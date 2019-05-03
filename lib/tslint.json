@@ -1,0 +1,21 @@
+{
+	"extends": "tslint:recommended",
+	"linterOptions": {
+		"exclude": ["**/*.js"]
+	},
+	"rules": {
+		"quotemark": [ true, "single", "avoid-escape" ],
+		"indent": [ true, "tabs" ],
+		"comment-format": false,
+		"arrow-parens": false,
+		"max-line-length": false,
+		"object-literal-key-quotes": [ true, "as-needed" ],
+		"no-var-requires": false,
+		"object-literal-sort-keys": false,
+		"no-object-literal-type-assertion": false,
+		"interface-name": false,
+		"max-classes-per-file": false,
+		"member-ordering": false,
+		"align": [true, "statements", "members"]
+	}
+}

@@ -1,0 +1,42 @@
+{
+	"name": "vpx-toolbox",
+	"version": "0.0.1",
+	"description": "A set of utils to deal with Visual Pinball files.",
+	"main": "index.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/vpdb/vpx-toolbox"
+	},
+	"scripts": {
+		"test": "test",
+		"build": "tsc"
+	},
+	"keywords": [
+		"visual pinball",
+		"vp10",
+		"vpx"
+	],
+	"author": "freezy <freezy@vpdb.io>",
+	"license": "GPL-2.0",
+	"dependencies": {
+		"@types/node": "^11.13.9",
+		"gm": "^1.23.1",
+		"sharp": "^0.22.1",
+		"three": "^0.104.0"
+	},
+	"devDependencies": {
+		"@types/chai": "^4.1.7",
+		"@types/gm": "^1.18.2",
+		"@types/mocha": "^5.2.6",
+		"@types/sharp": "^0.22.1",
+		"chai": "^4.2.0",
+		"mocha": "^6.1.4",
+		"ts-node": "^8.1.0",
+		"tslint": "^5.16.0",
+		"typescript": "^3.4.5"
+	},
+	"bugs": {
+		"url": "https://github.com/vpdb/vpx-toolbox/issues"
+	},
+	"homepage": "https://github.com/vpdb/vpx-toolbox/issues#readme"
+}
