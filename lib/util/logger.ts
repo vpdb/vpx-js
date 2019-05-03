@@ -21,26 +21,26 @@ export class Logger implements ILogger {
 
 	public static logger: ILogger = new Logger();
 
-	debug(format: any, ...param: any[]): void {
+	public debug(format: any, ...param: any[]): void {
 	}
 
-	error(format: any, ...param: any[]): void {
+	public error(format: any, ...param: any[]): void {
 	}
 
-	info(format: any, ...param: any[]): void {
+	public info(format: any, ...param: any[]): void {
 	}
 
-	verbose(format: any, ...param: any[]): void {
+	public verbose(format: any, ...param: any[]): void {
 	}
 
-	warn(format: any, ...param: any[]): void {
+	public warn(format: any, ...param: any[]): void {
 	}
 
-	wtf(format: any, ...param: any[]): void {
+	public wtf(format: any, ...param: any[]): void {
 	}
 
-	public static setLogger(logger: ILogger) {
-		this.logger = logger;
+	public static setLogger(l: ILogger) {
+		this.logger = l;
 	}
 }
 

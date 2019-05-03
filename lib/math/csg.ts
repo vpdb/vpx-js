@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+/* tslint:disable */
 import { BufferGeometry, Face3, Geometry, Matrix3, Matrix4, Mesh, Vector2, Vector3 } from 'three';
 
 /**
@@ -612,3 +613,4 @@ class Node {
 		}
 	}
 }
+/* tslint:enable */
