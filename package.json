@@ -1,6 +1,6 @@
 {
 	"name": "vpx-toolbox",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"description": "A set of utils to deal with Visual Pinball files.",
 	"main": "dist/lib/index.js",
 	"types": "dist/lib/index.d.ts",
