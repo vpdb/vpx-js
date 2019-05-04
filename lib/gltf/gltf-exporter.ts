@@ -71,7 +71,6 @@ import { Image } from './image';
 
 const gltfPipeline = require('gltf-pipeline');
 const PromisePool = require('es6-promise-pool');
-const pak = require('../../package.json');
 
 const WEBGL_CONSTANTS: { [key: string]: number } = {
 	POINTS: 0x0000,
@@ -174,7 +173,7 @@ export class GLTFExporter {
 			forceIndices: false,
 			forcePowerOfTwoTextures: false,
 			compressVertices: false,
-			versionString: 'vpdb/vpx-toolbox ' + pak.version,
+			versionString: 'vpdb/vpx-toolbox',
 			dracoOptions: {
 				compressionLevel: 7,
 				quantizePosition: 14,
