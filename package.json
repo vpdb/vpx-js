@@ -2,13 +2,14 @@
 	"name": "vpx-toolbox",
 	"version": "0.0.1",
 	"description": "A set of utils to deal with Visual Pinball files.",
-	"main": "index.js",
+	"main": "dist/lib/index.js",
+	"types": "dist/lib/index.d.ts",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/vpdb/vpx-toolbox"
 	},
 	"scripts": {
-		"build": "tsc",
+		"build": "rimraf dist && tsc",
 		"lint": "tslint lib/**/*.ts --format stylish",
 		"test": "nyc mocha"
 	},
@@ -20,26 +21,27 @@
 	"author": "freezy <freezy@vpdb.io>",
 	"license": "GPL-2.0",
 	"dependencies": {
-		"@types/node": "^11.13.9",
-		"es6-promise-pool": "^2.5.0",
-		"esm": "^3.2.22",
+		"@types/node": "11.13.9",
+		"es6-promise-pool": "2.5.0",
+		"esm": "3.2.22",
 		"gltf-pipeline": "github:freezy/gltf-pipeline#hotfix/dedupe",
-		"gm": "^1.23.1",
-		"pngquant": "^2.0.1",
-		"sharp": "^0.22.1",
-		"three": "^0.104.0"
+		"gm": "1.23.1",
+		"pngquant": "2.0.1",
+		"sharp": "0.22.1",
+		"three": "0.104.0"
 	},
 	"devDependencies": {
-		"@types/chai": "^4.1.7",
-		"@types/gm": "^1.18.2",
-		"@types/mocha": "^5.2.6",
-		"@types/sharp": "^0.22.1",
-		"chai": "^4.2.0",
-		"mocha": "^6.1.4",
-		"nyc": "^14.1.0",
-		"ts-node": "^8.1.0",
-		"tslint": "^5.16.0",
-		"typescript": "^3.4.5"
+		"@types/chai": "4.1.7",
+		"@types/gm": "1.18.2",
+		"@types/mocha": "5.2.6",
+		"@types/sharp": "0.22.1",
+		"chai": "4.2.0",
+		"mocha": "6.1.4",
+		"nyc": "14.1.0",
+		"rimraf": "^2.6.3",
+		"ts-node": "8.1.0",
+		"tslint": "5.16.0",
+		"typescript": "3.4.5"
 	},
 	"bugs": {
 		"url": "https://github.com/vpdb/vpx-toolbox/issues"
@@ -48,6 +50,9 @@
 	"nyc": {
 		"require": [
 			"ts-node/register"
+		],
+		"exclude": [
+			"lib/gltf/gltf-exporter.ts"
 		],
 		"extension": [
 			".ts"
