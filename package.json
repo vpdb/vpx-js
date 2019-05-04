@@ -8,8 +8,9 @@
 		"url": "https://github.com/vpdb/vpx-toolbox"
 	},
 	"scripts": {
-		"test": "test",
-		"build": "tsc"
+		"build": "tsc",
+		"lint": "tslint lib/**/*.ts --format stylish",
+		"test": "nyc mocha"
 	},
 	"keywords": [
 		"visual pinball",
@@ -20,7 +21,11 @@
 	"license": "GPL-2.0",
 	"dependencies": {
 		"@types/node": "^11.13.9",
+		"es6-promise-pool": "^2.5.0",
+		"esm": "^3.2.22",
+		"gltf-pipeline": "github:freezy/gltf-pipeline#hotfix/dedupe",
 		"gm": "^1.23.1",
+		"pngquant": "^2.0.1",
 		"sharp": "^0.22.1",
 		"three": "^0.104.0"
 	},
@@ -31,6 +36,7 @@
 		"@types/sharp": "^0.22.1",
 		"chai": "^4.2.0",
 		"mocha": "^6.1.4",
+		"nyc": "^14.1.0",
 		"ts-node": "^8.1.0",
 		"tslint": "^5.16.0",
 		"typescript": "^3.4.5"
@@ -38,5 +44,19 @@
 	"bugs": {
 		"url": "https://github.com/vpdb/vpx-toolbox/issues"
 	},
-	"homepage": "https://github.com/vpdb/vpx-toolbox/issues#readme"
+	"homepage": "https://github.com/vpdb/vpx-toolbox/issues#readme",
+	"nyc": {
+		"require": [
+			"ts-node/register"
+		],
+		"extension": [
+			".ts"
+		],
+		"reporter": [
+			"lcov",
+			"text-summary"
+		],
+		"sourceMap": true,
+		"instrument": true
+	}
 }

@@ -1,0 +1,4 @@
+--require ts-node/register
+--require esm
+--watch-extensions ts
+test/**/*.spec.ts

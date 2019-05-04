@@ -71,7 +71,7 @@ import { Image } from './image';
 
 const gltfPipeline = require('gltf-pipeline');
 const PromisePool = require('es6-promise-pool');
-const pak = require('../../../../package.json');
+const pak = require('../../package.json');
 
 const WEBGL_CONSTANTS: { [key: string]: number } = {
 	POINTS: 0x0000,
@@ -159,7 +159,6 @@ export class GLTFExporter {
 	private readonly outputJSON: GltfFile = {
 		asset: {
 			version: '2.0',
-			generator: 'VPDB ' + pak.version,
 		},
 	};
 
@@ -175,6 +174,7 @@ export class GLTFExporter {
 			forceIndices: false,
 			forcePowerOfTwoTextures: false,
 			compressVertices: false,
+			versionString: 'vpdb/vpx-toolbox ' + pak.version,
 			dracoOptions: {
 				compressionLevel: 7,
 				quantizePosition: 14,
@@ -186,6 +186,7 @@ export class GLTFExporter {
 			},
 		};
 		this.options = Object.assign({}, DEFAULT_OPTIONS, options);
+		this.outputJSON.asset.generator = this.options.versionString;
 	}
 
 	/**
@@ -1861,6 +1862,7 @@ export interface ParseOptions {
 	forceIndices?: boolean;
 	forcePowerOfTwoTextures?: boolean;
 	compressVertices?: boolean;
+	versionString?: string;
 	dracoOptions?: {
 		compressionLevel?: number;
 		quantizePosition?: number;
