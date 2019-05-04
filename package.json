@@ -52,6 +52,8 @@
 			"ts-node/register"
 		],
 		"exclude": [
+			"res/**",
+			"test/**",
 			"lib/gltf/gltf-exporter.ts"
 		],
 		"extension": [
