@@ -69,10 +69,10 @@ export class Table implements IRenderable {
 
 	private doc!: OleCompoundDoc;
 
-	public static async load(fileName: string): Promise<Table> {
+	public static async load(fileName: string, opts?: TableLoadOptions): Promise<Table> {
 		const then = Date.now();
 		const vpTable = new Table();
-		await vpTable._load(fileName);
+		await vpTable._load(fileName, opts || {});
 		logger.info(null, '[Table.load] Table loaded in %sms.', Date.now() - then);
 		return vpTable;
 	}
@@ -161,7 +161,7 @@ export class Table implements IRenderable {
 		}
 	}
 
-	private async _load(fileName: string): Promise<void> {
+	private async _load(fileName: string, opts: TableLoadOptions): Promise<void> {
 
 		this.doc = await OleCompoundDoc.load(fileName);
 		try {
@@ -172,11 +172,14 @@ export class Table implements IRenderable {
 			// load game data
 			this.gameData = await GameData.fromStorage(gameStorage, 'GameData');
 
-			// load items
-			await this.loadGameItems(gameStorage, this.gameData.numGameItems);
+			if (!opts.gameDataOnly) {
 
-			// load images
-			await this.loadTextures(gameStorage, this.gameData.numTextures);
+				// load items
+				await this.loadGameItems(gameStorage, this.gameData.numGameItems);
+
+				// load images
+				await this.loadTextures(gameStorage, this.gameData.numTextures);
+			}
 
 		} finally {
 			await this.doc.close();
@@ -395,4 +398,11 @@ export class Table implements IRenderable {
 		}
 		return new Mesh(buffer, playfieldPolyIndices);
 	}
+}
+
+export interface TableLoadOptions {
+	/**
+	 * If set, don't parse game items but only game data (faster).
+	 */
+	gameDataOnly?: boolean;
 }
