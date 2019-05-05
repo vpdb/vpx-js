@@ -48,4 +48,15 @@ describe('The VPinball parser for invisible elements', () => {
 		expect(plunger.speedPull).to.equal(5.5);
 		expect(plunger.speedFire).to.equal(80.80000305175781);
 	});
+
+	it('should parse a text box item', async () => {
+		const textBox= vpt.textBoxes.find(t => t.getName() === 'TextBox1')!;
+		expect(textBox).to.be.an('object');
+		expect(textBox.backColor).to.equal(0xff0000);
+		expect(textBox.fontColor).to.equal(0x0000ff);
+		expect(textBox.v1.x).to.equal(253);
+		expect(textBox.v1.y).to.equal(348);
+		expect(textBox.v2.x).to.equal(253 + 100);
+		expect(textBox.v2.y).to.equal(348 + 50);
+	});
 });

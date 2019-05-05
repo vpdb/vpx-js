@@ -59,7 +59,7 @@ export class BiffParser {
 				dataResult = data.slice(8, 8 + len - 4);
 			}
 
-			if (!tag || tag === 'ENDB') {
+			if (!tag || tag === 'ENDB' || tag === 'FONT') { // FIXME font screws up parsing currently.
 				if (nested) {
 					nested.onEnd(nestedItem);
 					nestedItem = null;

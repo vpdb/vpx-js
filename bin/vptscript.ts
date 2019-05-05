@@ -39,7 +39,7 @@ import { Table } from '../lib';
 			throw new Error(`The file "${vpxPath}" does not exist.`);
 		}
 
-		const vpt = await Table.load(vpxPath, { gameDataOnly: true });
+		const vpt = await Table.load(vpxPath, { loadInvisibleItems: true });
 		console.log(await vpt.getTableScript());
 
 	} catch (err) {

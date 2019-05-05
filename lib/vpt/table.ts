@@ -43,6 +43,7 @@ import { Texture } from './texture';
 import { TriggerItem } from './trigger-item';
 import { TimerItem } from './timer-item';
 import { PlungerItem } from './plunger-item';
+import { TextBoxItem } from './textbox-item';
 
 /**
  * A Visual Pinball table.
@@ -69,6 +70,7 @@ export class Table implements IRenderable {
 	public spinners: SpinnerItem[] = [];
 	public timers: TimerItem[] = [];
 	public plungers: PlungerItem[] = [];
+	public textBoxes: TextBoxItem[] = [];
 
 	public static playfieldThickness = 20.0;
 
@@ -379,6 +381,13 @@ export class Table implements IRenderable {
 				case GameItem.TypePlunger: {
 					if (opts.loadInvisibleItems) {
 						this.plungers.push(await PlungerItem.fromStorage(storage, itemName));
+					}
+					break;
+				}
+
+				case GameItem.TypeTextbox: {
+					if (opts.loadInvisibleItems) {
+						this.textBoxes.push(await TextBoxItem.fromStorage(storage, itemName));
 					}
 					break;
 				}
