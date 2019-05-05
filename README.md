@@ -32,14 +32,17 @@ export feature? Well, VPX Toolbox does some more things:
 - Install [Node.js](https://nodejs.org/en/)
 - Open a terminal and type:
 
-
-    npm install -g vpx-toolbox
+```bash
+npm install -g vpx-toolbox
+```
 
 ## Usage
 
 For tests and tooling, there is a command line tool:
 
-    vpt2glb <source.vpx> [<destination.glb>]
+```bash
+vpt2glb <source.vpx> [<destination.glb>]
+```
     
 Otherwise, the API is quite simple:
 
