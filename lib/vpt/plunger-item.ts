@@ -86,7 +86,7 @@ export class PlungerItem extends GameItem {
 			case 'HPSL': this.stroke = this.getFloat(buffer); break;
 			case 'SPDP': this.speedPull = this.getFloat(buffer); break;
 			case 'SPDF': this.speedFire = this.getFloat(buffer); break;
-			case 'MESTH': this.mechStrength = this.getFloat(buffer); break;
+			case 'MEST': this.mechStrength = this.getFloat(buffer); break;
 			case 'MPRK': this.parkPosition = this.getFloat(buffer); break;
 			case 'PSCV': this.scatterVelocity = this.getFloat(buffer); break;
 			case 'MOMX': this.momentumXfer = this.getFloat(buffer); break;

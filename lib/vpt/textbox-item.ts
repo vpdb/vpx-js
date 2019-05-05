@@ -68,7 +68,7 @@ export class TextBoxItem extends GameItem {
 			case 'ALGN': this.align = this.getInt(buffer); break;
 			case 'TRNS': this.isTransparent = this.getBool(buffer); break;
 			case 'IDMD': this.isDMD = this.getBool(buffer); break;
-			case 'FONT': break; // ignore for now
+			case 'FONT': break; // ignore for now, see BiffParser#L62, it's currently treated as end of storage
 			default:
 				this.getUnknownBlock(buffer, tag);
 				break;
