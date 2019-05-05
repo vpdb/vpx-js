@@ -1,6 +1,6 @@
 {
 	"name": "vpx-toolbox",
-	"version": "1.0.1",
+	"version": "1.0.2-SNAPSHOT",
 	"description": "A set of utils to deal with Visual Pinball files.",
 	"main": "dist/lib/index.js",
 	"types": "dist/lib/index.d.ts",
@@ -24,9 +24,7 @@
 	"author": "freezy <freezy@vpdb.io>",
 	"license": "GPL-2.0",
 	"dependencies": {
-		"@types/node": "11.13.9",
 		"es6-promise-pool": "2.5.0",
-		"esm": "3.2.22",
 		"gltf-pipeline": "github:freezy/gltf-pipeline#hotfix/dedupe",
 		"gm": "1.23.1",
 		"pngquant": "2.0.1",
@@ -37,8 +35,10 @@
 		"@types/chai": "4.1.7",
 		"@types/gm": "1.18.2",
 		"@types/mocha": "5.2.6",
+		"@types/node": "11.13.9",
 		"@types/sharp": "0.22.1",
 		"chai": "4.2.0",
+		"esm": "3.2.22",
 		"mocha": "6.1.4",
 		"nyc": "14.1.0",
 		"rimraf": "2.6.3",
