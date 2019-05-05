@@ -31,7 +31,8 @@ import { Table } from '../lib';
 
 		const start = Date.now();
 		if (!argSrc) {
-			throw new Error('First argument must be the .vpx file to process.');
+			console.log('USAGE: vpt2glb <source.vpx> [<dest.glb>]\n');
+			return;
 		}
 		if (!/\.vp[xt]$/i.test(argSrc)) {
 			throw new Error('First argument must be a .vpx or .vpt file.');
