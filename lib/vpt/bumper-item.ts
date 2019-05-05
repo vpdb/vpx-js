@@ -149,8 +149,6 @@ export class BumperItem extends GameItem implements IRenderable {
 			case 'RIMA': this.szRingMaterial = this.getString(buffer, len); break;
 			case 'BAMA': this.szBaseMaterial = this.getString(buffer, len); break;
 			case 'SKMA': this.szSkirtMaterial = this.getString(buffer, len); break;
-			case 'TMON': this.fTimerEnabled = this.getBool(buffer); break;
-			case 'TMIN': this.TimerInterval = this.getInt(buffer); break;
 			case 'THRS': this.threshold = this.getFloat(buffer); break;
 			case 'FORC': this.force = this.getFloat(buffer); break;
 			case 'BSCT': this.scatter = this.getFloat(buffer); break;

@@ -186,8 +186,6 @@ export class TriggerItem extends GameItem implements IRenderable {
 			case 'SCAX': this.scaleX = this.getFloat(buffer); break;
 			case 'SCAY': this.scaleY = this.getFloat(buffer); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
-			case 'TMON': this.fTimerEnabled = this.getBool(buffer); break;
-			case 'TMIN': this.TimerInterval = this.getInt(buffer); break;
 			case 'SURF': this.szSurface = this.getString(buffer, len); break;
 			case 'EBLD': this.fEnabled = this.getBool(buffer); break;
 			case 'THOT': this.hitHeight = this.getFloat(buffer); break;

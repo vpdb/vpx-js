@@ -170,9 +170,7 @@ export class KickerItem extends GameItem implements IRenderable {
 			case 'KHHI': this.hitHeight = this.getFloat(buffer); break;
 			case 'KORI': this.orientation = this.getFloat(buffer); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
-			case 'TMON': this.fTimerEnabled = this.getBool(buffer); break;
 			case 'EBLD': this.fEnabled = this.getBool(buffer); break;
-			case 'TMIN': this.TimerInterval = this.getInt(buffer); break;
 			case 'TYPE':
 				this.kickerType = this.getInt(buffer);
 				/* istanbul ignore if: legacy handling */

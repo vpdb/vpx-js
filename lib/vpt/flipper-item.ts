@@ -205,8 +205,6 @@ export class FlipperItem extends GameItem implements IRenderable {
 			case 'ANGE': this.endAngle = this.getFloat(buffer); break;
 			case 'OVRP': this.overridePhysics = this.getInt(buffer); break;
 			case 'FORC': this.mass = this.getFloat(buffer); break;
-			case 'TMON': this.isTimerEnabled = this.getBool(buffer); break;
-			case 'TMIN': this.timerInterval = this.getInt(buffer); break;
 			case 'SURF': this.szSurface = this.getString(buffer, len); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
 			case 'RUMA': this.szRubberMaterial = this.getString(buffer, len); break;

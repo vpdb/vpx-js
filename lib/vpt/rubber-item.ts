@@ -274,8 +274,6 @@ export class RubberItem extends GameItem implements IRenderable {
 			case 'WDTP': this.thickness = this.getInt(buffer); break;
 			case 'HTEV': this.fHitEvent = this.getBool(buffer); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
-			case 'TMON': this.timer.enabled = this.getBool(buffer); break;
-			case 'TMIN': this.timer.interval = this.getInt(buffer); break;
 			case 'IMAG': this.szImage = this.getString(buffer, len); break;
 			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			case 'ELAS': this.elasticity = this.getFloat(buffer); break;

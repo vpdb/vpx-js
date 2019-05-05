@@ -153,13 +153,11 @@ export class GateItem extends GameItem implements IRenderable {
 			case 'HGTH': this.height = this.getFloat(buffer); break;
 			case 'ROTA': this.rotation = this.getFloat(buffer); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
-			case 'TMON': this.fTimerEnabled = this.getBool(buffer); break;
 			case 'GSUP': this.fShowBracket = this.getBool(buffer); break;
 			case 'GCOL': this.fCollidable = this.getBool(buffer); break;
 			case 'TWWA': this.twoWay = this.getBool(buffer); break;
 			case 'GVSB': this.fVisible = this.getBool(buffer); break;
 			case 'REEN': this.fReflectionEnabled = this.getBool(buffer); break;
-			case 'TMIN': this.TimerInterval = this.getInt(buffer); break;
 			case 'SURF': this.szSurface = this.getString(buffer, len); break;
 			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			case 'ELAS': this.elasticity = this.getFloat(buffer); break;

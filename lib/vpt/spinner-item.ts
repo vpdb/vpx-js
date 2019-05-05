@@ -134,9 +134,6 @@ export class SpinnerItem extends GameItem implements IRenderable {
 			case 'VCEN': this.vCenter = Vertex2D.get(buffer); break;
 			case 'ROTA': this.rotation = this.getFloat(buffer); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
-			case 'TMON': this.fTimerEnabled = this.getBool(buffer); break;
-			case 'TMIN': this.TimerInterval = this.getInt(buffer); break;
-			case 'SSUP': this.fShowBracket = this.getBool(buffer); break;
 			case 'HIGH': this.height = this.getFloat(buffer); break;
 			case 'LGTH': this.length = this.getFloat(buffer); break;
 			case 'AFRC': this.damping = this.getFloat(buffer); break;

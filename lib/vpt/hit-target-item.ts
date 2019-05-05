@@ -181,8 +181,6 @@ export class HitTargetItem extends GameItem implements IRenderable {
 			case 'DILI': this.fDisableLightingTop = this.getFloat(buffer); break;
 			case 'DILB': this.fDisableLightingBelow = this.getFloat(buffer); break;
 			case 'PIDB': this.depthBias = this.getFloat(buffer); break;
-			case 'TMON': this.fTimerEnabled = this.getBool(buffer); break;
-			case 'TMIN': this.TimerInterval = this.getInt(buffer); break;
 			case 'RADE': this.RaiseDelay = this.getInt(buffer); break;
 			case 'MAPH': this.szPhysicsMaterial = this.getString(buffer, len); break;
 			case 'OVPH': this.fOverwritePhysics = this.getBool(buffer); break;

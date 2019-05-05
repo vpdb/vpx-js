@@ -91,6 +91,7 @@ export abstract class GameItem extends BiffParser {
 	private pdata?: number;
 	private fLocked?: boolean;
 	private layerIndex?: number;
+	protected timer = new TimerDataRoot();
 
 	public abstract getName(): string;
 
@@ -103,11 +104,19 @@ export abstract class GameItem extends BiffParser {
 			case 'PIID': this.pdata = this.getInt(buffer); break;
 			case 'LOCK': this.fLocked = this.getBool(buffer); break;
 			case 'LAYR': this.layerIndex = this.getInt(buffer); break;
+			case 'TMON': this.timer.enabled = this.getBool(buffer); break;
+			case 'TMIN': this.timer.interval = this.getInt(buffer); break;
+
 			default:
 				//logger.warn(null, '[GameItem.parseUnknownBlock]: Unknown block "%s".', tag);
 				break;
 		}
 	}
+}
+
+export class TimerDataRoot {
+	public interval: number = 0;
+	public enabled: boolean = false;
 }
 
 export interface IRenderable {

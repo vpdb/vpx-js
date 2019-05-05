@@ -310,8 +310,6 @@ export class SurfaceItem extends GameItem implements IRenderable {
 			case 'FLIP': this.fFlipbook = this.getBool(buffer); break;
 			case 'ISBS': this.fIsBottomSolid = this.getBool(buffer); break;
 			case 'CLDW': this.fCollidable = this.getBool(buffer); break;
-			case 'TMON': this.fTimerEnabled = this.getBool(buffer); break;
-			case 'TMIN': this.TimerInterval = this.getInt(buffer); break;
 			case 'THRS': this.threshold = this.getFloat(buffer); break;
 			case 'IMAG': this.szImage = this.getString(buffer, len); break;
 			case 'SIMG': this.szSideImage = this.getString(buffer, len); break;

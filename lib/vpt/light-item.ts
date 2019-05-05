@@ -308,8 +308,6 @@ export class LightItem extends GameItem implements IRenderable {
 			case 'COLR': this.color = BiffParser.bgrToRgb(this.getInt(buffer)); break;
 			case 'COL2': this.color2 = BiffParser.bgrToRgb(this.getInt(buffer)); break;
 			case 'IMG1': this.szOffImage = this.getString(buffer, len); break;
-			case 'TMON': this.fTimerEnabled = this.getBool(buffer); break;
-			case 'TMIN': this.TimerInterval = this.getInt(buffer); break;
 			case 'SHAP': this.roundLight = this.getBool(buffer); break;
 			case 'BPAT': this.rgblinkpattern = this.getString(buffer, len); break;
 			case 'BINT': this.blinkinterval = this.getInt(buffer); break;

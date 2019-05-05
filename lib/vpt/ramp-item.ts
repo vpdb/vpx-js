@@ -774,8 +774,6 @@ export class RampItem extends GameItem implements IRenderable {
 			case 'WDBT': this.widthBottom = this.getFloat(buffer); break;
 			case 'WDTP': this.widthTop = this.getFloat(buffer); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
-			case 'TMON': this.isTimerEnabled = this.getInt(buffer); break;
-			case 'TMIN': this.timerInterval = this.getInt(buffer); break;
 			case 'TYPE': this.rampType = this.getInt(buffer); break;
 			case 'IMAG': this.szImage = this.getString(buffer, len); break;
 			case 'ALGN': this.imageAlignment = this.getInt(buffer); break;
