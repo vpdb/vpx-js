@@ -14,7 +14,8 @@
 		"test": "nyc mocha"
 	},
 	"bin": {
-		"vpt2glb": "./dist/bin/vpt2glb.js"
+		"vpt2glb": "./dist/bin/vpt2glb.js",
+		"vptscript": "./dist/bin/vptscript.js"
 	},
 	"keywords": [
 		"visual pinball",

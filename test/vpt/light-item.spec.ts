@@ -22,7 +22,7 @@ import { expect } from 'chai';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 
 import { ThreeHelper } from '../three.helper';
-import { Table } from '../../lib/vpt/table';
+import { Table } from '../../lib';
 
 const three = new ThreeHelper();
 const scale = 0.05;

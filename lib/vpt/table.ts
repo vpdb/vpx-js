@@ -150,6 +150,17 @@ export class Table implements IRenderable {
 		return await exporter.exportGlb();
 	}
 
+	public async getTableScript(): Promise<string> {
+		await this.doc.reopen();
+		try {
+			const gameStorage = this.doc.storage('GameStg');
+			const buffer = await gameStorage.read('GameData', this.gameData.scriptPos, this.gameData.scriptLen);
+			return buffer.toString();
+		} finally {
+			await this.doc.close();
+		}
+	}
+
 	private async _load(fileName: string): Promise<void> {
 
 		this.doc = await OleCompoundDoc.load(fileName);

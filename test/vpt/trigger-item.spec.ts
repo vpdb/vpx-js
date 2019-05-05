@@ -18,7 +18,7 @@
  */
 
 import { ThreeHelper } from '../three.helper';
-import { Table } from '../../lib/vpt/table';
+import { Table } from '../../lib';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Mesh } from 'three';
 

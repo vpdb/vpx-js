@@ -18,7 +18,7 @@
  */
 
 import { ThreeHelper } from '../three.helper';
-import { Table } from '../../lib/vpt/table';
+import { Table } from '../../lib';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Mesh } from 'three';
 import { expect } from 'chai';
@@ -32,9 +32,10 @@ const tableDepth = 20;
 describe('The VPinball table generator', () => {
 
 	let gltf: GLTF;
+	let vpt: Table;
 
 	before(async () => {
-		const vpt = await Table.load(three.fixturePath('table-empty.vpx'));
+		vpt = await Table.load(three.fixturePath('table-empty.vpx'));
 		gltf = await three.loadGlb(await vpt.exportGlb({ applyTextures: false, exportPlayfieldLights: false }));
 	});
 
@@ -44,6 +45,11 @@ describe('The VPinball table generator', () => {
 		const expectedVertices = [ tableWidth, tableHeight, tableDepth, tableWidth, 0, tableDepth, tableWidth, tableHeight, 0, tableWidth, 0, tableDepth, tableWidth, 0, 0, tableWidth, tableHeight, 0, 0, tableHeight, 0, 0, 0, 0, 0, tableHeight, tableDepth, 0, 0, 0, 0, 0, tableDepth, 0, tableHeight, tableDepth, 0, tableHeight, 0, 0, tableHeight, tableDepth, tableWidth, tableHeight, 0, 0, tableHeight, tableDepth, tableWidth, tableHeight, tableDepth, tableWidth, tableHeight, 0, 0, 0, tableDepth, 0, 0, 0, tableWidth, 0, tableDepth, 0, 0, 0, tableWidth, 0, 0, tableWidth, 0, tableDepth, 0, tableHeight, tableDepth, 0, 0, tableDepth, tableWidth, tableHeight, tableDepth, 0, 0, tableDepth, tableWidth, 0, tableDepth, tableWidth, tableHeight, tableDepth, tableWidth, tableHeight, 0, tableWidth, 0, 0, 0, tableHeight, 0, tableWidth, 0, 0, 0, 0, 0, 0, tableHeight, 0 ];
 		expect(compareArray(playfieldVertices, expectedVertices)).to.be.true;
 	});
+
+	it('should read the table script correctly', async () => {
+		const script = await vpt.getTableScript();
+		expect(script).to.equal(`'Empty Table\r\n\r\nOption Explicit\r\n\r\n' EOF`);
+	})
 });
 
 function compareArray(arr1: any[], arr2: any[]) {

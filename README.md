@@ -38,7 +38,33 @@ npm install -g vpx-toolbox
 
 ## Usage
 
-For tests and tooling, there is a command line tool:
+### Extract Table Script
+
+To print the table script via CLI:
+
+```bash
+vptscript <source.vpx>
+```
+
+Using the API:
+
+```js
+const { Table } = require(`vpx-toolbox`);
+
+(async () => {
+	
+	// parse the table
+	const vpt = await Table.load('my-table.vpx');
+	
+	// read script
+	const script = await vpt.getTableScript();
+	console.log(script);
+})();
+```
+
+### Convert to GLTF
+
+CLI:
 
 ```bash
 vpt2glb <source.vpx> [<destination.glb>]

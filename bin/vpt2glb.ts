@@ -31,7 +31,7 @@ import { Table } from '../lib';
 
 		const start = Date.now();
 		if (!argSrc) {
-			console.log('USAGE: vpt2glb <source.vpx> [<dest.glb>]\n');
+			console.log('Converts a Visual Pinball table to a binary GLTF model.\n\nUSAGE: vpt2glb <source.vpx> [<dest.glb>]\n');
 			return;
 		}
 		if (!/\.vp[xt]$/i.test(argSrc)) {
