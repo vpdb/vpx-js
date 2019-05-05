@@ -18,3 +18,4 @@
  */
 
 export { Table } from './vpt/table';
+export { OleCompoundDoc } from './io/ole-doc';
