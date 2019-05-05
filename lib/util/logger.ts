@@ -17,31 +17,38 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-/* tslint:disable:no-empty */
+/* tslint:disable:no-empty no-console */
 export class Logger implements ILogger {
 
-	public static logger: ILogger = new Logger();
+	private static instance: ILogger = new Logger();
+
+	public static logger(): ILogger {
+		return Logger.instance;
+	}
+
+	public static setLogger(l: ILogger) {
+		Logger.instance = l;
+	}
 
 	public debug(format: any, ...param: any[]): void {
 	}
 
 	public error(format: any, ...param: any[]): void {
+		console.error(format, param);
 	}
 
 	public info(format: any, ...param: any[]): void {
+		console.log(format, param);
 	}
 
 	public verbose(format: any, ...param: any[]): void {
 	}
 
 	public warn(format: any, ...param: any[]): void {
+		console.warn(format, param);
 	}
 
 	public wtf(format: any, ...param: any[]): void {
-	}
-
-	public static setLogger(l: ILogger) {
-		this.logger = l;
 	}
 }
 

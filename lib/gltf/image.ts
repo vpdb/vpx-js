@@ -67,7 +67,7 @@ export class Image {
 			format = metadata.format;
 
 		} catch (err) {
-			logger.warn('[Image.init] Could not read metadata from buffer (%s), using GM to read image.', err.message);
+			logger().warn('[Image.init] Could not read metadata from buffer (%s), using GM to read image.', err.message);
 
 			const g = gm(data);
 			const metadata = await gmIdentify(g);
@@ -111,7 +111,7 @@ export class Image {
 
 		if (this.stats.isOpaque) {
 			if (this.format === 'png') {
-				logger.debug(null, '[Image.getImage]: Converting opaque png to jpeg.');
+				logger().debug(null, '[Image.getImage]: Converting opaque png to jpeg.');
 			}
 			return this.sharp.jpeg({ quality: Image.jpegQuality }).toBuffer();
 		}

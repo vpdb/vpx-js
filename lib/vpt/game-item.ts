@@ -108,7 +108,7 @@ export abstract class GameItem extends BiffParser {
 			case 'TMIN': this.timer.interval = this.getInt(buffer); break;
 
 			default:
-				//logger.warn(null, '[GameItem.parseUnknownBlock]: Unknown block "%s".', tag);
+				//logger().warn(null, '[GameItem.parseUnknownBlock]: Unknown block "%s".', tag);
 				break;
 		}
 	}

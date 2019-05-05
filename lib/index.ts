@@ -18,4 +18,5 @@
  */
 
 export { Table } from './vpt/table';
-export { OleCompoundDoc } from './io/ole-doc';
+export { OleCompoundDoc, Storage } from './io/ole-doc';
+export { Logger } from './util/logger';

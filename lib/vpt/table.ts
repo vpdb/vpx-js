@@ -20,7 +20,7 @@
 
 import { BoxGeometry, BufferGeometry, ExtrudeBufferGeometry, Shape, Vector2 } from 'three';
 import { TableExporter, VpTableExporterOptions } from '../gltf/table-exporter';
-import { OleCompoundDoc, Storage } from '../io/ole-doc';
+import { OleCompoundDoc, Storage } from '..';
 import { f4 } from '../math/float';
 import { Vertex3DNoTex2 } from '../math/vertex';
 import { logger } from '../util/logger';
@@ -80,7 +80,7 @@ export class Table implements IRenderable {
 		const then = Date.now();
 		const vpTable = new Table();
 		await vpTable._load(fileName, opts || {});
-		logger.info(null, '[Table.load] Table loaded in %sms.', Date.now() - then);
+		logger().info(null, '[Table.load] Table loaded in %sms.', Date.now() - then);
 		return vpTable;
 	}
 
@@ -167,7 +167,7 @@ export class Table implements IRenderable {
 			return f4(this.gameData.tableheight + this.ramps[surface].getSurfaceHeight(x, y, this));
 		}
 
-		logger.warn(null, '[Table.getSurfaceHeight] Unknown surface %s.', surface);
+		logger().warn(null, '[Table.getSurfaceHeight] Unknown surface %s.', surface);
 		return this.gameData.tableheight;
 	}
 
@@ -201,7 +201,7 @@ export class Table implements IRenderable {
 		this.doc = await OleCompoundDoc.load(fileName);
 		try {
 
-			if (!opts.tableInfoOnly) {
+			if (opts.gameDataOnly || !opts.tableInfoOnly) {
 				// open game storage
 				const gameStorage = this.doc.storage('GameStg');
 
@@ -218,7 +218,7 @@ export class Table implements IRenderable {
 				}
 			}
 
-			if (!opts.gameDataOnly) {
+			if (opts.tableInfoOnly || !opts.gameDataOnly) {
 				await this.loadTableInfo();
 			}
 
