@@ -91,7 +91,7 @@ export abstract class GameItem extends BiffParser {
 	private pdata?: number;
 	private fLocked?: boolean;
 	private layerIndex?: number;
-	protected timer = new TimerDataRoot();
+	public timer = new TimerDataRoot();
 
 	public abstract getName(): string;
 

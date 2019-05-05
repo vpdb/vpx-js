@@ -41,6 +41,7 @@ import { SpinnerItem } from './spinner-item';
 import { SurfaceItem } from './surface-item';
 import { Texture } from './texture';
 import { TriggerItem } from './trigger-item';
+import { TimerItem } from './timer-item';
 
 /**
  * A Visual Pinball table.
@@ -65,6 +66,7 @@ export class Table implements IRenderable {
 	public kickers: KickerItem[] = [];
 	public triggers: TriggerItem[] = [];
 	public spinners: SpinnerItem[] = [];
+	public timers: TimerItem[] = [];
 
 	public static playfieldThickness = 20.0;
 
@@ -205,7 +207,7 @@ export class Table implements IRenderable {
 				if (!opts.gameDataOnly) {
 
 					// load items
-					await this.loadGameItems(gameStorage, this.gameData.numGameItems);
+					await this.loadGameItems(gameStorage, this.gameData.numGameItems, opts);
 
 					// load images
 					await this.loadTextures(gameStorage, this.gameData.numTextures);
@@ -291,7 +293,7 @@ export class Table implements IRenderable {
 		return true;
 	}
 
-	private async loadGameItems(storage: Storage, numItems: number): Promise<{[key: string]: number}> {
+	private async loadGameItems(storage: Storage, numItems: number, opts: TableLoadOptions): Promise<{[key: string]: number}> {
 		const stats: {[key: string]: number} = {};
 		for (let i = 0; i < numItems; i++) {
 			const itemName = `GameItem${i}`;
@@ -362,6 +364,13 @@ export class Table implements IRenderable {
 
 				case GameItem.TypeSpinner: {
 					this.spinners.push(await SpinnerItem.fromStorage(storage, itemName));
+					break;
+				}
+
+				case GameItem.TypeTimer: {
+					if (opts.loadInvisibleItems) {
+						this.timers.push(await TimerItem.fromStorage(storage, itemName));
+					}
 					break;
 				}
 
@@ -462,4 +471,9 @@ export interface TableLoadOptions {
 	 * If set, ignore game storage and only parse table info.
 	 */
 	tableInfoOnly?: boolean;
+
+	/**
+	 * If set, also parse items like timers, i.e. non-visible items.
+	 */
+	loadInvisibleItems?: boolean;
 }

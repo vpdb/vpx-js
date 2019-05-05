@@ -23,14 +23,13 @@ import { Vertex2D } from '../math/vertex2d';
 import { GameItem } from './game-item';
 
 /**
- * VPinball's gates.
+ * VPinball's timers.
  *
- * @see https://github.com/vpinball/vpinball/blob/master/gate.cpp
+ * @see https://github.com/vpinball/vpinball/blob/master/timer.cpp
  */
 export class TimerItem extends GameItem {
 
-	private length: number = 100;
-	private vCenter!: Vertex2D;
+	public vCenter!: Vertex2D;
 	private wzName!: string;
 	private fBackglass!: boolean;
 

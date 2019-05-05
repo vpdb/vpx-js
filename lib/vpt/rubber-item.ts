@@ -42,7 +42,6 @@ export class RubberItem extends GameItem implements IRenderable {
 	public thickness: number = f4(8);
 	public fHitEvent: boolean = false;
 	public szMaterial?: string;
-	public timer: TimerDataRoot = new TimerDataRoot();
 	public szImage?: string;
 	public elasticity?: number;
 	public elasticityFalloff?: number;
@@ -297,9 +296,4 @@ export class RubberItem extends GameItem implements IRenderable {
 		}
 		return 0;
 	}
-}
-
-class TimerDataRoot {
-	public interval?: number;
-	public enabled: boolean = false;
 }
