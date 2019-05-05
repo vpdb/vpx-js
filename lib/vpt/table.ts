@@ -34,16 +34,16 @@ import { KickerItem } from './kicker-item';
 import { LightItem } from './light-item';
 import { Material } from './material';
 import { Mesh } from './mesh';
+import { PlungerItem } from './plunger-item';
 import { PrimitiveItem } from './primitive-item';
 import { RampItem } from './ramp-item';
 import { RubberItem } from './rubber-item';
 import { SpinnerItem } from './spinner-item';
 import { SurfaceItem } from './surface-item';
-import { Texture } from './texture';
-import { TriggerItem } from './trigger-item';
-import { TimerItem } from './timer-item';
-import { PlungerItem } from './plunger-item';
 import { TextBoxItem } from './textbox-item';
+import { Texture } from './texture';
+import { TimerItem } from './timer-item';
+import { TriggerItem } from './trigger-item';
 
 /**
  * A Visual Pinball table.
