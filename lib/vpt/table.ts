@@ -80,7 +80,7 @@ export class Table implements IRenderable {
 		const then = Date.now();
 		const vpTable = new Table();
 		await vpTable._load(fileName, opts || {});
-		logger().info(null, '[Table.load] Table loaded in %sms.', Date.now() - then);
+		logger().info('[Table.load] Table loaded in %sms.', Date.now() - then);
 		return vpTable;
 	}
 
@@ -167,7 +167,7 @@ export class Table implements IRenderable {
 			return f4(this.gameData.tableheight + this.ramps[surface].getSurfaceHeight(x, y, this));
 		}
 
-		logger().warn(null, '[Table.getSurfaceHeight] Unknown surface %s.', surface);
+		logger().warn('[Table.getSurfaceHeight] Unknown surface %s.', surface);
 		return this.gameData.tableheight;
 	}
 

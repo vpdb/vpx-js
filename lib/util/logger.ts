@@ -34,18 +34,18 @@ export class Logger implements ILogger {
 	}
 
 	public error(format: any, ...param: any[]): void {
-		console.error(format, param);
+		console.error.apply(console.log, [ format, ...param ]);
 	}
 
 	public info(format: any, ...param: any[]): void {
-		console.log(format, param);
+		console.log.apply(console.log, [ format, ...param ]);
 	}
 
 	public verbose(format: any, ...param: any[]): void {
 	}
 
 	public warn(format: any, ...param: any[]): void {
-		console.warn(format, param);
+		console.warn.apply(console.log, [ format, ...param ]);
 	}
 
 	public wtf(format: any, ...param: any[]): void {

@@ -227,7 +227,7 @@ export class TableExporter {
 			return true;
 		} catch (err) {
 			materialMap.image = Texture.DEFAULT_IMAGE;
-			logger().warn(null, '[VpTableExporter.loadMap] Error loading map of %s bytes for %s (%s/%s): %s', data! ? data!.length : '<null>', name, objMap.storageName, objMap.getName(), err.message);
+			logger().warn('[VpTableExporter.loadMap] Error loading map of %s bytes for %s (%s/%s): %s', data! ? data!.length : '<null>', name, objMap.storageName, objMap.getName(), err.message);
 			return false;
 		}
 	}

@@ -1791,7 +1791,7 @@ class Utils {
 					throw new Error('GLTFExporter: Cannot merge tracks with glTF CUBICSPLINE interpolation.');
 				}
 
-				logger().warn(null, '[GLTFExporter.mergeMorphTargetTracks]: Morph target interpolation mode not yet supported. Using LINEAR instead.');
+				logger().warn('[GLTFExporter.mergeMorphTargetTracks]: Morph target interpolation mode not yet supported. Using LINEAR instead.');
 
 				sourceTrack = sourceTrack.clone();
 				sourceTrack.setInterpolation(InterpolateLinear);

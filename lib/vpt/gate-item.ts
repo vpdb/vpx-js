@@ -114,7 +114,7 @@ export class GateItem extends GameItem implements IRenderable {
 			case GateItem.TypeGateLongPlate: return gateLongPlateMesh.clone();
 			/* istanbul ignore next */
 			default:
-				logger().warn(null, '[GateItem.getBaseMesh] Unknown gate type "%s".', this.gateType);
+				logger().warn('[GateItem.getBaseMesh] Unknown gate type "%s".', this.gateType);
 				return hitTargetT3Mesh.clone();
 		}
 	}

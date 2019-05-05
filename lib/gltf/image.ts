@@ -111,7 +111,7 @@ export class Image {
 
 		if (this.stats.isOpaque) {
 			if (this.format === 'png') {
-				logger().debug(null, '[Image.getImage]: Converting opaque png to jpeg.');
+				logger().debug('[Image.getImage]: Converting opaque png to jpeg.');
 			}
 			return this.sharp.jpeg({ quality: Image.jpegQuality }).toBuffer();
 		}

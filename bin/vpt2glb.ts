@@ -20,7 +20,7 @@
 
 import { existsSync, writeFileSync } from 'fs';
 import { basename, dirname, resolve } from 'path';
-import { Table } from '../lib';
+import { Logger, Table } from '../lib';
 
 (async () => {
 
@@ -28,6 +28,16 @@ import { Table } from '../lib';
 
 		const argSrc = process.argv[2];
 		const argDest = process.argv[3];
+
+		// silence logs
+		Logger.setLogger({
+			debug(format: any, ...param: any[]): void {},
+			error(format: any, ...param: any[]): void {},
+			info(format: any, ...param: any[]): void {},
+			verbose(format: any, ...param: any[]): void {},
+			warn(format: any, ...param: any[]): void {},
+			wtf(format: any, ...param: any[]): void {}
+		});
 
 		const start = Date.now();
 		if (!argSrc) {

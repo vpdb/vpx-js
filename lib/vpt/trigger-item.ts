@@ -172,7 +172,7 @@ export class TriggerItem extends GameItem implements IRenderable {
 				return triggerStarMesh.clone(name);
 			/* istanbul ignore next */
 			default:
-				logger().warn(null, '[TriggerItem.getBaseMesh] Unknown shape "%s".', this.shape);
+				logger().warn('[TriggerItem.getBaseMesh] Unknown shape "%s".', this.shape);
 				return triggerSimpleMesh.clone(name);
 		}
 	}
