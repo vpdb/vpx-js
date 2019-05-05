@@ -42,6 +42,7 @@ import { SurfaceItem } from './surface-item';
 import { Texture } from './texture';
 import { TriggerItem } from './trigger-item';
 import { TimerItem } from './timer-item';
+import { PlungerItem } from './plunger-item';
 
 /**
  * A Visual Pinball table.
@@ -67,6 +68,7 @@ export class Table implements IRenderable {
 	public triggers: TriggerItem[] = [];
 	public spinners: SpinnerItem[] = [];
 	public timers: TimerItem[] = [];
+	public plungers: PlungerItem[] = [];
 
 	public static playfieldThickness = 20.0;
 
@@ -370,6 +372,13 @@ export class Table implements IRenderable {
 				case GameItem.TypeTimer: {
 					if (opts.loadInvisibleItems) {
 						this.timers.push(await TimerItem.fromStorage(storage, itemName));
+					}
+					break;
+				}
+
+				case GameItem.TypePlunger: {
+					if (opts.loadInvisibleItems) {
+						this.plungers.push(await PlungerItem.fromStorage(storage, itemName));
 					}
 					break;
 				}
