@@ -9,7 +9,7 @@
 		"url": "https://github.com/vpdb/vpx-toolbox"
 	},
 	"scripts": {
-		"build": "rimraf dist && tsc",
+		"build": "rimraf dist && tsc && cp -r res/maps dist/res",
 		"lint": "tslint lib/**/*.ts --format stylish",
 		"test": "nyc mocha"
 	},

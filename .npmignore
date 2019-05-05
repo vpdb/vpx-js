@@ -1,7 +1,8 @@
-lib
-bin
-test
-coverage
+/lib
+/bin
+/test
+/res
+/coverage
 .idea
 .nyc_output
 .travis.yml
