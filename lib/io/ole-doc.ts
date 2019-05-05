@@ -244,6 +244,10 @@ export class Storage {
 		return new Storage(this.doc, this.dirEntry.storages[storageName]);
 	}
 
+	public getStreams(): string[] {
+		return Object.keys(this.dirEntry.streams);
+	}
+
 	public stream(streamName: string, offset: number = 0, bytesToRead: number = 0) {
 		const streamEntry = this.dirEntry.streams[streamName];
 		if (!streamEntry) {

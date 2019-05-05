@@ -50,7 +50,8 @@ import { TriggerItem } from './trigger-item';
  */
 export class Table implements IRenderable {
 
-	public gameData!: GameData;
+	public gameData?: GameData;
+	public tableInfo: { [key: string]: string } = {};
 	public surfaces: { [key: string]: SurfaceItem } = {};
 	public primitives: { [key: string]: PrimitiveItem } = {};
 	public textures: { [key: string]: Texture } = {};
@@ -88,10 +89,18 @@ export class Table implements IRenderable {
 		if (!name) {
 			return undefined;
 		}
+		/* istanbul ignore if */
+		if (!this.gameData) {
+			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
+		}
 		return this.gameData.materials.find(m => m.szName === name);
 	}
 
 	public getScaleZ(): number {
+		/* istanbul ignore if */
+		if (!this.gameData) {
+			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
+		}
 		return f4(this.gameData.BG_scalez[this.gameData.BG_current_set]) || 1.0;
 	}
 
@@ -100,10 +109,18 @@ export class Table implements IRenderable {
 	}
 
 	public getTableHeight() {
+		/* istanbul ignore if */
+		if (!this.gameData) {
+			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
+		}
 		return this.gameData.tableheight;
 	}
 
 	public getDimensions(): { width: number, height: number } {
+		/* istanbul ignore if */
+		if (!this.gameData) {
+			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
+		}
 		return {
 			width: this.gameData.right - this.gameData.left,
 			height: this.gameData.bottom - this.gameData.top,
@@ -111,6 +128,10 @@ export class Table implements IRenderable {
 	}
 
 	public getPlayfieldMap(): string {
+		/* istanbul ignore if */
+		if (!this.gameData) {
+			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
+		}
 		return this.gameData.szImage || '';
 	}
 
@@ -124,6 +145,10 @@ export class Table implements IRenderable {
 	}
 
 	public getSurfaceHeight(surface: string | undefined, x: number, y: number) {
+		/* istanbul ignore if */
+		if (!this.gameData) {
+			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
+		}
 		if (!surface) {
 			return this.gameData.tableheight;
 		}
@@ -151,6 +176,10 @@ export class Table implements IRenderable {
 	}
 
 	public async getTableScript(): Promise<string> {
+		/* istanbul ignore if */
+		if (!this.gameData) {
+			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
+		}
 		await this.doc.reopen();
 		try {
 			const gameStorage = this.doc.storage('GameStg');
@@ -166,19 +195,25 @@ export class Table implements IRenderable {
 		this.doc = await OleCompoundDoc.load(fileName);
 		try {
 
-			// open game storage
-			const gameStorage = this.doc.storage('GameStg');
+			if (!opts.tableInfoOnly) {
+				// open game storage
+				const gameStorage = this.doc.storage('GameStg');
 
-			// load game data
-			this.gameData = await GameData.fromStorage(gameStorage, 'GameData');
+				// load game data
+				this.gameData = await GameData.fromStorage(gameStorage, 'GameData');
+
+				if (!opts.gameDataOnly) {
+
+					// load items
+					await this.loadGameItems(gameStorage, this.gameData.numGameItems);
+
+					// load images
+					await this.loadTextures(gameStorage, this.gameData.numTextures);
+				}
+			}
 
 			if (!opts.gameDataOnly) {
-
-				// load items
-				await this.loadGameItems(gameStorage, this.gameData.numGameItems);
-
-				// load images
-				await this.loadTextures(gameStorage, this.gameData.numTextures);
+				await this.loadTableInfo();
 			}
 
 		} finally {
@@ -187,7 +222,10 @@ export class Table implements IRenderable {
 	}
 
 	public getMeshes(table: Table, opts: VpTableExporterOptions): Meshes {
-
+		/* istanbul ignore if */
+		if (!this.gameData) {
+			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
+		}
 		let geometry: BufferGeometry;
 		const dim = table.getDimensions();
 
@@ -348,7 +386,21 @@ export class Table implements IRenderable {
 		}
 	}
 
+	private async loadTableInfo() {
+		const tableInfoStorage = this.doc.storage('TableInfo');
+		for (const key of tableInfoStorage.getStreams()) {
+			const data = await tableInfoStorage.read(key);
+			if (data) {
+				this.tableInfo[key] = data.toString().replace(/\0/g, '');
+			}
+		}
+	}
+
+	/* istanbul ignore next */
 	private get2DMesh(): Mesh {
+		if (!this.gameData) {
+			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
+		}
 		const rgv: Vertex3DNoTex2[] = [];
 		for (let i = 0; i < 7; i++) {
 			rgv.push(new Vertex3DNoTex2());
@@ -405,4 +457,9 @@ export interface TableLoadOptions {
 	 * If set, don't parse game items but only game data (faster).
 	 */
 	gameDataOnly?: boolean;
+
+	/**
+	 * If set, ignore game storage and only parse table info.
+	 */
+	tableInfoOnly?: boolean;
 }

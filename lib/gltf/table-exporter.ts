@@ -29,6 +29,7 @@ import {
 	Scene,
 	Texture,
 } from 'three';
+import { Table } from '..';
 import { logger } from '../util/logger';
 import { BumperItem } from '../vpt/bumper-item';
 import { FlipperItem } from '../vpt/flipper-item';
@@ -37,7 +38,6 @@ import { PrimitiveItem } from '../vpt/primitive-item';
 import { RampItem } from '../vpt/ramp-item';
 import { RubberItem } from '../vpt/rubber-item';
 import { SurfaceItem } from '../vpt/surface-item';
-import { Table } from '../vpt/table';
 import { Texture as VpTexture } from '../vpt/texture';
 import { GLTFExporter, ParseOptions } from './gltf-exporter';
 import { Image } from './image';
@@ -54,14 +54,15 @@ export class TableExporter {
 	constructor(table: Table, opts: VpTableExporterOptions) {
 		this.opts = Object.assign({}, defaultOptions, opts);
 
+		const dim = table.getDimensions();
 		this.table = table;
 		this.scene = new Scene();
 		this.scene.name = 'vpdb-table';
 		this.playfield = new Group();
 		this.playfield.name = 'playfield';
 		this.playfield.rotateX(Math.PI / 2);
-		this.playfield.translateY((table.gameData.top - table.gameData.bottom) * TableExporter.scale / 2);
-		this.playfield.translateX(-(table.gameData.right - table.gameData.left) * TableExporter.scale / 2);
+		this.playfield.translateY(-dim.height * TableExporter.scale / 2);
+		this.playfield.translateX(-dim.width * TableExporter.scale / 2);
 		this.playfield.scale.set(TableExporter.scale, TableExporter.scale, TableExporter.scale);
 	}
 

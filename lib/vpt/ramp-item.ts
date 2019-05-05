@@ -273,8 +273,9 @@ export class RampItem extends GameItem implements IRenderable {
 		const rampVertex = rv.pcvertex;
 		const rgHeight = rv.ppheight;
 		const rgRatio = rv.ppratio;
-		const invTableWidth = f4(1.0 / f4(table.gameData.right - table.gameData.left));
-		const invTableHeight = f4(1.0 / f4(table.gameData.bottom - table.gameData.top));
+		const dim = table.getDimensions();
+		const invTableWidth = f4(1.0 / f4(dim.width));
+		const invTableHeight = f4(1.0 / f4(dim.height));
 		const numVertices = rv.pcvertex * 2;
 
 		const mesh = new Mesh(`ramp.floor-${this.getName()}`);
@@ -339,8 +340,9 @@ export class RampItem extends GameItem implements IRenderable {
 		const rampVertex = rv.pcvertex;
 		const rgHeight = rv.ppheight;
 		const rgRatio = rv.ppratio;
-		const invTableWidth = f4(1.0 / f4(table.gameData.right - table.gameData.left));
-		const invTableHeight = f4(1.0 / f4(table.gameData.bottom - table.gameData.top));
+		const dim = table.getDimensions();
+		const invTableWidth = f4(1.0 / f4(dim.width));
+		const invTableHeight = f4(1.0 / f4(dim.height));
 		const numVertices = rampVertex * 2;
 
 		const mesh = new Mesh(`ramp.left-${this.getName()}`);
@@ -401,8 +403,9 @@ export class RampItem extends GameItem implements IRenderable {
 		const rampVertex = rv.pcvertex;
 		const rgHeight = rv.ppheight;
 		const rgRatio = rv.ppratio;
-		const invTableWidth = f4(1.0 / f4(table.gameData.right - table.gameData.left));
-		const invTableHeight = f4(1.0 / f4(table.gameData.bottom - table.gameData.top));
+		const dim = table.getDimensions();
+		const invTableWidth = f4(1.0 / f4(dim.width));
+		const invTableHeight = f4(1.0 / f4(dim.height));
 		const numVertices = rampVertex * 2;
 
 		const mesh = new Mesh(`ramp.right-${this.getName()}`);
@@ -619,8 +622,8 @@ export class RampItem extends GameItem implements IRenderable {
 		// Compute an approximation to the length of the central curve
 		// by adding up the lengths of the line segments.
 		let totalLength = 0;
-		const bottomHeight = f4(this.heightBottom + table.gameData.tableheight);
-		const topHeight = f4(this.heightTop + table.gameData.tableheight);
+		const bottomHeight = f4(this.heightBottom + table.getTableHeight());
+		const topHeight = f4(this.heightTop + table.getTableHeight());
 
 		for (let i = 0; i < (cvertex - 1); i++) {
 

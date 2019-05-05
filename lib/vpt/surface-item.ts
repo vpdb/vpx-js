@@ -243,8 +243,9 @@ export class SurfaceItem extends GameItem implements IRenderable {
 		const heightNotDropped = this.heighttop * table.getScaleZ();
 		const heightDropped = this.heightbottom * table.getScaleZ() + 0.1;
 
-		const invTablewidth = 1.0 / (table.gameData.right - table.gameData.left);
-		const invTableheight = 1.0 / (table.gameData.bottom - table.gameData.top);
+		const dim = table.getDimensions();
+		const invTablewidth = 1.0 / dim.width;
+		const invTableheight = 1.0 / dim.height;
 
 		const vertsTop: Vertex3DNoTex2[][] = [[], [], []];
 		for (let i = 0; i < numVertices; i++) {
@@ -254,7 +255,7 @@ export class SurfaceItem extends GameItem implements IRenderable {
 			vertsTop[0][i] = new Vertex3DNoTex2();
 			vertsTop[0][i].x = pv0.x;
 			vertsTop[0][i].y = pv0.y;
-			vertsTop[0][i].z = heightNotDropped + table.gameData.tableheight;
+			vertsTop[0][i].z = heightNotDropped + table.getTableHeight();
 			vertsTop[0][i].tu = pv0.x * invTablewidth;
 			vertsTop[0][i].tv = pv0.y * invTableheight;
 			vertsTop[0][i].nx = 0;

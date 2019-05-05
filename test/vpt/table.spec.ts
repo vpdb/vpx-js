@@ -49,6 +49,19 @@ describe('The VPinball table generator', () => {
 	it('should read the table script correctly', async () => {
 		const script = await vpt.getTableScript();
 		expect(script).to.equal(`'Empty Table\r\n\r\nOption Explicit\r\n\r\n' EOF`);
+	});
+
+	it('should read the table info correctly', async () => {
+		expect(vpt.tableInfo.TableRules).to.equal('Rules');
+		expect(vpt.tableInfo.AuthorName).to.equal('Table Author');
+		expect(vpt.tableInfo.TableName).to.equal('Table Name');
+		expect(vpt.tableInfo.TableBlurb).to.equal('Short Blurb');
+		expect(vpt.tableInfo.ReleaseDate).to.equal('2019-04-14');
+		expect(vpt.tableInfo.AuthorEmail).to.equal('test@vpdb.io');
+		expect(vpt.tableInfo.customdata1).to.equal('customvalue1');
+		expect(vpt.tableInfo.AuthorWebSite).to.equal('https://vpdb.io');
+		expect(vpt.tableInfo.TableVersion).to.equal('Version');
+		expect(vpt.tableInfo.TableDescription).to.equal('Description');
 	})
 });
 
