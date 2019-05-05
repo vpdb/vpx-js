@@ -19,8 +19,8 @@
  */
 
 import { BoxGeometry, BufferGeometry, ExtrudeBufferGeometry, Shape, Vector2 } from 'three';
-import { TableExporter, VpTableExporterOptions } from '../gltf/table-exporter';
 import { OleCompoundDoc, Storage } from '..';
+import { TableExporter, VpTableExporterOptions } from '../gltf/table-exporter';
 import { f4 } from '../math/float';
 import { Vertex3DNoTex2 } from '../math/vertex';
 import { logger } from '../util/logger';
