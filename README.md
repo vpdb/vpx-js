@@ -87,7 +87,7 @@ const { Table } = require(`vpx-toolbox`);
 For a quick check you can use one of the [various](https://sandbox.babylonjs.com/)
 [online](https://threejs.org/editor/) [viewers](https://gltf-viewer.donmccurdy.com/). 
 The default Windows [3D Viewer](https://en.wikipedia.org/wiki/Microsoft_3D_Viewer) comes
-with GLTF support as well, however it doesn't suppor the Dracos extensions, so 
+with GLTF support as well, however it doesn't support the Dracos extensions, so 
 you'll need to disable mesh compression if you want to open it with 3D Viewer.
 
 VPDB uses this to display 3D models in the browser:
