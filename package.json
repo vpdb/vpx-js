@@ -50,7 +50,7 @@
 	"bugs": {
 		"url": "https://github.com/vpdb/vpx-toolbox/issues"
 	},
-	"homepage": "https://github.com/vpdb/vpx-toolbox/issues#readme",
+	"homepage": "https://github.com/vpdb/vpx-toolbox#readme",
 	"nyc": {
 		"require": [
 			"ts-node/register"

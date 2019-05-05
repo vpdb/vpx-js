@@ -87,6 +87,8 @@ describe('The VPinball primitive generator', () => {
 		three.expectVerticesInArray(expectedVertices, triangleMeshVertices);
 	});
 
+	it('should generate an uncompressed mesh');
+
 	it('should generate a compressed mesh', async () => {
 
 		const vptSink = await Table.load(three.fixturePath('table-sink.vpx'));
