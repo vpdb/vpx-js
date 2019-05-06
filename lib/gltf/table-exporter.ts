@@ -86,7 +86,7 @@ export class TableExporter {
 			{ name: 'flippers', meshes: Object.values<FlipperItem>(this.table.flippers), enabled: !!this.opts.exportFlippers},
 			{ name: 'bumpers', meshes: Object.values<BumperItem>(this.table.bumpers), enabled: !!this.opts.exportBumpers },
 			{ name: 'ramps', meshes: Object.values<RampItem>(this.table.ramps), enabled: !!this.opts.exportRamps },
-			{ name: 'lightsBulbs', meshes: this.table.lights.filter(l => l.isBulbLight()), enabled: !!this.opts.exportLightBulbs },
+			{ name: 'lightBulbs', meshes: this.table.lights.filter(l => l.isBulbLight()), enabled: !!this.opts.exportLightBulbs },
 			{ name: 'playfieldLights', meshes: this.table.lights.filter(l => l.isSurfaceLight(this.table)), enabled: !!this.opts.exportPlayfieldLights },
 			{ name: 'hitTargets', meshes: this.table.hitTargets, enabled: !!this.opts.exportHitTargets },
 			{ name: 'gates', meshes: this.table.gates, enabled: !!this.opts.exportGates },

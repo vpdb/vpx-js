@@ -33,29 +33,29 @@ describe('The VPinball lights generator', () => {
 
 	before(async () => {
 		const vpt = await Table.load(three.fixturePath('table-light.vpx'));
-		gltf = await three.loadGlb(await vpt.exportGlb());
+		gltf = await three.loadGlb(await vpt.exportGlb({ exportPlayfieldLights: true, applyTextures: false }));
 	});
 
 	it('should generate a static light bulb mesh', async () => {
-		three.expectObject(gltf, 'lightsBulbs', 'bulblight-StaticBulb');
+		three.expectObject(gltf, 'lightBulbs', 'bulblight-StaticBulb');
 	});
 
 	it('should generate a light bulb mesh', async () => {
-		three.expectObject(gltf, 'lightsBulbs', 'bulblight-Bulb');
+		three.expectObject(gltf, 'lightBulbs', 'bulblight-Bulb');
 	});
 
 	it('should generate a scaled light bulb mesh', async () => {
 		// TODO find a way to test scaling (vpx obj export doesn't export light bulbs)
-		three.expectObject(gltf, 'lightsBulbs', 'bulblight-Scaled');
+		three.expectObject(gltf, 'lightBulbs', 'bulblight-Scaled');
 	});
 
 	it('should generate a light bulb mesh on a surface', async () => {
 		// TODO find a way to test (vpx obj export doesn't export light bulbs)
-		three.expectObject(gltf, 'lightsBulbs', 'bulblight-Surface');
+		three.expectObject(gltf, 'lightBulbs', 'bulblight-Surface');
 	});
 
 	it('should not generate a light bulb with no bulb mesh', async () => {
-		three.expectNoObject(gltf, 'lightsBulbs', 'bulblight-NoBulb');
+		three.expectNoObject(gltf, 'lightBulbs', 'bulblight-NoBulb');
 	});
 
 	it('should not generate a light with no bulb mesh', async () => {
@@ -81,4 +81,17 @@ describe('The VPinball lights generator', () => {
 		expect(light.color.g).to.equal(0.9333333333333333);
 		expect(light.color.b).to.equal(0.06666666666666667);
 	});
+
+	it('should generate a mesh for a light with the same texture as the playfield', async () => {
+		three.expectObject(gltf, 'playfieldLights', 'surfacelight-PlayfieldLight');
+	});
+
+	it('should generate a mesh for a light with the same texture as a surface', async () => {
+		three.expectObject(gltf, 'playfieldLights', 'surfacelight-SurfaceLight');
+	});
+
+	it('should generate a mesh for a light that has the same texture as three other lights', async () => {
+		three.expectObject(gltf, 'playfieldLights', 'surfacelight-SurfaceLightCollection');
+	});
+
 });

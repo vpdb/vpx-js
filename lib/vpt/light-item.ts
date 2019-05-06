@@ -121,14 +121,21 @@ export class LightItem extends GameItem implements IRenderable {
 			return true;
 		}
 
+		// go through surfaces and check the same
+		for (const surface of Object.values(table.surfaces)) {
+			if (surface.szImage === this.szOffImage) {
+				return true;
+			}
+		}
+
 		/*
 		 * Sometimes, the texture used for playfield lights is not the same as the
 		 * playfield texture, so we need another way to determine whether a light
 		 * is inside the playfield or a surface. The rule is currently the
 		 * following:
 		 *   - First, it needs a texture.
-		 *   - If at least four other lights have the same texture, we assume
-		 *     it's a match.
+		 *   - If at least three other lights have the same texture, we assume
+		 *     it's a surface light.
 		 */
 		return table.lights.filter(l => l.szOffImage === this.szOffImage).length > 3;
 	}
@@ -230,6 +237,7 @@ export class LightItem extends GameItem implements IRenderable {
 	}
 
 	private getPathFromPoints<T extends Path>(points: Vector2[], path: T): T {
+		/* istanbul ignore if */
 		if (points.length === 0) {
 			throw new Error('Cannot get path from no points.');
 		}

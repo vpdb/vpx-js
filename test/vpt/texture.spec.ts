@@ -38,7 +38,15 @@ describe('The VPinball texture parser', () => {
 	});
 
 	it('should convert an opaque png to jpeg');
-	it('should correctly export a png');
+
+	it('should correctly export a png', async () => {
+		const texture = vpt.getTexture('test_pattern_png')!;
+		const image = await texture.getImage(vpt);
+		const jpg = await image.getImage(false, 100);
+		const png = await sharp(jpg).png().toBuffer();
+		const match = await comparePngs(png, testPng);
+		expect(match).to.equal(true);
+	});
 
 	it('should correctly export a jpeg', async () => {
 		const texture = vpt.getTexture('test_pattern_jpg')!;
@@ -49,9 +57,17 @@ describe('The VPinball texture parser', () => {
 		expect(match).to.equal(true);
 	});
 
-
 	it('should correctly export an lzw-compressed bitmap', async () => {
-		const texture = vpt.getTexture('test_pattern_bmp')!;
+		const texture = vpt.getTexture('test_pattern_xrgb')!;
+		const image = await texture.getImage(vpt);
+		const jpg = await image.getImage(false, 100);
+		const png = await sharp(jpg).png().toBuffer();
+		const match = await comparePngs(png, testPng);
+		expect(match).to.equal(true);
+	});
+
+	it('should correctly export an lzw-compressed xrgba bitmap', async () => {
+		const texture = vpt.getTexture('test_pattern_argb')!;
 		const image = await texture.getImage(vpt);
 		const jpg = await image.getImage(false, 100);
 		const png = await sharp(jpg).png().toBuffer();

@@ -130,6 +130,7 @@ export class Texture extends BiffParser {
 		}
 		return new Promise<Buffer>((resolve, reject) => {
 			const bufs: Buffer[] = [];
+			/* istanbul ignore if */
 			if (!strm) {
 				return reject(new Error('No such stream "' + this.storageName + '".'));
 			}
@@ -152,7 +153,11 @@ export class Texture extends BiffParser {
 				[ this.pdsBuffer, compressedLen ] = await BaseTexture.get(storage, itemName, offset, this.width, this.height);
 				return compressedLen + 4;
 			case 'LINK': logger().warn('[Texture.fromTag] Ignoring LINK tag for %s at %s, implement when understood what it is.', this.szName, this.storageName); break;
-			case 'TRNS': this.rgbTransparent = this.getInt(buffer); break; // legacy vp9
+
+			/* istanbul ignore next: legacy vp9 */
+			case 'TRNS': this.rgbTransparent = this.getInt(buffer); break;
+
+			/* istanbul ignore next */
 			default: logger().warn('[Texture.fromTag] Unknown tag "%s".', tag);
 		}
 		return 0;
@@ -172,10 +177,6 @@ class BaseTexture {
 	constructor(width: number, height: number) {
 		this.width = width;
 		this.height = height;
-	}
-
-	public size(): number {
-		return this.data.length;
 	}
 
 	public getData(): Buffer {

@@ -2,4 +2,5 @@
 --require esm
 --sourcemap
 --watch-extensions ts
+--file test/setup.ts
 test/**/*.spec.ts
