@@ -36,7 +36,7 @@
 		"@types/chai": "4.1.7",
 		"@types/gm": "1.18.2",
 		"@types/mocha": "5.2.6",
-		"@types/node": "11.13.9",
+		"@types/node": "11.13.10",
 		"@types/sharp": "0.22.1",
 		"chai": "4.2.0",
 		"esm": "3.2.22",
