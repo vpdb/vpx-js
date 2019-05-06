@@ -21,11 +21,13 @@ import gm = require('gm');
 import { basename, resolve as resolvePath } from 'path';
 import sharp = require('sharp');
 import { Stream } from 'stream';
+import { Storage } from '..';
+import { Image } from '../gltf/image';
 import { LzwReader } from '../gltf/lzw-reader';
 import { BiffParser } from '../io/biff-parser';
-import { Storage } from '../io/ole-doc';
 import { logger } from '../util/logger';
 import { Binary } from './binary';
+import { Table } from './table';
 
 /**
  * VPinball's texture.
@@ -83,7 +85,43 @@ export class Texture extends BiffParser {
 		return this.localPath ? basename(this.localPath) : this.szInternalName.toLowerCase();
 	}
 
-	public async getImage(storage: Storage): Promise<Buffer> {
+	/**
+	 * Returns the image of the texture, as JPG if opaque, or JPEG otherwise.
+	 * @param vpt
+	 */
+	public async getImage(vpt: Table): Promise<Image> {
+
+		if (this.isRaw()) {
+			return await Image.load(this.getName(), this.getRawImage());
+
+		} else {
+			const data = await vpt.streamStorage<Buffer>('GameStg', this.streamImage.bind(this));
+			if (!data || !data.length) {
+				throw new Error(`Cannot load image data for texture ${this.getName()}`);
+			}
+			return await Image.load(this.getName(), data);
+		}
+	}
+
+	public isRaw(): boolean {
+		return this.pdsBuffer !== undefined;
+	}
+
+	public getRawImage(): sharp.Sharp {
+		return sharp(this.pdsBuffer!.getData(), {
+			raw: {
+				width: this.width,
+				height: this.height,
+				channels: 4,
+			},
+		}).png();
+	}
+
+	/**
+	 * Streamer function that reads the image data into a buffer.
+	 * @param storage
+	 */
+	private async streamImage(storage: Storage): Promise<Buffer> {
 		let strm: Stream;
 		if (this.localPath) {
 			strm = gm(this.localPath).stream();
@@ -99,20 +137,6 @@ export class Texture extends BiffParser {
 			strm.on('data', (buf: Buffer) => bufs.push(buf));
 			strm.on('end', () => resolve(Buffer.concat(bufs)));
 		});
-	}
-
-	public isRaw(): boolean {
-		return this.pdsBuffer !== undefined;
-	}
-
-	public getRawImage(): sharp.Sharp {
-		return sharp(this.pdsBuffer!.getData(), {
-			raw: {
-				width: this.width,
-				height: this.height,
-				channels: 4,
-			},
-		}).png();
 	}
 
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number, storage: Storage, itemName: string): Promise<number> {
@@ -189,10 +213,43 @@ class BaseTexture {
 				}
 			}
 		}
+		pdsBuffer.data = pdsBuffer.rgbToBgr(width, height);
 		return [ pdsBuffer, compressedLen ];
 	}
 
-	public pitch(): number {
+	private rgbToBgr(width: number, height: number): Buffer {
+		const pitch = this.pitch();
+		const from = this.data;
+		const to = Buffer.alloc(pitch * height);
+		for (let i = 0; i < height; i++) {
+			for (let l = 0; l < width; l++) {
+				if (this.format === BaseTexture.RGBA) {
+					to[i * pitch + 4 * l] = from[i * pitch + 4 * l + 2];     // r
+					to[i * pitch + 4 * l + 1] = from[i * pitch + 4 * l + 1]; // g
+					to[i * pitch + 4 * l + 2] = from[i * pitch + 4 * l];     // b
+					to[i * pitch + 4 * l + 3] = from[i * pitch + 4 * l + 3]; // a
+
+				} else {
+					to[i * pitch + 4 * l] = from[i * pitch + 4 * l + 6];     // r
+					to[i * pitch + 4 * l + 1] = from[i * pitch + 4 * l + 7];
+					to[i * pitch + 4 * l + 2] = from[i * pitch + 4 * l + 8];
+
+					to[i * pitch + 4 * l + 3] = from[i * pitch + 4 * l + 3]; // g
+					to[i * pitch + 4 * l + 4] = from[i * pitch + 4 * l + 4];
+					to[i * pitch + 4 * l + 5] = from[i * pitch + 4 * l + 5];
+
+					to[i * pitch + 4 * l + 6] = from[i * pitch + 4 * l];     // b
+					to[i * pitch + 4 * l + 7] = from[i * pitch + 4 * l + 1];
+					to[i * pitch + 4 * l + 8] = from[i * pitch + 4 * l + 2];
+
+					to[i * pitch + 4 * l + 9] = from[i * pitch + 4 * l + 9]; // a
+				}
+			}
+		}
+		return to;
+	}
+
+	private pitch(): number {
 		return (this.format === BaseTexture.RGBA ? 4 : 3 * 4) * this.width;
 	}
 }

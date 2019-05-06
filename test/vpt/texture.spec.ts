@@ -19,34 +19,77 @@
 
 import { ThreeHelper } from '../three.helper';
 import { Table } from '../../lib';
-
-const gltfPipeline = require('gltf-pipeline');
+import { readFileSync, writeFileSync } from 'fs';
+import { createDiff } from 'looks-same';
+import * as sharp from 'sharp';
+import { expect } from 'chai';
+import looksSame = require('looks-same');
 
 const three = new ThreeHelper();
-const processGltf = gltfPipeline.processGltf;
+const imgDiffTolerance = 7;
 
 describe('The VPinball texture parser', () => {
 
-	let glb: Buffer;
+	let vpt: Table;
+	const testPng = readFileSync(three.fixturePath('test_pattern.png'));
 
 	before(async () => {
-		const vpt = await Table.load(three.fixturePath('table-texture.vpx'));
-		glb = await vpt.exportGlb({ optimizeTextures: false });
+		vpt = await Table.load(three.fixturePath('table-texture.vpx'));
 	});
 
 	it('should convert an opaque png to jpeg');
 	it('should correctly export a png');
-	it('should correctly export a jpeg');
-	it('should correctly export an lzw-compressed bitmap');
-	it('should parse textures', async () => {
-		const results = await processGltf(glb, { separate: true });
-		for (const relativePath in results.separateResources) {
-			if (results.separateResources.hasOwnProperty(relativePath)) {
-				const resource = results.separateResources[relativePath];
-				console.log(resource);
-			}
-		}
-		console.log('done');
+
+	it('should correctly export a jpeg', async () => {
+		const texture = vpt.getTexture('test_pattern_jpg')!;
+		const image = await texture.getImage(vpt);
+		const jpg = await image.getImage(false, 100);
+		const png = await sharp(jpg).png().toBuffer();
+		const match = await comparePngs(png, testPng);
+		expect(match).to.equal(true);
+	});
+
+
+	it('should correctly export an lzw-compressed bitmap', async () => {
+		const texture = vpt.getTexture('test_pattern_bmp')!;
+		const image = await texture.getImage(vpt);
+		const jpg = await image.getImage(false, 100);
+		const png = await sharp(jpg).png().toBuffer();
+		const match = await comparePngs(png, testPng);
+		expect(match).to.equal(true);
 	});
 
 });
+
+async function comparePngs(img1: Buffer, img2: Buffer, debugPrint = false): Promise<boolean> {
+	return new Promise((resolve, reject) => {
+		looksSame(img1, img2, { tolerance: imgDiffTolerance, ignoreAntialiasing: false, ignoreCaret: false }, (error, result) => {
+			if (error) {
+				return reject(error);
+			}
+			if (debugPrint) {
+				console.log(JSON.stringify(result, null, '  '));
+			}
+			resolve(result.equal);
+		});
+	});
+}
+
+async function debug(img1: Buffer, img2: Buffer) {
+	await comparePngs(img1, img2);
+	await new Promise((resolve, reject) => {
+		createDiff({
+			reference: img1,
+			current: img2,
+			diff: 'diff.png',
+			highlightColor: '#ff00ff', // color to highlight the differences
+			strict: false,
+			tolerance: imgDiffTolerance,
+			antialiasingTolerance: 0,
+			ignoreAntialiasing: false,
+			ignoreCaret: false
+		}, error => error ? reject(error) : resolve());
+	});
+	writeFileSync('texture.png', img1);
+	writeFileSync('fixture.png', img2);
+}

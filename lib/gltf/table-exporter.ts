@@ -207,27 +207,22 @@ export class TableExporter {
 		return material;
 	}
 
-	private async loadMap(name: string, objMap: VpTexture, materialMap: Texture): Promise<boolean> {
-		let data: Buffer;
+	private async loadMap(name: string, texture: VpTexture, threeMaterial: Texture): Promise<boolean> {
 		try {
 			let image: Image;
-			if (this.images.has(objMap.getName())) {
-				image = this.images.get(objMap.getName())!;
+			if (this.images.has(texture.getName())) {
+				image = this.images.get(texture.getName())!;
 			} else {
-				data = await this.table.streamStorage<Buffer>('GameStg', objMap.getImage.bind(objMap));
-				if (!data || !data.length) {
-					return false;
-				}
-				image = await Image.load(objMap.getName(), objMap.isRaw() ? objMap.getRawImage() : data);
-				this.images.set(objMap.getName(), image);
+				image = await texture.getImage(this.table);
+				this.images.set(texture.getName(), image);
 			}
-			materialMap.image = image;
-			materialMap.format = image.hasTransparency() ? RGBAFormat : RGBFormat;
-			materialMap.needsUpdate = true;
+			threeMaterial.image = image;
+			threeMaterial.format = image.hasTransparency() ? RGBAFormat : RGBFormat;
+			threeMaterial.needsUpdate = true;
 			return true;
 		} catch (err) {
-			materialMap.image = Texture.DEFAULT_IMAGE;
-			logger().warn('[VpTableExporter.loadMap] Error loading map of %s bytes for %s (%s/%s): %s', data! ? data!.length : '<null>', name, objMap.storageName, objMap.getName(), err.message);
+			threeMaterial.image = Texture.DEFAULT_IMAGE;
+			logger().warn('[VpTableExporter.loadMap] Error loading map %s (%s/%s): %s', name, texture.storageName, texture.getName(), err.message);
 			return false;
 		}
 	}

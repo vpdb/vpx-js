@@ -107,13 +107,13 @@ export class Image {
 		return !this.stats.isOpaque ? 'image/png' : 'image/jpeg';
 	}
 
-	public async getImage(optimize: boolean): Promise<Buffer> {
+	public async getImage(optimize: boolean, quality = Image.jpegQuality): Promise<Buffer> {
 
 		if (this.stats.isOpaque) {
 			if (this.format === 'png') {
 				logger().debug('[Image.getImage]: Converting opaque png to jpeg.');
 			}
-			return this.sharp.jpeg({ quality: Image.jpegQuality }).toBuffer();
+			return this.sharp.jpeg({ quality }).toBuffer();
 		}
 
 		switch (this.format) {
