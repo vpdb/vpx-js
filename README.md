@@ -122,6 +122,29 @@ VPDB uses this to display 3D models in the browser:
 
 [Live version](https://vpdb.io/games/dk/releases/pkvazc1pw) (click on *3D View*)
 
+## Tests
+
+Run tests with:
+
+```bash
+npm run test
+```
+
+Most of the tests are related to the mesh generation. We basically take Visual 
+Pinball's OBJ export as a base line and verify that the vertices in the GLTF file
+are the same. We do that for every playfield item and their variations. We also 
+apply transformations to test the matrices. We test textures by feeding multiple 
+formats into VPX and comparing the exported result using [looks-same](https://github.com/gemini-testing/looks-same).
+What's currently not tested are:
+
+- Vertex indices
+- Texture UVs
+- Materials
+
+Those are all easily verifiable by looking at the result though. Materials are
+still being tweaked because they obviously depend on the engine and the shaders.
+We're currently using the metalness/shininess model which seems to work well.
+
 ## License
 
 GPLv2, see [LICENSE](LICENSE).

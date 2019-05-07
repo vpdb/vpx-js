@@ -62,7 +62,16 @@ describe('The VPinball table generator', () => {
 		expect(vpt.tableInfo.AuthorWebSite).to.equal('https://vpdb.io');
 		expect(vpt.tableInfo.TableVersion).to.equal('Version');
 		expect(vpt.tableInfo.TableDescription).to.equal('Description');
-	})
+	});
+
+	it('should not crash when reading a corrupt file', async () => {
+		try {
+			await Table.load(three.fixturePath('table-corrupt.vpx'));
+			expect.fail('Exception expected.');
+		} catch (err) {
+			// we're good in here
+		}
+	});
 });
 
 function compareArray(arr1: any[], arr2: any[]) {

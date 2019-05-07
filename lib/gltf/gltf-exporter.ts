@@ -171,7 +171,7 @@ export class GLTFExporter {
 			embedImages: true,
 			animations: [],
 			forceIndices: false,
-			forcePowerOfTwoTextures: false,
+			forcePowerOfTwoTextures: true,
 			compressVertices: false,
 			versionString: 'vpdb/vpx-toolbox',
 			dracoOptions: {

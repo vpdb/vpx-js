@@ -32,14 +32,22 @@ describe('The VPinball texture parser', () => {
 
 	let vpt: Table;
 	const testPng = readFileSync(three.fixturePath('test_pattern.png'));
+	const testPngPow2 = readFileSync(three.fixturePath('test_pattern_pow2.png'));
+	const testPngTransparent = readFileSync(three.fixturePath('test_pattern_transparent.png'));
 
 	before(async () => {
 		vpt = await Table.load(three.fixturePath('table-texture.vpx'));
 	});
 
-	it('should convert an opaque png to jpeg');
+	it('should correctly export a png', async() => {
+		const texture = vpt.getTexture('test_pattern_transparent')!;
+		const image = await texture.getImage(vpt);
+		const png = await image.getImage(false);
+		const match = await comparePngs(png, testPngTransparent, 10, true);
+		expect(match).to.equal(true);
+	});
 
-	it('should correctly export a png', async () => {
+	it('should convert an opaque png to jpeg', async () => {
 		const texture = vpt.getTexture('test_pattern_png')!;
 		const image = await texture.getImage(vpt);
 		const jpg = await image.getImage(false, 100);
@@ -75,11 +83,30 @@ describe('The VPinball texture parser', () => {
 		expect(match).to.equal(true);
 	});
 
+	it('should resize an image to power of two', async() => {
+		const texture = vpt.getTexture('test_pattern_png')!;
+		const image = await texture.getImage(vpt);
+		image.resize(1024, 512);
+		const jpg = await image.getImage(false, 100);
+		const png = await sharp(jpg).png().toBuffer();
+		const match = await comparePngs(png, testPngPow2, 20);
+		expect(match).to.equal(true);
+	});
+
+	it.skip('should optimize a png', async() => {
+		const texture = vpt.getTexture('test_pattern_transparent')!;
+		const image = await texture.getImage(vpt);
+		const png = await image.getImage(true);
+		const match = await comparePngs(png, testPngTransparent, 65, true);
+		await debug(png, testPngTransparent, 65, true);
+		expect(match).to.equal(true);
+	});
+
 });
 
-async function comparePngs(img1: Buffer, img2: Buffer, debugPrint = false): Promise<boolean> {
+async function comparePngs(img1: Buffer, img2: Buffer, tolerance = imgDiffTolerance, ignoreAntialiasing = false, debugPrint = false): Promise<boolean> {
 	return new Promise((resolve, reject) => {
-		looksSame(img1, img2, { tolerance: imgDiffTolerance, ignoreAntialiasing: false, ignoreCaret: false }, (error, result) => {
+		looksSame(img1, img2, { tolerance, ignoreAntialiasing, ignoreCaret: false }, (error, result) => {
 			if (error) {
 				return reject(error);
 			}
@@ -91,8 +118,8 @@ async function comparePngs(img1: Buffer, img2: Buffer, debugPrint = false): Prom
 	});
 }
 
-async function debug(img1: Buffer, img2: Buffer) {
-	await comparePngs(img1, img2);
+async function debug(img1: Buffer, img2: Buffer, tolerance = imgDiffTolerance, ignoreAntialiasing = false) {
+	await comparePngs(img1, img2, tolerance, ignoreAntialiasing,true);
 	await new Promise((resolve, reject) => {
 		createDiff({
 			reference: img1,
@@ -100,9 +127,9 @@ async function debug(img1: Buffer, img2: Buffer) {
 			diff: 'diff.png',
 			highlightColor: '#ff00ff', // color to highlight the differences
 			strict: false,
-			tolerance: imgDiffTolerance,
+			tolerance: tolerance,
 			antialiasingTolerance: 0,
-			ignoreAntialiasing: false,
+			ignoreAntialiasing: ignoreAntialiasing,
 			ignoreCaret: false
 		}, error => error ? reject(error) : resolve());
 	});
