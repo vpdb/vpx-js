@@ -151,6 +151,7 @@ export class Mesh {
 		}
 	}
 
+	/* istanbul ignore next */
 	public static setNormal(rgv: Vertex3DNoTex2[], rgi: number[], count: number, applyCount = 0): void {
 
 		const rgvApply = rgv;

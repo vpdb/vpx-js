@@ -152,6 +152,8 @@ export class Texture extends BiffParser {
 				let compressedLen: number;
 				[ this.pdsBuffer, compressedLen ] = await BaseTexture.get(storage, itemName, offset, this.width, this.height);
 				return compressedLen + 4;
+
+			/* istanbul ignore next: duh. */
 			case 'LINK': logger().warn('[Texture.fromTag] Ignoring LINK tag for %s at %s, implement when understood what it is.', this.szName, this.storageName); break;
 
 			/* istanbul ignore next: legacy vp9 */
