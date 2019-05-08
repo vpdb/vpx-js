@@ -20,7 +20,9 @@
 	"keywords": [
 		"visual pinball",
 		"vp10",
-		"vpx"
+		"vpx",
+		"glb",
+		"gltf"
 	],
 	"author": "freezy <freezy@vpdb.io>",
 	"license": "GPL-2.0",
