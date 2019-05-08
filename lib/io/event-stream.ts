@@ -35,6 +35,7 @@ export function readableStream<T>(func: (stream: any, i: number) => Promise<T | 
 
 	function get(err?: Error, data: T | null = null) {
 
+		/* istanbul ignore if */
 		if (err) {
 			stream.emit('error', err);
 			if (!continueOnError) {

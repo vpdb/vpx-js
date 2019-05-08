@@ -62,6 +62,7 @@ export class Header {
 	public static load(buffer: Buffer): Header {
 		const header = new Header();
 		for (let i = 0; i < 8; i++) {
+			/* istanbul ignore if */
 			if (header.oleId[i] !== buffer[i]) {
 				throw new Error(`Doesn't look like a valid compound document (wrong ID, 0x${header.oleId[i].toString(16)} must be equal to 0x${buffer[i].toString(16)}).`);
 			}
@@ -238,6 +239,7 @@ export class Storage {
 	}
 
 	public storage(storageName: string): Storage {
+		/* istanbul ignore if */
 		if (!this.dirEntry.storages[storageName]) {
 			throw new Error(`No such storage "${storageName}".`);
 		}
@@ -282,6 +284,7 @@ export class Storage {
 				offset = 0;
 				return buffer;
 
+			/* istanbul ignore next */
 			} catch (err) {
 				stream.emit('error', err);
 				stream.emit('end');
@@ -318,6 +321,7 @@ export class Storage {
 	 */
 	public async streamFiltered<T>(streamName: string, offset: number, next: (data: ReadResult) => Promise<number | null>): Promise<void> {
 		const streamEntry = this.dirEntry.streams[streamName];
+		/* istanbul ignore if */
 		if (!streamEntry) {
 			throw new Error('No such stream "' + streamName + '" in document.');
 		}
@@ -366,6 +370,7 @@ export class Storage {
 				// read missing sectors
 				const remainingLen = -len - resultBuffer.length;
 				const numSecs = Math.ceil(remainingLen / secSize);
+				/* istanbul ignore if */
 				if (remainingLen > bytes - storageOffset) {
 					throw new Error(`Cannot read ${remainingLen} bytes when only ${bytes - storageOffset} remain in stream.`);
 				}
@@ -407,6 +412,7 @@ export class Storage {
 		return new Promise<Buffer>((resolve, reject) => {
 			const strm = this.stream(key, offset, bytesToRead);
 			const bufs: Buffer[] = [];
+			/* istanbul ignore if */
 			if (!strm) {
 				return reject(new Error('No such stream "' + key + '".'));
 			}
@@ -455,6 +461,7 @@ export class OleCompoundDoc extends EventEmitter {
 		return doc;
 	}
 
+	/* istanbul ignore next: Don't currently need this (at all) */
 	public async readWithCustomHeader(size: number): Promise<Buffer> {
 		this.skipBytes = size;
 		await this.openFile();
@@ -477,10 +484,10 @@ export class OleCompoundDoc extends EventEmitter {
 		return this.rootStorage.storage(storageName);
 	}
 
-	public stream(streamName: string, offset: number = 0, len: number = -1) {
-		this.assertLoaded();
-		return this.rootStorage.stream(streamName, offset, len);
-	}
+	// public stream(streamName: string, offset: number = 0, len: number = -1) {
+	// 	this.assertLoaded();
+	// 	return this.rootStorage.stream(streamName, offset, len);
+	// }
 
 	public async readSector(secId: number, offset: number = 0, bytesToRead: number = 0) {
 		this.assertLoaded();
@@ -553,6 +560,7 @@ export class OleCompoundDoc extends EventEmitter {
 	}
 
 	private assertLoaded() {
+		/* istanbul ignore if */
 		if (!this.fd) {
 			throw new Error('Document must be loaded first.');
 		}
@@ -615,6 +623,7 @@ export class OleCompoundDoc extends EventEmitter {
 
 	private async readSSAT(): Promise<void> {
 		const secIds = this.SAT.getSecIdChain(this.header.SSATSecId);
+		/* istanbul ignore if */
 		if (secIds.length !== this.header.SSATSize) {
 			throw new Error('Invalid Short Sector Allocation Table');
 		}
@@ -649,6 +658,7 @@ export class OleCompoundDoc extends EventEmitter {
 	private async read(buffer: Buffer, offset: number, length: number, position: number): Promise<[ number, Buffer ]> {
 		return new Promise((resolve, reject) => {
 			read(this.fd, buffer, offset, length, position, (err, bytesRead, data) => {
+				/* istanbul ignore if */
 				if (err) {
 					reject(err);
 					return;
