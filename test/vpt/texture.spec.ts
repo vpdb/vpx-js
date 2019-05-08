@@ -34,6 +34,7 @@ describe('The VPinball texture parser', () => {
 	const testPng = readFileSync(three.fixturePath('test_pattern.png'));
 	const testPngPow2 = readFileSync(three.fixturePath('test_pattern_pow2.png'));
 	const testPngTransparent = readFileSync(three.fixturePath('test_pattern_transparent.png'));
+	const testPngOptimized = readFileSync(three.fixturePath('test_pattern_optimized.png'));
 
 	before(async () => {
 		vpt = await Table.load(three.fixturePath('table-texture.vpx'));
@@ -93,12 +94,11 @@ describe('The VPinball texture parser', () => {
 		expect(match).to.equal(true);
 	});
 
-	it.skip('should optimize a png', async() => {
+	it('should optimize a png', async() => {
 		const texture = vpt.getTexture('test_pattern_transparent')!;
 		const image = await texture.getImage(vpt);
 		const png = await image.getImage(true);
-		const match = await comparePngs(png, testPngTransparent, 65, true);
-		await debug(png, testPngTransparent, 65, true);
+		const match = await comparePngs(png, testPngOptimized, 30, true);
 		expect(match).to.equal(true);
 	});
 

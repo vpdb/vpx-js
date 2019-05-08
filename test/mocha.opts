@@ -1,7 +1,6 @@
 --require ts-node/register
 --require esm
 --sourcemap
---watch-extensions ts
 --timeout 10000
 --file test/setup.ts
 test/**/*.spec.ts
