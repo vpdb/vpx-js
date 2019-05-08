@@ -122,7 +122,6 @@ export class TimerDataRoot {
 export interface IRenderable {
 	getMeshes(table: Table, opts: VpTableExporterOptions): Meshes;
 	isVisible(table: Table): boolean;
-	postProcessMesh?(table: Table, mesh: ThreeMesh): ThreeMesh;
 	postProcessMaterial?(table: Table, geometry: BufferGeometry, material: MeshStandardMaterial): MeshStandardMaterial | MeshStandardMaterial[];
 }
 

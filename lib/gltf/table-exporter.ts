@@ -106,16 +106,14 @@ export class TableExporter {
 				const objects = renderable.getMeshes(this.table, this.opts);
 				let obj: RenderInfo;
 				for (obj of Object.values(objects)) {
+					/* istanbul ignore if */
 					if (!obj.geometry && !obj.mesh) {
 						throw new Error('Mesh export must either provide mesh or geometry.');
 					}
 					const geometry = obj.geometry || obj.mesh!.getBufferGeometry();
 					const material = await this.getMaterial(obj);
 					const postProcessedMaterial = renderable.postProcessMaterial ? renderable.postProcessMaterial(this.table, geometry, material) : material;
-					let mesh = new Mesh(geometry, postProcessedMaterial);
-					if (renderable.postProcessMesh) {
-						mesh = renderable.postProcessMesh(this.table, mesh);
-					}
+					const mesh = new Mesh(geometry, postProcessedMaterial);
 					mesh.name = (obj.geometry || obj.mesh!).name;
 					g.add(mesh);
 				}

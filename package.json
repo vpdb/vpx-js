@@ -60,7 +60,8 @@
 			"res/**",
 			"bin/**",
 			"test/**",
-			"lib/gltf/gltf-exporter.ts"
+			"lib/gltf/gltf-exporter.ts",
+			"lib/util/logger.ts"
 		],
 		"extension": [
 			".ts"

@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+/*istanbul ignore next: Only used for debugging*/
 /**
  * Rounds a 64-bit floating point number (Node.js) to a 32-bit
  * float used in C.
@@ -34,7 +35,6 @@
  *
  * This function does is return case 3.
  *
- * istanbul ignore next: Only used for debugging
  * @param f8 Double-precision float
  * @return Rounded single-precision float
  */
