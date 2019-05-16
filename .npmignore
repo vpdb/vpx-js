@@ -8,3 +8,4 @@
 .travis.yml
 renovate.json
 tsconfig.json
+*.glb
