@@ -17,6 +17,9 @@
 		"vpt2glb": "./dist/bin/vpt2glb.js",
 		"vptscript": "./dist/bin/vptscript.js"
 	},
+	"files": [
+		"dist"
+	],
 	"keywords": [
 		"visual pinball",
 		"vp10",
