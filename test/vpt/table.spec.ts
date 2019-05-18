@@ -42,8 +42,8 @@ describe('The VPinball table generator', () => {
 	it('should generate the correct playfield mesh', async () => {
 		const playfieldMesh = three.first<Mesh>(gltf, 'playfield');
 		const playfieldVertices = three.vertices(playfieldMesh);
-		const expectedVertices = [ tableWidth, tableHeight, tableDepth, tableWidth, 0, tableDepth, tableWidth, tableHeight, 0, tableWidth, 0, tableDepth, tableWidth, 0, 0, tableWidth, tableHeight, 0, 0, tableHeight, 0, 0, 0, 0, 0, tableHeight, tableDepth, 0, 0, 0, 0, 0, tableDepth, 0, tableHeight, tableDepth, 0, tableHeight, 0, 0, tableHeight, tableDepth, tableWidth, tableHeight, 0, 0, tableHeight, tableDepth, tableWidth, tableHeight, tableDepth, tableWidth, tableHeight, 0, 0, 0, tableDepth, 0, 0, 0, tableWidth, 0, tableDepth, 0, 0, 0, tableWidth, 0, 0, tableWidth, 0, tableDepth, 0, tableHeight, tableDepth, 0, 0, tableDepth, tableWidth, tableHeight, tableDepth, 0, 0, tableDepth, tableWidth, 0, tableDepth, tableWidth, tableHeight, tableDepth, tableWidth, tableHeight, 0, tableWidth, 0, 0, 0, tableHeight, 0, tableWidth, 0, 0, 0, 0, 0, 0, tableHeight, 0 ];
-		expect(compareArray(playfieldVertices, expectedVertices)).to.be.true;
+		const expectedVertices = [tableWidth, 0, 0, 0, 0, 0, 0, tableHeight, 0, 0, tableHeight, 0, tableWidth, tableHeight, 0, tableWidth, 0, 0, 0, tableHeight, tableDepth, 0, 0, tableDepth, tableWidth, 0, tableDepth, tableWidth, 0, tableDepth, tableWidth, tableHeight, tableDepth, 0, tableHeight, tableDepth, tableWidth, 0, 0, tableWidth, tableHeight, 0, tableWidth, 0, tableDepth, tableWidth, tableHeight, 0, tableWidth, tableHeight, tableDepth, tableWidth, 0, tableDepth, tableWidth, tableHeight, 0, 0, tableHeight, 0, tableWidth, tableHeight, tableDepth, 0, tableHeight, 0, 0, tableHeight, tableDepth, tableWidth, tableHeight, tableDepth, 0, tableHeight, 0, 0, 0, 0, 0, tableHeight, tableDepth, 0, 0, 0, 0, 0, tableDepth, 0, tableHeight, tableDepth, 0, 0, 0, tableWidth, 0, 0, 0, 0, tableDepth, tableWidth, 0, 0, tableWidth, 0, tableDepth, 0, 0, tableDepth];
+		expect(compareArray(playfieldVertices, expectedVertices)).to.equal(true);
 	});
 
 	it('should read the table script correctly', async () => {
