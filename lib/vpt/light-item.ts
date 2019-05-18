@@ -72,13 +72,13 @@ export class LightItem extends GameItem implements IRenderable {
 	public dragPoints: DragPoint[] = [];
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<LightItem> {
-		const lightItem = new LightItem();
+		const lightItem = new LightItem(itemName);
 		await storage.streamFiltered(itemName, 4, LightItem.createStreamHandler(lightItem));
 		return lightItem;
 	}
 
-	private constructor() {
-		super();
+	private constructor(itemName: string) {
+		super(itemName);
 	}
 
 	public getName(): string {
@@ -102,7 +102,11 @@ export class LightItem extends GameItem implements IRenderable {
 	 * @param table
 	 */
 	public isPlayfieldLight(table: Table) {
-		return this.isSurfaceLight(table) && !this.szSurface;
+		return this.isSurfaceLight(table) && !this.isOnSurface(table);
+	}
+
+	private isOnSurface(table: Table) {
+		return this.szSurface && table.surfaces[this.szSurface];
 	}
 
 	/**
@@ -245,7 +249,7 @@ export class LightItem extends GameItem implements IRenderable {
 		for (const v of points.slice(1)) {
 			path.lineTo(v.x, v.y);
 		}
-		path.moveTo(points[0].x, points[0].y);
+		//path.moveTo(points[0].x, points[0].y);
 		return path;
 	}
 
