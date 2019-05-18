@@ -25,7 +25,7 @@ export feature? Well, VPX Toolbox does some more things:
    - PNG textures with no transparency are converted to JPEG
    - PNG textures with transparency are [PNG-crushed](https://en.wikipedia.org/wiki/Pngcrush)
    - Meshes are compressed using [Draco](https://google.github.io/draco/)
-- It's platform-independent, so you can run it on Linux and MacOS as well.   
+- It's platform-independent, so you can run it on Linux and MacOS as well.
 
 ## Installation
 
@@ -69,6 +69,12 @@ CLI:
 ```bash
 vpt2glb <source.vpx> [<destination.glb>]
 ```
+
+Additional options are `--compress-vertices`, `--skip-optimize`, `--no-textures`,
+`--no-materials` and `--no-lights`. You can also skip generation of individual
+item types by using `--no-primitives`, `--no-triggers`, `--no-kickers`, `--no-gates`,
+`--no-targets`, `--no-flippers`, `--no-bumpers`, `--no-ramps`, `--no-surfaces`, 
+`--no-rubbers`, `--no-bulbs`, `--no-surface-lights` and `--no-playfield`.    
     
 Otherwise, the API is quite simple:
 

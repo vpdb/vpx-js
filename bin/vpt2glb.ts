@@ -29,6 +29,28 @@ import { Logger, Table } from '../lib';
 		const argSrc = process.argv[2];
 		const argDest = process.argv[3];
 
+		// other options
+		const compressVertices = process.argv.includes('--compress-vertices');
+		const optimizeTextures = !process.argv.includes('--skip-optimize');
+		const applyTextures = !process.argv.includes('--no-textures');
+		const applyMaterials = !process.argv.includes('--no-materials');
+		const exportLightBulbLights = !process.argv.includes('--no-lights');
+
+		const exportPrimitives = !process.argv.includes('--no-primitives');
+		const exportTriggers = !process.argv.includes('--no-triggers');
+		const exportKickers = !process.argv.includes('--no-kickers');
+		const exportGates = !process.argv.includes('--no-gates');
+		const exportHitTargets = !process.argv.includes('--no-targets');
+		const exportFlippers = !process.argv.includes('--no-flippers');
+		const exportBumpers = !process.argv.includes('--no-bumpers');
+		const exportRamps = !process.argv.includes('--no-ramps');
+		const exportSurfaces = !process.argv.includes('--no-surfaces');
+		const exportRubbers = !process.argv.includes('--no-rubbers');
+		const exportLightBulbs = !process.argv.includes('--no-bulbs');
+		const exportPlayfieldLights = !process.argv.includes('--no-surface-lights');
+		const exportPlayfield = !process.argv.includes('--no-playfield');
+
+
 		// silence logs
 		Logger.setLogger({
 			debug(format: any, ...param: any[]): void {},
@@ -73,25 +95,25 @@ import { Logger, Table } from '../lib';
 		console.log('Exporting file to %s...', glbPath);
 		const glb = await vpt.exportGlb({
 
-			applyTextures: true,
-			applyMaterials: true,
-			exportLightBulbLights: true,
-			optimizeTextures: true,
-			gltfOptions: { compressVertices: false, forcePowerOfTwoTextures: true },
+			applyTextures,
+			applyMaterials,
+			exportLightBulbLights,
+			optimizeTextures,
+			gltfOptions: { compressVertices, forcePowerOfTwoTextures: true },
 
-			exportPrimitives: true,
-			exportTriggers: true,
-			exportKickers: true,
-			exportGates: true,
-			exportHitTargets: true,
-			exportFlippers: true,
-			exportBumpers: true,
-			exportRamps: true,
-			exportSurfaces: true,
-			exportRubbers: true,
-			exportLightBulbs: true,
-			exportPlayfieldLights: true,
-			exportPlayfield: true,
+			exportPrimitives,
+			exportTriggers,
+			exportKickers,
+			exportGates,
+			exportHitTargets,
+			exportFlippers,
+			exportBumpers,
+			exportRamps,
+			exportSurfaces,
+			exportRubbers,
+			exportLightBulbs,
+			exportPlayfieldLights,
+			exportPlayfield,
 		});
 		const exported = Date.now();
 		writeFileSync(glbPath, glb);
