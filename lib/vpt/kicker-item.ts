@@ -66,13 +66,13 @@ export class KickerItem extends GameItem implements IRenderable {
 	private legacyMode: boolean = false;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<KickerItem> {
-		const kickerItem = new KickerItem();
+		const kickerItem = new KickerItem(itemName);
 		await storage.streamFiltered(itemName, 4, BiffParser.stream(kickerItem.fromTag.bind(kickerItem), {}));
 		return kickerItem;
 	}
 
-	private constructor() {
-		super();
+	private constructor(itemName: string) {
+		super(itemName);
 	}
 
 	public getName(): string {

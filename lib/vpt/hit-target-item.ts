@@ -83,13 +83,13 @@ export class HitTargetItem extends GameItem implements IRenderable {
 	private fOverwritePhysics: boolean = false;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<HitTargetItem> {
-		const hitTargetItem = new HitTargetItem();
+		const hitTargetItem = new HitTargetItem(itemName);
 		await storage.streamFiltered(itemName, 4, BiffParser.stream(hitTargetItem.fromTag.bind(hitTargetItem), {}));
 		return hitTargetItem;
 	}
 
-	private constructor() {
-		super();
+	private constructor(itemName: string) {
+		super(itemName);
 	}
 
 	public getName(): string {

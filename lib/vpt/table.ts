@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BoxGeometry, BufferGeometry, ExtrudeBufferGeometry, Shape, Vector2 } from 'three';
+import { BufferGeometry, ExtrudeBufferGeometry, Shape, Vector2 } from 'three';
 import { OleCompoundDoc, Storage } from '..';
 import { TableExporter, VpTableExporterOptions } from '../gltf/table-exporter';
 import { f4 } from '../math/float';

@@ -38,7 +38,6 @@ export class PrimitiveItem extends GameItem implements IRenderable {
 	private data: PrimitiveData = new PrimitiveData();
 	private mesh: Mesh = new Mesh();
 
-	public itemName!: string;
 	public numVertices!: number;
 	public compressedAnimationVertices?: number;
 	public compressedVertices?: number;
@@ -47,15 +46,14 @@ export class PrimitiveItem extends GameItem implements IRenderable {
 	public compressedIndices?: number;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<PrimitiveItem> {
-		const primitiveItem = new PrimitiveItem();
-		primitiveItem.itemName = itemName;
+		const primitiveItem = new PrimitiveItem(itemName);
 		await storage.streamFiltered(itemName, 4, BiffParser
 			.stream((buffer, tag, offset, len) => primitiveItem.fromTag(buffer, tag, offset, len, storage, itemName)));
 		return primitiveItem;
 	}
 
-	private constructor() {
-		super();
+	private constructor(itemName: string) {
+		super(itemName);
 	}
 
 	public getName() {

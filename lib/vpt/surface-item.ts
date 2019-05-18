@@ -67,11 +67,9 @@ export class SurfaceItem extends GameItem implements IRenderable {
 	public fSideVisible: boolean = true;
 	public fReflectionEnabled: boolean = true;
 	public dragPoints: DragPoint[] = [];
-	public itemName!: string;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<SurfaceItem> {
-		const surfaceItem = new SurfaceItem();
-		surfaceItem.itemName = itemName;
+		const surfaceItem = new SurfaceItem(itemName);
 		await storage.streamFiltered(itemName, 4, SurfaceItem.createStreamHandler(surfaceItem));
 		return surfaceItem;
 	}
@@ -89,8 +87,8 @@ export class SurfaceItem extends GameItem implements IRenderable {
 		});
 	}
 
-	private constructor() {
-		super();
+	private constructor(itemName: string) {
+		super(itemName);
 	}
 
 	public getName(): string {

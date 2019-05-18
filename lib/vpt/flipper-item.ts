@@ -70,13 +70,13 @@ export class FlipperItem extends GameItem implements IRenderable {
 	public szImage?: string;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<FlipperItem> {
-		const flipperItem = new FlipperItem();
+		const flipperItem = new FlipperItem(itemName);
 		await storage.streamFiltered(itemName, 4, BiffParser.stream(flipperItem.fromTag.bind(flipperItem)));
 		return flipperItem;
 	}
 
-	private constructor() {
-		super();
+	private constructor(itemName: string) {
+		super(itemName);
 	}
 
 	public isVisible(): boolean {

@@ -54,9 +54,13 @@ export class SpinnerItem extends GameItem implements IRenderable {
 	private wzName!: string;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<SpinnerItem> {
-		const spinnerItem = new SpinnerItem();
+		const spinnerItem = new SpinnerItem(itemName);
 		await storage.streamFiltered(itemName, 4, BiffParser.stream(spinnerItem.fromTag.bind(spinnerItem), {}));
 		return spinnerItem;
+	}
+
+	private constructor(itemName: string) {
+		super(itemName);
 	}
 
 	public getName(): string {

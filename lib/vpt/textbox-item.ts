@@ -41,11 +41,15 @@ export class TextBoxItem extends GameItem {
 	private wzName!: string;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<TextBoxItem> {
-		const textBoxItem = new TextBoxItem();
+		const textBoxItem = new TextBoxItem(itemName);
 		await storage.streamFiltered(itemName, 4, BiffParser.stream(textBoxItem.fromTag.bind(textBoxItem), {
 			streamedTags: [ 'FONT' ],
 		}));
 		return textBoxItem;
+	}
+
+	private constructor(itemName: string) {
+		super(itemName);
 	}
 
 	public getName(): string {

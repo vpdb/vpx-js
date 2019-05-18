@@ -68,7 +68,7 @@ export class TriggerItem extends GameItem implements IRenderable {
 	private wzName!: string;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<TriggerItem> {
-		const triggerItem = new TriggerItem();
+		const triggerItem = new TriggerItem(itemName);
 		await storage.streamFiltered(itemName, 4, TriggerItem.createStreamHandler(triggerItem));
 		return triggerItem;
 	}
@@ -86,8 +86,8 @@ export class TriggerItem extends GameItem implements IRenderable {
 		});
 	}
 
-	private constructor() {
-		super();
+	private constructor(itemName: string) {
+		super(itemName);
 	}
 
 	public getName(): string {

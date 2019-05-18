@@ -62,7 +62,7 @@ export class RubberItem extends GameItem implements IRenderable {
 	private middlePoint: Vertex3D = new Vertex3D();
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<RubberItem> {
-		const rubberItem = new RubberItem();
+		const rubberItem = new RubberItem(itemName);
 		await storage.streamFiltered(itemName, 4, RubberItem.createStreamHandler(rubberItem));
 		return rubberItem;
 	}
@@ -80,8 +80,8 @@ export class RubberItem extends GameItem implements IRenderable {
 		});
 	}
 
-	private constructor() {
-		super();
+	private constructor(itemName: string) {
+		super(itemName);
 	}
 
 	public getName(): string {

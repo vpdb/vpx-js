@@ -34,9 +34,13 @@ export class TimerItem extends GameItem {
 	private fBackglass!: boolean;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<TimerItem> {
-		const timerItem = new TimerItem();
+		const timerItem = new TimerItem(itemName);
 		await storage.streamFiltered(itemName, 4, BiffParser.stream(timerItem.fromTag.bind(timerItem), {}));
 		return timerItem;
+	}
+
+	private constructor(itemName: string) {
+		super(itemName);
 	}
 
 	public getName(): string {

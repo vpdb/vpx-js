@@ -69,9 +69,13 @@ export class GateItem extends GameItem implements IRenderable {
 	private gravityfactor?: number;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<GateItem> {
-		const gateItem = new GateItem();
+		const gateItem = new GateItem(itemName);
 		await storage.streamFiltered(itemName, 4, BiffParser.stream(gateItem.fromTag.bind(gateItem), {}));
 		return gateItem;
+	}
+
+	private constructor(itemName: string) {
+		super(itemName);
 	}
 
 	public getName(): string {

@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Storage } from '..';
 import { BiffParser } from '../io/biff-parser';
-import { Storage } from '../io/ole-doc';
 import { CatmullCurve3D } from '../math/catmull-curve';
 import { DragPoint } from '../math/dragpoint';
 import { f4 } from '../math/float';
@@ -80,7 +80,7 @@ export class RampItem extends GameItem implements IRenderable {
 	public fOverwritePhysics: boolean = false;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<RampItem> {
-		const rampItem = new RampItem();
+		const rampItem = new RampItem(itemName);
 		await storage.streamFiltered(itemName, 4, RampItem.createStreamHandler(rampItem));
 		if (rampItem.widthTop === 0 && rampItem.widthBottom > 0) {
 			rampItem.widthTop = 0.1;
@@ -104,8 +104,8 @@ export class RampItem extends GameItem implements IRenderable {
 		});
 	}
 
-	private constructor() {
-		super();
+	private constructor(itemName: string) {
+		super(itemName);
 	}
 
 	public getName(): string {

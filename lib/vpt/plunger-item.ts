@@ -64,9 +64,13 @@ export class PlungerItem extends GameItem {
 	public springEndLoops?: number;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<PlungerItem> {
-		const plungerItem = new PlungerItem();
+		const plungerItem = new PlungerItem(itemName);
 		await storage.streamFiltered(itemName, 4, BiffParser.stream(plungerItem.fromTag.bind(plungerItem), {}));
 		return plungerItem;
+	}
+
+	private constructor(itemName: string) {
+		super(itemName);
 	}
 
 	public getName(): string {
