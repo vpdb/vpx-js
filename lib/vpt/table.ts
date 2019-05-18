@@ -235,54 +235,51 @@ export class Table implements IRenderable {
 		let geometry: BufferGeometry;
 		const dim = table.getDimensions();
 
+		const pfShape = new Shape();
+		pfShape.moveTo(this.gameData.left, this.gameData.top);
+		pfShape.lineTo(this.gameData.right, this.gameData.top);
+		pfShape.lineTo(this.gameData.right, this.gameData.bottom);
+		pfShape.lineTo(this.gameData.left, this.gameData.bottom);
+		pfShape.lineTo(this.gameData.left, this.gameData.top);
+
 		// drill holes if playfield lights are rendered separately.
 		if (opts.exportPlayfieldLights) {
-			const pfShape = new Shape();
-			pfShape.moveTo(this.gameData.left, this.gameData.top);
-			pfShape.lineTo(this.gameData.right, this.gameData.top);
-			pfShape.lineTo(this.gameData.right, this.gameData.bottom);
-			pfShape.lineTo(this.gameData.left, this.gameData.bottom);
-			pfShape.lineTo(this.gameData.left, this.gameData.top);
-
 			pfShape.holes = this.lights
 				.filter(l => l.isPlayfieldLight(table))
 				.map(l => l.getPath(table));
-
-			const invTableWidth = 1.0 / dim.width;
-			const invTableHeight = 1.0 / dim.height;
-
-			geometry = new ExtrudeBufferGeometry(pfShape, {
-				depth: Table.playfieldThickness,
-				bevelEnabled: false,
-				steps: 1,
-				UVGenerator: {
-					generateSideWallUV(g: ExtrudeBufferGeometry, vertices: number[], indexA: number, indexB: number, indexC: number, indexD: number): Vector2[] {
-						return [
-							new Vector2( 0, 0),
-							new Vector2( 0, 0),
-							new Vector2( 0, 0),
-							new Vector2( 0, 0),
-						];
-					},
-					generateTopUV(g: ExtrudeBufferGeometry, vertices: number[], indexA: number, indexB: number, indexC: number): Vector2[] {
-						const ax = vertices[indexA * 3];
-						const ay = vertices[indexA * 3 + 1];
-						const bx = vertices[indexB * 3];
-						const by = vertices[indexB * 3 + 1];
-						const cx = vertices[indexC * 3];
-						const cy = vertices[indexC * 3 + 1];
-						return [
-							new Vector2(ax * invTableWidth, 1 - ay * invTableHeight),
-							new Vector2(bx * invTableWidth, 1 - by * invTableHeight),
-							new Vector2(cx * invTableWidth, 1 - cy * invTableHeight),
-						];
-					},
-				},
-			});
-
-		} else {
-			geometry = new BufferGeometry().fromGeometry(new BoxGeometry(dim.width, dim.height, Table.playfieldThickness)).translate(dim.width / 2, dim.height / 2, Table.playfieldThickness / 2);
 		}
+
+		const invTableWidth = 1.0 / dim.width;
+		const invTableHeight = 1.0 / dim.height;
+
+		geometry = new ExtrudeBufferGeometry(pfShape, {
+			depth: Table.playfieldThickness,
+			bevelEnabled: false,
+			steps: 1,
+			UVGenerator: {
+				generateSideWallUV(g: ExtrudeBufferGeometry, vertices: number[], indexA: number, indexB: number, indexC: number, indexD: number): Vector2[] {
+					return [
+						new Vector2(0, 0),
+						new Vector2(0, 0),
+						new Vector2(0, 0),
+						new Vector2(0, 0),
+					];
+				},
+				generateTopUV(g: ExtrudeBufferGeometry, vertices: number[], indexA: number, indexB: number, indexC: number): Vector2[] {
+					const ax = vertices[indexA * 3];
+					const ay = vertices[indexA * 3 + 1];
+					const bx = vertices[indexB * 3];
+					const by = vertices[indexB * 3 + 1];
+					const cx = vertices[indexC * 3];
+					const cy = vertices[indexC * 3 + 1];
+					return [
+						new Vector2(ax * invTableWidth, 1 - ay * invTableHeight),
+						new Vector2(bx * invTableWidth, 1 - by * invTableHeight),
+						new Vector2(cx * invTableWidth, 1 - cy * invTableHeight),
+					];
+				},
+			},
+		});
 
 		return {
 			playfield: {
