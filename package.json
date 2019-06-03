@@ -36,7 +36,7 @@
 		"gm": "^1.23.1",
 		"pngquant": "^2.0.1",
 		"sharp": "^0.22.1",
-		"three": "^0.104.0"
+		"three": "^0.105.0"
 	},
 	"devDependencies": {
 		"@types/chai": "4.1.7",
