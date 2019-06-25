@@ -24,6 +24,7 @@ import { createDiff } from 'looks-same';
 import * as sharp from 'sharp';
 import { expect } from 'chai';
 import looksSame = require('looks-same');
+import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
 
 const three = new ThreeHelper();
 const imgDiffTolerance = 7;
@@ -37,7 +38,7 @@ describe('The VPinball texture parser', () => {
 	const testPngOptimized = readFileSync(three.fixturePath('test_pattern_optimized.png'));
 
 	before(async () => {
-		vpt = await Table.load(three.fixturePath('table-texture.vpx'));
+		vpt = await Table.load(new NodeBinaryReader(three.fixturePath('table-texture.vpx')));
 	});
 
 	it('should correctly export a png', async() => {

@@ -21,6 +21,7 @@ import { ThreeHelper } from '../three.helper';
 import { Table } from '../../lib';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Mesh } from 'three';
+import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
 
 const three = new ThreeHelper();
 
@@ -29,7 +30,7 @@ describe('The VPinball flipper generator', () => {
 	let gltf: GLTF;
 
 	before(async () => {
-		const vpt = await Table.load(three.fixturePath('table-flipper.vpx'));
+		const vpt = await Table.load(new NodeBinaryReader(three.fixturePath('table-flipper.vpx')));
 		gltf = await three.loadGlb(await vpt.exportGlb());
 	});
 

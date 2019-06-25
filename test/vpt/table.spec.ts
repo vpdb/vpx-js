@@ -22,6 +22,7 @@ import { Table } from '../../lib';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Mesh } from 'three';
 import { expect } from 'chai';
+import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
 
 const three = new ThreeHelper();
 
@@ -35,7 +36,7 @@ describe('The VPinball table generator', () => {
 	let vpt: Table;
 
 	before(async () => {
-		vpt = await Table.load(three.fixturePath('table-empty.vpx'));
+		vpt = await Table.load(new NodeBinaryReader(three.fixturePath('table-empty.vpx')));
 		gltf = await three.loadGlb(await vpt.exportGlb({ applyTextures: false, exportPlayfieldLights: false }));
 	});
 
@@ -66,7 +67,7 @@ describe('The VPinball table generator', () => {
 
 	it('should not crash when reading a corrupt file', async () => {
 		try {
-			await Table.load(three.fixturePath('table-corrupt.vpx'));
+			await Table.load(new NodeBinaryReader(three.fixturePath('table-corrupt.vpx')));
 			expect.fail('Exception expected.');
 		} catch (err) {
 			// we're good in here

@@ -21,6 +21,7 @@
 import { BufferGeometry, ExtrudeBufferGeometry, Shape, Vector2 } from 'three';
 import { OleCompoundDoc, Storage } from '..';
 import { TableExporter, VpTableExporterOptions } from '../gltf/table-exporter';
+import { IBinaryReader } from '../io/ole-doc';
 import { f4 } from '../math/float';
 import { Vertex3DNoTex2 } from '../math/vertex';
 import { logger } from '../util/logger';
@@ -76,10 +77,10 @@ export class Table implements IRenderable {
 
 	private doc!: OleCompoundDoc;
 
-	public static async load(fileName: string, opts?: TableLoadOptions): Promise<Table> {
+	public static async load(reader: IBinaryReader, opts?: TableLoadOptions): Promise<Table> {
 		const then = Date.now();
 		const vpTable = new Table();
-		await vpTable._load(fileName, opts || {});
+		await vpTable._load(reader, opts || {});
 		logger().info('[Table.load] Table loaded in %sms.', Date.now() - then);
 		return vpTable;
 	}
@@ -196,9 +197,9 @@ export class Table implements IRenderable {
 		}
 	}
 
-	private async _load(fileName: string, opts: TableLoadOptions): Promise<void> {
+	private async _load(reader: IBinaryReader, opts: TableLoadOptions): Promise<void> {
 
-		this.doc = await OleCompoundDoc.load(fileName);
+		this.doc = await OleCompoundDoc.load(reader);
 		try {
 
 			if (opts.gameDataOnly || !opts.tableInfoOnly) {

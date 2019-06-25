@@ -20,6 +20,7 @@
 import { ThreeHelper } from '../three.helper';
 import { Table } from '../../lib';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
 
 const three = new ThreeHelper();
 
@@ -28,7 +29,7 @@ describe('The VPinball surface generator', () => {
 	let gltf: GLTF;
 
 	before(async () => {
-		const vpt = await Table.load(three.fixturePath('table-surface.vpx'));
+		const vpt = await Table.load(new NodeBinaryReader(three.fixturePath('table-surface.vpx')));
 		gltf = await three.loadGlb(await vpt.exportGlb());
 	});
 

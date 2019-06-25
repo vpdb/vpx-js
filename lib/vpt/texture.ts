@@ -17,9 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import gm = require('gm');
+import * as gm from 'gm';
 import { basename, resolve as resolvePath } from 'path';
-import sharp = require('sharp');
+import * as sharp from 'sharp';
 import { Stream } from 'stream';
 import { Storage } from '..';
 import { Image } from '../gltf/image';

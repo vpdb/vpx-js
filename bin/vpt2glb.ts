@@ -21,6 +21,7 @@
 import { existsSync, writeFileSync } from 'fs';
 import { basename, dirname, resolve } from 'path';
 import { Logger, Table } from '../lib';
+import { NodeBinaryReader } from '../lib/io/binary-reader.node';
 
 (async () => {
 
@@ -89,7 +90,7 @@ import { Logger, Table } from '../lib';
 
 
 		console.log('Parsing file from %s...', vpxPath);
-		const vpt = await Table.load(vpxPath);
+		const vpt = await Table.load(new NodeBinaryReader(vpxPath));
 		const loaded = Date.now();
 
 		console.log('Exporting file to %s...', glbPath);

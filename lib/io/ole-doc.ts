@@ -18,8 +18,9 @@
  */
 
 /* tslint:disable:no-bitwise */
+
 import { EventEmitter } from 'events';
-import { close, open, read } from 'fs';
+import { BinaryReader } from '../refs.node';
 import { readableStream } from './event-stream';
 
 export class Header {
@@ -429,23 +430,22 @@ export class OleCompoundDoc extends EventEmitter {
 	public SAT!: AllocationTable;
 	public SSAT!: AllocationTable;
 
-	private readonly filename: string;
-	private fd: number = 0;
+	private readonly reader: IBinaryReader;
 	private skipBytes: number;
 	private rootStorage!: Storage;
 	private MSAT: number[] = [];
 	private shortStreamSecIds: number[] = [];
 	private directoryTree: DirectoryTree | undefined;
 
-	private constructor(filename: string) {
+	private constructor(reader: IBinaryReader) {
 		super();
-		this.filename = filename;
+		this.reader = reader;
 		this.skipBytes = 0;
 	}
 
-	public static async load(filename: string): Promise<OleCompoundDoc> {
+	public static async load(reader: IBinaryReader): Promise<OleCompoundDoc> {
 
-		const doc = new OleCompoundDoc(filename);
+		const doc = new OleCompoundDoc(reader);
 		try {
 			await doc.openFile();
 			await doc.readHeader();
@@ -508,7 +508,7 @@ export class OleCompoundDoc extends EventEmitter {
 			}
 			const fileLen = Math.min(this.header.secSize - offset, bytesToRead);
 			const fileOffset = offset + this.getFileOffsetForSec(secIds[i]);
-			await this.read(buffer, bufferOffset, fileLen, fileOffset);
+			await this.reader.read(buffer, bufferOffset, fileLen, fileOffset);
 			bytesToRead -= fileLen;
 			bufferOffset += fileLen;
 			offset = 0;
@@ -535,7 +535,7 @@ export class OleCompoundDoc extends EventEmitter {
 			}
 			const fileOffset = offset + this.getFileOffsetForShortSec(secIds[i]);
 			const fileLen = Math.min(this.header.shortSecSize - offset, bytesToRead);
-			await this.read(buffer, bufferOffset, fileLen, fileOffset);
+			await this.reader.read(buffer, bufferOffset, fileLen, fileOffset);
 			bytesToRead -= fileLen;
 			bufferOffset += fileLen;
 			offset = 0;
@@ -545,48 +545,29 @@ export class OleCompoundDoc extends EventEmitter {
 	}
 
 	public async close(): Promise<void> {
-		if (this.fd) {
-			await new Promise((resolve, reject) => {
-				close(this.fd, err => {
-					if (err) {
-						reject(err);
-						return;
-					}
-					resolve();
-				});
-			});
-		}
-		this.fd = 0;
+		await this.reader.close();
 	}
 
 	private assertLoaded() {
 		/* istanbul ignore if */
-		if (!this.fd) {
+		if (!this.reader.isOpen()) {
 			throw new Error('Document must be loaded first.');
 		}
 	}
 
 	private async openFile(): Promise<void> {
-		this.fd = await new Promise((resolve, reject) => {
-			open(this.filename, 'r', 0o666, (err, fd) => {
-				if (err) {
-					reject(err);
-					return;
-				}
-				resolve(fd);
-			});
-		});
+		await this.reader.open();
 	}
 
 	private async readCustomHeader(): Promise<Buffer> {
 		const buffer = Buffer.alloc(this.skipBytes);
-		const [bytesRead, data] = await this.read(buffer, 0, this.skipBytes, 0);
+		const [bytesRead, data] = await this.reader.read(buffer, 0, this.skipBytes, 0);
 		return data;
 	}
 
 	private async readHeader(): Promise<void> {
 		const buffer = Buffer.alloc(512);
-		const [bytesRead, data] = await this.read(buffer, 0, 512, this.skipBytes);
+		const [bytesRead, data] = await this.reader.read(buffer, 0, 512, this.skipBytes);
 		this.header = Header.load(data);
 	}
 
@@ -654,24 +635,40 @@ export class OleCompoundDoc extends EventEmitter {
 		const secId = this.shortStreamSecIds[secIdIndex];
 		return this.getFileOffsetForSec(secId) + secOffset;
 	}
-
-	private async read(buffer: Buffer, offset: number, length: number, position: number): Promise<[ number, Buffer ]> {
-		return new Promise((resolve, reject) => {
-			read(this.fd, buffer, offset, length, position, (err, bytesRead, data) => {
-				/* istanbul ignore if */
-				if (err) {
-					reject(err);
-					return;
-				}
-				resolve([bytesRead, data]);
-			});
-		});
-	}
 }
 
 export interface ReadResult {
 	data: Buffer;
 	storageOffset: number;
+}
+
+export interface IBinaryReader {
+
+	/**
+	 * Reads data into a buffer.
+	 *
+	 * @param buffer Buffer to write to
+	 * @param offset Offset in the buffer to write to
+	 * @param length How many bytes to read
+	 * @param position At which offset to start reading
+	 * @returns [ number of bytes read, data read ]
+	 */
+	read(buffer: Buffer, offset: number, length: number, position: number): Promise<[ number, Buffer ]>;
+
+	/**
+	 * Opens the data source.
+	 */
+	open(): Promise<void>;
+
+	/**
+	 * Closes the data source.
+	 */
+	close(): Promise<void>;
+
+	/**
+	 * Returns whether the data source is opened.
+	 */
+	isOpen(): boolean;
 }
 
 /* tslint:enable:no-bitwise */

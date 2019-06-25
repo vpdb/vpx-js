@@ -21,6 +21,7 @@
 import { existsSync } from 'fs';
 import { resolve } from 'path';
 import { Table } from '../lib';
+import { NodeBinaryReader } from '../lib/io/binary-reader.node';
 
 (async () => {
 
@@ -39,7 +40,7 @@ import { Table } from '../lib';
 			throw new Error(`The file "${vpxPath}" does not exist.`);
 		}
 
-		const vpt = await Table.load(vpxPath, { loadInvisibleItems: true });
+		const vpt = await Table.load(new NodeBinaryReader(vpxPath), { loadInvisibleItems: true });
 		console.log(await vpt.getTableScript());
 
 	} catch (err) {
