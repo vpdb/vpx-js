@@ -40,7 +40,7 @@ import { RubberItem } from '../vpt/rubber-item';
 import { SurfaceItem } from '../vpt/surface-item';
 import { Texture as VpTexture } from '../vpt/texture';
 import { GLTFExporter, ParseOptions } from './gltf-exporter';
-import { Image } from './image';
+import { IImage } from './image';
 
 export class TableExporter {
 
@@ -49,7 +49,7 @@ export class TableExporter {
 	private readonly scene: Scene;
 	private readonly opts: VpTableExporterOptions;
 	private readonly playfield: Group;
-	private readonly images: Map<string, Image> = new Map();
+	private readonly images: Map<string, IImage> = new Map();
 
 	constructor(table: Table, opts: VpTableExporterOptions) {
 		this.opts = Object.assign({}, defaultOptions, opts);
@@ -182,7 +182,7 @@ export class TableExporter {
 				material.map = new Texture();
 				material.map.name = 'texture:' + obj.map.getName();
 				if (await this.loadMap(name, obj.map, material.map)) {
-					if ((material.map.image as Image).containsTransparency()) {
+					if ((material.map.image as IImage).containsTransparency()) {
 						material.transparent = true;
 					}
 					material.needsUpdate = true;
@@ -207,7 +207,7 @@ export class TableExporter {
 
 	private async loadMap(name: string, texture: VpTexture, threeMaterial: Texture): Promise<boolean> {
 		try {
-			let image: Image;
+			let image: IImage;
 			if (this.images.has(texture.getName())) {
 				image = this.images.get(texture.getName())!;
 			} else {

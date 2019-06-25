@@ -18,142 +18,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { State } from 'gm';
-import * as gm from 'gm';
-import * as sharp from 'sharp';
-import { logger } from '../util/logger';
-
-const PngQuant = require('pngquant');
-
 /**
  * Holds a physical image that can be processed by GLTFExporter.
  *
  * It uses Sharp for reprocessing, crushes PNGs with PngQuant and converts
  * PNGs to JPEGs when no alpha channel is found.
  */
-export class Image {
-
-	private static readonly jpegQuality = 65;
-
-	public readonly src: string;
-	public width: number;
-	public height: number;
-
-	private readonly format: string;
-	private readonly stats: sharp.Stats;
-	private readonly sharp: sharp.Sharp;
-
-	private constructor(src: string, width: number, height: number, format: string, stats: sharp.Stats, shrp: sharp.Sharp) {
-		this.src = src;
-		this.width = width;
-		this.height = height;
-		this.format = format;
-
-		this.stats = stats;
-		this.sharp = shrp;
-	}
-
-	public static async load(src: string, data: Buffer | sharp.Sharp): Promise<Image> {
-
-		let width;
-		let height;
-		let format;
-		let shrp: sharp.Sharp = data instanceof Buffer ? sharp(data) : data;
-
-		try {
-			const metadata = await shrp.metadata();
-			width = metadata.width;
-			height = metadata.height;
-			format = metadata.format;
-
-		} catch (err) {
-			logger().warn('[Image.init] Could not read metadata from buffer (%s), using GM to read image.', err.message);
-
-			const g = gm(data);
-			const metadata = await gmIdentify(g);
-			format = metadata.format.toLowerCase();
-			width = metadata.size.width;
-			height = metadata.size.height;
-			const gmData = await new Promise((resolve, reject) => {
-				const buffers: Buffer[] = [];
-				g.setFormat('jpeg').stream().on('error', reject)
-					.on('data', (buf: Buffer) => buffers.push(buf as Buffer))
-					.on('end', () => resolve(Buffer.concat(buffers)))
-					.on('error', reject);
-			});
-			shrp = sharp(gmData);
-		}
-		const stats = await shrp.stats();
-		return new Image(src, width, height, format, stats, shrp);
-	}
-
-	public resize(width: number, height: number): this {
-		this.sharp.resize(width, height, { fit: 'fill' });
-		this.width = width;
-		this.height = height;
-		return this;
-	}
-
-	public flipY(): this {
-		this.sharp.flip();
-		return this;
-	}
-
-	public getFormat(): string {
-		return this.format;
-	}
-
-	public getMimeType(): string {
-		return !this.stats.isOpaque ? 'image/png' : 'image/jpeg';
-	}
-
-	public async getImage(optimize: boolean, quality = Image.jpegQuality): Promise<Buffer> {
-
-		if (this.stats.isOpaque) {
-			if (this.format === 'png') {
-				logger().debug('[Image.getImage]: Converting opaque png to jpeg.');
-			}
-			return this.sharp.jpeg({ quality }).toBuffer();
-		}
-
-		switch (this.format) {
-			case 'png': {
-				if (optimize) {
-					const quanter = new PngQuant([128]);
-					return new Promise((resolve, reject) => {
-						const buffers: Buffer[] = [];
-						this.sharp.on('error', reject)
-							.pipe(quanter).on('error', reject)
-							.on('data', (buf: Buffer) => buffers.push(buf as Buffer))
-							.on('end', () => resolve(Buffer.concat(buffers)))
-							.on('error', reject);
-					});
-				}
-				return this.sharp.toBuffer();
-			}
-
-			default: {
-				return this.sharp.jpeg({ quality: Image.jpegQuality }).toBuffer();
-			}
-		}
-	}
-
-	public hasTransparency(): boolean {
-		return ['png', 'webp', 'gif'].includes(this.format);
-	}
-
-	public containsTransparency(): boolean {
-		return !this.stats.isOpaque;
-	}
-}
-
-async function gmIdentify(g: State): Promise<any> {
-	return new Promise((resolve, reject) => {
-		g.identify((err, value) => {
-			if (err) {
-				return reject(err);
-			}
-			resolve(value);
-		});
-	});
+export interface IImage {
+	width: number;
+	height: number;
+	src: string;
+	resize(width: number, height: number): this;
+	flipY(): this;
+	getFormat(): string;
+	getMimeType(): string;
+	getImage(optimize: boolean, quality?: number): Promise<Buffer>;
+	hasTransparency(): boolean;
+	containsTransparency(): boolean;
 }
