@@ -647,9 +647,9 @@ export interface IBinaryReader {
 	/**
 	 * Reads data into a buffer.
 	 *
-	 * @param buffer Buffer to write to
-	 * @param offset Offset in the buffer to write to
-	 * @param length How many bytes to read
+	 * @param buffer Buffer that the data will be written to.
+	 * @param offset Offset in the buffer to start writing at.
+	 * @param length Integer specifying the number of bytes to read.
 	 * @param position At which offset to start reading
 	 * @returns [ number of bytes read, data read ]
 	 */
