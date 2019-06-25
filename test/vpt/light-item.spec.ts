@@ -23,6 +23,7 @@ import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 
 import { ThreeHelper } from '../three.helper';
 import { Table } from '../../lib';
+import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
 
 const three = new ThreeHelper();
 const scale = 0.05;
@@ -32,7 +33,7 @@ describe('The VPinball lights generator', () => {
 	let gltf: GLTF;
 
 	before(async () => {
-		const vpt = await Table.load(three.fixturePath('table-light.vpx'));
+		const vpt = await Table.load(new NodeBinaryReader(three.fixturePath('table-light.vpx')));
 		gltf = await three.loadGlb(await vpt.exportGlb({ exportPlayfieldLights: true, applyTextures: false }));
 	});
 

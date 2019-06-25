@@ -19,8 +19,8 @@
  */
 
 import { State } from 'gm';
-import gm = require('gm');
-import sharp = require('sharp');
+import * as gm from 'gm';
+import * as sharp from 'sharp';
 import { logger } from '../util/logger';
 
 const PngQuant = require('pngquant');

@@ -20,6 +20,7 @@
 import { ThreeHelper } from '../three.helper';
 import { Table } from '../../lib';
 import { expect } from 'chai';
+import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
 
 const three = new ThreeHelper();
 
@@ -28,7 +29,7 @@ describe('The VPinball parser for invisible elements', () => {
 	let vpt: Table;
 
 	before(async () => {
-		vpt = await Table.load(three.fixturePath('table-invisible.vpx'), { loadInvisibleItems: true });
+		vpt = await Table.load(new NodeBinaryReader(three.fixturePath('table-invisible.vpx')), { loadInvisibleItems: true });
 	});
 
 	it('should parse a timer item', async () => {
