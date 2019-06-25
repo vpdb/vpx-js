@@ -20,3 +20,5 @@
 export { Table } from './vpt/table';
 export { OleCompoundDoc, Storage } from './io/ole-doc';
 export { Logger } from './util/logger';
+// export { NodeBinaryReader } from './io/binary-reader.node';
+// export { BrowserBinaryReader } from './io/binary-reader.browser';
