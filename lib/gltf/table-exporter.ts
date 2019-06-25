@@ -76,7 +76,7 @@ export class TableExporter {
 		return await this.export<Buffer>();
 	}
 
-	private async export<T>(): Promise<T> {
+	public async createScene(): Promise<Scene> {
 
 		const renderGroups: IRenderGroup[] = [
 			{ name: 'playfield', meshes: [ this.table ], enabled: !!this.opts.exportPlayfield },
@@ -152,6 +152,13 @@ export class TableExporter {
 
 		// finally, add to scene
 		this.scene.add(this.playfield);
+
+		return this.scene;
+	}
+
+	private async export<T>(): Promise<T> {
+
+		await this.createScene();
 
 		// now, export to GLTF
 		return exportGltf(this.scene, this.opts, this.opts.gltfOptions);

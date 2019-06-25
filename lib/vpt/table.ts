@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BufferGeometry, ExtrudeBufferGeometry, Shape, Vector2 } from 'three';
+import { BufferGeometry, ExtrudeBufferGeometry, Scene, Shape, Vector2 } from 'three';
 import { OleCompoundDoc, Storage } from '..';
 import { TableExporter, VpTableExporterOptions } from '../gltf/table-exporter';
 import { IBinaryReader } from '../io/ole-doc';
@@ -170,6 +170,11 @@ export class Table implements IRenderable {
 
 		logger().warn('[Table.getSurfaceHeight] Unknown surface %s.', surface);
 		return this.gameData.tableheight;
+	}
+
+	public async exportScene(opts?: VpTableExporterOptions): Promise<Scene> {
+		const exporter = new TableExporter(this, opts || {});
+		return await exporter.createScene();
 	}
 
 	public async exportGltf(opts?: VpTableExporterOptions): Promise<string> {
