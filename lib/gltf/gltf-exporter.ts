@@ -67,7 +67,7 @@ import {
 	GltfNode,
 	GltfScene,
 } from './gltf';
-import { Image } from './image';
+import { IImage } from './image';
 
 const gltfPipeline = require('gltf-pipeline');
 const PromisePool = require('es6-promise-pool');
@@ -370,7 +370,7 @@ export class GLTFExporter {
 	 * @returns {Boolean} Returns true if image size is POT.
 	 *
 	 */
-	private isPowerOfTwo(image: Image) {
+	private isPowerOfTwo(image: IImage) {
 		return M.isPowerOfTwo(image.width) && M.isPowerOfTwo(image.height);
 	}
 
@@ -749,7 +749,7 @@ export class GLTFExporter {
 	 * @param  flipY before writing out the image
 	 * @return Index of the processed texture in the "images" array
 	 */
-	private processImage(image: Image, format: PixelFormat, flipY: boolean) {
+	private processImage(image: IImage, format: PixelFormat, flipY: boolean) {
 
 		const mimeType = image.getMimeType();
 		if (!this.outputJSON.images) {

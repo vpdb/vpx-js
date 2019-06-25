@@ -17,14 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import * as gm from 'gm';
 import { basename, resolve as resolvePath } from 'path';
-import * as sharp from 'sharp';
-import { Stream } from 'stream';
 import { Storage } from '..';
-import { Image } from '../gltf/image';
+import { IImage } from '../gltf/image';
 import { LzwReader } from '../gltf/lzw-reader';
 import { BiffParser } from '../io/biff-parser';
+import { getRawImage, loadImage, streamImage } from '../refs.node';
 import { logger } from '../util/logger';
 import { Binary } from './binary';
 import { Table } from './table';
@@ -89,55 +87,22 @@ export class Texture extends BiffParser {
 	 * Returns the image of the texture, as JPG if opaque, or JPEG otherwise.
 	 * @param vpt
 	 */
-	public async getImage(vpt: Table): Promise<Image> {
+	public async getImage(vpt: Table): Promise<IImage> {
 
 		if (this.isRaw()) {
-			return await Image.load(this.getName(), this.getRawImage());
+			return await loadImage(this.getName(), getRawImage(this.pdsBuffer!.getData(), this.width, this.height));
 
 		} else {
-			const data = await vpt.streamStorage<Buffer>('GameStg', this.streamImage.bind(this));
+			const data = await vpt.streamStorage<Buffer>('GameStg', storage => streamImage(storage, this.storageName, this.binary, this.localPath));
 			if (!data || !data.length) {
 				throw new Error(`Cannot load image data for texture ${this.getName()}`);
 			}
-			return await Image.load(this.getName(), data);
+			return await loadImage(this.getName(), data);
 		}
 	}
 
 	public isRaw(): boolean {
 		return this.pdsBuffer !== undefined;
-	}
-
-	public getRawImage(): sharp.Sharp {
-		return sharp(this.pdsBuffer!.getData(), {
-			raw: {
-				width: this.width,
-				height: this.height,
-				channels: 4,
-			},
-		}).png();
-	}
-
-	/**
-	 * Streamer function that reads the image data into a buffer.
-	 * @param storage
-	 */
-	private async streamImage(storage: Storage): Promise<Buffer> {
-		let strm: Stream;
-		if (this.localPath) {
-			strm = gm(this.localPath).stream();
-		} else {
-			strm = storage.stream(this.storageName!, this.binary!.pos, this.binary!.len);
-		}
-		return new Promise<Buffer>((resolve, reject) => {
-			const bufs: Buffer[] = [];
-			/* istanbul ignore if */
-			if (!strm) {
-				return reject(new Error('No such stream "' + this.storageName + '".'));
-			}
-			strm.on('error', reject);
-			strm.on('data', (buf: Buffer) => bufs.push(buf));
-			strm.on('end', () => resolve(Buffer.concat(bufs)));
-		});
 	}
 
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number, storage: Storage, itemName: string): Promise<number> {
