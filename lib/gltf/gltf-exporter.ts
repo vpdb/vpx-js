@@ -68,6 +68,7 @@ import {
 	GltfScene,
 } from './gltf';
 import { IImage } from './image';
+import { ParseOptions } from './table-exporter';
 
 const gltfPipeline = require('gltf-pipeline');
 const PromisePool = require('es6-promise-pool');
@@ -1848,29 +1849,6 @@ class Utils {
 		clip.tracks = tracks;
 		return clip;
 	}
-}
-
-export interface ParseOptions {
-	binary?: boolean;
-	optimizeImages?: boolean;
-	trs?: boolean;
-	onlyVisible?: boolean;
-	truncateDrawRange?: boolean;
-	embedImages?: boolean;
-	animations?: any[];
-	forceIndices?: boolean;
-	forcePowerOfTwoTextures?: boolean;
-	compressVertices?: boolean;
-	versionString?: string;
-	dracoOptions?: {
-		compressionLevel?: number;
-		quantizePosition?: number;
-		quantizeNormal?: number;
-		quantizeTexcoord?: number;
-		quantizeColor?: number;
-		quantizeSkin?: number;
-		unifiedQuantization?: boolean;
-	};
 }
 
 interface MapDefinition {

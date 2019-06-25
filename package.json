@@ -20,6 +20,9 @@
 	"files": [
 		"dist"
 	],
+	"browser": {
+		"./dist/lib/refs.node.js": "./dist/lib/refs.browser.js"
+	},
 	"keywords": [
 		"pinball",
 		"visual pinball",

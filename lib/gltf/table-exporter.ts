@@ -30,6 +30,7 @@ import {
 	Texture,
 } from 'three';
 import { Table } from '..';
+import { exportGltf } from '../refs.node';
 import { logger } from '../util/logger';
 import { BumperItem } from '../vpt/bumper-item';
 import { FlipperItem } from '../vpt/flipper-item';
@@ -39,7 +40,6 @@ import { RampItem } from '../vpt/ramp-item';
 import { RubberItem } from '../vpt/rubber-item';
 import { SurfaceItem } from '../vpt/surface-item';
 import { Texture as VpTexture } from '../vpt/texture';
-import { GLTFExporter, ParseOptions } from './gltf-exporter';
 import { IImage } from './image';
 
 export class TableExporter {
@@ -154,8 +154,7 @@ export class TableExporter {
 		this.scene.add(this.playfield);
 
 		// now, export to GLTF
-		const gltfExporter = new GLTFExporter(Object.assign({}, { embedImages: true, optimizeImages: this.opts.optimizeTextures }, this.opts.gltfOptions));
-		return gltfExporter.parse(this.scene);
+		return exportGltf(this.scene, this.opts, this.opts.gltfOptions);
 	}
 
 	private async getMaterial(obj: RenderInfo): Promise<MeshStandardMaterial> {
@@ -275,3 +274,26 @@ const defaultOptions: VpTableExporterOptions = {
 	exportSpinners: true,
 	gltfOptions: {},
 };
+
+export interface ParseOptions {
+	binary?: boolean;
+	optimizeImages?: boolean;
+	trs?: boolean;
+	onlyVisible?: boolean;
+	truncateDrawRange?: boolean;
+	embedImages?: boolean;
+	animations?: any[];
+	forceIndices?: boolean;
+	forcePowerOfTwoTextures?: boolean;
+	compressVertices?: boolean;
+	versionString?: string;
+	dracoOptions?: {
+		compressionLevel?: number;
+		quantizePosition?: number;
+		quantizeNormal?: number;
+		quantizeTexcoord?: number;
+		quantizeColor?: number;
+		quantizeSkin?: number;
+		unifiedQuantization?: boolean;
+	};
+}
