@@ -161,7 +161,7 @@ export class DirectoryTree {
 		const entries = new Array(count);
 		for (let i = 0; i < count; i++) {
 			const offset = i * 128;
-			const nameLength = Math.max(buffer.readInt16LE(64 + offset) - 1, 0);
+			const nameLength = Math.max(buffer.readInt16LE(64 + offset) - 2, 0);
 			entries[i] = {
 				name: buffer.toString('utf16le', offset, nameLength + offset),
 				type: buffer.readInt8(66 + offset),
