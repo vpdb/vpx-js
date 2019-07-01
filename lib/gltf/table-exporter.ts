@@ -100,11 +100,13 @@ export class TableExporter {
 			if (!group.enabled) {
 				continue;
 			}
-			const g = new Group();
-			g.name = group.name;
+			const itemTypeGroup = new Group();
+			itemTypeGroup.name = group.name;
 			for (const renderable of group.meshes.filter(i => i.isVisible(this.table))) {
 				const objects = renderable.getMeshes(this.table, this.opts);
 				let obj: RenderInfo;
+				const itemGroup = new Group();
+				itemGroup.name = renderable.getName();
 				for (obj of Object.values(objects)) {
 					/* istanbul ignore if */
 					if (!obj.geometry && !obj.mesh) {
@@ -115,11 +117,12 @@ export class TableExporter {
 					const postProcessedMaterial = renderable.postProcessMaterial ? renderable.postProcessMaterial(this.table, geometry, material) : material;
 					const mesh = new Mesh(geometry, postProcessedMaterial);
 					mesh.name = (obj.geometry || obj.mesh!).name;
-					g.add(mesh);
+					itemGroup.add(mesh);
 				}
+				itemTypeGroup.add(itemGroup);
 			}
-			if (g.children.length > 0) {
-				this.playfield.add(g);
+			if (itemTypeGroup.children.length > 0) {
+				this.playfield.add(itemTypeGroup);
 			}
 		}
 

@@ -85,6 +85,10 @@ export class Table implements IRenderable {
 		return vpTable;
 	}
 
+	public getName(): string {
+		return this.gameData!.getName();
+	}
+
 	public getTexture(name?: string): Texture | undefined {
 		if (!name) {
 			return undefined;
