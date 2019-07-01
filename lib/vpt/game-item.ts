@@ -126,6 +126,7 @@ export class TimerDataRoot {
 }
 
 export interface IRenderable {
+	getName(): string;
 	getMeshes(table: Table, opts: VpTableExporterOptions): Meshes;
 	isVisible(table: Table): boolean;
 	postProcessMaterial?(table: Table, geometry: BufferGeometry, material: MeshStandardMaterial): MeshStandardMaterial | MeshStandardMaterial[];
