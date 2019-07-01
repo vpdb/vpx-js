@@ -133,9 +133,12 @@ export class TableExporter {
 		if (this.opts.exportLightBulbLights) {
 			for (const lightInfo of this.table.lights.filter(l => l.isBulbLight())) {
 				const light = new PointLight(lightInfo.color, lightInfo.intensity, lightInfo.falloff * TableExporter.scale, 2);
+				const itemGroup = new Group();
+				itemGroup.name = lightInfo.getName();
 				light.name = 'light:' + lightInfo.getName();
 				light.position.set(lightInfo.vCenter.x, lightInfo.vCenter.y, -17);
-				lightGroup.add(light);
+				itemGroup.add(light);
+				lightGroup.add(itemGroup);
 			}
 		}
 

@@ -35,7 +35,7 @@ describe('The VPinball kicker generator', () => {
 	});
 
 	it('should generate a cup kicker mesh', async () => {
-		const kickerMesh = three.find<Mesh>(gltf, 'kickers', 'kicker-Cup');
+		const kickerMesh = three.find<Mesh>(gltf, 'kickers', 'Cup', 'kicker-Cup');
 		const kickerMeshVertices = three.vertices(kickerMesh);
 		let expectedVertices = [
 			[131.679199, 1300.751343, 15.432900],
@@ -416,7 +416,7 @@ describe('The VPinball kicker generator', () => {
 	});
 
 	it('should generate a cup2 kicker mesh', async () => {
-		const kickerMesh = three.find<Mesh>(gltf, 'kickers', 'kicker-Cup2');
+		const kickerMesh = three.find<Mesh>(gltf, 'kickers', 'Cup2', 'kicker-Cup2');
 		const kickerMeshVertices = three.vertices(kickerMesh);
 		let expectedVertices = [
 			[251.094788, 1325.130981, 15.273825],
@@ -551,7 +551,7 @@ describe('The VPinball kicker generator', () => {
 	});
 
 	it('should generate a gottlieb kicker mesh', async () => {
-		const kickerMesh = three.find<Mesh>(gltf, 'kickers', 'kicker-Gottlieb');
+		const kickerMesh = three.find<Mesh>(gltf, 'kickers', 'Gottlieb', 'kicker-Gottlieb');
 		const kickerMeshVertices = three.vertices(kickerMesh);
 		let expectedVertices = [
 			[383.125549, 1346.716797, -0.425500],
@@ -836,7 +836,7 @@ describe('The VPinball kicker generator', () => {
 	});
 
 	it('should generate a hole kicker mesh', async () => {
-		const kickerMesh = three.find<Mesh>(gltf, 'kickers', 'kicker-Hole');
+		const kickerMesh = three.find<Mesh>(gltf, 'kickers', 'Hole', 'kicker-Hole');
 		const kickerMeshVertices = three.vertices(kickerMesh);
 		let expectedVertices = [
 			[515.554260, 1326.334351, 0.545350],
@@ -1036,7 +1036,7 @@ describe('The VPinball kicker generator', () => {
 	});
 
 	it('should generate a simple hole kicker mesh', async () => {
-		const kickerMesh = three.find<Mesh>(gltf, 'kickers', 'kicker-HoleSimple');
+		const kickerMesh = three.find<Mesh>(gltf, 'kickers', 'HoleSimple', 'kicker-HoleSimple');
 		const kickerMeshVertices = three.vertices(kickerMesh);
 		let expectedVertices = [
 			[616.148743, 1345.464844, 15.598175],
@@ -1086,11 +1086,11 @@ describe('The VPinball kicker generator', () => {
 	});
 
 	it('should not generate an invisible kicker', async () => {
-		three.expectNoObject(gltf, 'kickers', 'kicker-Invisible');
+		three.expectNoObject(gltf, 'kickers', 'Invisible');
 	});
 
 	it('should generate a williams kicker mesh', async () => {
-		const kickerMesh = three.find<Mesh>(gltf, 'kickers', 'kicker-Williams');
+		const kickerMesh = three.find<Mesh>(gltf, 'kickers', 'Williams', 'kicker-Williams');
 		const kickerMeshVertices = three.vertices(kickerMesh);
 		let expectedVertices = [
 			[873.227051, 1347.589111, 25.218075],
@@ -1240,7 +1240,7 @@ describe('The VPinball kicker generator', () => {
 	});
 
 	it('should generate a kicker mesh on a surface', async () => {
-		const kickerMesh = three.find<Mesh>(gltf, 'kickers', 'kicker-Surface');
+		const kickerMesh = three.find<Mesh>(gltf, 'kickers', 'Surface', 'kicker-Surface');
 		const kickerMeshVertices = three.vertices(kickerMesh);
 		let expectedVertices = [
 			[486.815857, 1177.464844, -34.401825],
@@ -1290,7 +1290,7 @@ describe('The VPinball kicker generator', () => {
 	});
 
 	it('should generate a scaled kicker mesh', async () => {
-		const kickerMesh = three.find<Mesh>(gltf, 'kickers', 'kicker-Scaled');
+		const kickerMesh = three.find<Mesh>(gltf, 'kickers', 'Scaled', 'kicker-Scaled');
 		const kickerMeshVertices = three.vertices(kickerMesh);
 		let expectedVertices = [
 			[388.763977, 1546.879639, 30.921824],
@@ -1340,7 +1340,7 @@ describe('The VPinball kicker generator', () => {
 	});
 
 	it('should generate a rotated kicker mesh', async () => {
-		const kickerMesh = three.find<Mesh>(gltf, 'kickers', 'kicker-Rotated');
+		const kickerMesh = three.find<Mesh>(gltf, 'kickers', 'Rotated', 'kicker-Rotated');
 		const kickerMeshVertices = three.vertices(kickerMesh);
 		let expectedVertices = [
 			[557.452087, 1476.413574, 15.432900],

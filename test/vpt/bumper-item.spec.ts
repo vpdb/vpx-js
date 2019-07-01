@@ -35,7 +35,7 @@ describe('The VPinball bumper generator', () => {
 	});
 
 	it('should generate a scaled and rotated bumper mesh', async () => {
-		const bumperMesh = three.find<Mesh>(gltf, 'bumpers', 'bumper-socket-Bumper1');
+		const bumperMesh = three.find<Mesh>(gltf, 'bumpers', 'Bumper1','bumper-socket-Bumper1');
 		const bumperMeshVertices = three.vertices(bumperMesh);
 		const expectedVertices = [
 			[463.157959, 1244.674194, -4.921520],
@@ -525,7 +525,7 @@ describe('The VPinball bumper generator', () => {
 	});
 
 	it('should generate a bumper mesh on a surface', async () => {
-		const bumperMesh = three.find<Mesh>(gltf, 'bumpers', 'bumper-socket-Bumper2');
+		const bumperMesh = three.find<Mesh>(gltf, 'bumpers', 'Bumper2', 'bumper-socket-Bumper2');
 		const bumperMeshVertices = three.vertices(bumperMesh);
 		const expectedVertices = [
 			[445.167603, 873.754761, -54.911709],
@@ -1015,7 +1015,7 @@ describe('The VPinball bumper generator', () => {
 	});
 
 	it('should not generate a bumper with no visible elements', async () => {
-		three.expectNoObject(gltf, 'bumpers', 'bumper-socket-Bumper3');
+		three.expectNoObject(gltf, 'bumpers', 'Bumper3');
 	});
 
 });

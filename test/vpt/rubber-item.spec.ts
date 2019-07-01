@@ -35,7 +35,7 @@ describe('The VPinball rubber generator', () => {
 	});
 
 	it('should generate a rubber mesh', async () => {
-		const rubberMesh = three.find<Mesh>(gltf, 'rubbers', 'rubber-Rubber2');
+		const rubberMesh = three.find<Mesh>(gltf, 'rubbers', 'Rubber2', 'rubber-Rubber2');
 		const rubberMeshVertices = three.vertices(rubberMesh);
 		const expectedVertices = [
 			[474.438477, 450.783447, -21.006498],
@@ -403,7 +403,7 @@ describe('The VPinball rubber generator', () => {
 	});
 
 	it('should generate a rotated rubber mesh', async () => {
-		const rubberMesh = three.find<Mesh>(gltf, 'rubbers', 'rubber-Rubber1');
+		const rubberMesh = three.find<Mesh>(gltf, 'rubbers', 'Rubber1', 'rubber-Rubber1');
 		const rubberMeshVertices = three.vertices(rubberMesh);
 		const expectedVertices = [
 			[504.430420, 1035.444336, 61.705627],
