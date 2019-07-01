@@ -35,7 +35,7 @@ describe('The VPinball primitive generator', () => {
 	});
 
 	it('should generate a simple primitive mesh', async () => {
-		const cubeMesh = three.find<Mesh>(gltf, 'primitives', 'primitive-Cube');
+		const cubeMesh = three.find<Mesh>(gltf, 'primitives', 'Cube', 'primitive-Cube');
 		const cubeMeshVertices = three.vertices(cubeMesh);
 		const expectedVertices = [
 			[600.000000, 600.000000, 100.000000],
@@ -67,7 +67,7 @@ describe('The VPinball primitive generator', () => {
 	});
 
 	it('should generate a simple generated mesh', async () => {
-		const triangleMesh = three.find<Mesh>(gltf, 'primitives', 'primitive-Triangle');
+		const triangleMesh = three.find<Mesh>(gltf, 'primitives', 'Triangle', 'primitive-Triangle');
 		const triangleMeshVertices = three.vertices(triangleMesh);
 		const expectedVertices = [
 			[526.975952, 913.236511, -246.442444],
@@ -95,7 +95,7 @@ describe('The VPinball primitive generator', () => {
 		const vptSink = await Table.load(new NodeBinaryReader(three.fixturePath('table-sink.vpx')));
 		const gltfSink = await three.loadGlb(await vptSink.exportGlb());
 
-		const sinkMesh = three.find<Mesh>(gltfSink, 'primitives', 'primitive-Primitive1');
+		const sinkMesh = three.find<Mesh>(gltfSink, 'primitives', 'Primitive1', 'primitive-Primitive1');
 		const sinkMeshVertices = three.vertices(sinkMesh);
 		const expectedVertices = [
 			[450.063995, 1123.057007, -85.772011],

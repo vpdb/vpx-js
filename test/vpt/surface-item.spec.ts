@@ -34,7 +34,7 @@ describe('The VPinball surface generator', () => {
 	});
 
 	it('should generate a surface mesh', async () => {
-		const vertices = three.concatMeshes(gltf, 'surfaces',['surfacetop-Wall', 'surfaceside-Wall']);
+		const vertices = three.concatMeshes(gltf, 'surfaces','Wall',['surfacetop-Wall', 'surfaceside-Wall']);
 		let expectedVertices = [
 			[251.000000, 353.000000, -0.000000],
 			[251.000000, 353.000000, -50.000000],
@@ -306,7 +306,7 @@ describe('The VPinball surface generator', () => {
 	});
 
 	it('should generate a surface mesh with invisible top', async () => {
-		const vertices = three.concatMeshes(gltf, 'surfaces',['surfaceside-TopInvisible']);
+		const vertices = three.concatMeshes(gltf, 'surfaces','TopInvisible', ['surfaceside-TopInvisible']);
 		let expectedVertices = [
 			[379.000000, 1125.000000, -2.700000],
 			[379.000000, 1125.000000, -49.599998],
@@ -350,11 +350,11 @@ describe('The VPinball surface generator', () => {
 			[379.000000, 1125.000000, -2.700000],
 		];
 		three.expectVerticesInArray(expectedVertices, vertices);
-		three.expectNoObject(gltf, 'surfaces', 'surfacetop-TopInvisible');
+		three.expectNoObject(gltf, 'surfaces', 'TopInvisible', 'surfacetop-TopInvisible');
 	});
 
 	it('should generate a surface mesh with invisible sides', async () => {
-		const vertices = three.concatMeshes(gltf, 'surfaces',['surfacetop-SideInvisible']);
+		const vertices = three.concatMeshes(gltf, 'surfaces','SideInvisible', ['surfacetop-SideInvisible']);
 		let expectedVertices = [
 			[455.000000, 1667.000000, -11.500000],
 			[450.444305, 1670.719604, -11.500000],
@@ -477,12 +477,11 @@ describe('The VPinball surface generator', () => {
 			[461.540344, 1659.923218, -11.500000],
 		];
 		three.expectVerticesInArray(expectedVertices, vertices);
-		three.expectNoObject(gltf, 'surfaces', 'surfaceside-SideInvisible');
+		three.expectNoObject(gltf, 'surfaces', 'SideInvisible', 'surfaceside-SideInvisible');
 	});
 
 	it('should not generate a surface mesh with invisible sides and top', async () => {
-		three.expectNoObject(gltf, 'surfaces', 'surfaceside-Invisible');
-		three.expectNoObject(gltf, 'surfaces', 'surfaceside-Invisible');
+		three.expectNoObject(gltf, 'surfaces', 'Invisible');
 	});
 
 });
