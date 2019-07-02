@@ -45,15 +45,15 @@ export class FlipperMover {
 	private angleStart: number;
 	private angleEnd: number;
 
-	private inertia: number;	        // moment of inertia
+	private inertia: number; // moment of inertia
 
-	private zeroAngNorm: Vertex2D = new Vertex2D();  // base norms at zero degrees
+	private zeroAngNorm: Vertex2D = new Vertex2D(); // base norms at zero degrees
 
 	private enableRotateEvent: number; // -1,0,1
 
 	private direction: boolean;
 
-	private solState: boolean;         // is solenoid enabled?
+	private solState: boolean; // is solenoid enabled?
 	private isInContact: boolean;
 
 	// private isEnabled: boolean;
@@ -95,8 +95,6 @@ export class FlipperMover {
 		this.inertia = (1.0 / 3.0) * mass * (flipr * flipr);
 
 		this.lastHitFace = false; // used to optimize hit face search order
-
-		//m_faceLength = m_flipperradius * sqrtf(1.0f-ratio*ratio); // Cosine of face angle X hypotenuse // = m_flipperradius * cosf(fa)
 
 		this.zeroAngNorm.x =  Math.sqrt(1.0 - ratio * ratio); // F2 Norm, used in Green's transform, in FPM time search  // =  sinf(faceNormOffset)
 		this.zeroAngNorm.y = -ratio;                   // F1 norm, change sign of x component, i.e -zeroAngNorm.x // = -cosf(faceNormOffset)
@@ -304,12 +302,12 @@ export class FlipperMover {
 			? angleMax - this.angleCur       // >= 0
 			: angleMin - this.angleCur;      // <= 0
 
-		const hittime = dist / this.angleSpeed;
+		const hitTime = dist / this.angleSpeed;
 
-		if (!isFinite(hittime) || hittime < 0) {
+		if (!isFinite(hitTime) || hitTime < 0) {
 			return -1.0;
 		} else {
-			return hittime;
+			return hitTime;
 		}
 	}
 
@@ -319,6 +317,6 @@ export class FlipperMover {
 	}
 
 	private static CrossZ(rz: number, v: Vertex3D): Vertex3D {
-		return new Vertex3D(-rz * v.y, rz * v.x, 0.);
+		return new Vertex3D(-rz * v.y, rz * v.x, 0);
 	}
 }
