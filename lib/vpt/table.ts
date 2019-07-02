@@ -26,7 +26,7 @@ import { f4 } from '../math/float';
 import { Vertex3DNoTex2 } from '../math/vertex';
 import { logger } from '../util/logger';
 import { BumperItem } from './bumper-item';
-import { FlipperItem } from './flipper-item';
+import { Flipper } from './flipper/flipper';
 import { GameData } from './game-data';
 import { GameItem, IRenderable, Meshes } from './game-item';
 import { GateItem } from './gate-item';
@@ -60,7 +60,7 @@ export class Table implements IRenderable {
 	public primitives: { [key: string]: PrimitiveItem } = {};
 	public textures: { [key: string]: Texture } = {};
 	public rubbers: { [key: string]: RubberItem } = {};
-	public flippers: { [key: string]: FlipperItem } = {};
+	public flippers: { [key: string]: Flipper } = {};
 	public bumpers: { [key: string]: BumperItem } = {};
 	public ramps: { [key: string]: RampItem } = {};
 	public lights: LightItem[] = [];
@@ -336,7 +336,7 @@ export class Table implements IRenderable {
 				}
 
 				case GameItem.TypeFlipper: {
-					const item = await FlipperItem.fromStorage(storage, itemName);
+					const item = await Flipper.fromStorage(storage, itemName);
 					this.flippers[item.getName()] = item;
 					break;
 				}

@@ -20,8 +20,8 @@
 import { degToRad, radToDeg } from '../../math/float';
 import { Vertex2D } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
+import { PHYS_FACTOR } from '../../physics/constants';
 import { GameData } from '../game-data';
-import { PHYS_FACTOR } from '../physics';
 import { FlipperData } from './flipper-data';
 
 export class FlipperMover {
