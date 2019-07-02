@@ -39,6 +39,15 @@ export class Matrix3D {
 		this.setIdentity();
 	}
 
+	public getElements(): number[] {
+		return [
+			this._11, this._12, this._13, this._14,
+			this._21, this._22, this._23, this._24,
+			this._31, this._32, this._33, this._34,
+			this._41, this._42, this._43, this._44,
+		];
+	}
+
 	public setIdentity() {
 		this._11 = this._22 = this._33 = this._44 = 1.0;
 		this._12 = this._13 = this._14 = this._41 =

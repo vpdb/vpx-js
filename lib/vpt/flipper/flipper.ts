@@ -40,7 +40,7 @@ export class Flipper extends GameItem implements IRenderable {
 		return new Flipper(itemName, data);
 	}
 
-	private constructor(itemName: string, data: FlipperData) {
+	public constructor(itemName: string, data: FlipperData) {
 		super(itemName);
 		this.data = data;
 		this.mesh = new FlipperMesh();
@@ -77,11 +77,11 @@ export class Flipper extends GameItem implements IRenderable {
 		return meshes;
 	}
 
-	private getMatrix(): Matrix3D {
+	public getMatrix(rotation: number = this.data.startAngle): Matrix3D {
 		const trafoMatrix = new Matrix3D();
 		const tempMatrix = new Matrix3D();
 		trafoMatrix.setTranslation(this.data.center.x, this.data.center.y, 0);
-		tempMatrix.rotateZMatrix(degToRad(this.data.startAngle));
+		tempMatrix.rotateZMatrix(degToRad(rotation));
 		trafoMatrix.preMultiply(tempMatrix);
 		return trafoMatrix;
 	}
