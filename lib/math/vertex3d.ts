@@ -131,6 +131,13 @@ export class Vertex3D implements Vertex {
 		return this;
 	}
 
+	public add(v: Vertex3D): this {
+		this.x += v.x;
+		this.y += v.y;
+		this.z += v.z;
+		return this;
+	}
+
 	public cross(v: Vertex3D): this {
 		return this.crossVectors(this, v);
 	}
