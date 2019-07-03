@@ -21,15 +21,17 @@ import { degToRad, radToDeg } from '../../math/float';
 import { Vertex2D } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
 import { PHYS_FACTOR } from '../../physics/constants';
+import { HitCircle } from '../../physics/hit-circle';
+import { MoverObject } from '../../physics/mover-object';
 import { GameData } from '../game-data';
 import { FlipperData } from './flipper-data';
 
-export class FlipperMover {
+export class FlipperMover implements MoverObject {
 
 	private data: FlipperData;
 	private tableData: GameData;
 
-	//private hitcircleBase: HitCircle;
+	public hitcircleBase: HitCircle;
 	private endRadius: number;
 	private readonly flipperRadius: number;
 
@@ -56,9 +58,9 @@ export class FlipperMover {
 	private solState: boolean; // is solenoid enabled?
 	private isInContact: boolean;
 
-	// private isEnabled: boolean;
+	public isEnabled: boolean;
 	// private isVisible: boolean;
-	private lastHitFace: boolean;
+	public lastHitFace: boolean;
 
 	constructor(center: Vertex2D, baser: number, endr: number, flipr: number, angleStart: number, angleEnd: number, zlow: number, zhigh: number, data: FlipperData, tableData: GameData) {
 
