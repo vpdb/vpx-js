@@ -17,15 +17,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Matrix3 } from 'three';
+import { Matrix3 } from 'three/src/math/Matrix3';
 import { Vertex3D } from '../../math/vertex3d';
-import { Texture } from '../texture';
 import { CollisionEvent } from '../../physics/collision-event';
-import { eObjType } from '../../physics/collision-type';
 import { IFireEvents } from '../../physics/events';
+import { HitObject } from '../../physics/hit-object';
+import { Texture } from '../texture';
 import { BallMover } from './ball-mover';
 
-export class Ball {
+export class Ball extends HitObject {
 
 	private color: number;
 
@@ -37,7 +37,7 @@ export class Ball {
 
 	private pinballEnv: Texture;
 	private pinballDecal: Texture;
-	private vpVolObjs: IFireEvents[]; // vector of triggers and kickers we are now inside (stored as IFireEvents* though, as HitObject.m_obj stores it like that!)
+	public vpVolObjs: IFireEvents[]; // vector of triggers and kickers we are now inside (stored as IFireEvents* though, as HitObject.m_obj stores it like that!)
 
 	private coll: CollisionEvent;  // collision information, may not be a actual hit if something else happens first
 
@@ -71,17 +71,19 @@ export class Ball {
 
 	private playfieldReflectionStrength: number;
 
-	private frozen: boolean;
+	public isFrozen: boolean;
 	private reflectionEnabled: boolean;
 	private forceReflection: boolean;
 	private visible: boolean;
 	private decalMode: boolean;
 
-	static ballID: number; // increased for each ball created to have an unique ID for scripts for each ball
+	private static ballID: number; // increased for each ball created to have an unique ID for scripts for each ball
 
 	constructor() {
+		super();
 		this.id = Ball.ballID;
 		Ball.ballID++;
+		this.coll = new CollisionEvent(this);
 	}
 
 	public Init(mass: number): void {
@@ -105,8 +107,8 @@ export class Ball {
 
 	}
 
-	public GetType(): eObjType {
-		return 'eBall';
+	public GetType(): CollisionType {
+		return CollisionType.Ball;
 	}
 
 	public Collide(coll: CollisionEvent): void {

@@ -27,7 +27,7 @@ export class CollisionEvent {
 	/**
 	 * the ball that collided with smth
 	 */
-	public ball?: Ball;
+	public ball: Ball;
 
 	/**
 	 * what the ball collided with
@@ -67,4 +67,8 @@ export class CollisionEvent {
 	public hitFlag: boolean = false;
 
 	public isContact: boolean = false;
+
+	constructor(ball: Ball) {
+		this.ball = ball;
+	}
 }

@@ -1,3 +1,24 @@
-export type eObjType = 'eNull' | 'ePoint' | 'eLineSeg' | 'eLineSegSlingshot' | 'eJoint' | 'eCircle'
-| 'eFlipper' | 'ePlunger' | 'eSpinner' | 'eBall' | 'e3DPoly' | 'eTriangle' | 'ePlane' | 'e3DLine'
-| 'eGate' | 'eTextbox' | 'eDispReel' | 'eLightSeq' | 'ePrimitive' | 'eHitTarget' | 'eTrigger' | 'eKicker';
+enum CollisionType {
+	Null = 'eNull',
+	Point = 'ePoint',
+	LineSeg = 'eLineSeg',
+	LineSegSlingshot = 'eLineSegSlingshot',
+	Joint = 'eJoint',
+	Circle = 'eCircle',
+	Flipper = 'eFlipper',
+	Plunger = 'ePlunger',
+	Spinner = 'eSpinner',
+	Ball = 'eBall',
+	Poly = 'e3DPoly',
+	Triangle = 'eTriangle',
+	Plane = 'ePlane',
+	Line = 'e3DLine',
+	Gate = 'eGate',
+	Textbox = 'eTextbox',
+	DispReel = 'eDispReel',
+	LightSeq = 'eLightSeq',
+	Primitive = 'ePrimitive',
+	HitTarget = 'eHitTarget',
+	Trigger = 'eTrigger',
+	Kicker = 'eKicker',
+}
