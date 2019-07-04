@@ -2,20 +2,24 @@ import { FLT_MAX } from '../vpt/mesh';
 
 export class FRect3D {
 
-	public left: number;
-	public top: number;
-	public right: number;
-	public bottom: number;
-	public zlow: number;
-	public zhigh: number;
+	public left: number = 0;
+	public top: number = 0;
+	public right: number = 0;
+	public bottom: number = 0;
+	public zlow: number = 0;
+	public zhigh: number = 0;
 
-	constructor(x1: number, x2: number, y1: number, y2: number, z1: number, z2: number) {
-		this.left = x1;
-		this.right = x2;
-		this.top = y1;
-		this.bottom = y2;
-		this.zlow = z1;
-		this.zhigh = z2;
+	constructor(x1?: number, x2?: number, y1?: number, y2?: number, z1?: number, z2?: number) {
+		if (x1 && x2 && y1 && y2 && z1 && z2) {
+			this.left = x1;
+			this.right = x2;
+			this.top = y1;
+			this.bottom = y2;
+			this.zlow = z1;
+			this.zhigh = z2;
+		} else {
+			this.Clear();
+		}
 	}
 
 	public Clear(): void {

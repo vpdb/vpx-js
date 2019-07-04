@@ -28,10 +28,10 @@ import { FlipperData } from './flipper-data';
 
 export class FlipperMover implements MoverObject {
 
-	private data: FlipperData;
+	private flipperData: FlipperData;
 	private tableData: GameData;
 
-	public hitcircleBase: HitCircle;
+	public hitCircleBase: HitCircle;
 	public endRadius: number;
 	public readonly flipperRadius: number;
 
@@ -58,17 +58,17 @@ export class FlipperMover implements MoverObject {
 	private solState: boolean; // is solenoid enabled?
 	private isInContact: boolean;
 
-	public isEnabled: boolean;
-	// private isVisible: boolean;
+	public isEnabled: boolean = false;
 	public lastHitFace: boolean;
 
-	constructor(center: Vertex2D, baser: number, endr: number, flipr: number, angleStart: number, angleEnd: number, zlow: number, zhigh: number, data: FlipperData, tableData: GameData) {
+	constructor(center: Vertex2D, baseRadius: number, endRadius: number, flipperRadius: number, angleStart: number, angleEnd: number, zLow: number, zHigh: number, flipperData: FlipperData, tableData: GameData) {
 
-		this.data = data;
+		this.hitCircleBase = new HitCircle(center, baseRadius, zLow, zHigh);
+		this.flipperData = flipperData;
 		this.tableData = tableData;
 
-		this.endRadius = endr;         // radius of flipper end
-		this.flipperRadius = flipr;    // radius of flipper arc, center-to-center radius
+		this.endRadius = endRadius;         // radius of flipper end
+		this.flipperRadius = flipperRadius;    // radius of flipper arc, center-to-center radius
 
 		if (angleEnd === angleStart) { // otherwise hangs forever in collisions/updates
 			angleEnd += 0.0001;
@@ -88,13 +88,13 @@ export class FlipperMover implements MoverObject {
 		this.angularAcceleration = 0;
 		this.angleSpeed = 0;
 
-		const ratio = (baser - endr) / flipr;
+		const ratio = (baseRadius - endRadius) / flipperRadius;
 
 		// model inertia of flipper as that of rod of length flipr around its end
-		const mass = this.data.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics)
-			? this.data.overrideMass!
-			: this.data.mass;
-		this.inertia = (1.0 / 3.0) * mass * (flipr * flipr);
+		const mass = this.flipperData.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics)
+			? this.flipperData.overrideMass!
+			: this.flipperData.mass;
+		this.inertia = (1.0 / 3.0) * mass * (flipperRadius * flipperRadius);
 
 		this.lastHitFace = false; // used to optimize hit face search order
 
@@ -159,24 +159,24 @@ export class FlipperMover implements MoverObject {
 
 		// hold coil is weaker
 		const eosAngle = degToRad(
-			(this.data.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
-				? this.data.overrideTorqueDampingAngle!
-				: this.data.torqueDampingAngle!);
+			(this.flipperData.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
+				? this.flipperData.overrideTorqueDampingAngle!
+				: this.flipperData.torqueDampingAngle!);
 
 		if (Math.abs(this.angleCur - this.angleEnd) < eosAngle) {
 			const lerp = Math.sqrt(Math.sqrt(Math.abs(this.angleCur - this.angleEnd) / eosAngle)); // fade in/out damping, depending on angle to end
-			desiredTorque *= lerp + ((this.data.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
-				? this.data.overrideTorqueDamping!
-				: this.data.torqueDamping!) * (1.0 - lerp);
+			desiredTorque *= lerp + ((this.flipperData.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
+				? this.flipperData.overrideTorqueDamping!
+				: this.flipperData.torqueDamping!) * (1.0 - lerp);
 		}
 
 		if (!this.direction) {
 			desiredTorque = -desiredTorque;
 		}
 
-		let torqueRampupSpeed = (this.data.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
-			? this.data.overrideCoilRampUp!
-			: this.data.rampUp!;
+		let torqueRampupSpeed = (this.flipperData.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
+			? this.flipperData.overrideCoilRampUp!
+			: this.flipperData.rampUp!;
 
 		if (torqueRampupSpeed <= 0) {
 			torqueRampupSpeed = 1e6; // set very high for instant coil response
@@ -257,9 +257,9 @@ export class FlipperMover implements MoverObject {
 	}
 
 	public getReturnRatio(): number {
-		return (this.data.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
-			? this.data.overrideReturnStrength!
-			: this.data.return!;
+		return (this.flipperData.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
+			? this.flipperData.overrideReturnStrength!
+			: this.flipperData.return!;
 	}
 
 	public getMass(): number {
@@ -271,9 +271,9 @@ export class FlipperMover implements MoverObject {
 	}
 
 	public getStrength(): number {
-		return (this.data.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
-			? this.data.overrideStrength!
-			: this.data.strength!;
+		return (this.flipperData.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
+			? this.flipperData.overrideStrength!
+			: this.flipperData.strength!;
 	}
 
 	// rigid body functions
