@@ -1,36 +1,39 @@
 import { FRect3D } from '../math/frect3d';
-import { Ball } from './ball';
+import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { eObjType } from './collision-type';
+import { IFireEvents } from './events';
 import { MoverObject } from './mover-object';
 
 export class HitObject {
 
-	// private m_pfedebug: IFireEvents;
-	// private m_obj: IFireEvents; // base object pointer (mainly used as IFireEvents, but also as HitTarget or Primitive or Trigger or Kicker or Gate, see below)
+	private pfeDebug?: IFireEvents;
+	private obj?: IFireEvents; // base object pointer (mainly used as IFireEvents, but also as HitTarget or Primitive or Trigger or Kicker or Gate, see below)
 
-	private m_threshold: number;  // threshold for firing an event (usually (always??) normal dot ball-velocity)
+	private threshold: number = 0;  // threshold for firing an event (usually (always??) normal dot ball-velocity)
 
-	protected m_hitBBox: FRect3D;
+	public hitBBox: FRect3D;
 
-	private m_elasticity: number;
-	private m_elasticityFalloff: number;
-	private m_friction: number;
-	private m_scatter: number; // in radians
+	protected elasticity: number = 0.3;
+	protected elasticityFalloff: number = 0;
+	private friction: number = 0.3;
+	protected scatter: number = 0; // in radians
 
-	private m_ObjType: eObjType;
+	private objType: eObjType = 'eNull';
 
-	private m_fEnabled: boolean;
+	private isEnabled: boolean = true;
 
-	private m_fe: boolean;  // FireEvents for m_obj?
-	private m_e: boolean;   // currently only used to determine which HitTriangles/HitLines/HitPoints are being part of the same Primitive element m_obj, to be able to early out intersection traversal if primitive is flagged as not collidable
+	/**
+	 * FireEvents for m_obj?
+	 */
+	private fe: boolean = false;
 
-
-	constructor() {
-		// m_fEnabled(true), m_ObjType(eNull), m_obj(NULL),
-		// 	m_elasticity(0.3f), m_elasticityFalloff(0.0f), m_friction(0.3f), m_scatter(0.0f),
-		// m_threshold(0.f), m_pfedebug(NULL), m_fe(false), m_e(false)
-	}
+	/**
+	 * currently only used to determine which HitTriangles/HitLines/HitPoints
+	 * are being part of the same Primitive element m_obj, to be able to early
+	 * out intersection traversal if primitive is flagged as not collidable
+	 */
+	private e: boolean = false;
 
 	public HitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {
 		return -1;
@@ -44,8 +47,14 @@ export class HitObject {
 
 	}
 
+	/**
+	 * apply contact forces for the given time interval. Ball, Spinner and Gate do nothing here, Flipper has a specialized handling
+	 * @param coll
+	 * @param dtime
+	 * @constructor
+	 */
 	public Contact(coll: CollisionEvent, dtime: number): void {
-		// apply contact forces for the given time interval. Ball, Spinner and Gate do nothing here, Flipper has a specialized handling
+		coll.ball.HandleStaticContact(coll, this.friction, dtime);
 	}
 
 	public CalcHitBBox(): void {
@@ -57,10 +66,23 @@ export class HitObject {
 	}
 
 	public SetFriction(friction: number): void {
-		this.m_friction = friction;
+		this.friction = friction;
 	}
 
 	public FireHitEvent(pball: Ball): void {
+		if (this.obj && this.fe && this.isEnabled) {
 
+			// is this the same place as last event? if same then ignore it
+			const distLs = (pball.eventPos.clone().sub(pball.pos)).lengthSq();
+
+			pball.eventPos = pball.pos;    //remember last collide position
+
+			// hit targets when used with a captured ball have always a too small distance
+			const normalDist = (this.objType === 'eHitTarget') ? 0.0 : 0.25; //!! magic distance
+
+			if (distLs > normalDist) { // must be a new place if only by a little
+				this.obj.FireGroupEvent(DISPID_HitEvents_Hit);
+			}
+		}
 	}
 }

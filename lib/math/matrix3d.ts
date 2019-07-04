@@ -40,11 +40,17 @@ export class Matrix3D {
 	}
 
 	public getElements(): number[] {
+		// return [
+		// 	this._11, this._12, this._13, this._14,
+		// 	this._21, this._22, this._23, this._24,
+		// 	this._31, this._32, this._33, this._34,
+		// 	this._41, this._42, this._43, this._44,
+		// ];
 		return [
-			this._11, this._12, this._13, this._14,
-			this._21, this._22, this._23, this._24,
-			this._31, this._32, this._33, this._34,
-			this._41, this._42, this._43, this._44,
+			this._11, this._21, this._31, this._41,
+			this._12, this._22, this._32, this._42,
+			this._13, this._23, this._33, this._43,
+			this._14, this._24, this._34, this._44,
 		];
 	}
 
@@ -119,6 +125,62 @@ export class Matrix3D {
 
 	public preMultiply(a: Matrix3D): this {
 		Object.assign(this.matrix, Matrix3D.multiplyMatrices(a, this).matrix);
+		return this;
+	}
+
+	public invert(): this {
+		const ipvt = [0, 1, 2, 3];
+		for (let k = 0; k < 4; ++k) {
+			let temp = 0;
+			let l = k;
+			for (let i = k; i < 4; ++i) {
+				const dd = Math.abs(this.matrix[k][i]);
+				if (dd > temp) {
+					temp = dd;
+					l = i;
+				}
+			}
+			if (l !== k) {
+				const tmp = ipvt[k];
+				ipvt[k] = ipvt[l];
+				ipvt[l] = tmp;
+				for (let j = 0; j < 4; ++j) {
+					temp = this.matrix[j][k];
+					this.matrix[j][k] = this.matrix[j][l];
+					this.matrix[j][l] = temp;
+				}
+			}
+			const d = 1.0 / this.matrix[k][k];
+			for (let j = 0; j < k; ++j) {
+				const c = this.matrix[j][k] * d;
+				for (let i = 0; i < 4; ++i) {
+					this.matrix[j][i] -= this.matrix[k][i] * c;
+				}
+				this.matrix[j][k] = c;
+			}
+			for (let j = k + 1; j < 4; ++j) {
+				const c = this.matrix[j][k] * d;
+				for (let i = 0; i < 4; ++i) {
+					this.matrix[j][i] -= this.matrix[k][i] * c;
+				}
+				this.matrix[j][k] = c;
+			}
+			for (let i = 0; i < 4; ++i) {
+				this.matrix[k][i] = -this.matrix[k][i] * d;
+			}
+			this.matrix[k][k] = d;
+		}
+		return this;
+	}
+
+	public transpose(): this {
+		const clone = this.clone();
+		for (let i = 0; i < 4; ++i) {
+			this.matrix[0][i] = clone.matrix[i][0];
+			this.matrix[1][i] = clone.matrix[i][1];
+			this.matrix[2][i] = clone.matrix[i][2];
+			this.matrix[3][i] = clone.matrix[i][3];
+		}
 		return this;
 	}
 

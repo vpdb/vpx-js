@@ -1,18 +1,18 @@
 import { Vertex2D } from '../math/vertex2d';
-import { Ball } from './ball';
+import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { eObjType } from './collision-type';
 import { HitObject } from './hit-object';
 
 export class HitCircle extends HitObject {
 
-	private center: Vertex2D;
+	public center: Vertex2D;
 	private radius: number;
 
 	constructor(c: Vertex2D, r: number, zlow: number, zhigh: number) {
 		super();
-		this.m_hitBBox.zlow = zlow;
-		this.m_hitBBox.zhigh = zhigh;
+		this.hitBBox.zlow = zlow;
+		this.hitBBox.zhigh = zhigh;
 		this.center = c;
 		this.radius = r;
 	}

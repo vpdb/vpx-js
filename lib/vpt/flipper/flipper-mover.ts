@@ -32,20 +32,20 @@ export class FlipperMover implements MoverObject {
 	private tableData: GameData;
 
 	public hitcircleBase: HitCircle;
-	private endRadius: number;
-	private readonly flipperRadius: number;
+	public endRadius: number;
+	public readonly flipperRadius: number;
 
 	// kinematic state
 	private angularMomentum: number;
 	private angularAcceleration: number;
-	private angleSpeed: number;
-	private angleCur: number;
+	public angleSpeed: number;
+	public angleCur: number;
 
 	private curTorque: number;
 	private contactTorque?: number;
 
-	private angleStart: number;
-	private angleEnd: number;
+	public angleStart: number;
+	public angleEnd: number;
 
 	private inertia: number; // moment of inertia
 
