@@ -76,8 +76,8 @@ export class GameData extends BiffParser {
 	public glassheight?: number;
 	public tableheight!: number;
 	public szImage?: string;
-	public szBallImage?: string;
-	public szBallImageFront?: string;
+	public szBallImage!: string;
+	public szBallImageFront!: string;
 	public szScreenShot?: string;
 	public fBackdrop: boolean = false;
 	public numGameItems!: number;

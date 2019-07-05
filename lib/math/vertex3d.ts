@@ -161,6 +161,18 @@ export class Vertex3D implements Vertex {
 	public xy(): Vertex2D {
 		return new Vertex2D(this.x, this.y);
 	}
+
+	public setZero(): this {
+		return this.set(0, 0, 0);
+	}
+
+	public static crossProduct(pv1: Vertex3D, pv2: Vertex3D): Vertex3D {
+		return new Vertex3D(
+			pv1.y * pv2.z - pv1.z * pv2.y,
+			pv1.z * pv2.x - pv1.x * pv2.z,
+			pv1.x * pv2.y - pv1.y * pv2.x,
+		);
+	}
 }
 
 export class RenderVertex3D extends Vertex3D implements IRenderVertex {
