@@ -72,16 +72,16 @@ export class HitCircle extends HitObject {
 		}
 
 		const c = new Vertex3D(this.center.x, this.center.y, 0.0);
-		const dist = pball.pos.clone().sub(c);    // relative ball position
+		const dist = pball.pos!.clone().sub(c);    // relative ball position
 		const dv = pball.vel;
 
-		const capsule3D = (!lateral && pball.pos.z > this.hitBBox.zhigh);
+		const capsule3D = (!lateral && pball.pos!.z > this.hitBBox.zhigh);
 
 		let targetRadius: number;
 		if (capsule3D) {
 			targetRadius = this.radius * (13.0 / 5.0);
 			c.z = this.hitBBox.zhigh - this.radius * (12.0 / 5.0);
-			dist.z = pball.pos.z - c.z;                          // ball rolling point - capsule center height
+			dist.z = pball.pos!.z - c.z;                          // ball rolling point - capsule center height
 
 		} else {
 			targetRadius = this.radius;
@@ -146,9 +146,7 @@ export class HitCircle extends HitObject {
 			if (!sol) {
 				return -1.0;
 			}
-			const time1 = sol[0];
-			const time2 = sol[1];
-
+			const [time1, time2] = sol;
 			bUnhit = (time1 * time2 < 0);
 			hittime = bUnhit ? Math.max(time1, time2) : Math.min(time1, time2); // ball is inside the circle
 		}
@@ -157,7 +155,7 @@ export class HitCircle extends HitObject {
 			return -1.0; // contact out of physics frame
 		}
 
-		const hitz = pball.pos.z + pball.vel.z * hittime; // rolling point
+		const hitz = pball.pos!.z + pball.vel.z * hittime; // rolling point
 
 		if (((hitz + pball.radius * 0.5) < this.hitBBox.zlow)
 			|| (!capsule3D && (hitz - pball.radius * 0.5) > this.hitBBox.zhigh)
@@ -165,8 +163,8 @@ export class HitCircle extends HitObject {
 			return -1.0;
 		}
 
-		const hitx = pball.pos.x + pball.vel.x * hittime;
-		const hity = pball.pos.y + pball.vel.y * hittime;
+		const hitx = pball.pos!.x + pball.vel.x * hittime;
+		const hity = pball.pos!.y + pball.vel.y * hittime;
 
 		const sqrlen = (hitx - c.x) * (hitx - c.x) + (hity - c.y) * (hity - c.y);
 

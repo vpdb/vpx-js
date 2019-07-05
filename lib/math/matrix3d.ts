@@ -54,11 +54,12 @@ export class Matrix3D {
 		];
 	}
 
-	public setIdentity() {
+	public setIdentity(): this {
 		this._11 = this._22 = this._33 = this._44 = 1.0;
 		this._12 = this._13 = this._14 = this._41 =
 		this._21 = this._23 = this._24 = this._42 =
 		this._31 = this._32 = this._34 = this._43 = 0.0;
+		return this;
 	}
 
 	public setTranslation(tx: number, ty: number, tz: number) {
@@ -123,6 +124,14 @@ export class Matrix3D {
 		return this;
 	}
 
+	public multiplyScalar(scalar: number) {
+		for (let i = 0; i < 3; ++i) {
+			for (let l = 0; l < 3; ++l) {
+				this.matrix[i][l] *= scalar;
+			}
+		}
+	}
+
 	public preMultiply(a: Matrix3D): this {
 		Object.assign(this.matrix, Matrix3D.multiplyMatrices(a, this).matrix);
 		return this;
@@ -182,6 +191,46 @@ export class Matrix3D {
 			this.matrix[3][i] = clone.matrix[i][3];
 		}
 		return this;
+	}
+
+	public createSkewSymmetric(pv3D: Vertex3D) {
+		this.matrix[0][0] = 0;
+		this.matrix[0][1] = -pv3D.z;
+		this.matrix[0][2] = pv3D.y;
+		this.matrix[1][0] = pv3D.z;
+		this.matrix[1][1] = 0;
+		this.matrix[1][2] = -pv3D.x;
+		this.matrix[2][0] = -pv3D.y;
+		this.matrix[2][1] = pv3D.x;
+		this.matrix[2][2] = 0;
+	}
+
+	public addMatrix(pmat1: Matrix3D, pmat2: Matrix3D) {
+		for (let i = 0; i < 3; ++i) {
+			for (let l = 0; l < 3; ++l) {
+				this.matrix[i][l] = pmat1.matrix[i][l] + pmat2.matrix[i][l];
+			}
+		}
+	}
+
+	public orthoNormalize() {
+		const vX = new Vertex3D(this.matrix[0][0], this.matrix[1][0], this.matrix[2][0]);
+		let vY = new Vertex3D(this.matrix[0][1], this.matrix[1][1], this.matrix[2][1]);
+		const vZ = Vertex3D.crossProduct(vX, vY);
+		vX.normalize();
+		vZ.normalize();
+		vY = Vertex3D.crossProduct(vZ, vX);
+		//vY.Normalize(); // not needed
+
+		this.matrix[0][0] = vX.x;
+		this.matrix[0][1] = vY.x;
+		this.matrix[0][2] = vZ.x;
+		this.matrix[1][0] = vX.y;
+		this.matrix[1][1] = vY.y;
+		this.matrix[1][2] = vZ.y;
+		this.matrix[2][0] = vX.z;
+		this.matrix[2][1] = vY.z;
+		this.matrix[2][2] = vZ.z;
 	}
 
 	public toRightHanded(): Matrix3D {

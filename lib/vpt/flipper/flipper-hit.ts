@@ -91,13 +91,13 @@ export class FlipperHit extends HitObject {
 		return CollisionType.Flipper;
 	}
 
+	// tslint:disable-next-line:no-empty
 	public Collide(coll: CollisionEvent): void {
-
 	}
 
-	public Contact(coll: CollisionEvent, dtime: number): void {
-
-	}
+	// public Contact(coll: CollisionEvent, dtime: number): void {
+	//
+	// }
 
 	public CalcHitBBox(): void {
 		// Allow roundoff
@@ -129,7 +129,8 @@ export class FlipperHit extends HitObject {
 	}
 
 	public HitTestFlipperFace(pball: Ball, dtime: number, coll: CollisionEvent, face1: boolean): number {
-
+		// TODO
+		return 0;
 	}
 
 	public HitTestFlipperEnd(pball: Ball, dtime: number, coll: CollisionEvent): number {
@@ -147,8 +148,8 @@ export class FlipperHit extends HitObject {
 
 		const ballrEndr = feRadius + ballr; // magnititude of (ball - flipperEnd)
 
-		const ballx = pball.pos.x;
-		const bally = pball.pos.y;
+		const ballx = pball.pos!.x;
+		const bally = pball.pos!.y;
 
 		const ballvx = pball.vel.x;
 		const ballvy = pball.vel.y;
@@ -254,7 +255,7 @@ export class FlipperHit extends HitObject {
 		}
 
 		// here ball and flipper end are in contact .. well in most cases, near and embedded solutions need calculations
-		const hitz = pball.pos.z + pball.vel.z * t; // check for a hole, relative to ball rolling point at hittime
+		const hitz = pball.pos!.z + pball.vel.z * t; // check for a hole, relative to ball rolling point at hittime
 
 		if ((hitz + ballr * 0.5) < this.hitBBox.zlow		//check limits of object's height and depth
 			|| (hitz - ballr * 0.5) > this.hitBBox.zhigh) {
@@ -270,8 +271,8 @@ export class FlipperHit extends HitObject {
 		coll.hitNormal.z = 0.0;
 
 		const dist = new Vertex2D(
-			pball.pos.x + ballvx * t - ballr * coll.hitNormal.x - this.flipperMover.hitCircleBase.center.x, // vector from base to flipperEnd plus the projected End radius
-			pball.pos.y + ballvy * t - ballr * coll.hitNormal.y - this.flipperMover.hitCircleBase.center.y);
+			pball.pos!.x + ballvx * t - ballr * coll.hitNormal.x - this.flipperMover.hitCircleBase.center.x, // vector from base to flipperEnd plus the projected End radius
+			pball.pos!.y + ballvy * t - ballr * coll.hitNormal.y - this.flipperMover.hitCircleBase.center.y);
 
 		const distance = Math.sqrt(dist.x * dist.x + dist.y * dist.y); // distance from base center to contact point
 

@@ -80,9 +80,9 @@ export abstract class HitObject {
 		if (this.obj && this.fe && this.isEnabled) {
 
 			// is this the same place as last event? if same then ignore it
-			const distLs = (pball.eventPos.clone().sub(pball.pos)).lengthSq();
+			const distLs = (pball.eventPos.clone().sub(pball.pos!)).lengthSq();
 
-			pball.eventPos = pball.pos;    //remember last collide position
+			pball.eventPos = pball.pos!;    //remember last collide position
 
 			// hit targets when used with a captured ball have always a too small distance
 			const normalDist = (this.objType === CollisionType.HitTarget) ? 0.0 : 0.25; //!! magic distance
