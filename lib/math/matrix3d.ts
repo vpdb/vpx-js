@@ -62,11 +62,12 @@ export class Matrix3D {
 		return this;
 	}
 
-	public setTranslation(tx: number, ty: number, tz: number) {
+	public setTranslation(tx: number, ty: number, tz: number): this {
 		this.setIdentity();
 		this._41 = tx;
 		this._42 = ty;
 		this._43 = tz;
+		return this;
 	}
 
 	public setScaling(sx: number, sy: number, sz: number) {
@@ -90,11 +91,12 @@ export class Matrix3D {
 		this._13 = -this._31;
 	}
 
-	public rotateZMatrix(z: number) {
+	public rotateZMatrix(z: number): this {
 		this.setIdentity();
 		this._11 = this._22 = Math.cos(f4(z));
 		this._12 = Math.sin(f4(z));
 		this._21 = -this._12;
+		return this;
 	}
 
 	public multiplyVector(v: Vertex3D): Vertex3D {

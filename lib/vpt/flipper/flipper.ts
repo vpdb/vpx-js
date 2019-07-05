@@ -87,13 +87,9 @@ export class Flipper extends GameItem implements IRenderable {
 	}
 
 	public getDynamicMatrix(rotation: number = 0) {
-		const matTrafo = new Matrix3D();
-		matTrafo.setIdentity();
-		matTrafo._41 = this.data.center.x;
-		matTrafo._42 = this.data.center.y;
-		const matTemp = new Matrix3D();
-		matTemp.rotateZMatrix(rotation);
-		matTrafo.multiply(matTemp, matTrafo);
-		return matTrafo;
+		const matToOrigin = new Matrix3D().setTranslation(-this.data.center.x, -this.data.center.y, 0);
+		const matFromOrigin = new Matrix3D().setTranslation(this.data.center.x, this.data.center.y, 0);
+		const matRotate = new Matrix3D().rotateZMatrix(degToRad(rotation));
+		return matToOrigin.multiply(matRotate).multiply(matFromOrigin);
 	}
 }
