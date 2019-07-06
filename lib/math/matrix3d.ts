@@ -19,6 +19,7 @@
 
 import { f4, fr } from './float';
 import { Vertex3D } from './vertex3d';
+import { Matrix4 } from 'three';
 
 /**
  * Three's Matrix4.multiply() gives different results than VPinball's. Duh.
@@ -239,6 +240,17 @@ export class Matrix3D {
 		const tempMat = new Matrix3D();
 		tempMat.setScaling(1, 1, -1);
 		return this.clone().multiply(tempMat);
+	}
+
+	public toThreeMatrix4(): Matrix4 {
+		const matrix = new Matrix4();
+		matrix.set(
+			this._11, this._21, this._31, this._41,
+			this._12, this._22, this._32, this._42,
+			this._13, this._23, this._33, this._43,
+			this._14, this._24, this._34, this._44,
+		);
+		return matrix;
 	}
 
 	private static multiplyMatrices(a: Matrix3D, b: Matrix3D): Matrix3D {

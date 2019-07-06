@@ -1,5 +1,5 @@
-import { Vertex3D } from '../math/vertex3d';
 import { degToRad } from '../math/float';
+import { Vertex3D } from '../math/vertex3d';
 
 export class Player {
 
@@ -12,6 +12,11 @@ export class Player {
 			Player.instance = new Player();
 		}
 		return Player.instance;
+	}
+
+	// tslint:disable-next-line:no-empty
+	public PhysicsSimulateCycle(dtime: number) {
+
 	}
 
 	public setGravity(slopeDeg: number, strength: number): void {
