@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Matrix4 } from 'three';
 import { Storage } from '../..';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
@@ -25,9 +26,8 @@ import { Table } from '../table';
 import { FlipperData } from './flipper-data';
 import { FlipperMesh } from './flipper-mesh';
 import { FlipperState } from './flipper-state';
-import { Matrix4 } from 'three';
-import { Vertex2D } from '../../math/vertex2d';
-import { Material } from '../material';
+import { FlipperMover } from './flipper-mover';
+import { FlipperHit } from './flipper-hit';
 
 /**
  * VPinball's flippers
@@ -38,23 +38,25 @@ export class Flipper extends GameItem implements IRenderable {
 
 	private readonly data: FlipperData;
 	private readonly mesh: FlipperMesh;
+	public readonly hit: FlipperHit;
 	private state: FlipperState;
 
-	public static async fromStorage(storage: Storage, itemName: string): Promise<Flipper> {
+	public static async fromStorage(storage: Storage, itemName: string, table: Table): Promise<Flipper> {
 		const data = await FlipperData.fromStorage(storage, itemName);
-		return new Flipper(itemName, data);
+		return new Flipper(itemName, data, table);
 	}
 
-	public static fromSerialized(itemName: string, blob: { [key: string]: any }): Flipper {
+	public static fromSerialized(itemName: string, blob: { [key: string]: any }, table: Table): Flipper {
 		const data = FlipperData.fromSerialized(itemName, blob.data);
-		return new Flipper(itemName, data);
+		return new Flipper(itemName, data, table);
 	}
 
-	public constructor(itemName: string, data: FlipperData) {
+	public constructor(itemName: string, data: FlipperData, table: Table) {
 		super(itemName);
 		this.data = data;
 		this.mesh = new FlipperMesh();
 		this.state = new FlipperState(data.startAngle);
+		this.hit = FlipperHit.getInstance(data, table);
 	}
 
 	public isVisible(): boolean {
@@ -86,6 +88,16 @@ export class Flipper extends GameItem implements IRenderable {
 			};
 		}
 		return meshes;
+	}
+
+	public rotateToEnd(): void { // power stroke to hit ball, key/button down/pressed
+		this.hit.flipperMover.enableRotateEvent = 1;
+		this.hit.flipperMover.setSolenoidState(true);
+	}
+
+	public rotateToStart() { // return to park, key/button up/released
+		this.hit.flipperMover.enableRotateEvent = -1;
+		this.hit.flipperMover.setSolenoidState(false);
 	}
 
 	public getMatrix(rotation: number = this.data.startAngle): Matrix3D {

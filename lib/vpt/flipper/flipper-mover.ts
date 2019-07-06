@@ -25,6 +25,9 @@ import { HitCircle } from '../../physics/hit-circle';
 import { MoverObject } from '../../physics/mover-object';
 import { GameData } from '../game-data';
 import { FlipperData } from './flipper-data';
+import { Table } from '../table';
+import { Player } from '../../game/player';
+import { FlipperState } from './flipper-state';
 
 export class FlipperMover implements MoverObject {
 
@@ -51,7 +54,7 @@ export class FlipperMover implements MoverObject {
 
 	private zeroAngNorm: Vertex2D = new Vertex2D(); // base norms at zero degrees
 
-	private enableRotateEvent: number; // -1,0,1
+	public enableRotateEvent: number; // -1,0,1
 
 	private direction: boolean;
 
@@ -60,6 +63,7 @@ export class FlipperMover implements MoverObject {
 
 	public isEnabled: boolean = false;
 	public lastHitFace: boolean;
+	private player!: Player;
 
 	constructor(center: Vertex2D, baseRadius: number, endRadius: number, flipperRadius: number, angleStart: number, angleEnd: number, zLow: number, zHigh: number, flipperData: FlipperData, tableData: GameData) {
 
@@ -100,7 +104,10 @@ export class FlipperMover implements MoverObject {
 
 		this.zeroAngNorm.x =  Math.sqrt(1.0 - ratio * ratio); // F2 Norm, used in Green's transform, in FPM time search  // =  sinf(faceNormOffset)
 		this.zeroAngNorm.y = -ratio;                   // F1 norm, change sign of x component, i.e -zeroAngNorm.x // = -cosf(faceNormOffset)
+	}
 
+	public setPlayer(player: Player) {
+		this.player = player;
 	}
 
 	public updateDisplacements(dtime: number): void {
@@ -148,6 +155,7 @@ export class FlipperMover implements MoverObject {
 			}
 			this.enableRotateEvent = 0;
 		}
+		this.player.changeState(this.flipperData.getName(), new FlipperState(this.angleCur));
 	}
 
 	public updateVelocities(): void {

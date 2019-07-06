@@ -28,7 +28,7 @@ export class FlipperData extends GameItem {
 
 	public baseRadius: number = 21.5;
 	public endRadius: number = 13.0;
-	public flipperRadiusMin?: number;
+	public flipperRadiusMin!: number;
 	public flipperRadiusMax: number = 130.0;
 	public flipperRadius: number = 130.0;
 
