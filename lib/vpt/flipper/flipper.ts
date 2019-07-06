@@ -24,6 +24,8 @@ import { GameItem, IRenderable, Meshes } from '../game-item';
 import { Table } from '../table';
 import { FlipperData } from './flipper-data';
 import { FlipperMesh } from './flipper-mesh';
+import { FlipperState } from './flipper-state';
+import { Matrix4 } from 'three';
 
 /**
  * VPinball's flippers
@@ -34,6 +36,7 @@ export class Flipper extends GameItem implements IRenderable {
 
 	private readonly data: FlipperData;
 	private readonly mesh: FlipperMesh;
+	private state: FlipperState;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Flipper> {
 		const data = await FlipperData.fromStorage(storage, itemName);
@@ -44,6 +47,7 @@ export class Flipper extends GameItem implements IRenderable {
 		super(itemName);
 		this.data = data;
 		this.mesh = new FlipperMesh();
+		this.state = new FlipperState(data.startAngle);
 	}
 
 	public isVisible(): boolean {
@@ -86,7 +90,16 @@ export class Flipper extends GameItem implements IRenderable {
 		return trafoMatrix;
 	}
 
-	public getDynamicMatrix(rotation: number = 0) {
+	public updateState(state: FlipperState): Matrix4 | undefined {
+		if (state.equals(this.state)) {
+			return;
+		}
+		const matrix = this.getRotationMatrix(state.angle - this.state.angle);
+		this.state = state;
+		return matrix.toThreeMatrix4();
+	}
+
+	private getRotationMatrix(rotation: number = 0): Matrix3D {
 		const matToOrigin = new Matrix3D().setTranslation(-this.data.center.x, -this.data.center.y, 0);
 		const matFromOrigin = new Matrix3D().setTranslation(this.data.center.x, this.data.center.y, 0);
 		const matRotate = new Matrix3D().rotateZMatrix(degToRad(rotation));
