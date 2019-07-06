@@ -138,6 +138,21 @@ export class GameData extends BiffParser {
 		return gameData;
 	}
 
+	public static fromSerialized(blob: { [key: string]: any }): GameData {
+		const data = new GameData();
+
+		// primitives
+		for (const key of Object.keys(blob)) {
+			(data as any)[key] = blob[key];
+		}
+
+		// objects
+		data.offset = new Vertex2D(blob.offset._x, blob.offset._y);
+		data.materials = blob.materials.map((m: any) => Material.fromSerialized(m));
+
+		return data;
+	}
+
 	private constructor() {
 		super();
 	}

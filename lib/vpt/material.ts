@@ -86,6 +86,17 @@ export class Material {
 		return material;
 	}
 
+	public static fromSerialized(blob: { [key: string]: any }): Material {
+		const material = new Material();
+
+		// primitives
+		for (const key of Object.keys(blob)) {
+			(material as any)[key] = blob[key];
+		}
+
+		return material;
+	}
+
 	public physUpdate(savePhysMat: SavePhysicsMaterial) {
 		this.fElasticity = savePhysMat.fElasticity;
 		this.fElasticityFalloff = savePhysMat.fElasticityFallOff;

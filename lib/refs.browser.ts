@@ -4,4 +4,6 @@ export { loadImage, getRawImage, streamImage, BrowserImage as Image } from './gl
 export { exportGltf } from './gltf/export-gltf.browser';
 
 // polyfills
-(window as any).Buffer = require('buffer/').Buffer;
+if (typeof(window) !== 'undefined') {
+	(window as any).Buffer = require('buffer/').Buffer;
+}
