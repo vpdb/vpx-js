@@ -20,6 +20,7 @@
 import { FRect3D } from '../math/frect3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
+import { CollisionType } from './collision-type';
 import { IFireEvents } from './events';
 import { MoverObject } from './mover-object';
 

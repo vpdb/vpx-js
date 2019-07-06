@@ -1,22 +1,51 @@
+import { Table } from '..';
 import { degToRad } from '../math/float';
 import { Vertex3D } from '../math/vertex3d';
+import { MoverObject } from '../physics/mover-object';
 
 export class Player {
 
-	private static instance: Player;
-
 	public gravity = new Vertex3D();
+	private readonly table: Table;
+	private readonly movers: MoverObject[];
+	private stateCallback?: (name: string, state: any) => void;
 
-	public static getInstance(): Player {
-		if (!Player.instance) {
-			Player.instance = new Player();
+	constructor(table: Table) {
+		this.table = table;
+		this.movers = [];
+		for (const flipperName of Object.keys(table.flippers)) {
+			const flipper = table.flippers[flipperName];
+			flipper.hit.flipperMover.setPlayer(this);
+			this.movers.push(flipper.hit.flipperMover);
 		}
-		return Player.instance;
 	}
 
-	// tslint:disable-next-line:no-empty
-	public PhysicsSimulateCycle(dtime: number) {
+	public setOnStateChanged(callback: (name: string, state: any) => void): void {
+		this.stateCallback = callback;
+	}
 
+	public changeState(name: string, state: any) {
+		if (this.stateCallback) {
+			this.stateCallback(name, state);
+		}
+	}
+
+	public physicsSimulateCycle(dtime: number) {
+		while (dtime > 0) {
+			const hittime = dtime;
+
+			for (const mover of this.movers) {
+				mover.updateDisplacements(hittime);
+			}
+
+			dtime -= hittime;
+		}
+	}
+
+	public updatePhysics() {
+		for (const mover of this.movers) {
+			mover.updateVelocities();
+		}
 	}
 
 	public setGravity(slopeDeg: number, strength: number): void {

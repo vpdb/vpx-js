@@ -22,6 +22,7 @@ import { Vertex2D } from '../math/vertex2d';
 import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
+import { CollisionType } from './collision-type';
 import { C_CONTACTVEL, C_LOWNORMVEL, PHYS_TOUCH } from './constants';
 import { HitObject } from './hit-object';
 import { MoverObject } from './mover-object';

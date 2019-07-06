@@ -22,6 +22,7 @@ import { clamp, solveQuadraticEq } from '../../math/functions';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
+import { CollisionType } from '../../physics/collision-type';
 import {
 	C_CONTACTVEL,
 	C_DISP_GAIN,
@@ -42,6 +43,7 @@ import { BallMover } from './ball-mover';
 
 export class Ball extends HitObject {
 
+	private readonly player: Player;
 	private readonly tableData: GameData;
 	private color = 0xffffff;
 
@@ -93,10 +95,13 @@ export class Ball extends HitObject {
 	private visible = true;
 	private decalMode?: boolean;
 
-	private static ballID: number; // increased for each ball created to have an unique ID for scripts for each ball
+	private static ballID: number;
 
-	constructor(tableData: GameData) {
+	// increased for each ball created to have an unique ID for scripts for each ball
+
+	constructor(player: Player, tableData: GameData) {
 		super();
+		this.player = player;
 		this.tableData = tableData;
 		this.id = Ball.ballID;
 		Ball.ballID++;
@@ -467,7 +472,7 @@ export class Ball extends HitObject {
 		const surfVel = this.SurfaceVelocity(surfP);
 		const slip = surfVel.clone().sub(hitnormal.clone().multiplyScalar(surfVel.dot(hitnormal)));       // calc the tangential slip velocity
 
-		const maxFric = fricCoeff * this.mass * - Player.getInstance().gravity.dot(hitnormal);
+		const maxFric = fricCoeff * this.mass * - this.player.gravity.dot(hitnormal);
 
 		const slipspeed = slip.length();
 		let slipDir: Vertex3D;
@@ -513,7 +518,7 @@ export class Ball extends HitObject {
 
 		// If some collision has changed the ball's velocity, we may not have to do anything.
 		if (normVel <= C_CONTACTVEL) {
-			const fe = Player.getInstance().gravity.clone().multiplyScalar(this.mass);   // external forces (only gravity for now)
+			const fe = this.player.gravity.clone().multiplyScalar(this.mass);   // external forces (only gravity for now)
 			const dot = fe.dot(coll.hitNormal!);
 			const normalForce = Math.max(0.0, -(dot * dtime + coll.hitOrgNormalVelocity!)); // normal force is always nonnegative
 

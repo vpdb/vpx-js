@@ -1,4 +1,4 @@
-enum CollisionType {
+export enum CollisionType {
 	Null = 'eNull',
 	Point = 'ePoint',
 	LineSeg = 'eLineSeg',

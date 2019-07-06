@@ -21,24 +21,49 @@ import { degToRad } from '../../math/float';
 import { Vertex2D } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
+import { CollisionType } from '../../physics/collision-type';
 import { C_CONTACTVEL, C_INTERATIONS, C_PRECISION, PHYS_TOUCH } from '../../physics/constants';
 import { HitObject } from '../../physics/hit-object';
 import { MoverObject } from '../../physics/mover-object';
 import { Ball } from '../ball/ball';
 import { GameData } from '../game-data';
+import { Table } from '../table';
 import { FlipperData } from './flipper-data';
 import { FlipperMover } from './flipper-mover';
 
 export class FlipperHit extends HitObject {
 
-	private readonly flipperMover: FlipperMover;
+	public readonly flipperMover: FlipperMover;
 	private readonly flipperData: FlipperData;
 	private readonly tableData: GameData;
 	private lastHitTime: number = 0;
 
+	public static getInstance(flipperData: FlipperData, table: Table): FlipperHit {
+		const height = table.getSurfaceHeight(flipperData.szSurface, flipperData.center.x, flipperData.center.y);
+		if (flipperData.flipperRadiusMin > 0 && flipperData.flipperRadiusMax > flipperData.flipperRadiusMin) {
+			flipperData.flipperRadius = flipperData.flipperRadiusMax - (flipperData.flipperRadiusMax - flipperData.flipperRadiusMin) /* m_ptable->m_globalDifficulty*/;
+			flipperData.flipperRadius = Math.max(flipperData.flipperRadius, flipperData.baseRadius - flipperData.endRadius + 0.05);
+		} else {
+			flipperData.flipperRadius = flipperData.flipperRadiusMax;
+		}
+		return new FlipperHit(
+			flipperData.center,
+			Math.max(flipperData.baseRadius, 0.01),
+			Math.max(flipperData.endRadius, 0.01),
+			Math.max(flipperData.flipperRadius, 0.01),
+			degToRad(flipperData.startAngle),
+			degToRad(flipperData.endAngle),
+			height,
+			height + flipperData.height,
+			flipperData,
+			table.gameData!,
+		);
+	}
+
 	constructor(center: Vertex2D, baser: number, endr: number, flipr: number, angleStart: number, angleEnd: number, zlow: number, zhigh: number, data: FlipperData, tableData: GameData) {
 		super();
 		this.flipperMover = new FlipperMover(center, baser, endr, flipr, angleStart, angleEnd, zlow, zhigh, data, tableData);
+		this.flipperMover.isEnabled = data.fEnabled;
 		this.flipperData = data;
 		this.tableData = tableData;
 		this.UpdatePhysicsFromFlipper();
