@@ -45,6 +45,7 @@ import { TextBoxItem } from './textbox-item';
 import { Texture } from './texture';
 import { TimerItem } from './timer-item';
 import { TriggerItem } from './trigger-item';
+import { Vertex2D } from '../math/vertex2d';
 
 /**
  * A Visual Pinball table.
@@ -83,6 +84,16 @@ export class Table implements IRenderable {
 		await vpTable._load(reader, opts || {});
 		logger().info('[Table.load] Table loaded in %sms.', Date.now() - then);
 		return vpTable;
+	}
+
+	public static fromSerialized(blob: { [key: string]: any }): Table {
+		const table = new Table();
+
+		table.gameData = GameData.fromSerialized(blob.gameData);
+		for (const name of Object.keys(blob.flippers)) {
+			table.flippers[name] = Flipper.fromSerialized(blob.flippers[name].data.itemName, blob.flippers[name]);
+		}
+		return table;
 	}
 
 	public getName(): string {

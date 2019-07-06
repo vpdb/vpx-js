@@ -26,6 +26,8 @@ import { FlipperData } from './flipper-data';
 import { FlipperMesh } from './flipper-mesh';
 import { FlipperState } from './flipper-state';
 import { Matrix4 } from 'three';
+import { Vertex2D } from '../../math/vertex2d';
+import { Material } from '../material';
 
 /**
  * VPinball's flippers
@@ -40,6 +42,11 @@ export class Flipper extends GameItem implements IRenderable {
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Flipper> {
 		const data = await FlipperData.fromStorage(storage, itemName);
+		return new Flipper(itemName, data);
+	}
+
+	public static fromSerialized(itemName: string, blob: { [key: string]: any }): Flipper {
+		const data = FlipperData.fromSerialized(itemName, blob.data);
 		return new Flipper(itemName, data);
 	}
 
