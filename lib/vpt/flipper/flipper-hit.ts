@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
 import { Vertex2D } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
@@ -28,6 +29,7 @@ import { MoverObject } from '../../physics/mover-object';
 import { Ball } from '../ball/ball';
 import { GameData } from '../game-data';
 import { Table } from '../table';
+import { FlipperConfig } from './flipper';
 import { FlipperData } from './flipper-data';
 import { FlipperMover } from './flipper-mover';
 
@@ -38,7 +40,7 @@ export class FlipperHit extends HitObject {
 	private readonly tableData: GameData;
 	private lastHitTime: number = 0;
 
-	public static getInstance(flipperData: FlipperData, table: Table): FlipperHit {
+	public static getInstance(flipperData: FlipperData, player: Player, table: Table): FlipperHit {
 		const height = table.getSurfaceHeight(flipperData.szSurface, flipperData.center.x, flipperData.center.y);
 		if (flipperData.flipperRadiusMin > 0 && flipperData.flipperRadiusMax > flipperData.flipperRadiusMin) {
 			flipperData.flipperRadius = flipperData.flipperRadiusMax - (flipperData.flipperRadiusMax - flipperData.flipperRadiusMin) /* m_ptable->m_globalDifficulty*/;
@@ -46,23 +48,25 @@ export class FlipperHit extends HitObject {
 		} else {
 			flipperData.flipperRadius = flipperData.flipperRadiusMax;
 		}
-		return new FlipperHit(
-			flipperData.center,
-			Math.max(flipperData.baseRadius, 0.01),
-			Math.max(flipperData.endRadius, 0.01),
-			Math.max(flipperData.flipperRadius, 0.01),
-			degToRad(flipperData.startAngle),
-			degToRad(flipperData.endAngle),
-			height,
-			height + flipperData.height,
+		return new FlipperHit({
+				center: flipperData.center,
+				baseRadius: Math.max(flipperData.baseRadius, 0.01),
+				endRadius: Math.max(flipperData.endRadius, 0.01),
+				flipperRadius: Math.max(flipperData.flipperRadius, 0.01),
+				angleStart: degToRad(flipperData.startAngle),
+				angleEnd: degToRad(flipperData.endAngle),
+				zLow: height,
+				zHigh: height + flipperData.height,
+			},
 			flipperData,
+			player,
 			table.gameData!,
 		);
 	}
 
-	constructor(center: Vertex2D, baser: number, endr: number, flipr: number, angleStart: number, angleEnd: number, zlow: number, zhigh: number, data: FlipperData, tableData: GameData) {
+	constructor(config: FlipperConfig, data: FlipperData, player: Player, tableData: GameData) {
 		super();
-		this.flipperMover = new FlipperMover(center, baser, endr, flipr, angleStart, angleEnd, zlow, zhigh, data, tableData);
+		this.flipperMover = new FlipperMover(config, data, player, tableData);
 		this.flipperMover.isEnabled = data.fEnabled;
 		this.flipperData = data;
 		this.tableData = tableData;

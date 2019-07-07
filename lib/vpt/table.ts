@@ -45,6 +45,7 @@ import { TextBoxItem } from './textbox-item';
 import { Texture } from './texture';
 import { TimerItem } from './timer-item';
 import { TriggerItem } from './trigger-item';
+import { Player } from '../game/player';
 
 /**
  * A Visual Pinball table.
@@ -92,6 +93,14 @@ export class Table implements IRenderable {
 			table.flippers[name] = Flipper.fromSerialized(blob.flippers[name].data.itemName, blob.flippers[name], table);
 		}
 		return table;
+	}
+
+	public setupPlayer(player: Player) {
+		for (const flipperName of Object.keys(this.flippers)) {
+			const flipper = this.flippers[flipperName];
+			flipper.setupPlayer(player, this);
+			player.addMover(flipper.getMover());
+		}
 	}
 
 	public getName(): string {
