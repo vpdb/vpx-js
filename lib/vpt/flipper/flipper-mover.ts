@@ -145,12 +145,14 @@ export class FlipperMover implements MoverObject {
 			this.angleSpeed = this.angularMomentum / this.inertia;
 
 			if (this.enableRotateEvent > 0) {
+				console.log('[%s] Flipper is up', this.flipperData.getName());
 				// this.m_pflipper->FireVoidEventParm(DISPID_LimitEvents_EOS, anglespd); // send EOS event
 				//
 				// g_pplayer->this.m_pininput.this.m_leftkey_down_usec_EOS = usec(); // debug only
 				// g_pplayer->this.m_pininput.this.m_leftkey_down_frame_EOS = g_pplayer->this.m_overall_frames;
 
 			} else if (this.enableRotateEvent < 0) {
+				console.log('[%s] Flipper is down', this.flipperData.getName());
 				// this.m_pflipper->FireVoidEventParm(DISPID_LimitEvents_BOS, anglespd); // send Beginning of Stroke/Park event
 			}
 			this.enableRotateEvent = 0;

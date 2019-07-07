@@ -52,7 +52,7 @@ describe('The VPinball flipper physics', () => {
 		player.setOnStateChanged(callback);
 
 		flipper.rotateToEnd();
-		simulateCycles(player, 500);
+		simulateCycles(player, 25);
 
 		expect(flipperMover.angleCur).to.equal(endAngleRad);
 		expect(callback).to.have.been.calledWith('FlipperR', new FlipperState(endAngleRad));
@@ -66,14 +66,14 @@ describe('The VPinball flipper physics', () => {
 
 		// move up
 		flipper.rotateToEnd();
-		simulateCycles(player, 500);
+		simulateCycles(player, 25); // hit at 17.012061224193429107ms (at 1000fps)
 
 		const callback = spy();
 		player.setOnStateChanged(callback);
 
 		// move down again
 		flipper.rotateToStart();
-		simulateCycles(player, 500);
+		simulateCycles(player, 80);
 
 		expect(flipperMover.angleCur).to.equal(startAngleRad);
 		expect(callback).to.have.been.calledWith('FlipperR', new FlipperState(startAngleRad));
