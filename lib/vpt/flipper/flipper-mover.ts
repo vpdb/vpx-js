@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Player } from '../../game/player';
 import { degToRad, radToDeg } from '../../math/float';
 import { Vertex2D } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
@@ -24,9 +25,8 @@ import { PHYS_FACTOR } from '../../physics/constants';
 import { HitCircle } from '../../physics/hit-circle';
 import { MoverObject } from '../../physics/mover-object';
 import { GameData } from '../game-data';
+import { FlipperConfig } from './flipper';
 import { FlipperData } from './flipper-data';
-import { Table } from '../table';
-import { Player } from '../../game/player';
 import { FlipperState } from './flipper-state';
 
 export class FlipperMover implements MoverObject {
@@ -65,49 +65,46 @@ export class FlipperMover implements MoverObject {
 	public lastHitFace: boolean;
 	private player!: Player;
 
-	constructor(center: Vertex2D, baseRadius: number, endRadius: number, flipperRadius: number, angleStart: number, angleEnd: number, zLow: number, zHigh: number, flipperData: FlipperData, tableData: GameData) {
+	constructor(config: FlipperConfig, flipperData: FlipperData, player: Player, tableData: GameData) {
 
-		this.hitCircleBase = new HitCircle(center, baseRadius, zLow, zHigh);
+		this.hitCircleBase = new HitCircle(config.center, config.baseRadius, config.zLow, config.zHigh);
 		this.flipperData = flipperData;
 		this.tableData = tableData;
+		this.player = player;
 
-		this.endRadius = endRadius;         // radius of flipper end
-		this.flipperRadius = flipperRadius;    // radius of flipper arc, center-to-center radius
+		this.endRadius = config.endRadius;         // radius of flipper end
+		this.flipperRadius = config.flipperRadius;    // radius of flipper arc, center-to-center radius
 
-		if (angleEnd === angleStart) { // otherwise hangs forever in collisions/updates
-			angleEnd += 0.0001;
+		if (config.angleEnd === config.angleStart) { // otherwise hangs forever in collisions/updates
+			config.angleEnd += 0.0001;
 		}
 
-		this.direction = angleEnd >= angleStart;
+		this.direction = config.angleEnd >= config.angleStart;
 		this.solState = false;
 		this.isInContact = false;
 		this.curTorque = 0.0;
 		this.enableRotateEvent = 0;
 
-		this.angleStart = angleStart;
-		this.angleEnd = angleEnd;
-		this.angleCur = angleStart;
+		this.angleStart = config.angleStart;
+		this.angleEnd = config.angleEnd;
+		this.angleCur = config.angleStart;
 
 		this.angularMomentum = 0;
 		this.angularAcceleration = 0;
 		this.angleSpeed = 0;
 
-		const ratio = (baseRadius - endRadius) / flipperRadius;
+		const ratio = (config.baseRadius - config.endRadius) / config.flipperRadius;
 
 		// model inertia of flipper as that of rod of length flipr around its end
 		const mass = this.flipperData.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics)
 			? this.flipperData.overrideMass!
 			: this.flipperData.mass;
-		this.inertia = (1.0 / 3.0) * mass * (flipperRadius * flipperRadius);
+		this.inertia = (1.0 / 3.0) * mass * (config.flipperRadius * config.flipperRadius);
 
 		this.lastHitFace = false; // used to optimize hit face search order
 
 		this.zeroAngNorm.x =  Math.sqrt(1.0 - ratio * ratio); // F2 Norm, used in Green's transform, in FPM time search  // =  sinf(faceNormOffset)
 		this.zeroAngNorm.y = -ratio;                   // F1 norm, change sign of x component, i.e -zeroAngNorm.x // = -cosf(faceNormOffset)
-	}
-
-	public setPlayer(player: Player) {
-		this.player = player;
 	}
 
 	public updateDisplacements(dtime: number): void {

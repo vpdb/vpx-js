@@ -7,17 +7,12 @@ export class Player {
 
 	public gravity = new Vertex3D();
 	private readonly table: Table;
-	private readonly movers: MoverObject[];
+	private readonly movers: MoverObject[] = [];
 	private stateCallback?: (name: string, state: any) => void;
 
 	constructor(table: Table) {
 		this.table = table;
-		this.movers = [];
-		for (const flipperName of Object.keys(table.flippers)) {
-			const flipper = table.flippers[flipperName];
-			flipper.hit.flipperMover.setPlayer(this);
-			this.movers.push(flipper.hit.flipperMover);
-		}
+		this.table.setupPlayer(this);
 	}
 
 	public setOnStateChanged(callback: (name: string, state: any) => void): void {
@@ -46,6 +41,10 @@ export class Player {
 		for (const mover of this.movers) {
 			mover.updateVelocities();
 		}
+	}
+
+	public addMover(mover: MoverObject) {
+		this.movers.push(mover);
 	}
 
 	public setGravity(slopeDeg: number, strength: number): void {

@@ -19,15 +19,17 @@
 
 import { Matrix4 } from 'three';
 import { Storage } from '../..';
+import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
+import { Vertex2D } from '../../math/vertex2d';
+import { MoverObject } from '../../physics/mover-object';
 import { GameItem, IRenderable, Meshes } from '../game-item';
 import { Table } from '../table';
 import { FlipperData } from './flipper-data';
+import { FlipperHit } from './flipper-hit';
 import { FlipperMesh } from './flipper-mesh';
 import { FlipperState } from './flipper-state';
-import { FlipperMover } from './flipper-mover';
-import { FlipperHit } from './flipper-hit';
 
 /**
  * VPinball's flippers
@@ -38,8 +40,8 @@ export class Flipper extends GameItem implements IRenderable {
 
 	private readonly data: FlipperData;
 	private readonly mesh: FlipperMesh;
-	public readonly hit: FlipperHit;
 	private state: FlipperState;
+	private hit?: FlipperHit;
 
 	public static async fromStorage(storage: Storage, itemName: string, table: Table): Promise<Flipper> {
 		const data = await FlipperData.fromStorage(storage, itemName);
@@ -56,11 +58,18 @@ export class Flipper extends GameItem implements IRenderable {
 		this.data = data;
 		this.mesh = new FlipperMesh();
 		this.state = new FlipperState(data.startAngle);
-		this.hit = FlipperHit.getInstance(data, table);
+	}
+
+	public setupPlayer(player: Player, table: Table) {
+		this.hit = FlipperHit.getInstance(this.data, player, table);
 	}
 
 	public isVisible(): boolean {
 		return this.data.fVisible;
+	}
+
+	public getMover(): MoverObject {
+		return this.hit!.flipperMover;
 	}
 
 	public getName(): string {
@@ -91,22 +100,13 @@ export class Flipper extends GameItem implements IRenderable {
 	}
 
 	public rotateToEnd(): void { // power stroke to hit ball, key/button down/pressed
-		this.hit.flipperMover.enableRotateEvent = 1;
-		this.hit.flipperMover.setSolenoidState(true);
+		this.hit!.flipperMover.enableRotateEvent = 1;
+		this.hit!.flipperMover.setSolenoidState(true);
 	}
 
 	public rotateToStart() { // return to park, key/button up/released
-		this.hit.flipperMover.enableRotateEvent = -1;
-		this.hit.flipperMover.setSolenoidState(false);
-	}
-
-	public getMatrix(rotation: number = this.data.startAngle): Matrix3D {
-		const trafoMatrix = new Matrix3D();
-		const tempMatrix = new Matrix3D();
-		trafoMatrix.setTranslation(this.data.center.x, this.data.center.y, 0);
-		tempMatrix.rotateZMatrix(degToRad(rotation));
-		trafoMatrix.preMultiply(tempMatrix);
-		return trafoMatrix;
+		this.hit!.flipperMover.enableRotateEvent = -1;
+		this.hit!.flipperMover.setSolenoidState(false);
 	}
 
 	public updateState(state: FlipperState): Matrix4 | undefined {
@@ -118,10 +118,30 @@ export class Flipper extends GameItem implements IRenderable {
 		return matrix.toThreeMatrix4();
 	}
 
+	public getMatrix(rotation: number = this.data.startAngle): Matrix3D {
+		const trafoMatrix = new Matrix3D();
+		const tempMatrix = new Matrix3D();
+		trafoMatrix.setTranslation(this.data.center.x, this.data.center.y, 0);
+		tempMatrix.rotateZMatrix(degToRad(rotation));
+		trafoMatrix.preMultiply(tempMatrix);
+		return trafoMatrix;
+	}
+
 	private getRotationMatrix(rotation: number = 0): Matrix3D {
 		const matToOrigin = new Matrix3D().setTranslation(-this.data.center.x, -this.data.center.y, 0);
 		const matFromOrigin = new Matrix3D().setTranslation(this.data.center.x, this.data.center.y, 0);
 		const matRotate = new Matrix3D().rotateZMatrix(degToRad(rotation));
 		return matToOrigin.multiply(matRotate).multiply(matFromOrigin);
 	}
+}
+
+export interface FlipperConfig {
+	center: Vertex2D;
+	baseRadius: number;
+	endRadius: number;
+	flipperRadius: number;
+	angleStart: number;
+	angleEnd: number;
+	zLow: number;
+	zHigh: number;
 }
