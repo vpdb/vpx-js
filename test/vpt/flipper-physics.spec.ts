@@ -52,14 +52,13 @@ describe('The VPinball flipper physics', () => {
 		player.setOnStateChanged(callback);
 
 		flipper.rotateToEnd();
-		player.updatePhysics();
-		player.physicsSimulateCycle(1000);
+		simulateCycles(player, 500);
 
 		expect(flipperMover.angleCur).to.equal(endAngleRad);
 		expect(callback).to.have.been.calledWith('FlipperR', new FlipperState(endAngleRad));
 	});
 
-	it.skip('should move to the start when solenoid is off again', async () => {
+	it('should move to the start when solenoid is off again', async () => {
 
 		const flipper = table.flippers.FlipperR;
 		const flipperMover = flipper.getMover() as FlipperMover;
@@ -67,18 +66,25 @@ describe('The VPinball flipper physics', () => {
 
 		// move up
 		flipper.rotateToEnd();
-		player.updatePhysics();
-		player.physicsSimulateCycle(1000);
+		simulateCycles(player, 500);
 
 		const callback = spy();
 		player.setOnStateChanged(callback);
 
 		// move down again
 		flipper.rotateToStart();
-		player.updatePhysics();
-		player.physicsSimulateCycle(1000);
+		simulateCycles(player, 500);
 
 		expect(flipperMover.angleCur).to.equal(startAngleRad);
 		expect(callback).to.have.been.calledWith('FlipperR', new FlipperState(startAngleRad));
 	});
 });
+
+
+function simulateCycles(player: Player, duration: number, tickDuration = 1) {
+	const numTicks = Math.floor(duration / tickDuration);
+	for (let i = 0; i < numTicks; i++) {
+		player.physicsSimulateCycle(tickDuration);
+		player.updatePhysics();
+	}
+}
