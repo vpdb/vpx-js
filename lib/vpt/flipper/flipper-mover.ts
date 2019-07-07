@@ -123,6 +123,7 @@ export class FlipperMover implements MoverObject {
 		}
 
 		if (Math.abs(this.angleSpeed) < 0.0005) {          // avoids 'jumping balls' when two or more balls held on flipper (and more other balls are in play) //!! make dependent on physics update rate
+			this.changeState(lastAngle);
 			return;
 		}
 

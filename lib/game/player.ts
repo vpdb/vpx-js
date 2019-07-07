@@ -38,7 +38,7 @@ export class Player {
 			// 		hitTime = flipperHitTime;
 			// 	}
 			// }
-			//console.log('updating in %sms (%sms)', hitTime, dtime)
+			// console.log('updating in %sms (%sms)', hitTime, dtime);
 
 			for (const mover of this.movers) {
 				mover.updateDisplacements(hitTime);
