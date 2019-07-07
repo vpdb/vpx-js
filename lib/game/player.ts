@@ -29,16 +29,16 @@ export class Player {
 
 	public physicsSimulateCycle(dtime: number) {
 		while (dtime > 0) {
-			const hitTime = dtime;
+			let hitTime = dtime;
 
 			// find earliest time where a flipper collides with its stop
-			// for (const flipperHit of this.flipperHits) {
-			// 	const flipperHitTime = flipperHit.getHitTime();
-			// 	if (flipperHitTime > 0 && flipperHitTime < hitTime) { //!! >= 0.f causes infinite loop
-			// 		hitTime = flipperHitTime;
-			// 	}
-			// }
-			// console.log('updating in %sms (%sms)', hitTime, dtime);
+			for (const flipperHit of this.flipperHits) {
+				const flipperHitTime = flipperHit.getHitTime();
+				if (flipperHitTime > 0 && flipperHitTime < hitTime) { //!! >= 0.f causes infinite loop
+					hitTime = flipperHitTime;
+				}
+			}
+			//console.log('updating in %sms (%sms)', hitTime, dtime);
 
 			for (const mover of this.movers) {
 				mover.updateDisplacements(hitTime);
