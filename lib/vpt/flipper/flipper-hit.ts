@@ -337,7 +337,7 @@ export class FlipperHit extends HitObject {
 		return t;
 	}
 
-	public GetHitTime(): number {
+	public getHitTime(): number {
 		return this.flipperMover.getHitTime();
 	}
 }
