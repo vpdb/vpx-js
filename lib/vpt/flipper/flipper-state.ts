@@ -20,7 +20,7 @@
 export class FlipperState {
 
 	/**
-	 * Angle in degrees
+	 * Angle in rad
 	 */
 	public readonly angle: number;
 
@@ -30,7 +30,7 @@ export class FlipperState {
 
 	/**
 	 * New flipper state
-	 * @param angle Flipper angle in degrees
+	 * @param angle Flipper angle in rad
 	 */
 	constructor(angle: number) {
 		this.angle = angle;
@@ -43,6 +43,6 @@ export class FlipperState {
 		if (state.angle === this.angle) {
 			return true;
 		}
-		return Math.abs(this.angle - state.angle) < 0.00001;
+		return Math.abs(this.angle - state.angle) < 1e-6;
 	}
 }

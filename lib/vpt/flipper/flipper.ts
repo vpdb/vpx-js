@@ -72,6 +72,10 @@ export class Flipper extends GameItem implements IRenderable {
 		return this.hit!.flipperMover;
 	}
 
+	public getHit(): FlipperHit {
+		return this.hit!;
+	}
+
 	public getName(): string {
 		return this.data.wzName;
 	}
@@ -118,6 +122,10 @@ export class Flipper extends GameItem implements IRenderable {
 		return matrix.toThreeMatrix4();
 	}
 
+	public getFlipperData(): FlipperData {
+		return this.data;
+	}
+
 	public getMatrix(rotation: number = this.data.startAngle): Matrix3D {
 		const trafoMatrix = new Matrix3D();
 		const tempMatrix = new Matrix3D();
@@ -127,10 +135,10 @@ export class Flipper extends GameItem implements IRenderable {
 		return trafoMatrix;
 	}
 
-	private getRotationMatrix(rotation: number = 0): Matrix3D {
+	private getRotationMatrix(rad: number): Matrix3D {
 		const matToOrigin = new Matrix3D().setTranslation(-this.data.center.x, -this.data.center.y, 0);
 		const matFromOrigin = new Matrix3D().setTranslation(this.data.center.x, this.data.center.y, 0);
-		const matRotate = new Matrix3D().rotateZMatrix(degToRad(rotation));
+		const matRotate = new Matrix3D().rotateZMatrix(rad);
 		return matToOrigin.multiply(matRotate).multiply(matFromOrigin);
 	}
 }

@@ -5,7 +5,7 @@ export const PHYSICS_STEPTIME_S = (PHYSICS_STEPTIME * 1e-6);     // step time in
 export const DEFAULT_STEPTIME = 10000;     // default physics rate: 1000Hz
 export const DEFAULT_STEPTIME_S = 0.01;      // default physics rate: 1000Hz
 
-export const PHYS_FACTOR = (PHYSICS_STEPTIME_S / DEFAULT_STEPTIME_S)
+export const PHYS_FACTOR = (PHYSICS_STEPTIME_S / DEFAULT_STEPTIME_S);
 
 export const DEFAULT_TABLE_GRAVITY = 0.97;
 export const DEFAULT_TABLE_CONTACTFRICTION = 0.075;

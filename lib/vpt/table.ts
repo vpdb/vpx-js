@@ -100,6 +100,7 @@ export class Table implements IRenderable {
 			const flipper = this.flippers[flipperName];
 			flipper.setupPlayer(player, this);
 			player.addMover(flipper.getMover());
+			player.addFlipperHit(flipper.getHit());
 		}
 	}
 
