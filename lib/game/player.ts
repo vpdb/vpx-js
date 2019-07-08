@@ -12,12 +12,13 @@ export class Player {
 	private readonly flipperHits: FlipperHit[] = [];
 	private stateCallback?: (name: string, state: any) => void;
 
-	constructor(table: Table) {
+	constructor(table: Table, callback?: StateCallback) {
+		this.stateCallback = callback;
 		this.table = table;
 		this.table.setupPlayer(this);
 	}
 
-	public setOnStateChanged(callback: (name: string, state: any) => void): void {
+	public setOnStateChanged(callback: StateCallback): void {
 		this.stateCallback = callback;
 	}
 
@@ -68,3 +69,5 @@ export class Player {
 		this.gravity.z = -Math.cos(degToRad(slopeDeg)) * strength;
 	}
 }
+
+export type StateCallback = (name: string, state: any) => void;
