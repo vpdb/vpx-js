@@ -22,12 +22,12 @@ import { Table } from '../../lib';
 import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
 import { Player } from '../../lib/game/player';
 import { spy } from 'sinon';
-import { expect } from 'chai';
 import * as chai from 'chai';
-import sinonChai = require('sinon-chai');
+import { expect } from 'chai';
 import { degToRad } from '../../lib/math/float';
 import { FlipperState } from '../../lib/vpt/flipper/flipper-state';
 import { FlipperMover } from '../../lib/vpt/flipper/flipper-mover';
+import sinonChai = require('sinon-chai');
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
@@ -39,6 +39,9 @@ describe('The VPinball flipper physics', () => {
 
 	before(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-flipper.vpx')));
+	});
+
+	beforeEach(() => {
 		player = new Player(table);
 	});
 
@@ -78,6 +81,44 @@ describe('The VPinball flipper physics', () => {
 		expect(flipperMover.angleCur).to.equal(startAngleRad);
 		expect(callback).to.have.been.calledWith('FlipperR', new FlipperState(startAngleRad));
 	});
+
+	it('should move back to end when pressed while moving', async () => {
+
+		const flipper = table.flippers.FlipperR;
+		const flipperMover = flipper.getMover() as FlipperMover;
+		const startAngleRad = degToRad(flipper.getFlipperData().startAngle);
+		const endAngleRad = degToRad(flipper.getFlipperData().endAngle);
+
+		// move up
+		flipper.rotateToEnd();
+		simulateCycles(player, 25); // hit at 17.012061224193429107ms (at 1000fps)
+
+		// move down
+		flipper.rotateToStart();
+		simulateCycles(player, 25);
+
+		// assert it's in the middle
+		const turningAngle = flipperMover.angleCur;
+		expect(turningAngle).to.be.above(startAngleRad);
+		expect(turningAngle).to.be.below(endAngleRad);
+
+		// move up again
+		flipper.rotateToEnd();
+		simulateCycles(player, 10);
+
+		// assert it's back up in less than half the time
+		expect(flipperMover.angleCur).to.equal(endAngleRad);
+	});
+
+	it('should correctly deal with state', () => {
+		const state1 = new FlipperState(1);
+		const state2 = FlipperState.fromSerialized({ angle: 1.0 });
+		const state3 = new FlipperState(1.00000001);
+		expect(state1.equals(state2)).to.equal(true);
+		expect(state2.equals(state3)).to.equal(true);
+		expect(state3.equals((null as unknown) as FlipperState)).to.equal(false);
+	});
+
 });
 
 
