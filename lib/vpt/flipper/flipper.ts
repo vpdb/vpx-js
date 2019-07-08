@@ -57,7 +57,7 @@ export class Flipper extends GameItem implements IRenderable {
 		super(itemName);
 		this.data = data;
 		this.mesh = new FlipperMesh();
-		this.state = new FlipperState(data.startAngle);
+		this.state = new FlipperState(degToRad(data.startAngle));
 	}
 
 	public setupPlayer(player: Player, table: Table) {

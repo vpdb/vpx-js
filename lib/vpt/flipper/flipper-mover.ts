@@ -105,6 +105,8 @@ export class FlipperMover implements MoverObject {
 
 		this.zeroAngNorm.x =  Math.sqrt(1.0 - ratio * ratio); // F2 Norm, used in Green's transform, in FPM time search  // =  sinf(faceNormOffset)
 		this.zeroAngNorm.y = -ratio;                   // F1 norm, change sign of x component, i.e -zeroAngNorm.x // = -cosf(faceNormOffset)
+
+		this.changeState();
 	}
 
 	public updateDisplacements(dtime: number): void {
@@ -346,8 +348,8 @@ export class FlipperMover implements MoverObject {
 		this.angleSpeed = this.angularMomentum / this.inertia;    // TODO: figure out moment of inertia
 	}
 
-	private changeState(lastAngle: number) {
-		if (lastAngle !== this.angleCur) {
+	private changeState(lastAngle?: number) {
+		if (typeof lastAngle === 'undefined' || lastAngle !== this.angleCur) {
 			this.player.changeState(this.flipperData.getName(), new FlipperState(this.angleCur));
 		}
 	}
