@@ -17,9 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Matrix4 } from 'three';
 import { f4, fr } from './float';
 import { Vertex3D } from './vertex3d';
-import { Matrix4 } from 'three';
 
 /**
  * Three's Matrix4.multiply() gives different results than VPinball's. Duh.
@@ -38,21 +38,6 @@ export class Matrix3D {
 
 	constructor() {
 		this.setIdentity();
-	}
-
-	public getElements(): number[] {
-		// return [
-		// 	this._11, this._12, this._13, this._14,
-		// 	this._21, this._22, this._23, this._24,
-		// 	this._31, this._32, this._33, this._34,
-		// 	this._41, this._42, this._43, this._44,
-		// ];
-		return [
-			this._11, this._21, this._31, this._41,
-			this._12, this._22, this._32, this._42,
-			this._13, this._23, this._33, this._43,
-			this._14, this._24, this._34, this._44,
-		];
 	}
 
 	public setIdentity(): this {
@@ -140,101 +125,101 @@ export class Matrix3D {
 		return this;
 	}
 
-	public invert(): this {
-		const ipvt = [0, 1, 2, 3];
-		for (let k = 0; k < 4; ++k) {
-			let temp = 0;
-			let l = k;
-			for (let i = k; i < 4; ++i) {
-				const dd = Math.abs(this.matrix[k][i]);
-				if (dd > temp) {
-					temp = dd;
-					l = i;
-				}
-			}
-			if (l !== k) {
-				const tmp = ipvt[k];
-				ipvt[k] = ipvt[l];
-				ipvt[l] = tmp;
-				for (let j = 0; j < 4; ++j) {
-					temp = this.matrix[j][k];
-					this.matrix[j][k] = this.matrix[j][l];
-					this.matrix[j][l] = temp;
-				}
-			}
-			const d = 1.0 / this.matrix[k][k];
-			for (let j = 0; j < k; ++j) {
-				const c = this.matrix[j][k] * d;
-				for (let i = 0; i < 4; ++i) {
-					this.matrix[j][i] -= this.matrix[k][i] * c;
-				}
-				this.matrix[j][k] = c;
-			}
-			for (let j = k + 1; j < 4; ++j) {
-				const c = this.matrix[j][k] * d;
-				for (let i = 0; i < 4; ++i) {
-					this.matrix[j][i] -= this.matrix[k][i] * c;
-				}
-				this.matrix[j][k] = c;
-			}
-			for (let i = 0; i < 4; ++i) {
-				this.matrix[k][i] = -this.matrix[k][i] * d;
-			}
-			this.matrix[k][k] = d;
-		}
-		return this;
-	}
-
-	public transpose(): this {
-		const clone = this.clone();
-		for (let i = 0; i < 4; ++i) {
-			this.matrix[0][i] = clone.matrix[i][0];
-			this.matrix[1][i] = clone.matrix[i][1];
-			this.matrix[2][i] = clone.matrix[i][2];
-			this.matrix[3][i] = clone.matrix[i][3];
-		}
-		return this;
-	}
-
-	public createSkewSymmetric(pv3D: Vertex3D) {
-		this.matrix[0][0] = 0;
-		this.matrix[0][1] = -pv3D.z;
-		this.matrix[0][2] = pv3D.y;
-		this.matrix[1][0] = pv3D.z;
-		this.matrix[1][1] = 0;
-		this.matrix[1][2] = -pv3D.x;
-		this.matrix[2][0] = -pv3D.y;
-		this.matrix[2][1] = pv3D.x;
-		this.matrix[2][2] = 0;
-	}
-
-	public addMatrix(pmat1: Matrix3D, pmat2: Matrix3D) {
-		for (let i = 0; i < 3; ++i) {
-			for (let l = 0; l < 3; ++l) {
-				this.matrix[i][l] = pmat1.matrix[i][l] + pmat2.matrix[i][l];
-			}
-		}
-	}
-
-	public orthoNormalize() {
-		const vX = new Vertex3D(this.matrix[0][0], this.matrix[1][0], this.matrix[2][0]);
-		let vY = new Vertex3D(this.matrix[0][1], this.matrix[1][1], this.matrix[2][1]);
-		const vZ = Vertex3D.crossProduct(vX, vY);
-		vX.normalize();
-		vZ.normalize();
-		vY = Vertex3D.crossProduct(vZ, vX);
-		//vY.Normalize(); // not needed
-
-		this.matrix[0][0] = vX.x;
-		this.matrix[0][1] = vY.x;
-		this.matrix[0][2] = vZ.x;
-		this.matrix[1][0] = vX.y;
-		this.matrix[1][1] = vY.y;
-		this.matrix[1][2] = vZ.y;
-		this.matrix[2][0] = vX.z;
-		this.matrix[2][1] = vY.z;
-		this.matrix[2][2] = vZ.z;
-	}
+	// public invert(): this {
+	// 	const ipvt = [0, 1, 2, 3];
+	// 	for (let k = 0; k < 4; ++k) {
+	// 		let temp = 0;
+	// 		let l = k;
+	// 		for (let i = k; i < 4; ++i) {
+	// 			const dd = Math.abs(this.matrix[k][i]);
+	// 			if (dd > temp) {
+	// 				temp = dd;
+	// 				l = i;
+	// 			}
+	// 		}
+	// 		if (l !== k) {
+	// 			const tmp = ipvt[k];
+	// 			ipvt[k] = ipvt[l];
+	// 			ipvt[l] = tmp;
+	// 			for (let j = 0; j < 4; ++j) {
+	// 				temp = this.matrix[j][k];
+	// 				this.matrix[j][k] = this.matrix[j][l];
+	// 				this.matrix[j][l] = temp;
+	// 			}
+	// 		}
+	// 		const d = 1.0 / this.matrix[k][k];
+	// 		for (let j = 0; j < k; ++j) {
+	// 			const c = this.matrix[j][k] * d;
+	// 			for (let i = 0; i < 4; ++i) {
+	// 				this.matrix[j][i] -= this.matrix[k][i] * c;
+	// 			}
+	// 			this.matrix[j][k] = c;
+	// 		}
+	// 		for (let j = k + 1; j < 4; ++j) {
+	// 			const c = this.matrix[j][k] * d;
+	// 			for (let i = 0; i < 4; ++i) {
+	// 				this.matrix[j][i] -= this.matrix[k][i] * c;
+	// 			}
+	// 			this.matrix[j][k] = c;
+	// 		}
+	// 		for (let i = 0; i < 4; ++i) {
+	// 			this.matrix[k][i] = -this.matrix[k][i] * d;
+	// 		}
+	// 		this.matrix[k][k] = d;
+	// 	}
+	// 	return this;
+	// }
+	//
+	// public transpose(): this {
+	// 	const clone = this.clone();
+	// 	for (let i = 0; i < 4; ++i) {
+	// 		this.matrix[0][i] = clone.matrix[i][0];
+	// 		this.matrix[1][i] = clone.matrix[i][1];
+	// 		this.matrix[2][i] = clone.matrix[i][2];
+	// 		this.matrix[3][i] = clone.matrix[i][3];
+	// 	}
+	// 	return this;
+	// }
+	//
+	// public createSkewSymmetric(pv3D: Vertex3D) {
+	// 	this.matrix[0][0] = 0;
+	// 	this.matrix[0][1] = -pv3D.z;
+	// 	this.matrix[0][2] = pv3D.y;
+	// 	this.matrix[1][0] = pv3D.z;
+	// 	this.matrix[1][1] = 0;
+	// 	this.matrix[1][2] = -pv3D.x;
+	// 	this.matrix[2][0] = -pv3D.y;
+	// 	this.matrix[2][1] = pv3D.x;
+	// 	this.matrix[2][2] = 0;
+	// }
+	//
+	// public addMatrix(pmat1: Matrix3D, pmat2: Matrix3D) {
+	// 	for (let i = 0; i < 3; ++i) {
+	// 		for (let l = 0; l < 3; ++l) {
+	// 			this.matrix[i][l] = pmat1.matrix[i][l] + pmat2.matrix[i][l];
+	// 		}
+	// 	}
+	// }
+	//
+	// public orthoNormalize() {
+	// 	const vX = new Vertex3D(this.matrix[0][0], this.matrix[1][0], this.matrix[2][0]);
+	// 	let vY = new Vertex3D(this.matrix[0][1], this.matrix[1][1], this.matrix[2][1]);
+	// 	const vZ = Vertex3D.crossProduct(vX, vY);
+	// 	vX.normalize();
+	// 	vZ.normalize();
+	// 	vY = Vertex3D.crossProduct(vZ, vX);
+	// 	//vY.Normalize(); // not needed
+	//
+	// 	this.matrix[0][0] = vX.x;
+	// 	this.matrix[0][1] = vY.x;
+	// 	this.matrix[0][2] = vZ.x;
+	// 	this.matrix[1][0] = vX.y;
+	// 	this.matrix[1][1] = vY.y;
+	// 	this.matrix[1][2] = vZ.y;
+	// 	this.matrix[2][0] = vX.z;
+	// 	this.matrix[2][1] = vY.z;
+	// 	this.matrix[2][2] = vZ.z;
+	// }
 
 	public toRightHanded(): Matrix3D {
 		const tempMat = new Matrix3D();

@@ -31,12 +31,12 @@ export class FRect3D {
 		this.zhigh = -FLT_MAX;
 	}
 
-	public Extend(other: FRect3D): void {
-		this.left = Math.min(this.left, other.left);
-		this.right = Math.max(this.right, other.right);
-		this.top = Math.min(this.top, other.top);
-		this.bottom = Math.max(this.bottom, other.bottom);
-		this.zlow = Math.min(this.zlow, other.zlow);
-		this.zhigh = Math.max(this.zhigh, other.zhigh);
-	}
+	// public Extend(other: FRect3D): void {
+	// 	this.left = Math.min(this.left, other.left);
+	// 	this.right = Math.max(this.right, other.right);
+	// 	this.top = Math.min(this.top, other.top);
+	// 	this.bottom = Math.max(this.bottom, other.bottom);
+	// 	this.zlow = Math.min(this.zlow, other.zlow);
+	// 	this.zhigh = Math.max(this.zhigh, other.zhigh);
+	// }
 }

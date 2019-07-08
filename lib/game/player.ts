@@ -63,11 +63,11 @@ export class Player {
 		this.flipperHits.push(flipperHit);
 	}
 
-	public setGravity(slopeDeg: number, strength: number): void {
-		this.gravity.x = 0;
-		this.gravity.y = Math.sin(degToRad(slopeDeg)) * strength;
-		this.gravity.z = -Math.cos(degToRad(slopeDeg)) * strength;
-	}
+	// public setGravity(slopeDeg: number, strength: number): void {
+	// 	this.gravity.x = 0;
+	// 	this.gravity.y = Math.sin(degToRad(slopeDeg)) * strength;
+	// 	this.gravity.z = -Math.cos(degToRad(slopeDeg)) * strength;
+	// }
 }
 
 export type StateCallback = (name: string, state: any) => void;

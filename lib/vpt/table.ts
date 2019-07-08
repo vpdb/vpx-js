@@ -20,6 +20,7 @@
 
 import { BufferGeometry, ExtrudeBufferGeometry, Scene, Shape, Vector2 } from 'three';
 import { OleCompoundDoc, Storage } from '..';
+import { Player } from '../game/player';
 import { TableExporter, VpTableExporterOptions } from '../gltf/table-exporter';
 import { IBinaryReader } from '../io/ole-doc';
 import { f4 } from '../math/float';
@@ -45,7 +46,6 @@ import { TextBoxItem } from './textbox-item';
 import { Texture } from './texture';
 import { TimerItem } from './timer-item';
 import { TriggerItem } from './trigger-item';
-import { Player } from '../game/player';
 
 /**
  * A Visual Pinball table.

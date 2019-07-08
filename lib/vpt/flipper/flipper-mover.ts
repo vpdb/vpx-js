@@ -20,10 +20,10 @@
 import { Player } from '../../game/player';
 import { degToRad, radToDeg } from '../../math/float';
 import { Vertex2D } from '../../math/vertex2d';
-import { Vertex3D } from '../../math/vertex3d';
 import { PHYS_FACTOR } from '../../physics/constants';
 import { HitCircle } from '../../physics/hit-circle';
 import { MoverObject } from '../../physics/mover-object';
+import { logger } from '../../util/logger';
 import { GameData } from '../game-data';
 import { FlipperConfig } from './flipper';
 import { FlipperData } from './flipper-data';
@@ -96,9 +96,7 @@ export class FlipperMover implements MoverObject {
 		const ratio = (config.baseRadius - config.endRadius) / config.flipperRadius;
 
 		// model inertia of flipper as that of rod of length flipr around its end
-		const mass = this.flipperData.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics)
-			? this.flipperData.overrideMass!
-			: this.flipperData.mass;
+		const mass = this.getFlipperMass();
 		this.inertia = (1.0 / 3.0) * mass * (config.flipperRadius * config.flipperRadius);
 
 		this.lastHitFace = false; // used to optimize hit face search order
@@ -147,14 +145,14 @@ export class FlipperMover implements MoverObject {
 			this.angleSpeed = this.angularMomentum / this.inertia;
 
 			if (this.enableRotateEvent > 0) {
-				console.log('[%s] Flipper is up', this.flipperData.getName());
+				logger().info('[%s] Flipper is up', this.flipperData.getName());
 				// this.m_pflipper->FireVoidEventParm(DISPID_LimitEvents_EOS, anglespd); // send EOS event
 				//
 				// g_pplayer->this.m_pininput.this.m_leftkey_down_usec_EOS = usec(); // debug only
 				// g_pplayer->this.m_pininput.this.m_leftkey_down_frame_EOS = g_pplayer->this.m_overall_frames;
 
 			} else if (this.enableRotateEvent < 0) {
-				console.log('[%s] Flipper is down', this.flipperData.getName());
+				logger().info('[%s] Flipper is down', this.flipperData.getName());
 				// this.m_pflipper->FireVoidEventParm(DISPID_LimitEvents_BOS, anglespd); // send Beginning of Stroke/Park event
 			}
 			this.enableRotateEvent = 0;
@@ -226,50 +224,46 @@ export class FlipperMover implements MoverObject {
 		this.angularAcceleration = torque / this.inertia;
 	}
 
-	public addToList(): boolean {
-		return true;
-	}
-
 	public setSolenoidState(s: boolean): void {
 		this.solState = s;
 	}
 
-	public getStrokeRatio(): number {
-		return (this.angleCur - this.angleStart) / (this.angleEnd - this.angleStart); // End == Start cannot happen, as handled in ctor
-	}
+	// public getStrokeRatio(): number {
+	// 	return (this.angleCur - this.angleStart) / (this.angleEnd - this.angleStart); // End == Start cannot happen, as handled in ctor
+	// }
 
-	public setStartAngle(r: number): void {
-		this.angleStart = r;
-		const angleMin = Math.min(this.angleStart, this.angleEnd);
-		const angleMax = Math.max(this.angleStart, this.angleEnd);
-		if (this.angleCur > angleMax) {
-			this.angleCur = angleMax;
-		}
-		if (this.angleCur < angleMin) {
-			this.angleCur = angleMin;
-		}
-	}
+	// public setStartAngle(r: number): void {
+	// 	this.angleStart = r;
+	// 	const angleMin = Math.min(this.angleStart, this.angleEnd);
+	// 	const angleMax = Math.max(this.angleStart, this.angleEnd);
+	// 	if (this.angleCur > angleMax) {
+	// 		this.angleCur = angleMax;
+	// 	}
+	// 	if (this.angleCur < angleMin) {
+	// 		this.angleCur = angleMin;
+	// 	}
+	// }
 
-	public setEndAngle(r: number): void {
-		this.angleEnd = r;
-		const angleMin = Math.min(this.angleStart, this.angleEnd);
-		const angleMax = Math.max(this.angleStart, this.angleEnd);
+	// public setEndAngle(r: number): void {
+	// 	this.angleEnd = r;
+	// 	const angleMin = Math.min(this.angleStart, this.angleEnd);
+	// 	const angleMax = Math.max(this.angleStart, this.angleEnd);
+	//
+	// 	if (this.angleCur > angleMax) {
+	// 		this.angleCur = angleMax;
+	// 	}
+	// 	if (this.angleCur < angleMin) {
+	// 		this.angleCur = angleMin;
+	// 	}
+	// }
 
-		if (this.angleCur > angleMax) {
-			this.angleCur = angleMax;
-		}
-		if (this.angleCur < angleMin) {
-			this.angleCur = angleMin;
-		}
-	}
+	// public getMass(): number {
+	// 	return 3.0 * this.inertia / (this.flipperRadius * this.flipperRadius); //!! also change if wiring of moment of inertia happens (see ctor)
+	// }
 
-	public getMass(): number {
-		return 3.0 * this.inertia / (this.flipperRadius * this.flipperRadius); //!! also change if wiring of moment of inertia happens (see ctor)
-	}
-
-	public setMass(m: number): void {
-		this.inertia = (1.0 / 3.0) * m * (this.flipperRadius * this.flipperRadius); //!! also change if wiring of moment of inertia happens (see ctor)
-	}
+	// public setMass(m: number): void {
+	// 	this.inertia = (1.0 / 3.0) * m * (this.flipperRadius * this.flipperRadius); //!! also change if wiring of moment of inertia happens (see ctor)
+	// }
 
 	public getReturnRatio(): number {
 		return this.doOverridePhysics()
@@ -287,6 +281,11 @@ export class FlipperMover implements MoverObject {
 		return this.doOverridePhysics()
 			? this.flipperData.overrideTorqueDampingAngle!
 			: this.flipperData.torqueDampingAngle!;
+	}
+	private getFlipperMass(): number {
+		return this.doOverridePhysics()
+			? this.flipperData.overrideMass!
+			: this.flipperData.mass;
 	}
 
 	private getTorqueDamping(): number {
@@ -307,20 +306,20 @@ export class FlipperMover implements MoverObject {
 	}
 
 	// rigid body functions
-	public surfaceVelocity(surfP: Vertex3D): Vertex3D {
-		return FlipperMover.CrossZ(this.angleSpeed, surfP);
-	}
+	// public surfaceVelocity(surfP: Vertex3D): Vertex3D {
+	// 	return FlipperMover.CrossZ(this.angleSpeed, surfP);
+	// }
 
-	public surfaceAcceleration(surfP: Vertex3D): Vertex3D {
-		// tangential acceleration = (0, 0, omega) x surfP
-		const tangAcc = FlipperMover.CrossZ(this.angularAcceleration, surfP);
-
-		// centripetal acceleration = (0,0,omega) x ( (0,0,omega) x surfP )
-		const av2 = this.angleSpeed * this.angleSpeed;
-		const centrAcc = new Vertex3D(-av2 * surfP.x, -av2 * surfP.y, 0);
-
-		return tangAcc.add(centrAcc);
-	}
+	// public surfaceAcceleration(surfP: Vertex3D): Vertex3D {
+	// 	// tangential acceleration = (0, 0, omega) x surfP
+	// 	const tangAcc = FlipperMover.CrossZ(this.angularAcceleration, surfP);
+	//
+	// 	// centripetal acceleration = (0,0,omega) x ( (0,0,omega) x surfP )
+	// 	const av2 = this.angleSpeed * this.angleSpeed;
+	// 	const centrAcc = new Vertex3D(-av2 * surfP.x, -av2 * surfP.y, 0);
+	//
+	// 	return tangAcc.add(centrAcc);
+	// }
 
 	public getHitTime(): number {
 		if (this.angleSpeed === 0) {
@@ -343,18 +342,14 @@ export class FlipperMover implements MoverObject {
 		}
 	}
 
-	public applyImpulse(rotI: Vertex3D): void {
-		this.angularMomentum += rotI.z;            // only rotation about z axis
-		this.angleSpeed = this.angularMomentum / this.inertia;    // TODO: figure out moment of inertia
-	}
+	// public applyImpulse(rotI: Vertex3D): void {
+	// 	// 	this.angularMomentum += rotI.z;            // only rotation about z axis
+	// 	// 	this.angleSpeed = this.angularMomentum / this.inertia;    // TODO: figure out moment of inertia
+	// 	// }
 
 	private changeState(lastAngle?: number) {
 		if (typeof lastAngle === 'undefined' || lastAngle !== this.angleCur) {
 			this.player.changeState(this.flipperData.getName(), new FlipperState(this.angleCur));
 		}
-	}
-
-	private static CrossZ(rz: number, v: Vertex3D): Vertex3D {
-		return new Vertex3D(-rz * v.y, rz * v.x, 0);
 	}
 }
