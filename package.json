@@ -52,7 +52,7 @@
 		"rimraf": "2.6.3",
 		"ts-node": "8.3.0",
 		"tslint": "5.18.0",
-		"typescript": "3.4.5"
+		"typescript": "3.5.3"
 	},
 	"bugs": {
 		"url": "https://github.com/vpdb/vpx-toolbox/issues"
