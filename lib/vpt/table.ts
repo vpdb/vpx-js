@@ -191,6 +191,7 @@ export class Table implements IRenderable {
 			return f4(this.gameData.tableheight + this.ramps[surface].getSurfaceHeight(x, y, this));
 		}
 
+		/* istanbul ignore next */
 		logger().warn('[Table.getSurfaceHeight] Unknown surface %s.', surface);
 		return this.gameData.tableheight;
 	}
