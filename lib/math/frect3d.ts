@@ -10,6 +10,7 @@ export class FRect3D {
 	public zhigh: number = 0;
 
 	constructor(x1?: number, x2?: number, y1?: number, y2?: number, z1?: number, z2?: number) {
+		/* istanbul ignore if */
 		if (x1 && x2 && y1 && y2 && z1 && z2) {
 			this.left = x1;
 			this.right = x2;
