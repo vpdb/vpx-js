@@ -112,13 +112,13 @@ export class Matrix3D {
 		return this;
 	}
 
-	public multiplyScalar(scalar: number) {
-		for (let i = 0; i < 3; ++i) {
-			for (let l = 0; l < 3; ++l) {
-				this.matrix[i][l] *= scalar;
-			}
-		}
-	}
+	// public multiplyScalar(scalar: number) {
+	// 	for (let i = 0; i < 3; ++i) {
+	// 		for (let l = 0; l < 3; ++l) {
+	// 			this.matrix[i][l] *= scalar;
+	// 		}
+	// 	}
+	// }
 
 	public preMultiply(a: Matrix3D): this {
 		Object.assign(this.matrix, Matrix3D.multiplyMatrices(a, this).matrix);
@@ -227,6 +227,7 @@ export class Matrix3D {
 		return this.clone().multiply(tempMat);
 	}
 
+	/** istanbul ignore next */
 	public toThreeMatrix4(): Matrix4 {
 		const matrix = new Matrix4();
 		matrix.set(

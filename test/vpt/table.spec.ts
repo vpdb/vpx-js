@@ -73,6 +73,12 @@ describe('The VPinball table generator', () => {
 			// we're good in here
 		}
 	});
+
+	it('should serialize the table correctly', async () => {
+		const table = await Table.load(new NodeBinaryReader(three.fixturePath('table-flipper.vpx')));
+		const unserializedTable = Table.fromSerialized(table);
+		expect(unserializedTable.flippers.FlipperR.getName).to.be.a('function');
+	});
 });
 
 function compareArray(arr1: any[], arr2: any[]) {
