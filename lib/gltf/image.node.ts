@@ -150,7 +150,7 @@ export async function loadImage(src: string, data: Buffer | sharp.Sharp): Promis
 		format = metadata.format.toLowerCase();
 		width = metadata.size.width;
 		height = metadata.size.height;
-		const gmData = await new Promise((resolve, reject) => {
+		const gmData: Buffer = await new Promise((resolve, reject) => {
 			const buffers: Buffer[] = [];
 			g.setFormat('jpeg').stream().on('error', reject)
 				.on('data', (buf: Buffer) => buffers.push(buf as Buffer))
