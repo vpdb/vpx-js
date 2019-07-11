@@ -4,6 +4,7 @@ import { Vertex3D } from '../math/vertex3d';
 import { DEFAULT_STEPTIME, PHYSICS_STEPTIME } from '../physics/constants';
 import { MoverObject } from '../physics/mover-object';
 import { FlipperHit } from '../vpt/flipper/flipper-hit';
+import { now } from '../refs.node';
 
 export class Player {
 
@@ -80,7 +81,7 @@ export class Player {
 
 	public updatePhysics() {
 
-		let initialTimeUsec = Math.floor(performance.now() * 1000);
+		let initialTimeUsec = Math.floor(now() * 1000);
 
 		// DJRobX's crazy latency-reduction code
 		let deltaFrame = 0;
@@ -137,7 +138,7 @@ export class Player {
 			// DJRobX's crazy latency-reduction code: Artificially lengthen the execution of the physics loop by X usecs, to give more opportunities to read changes from input(s) (try values in the multiple 100s up to maximum 1000 range, in general: the more, the faster the CPU is)
 			//                                        Intended mainly to be used if vsync is enabled (e.g. most idle time is shifted from vsync-waiting to here)
 			if (this.minPhysLoopTime > 0) {
-				const basetime = Math.floor(performance.now() * 1000);
+				const basetime = Math.floor(now() * 1000);
 				const targettime = (this.minPhysLoopTime * this.physIterations) + this.lastFlipTime;
 
 				// If we're 3/4 of the way through the loop fire a "frame sync" timer event so VPM can react to input.
@@ -152,7 +153,7 @@ export class Player {
 				}
 			}
 			// end DJRobX's crazy code
-			const curTimeUsec = Math.floor(performance.now() * 1000) - deltaFrame; //!! one could also do this directly in the while loop condition instead (so that the while loop will really match with the current time), but that leads to some stuttering on some heavy frames
+			const curTimeUsec = Math.floor(now() * 1000) - deltaFrame; //!! one could also do this directly in the while loop condition instead (so that the while loop will really match with the current time), but that leads to some stuttering on some heavy frames
 
 			// hung in the physics loop over 200 milliseconds or the number of physics iterations to catch up on is high (i.e. very low/unplayable FPS)
 			// if ((curTimeUsec - initialTimeUsec > 200000) || (this.physIterations > ((this.table.gameData!.physicsMaxLoops === 0) || (this.table.gameData!.physicsMaxLoops === 0xFFFFFFFF) ? 0xFFFFFFFF : (this.table.gameData!.physicsMaxLoops! * (10000 / PHYSICS_STEPTIME))/*2*/))) {                                                             // can not keep up to real time
@@ -262,9 +263,7 @@ export class Player {
 			// if (m_pininput.m_enable_nudge_filter)
 			// 	FilterNudge();
 
-			for (const mover of this.movers) {
-				mover.updateVelocities(); // always on integral physics frame boundary (spinner, gate, flipper, plunger, ball)
-			}
+			this.updateVelocities();
 
 			//primary physics loop
 			this.physicsSimulateCycle(physicsDiffTime); // main simulator call
@@ -288,7 +287,13 @@ export class Player {
 			firstCycle = false;
 		} // end while (m_curPhysicsFrameTime < initial_time_usec)
 
-		this.physPeriod = (Math.floor(performance.now() * 1000) - deltaFrame) - initialTimeUsec;
+		this.physPeriod = (Math.floor(now() * 1000) - deltaFrame) - initialTimeUsec;
+	}
+
+	public updateVelocities() {
+		for (const mover of this.movers) {
+			mover.updateVelocities(); // always on integral physics frame boundary (spinner, gate, flipper, plunger, ball)
+		}
 	}
 
 	public addMover(mover: MoverObject) {

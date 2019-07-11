@@ -125,7 +125,7 @@ describe('The VPinball flipper physics', () => {
 function simulateCycles(player: Player, duration: number, tickDuration = 1) {
 	const numTicks = Math.floor(duration / tickDuration);
 	for (let i = 0; i < numTicks; i++) {
+		player.updateVelocities();
 		player.physicsSimulateCycle(tickDuration);
-		player.updatePhysics();
 	}
 }
