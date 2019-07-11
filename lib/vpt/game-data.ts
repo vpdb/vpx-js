@@ -62,7 +62,7 @@ export class GameData extends BiffParser {
 	public nudgeTime?: number;
 	public plungerNormalize?: number;
 	public plungerFilter: boolean = false;
-	public PhysicsMaxLoops?: number;
+	public physicsMaxLoops?: number;
 	public fRenderDecals: boolean = false;
 	public fRenderEMReels: boolean = false;
 	public offset: Vertex2D = new Vertex2D();
@@ -215,7 +215,7 @@ export class GameData extends BiffParser {
 			case 'NDGT': this.nudgeTime = this.getFloat(buffer); break;
 			case 'MPGC': this.plungerNormalize = this.getInt(buffer); break;
 			case 'MPDF': this.plungerFilter = this.getBool(buffer); break;
-			case 'PHML': this.PhysicsMaxLoops = this.getInt(buffer); break;
+			case 'PHML': this.physicsMaxLoops = this.getInt(buffer); break;
 			case 'DECL': this.fRenderDecals = this.getBool(buffer); break;
 			case 'REEL': this.fRenderEMReels = this.getBool(buffer); break;
 			case 'OFFX': this.offset.x = this.getFloat(buffer); break;
