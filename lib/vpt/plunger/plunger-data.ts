@@ -25,35 +25,37 @@ import { PlungerType } from './plunger';
 
 export class PlungerData extends GameItem {
 
-	public type!: PlungerType;
+	public type: PlungerType = PlungerType.Modern;
 	public center!: Vertex2D;
-	public width?: number;
-	public height?: number;
-	public zAdjust?: number;
+	public width: number = 25;
+	public height: number = 20;
+	public zAdjust: number = this.height * 4;
+	public color: number = 0x4c4c4c;
 	public stroke?: number;
-	public speedPull?: number;
-	public speedFire?: number;
-	public mechStrength?: number;
-	public parkPosition?: number;
-	public scatterVelocity?: number;
-	public momentumXfer?: number;
-	public mechPlunger?: boolean;
-	public autoPlunger?: boolean;
+	public speedPull: number = 0.5;
+	public speedFire: number = 80;
+	public mechStrength: number = 85;
+	public parkPosition: number = 0.5 / 3.0;
+	public scatterVelocity: number = 0;
+	public momentumXfer: number = 1;
+	public mechPlunger: boolean = false;
+	public autoPlunger: boolean = false;
 	public wzName!: string;
 	public animFrames?: number;
 	public szMaterial?: string;
 	public szImage?: string;
-	public fVisible!: boolean;
-	public fReflectionEnabled?: boolean;
+	public fVisible: boolean = true;
+	public fReflectionEnabled: boolean = true;
 	public szSurface?: string;
 	public szTipShape?: string;
-	public rodDiam?: number;
-	public ringGap?: number;
-	public ringWidth?: number;
-	public springDiam?: number;
-	public springGauge?: number;
-	public springLoops?: number;
-	public springEndLoops?: number;
+	public rodDiam: number = 0.6;
+	public ringGap: number = 2.0;
+	public ringDiam: number = 0.94;
+	public ringWidth: number = 3.0;
+	public springDiam: number = 0.77;
+	public springGauge: number = 1.38;
+	public springLoops: number = 8.0;
+	public springEndLoops: number = 2.5;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<PlungerData> {
 		const plungerItem = new PlungerData(itemName);
