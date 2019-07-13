@@ -43,11 +43,11 @@ describe('The VPinball parser for invisible elements', () => {
 	it('should parse a plunger item', async () => {
 		const plunger = vpt.plungers.find(t => t.getName() === 'Plunger1')!;
 		expect(plunger).to.be.an('object');
-		expect(plunger.width).to.equal(25);
-		expect(plunger.vCenter.x).to.equal(877.7000122070312);
-		expect(plunger.vCenter.y).to.equal(2009);
-		expect(plunger.speedPull).to.equal(5.5);
-		expect(plunger.speedFire).to.equal(80.80000305175781);
+		expect(plunger.getData().width).to.equal(25);
+		expect(plunger.getData().center.x).to.equal(877.7000122070312);
+		expect(plunger.getData().center.y).to.equal(2009);
+		expect(plunger.getData().speedPull).to.equal(5.5);
+		expect(plunger.getData().speedFire).to.equal(80.80000305175781);
 	});
 
 	it('should parse a text box item', async () => {

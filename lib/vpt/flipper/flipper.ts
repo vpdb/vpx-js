@@ -36,7 +36,7 @@ import { FlipperState } from './flipper-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/flipper.cpp
  */
-export class Flipper extends GameItem implements IRenderable {
+export class Flipper implements IRenderable {
 
 	private readonly data: FlipperData;
 	private readonly mesh: FlipperMesh;
@@ -54,7 +54,6 @@ export class Flipper extends GameItem implements IRenderable {
 	}
 
 	public constructor(itemName: string, data: FlipperData, table: Table) {
-		super(itemName);
 		this.data = data;
 		this.mesh = new FlipperMesh();
 		this.state = new FlipperState(degToRad(data.startAngle));
