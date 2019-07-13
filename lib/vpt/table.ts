@@ -36,7 +36,7 @@ import { KickerItem } from './kicker-item';
 import { LightItem } from './light-item';
 import { Material } from './material';
 import { Mesh } from './mesh';
-import { PlungerItem } from './plunger-item';
+import { Plunger } from './plunger/plunger';
 import { PrimitiveItem } from './primitive-item';
 import { RampItem } from './ramp-item';
 import { RubberItem } from './rubber-item';
@@ -71,7 +71,7 @@ export class Table implements IRenderable {
 	public triggers: TriggerItem[] = [];
 	public spinners: SpinnerItem[] = [];
 	public timers: TimerItem[] = [];
-	public plungers: PlungerItem[] = [];
+	public plungers: Plunger[] = [];
 	public textBoxes: TextBoxItem[] = [];
 
 	public static playfieldThickness = 20.0;
@@ -407,7 +407,7 @@ export class Table implements IRenderable {
 
 				case GameItem.TypePlunger: {
 					if (opts.loadInvisibleItems) {
-						this.plungers.push(await PlungerItem.fromStorage(storage, itemName));
+						this.plungers.push(await Plunger.fromStorage(storage, itemName, this));
 					}
 					break;
 				}

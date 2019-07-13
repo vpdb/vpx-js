@@ -17,23 +17,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BiffParser } from '../io/biff-parser';
-import { Storage } from '../io/ole-doc';
-import { Vertex2D } from '../math/vertex2d';
-import { GameItem } from './game-item';
+import { Storage } from '../..';
+import { BiffParser } from '../../io/biff-parser';
+import { Vertex2D } from '../../math/vertex2d';
+import { GameItem } from '../game-item';
+import { PlungerType } from './plunger';
 
-/**
- * VPinball's plungers.
- *
- * @see https://github.com/vpinball/vpinball/blob/master/plunger.cpp
- */
-export class PlungerItem extends GameItem {
+export class PlungerData extends GameItem {
 
-	public static TypePlungerTypeModern = 1;
-	public static TypePlungerTypeFlat = 2;
-	public static TypePlungerTypeCustom = 3;
-
-	public vCenter!: Vertex2D;
+	public type!: PlungerType;
+	public center!: Vertex2D;
 	public width?: number;
 	public height?: number;
 	public zAdjust?: number;
@@ -47,7 +40,6 @@ export class PlungerItem extends GameItem {
 	public mechPlunger?: boolean;
 	public autoPlunger?: boolean;
 	public wzName!: string;
-	public type?: number;
 	public animFrames?: number;
 	public szMaterial?: string;
 	public szImage?: string;
@@ -63,8 +55,8 @@ export class PlungerItem extends GameItem {
 	public springLoops?: number;
 	public springEndLoops?: number;
 
-	public static async fromStorage(storage: Storage, itemName: string): Promise<PlungerItem> {
-		const plungerItem = new PlungerItem(itemName);
+	public static async fromStorage(storage: Storage, itemName: string): Promise<PlungerData> {
+		const plungerItem = new PlungerData(itemName);
 		await storage.streamFiltered(itemName, 4, BiffParser.stream(plungerItem.fromTag.bind(plungerItem), {}));
 		return plungerItem;
 	}
@@ -83,7 +75,7 @@ export class PlungerItem extends GameItem {
 
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
 		switch (tag) {
-			case 'VCEN': this.vCenter = Vertex2D.get(buffer); break;
+			case 'VCEN': this.center = Vertex2D.get(buffer); break;
 			case 'WDTH': this.width = this.getFloat(buffer); break;
 			case 'ZADJ': this.zAdjust = this.getFloat(buffer); break;
 			case 'HIGH': this.height = this.getFloat(buffer); break;
