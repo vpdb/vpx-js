@@ -96,11 +96,20 @@ export class Table implements IRenderable {
 	}
 
 	public setupPlayer(player: Player) {
+
+		// flippers
 		for (const flipperName of Object.keys(this.flippers)) {
 			const flipper = this.flippers[flipperName];
 			flipper.setupPlayer(player, this);
 			player.addMover(flipper.getMover());
 			player.addFlipperHit(flipper.getHit());
+		}
+
+		// plungers
+		for (const plunger of this.plungers) {
+			plunger.setupPlayer(player, this);
+			player.addMover(plunger.getMover());
+			player.addPlungerHit(plunger.getHit());
 		}
 	}
 

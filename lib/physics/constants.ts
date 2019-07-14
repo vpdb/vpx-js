@@ -78,3 +78,6 @@ export const C_INTERATIONS = 20; // Precision level and cycles for interative ca
 
 //Plumb:
 export const VELOCITY_EPSILON = 0.05;	// The threshold for zero velocity.
+
+export const JOYRANGEMN  = -65536;
+export const JOYRANGEMX = 65536;

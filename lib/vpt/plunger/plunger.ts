@@ -18,12 +18,15 @@
  */
 
 import { Storage } from '../..';
+import { Player } from '../../game/player';
 import { VpTableExporterOptions } from '../../gltf/table-exporter';
+import { Matrix3D } from '../../math/matrix3d';
+import { MoverObject } from '../../physics/mover-object';
 import { IRenderable, Meshes } from '../game-item';
 import { Table } from '../table';
 import { PlungerData } from './plunger-data';
+import { PlungerHit } from './plunger-hit';
 import { PlungerMesh } from './plunger-mesh';
-import { Matrix3D } from '../../math/matrix3d';
 
 /**
  * VPinball's plunger.
@@ -32,8 +35,11 @@ import { Matrix3D } from '../../math/matrix3d';
  */
 export class Plunger implements IRenderable {
 
+	public static PLUNGER_HEIGHT = 50.0;
+
 	private readonly data: PlungerData;
 	private readonly mesh: PlungerMesh;
+	private hit?: PlungerHit;
 
 	public static async fromStorage(storage: Storage, itemName: string, table: Table): Promise<Plunger> {
 		const data = await PlungerData.fromStorage(storage, itemName);
@@ -43,6 +49,10 @@ export class Plunger implements IRenderable {
 	public constructor(itemName: string, data: PlungerData, table: Table) {
 		this.data = data;
 		this.mesh = new PlungerMesh(data, table);
+	}
+
+	public setupPlayer(player: Player, table: Table) {
+		this.hit = new PlungerHit(this.data, player, table);
 	}
 
 	public getName(): string {
@@ -89,10 +99,49 @@ export class Plunger implements IRenderable {
 		return this.data.isVisible();
 	}
 
+	public getMover(): MoverObject {
+		return this.hit!.plungerMover;
+	}
+
+	public getHit(): PlungerHit {
+		return this.hit!;
+	}
+
+	public pullBack(): void {
+		this.hit!.plungerMover.pullBack(this.data.speedPull);
+	}
+
+	public fire(): void {
+		// check for an auto plunger
+		if (this.data.autoPlunger) {
+			// Auto Plunger - this models a "Launch Ball" button or a
+			// ROM-controlled launcher, rather than a player-operated
+			// spring plunger.  In a physical machine, this would be
+			// implemented as a solenoid kicker, so the amount of force
+			// is constant (modulo some mechanical randomness).  Simulate
+			// this by triggering a release from the maximum retracted
+			// position.
+			this.hit!.plungerMover.fire(1.0);
+
+		} else {
+			// Regular plunger - trigger a release from the current
+			// position, using the keyboard firing strength.
+			this.hit!.plungerMover.fire();
+		}
+	}
 }
 
 export enum PlungerType {
 	Modern = 1,
 	Flat = 2,
 	Custom = 3,
+}
+
+export interface PlungerConfig {
+	x: number;
+	y: number;
+	x2: number;
+	zHeight: number;
+	frameTop: number;
+	frameBottom: number;
 }

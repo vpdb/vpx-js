@@ -60,7 +60,7 @@ export class GameData extends BiffParser {
 	public scatter?: number;
 	public defaultScatter?: number;
 	public nudgeTime?: number;
-	public plungerNormalize?: number;
+	public plungerNormalize!: number;
 	public plungerFilter: boolean = false;
 	public physicsMaxLoops?: number;
 	public fRenderDecals: boolean = false;
