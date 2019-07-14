@@ -101,7 +101,8 @@ export class PlungerData extends GameItem {
 			case 'TIPS': this.szTipShape = this.getString(buffer, len); break;
 			case 'RODD': this.rodDiam = this.getFloat(buffer); break;
 			case 'RNGG': this.ringGap = this.getFloat(buffer); break;
-			case 'RNGD': this.ringWidth = this.getFloat(buffer); break;
+			case 'RNGD': this.ringDiam = this.getFloat(buffer); break;
+			case 'RNGW': this.ringWidth = this.getFloat(buffer); break;
 			case 'SPRD': this.springDiam = this.getFloat(buffer); break;
 			case 'SPRG': this.springGauge = this.getFloat(buffer); break;
 			case 'SPRL': this.springLoops = this.getFloat(buffer); break;

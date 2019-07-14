@@ -55,20 +55,28 @@ export class Plunger implements IRenderable {
 	public getMeshes(table: Table, opts: VpTableExporterOptions): Meshes {
 		const plunger = this.mesh.generateMeshes();
 		const meshes: Meshes = {};
+		const material = table.getMaterial(this.data.szMaterial);
+		const map = table.getTexture(this.data.szImage);
 
 		if (plunger.rod) {
 			meshes.rod = {
 				mesh: plunger.rod,
+				material,
+				map,
 			};
 		}
 		if (plunger.spring) {
 			meshes.spring = {
 				mesh: plunger.spring,
+				material,
+				map,
 			};
 		}
 		if (plunger.flat) {
 			meshes.flat = {
 				mesh: plunger.flat,
+				material,
+				map,
 			};
 		}
 		return meshes;
