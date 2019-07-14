@@ -93,6 +93,7 @@ export class TableExporter {
 			{ name: 'kickers', meshes: this.table.kickers, enabled: !!this.opts.exportKickers },
 			{ name: 'triggers', meshes: this.table.triggers, enabled: !!this.opts.exportTriggers },
 			{ name: 'spinners', meshes: this.table.spinners, enabled: !!this.opts.exportSpinners },
+			{ name: 'plungers', meshes: this.table.plungers, enabled: !!this.opts.exportPlungers },
 		];
 
 		// meshes
@@ -263,6 +264,7 @@ export interface VpTableExporterOptions {
 	exportKickers?: boolean;
 	exportTriggers?: boolean;
 	exportSpinners?: boolean;
+	exportPlungers?: boolean;
 	gltfOptions?: ParseOptions;
 }
 
@@ -285,6 +287,7 @@ const defaultOptions: VpTableExporterOptions = {
 	exportKickers: true,
 	exportTriggers: true,
 	exportSpinners: true,
+	exportPlungers: true,
 	gltfOptions: {},
 };
 

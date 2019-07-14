@@ -18,17 +18,21 @@
  */
 
 import { Storage } from '../..';
+import { VpTableExporterOptions } from '../../gltf/table-exporter';
+import { IRenderable, Meshes } from '../game-item';
 import { Table } from '../table';
 import { PlungerData } from './plunger-data';
+import { PlungerMesh } from './plunger-mesh';
 
 /**
- * VPinball's plungers.
+ * VPinball's plunger.
  *
  * @see https://github.com/vpinball/vpinball/blob/master/plunger.cpp
  */
-export class Plunger {
+export class Plunger implements IRenderable {
 
 	private readonly data: PlungerData;
+	private readonly mesh: PlungerMesh;
 
 	public static async fromStorage(storage: Storage, itemName: string, table: Table): Promise<Plunger> {
 		const data = await PlungerData.fromStorage(storage, itemName);
@@ -37,6 +41,7 @@ export class Plunger {
 
 	public constructor(itemName: string, data: PlungerData, table: Table) {
 		this.data = data;
+		this.mesh = new PlungerMesh(data, table);
 	}
 
 	public getName(): string {
@@ -45,6 +50,32 @@ export class Plunger {
 
 	public getData(): PlungerData {
 		return this.data;
+	}
+
+	public getMeshes(table: Table, opts: VpTableExporterOptions): Meshes {
+		const plunger = this.mesh.generateMeshes();
+		const meshes: Meshes = {};
+
+		if (plunger.rod) {
+			meshes.rod = {
+				mesh: plunger.rod,
+			};
+		}
+		if (plunger.spring) {
+			meshes.spring = {
+				mesh: plunger.spring,
+			};
+		}
+		if (plunger.flat) {
+			meshes.flat = {
+				mesh: plunger.flat,
+			};
+		}
+		return meshes;
+	}
+
+	public isVisible(table: Table): boolean {
+		return this.data.isVisible();
 	}
 
 }

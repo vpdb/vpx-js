@@ -59,8 +59,10 @@ export class PlungerDesc {
 		return new PlungerDesc(0, []);
 	}
 
-	public static getCustom(data: PlungerData, beginy: number, springMinSpacing: number): CustomDescResult {
+	public static getCustom(data: PlungerData, beginY: number, springMinSpacing: number): CustomDescResult {
+
 		let i: number;
+
 		// Several of the entries are fixed:
 		//   shaft x 2 (top, bottom)
 		//   ring x 6 (inner top, outer top x 2, outer bottom x 2, inner bottom)
@@ -116,7 +118,7 @@ export class PlungerDesc {
 
 		// Figure the normals and the texture coordinates
 		let cprv = new PlungerCoord(0.0, 0.0, 0.0, 0.0, 1.0);
-		for (i = 0; i < nTip; ++i) {
+		for (i = 0; i < tipShapes.length; i++) {
 			const c = desc.c[i];
 
 			// Figure the texture coordinate.  The tip is always
@@ -154,6 +156,8 @@ export class PlungerDesc {
 		desc.c[i++].set(rRod, y, 0.26, 0.0, -1.0);
 		desc.c[i++].set(rRing, y, 0.33, 0.0, -1.0);
 		desc.c[i++].set(rRing, y, 0.33, 1.0, 0.0);
+
+		// noinspection JSSuspiciousNameCombination
 		y += data.ringWidth;
 		desc.c[i++].set(rRing, y, 0.42, 1.0, 0.0);
 		desc.c[i++].set(rRing, y, 0.42, 0.0, 1.0);
@@ -176,7 +180,7 @@ export class PlungerDesc {
 		// retracted tip position (beginy), plus the length of the parts
 		// at the end that don't compress with the spring (y), plus the
 		// fully retracted spring length.
-		const rody = beginy + y + springMin;
+		const rody = beginY + y + springMin;
 		desc.c[i].set(rRod, rody, 0.74, 1.0, 0.0);
 
 		return {
