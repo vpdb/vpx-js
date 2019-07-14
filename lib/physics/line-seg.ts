@@ -27,25 +27,30 @@ export class LineSeg extends HitObject {
 	private normal!: Vertex2D;
 	private length!: number;
 
-	constructor(p1: Vertex2D, p2: Vertex2D, zlow?: number, zhigh?: number) {
+	constructor(p1: Vertex2D, p2: Vertex2D, zLow: number, zHigh: number) {
 		super();
 		this.v1 = p1;
 		this.v2 = p2;
-		if (typeof zlow !== 'undefined') {
-			this.hitBBox.zlow = zlow;
-		}
-		if (typeof zhigh !== 'undefined') {
-			this.hitBBox.zhigh = zhigh;
-		}
+		this.hitBBox.zlow = zLow;
+		this.hitBBox.zhigh = zHigh;
 		this.calcNormal();
 	}
 
-	private calcNormal() {
+	public setSeg(x1: number, y1: number, x2: number, y2: number): this {
+		this.v1.x = x1;
+		this.v1.y = y1;
+		this.v2.x = x2;
+		this.v2.y = y2;
+		return this.calcNormal();
+	}
+
+	private calcNormal(): this {
 		const vT = new Vertex2D(this.v1.x - this.v2.x, this.v1.y - this.v2.y);
 
 		// Set up line normal
 		this.length = vT.length();
 		const invLength = 1.0 / this.length;
 		this.normal = new Vertex2D(vT.y * invLength, -vT.x * invLength);
+		return this;
 	}
 }

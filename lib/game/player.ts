@@ -3,8 +3,9 @@ import { Table } from '..';
 import { Vertex3D } from '../math/vertex3d';
 import { DEFAULT_STEPTIME, PHYSICS_STEPTIME } from '../physics/constants';
 import { MoverObject } from '../physics/mover-object';
-import { FlipperHit } from '../vpt/flipper/flipper-hit';
 import { now } from '../refs.node';
+import { FlipperHit } from '../vpt/flipper/flipper-hit';
+import { PlungerHit } from '../vpt/plunger/plunger-hit';
 
 export class Player {
 
@@ -12,6 +13,7 @@ export class Player {
 	private readonly table: Table;
 	private readonly movers: MoverObject[] = [];
 	private readonly flipperHits: FlipperHit[] = [];
+	private readonly plungerHits: PlungerHit[] = [];
 	private stateCallback?: (name: string, state: any) => void;
 
 	private minPhysLoopTime: number = 0;
@@ -31,6 +33,7 @@ export class Player {
 	private physPeriod: number = 0;
 
 	private state: { [key: string]: any} = {};
+	public curMechPlungerPos: number = 0;
 
 	constructor(table: Table, callback?: StateCallback) {
 		this.stateCallback = callback;
@@ -302,6 +305,10 @@ export class Player {
 
 	public addFlipperHit(flipperHit: FlipperHit) {
 		this.flipperHits.push(flipperHit);
+	}
+
+	public addPlungerHit(plungerHit: PlungerHit) {
+		this.plungerHits.push(plungerHit);
 	}
 
 	// public setGravity(slopeDeg: number, strength: number): void {

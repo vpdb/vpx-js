@@ -17,27 +17,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Vertex2D } from '../math/vertex2d';
-import { HitObject } from './hit-object';
+export class PlungerState {
 
-export class HitLineZ extends HitObject {
+	/**
+	 * Plunger position (1 = pulled back, 0 = start position)
+	 */
+	public readonly pos: number;
 
-	private readonly xy: Vertex2D;
-
-	constructor(xy: Vertex2D, zlow?: number, zhigh?: number) {
-		super();
-		this.xy = xy;
-		if (typeof zlow !== 'undefined') {
-			this.hitBBox.zlow = zlow;
-		}
-		if (typeof zhigh !== 'undefined') {
-			this.hitBBox.zhigh = zhigh;
-		}
+	public static fromSerialized(obj: { [key: string]: any }): PlungerState {
+		return new PlungerState(obj.pos);
 	}
 
-	public set(x: number, y: number): this {
-		this.xy.x = x;
-		this.xy.y = y;
-		return this;
+	/**
+	 * New plunger state
+	 * @param pos Plunger position
+	 */
+	constructor(pos: number) {
+		this.pos = pos;
+	}
+
+	public equals(state: PlungerState): boolean {
+		if (!state) {
+			return false;
+		}
+		if (state.pos === this.pos) {
+			return true;
+		}
+		return Math.abs(this.pos - state.pos) < 1e-6;
 	}
 }

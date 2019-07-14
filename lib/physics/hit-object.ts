@@ -93,4 +93,9 @@ export abstract class HitObject {
 	// 		}
 	// 	}
 	// }
+
+	public setZ(zLow: number, zHigh: number) {
+		this.hitBBox.zlow = zLow;
+		this.hitBBox.zhigh = zHigh;
+	}
 }
