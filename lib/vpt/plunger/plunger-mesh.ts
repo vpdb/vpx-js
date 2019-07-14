@@ -94,7 +94,7 @@ export class PlungerMesh {
 
 		this.calculateFrameRenderingDetails();
 
-		const n = 20;
+		const n = 50;
 		if (this.data.type === PlungerType.Flat) {
 			return { flat: this.buildFlatMesh(n) };
 		} else {

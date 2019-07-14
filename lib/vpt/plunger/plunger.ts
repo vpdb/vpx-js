@@ -23,6 +23,7 @@ import { IRenderable, Meshes } from '../game-item';
 import { Table } from '../table';
 import { PlungerData } from './plunger-data';
 import { PlungerMesh } from './plunger-mesh';
+import { Matrix3D } from '../../math/matrix3d';
 
 /**
  * VPinball's plunger.
@@ -58,23 +59,25 @@ export class Plunger implements IRenderable {
 		const material = table.getMaterial(this.data.szMaterial);
 		const map = table.getTexture(this.data.szImage);
 
+		const matrix = new Matrix3D().toRightHanded();
+
 		if (plunger.rod) {
 			meshes.rod = {
-				mesh: plunger.rod,
+				mesh: plunger.rod.transform(matrix),
 				material,
 				map,
 			};
 		}
 		if (plunger.spring) {
 			meshes.spring = {
-				mesh: plunger.spring,
+				mesh: plunger.spring.transform(matrix),
 				material,
 				map,
 			};
 		}
 		if (plunger.flat) {
 			meshes.flat = {
-				mesh: plunger.flat,
+				mesh: plunger.flat.transform(matrix),
 				material,
 				map,
 			};
