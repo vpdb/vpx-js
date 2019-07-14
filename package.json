@@ -10,6 +10,7 @@
 	},
 	"scripts": {
 		"build": "rimraf dist && tsc && cp -r res/maps dist/res",
+		"build:watch": "tsc --watch",
 		"lint": "tslint lib/**/*.ts --format stylish",
 		"test": "nyc mocha"
 	},

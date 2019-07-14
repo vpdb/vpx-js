@@ -406,9 +406,7 @@ export class Table implements IRenderable {
 				}
 
 				case GameItem.TypePlunger: {
-					if (opts.loadInvisibleItems) {
-						this.plungers.push(await Plunger.fromStorage(storage, itemName, this));
-					}
+					this.plungers.push(await Plunger.fromStorage(storage, itemName, this));
 					break;
 				}
 
