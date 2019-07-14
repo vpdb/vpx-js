@@ -28,29 +28,29 @@ const PLUNGER_FRAME_COUNT = 25;
 
 export class PlungerMesh {
 
-	private table: Table;
-	private data: PlungerData;
+	private readonly table: Table;
+	private readonly data: PlungerData;
 
-	private zheight: number;
-	private stroke: number;
-	private beginy: number;
-	private endy: number;
-	private cframes: number;
-	private invScale: number;
-	private dyPerFrame: number;
-	private circlePoints: number;
+	private readonly zHeight: number;
+	private readonly stroke: number;
+	private readonly beginY: number;
+	private readonly endY: number;
+	private readonly cFrames: number;
+	private readonly invScale: number;
+	private readonly dyPerFrame: number;
+	private readonly circlePoints: number;
+	private readonly zScale: number;
+	private readonly srcCells: number;
+	private readonly cellWid: number;
+
+	/** Rod bottom position */
+	private rody: number;
 	private springLoops: number;
 	private springEndLoops: number;
 	private springGauge: number;
 	private springRadius: number;
-	private springMinSpacing: number;
-	/**
-	 * Rod bottom position
-	 */
-	private rody: number;
-	private zScale: number;
-	private srcCells: number;
-	private cellWid: number;
+	private readonly springMinSpacing: number;
+
 	private lathePoints!: number;
 	private vtsPerFrame!: number;
 	private indicesPerFrame!: number;
@@ -59,20 +59,20 @@ export class PlungerMesh {
 	constructor(data: PlungerData, table: Table) {
 		this.data = data;
 		this.table = table;
-		this.zheight = table.getSurfaceHeight(data.szSurface, data.center.x, data.center.y) + data.zAdjust;
+		this.zHeight = table.getSurfaceHeight(data.szSurface, data.center.x, data.center.y) + data.zAdjust;
 		this.stroke = data.stroke!;
-		this.beginy = data.center.y;
-		this.endy = data.center.y - this.stroke;
-		this.cframes = Math.floor(PLUNGER_FRAME_COUNT * (this.stroke * (1.0 / 80.0))) + 1; // 25 frames per 80 units travel
-		this.invScale = (this.cframes > 1) ? (1.0 / (this.cframes - 1)) : 0.0;
-		this.dyPerFrame = (this.endy - this.beginy) * this.invScale;
+		this.beginY = data.center.y;
+		this.endY = data.center.y - this.stroke;
+		this.cFrames = Math.floor(PLUNGER_FRAME_COUNT * (this.stroke * (1.0 / 80.0))) + 1; // 25 frames per 80 units travel
+		this.invScale = (this.cFrames > 1) ? (1.0 / (this.cFrames - 1)) : 0.0;
+		this.dyPerFrame = (this.endY - this.beginY) * this.invScale;
 		this.circlePoints = (data.type === PlungerType.Flat) ? 0 : 24;
 		this.springLoops = 0.0;
 		this.springEndLoops = 0.0;
 		this.springGauge = 0.0;
 		this.springRadius = 0.0;
 		this.springMinSpacing = 2.2;
-		this.rody = this.beginy + data.height;
+		this.rody = this.beginY + data.height;
 		this.zScale = table.getScaleZ();
 
 		// note the number of cells in the source image
@@ -114,7 +114,7 @@ export class PlungerMesh {
 				return PlungerDesc.getFlat();
 
 			case PlungerType.Custom:
-				const result = PlungerDesc.getCustom(this.data, this.beginy, this.springMinSpacing);
+				const result = PlungerDesc.getCustom(this.data, this.beginY, this.springMinSpacing);
 				this.rody = result.rody;
 				this.springGauge = result.springGauge;
 				this.springRadius = result.springRadius;
@@ -188,7 +188,7 @@ export class PlungerMesh {
 	private buildRodMesh(i: number): Mesh {
 
 		const mesh = new Mesh('rod');
-		const ytip = this.beginy + this.dyPerFrame * i;
+		const yTip = this.beginY + this.dyPerFrame * i;
 
 		const stepU = 1.0 / this.circlePoints;
 		let tu = 0.51;
@@ -206,7 +206,7 @@ export class PlungerMesh {
 				const c = this.desc.c[m];
 
 				// get the current point's coordinates
-				let y = c.y + ytip;
+				let y = c.y + yTip;
 				const r = c.r;
 				let tv = c.tv;
 
@@ -230,7 +230,7 @@ export class PlungerMesh {
 				// figure the point coordinates
 				pm.x = r * (sn * this.data.width) + this.data.center.x;
 				pm.y = y;
-				pm.z = (r * (cs * this.data.width) + this.data.width + this.zheight) * this.zScale;
+				pm.z = (r * (cs * this.data.width) + this.data.width + this.zHeight) * this.zScale;
 				pm.nx = c.nx * sn;
 				pm.ny = c.ny;
 				pm.nz = -c.nx * cs;
@@ -287,10 +287,9 @@ export class PlungerMesh {
 		const nMain = n - nEnd;
 		const yEnd = this.springEndLoops * this.springGauge * this.springMinSpacing;
 		const dyMain = (y1 - y0 - yEnd) / (nMain - 1);
-		const dyEnd = yEnd / (nEnd - 1);
-		let dy = dyEnd;
-		const dtheta = (Math.PI * 2.0) / (this.circlePoints - 1) + Math.PI / (n - 1);
-		for (let theta = Math.PI, y = y0; n !== 0; --n, theta += dtheta, y += dy) {
+		let dy = yEnd / (nEnd - 1);
+		const dTheta = (Math.PI * 2.0) / (this.circlePoints - 1) + Math.PI / (n - 1);
+		for (let theta = Math.PI, y = y0; n !== 0; --n, theta += dTheta, y += dy) {
 			if (n === nMain) {
 				dy = dyMain;
 			}
@@ -304,7 +303,7 @@ export class PlungerMesh {
 			let pm = new Vertex3DNoTex2();
 			pm.x = this.springRadius * (sn * this.data.width) + this.data.center.x;
 			pm.y = y - this.springGauge;
-			pm.z = (this.springRadius * (cs * this.data.width) + this.data.width + this.zheight) * this.zScale;
+			pm.z = (this.springRadius * (cs * this.data.width) + this.data.width + this.zHeight) * this.zScale;
 			pm.nx = 0.0;
 			pm.ny = -1.0;
 			pm.nz = 0.0;
@@ -316,7 +315,7 @@ export class PlungerMesh {
 			pm = new Vertex3DNoTex2();
 			pm.x = (this.springRadius + springGaugeRel / 1.5) * (sn * this.data.width) + this.data.center.x;
 			pm.y = y;
-			pm.z = ((this.springRadius + springGaugeRel / 1.5) * (cs * this.data.width) + this.data.width + this.zheight) * this.zScale;
+			pm.z = ((this.springRadius + springGaugeRel / 1.5) * (cs * this.data.width) + this.data.width + this.zHeight) * this.zScale;
 			pm.nx = sn;
 			pm.ny = 0.0;
 			pm.nz = -cs;
@@ -328,7 +327,7 @@ export class PlungerMesh {
 			pm = new Vertex3DNoTex2();
 			pm.x = this.springRadius * (sn * this.data.width) + this.data.center.x;
 			pm.y = y + this.springGauge;
-			pm.z = (this.springRadius * (cs * this.data.width) + this.data.width + this.zheight) * this.zScale;
+			pm.z = (this.springRadius * (cs * this.data.width) + this.data.width + this.zHeight) * this.zScale;
 			pm.nx = 0.0;
 			pm.ny = 1.0;
 			pm.nz = 0.0;
@@ -353,7 +352,7 @@ export class PlungerMesh {
 			// varies from frame to frame is the length of the spiral.
 			if (v.nz <= 0.0) {
 				// top half vertices
-				mesh.indices[k++] = i + 0;
+				mesh.indices[k++] = i;
 				mesh.indices[k++] = i + 3;
 				mesh.indices[k++] = i + 1;
 
@@ -372,11 +371,11 @@ export class PlungerMesh {
 			} else {
 				// bottom half vertices
 				mesh.indices[k++] = i + 3;
-				mesh.indices[k++] = i + 0;
+				mesh.indices[k++] = i;
 				mesh.indices[k++] = i + 4;
 
 				mesh.indices[k++] = i + 4;
-				mesh.indices[k++] = i + 0;
+				mesh.indices[k++] = i;
 				mesh.indices[k++] = i + 1;
 
 				mesh.indices[k++] = i + 1;
@@ -399,7 +398,7 @@ export class PlungerMesh {
 
 		const mesh = new Mesh('flat');
 
-		const ytip = this.beginy + this.dyPerFrame * i;
+		const yTip = this.beginY + this.dyPerFrame * i;
 		const vertices = mesh.vertices;
 
 		// Figure the corner coordinates.
@@ -411,8 +410,8 @@ export class PlungerMesh {
 		// the nominal y position plus m_d.m_height.
 		const xLt = this.data.center.x - this.data.width;
 		const xRt = this.data.center.x + this.data.width;
-		const yTop = ytip;
-		const yBot = this.beginy + this.data.height;
+		const yTop = yTip;
+		const yBot = this.beginY + this.data.height;
 
 		// Figure the z coordinate.
 		//
@@ -426,7 +425,7 @@ export class PlungerMesh {
 		// 1.25x the width above the base surface.  The table author can tweak this
 		// using the ZAdjust property, which is added to the zheight base level.
 		//
-		const z = (this.zheight + this.data.width * 1.25) * this.zScale;
+		const z = (this.zHeight + this.data.width * 1.25) * this.zScale;
 
 		// Figure out which animation cell we're using.  The source image might not
 		// (and probably does not) have the same number of cells as the frame list
@@ -437,7 +436,7 @@ export class PlungerMesh {
 		// cell and the fully retracted image in the rightmost cell.  Our frame
 		// numbering is just the reverse, so figure the cell number in right-to-left
 		// order to simplify the texture mapping calculations.
-		let cellIdx = this.srcCells - 1 - Math.floor((i * this.srcCells / this.cframes) + 0.5);
+		let cellIdx = this.srcCells - 1 - Math.floor((i * this.srcCells / this.cFrames) + 0.5);
 		if (cellIdx < 0) {
 			cellIdx = 0;
 		}
@@ -453,7 +452,7 @@ export class PlungerMesh {
 		//
 		// The x extent is the full width of the current cell.
 		const tuLocal = this.cellWid * cellIdx;
-		const tvLocal = (yBot - yTop) / (this.beginy + this.data.height - this.endy);
+		const tvLocal = (yBot - yTop) / (this.beginY + this.data.height - this.endY);
 
 		// Fill in the four corner vertices.
 		// Vertices are (in order): bottom left, top left, top right, bottom right.
