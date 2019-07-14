@@ -47,7 +47,7 @@ export class PlungerData extends GameItem {
 	public fVisible: boolean = true;
 	public fReflectionEnabled: boolean = true;
 	public szSurface?: string;
-	public szTipShape?: string;
+	public szTipShape: string = '0 .34; 2 .6; 3 .64; 5 .7; 7 .84; 8 .88; 9 .9; 11 .92; 14 .92; 39 .84';
 	public rodDiam: number = 0.6;
 	public ringGap: number = 2.0;
 	public ringDiam: number = 0.94;
