@@ -94,11 +94,12 @@ export class PlungerMesh {
 
 		this.calculateFrameRenderingDetails();
 
+		const n = 20;
 		if (this.data.type === PlungerType.Flat) {
-			return { flat: this.buildFlatMesh(0) };
+			return { flat: this.buildFlatMesh(n) };
 		} else {
-			const rod = this.buildRodMesh(0);
-			const spring = this.buildSpringMesh(0, rod.vertices);
+			const rod = this.buildRodMesh(n);
+			const spring = this.buildSpringMesh(n, rod.vertices);
 			return { rod, spring };
 		}
 	}
@@ -210,7 +211,7 @@ export class PlungerMesh {
 				let tv = c.tv;
 
 				// the last coordinate is always the bottom of the rod
-				if (m + 1 === this.lathePoints && offset > 0) {
+				if (m + 1 === this.lathePoints) {
 
 					// set the end point
 					y = this.rody;
@@ -223,7 +224,7 @@ export class PlungerMesh {
 					// proportional point of the texture at our cut-off point on
 					// the object surface.
 					const ratio = i * this.invScale;
-					tv = mesh.vertices[offset - 1].tv + (tv - mesh.vertices[offset - 1].tv) * ratio;
+					tv = mesh.vertices[m - 1].tv + (tv - mesh.vertices[m - 1].tv) * ratio;
 				}
 
 				// figure the point coordinates
@@ -338,8 +339,8 @@ export class PlungerMesh {
 
 		// set up the vertex list for the spring
 		let k = 0;
-		for (i = 0; i < rodVertices.length; i += 3) {
-			const v = rodVertices[i];
+		for (i = 0; i < mesh.vertices.length; i += 3) {
+			const v = mesh.vertices[i + 1];
 			// Direct3D only renders faces if the vertices are in clockwise
 			// order.  We want to render the spring all the way around, so
 			// we need to use different vertex ordering for faces that are

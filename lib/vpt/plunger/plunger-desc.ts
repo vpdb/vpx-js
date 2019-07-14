@@ -76,7 +76,7 @@ export class PlungerDesc {
 		// by semicolons.
 		const tipShapes = data.szTipShape ? data.szTipShape.split(';') : [];
 		const nTip = tipShapes.length;
-		nn += tipShapes.length;
+		nn += tipShapes.length - 1;
 
 		// allocate the descriptor and the coordinate array
 		const desc = new PlungerDesc(nn, []);
