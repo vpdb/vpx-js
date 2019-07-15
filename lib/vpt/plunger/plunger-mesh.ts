@@ -28,16 +28,14 @@ const PLUNGER_FRAME_COUNT = 25;
 
 export class PlungerMesh {
 
-	public springCut: number = 0;
-
 	private readonly table: Table;
 	private readonly data: PlungerData;
 
+	public readonly cFrames: number;
 	private readonly zHeight: number;
 	private readonly stroke: number;
 	private readonly beginY: number;
 	private readonly endY: number;
-	private readonly cFrames: number;
 	private readonly invScale: number;
 	private readonly dyPerFrame: number;
 	private readonly circlePoints: number;
@@ -87,7 +85,7 @@ export class PlungerMesh {
 		this.cellWid = 1.0 / this.srcCells;
 	}
 
-	public generateMeshes(): { rod?: Mesh, springTop?: Mesh, springBody?: Mesh, flat?: Mesh } {
+	public generateMeshes(frame: number): { rod?: Mesh, spring?: Mesh, flat?: Mesh } {
 
 		this.desc = this.getDesc();
 
@@ -96,14 +94,12 @@ export class PlungerMesh {
 
 		this.calculateFrameRenderingDetails();
 
-		const n = 50;
 		if (this.data.type === PlungerType.Flat) {
-			return { flat: this.buildFlatMesh(n) };
+			return { flat: this.buildFlatMesh(frame) };
 		} else {
-			const rod = this.buildRodMesh(n);
-			const springTop = this.buildSpringMesh(n, true, rod.vertices);
-			const springBody = this.buildSpringMesh(n, false, rod.vertices);
-			return { rod, springTop, springBody };
+			const rod = this.buildRodMesh(frame);
+			const spring = this.buildSpringMesh(frame, rod.vertices);
+			return { rod, spring };
 		}
 	}
 
@@ -275,12 +271,11 @@ export class PlungerMesh {
 	 * So use the true rod base (rody) position to figure the spring length.
 	 *
 	 * @param i
-	 * @param buildTop If true, only build the "fixed" top of the string; otherwise only build the flexibly "body" of the spring.
 	 * @param rodVertices
 	 */
-	private buildSpringMesh(i: number, buildTop: boolean, rodVertices: Vertex3DNoTex2[]): Mesh {
+	private buildSpringMesh(i: number, rodVertices: Vertex3DNoTex2[]): Mesh {
 
-		const mesh = new Mesh('spring' + (buildTop ? 'Top' : 'Body'));
+		const mesh = new Mesh('spring');
 		const springGaugeRel = this.springGauge / this.data.width;
 
 		const offset = this.circlePoints * this.lathePoints;
@@ -293,24 +288,14 @@ export class PlungerMesh {
 		const dyMain = (y1 - y0 - yEnd) / (nMain - 1);
 		let dy = yEnd / (nEnd - 1);
 		const dTheta = (Math.PI * 2.0) / (this.circlePoints - 1) + Math.PI / (n - 1);
-		let buildingTop = true;
 		for (let theta = Math.PI, y = y0; n !== 0; --n, theta += dTheta, y += dy) {
-
-			if (theta >= Math.PI * 2.0) {
-				theta -= Math.PI * 2.0;
-			}
 
 			if (n === nMain) {
 				dy = dyMain;
-				buildingTop = false;
-				this.springCut = y;
 			}
 
-			if (buildTop && !buildingTop) {
-				continue;
-			}
-			if (!buildTop && buildingTop) {
-				continue;
+			if (theta >= Math.PI * 2.0) {
+				theta -= Math.PI * 2.0;
 			}
 
 			const sn = Math.sin(theta);

@@ -20,29 +20,22 @@
 export class PlungerState {
 
 	/**
-	 * Plunger position (1 = pulled back, 0 = start position)
+	 * Which frame to render
 	 */
-	public readonly pos: number;
-	public readonly scaleY: number;
+	public readonly frame: number;
 
 	/**
 	 * New plunger state
-	 * @param pos Plunger position
-	 * @param scaleY How much to scale the flexible spring part
+	 * @param frame Which frame of the plunger position is to render
 	 */
-	constructor(pos: number, scaleY: number) {
-		this.pos = pos;
-		this.scaleY = scaleY;
+	constructor(frame: number) {
+		this.frame = frame;
 	}
 
 	public equals(state: PlungerState): boolean {
 		if (!state) {
 			return false;
 		}
-		if (state.pos === this.pos && state.scaleY === this.scaleY) {
-			return true;
-		}
-		return Math.abs(this.pos - state.pos) < 1e-6
-			&& Math.abs(this.scaleY - state.scaleY) < 1e-6;
+		return state.frame === this.frame;
 	}
 }

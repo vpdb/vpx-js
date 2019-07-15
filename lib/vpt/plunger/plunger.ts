@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Object3D } from 'three';
+import { BufferGeometry, Mesh, MeshStandardMaterial, Object3D } from 'three';
 import { Storage } from '../..';
 import { Player } from '../../game/player';
 import { VpTableExporterOptions } from '../../gltf/table-exporter';
@@ -55,7 +55,7 @@ export class Plunger implements IRenderable, IMovable<PlungerState> {
 	}
 
 	public setupPlayer(player: Player, table: Table) {
-		this.hit = new PlungerHit(this.data, this.mesh.springCut, player, table);
+		this.hit = new PlungerHit(this.data, this.mesh.cFrames, player, table);
 		this.state = this.hit.plungerMover.getState();
 	}
 
@@ -68,7 +68,7 @@ export class Plunger implements IRenderable, IMovable<PlungerState> {
 	}
 
 	public getMeshes(table: Table, opts: VpTableExporterOptions): Meshes {
-		const plunger = this.mesh.generateMeshes();
+		const plunger = this.mesh.generateMeshes(0);
 		const meshes: Meshes = {};
 		const material = table.getMaterial(this.data.szMaterial);
 		const map = table.getTexture(this.data.szImage);
@@ -82,16 +82,9 @@ export class Plunger implements IRenderable, IMovable<PlungerState> {
 				map,
 			};
 		}
-		if (plunger.springTop) {
-			meshes.springTop = {
-				mesh: plunger.springTop.transform(matrix),
-				material,
-				map,
-			};
-		}
-		if (plunger.springBody) {
-			meshes.springBody = {
-				mesh: plunger.springBody.transform(matrix),
+		if (plunger.spring) {
+			meshes.spring = {
+				mesh: plunger.spring.transform(matrix),
 				material,
 				map,
 			};
@@ -145,29 +138,18 @@ export class Plunger implements IRenderable, IMovable<PlungerState> {
 		if (state.equals(this.state!)) {
 			return;
 		}
+		const matrix = new Matrix3D().toRightHanded();
+		const mesh = this.mesh.generateMeshes(state.frame);
 
-		const posY = state.pos - this.state!.pos;
-
-		const matMove = new Matrix3D().setTranslation(0, posY, 0);
+		const rodObj = obj.children.find(o => o.name === 'rod') as any;
+		if (rodObj) {
+			mesh.rod!.transform(matrix).applyToObject(rodObj);
+		}
+		const springObj = obj.children.find(o => o.name === 'spring') as any;
+		if (springObj) {
+			mesh.spring!.transform(matrix).applyToObject(springObj);
+		}
 		this.state = state;
-
-		const rod = obj.children.find(o => o.name === 'rod');
-		const springTop = obj.children.find(o => o.name === 'springTop');
-		const springBody = obj.children.find(o => o.name === 'springBody');
-
-		if (rod) {
-			rod!.applyMatrix(matMove.toThreeMatrix4());
-		}
-		if (springTop) {
-			springTop!.applyMatrix(matMove.toThreeMatrix4());
-		}
-		if (springBody) {
-			const matScale = new Matrix3D().setScaling(1, state.scaleY / this.state!.scaleY, 1);
-			const matToOrigin = new Matrix3D().setTranslation(-this.data.center.x, -this.data.center.y, 0);
-			const matFromOrigin = new Matrix3D().setTranslation(this.data.center.x, this.data.center.y, 0);
-			const matrix = matToOrigin.multiply(matScale).multiply(matFromOrigin);
-			springBody!.applyMatrix(matrix.toThreeMatrix4());
-		}
 	}
 }
 
@@ -184,5 +166,5 @@ export interface PlungerConfig {
 	zHeight: number;
 	frameTop: number;
 	frameBottom: number;
-	frameSplit: number;
+	cFrames: number;
 }
