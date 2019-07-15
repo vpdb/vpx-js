@@ -29,7 +29,7 @@ import { logger } from '../util/logger';
 import { BumperItem } from './bumper-item';
 import { Flipper } from './flipper/flipper';
 import { GameData } from './game-data';
-import { GameItem, IRenderable, Meshes } from './game-item';
+import { GameItem, IMovable, IRenderable, Meshes } from './game-item';
 import { GateItem } from './gate-item';
 import { HitTargetItem } from './hit-target-item';
 import { KickerItem } from './kicker-item';
@@ -133,6 +133,10 @@ export class Table implements IRenderable {
 			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
 		}
 		return this.gameData.materials.find(m => m.szName === name);
+	}
+
+	public getMovables(): Array<IMovable<any>> {
+		return [ ...Object.values(this.flippers), ...this.plungers ];
 	}
 
 	public getScaleZ(): number {

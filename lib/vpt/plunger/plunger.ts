@@ -22,18 +22,20 @@ import { Player } from '../../game/player';
 import { VpTableExporterOptions } from '../../gltf/table-exporter';
 import { Matrix3D } from '../../math/matrix3d';
 import { MoverObject } from '../../physics/mover-object';
-import { IRenderable, Meshes } from '../game-item';
+import { IMovable, IRenderable, Meshes } from '../game-item';
 import { Table } from '../table';
 import { PlungerData } from './plunger-data';
 import { PlungerHit } from './plunger-hit';
 import { PlungerMesh } from './plunger-mesh';
+import { PlungerState } from './plunger-state';
+import { Object3D } from 'three';
 
 /**
  * VPinball's plunger.
  *
  * @see https://github.com/vpinball/vpinball/blob/master/plunger.cpp
  */
-export class Plunger implements IRenderable {
+export class Plunger implements IRenderable, IMovable<PlungerState> {
 
 	public static PLUNGER_HEIGHT = 50.0;
 
@@ -128,6 +130,11 @@ export class Plunger implements IRenderable {
 			// position, using the keyboard firing strength.
 			this.hit!.plungerMover.fire();
 		}
+	}
+	
+
+	public updateState(state: PlungerState, obj: Object3D): void {
+		console.log(state.pos);
 	}
 }
 

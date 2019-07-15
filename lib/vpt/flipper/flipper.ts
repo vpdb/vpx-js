@@ -17,14 +17,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Matrix4 } from 'three';
+import { Object3D } from 'three';
 import { Storage } from '../..';
 import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex2D } from '../../math/vertex2d';
 import { MoverObject } from '../../physics/mover-object';
-import { GameItem, IRenderable, Meshes } from '../game-item';
+import { IMovable, IRenderable, Meshes } from '../game-item';
 import { Table } from '../table';
 import { FlipperData } from './flipper-data';
 import { FlipperHit } from './flipper-hit';
@@ -36,7 +36,7 @@ import { FlipperState } from './flipper-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/flipper.cpp
  */
-export class Flipper implements IRenderable {
+export class Flipper implements IRenderable, IMovable<FlipperState> {
 
 	private readonly data: FlipperData;
 	private readonly mesh: FlipperMesh;
@@ -112,20 +112,20 @@ export class Flipper implements IRenderable {
 		this.hit!.flipperMover.setSolenoidState(false);
 	}
 
-	public updateState(state: FlipperState): Matrix4 | undefined {
+	public updateState(state: FlipperState, obj: Object3D): void {
 		if (state.equals(this.state)) {
 			return;
 		}
 		const matrix = this.getRotationMatrix(state.angle - this.state.angle);
 		this.state = state;
-		return matrix.toThreeMatrix4();
+		obj.applyMatrix(matrix.toThreeMatrix4());
 	}
 
 	public getFlipperData(): FlipperData {
 		return this.data;
 	}
 
-	public getMatrix(rotation: number = this.data.startAngle): Matrix3D {
+	private getMatrix(rotation: number = this.data.startAngle): Matrix3D {
 		const trafoMatrix = new Matrix3D();
 		const tempMatrix = new Matrix3D();
 		trafoMatrix.setTranslation(this.data.center.x, this.data.center.y, 0);

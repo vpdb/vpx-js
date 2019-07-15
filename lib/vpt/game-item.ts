@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BufferGeometry, Material as ThreeMaterial, Mesh as ThreeMesh, MeshStandardMaterial } from 'three';
+import { BufferGeometry, Material as ThreeMaterial, Mesh as ThreeMesh, MeshStandardMaterial, Object3D } from 'three';
 import { VpTableExporterOptions } from '../gltf/table-exporter';
 import { BiffParser } from '../io/biff-parser';
 import { Storage } from '../io/ole-doc';
@@ -130,6 +130,11 @@ export interface IRenderable {
 	getMeshes(table: Table, opts: VpTableExporterOptions): Meshes;
 	isVisible(table: Table): boolean;
 	postProcessMaterial?(table: Table, geometry: BufferGeometry, material: MeshStandardMaterial): MeshStandardMaterial | MeshStandardMaterial[];
+}
+
+export interface IMovable<STATE> {
+	getName(): string;
+	updateState(state: STATE, obj: Object3D): void;
 }
 
 export interface Meshes {
