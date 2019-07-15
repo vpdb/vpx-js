@@ -458,18 +458,10 @@ export class PlungerMesh {
 
 		// Fill in the four corner vertices.
 		// Vertices are (in order): bottom left, top left, top right, bottom right.
-		vertices[0].x = xLt;        vertices[0].nx = 0.0;          vertices[0].tu = tuLocal;           // left
-		vertices[0].y = yBot;       vertices[0].ny = 0.0;          vertices[0].tv = tvLocal;           // bottom
-		vertices[0].z = z;          vertices[0].nz = -1.0;
-		vertices[1].x = xLt;        vertices[1].nx = 0.0;          vertices[1].tu = tuLocal;           // left
-		vertices[1].y = yTop;       vertices[1].ny = 0.0;          vertices[1].tv = 0.0;               // top
-		vertices[1].z = z;          vertices[1].nz = -1.0;
-		vertices[2].x = xRt;        vertices[2].nx = 0.0;          vertices[2].tu = tuLocal + this.cellWid; // right
-		vertices[2].y = yTop;       vertices[2].ny = 0.0;          vertices[2].tv = 0.0;                    // top
-		vertices[2].z = z;          vertices[2].nz = -1.0;
-		vertices[3].x = xRt;        vertices[3].nx = 0.0;          vertices[3].tu = tuLocal + this.cellWid; // right
-		vertices[3].y = yBot;       vertices[3].ny = 0.0;          vertices[3].tv = tvLocal;                // bottom
-		vertices[3].z = z;          vertices[3].nz = -1.0;
+		vertices[0] = Vertex3DNoTex2.fromArray([xLt, yBot, z, 0.0, 0.0, -1.0, tuLocal, tvLocal]);
+		vertices[1] = Vertex3DNoTex2.fromArray([xLt, yTop, z, 0.0, 0.0, -1.0, tuLocal, 0.0]);
+		vertices[2] = Vertex3DNoTex2.fromArray([xRt, yTop, z, 0.0, 0.0, -1.0, tuLocal + this.cellWid, 0.0]);
+		vertices[3] = Vertex3DNoTex2.fromArray([xRt, yBot, z, 0.0, 0.0, -1.0, tuLocal + this.cellWid, tvLocal]);
 
 		// for the flat rectangle, we just need two triangles:
 		// bottom left - top left - top right

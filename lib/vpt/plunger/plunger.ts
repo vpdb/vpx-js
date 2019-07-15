@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BufferGeometry, Mesh, MeshStandardMaterial, Object3D } from 'three';
+import { Object3D } from 'three';
 import { Storage } from '../..';
 import { Player } from '../../game/player';
 import { VpTableExporterOptions } from '../../gltf/table-exporter';
