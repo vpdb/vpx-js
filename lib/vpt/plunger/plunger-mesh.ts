@@ -44,7 +44,7 @@ export class PlungerMesh {
 	private readonly cellWid: number;
 
 	/** Rod bottom position */
-	private rody: number;
+	private rodY: number;
 	private springLoops: number;
 	private springEndLoops: number;
 	private springGauge: number;
@@ -72,7 +72,7 @@ export class PlungerMesh {
 		this.springGauge = 0.0;
 		this.springRadius = 0.0;
 		this.springMinSpacing = 2.2;
-		this.rody = this.beginY + data.height;
+		this.rodY = this.beginY + data.height;
 		this.zScale = table.getScaleZ();
 
 		// note the number of cells in the source image
@@ -115,7 +115,7 @@ export class PlungerMesh {
 
 			case PlungerType.Custom:
 				const result = PlungerDesc.getCustom(this.data, this.beginY, this.springMinSpacing);
-				this.rody = result.rody;
+				this.rodY = result.rody;
 				this.springGauge = result.springGauge;
 				this.springRadius = result.springRadius;
 				this.springLoops = result.springLoops;
@@ -214,7 +214,7 @@ export class PlungerMesh {
 				if (m + 1 === this.lathePoints) {
 
 					// set the end point
-					y = this.rody;
+					y = this.rodY;
 
 					// Figure the texture mapping for the rod position.  This is
 					// important because we draw the rod with varying length -
@@ -281,7 +281,7 @@ export class PlungerMesh {
 
 		const offset = this.circlePoints * this.lathePoints;
 		const y0 = rodVertices[offset - 2].y;
-		const y1 = this.rody;
+		const y1 = this.rodY;
 		let n = Math.floor((this.springLoops + this.springEndLoops) * this.circlePoints);
 		const nEnd = Math.floor(this.springEndLoops * this.circlePoints);
 		const nMain = n - nEnd;

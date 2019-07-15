@@ -116,8 +116,13 @@ export class Flipper implements IRenderable, IMovable<FlipperState> {
 		if (state.equals(this.state)) {
 			return;
 		}
-		const matrix = this.getRotationMatrix(state.angle - this.state.angle);
+
+		const matToOrigin = new Matrix3D().setTranslation(-this.data.center.x, -this.data.center.y, 0);
+		const matFromOrigin = new Matrix3D().setTranslation(this.data.center.x, this.data.center.y, 0);
+		const matRotate = new Matrix3D().rotateZMatrix(state.angle - this.state.angle);
+		const matrix = matToOrigin.multiply(matRotate).multiply(matFromOrigin);
 		this.state = state;
+
 		obj.applyMatrix(matrix.toThreeMatrix4());
 	}
 
@@ -132,13 +137,6 @@ export class Flipper implements IRenderable, IMovable<FlipperState> {
 		tempMatrix.rotateZMatrix(degToRad(rotation));
 		trafoMatrix.preMultiply(tempMatrix);
 		return trafoMatrix;
-	}
-
-	private getRotationMatrix(rad: number): Matrix3D {
-		const matToOrigin = new Matrix3D().setTranslation(-this.data.center.x, -this.data.center.y, 0);
-		const matFromOrigin = new Matrix3D().setTranslation(this.data.center.x, this.data.center.y, 0);
-		const matRotate = new Matrix3D().rotateZMatrix(rad);
-		return matToOrigin.multiply(matRotate).multiply(matFromOrigin);
 	}
 }
 
