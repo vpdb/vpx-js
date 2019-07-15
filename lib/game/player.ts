@@ -45,7 +45,7 @@ export class Player {
 	}
 
 	public changeState(name: string, state: any) {
-		if (this.stateCallback) {
+		if (this.stateCallback && (!this.state[name] || !this.state[name].equals(state))) {
 			this.stateCallback(name, state);
 		}
 		this.state[name] = state;

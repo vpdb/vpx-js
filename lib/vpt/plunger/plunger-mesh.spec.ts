@@ -17,16 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { SpotLight } from 'three';
-import { expect } from 'chai';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 
-import { ThreeHelper } from '../three.helper';
-import { Table } from '../../lib';
-import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
+import { ThreeHelper } from '../../../test/three.helper';
+import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { Table } from '../table';
 
 const three = new ThreeHelper();
-const scale = 0.05;
 
 describe('The VPinball plunger generator', () => {
 

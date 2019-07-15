@@ -17,17 +17,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ThreeHelper } from '../three.helper';
-import { Table } from '../../lib';
-import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
-import { Player } from '../../lib/game/player';
-import { spy } from 'sinon';
 import * as chai from 'chai';
 import { expect } from 'chai';
-import { degToRad } from '../../lib/math/float';
-import { FlipperState } from '../../lib/vpt/flipper/flipper-state';
-import { FlipperMover } from '../../lib/vpt/flipper/flipper-mover';
+import { spy } from 'sinon';
 import sinonChai = require('sinon-chai');
+import { simulateCycles } from '../../../test/physics.helper';
+import { ThreeHelper } from '../../../test/three.helper';
+import { Player } from '../../game/player';
+import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { degToRad } from '../../math/float';
+import { Table } from '../table';
+import { FlipperMover } from './flipper-mover';
+import { FlipperState } from './flipper-state';
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
@@ -110,7 +111,7 @@ describe('The VPinball flipper physics', () => {
 		expect(flipperMover.angleCur).to.equal(endAngleRad);
 	});
 
-	it('should correctly deal with state', () => {
+	it('should correctly serialize state', () => {
 		const state1 = new FlipperState(1);
 		const state2 = FlipperState.fromSerialized({ angle: 1.0 });
 		const state3 = new FlipperState(1.00000001);
@@ -120,12 +121,3 @@ describe('The VPinball flipper physics', () => {
 	});
 
 });
-
-
-function simulateCycles(player: Player, duration: number, tickDuration = 1) {
-	const numTicks = Math.floor(duration / tickDuration);
-	for (let i = 0; i < numTicks; i++) {
-		player.updateVelocities();
-		player.physicsSimulateCycle(tickDuration);
-	}
-}

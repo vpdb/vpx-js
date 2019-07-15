@@ -264,7 +264,7 @@ export class PlungerMover implements MoverObject {
 	/**
 	 * Number of frames the animation is to be rendered
 	 */
-	private readonly cFrames: number;
+	public readonly cFrames: number;
 
 	/**
 	 * Stroke Events are armed.  We use this for a hysteresis system
