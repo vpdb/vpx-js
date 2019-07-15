@@ -22,6 +22,7 @@ import { Vertex2D } from '../../math/vertex2d';
 import { HitLineZ } from '../../physics/hit-line-z';
 import { LineSeg } from '../../physics/line-seg';
 import { MoverObject } from '../../physics/mover-object';
+import { logger } from '../../util/logger';
 import { GameData } from '../game-data';
 import { Plunger, PlungerConfig } from './plunger';
 import { PlungerData } from './plunger-data';
@@ -141,7 +142,7 @@ export class PlungerMover implements MoverObject {
 	 * strengths - make sure you understand all of the speed and
 	 * force calculations in hitplunger.cpp before proceeding.
 	 */
-	private mass: number = 0;
+	private mass: number = 30.0;
 
 	/**
 	 * Pull force.  This models the force being applied by the player
@@ -672,6 +673,8 @@ export class PlungerMover implements MoverObject {
 		// start the pull by applying the artificial "pull force"
 		this.speed = 0.0;
 		this.pullForce = speed;
+
+		logger().info('[%s] Pulled back.', this.plungerData.getName());
 	}
 
 	public fire(startPos: number = 0): void {
@@ -682,7 +685,7 @@ export class PlungerMover implements MoverObject {
 		// cancel any pull force
 		this.pullForce = 0.0;
 
-		// make sure the starting point is behind the park position
+		// make sure the starting point is behind the park positionDirty God 1080p
 		if (startPos < this.restPos) {
 			startPos = this.restPos;
 		}
@@ -714,6 +717,8 @@ export class PlungerMover implements MoverObject {
 
 		// enter Fire mode for long enough for the process to complete
 		this.fireTimer = 200;
+
+		logger().info('[%s] Fired.', this.plungerData.getName());
 	}
 
 	private setObjects(len: number): void {
@@ -728,7 +733,7 @@ export class PlungerMover implements MoverObject {
 	}
 
 	private changeState(lastPos?: number) {
-		if (typeof lastPos === 'undefined' || lastPos !== this.pos) {
+		if (!isNaN(this.pos) && (typeof lastPos === 'undefined' || lastPos !== this.pos)) {
 			this.player.changeState(this.plungerData.getName(), new PlungerState(this.pos));
 		}
 	}

@@ -35,8 +35,7 @@ export class Player {
 	private state: { [key: string]: any} = {};
 	public curMechPlungerPos: number = 0;
 
-	constructor(table: Table, callback?: StateCallback) {
-		this.stateCallback = callback;
+	constructor(table: Table) {
 		this.table = table;
 		this.table.setupPlayer(this);
 	}
