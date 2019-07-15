@@ -17,18 +17,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Object3D } from 'three';
 import { Storage } from '../..';
 import { Player } from '../../game/player';
 import { VpTableExporterOptions } from '../../gltf/table-exporter';
 import { Matrix3D } from '../../math/matrix3d';
 import { MoverObject } from '../../physics/mover-object';
+import { logger } from '../../util/logger';
 import { IMovable, IRenderable, Meshes } from '../game-item';
 import { Table } from '../table';
 import { PlungerData } from './plunger-data';
 import { PlungerHit } from './plunger-hit';
 import { PlungerMesh } from './plunger-mesh';
 import { PlungerState } from './plunger-state';
-import { Object3D } from 'three';
 
 /**
  * VPinball's plunger.
@@ -41,6 +42,7 @@ export class Plunger implements IRenderable, IMovable<PlungerState> {
 
 	private readonly data: PlungerData;
 	private readonly mesh: PlungerMesh;
+	private state?: PlungerState;
 	private hit?: PlungerHit;
 
 	public static async fromStorage(storage: Storage, itemName: string, table: Table): Promise<Plunger> {
@@ -55,6 +57,7 @@ export class Plunger implements IRenderable, IMovable<PlungerState> {
 
 	public setupPlayer(player: Player, table: Table) {
 		this.hit = new PlungerHit(this.data, player, table);
+		this.state = this.hit.plungerMover.getState();
 	}
 
 	public getName(): string {
@@ -131,10 +134,22 @@ export class Plunger implements IRenderable, IMovable<PlungerState> {
 			this.hit!.plungerMover.fire();
 		}
 	}
-	
 
 	public updateState(state: PlungerState, obj: Object3D): void {
-		console.log(state.pos);
+		if (state.equals(this.state!)) {
+			return;
+		}
+
+		const posY = state.pos - this.state!.pos;
+		const matMove = new Matrix3D().setTranslation(0, posY, 0);
+		this.state = state;
+
+		const rod = obj.children.find(o => o.name === 'rod');
+		if (!rod) {
+			logger().info('[%s] Cannot find rod in scene.', this.getName());
+			return;
+		}
+		rod.applyMatrix(matMove.toThreeMatrix4());
 	}
 }
 

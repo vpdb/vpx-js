@@ -391,10 +391,12 @@ export class PlungerMover implements MoverObject {
 		const strokeEventLimit = this.frameLen / 50.0;
 		const strokeEventHysteresis = strokeEventLimit * 2.0;
 		if (this.fStrokeEventsArmed && this.pos + dx > this.frameStart - strokeEventLimit) {
+			logger().info('[%s] Pulled back.', this.plungerData.getName());
 			//this.plunger->FireVoidEventParm(DISPID_LimitEvents_BOS, fabsf(this.speed));
 			this.fStrokeEventsArmed = false;
 
 		} else if (this.fStrokeEventsArmed && this.pos + dx < this.frameEnd + strokeEventLimit) {
+			logger().info('[%s] Fired.', this.plungerData.getName());
 			//this.plunger->FireVoidEventParm(DISPID_LimitEvents_EOS, fabsf(this.speed));
 			this.fStrokeEventsArmed = false;
 
@@ -673,8 +675,6 @@ export class PlungerMover implements MoverObject {
 		// start the pull by applying the artificial "pull force"
 		this.speed = 0.0;
 		this.pullForce = speed;
-
-		logger().info('[%s] Pulled back.', this.plungerData.getName());
 	}
 
 	public fire(startPos: number = 0): void {
@@ -717,8 +717,6 @@ export class PlungerMover implements MoverObject {
 
 		// enter Fire mode for long enough for the process to complete
 		this.fireTimer = 200;
-
-		logger().info('[%s] Fired.', this.plungerData.getName());
 	}
 
 	private setObjects(len: number): void {
@@ -734,7 +732,12 @@ export class PlungerMover implements MoverObject {
 
 	private changeState(lastPos?: number) {
 		if (!isNaN(this.pos) && (typeof lastPos === 'undefined' || lastPos !== this.pos)) {
-			this.player.changeState(this.plungerData.getName(), new PlungerState(this.pos));
+
+			this.player.changeState(this.plungerData.getName(), this.getState());
 		}
+	}
+
+	public getState(): PlungerState {
+		return new PlungerState(this.pos - this.frameStart);
 	}
 }
