@@ -262,6 +262,13 @@ export class PlungerMover implements MoverObject {
 	private readonly frameLen: number;
 
 	/**
+	 * Position where the fixed spring goes into the flexible spring.
+	 *
+	 * Below this point, the spring is scaled, above it's moved.
+	 */
+	private readonly frameSplit: number;
+
+	/**
 	 * Stroke Events are armed.  We use this for a hysteresis system
 	 * for the End-of-stroke and Beginning-of-stroke events.  Any time
 	 * plunger is away from the extremes of its range of motion, we
@@ -313,6 +320,7 @@ export class PlungerMover implements MoverObject {
 		this.frameEnd = plungerConfig.frameTop;
 		this.frameStart = plungerConfig.frameBottom;
 		this.frameLen = plungerConfig.frameBottom - plungerConfig.frameTop;
+		this.frameSplit = plungerConfig.frameSplit;
 		this.travelLimit = plungerConfig.frameTop;
 		this.scatterVelocity = plungerData.scatterVelocity;
 
@@ -731,13 +739,15 @@ export class PlungerMover implements MoverObject {
 	}
 
 	private changeState(lastPos?: number) {
-		if (!isNaN(this.pos) && (typeof lastPos === 'undefined' || lastPos !== this.pos)) {
-
+		if (typeof lastPos === 'undefined' || lastPos !== this.pos) {
 			this.player.changeState(this.plungerData.getName(), this.getState());
 		}
 	}
 
 	public getState(): PlungerState {
-		return new PlungerState(this.pos - this.frameStart);
+		const fixedTopY = this.frameSplit - this.frameEnd;
+		const originalBodyY = this.frameEnd - this.frameSplit;
+		const currentBodyY = this.frameEnd - this.pos - fixedTopY;
+		return new PlungerState(this.pos - this.frameStart, currentBodyY / originalBodyY);
 	}
 }

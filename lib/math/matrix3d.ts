@@ -56,11 +56,12 @@ export class Matrix3D {
 		return this;
 	}
 
-	public setScaling(sx: number, sy: number, sz: number) {
+	public setScaling(sx: number, sy: number, sz: number): this {
 		this.setIdentity();
 		this._11 = sx;
 		this._22 = sy;
 		this._33 = sz;
+		return this;
 	}
 
 	public rotateXMatrix(x: number) {

@@ -28,6 +28,8 @@ const PLUNGER_FRAME_COUNT = 25;
 
 export class PlungerMesh {
 
+	public springCut: number = 0;
+
 	private readonly table: Table;
 	private readonly data: PlungerData;
 
@@ -85,7 +87,7 @@ export class PlungerMesh {
 		this.cellWid = 1.0 / this.srcCells;
 	}
 
-	public generateMeshes(): { rod?: Mesh, spring?: Mesh, flat?: Mesh } {
+	public generateMeshes(): { rod?: Mesh, springTop?: Mesh, springBody?: Mesh, flat?: Mesh } {
 
 		this.desc = this.getDesc();
 
@@ -99,8 +101,9 @@ export class PlungerMesh {
 			return { flat: this.buildFlatMesh(n) };
 		} else {
 			const rod = this.buildRodMesh(n);
-			const spring = this.buildSpringMesh(n, rod.vertices);
-			return { rod, spring };
+			const springTop = this.buildSpringMesh(n, true, rod.vertices);
+			const springBody = this.buildSpringMesh(n, false, rod.vertices);
+			return { rod, springTop, springBody };
 		}
 	}
 
@@ -272,11 +275,12 @@ export class PlungerMesh {
 	 * So use the true rod base (rody) position to figure the spring length.
 	 *
 	 * @param i
+	 * @param buildTop If true, only build the "fixed" top of the string; otherwise only build the flexibly "body" of the spring.
 	 * @param rodVertices
 	 */
-	private buildSpringMesh(i: number, rodVertices: Vertex3DNoTex2[]): Mesh {
+	private buildSpringMesh(i: number, buildTop: boolean, rodVertices: Vertex3DNoTex2[]): Mesh {
 
-		const mesh = new Mesh('spring');
+		const mesh = new Mesh('spring' + (buildTop ? 'Top' : 'Body'));
 		const springGaugeRel = this.springGauge / this.data.width;
 
 		const offset = this.circlePoints * this.lathePoints;
@@ -289,13 +293,26 @@ export class PlungerMesh {
 		const dyMain = (y1 - y0 - yEnd) / (nMain - 1);
 		let dy = yEnd / (nEnd - 1);
 		const dTheta = (Math.PI * 2.0) / (this.circlePoints - 1) + Math.PI / (n - 1);
+		let buildingTop = true;
 		for (let theta = Math.PI, y = y0; n !== 0; --n, theta += dTheta, y += dy) {
-			if (n === nMain) {
-				dy = dyMain;
-			}
+
 			if (theta >= Math.PI * 2.0) {
 				theta -= Math.PI * 2.0;
 			}
+
+			if (n === nMain) {
+				dy = dyMain;
+				buildingTop = false;
+				this.springCut = y;
+			}
+
+			if (buildTop && !buildingTop) {
+				continue;
+			}
+			if (!buildTop && buildingTop) {
+				continue;
+			}
+
 			const sn = Math.sin(theta);
 			const cs = Math.cos(theta);
 
