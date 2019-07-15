@@ -23,7 +23,6 @@ import { Player } from '../../game/player';
 import { VpTableExporterOptions } from '../../gltf/table-exporter';
 import { Matrix3D } from '../../math/matrix3d';
 import { MoverObject } from '../../physics/mover-object';
-import { logger } from '../../util/logger';
 import { IMovable, IRenderable, Meshes } from '../game-item';
 import { Table } from '../table';
 import { PlungerData } from './plunger-data';
@@ -56,7 +55,7 @@ export class Plunger implements IRenderable, IMovable<PlungerState> {
 	}
 
 	public setupPlayer(player: Player, table: Table) {
-		this.hit = new PlungerHit(this.data, player, table);
+		this.hit = new PlungerHit(this.data, this.mesh.springCut, player, table);
 		this.state = this.hit.plungerMover.getState();
 	}
 
@@ -83,9 +82,16 @@ export class Plunger implements IRenderable, IMovable<PlungerState> {
 				map,
 			};
 		}
-		if (plunger.spring) {
-			meshes.spring = {
-				mesh: plunger.spring.transform(matrix),
+		if (plunger.springTop) {
+			meshes.springTop = {
+				mesh: plunger.springTop.transform(matrix),
+				material,
+				map,
+			};
+		}
+		if (plunger.springBody) {
+			meshes.springBody = {
+				mesh: plunger.springBody.transform(matrix),
 				material,
 				map,
 			};
@@ -141,15 +147,27 @@ export class Plunger implements IRenderable, IMovable<PlungerState> {
 		}
 
 		const posY = state.pos - this.state!.pos;
+
 		const matMove = new Matrix3D().setTranslation(0, posY, 0);
 		this.state = state;
 
 		const rod = obj.children.find(o => o.name === 'rod');
-		if (!rod) {
-			logger().info('[%s] Cannot find rod in scene.', this.getName());
-			return;
+		const springTop = obj.children.find(o => o.name === 'springTop');
+		const springBody = obj.children.find(o => o.name === 'springBody');
+
+		if (rod) {
+			rod!.applyMatrix(matMove.toThreeMatrix4());
 		}
-		rod.applyMatrix(matMove.toThreeMatrix4());
+		if (springTop) {
+			springTop!.applyMatrix(matMove.toThreeMatrix4());
+		}
+		if (springBody) {
+			const matScale = new Matrix3D().setScaling(1, state.scaleY / this.state!.scaleY, 1);
+			const matToOrigin = new Matrix3D().setTranslation(-this.data.center.x, -this.data.center.y, 0);
+			const matFromOrigin = new Matrix3D().setTranslation(this.data.center.x, this.data.center.y, 0);
+			const matrix = matToOrigin.multiply(matScale).multiply(matFromOrigin);
+			springBody!.applyMatrix(matrix.toThreeMatrix4());
+		}
 	}
 }
 
@@ -166,4 +184,5 @@ export interface PlungerConfig {
 	zHeight: number;
 	frameTop: number;
 	frameBottom: number;
+	frameSplit: number;
 }

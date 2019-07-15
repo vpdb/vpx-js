@@ -28,7 +28,7 @@ export class PlungerHit extends HitObject {
 
 	public readonly plungerMover: PlungerMover;
 
-	constructor(plungerData: PlungerData, player: Player, table: Table) {
+	constructor(plungerData: PlungerData, frameSplit: number, player: Player, table: Table) {
 		super();
 		const zHeight = table.getSurfaceHeight(plungerData.szSurface, plungerData.center.x, plungerData.center.y);
 		const config: PlungerConfig = {
@@ -38,7 +38,9 @@ export class PlungerHit extends HitObject {
 			zHeight,
 			frameTop: plungerData.center.y - plungerData.stroke!,
 			frameBottom: plungerData.center.y,
+			frameSplit,
 		};
+
 		this.hitBBox.zlow = config.zHeight;
 		this.hitBBox.zhigh = config.zHeight + Plunger.PLUNGER_HEIGHT;
 
