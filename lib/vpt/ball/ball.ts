@@ -18,7 +18,10 @@
  */
 
 import { Object3D } from 'three';
-import { IHittable, IMovable } from '../item-data';
+import { IHittable } from '../../game/ihittable';
+import { IMovable } from '../../game/imovable';
+import { Player } from '../../game/player';
+import { Table } from '../table';
 import { TableData } from '../table-data';
 import { BallData } from './ball-data';
 import { BallHit } from './ball-hit';
@@ -60,5 +63,9 @@ export class Ball implements IMovable<BallState>, IHittable {
 
 	public getHitObject(): BallHit {
 		return this.hit;
+	}
+
+	public setupPlayer(player: Player, table: Table): void {
+		// there is no ball yet on player setup
 	}
 }

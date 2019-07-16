@@ -19,13 +19,14 @@
 
 import { spinnerBracketMesh } from '../../res/meshes/spinner-bracket-mesh';
 import { spinnerPlateMesh } from '../../res/meshes/spinner-plate-mesh';
+import { IRenderable } from '../game/irenderable';
 import { BiffParser } from '../io/biff-parser';
 import { Storage } from '../io/ole-doc';
 import { degToRad, f4 } from '../math/float';
 import { Matrix3D } from '../math/matrix3d';
 import { Vertex2D } from '../math/vertex2d';
 import { Vertex3D } from '../math/vertex3d';
-import { IRenderable, ItemData, Meshes } from './item-data';
+import { ItemData, Meshes } from './item-data';
 import { Mesh } from './mesh';
 import { Table } from './table';
 

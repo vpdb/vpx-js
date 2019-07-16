@@ -20,13 +20,14 @@
 import { BufferGeometry, ExtrudeBufferGeometry, MeshStandardMaterial, Path, Shape, Vector2 } from 'three';
 import { bulbLightMesh } from '../../res/meshes/bulb-light-mesh';
 import { bulbSocketMesh } from '../../res/meshes/bulb-socket-mesh';
+import { IRenderable } from '../game/irenderable';
 import { BiffParser } from '../io/biff-parser';
 import { Storage } from '../io/ole-doc';
 import { DragPoint } from '../math/dragpoint';
 import { Matrix3D } from '../math/matrix3d';
 import { SplineVertex } from '../math/spline-vertex';
 import { Vertex2D } from '../math/vertex2d';
-import { IRenderable, ItemData, Meshes } from './item-data';
+import { ItemData, Meshes } from './item-data';
 import { Material } from './material';
 import { Table } from './table';
 

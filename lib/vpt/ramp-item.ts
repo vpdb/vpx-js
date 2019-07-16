@@ -18,6 +18,7 @@
  */
 
 import { Storage } from '..';
+import { IRenderable, RenderInfo } from '../game/irenderable';
 import { BiffParser } from '../io/biff-parser';
 import { CatmullCurve3D } from '../math/catmull-curve';
 import { DragPoint } from '../math/dragpoint';
@@ -26,7 +27,7 @@ import { Matrix3D } from '../math/matrix3d';
 import { Vertex3DNoTex2 } from '../math/vertex';
 import { Vertex2D } from '../math/vertex2d';
 import { RenderVertex3D, Vertex3D } from '../math/vertex3d';
-import { IRenderable, ItemData, Meshes, RenderInfo } from './item-data';
+import { ItemData, Meshes} from './item-data';
 import { Mesh } from './mesh';
 import { Table } from './table';
 

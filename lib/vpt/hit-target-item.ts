@@ -26,12 +26,13 @@ import { hitTargetRectangleMesh } from '../../res/meshes/hit-target-rectangle-me
 import { hitTargetRoundMesh } from '../../res/meshes/hit-target-round-mesh';
 import { hitTargetT1SlimMesh } from '../../res/meshes/hit-target-t1-slim-mesh';
 import { hitTargetT2SlimMesh } from '../../res/meshes/hit-target-t2-slim-mesh';
+import { IRenderable } from '../game/irenderable';
 import { BiffParser } from '../io/biff-parser';
 import { Storage } from '../io/ole-doc';
 import { degToRad, f4 } from '../math/float';
 import { Matrix3D } from '../math/matrix3d';
 import { Vertex3D } from '../math/vertex3d';
-import { IRenderable, ItemData, Meshes } from './item-data';
+import { ItemData, Meshes } from './item-data';
 import { Mesh } from './mesh';
 import { Table } from './table';
 

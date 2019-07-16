@@ -30,11 +30,11 @@ import {
 	Texture,
 } from 'three';
 import { Table } from '..';
+import { IRenderable, RenderInfo } from '../game/irenderable';
 import { exportGltf } from '../refs.node';
 import { logger } from '../util/logger';
 import { BumperItem } from '../vpt/bumper-item';
 import { Flipper } from '../vpt/flipper/flipper';
-import { IRenderable, RenderInfo } from '../vpt/item-data';
 import { PrimitiveItem } from '../vpt/primitive-item';
 import { RampItem } from '../vpt/ramp-item';
 import { RubberItem } from '../vpt/rubber-item';

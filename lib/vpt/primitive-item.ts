@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { IRenderable } from '../game/irenderable';
 import { BiffParser } from '../io/biff-parser';
 import { Storage } from '../io/ole-doc';
 import { degToRad } from '../math/float';
@@ -24,7 +25,7 @@ import { Matrix3D } from '../math/matrix3d';
 import { Vertex3DNoTex2 } from '../math/vertex';
 import { Vertex3D } from '../math/vertex3d';
 import { FrameData } from './animation';
-import { IRenderable, ItemData, Meshes } from './item-data';
+import { ItemData, Meshes } from './item-data';
 import { FLT_MAX, Mesh } from './mesh';
 import { Table } from './table';
 

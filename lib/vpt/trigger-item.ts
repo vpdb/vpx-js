@@ -21,6 +21,7 @@ import { triggerButtonMesh } from '../../res/meshes/trigger-button-mesh';
 import { triggerSimpleMesh } from '../../res/meshes/trigger-simple-mesh';
 import { triggerStarMesh } from '../../res/meshes/trigger-star-mesh';
 import { triggerDWireMesh } from '../../res/meshes/trigger-wire-d-mesh';
+import { IRenderable } from '../game/irenderable';
 import { BiffParser } from '../io/biff-parser';
 import { Storage } from '../io/ole-doc';
 import { DragPoint } from '../math/dragpoint';
@@ -29,7 +30,7 @@ import { Matrix3D } from '../math/matrix3d';
 import { Vertex2D } from '../math/vertex2d';
 import { Vertex3D } from '../math/vertex3d';
 import { logger } from '../util/logger';
-import { IRenderable, ItemData, Meshes } from './item-data';
+import { ItemData, Meshes } from './item-data';
 import { Mesh } from './mesh';
 import { Table } from './table';
 
