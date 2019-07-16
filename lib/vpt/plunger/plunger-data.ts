@@ -20,10 +20,10 @@
 import { Storage } from '../..';
 import { BiffParser } from '../../io/biff-parser';
 import { Vertex2D } from '../../math/vertex2d';
-import { GameItem } from '../game-item';
+import { ItemData } from '../item-data';
 import { PlungerType } from './plunger';
 
-export class PlungerData extends GameItem {
+export class PlungerData extends ItemData {
 
 	public type: PlungerType = PlungerType.Modern;
 	public center!: Vertex2D;

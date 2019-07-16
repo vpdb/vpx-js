@@ -26,7 +26,7 @@ import { Matrix3D } from '../math/matrix3d';
 import { Vertex3DNoTex2 } from '../math/vertex';
 import { Vertex2D } from '../math/vertex2d';
 import { RenderVertex3D, Vertex3D } from '../math/vertex3d';
-import { GameItem, IRenderable, Meshes, RenderInfo } from './game-item';
+import { IRenderable, ItemData, Meshes, RenderInfo } from './item-data';
 import { Mesh } from './mesh';
 import { Table } from './table';
 
@@ -35,7 +35,7 @@ import { Table } from './table';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/ramp.cpp
  */
-export class RampItem extends GameItem implements IRenderable {
+export class RampItem extends ItemData implements IRenderable {
 
 	public static RampTypeFlat = 0;
 	public static RampType4Wire = 1;

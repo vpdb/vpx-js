@@ -24,7 +24,7 @@ import { PHYS_FACTOR } from '../../physics/constants';
 import { HitCircle } from '../../physics/hit-circle';
 import { MoverObject } from '../../physics/mover-object';
 import { logger } from '../../util/logger';
-import { GameData } from '../game-data';
+import { TableData } from '../table-data';
 import { FlipperConfig } from './flipper';
 import { FlipperData } from './flipper-data';
 import { FlipperState } from './flipper-state';
@@ -32,7 +32,7 @@ import { FlipperState } from './flipper-state';
 export class FlipperMover implements MoverObject {
 
 	private flipperData: FlipperData;
-	private tableData: GameData;
+	private tableData: TableData;
 
 	public hitCircleBase: HitCircle;
 	public endRadius: number;
@@ -65,7 +65,7 @@ export class FlipperMover implements MoverObject {
 	public lastHitFace: boolean;
 	private player!: Player;
 
-	constructor(config: FlipperConfig, flipperData: FlipperData, player: Player, tableData: GameData) {
+	constructor(config: FlipperConfig, flipperData: FlipperData, player: Player, tableData: TableData) {
 
 		this.hitCircleBase = new HitCircle(config.center, config.baseRadius, config.zLow, config.zHigh);
 		this.flipperData = flipperData;

@@ -20,14 +20,14 @@
 import { BiffParser } from '../io/biff-parser';
 import { Storage } from '../io/ole-doc';
 import { Vertex2D } from '../math/vertex2d';
-import { GameItem } from './game-item';
+import { ItemData } from './item-data';
 
 /**
  * VPinball's timers.
  *
  * @see https://github.com/vpinball/vpinball/blob/master/timer.cpp
  */
-export class TextBoxItem extends GameItem {
+export class TextBoxItem extends ItemData {
 
 	public v1!: Vertex2D;
 	public v2!: Vertex2D;

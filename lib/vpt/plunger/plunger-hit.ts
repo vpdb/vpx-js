@@ -45,7 +45,7 @@ export class PlungerHit extends HitObject {
 		this.hitBBox.zlow = config.zHeight;
 		this.hitBBox.zhigh = config.zHeight + Plunger.PLUNGER_HEIGHT;
 
-		this.plungerMover = new PlungerMover(config, plungerData, player, table.gameData!);
+		this.plungerMover = new PlungerMover(config, plungerData, player, table.data!);
 	}
 
 	public getMoverObject(): PlungerMover {

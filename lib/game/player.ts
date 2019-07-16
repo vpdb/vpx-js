@@ -330,11 +330,11 @@ export class Player {
 
 	public createBall(ballCreator: IBallCreationPosition, velocity: Vertex3D = new Vertex3D( 0.1, 0, 0), radius = 25, mass = 1): Ball {
 
-		const data = new BallData(radius, mass, this.table.gameData!.defaultBulbIntensityScaleOnBall);
+		const data = new BallData(radius, mass, this.table.data!.defaultBulbIntensityScaleOnBall);
 		const state = new BallState(ballCreator.getBallCreationPosition(this.table), velocity);
 		state.pos.z += data.radius;
 
-		const ball = new Ball(data, state, this.table.gameData!);
+		const ball = new Ball(data, state, this.table.data!);
 
 		this.balls.push(ball);
 		this.movers.push(ball.getMover()); // balls are always added separately to this list!

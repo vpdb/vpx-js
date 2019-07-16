@@ -30,7 +30,7 @@ import { Matrix3D } from '../math/matrix3d';
 import { Vertex2D } from '../math/vertex2d';
 import { Vertex3D } from '../math/vertex3d';
 import { logger } from '../util/logger';
-import { GameItem, IRenderable, Meshes } from './game-item';
+import { IRenderable, ItemData, Meshes } from './item-data';
 import { Mesh } from './mesh';
 import { Table } from './table';
 
@@ -39,7 +39,7 @@ import { Table } from './table';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/gate.cpp
  */
-export class GateItem extends GameItem implements IRenderable {
+export class GateItem extends ItemData implements IRenderable {
 
 	public static TypeGateWireW = 1;
 	public static TypeGateWireRectangle = 2;

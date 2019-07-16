@@ -22,7 +22,7 @@ import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { HitObject } from '../../physics/hit-object';
-import { GameData } from '../game-data';
+import { TableData } from '../table-data';
 import { Ball } from './ball';
 import { BallData } from './ball-data';
 import { BallMover } from './ball-mover';
@@ -37,7 +37,7 @@ export class BallHit extends HitObject {
 	private readonly data: BallData;
 	private readonly state: BallState;
 	private readonly mover: BallMover;
-	private readonly tableData: GameData;
+	private readonly tableData: TableData;
 
 	private readonly orientation = new Matrix3D().setIdentity();
 	private readonly invMass: number;
@@ -64,7 +64,7 @@ export class BallHit extends HitObject {
 	 * @param tableData Table data
 	 * @see void Ball::Init(const float mass)
 	 */
-	constructor(ball: Ball, data: BallData, state: BallState, tableData: GameData) {
+	constructor(ball: Ball, data: BallData, state: BallState, tableData: TableData) {
 		super();
 
 		this.data = data;

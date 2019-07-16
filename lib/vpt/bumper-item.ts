@@ -17,17 +17,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Storage } from '..';
 import { bumperBaseMesh } from '../../res/meshes/bumper-base-mesh';
 import { bumperCapMesh } from '../../res/meshes/bumper-cap-mesh';
 import { bumperRingMesh } from '../../res/meshes/bumper-ring-mesh';
 import { bumperSocketMesh } from '../../res/meshes/bumper-socket-mesh';
 import { BiffParser } from '../io/biff-parser';
-import { Storage } from '../io/ole-doc';
 import { degToRad, f4 } from '../math/float';
 import { Matrix3D } from '../math/matrix3d';
 import { Vertex2D } from '../math/vertex2d';
 import { Vertex3D } from '../math/vertex3d';
-import { GameItem, IRenderable, Meshes } from './game-item';
+import { IRenderable, ItemData, Meshes } from './item-data';
 import { Mesh } from './mesh';
 import { Table } from './table';
 import { Texture } from './texture';
@@ -37,7 +37,7 @@ import { Texture } from './texture';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/bumper.cpp
  */
-export class BumperItem extends GameItem implements IRenderable {
+export class BumperItem extends ItemData implements IRenderable {
 
 	public vCenter!: Vertex2D;
 	public radius: number = 1.0;

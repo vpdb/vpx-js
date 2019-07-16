@@ -18,8 +18,8 @@
  */
 
 import { Object3D } from 'three';
-import { GameData } from '../game-data';
-import { IHittable, IMovable } from '../game-item';
+import { IHittable, IMovable } from '../item-data';
+import { TableData } from '../table-data';
 import { BallData } from './ball-data';
 import { BallHit } from './ball-hit';
 import { BallMesh } from './ball-mesh';
@@ -38,7 +38,7 @@ export class Ball implements IMovable<BallState>, IHittable {
 
 	private static idCounter = 0;
 
-	constructor(data: BallData, state: BallState, tableData: GameData) {
+	constructor(data: BallData, state: BallState, tableData: TableData) {
 		this.id = Ball.idCounter++;
 		this.data = data;
 		this.state = state;

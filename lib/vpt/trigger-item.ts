@@ -29,7 +29,7 @@ import { Matrix3D } from '../math/matrix3d';
 import { Vertex2D } from '../math/vertex2d';
 import { Vertex3D } from '../math/vertex3d';
 import { logger } from '../util/logger';
-import { GameItem, IRenderable, Meshes } from './game-item';
+import { IRenderable, ItemData, Meshes } from './item-data';
 import { Mesh } from './mesh';
 import { Table } from './table';
 
@@ -38,7 +38,7 @@ import { Table } from './table';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/trigger.cpp
  */
-export class TriggerItem extends GameItem implements IRenderable {
+export class TriggerItem extends ItemData implements IRenderable {
 
 	public static ShapeTriggerNone = 0;
 	public static ShapeTriggerWireA = 1;

@@ -23,7 +23,7 @@ import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex2D } from '../../math/vertex2d';
-import { IMovable, IRenderable, Meshes } from '../game-item';
+import { IMovable, IRenderable, Meshes } from '../item-data';
 import { Table } from '../table';
 import { FlipperData } from './flipper-data';
 import { FlipperHit } from './flipper-hit';
@@ -43,17 +43,17 @@ export class Flipper implements IRenderable, IMovable<FlipperState> {
 	private state: FlipperState;
 	private hit?: FlipperHit;
 
-	public static async fromStorage(storage: Storage, itemName: string, table: Table): Promise<Flipper> {
+	public static async fromStorage(storage: Storage, itemName: string): Promise<Flipper> {
 		const data = await FlipperData.fromStorage(storage, itemName);
-		return new Flipper(itemName, data, table);
+		return new Flipper(itemName, data);
 	}
 
-	public static fromSerialized(itemName: string, blob: { [key: string]: any }, table: Table): Flipper {
+	public static fromSerialized(itemName: string, blob: { [key: string]: any }): Flipper {
 		const data = FlipperData.fromSerialized(itemName, blob.data);
-		return new Flipper(itemName, data, table);
+		return new Flipper(itemName, data);
 	}
 
-	public constructor(itemName: string, data: FlipperData, table: Table) {
+	public constructor(itemName: string, data: FlipperData) {
 		this.data = data;
 		this.mesh = new FlipperMesh();
 		this.state = new FlipperState(degToRad(data.startAngle));
