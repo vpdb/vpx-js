@@ -19,6 +19,7 @@
 
 import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
+import { CollisionType } from '../../physics/collision-type';
 // import { Vertex2D } from '../../math/vertex2d';
 // import { Vertex3D } from '../../math/vertex3d';
 // import { CollisionEvent } from '../../physics/collision-event';
@@ -116,9 +117,9 @@ export class FlipperHit extends HitObject {
 	// 	}
 	// }
 
-	// public GetType(): CollisionType {
-	// 	return CollisionType.Flipper;
-	// }
+	public getType(): CollisionType {
+		return CollisionType.Flipper;
+	}
 
 	// public Collide(coll: CollisionEvent): void {
 	// }

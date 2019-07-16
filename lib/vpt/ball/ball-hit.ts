@@ -26,6 +26,7 @@ import { Ball } from './ball';
 import { BallData } from './ball-data';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
+import { CollisionType } from '../../physics/collision-type';
 
 /**
  * In the VP source code this is all part of ball.cpp. We'll try
@@ -112,6 +113,10 @@ export class BallHit extends HitObject {
 
 	public getMoverObject(): BallMover {
 		return this.mover;
+	}
+
+	public getType(): CollisionType {
+		return CollisionType.Flipper;
 	}
 }
 

@@ -18,8 +18,8 @@
  */
 
 import { Vertex2D } from '../math/vertex2d';
+import { CollisionType } from './collision-type';
 import { HitObject } from './hit-object';
-import { MoverObject } from './mover-object';
 
 export class HitLineZ extends HitObject {
 
@@ -40,5 +40,9 @@ export class HitLineZ extends HitObject {
 		this.xy.x = x;
 		this.xy.y = y;
 		return this;
+	}
+
+	public getType(): CollisionType {
+		return CollisionType.Joint;
 	}
 }
