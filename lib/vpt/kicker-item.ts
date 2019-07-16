@@ -29,7 +29,7 @@ import { degToRad, f4 } from '../math/float';
 import { Matrix3D } from '../math/matrix3d';
 import { Vertex2D } from '../math/vertex2d';
 import { Vertex3D } from '../math/vertex3d';
-import { GameItem, IRenderable, Meshes } from './game-item';
+import { IRenderable, ItemData, Meshes } from './item-data';
 import { Mesh } from './mesh';
 import { Table } from './table';
 import { Texture } from './texture';
@@ -39,7 +39,7 @@ import { Texture } from './texture';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/kicker.cpp
  */
-export class KickerItem extends GameItem implements IRenderable {
+export class KickerItem extends ItemData implements IRenderable {
 
 	public static TypeKickerInvisible = 0;
 	public static TypeKickerHole = 1;

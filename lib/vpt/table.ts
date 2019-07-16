@@ -28,10 +28,9 @@ import { Vertex3DNoTex2 } from '../math/vertex';
 import { logger } from '../util/logger';
 import { BumperItem } from './bumper-item';
 import { Flipper } from './flipper/flipper';
-import { GameData } from './game-data';
-import { GameItem, IMovable, IRenderable, Meshes } from './game-item';
 import { GateItem } from './gate-item';
 import { HitTargetItem } from './hit-target-item';
+import { IMovable, IRenderable, ItemData, Meshes } from './item-data';
 import { KickerItem } from './kicker-item';
 import { LightItem } from './light-item';
 import { Material } from './material';
@@ -42,6 +41,7 @@ import { RampItem } from './ramp-item';
 import { RubberItem } from './rubber-item';
 import { SpinnerItem } from './spinner-item';
 import { SurfaceItem } from './surface-item';
+import { TableData } from './table-data';
 import { TextBoxItem } from './textbox-item';
 import { Texture } from './texture';
 import { TimerItem } from './timer-item';
@@ -55,7 +55,7 @@ import { TriggerItem } from './trigger-item';
  */
 export class Table implements IRenderable {
 
-	public gameData?: GameData;
+	public data?: TableData;
 	public tableInfo: { [key: string]: string } = {};
 	public surfaces: { [key: string]: SurfaceItem } = {};
 	public primitives: { [key: string]: PrimitiveItem } = {};
@@ -88,9 +88,9 @@ export class Table implements IRenderable {
 
 	public static fromSerialized(blob: { [key: string]: any }): Table {
 		const table = new Table();
-		table.gameData = GameData.fromSerialized(blob.gameData);
+		table.data = TableData.fromSerialized(blob.gameData);
 		for (const name of Object.keys(blob.flippers)) {
-			table.flippers[name] = Flipper.fromSerialized(blob.flippers[name].data.itemName, blob.flippers[name], table);
+			table.flippers[name] = Flipper.fromSerialized(blob.flippers[name].data.itemName, blob.flippers[name]);
 		}
 		return table;
 	}
@@ -113,7 +113,7 @@ export class Table implements IRenderable {
 	}
 
 	public getName(): string {
-		return this.gameData!.getName();
+		return this.data!.getName();
 	}
 
 	public getTexture(name?: string): Texture | undefined {
@@ -128,10 +128,10 @@ export class Table implements IRenderable {
 			return undefined;
 		}
 		/* istanbul ignore if */
-		if (!this.gameData) {
+		if (!this.data) {
 			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
 		}
-		return this.gameData.materials.find(m => m.szName === name);
+		return this.data.materials.find(m => m.szName === name);
 	}
 
 	public getMovables(): Array<IMovable<any>> {
@@ -140,10 +140,10 @@ export class Table implements IRenderable {
 
 	public getScaleZ(): number {
 		/* istanbul ignore if */
-		if (!this.gameData) {
+		if (!this.data) {
 			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
 		}
-		return f4(this.gameData.BG_scalez[this.gameData.BG_current_set]) || 1.0;
+		return f4(this.data.BG_scalez[this.data.BG_current_set]) || 1.0;
 	}
 
 	public getDetailLevel() {
@@ -152,29 +152,29 @@ export class Table implements IRenderable {
 
 	public getTableHeight() {
 		/* istanbul ignore if */
-		if (!this.gameData) {
+		if (!this.data) {
 			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
 		}
-		return this.gameData.tableheight;
+		return this.data.tableheight;
 	}
 
 	public getDimensions(): { width: number, height: number } {
 		/* istanbul ignore if */
-		if (!this.gameData) {
+		if (!this.data) {
 			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
 		}
 		return {
-			width: this.gameData.right - this.gameData.left,
-			height: this.gameData.bottom - this.gameData.top,
+			width: this.data.right - this.data.left,
+			height: this.data.bottom - this.data.top,
 		};
 	}
 
 	public getPlayfieldMap(): string {
 		/* istanbul ignore if */
-		if (!this.gameData) {
+		if (!this.data) {
 			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
 		}
-		return this.gameData.szImage || '';
+		return this.data.szImage || '';
 	}
 
 	public async streamStorage<T>(name: string, streamer: (stg: Storage) => Promise<T>): Promise<T> {
@@ -188,24 +188,24 @@ export class Table implements IRenderable {
 
 	public getSurfaceHeight(surface: string | undefined, x: number, y: number) {
 		/* istanbul ignore if */
-		if (!this.gameData) {
+		if (!this.data) {
 			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
 		}
 		if (!surface) {
-			return this.gameData.tableheight;
+			return this.data.tableheight;
 		}
 
 		if (this.surfaces[surface]) {
-			return f4(this.gameData.tableheight + this.surfaces[surface].heighttop);
+			return f4(this.data.tableheight + this.surfaces[surface].heighttop);
 		}
 
 		if (this.ramps[surface]) {
-			return f4(this.gameData.tableheight + this.ramps[surface].getSurfaceHeight(x, y, this));
+			return f4(this.data.tableheight + this.ramps[surface].getSurfaceHeight(x, y, this));
 		}
 
 		/* istanbul ignore next */
 		logger().warn('[Table.getSurfaceHeight] Unknown surface %s.', surface);
-		return this.gameData.tableheight;
+		return this.data.tableheight;
 	}
 
 	public async exportScene(opts?: VpTableExporterOptions): Promise<Scene> {
@@ -225,13 +225,13 @@ export class Table implements IRenderable {
 
 	public async getTableScript(): Promise<string> {
 		/* istanbul ignore if */
-		if (!this.gameData) {
+		if (!this.data) {
 			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
 		}
 		await this.doc.reopen();
 		try {
 			const gameStorage = this.doc.storage('GameStg');
-			const buffer = await gameStorage.read('GameData', this.gameData.scriptPos, this.gameData.scriptLen);
+			const buffer = await gameStorage.read('GameData', this.data.scriptPos, this.data.scriptLen);
 			return buffer.toString();
 		} finally {
 			await this.doc.close();
@@ -248,15 +248,15 @@ export class Table implements IRenderable {
 				const gameStorage = this.doc.storage('GameStg');
 
 				// load game data
-				this.gameData = await GameData.fromStorage(gameStorage, 'GameData');
+				this.data = await TableData.fromStorage(gameStorage, 'GameData');
 
 				if (!opts.gameDataOnly) {
 
 					// load items
-					await this.loadGameItems(gameStorage, this.gameData.numGameItems, opts);
+					await this.loadGameItems(gameStorage, this.data.numGameItems, opts);
 
 					// load images
-					await this.loadTextures(gameStorage, this.gameData.numTextures);
+					await this.loadTextures(gameStorage, this.data.numTextures);
 				}
 			}
 
@@ -271,18 +271,18 @@ export class Table implements IRenderable {
 
 	public getMeshes(table: Table, opts: VpTableExporterOptions): Meshes {
 		/* istanbul ignore if */
-		if (!this.gameData) {
+		if (!this.data) {
 			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
 		}
 		let geometry: BufferGeometry;
 		const dim = table.getDimensions();
 
 		const pfShape = new Shape();
-		pfShape.moveTo(this.gameData.left, this.gameData.top);
-		pfShape.lineTo(this.gameData.right, this.gameData.top);
-		pfShape.lineTo(this.gameData.right, this.gameData.bottom);
-		pfShape.lineTo(this.gameData.left, this.gameData.bottom);
-		pfShape.lineTo(this.gameData.left, this.gameData.top);
+		pfShape.moveTo(this.data.left, this.data.top);
+		pfShape.lineTo(this.data.right, this.data.top);
+		pfShape.lineTo(this.data.right, this.data.bottom);
+		pfShape.lineTo(this.data.left, this.data.bottom);
+		pfShape.lineTo(this.data.left, this.data.top);
 
 		// drill holes if playfield lights are rendered separately.
 		if (opts.exportPlayfieldLights) {
@@ -326,8 +326,8 @@ export class Table implements IRenderable {
 		return {
 			playfield: {
 				geometry,
-				material: this.getMaterial(this.gameData.szPlayfieldMaterial),
-				map: this.getTexture(this.gameData.szImage),
+				material: this.getMaterial(this.data.szPlayfieldMaterial),
+				map: this.getTexture(this.data.szImage),
 			},
 		};
 	}
@@ -344,85 +344,85 @@ export class Table implements IRenderable {
 			const itemType = itemData.readInt32LE(0);
 			switch (itemType) {
 
-				case GameItem.TypeSurface: {
+				case ItemData.TypeSurface: {
 					const item = await SurfaceItem.fromStorage(storage, itemName);
 					this.surfaces[item.getName()] = item;
 					break;
 				}
 
-				case GameItem.TypePrimitive: {
+				case ItemData.TypePrimitive: {
 					const item = await PrimitiveItem.fromStorage(storage, itemName);
 					this.primitives[item.getName()] = item;
 					break;
 				}
 
-				case GameItem.TypeLight: {
+				case ItemData.TypeLight: {
 					this.lights.push(await LightItem.fromStorage(storage, itemName));
 					break;
 				}
 
-				case GameItem.TypeRubber: {
+				case ItemData.TypeRubber: {
 					const item = await RubberItem.fromStorage(storage, itemName);
 					this.rubbers[item.getName()] = item;
 					break;
 				}
 
-				case GameItem.TypeFlipper: {
-					const item = await Flipper.fromStorage(storage, itemName, this);
+				case ItemData.TypeFlipper: {
+					const item = await Flipper.fromStorage(storage, itemName);
 					this.flippers[item.getName()] = item;
 					break;
 				}
 
-				case GameItem.TypeBumper: {
+				case ItemData.TypeBumper: {
 					const item = await BumperItem.fromStorage(storage, itemName);
 					this.bumpers[item.getName()] = item;
 					break;
 				}
 
-				case GameItem.TypeRamp: {
+				case ItemData.TypeRamp: {
 					const item = await RampItem.fromStorage(storage, itemName);
 					this.ramps[item.getName()] = item;
 					break;
 				}
 
-				case GameItem.TypeHitTarget: {
+				case ItemData.TypeHitTarget: {
 					this.hitTargets.push(await HitTargetItem.fromStorage(storage, itemName));
 					break;
 				}
 
-				case GameItem.TypeGate: {
+				case ItemData.TypeGate: {
 					this.gates.push(await GateItem.fromStorage(storage, itemName));
 					break;
 				}
 
-				case GameItem.TypeKicker: {
+				case ItemData.TypeKicker: {
 					this.kickers.push(await KickerItem.fromStorage(storage, itemName));
 					break;
 				}
 
-				case GameItem.TypeTrigger: {
+				case ItemData.TypeTrigger: {
 					this.triggers.push(await TriggerItem.fromStorage(storage, itemName));
 					break;
 				}
 
-				case GameItem.TypeSpinner: {
+				case ItemData.TypeSpinner: {
 					this.spinners.push(await SpinnerItem.fromStorage(storage, itemName));
 					break;
 				}
 
-				case GameItem.TypeTimer: {
+				case ItemData.TypeTimer: {
 					if (opts.loadInvisibleItems) {
 						this.timers.push(await TimerItem.fromStorage(storage, itemName));
 					}
 					break;
 				}
 
-				case GameItem.TypePlunger: {
+				case ItemData.TypePlunger: {
 					this.plungers.push(await Plunger.fromStorage(storage, itemName, this));
 					break;
 				}
 
-				case GameItem.TypeTextbox: {
+				case ItemData.TypeTextbox: {
 					if (opts.loadInvisibleItems) {
 						this.textBoxes.push(await TextBoxItem.fromStorage(storage, itemName));
 					}
@@ -433,10 +433,10 @@ export class Table implements IRenderable {
 					// ignore the rest for now
 					break;
 			}
-			if (!stats[GameItem.getType(itemType)]) {
-				stats[GameItem.getType(itemType)] = 1;
+			if (!stats[ItemData.getType(itemType)]) {
+				stats[ItemData.getType(itemType)] = 1;
 			} else {
-				stats[GameItem.getType(itemType)]++;
+				stats[ItemData.getType(itemType)]++;
 			}
 		}
 		return stats;
@@ -462,22 +462,22 @@ export class Table implements IRenderable {
 
 	/* istanbul ignore next */
 	private get2DMesh(): Mesh {
-		if (!this.gameData) {
+		if (!this.data) {
 			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
 		}
 		const rgv: Vertex3DNoTex2[] = [];
 		for (let i = 0; i < 7; i++) {
 			rgv.push(new Vertex3DNoTex2());
 		}
-		rgv[0].x = this.gameData.left;     rgv[0].y = this.gameData.top;      rgv[0].z = this.gameData.tableheight;
-		rgv[1].x = this.gameData.right;    rgv[1].y = this.gameData.top;      rgv[1].z = this.gameData.tableheight;
-		rgv[2].x = this.gameData.right;    rgv[2].y = this.gameData.bottom;   rgv[2].z = this.gameData.tableheight;
-		rgv[3].x = this.gameData.left;     rgv[3].y = this.gameData.bottom;   rgv[3].z = this.gameData.tableheight;
+		rgv[0].x = this.data.left;     rgv[0].y = this.data.top;      rgv[0].z = this.data.tableheight;
+		rgv[1].x = this.data.right;    rgv[1].y = this.data.top;      rgv[1].z = this.data.tableheight;
+		rgv[2].x = this.data.right;    rgv[2].y = this.data.bottom;   rgv[2].z = this.data.tableheight;
+		rgv[3].x = this.data.left;     rgv[3].y = this.data.bottom;   rgv[3].z = this.data.tableheight;
 
 		// These next 4 vertices are used just to set the extents
-		rgv[4].x = this.gameData.left;     rgv[4].y = this.gameData.top;      rgv[4].z = this.gameData.tableheight + Table.playfieldThickness;
-		rgv[5].x = this.gameData.left;     rgv[5].y = this.gameData.bottom;   rgv[5].z = this.gameData.tableheight + Table.playfieldThickness;
-		rgv[6].x = this.gameData.right;    rgv[6].y = this.gameData.bottom;   rgv[6].z = this.gameData.tableheight + Table.playfieldThickness;
+		rgv[4].x = this.data.left;     rgv[4].y = this.data.top;      rgv[4].z = this.data.tableheight + Table.playfieldThickness;
+		rgv[5].x = this.data.left;     rgv[5].y = this.data.bottom;   rgv[5].z = this.data.tableheight + Table.playfieldThickness;
+		rgv[6].x = this.data.right;    rgv[6].y = this.data.bottom;   rgv[6].z = this.data.tableheight + Table.playfieldThickness;
 		//rgv[7].x=g_pplayer->m_ptable->m_right;    rgv[7].y=g_pplayer->m_ptable->m_top;      rgv[7].z=50.0f;
 
 		for (let i = 0; i < 4; ++i) {

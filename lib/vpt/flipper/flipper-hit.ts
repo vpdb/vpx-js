@@ -27,9 +27,9 @@ import { CollisionType } from '../../physics/collision-type';
 // import { C_CONTACTVEL, C_INTERATIONS, C_PRECISION, PHYS_TOUCH } from '../../physics/constants';
 import { HitObject } from '../../physics/hit-object';
 import { MoverObject } from '../../physics/mover-object';
-// import { Ball } from '../ball/ball';
-import { GameData } from '../game-data';
 import { Table } from '../table';
+// import { Ball } from '../ball/ball';
+import { TableData } from '../table-data';
 import { FlipperConfig } from './flipper';
 import { FlipperData } from './flipper-data';
 import { FlipperMover } from './flipper-mover';
@@ -38,7 +38,7 @@ export class FlipperHit extends HitObject {
 
 	private readonly flipperMover: FlipperMover;
 	private readonly flipperData: FlipperData;
-	private readonly tableData: GameData;
+	private readonly tableData: TableData;
 	private lastHitTime: number = 0;
 
 	public static getInstance(flipperData: FlipperData, player: Player, table: Table): FlipperHit {
@@ -61,11 +61,11 @@ export class FlipperHit extends HitObject {
 			},
 			flipperData,
 			player,
-			table.gameData!,
+			table.data!,
 		);
 	}
 
-	constructor(config: FlipperConfig, data: FlipperData, player: Player, tableData: GameData) {
+	constructor(config: FlipperConfig, data: FlipperData, player: Player, tableData: TableData) {
 		super();
 		this.flipperMover = new FlipperMover(config, data, player, tableData);
 		this.flipperMover.isEnabled = data.fEnabled;

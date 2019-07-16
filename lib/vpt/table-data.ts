@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Storage } from '..';
 import { BiffParser } from '../io/biff-parser';
-import { Storage } from '../io/ole-doc';
 import { Vertex2D } from '../math/vertex2d';
 import { Vertex3D } from '../math/vertex3d';
 import { Material, SaveMaterial, SavePhysicsMaterial } from './material';
@@ -29,7 +29,7 @@ import { Material, SaveMaterial, SavePhysicsMaterial } from './material';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/pintable.cpp
  */
-export class GameData extends BiffParser {
+export class TableData extends BiffParser {
 
 	private static BG_DESKTOP = 0;
 	private static BG_FULLSCREEN = 1;
@@ -130,16 +130,16 @@ export class GameData extends BiffParser {
 	public numMaterials!: number;
 	public materials: Material[] = [];
 
-	public static async fromStorage(storage: Storage, itemName: string): Promise<GameData> {
-		const gameData = new GameData();
+	public static async fromStorage(storage: Storage, itemName: string): Promise<TableData> {
+		const gameData = new TableData();
 		await storage.streamFiltered(itemName, 0, BiffParser.stream(gameData.fromTag.bind(gameData), {
 			streamedTags: [ 'CODE' ],
 		}));
 		return gameData;
 	}
 
-	public static fromSerialized(blob: { [key: string]: any }): GameData {
-		const data = new GameData();
+	public static fromSerialized(blob: { [key: string]: any }): TableData {
+		const data = new TableData();
 
 		// primitives
 		for (const key of Object.keys(blob)) {
@@ -167,41 +167,41 @@ export class GameData extends BiffParser {
 			case 'TOPX': this.top = this.getFloat(buffer); break;
 			case 'RGHT': this.right = this.getFloat(buffer); break;
 			case 'BOTM': this.bottom = this.getFloat(buffer); break;
-			case 'ROTA': this.BG_rotation[GameData.BG_DESKTOP] = this.getFloat(buffer); break;
-			case 'LAYB': this.BG_layback[GameData.BG_DESKTOP] = this.getFloat(buffer); break;
-			case 'INCL': this.BG_inclination[GameData.BG_DESKTOP] = this.getFloat(buffer); break;
-			case 'FOVX': this.BG_FOV[GameData.BG_DESKTOP] = this.getFloat(buffer); break;
-			case 'SCLX': this.BG_scalex[GameData.BG_DESKTOP] = this.getFloat(buffer); break;
-			case 'SCLY': this.BG_scaley[GameData.BG_DESKTOP] = this.getFloat(buffer); break;
-			case 'SCLZ': this.BG_scalez[GameData.BG_DESKTOP] = this.getFloat(buffer); break;
-			case 'XLTX': this.BG_xlatex[GameData.BG_DESKTOP] = this.getFloat(buffer); break;
-			case 'XLTY': this.BG_xlatey[GameData.BG_DESKTOP] = this.getFloat(buffer); break;
-			case 'XLTZ': this.BG_xlatez[GameData.BG_DESKTOP] = this.getFloat(buffer); break;
-			case 'ROTF': this.BG_rotation[GameData.BG_FULLSCREEN] = this.getFloat(buffer); break;
-			case 'LAYF': this.BG_layback[GameData.BG_FULLSCREEN] = this.getFloat(buffer); break;
-			case 'INCF': this.BG_inclination[GameData.BG_FULLSCREEN] = this.getFloat(buffer); break;
-			case 'FOVF': this.BG_FOV[GameData.BG_FULLSCREEN] = this.getFloat(buffer); break;
-			case 'SCFX': this.BG_scalex[GameData.BG_FULLSCREEN] = this.getFloat(buffer); break;
-			case 'SCFY': this.BG_scaley[GameData.BG_FULLSCREEN] = this.getFloat(buffer); break;
-			case 'SCFZ': this.BG_scalez[GameData.BG_FULLSCREEN] = this.getFloat(buffer); break;
-			case 'XLFX': this.BG_xlatex[GameData.BG_FULLSCREEN] = this.getFloat(buffer); break;
-			case 'XLFY': this.BG_xlatey[GameData.BG_FULLSCREEN] = this.getFloat(buffer); break;
-			case 'XLFZ': this.BG_xlatez[GameData.BG_FULLSCREEN] = this.getFloat(buffer); break;
-			case 'ROFS': this.BG_rotation[GameData.BG_FSS] = this.getFloat(buffer); break;
-			case 'LAFS': this.BG_layback[GameData.BG_FSS] = this.getFloat(buffer); break;
-			case 'INFS': this.BG_inclination[GameData.BG_FSS] = this.getFloat(buffer); break;
-			case 'FOFS': this.BG_FOV[GameData.BG_FSS] = this.getFloat(buffer); break;
-			case 'SCXS': this.BG_scalex[GameData.BG_FSS] = this.getFloat(buffer); break;
-			case 'SCYS': this.BG_scaley[GameData.BG_FSS] = this.getFloat(buffer); break;
-			case 'SCZS': this.BG_scalez[GameData.BG_FSS] = this.getFloat(buffer); break;
-			case 'XLXS': this.BG_xlatex[GameData.BG_FSS] = this.getFloat(buffer); break;
-			case 'XLYS': this.BG_xlatey[GameData.BG_FSS] = this.getFloat(buffer); break;
-			case 'XLZS': this.BG_xlatez[GameData.BG_FSS] = this.getFloat(buffer); break;
+			case 'ROTA': this.BG_rotation[TableData.BG_DESKTOP] = this.getFloat(buffer); break;
+			case 'LAYB': this.BG_layback[TableData.BG_DESKTOP] = this.getFloat(buffer); break;
+			case 'INCL': this.BG_inclination[TableData.BG_DESKTOP] = this.getFloat(buffer); break;
+			case 'FOVX': this.BG_FOV[TableData.BG_DESKTOP] = this.getFloat(buffer); break;
+			case 'SCLX': this.BG_scalex[TableData.BG_DESKTOP] = this.getFloat(buffer); break;
+			case 'SCLY': this.BG_scaley[TableData.BG_DESKTOP] = this.getFloat(buffer); break;
+			case 'SCLZ': this.BG_scalez[TableData.BG_DESKTOP] = this.getFloat(buffer); break;
+			case 'XLTX': this.BG_xlatex[TableData.BG_DESKTOP] = this.getFloat(buffer); break;
+			case 'XLTY': this.BG_xlatey[TableData.BG_DESKTOP] = this.getFloat(buffer); break;
+			case 'XLTZ': this.BG_xlatez[TableData.BG_DESKTOP] = this.getFloat(buffer); break;
+			case 'ROTF': this.BG_rotation[TableData.BG_FULLSCREEN] = this.getFloat(buffer); break;
+			case 'LAYF': this.BG_layback[TableData.BG_FULLSCREEN] = this.getFloat(buffer); break;
+			case 'INCF': this.BG_inclination[TableData.BG_FULLSCREEN] = this.getFloat(buffer); break;
+			case 'FOVF': this.BG_FOV[TableData.BG_FULLSCREEN] = this.getFloat(buffer); break;
+			case 'SCFX': this.BG_scalex[TableData.BG_FULLSCREEN] = this.getFloat(buffer); break;
+			case 'SCFY': this.BG_scaley[TableData.BG_FULLSCREEN] = this.getFloat(buffer); break;
+			case 'SCFZ': this.BG_scalez[TableData.BG_FULLSCREEN] = this.getFloat(buffer); break;
+			case 'XLFX': this.BG_xlatex[TableData.BG_FULLSCREEN] = this.getFloat(buffer); break;
+			case 'XLFY': this.BG_xlatey[TableData.BG_FULLSCREEN] = this.getFloat(buffer); break;
+			case 'XLFZ': this.BG_xlatez[TableData.BG_FULLSCREEN] = this.getFloat(buffer); break;
+			case 'ROFS': this.BG_rotation[TableData.BG_FSS] = this.getFloat(buffer); break;
+			case 'LAFS': this.BG_layback[TableData.BG_FSS] = this.getFloat(buffer); break;
+			case 'INFS': this.BG_inclination[TableData.BG_FSS] = this.getFloat(buffer); break;
+			case 'FOFS': this.BG_FOV[TableData.BG_FSS] = this.getFloat(buffer); break;
+			case 'SCXS': this.BG_scalex[TableData.BG_FSS] = this.getFloat(buffer); break;
+			case 'SCYS': this.BG_scaley[TableData.BG_FSS] = this.getFloat(buffer); break;
+			case 'SCZS': this.BG_scalez[TableData.BG_FSS] = this.getFloat(buffer); break;
+			case 'XLXS': this.BG_xlatex[TableData.BG_FSS] = this.getFloat(buffer); break;
+			case 'XLYS': this.BG_xlatey[TableData.BG_FSS] = this.getFloat(buffer); break;
+			case 'XLZS': this.BG_xlatez[TableData.BG_FSS] = this.getFloat(buffer); break;
 			case 'EFSS':
 				this.BG_enable_FSS = this.getBool(buffer);
 				/* istanbul ignore if: legacy */
 				if (this.BG_enable_FSS) {
-					this.BG_current_set = GameData.BG_FSS;
+					this.BG_current_set = TableData.BG_FSS;
 				}
 				break;
 			case 'ORRP': this.overridePhysics = this.getInt(buffer); break;
@@ -244,9 +244,9 @@ export class GameData extends BiffParser {
 				this.scriptLen = len;
 				break;
 			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
-			case 'BIMG': this.BG_szImage[GameData.BG_DESKTOP] = this.getString(buffer, len); break;
-			case 'BIMF': this.BG_szImage[GameData.BG_FULLSCREEN] = this.getString(buffer, len); break;
-			case 'BIMS': this.BG_szImage[GameData.BG_FSS] = this.getString(buffer, len); break;
+			case 'BIMG': this.BG_szImage[TableData.BG_DESKTOP] = this.getString(buffer, len); break;
+			case 'BIMF': this.BG_szImage[TableData.BG_FULLSCREEN] = this.getString(buffer, len); break;
+			case 'BIMS': this.BG_szImage[TableData.BG_FSS] = this.getString(buffer, len); break;
 			case 'BIMN': this.ImageBackdropNightDay = this.getBool(buffer); break;
 			case 'IMCG': this.szImageColorGrade = this.getString(buffer, len); break;
 			case 'EIMG': this.szEnvImage = this.getString(buffer, len); break;

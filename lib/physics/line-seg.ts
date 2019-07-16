@@ -18,8 +18,8 @@
  */
 
 import { Vertex2D } from '../math/vertex2d';
-import { HitObject } from './hit-object';
 import { CollisionType } from './collision-type';
+import { HitObject } from './hit-object';
 
 export class LineSeg extends HitObject {
 

@@ -23,7 +23,7 @@ import { HitLineZ } from '../../physics/hit-line-z';
 import { LineSeg } from '../../physics/line-seg';
 import { MoverObject } from '../../physics/mover-object';
 import { logger } from '../../util/logger';
-import { GameData } from '../game-data';
+import { TableData } from '../table-data';
 import { Plunger, PlungerConfig } from './plunger';
 import { PlungerData } from './plunger-data';
 import { PlungerState } from './plunger-state';
@@ -32,7 +32,7 @@ export class PlungerMover implements MoverObject {
 
 	private readonly plungerData: PlungerData;
 	private readonly player: Player;
-	private readonly tableData: GameData;
+	private readonly tableData: TableData;
 
 	/**
 	 * position of the on-screen plunger (left)
@@ -307,7 +307,7 @@ export class PlungerMover implements MoverObject {
 	 */
 	private scatterVelocity: number = 0;
 
-	constructor(plungerConfig: PlungerConfig, plungerData: PlungerData, player: Player, tableData: GameData) {
+	constructor(plungerConfig: PlungerConfig, plungerData: PlungerData, player: Player, tableData: TableData) {
 
 		this.plungerData = plungerData;
 		this.player = player;

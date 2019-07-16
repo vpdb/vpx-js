@@ -24,7 +24,7 @@ import { Matrix3D } from '../math/matrix3d';
 import { Vertex3DNoTex2 } from '../math/vertex';
 import { Vertex3D } from '../math/vertex3d';
 import { FrameData } from './animation';
-import { GameItem, IRenderable, Meshes } from './game-item';
+import { IRenderable, ItemData, Meshes } from './item-data';
 import { FLT_MAX, Mesh } from './mesh';
 import { Table } from './table';
 
@@ -33,7 +33,7 @@ import { Table } from './table';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/primitive.cpp
  */
-export class PrimitiveItem extends GameItem implements IRenderable {
+export class PrimitiveItem extends ItemData implements IRenderable {
 
 	private data: PrimitiveData = new PrimitiveData();
 	private mesh: Mesh = new Mesh();

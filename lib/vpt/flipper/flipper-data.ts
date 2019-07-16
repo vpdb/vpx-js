@@ -20,9 +20,9 @@
 import { Storage } from '../..';
 import { BiffParser } from '../../io/biff-parser';
 import { Vertex2D } from '../../math/vertex2d';
-import { GameItem } from '../game-item';
+import { ItemData } from '../item-data';
 
-export class FlipperData extends GameItem {
+export class FlipperData extends ItemData {
 
 	public wzName!: string;
 

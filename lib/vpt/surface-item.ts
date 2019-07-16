@@ -24,7 +24,7 @@ import { DragPoint } from '../math/dragpoint';
 import { Matrix3D } from '../math/matrix3d';
 import { Vertex3DNoTex2 } from '../math/vertex';
 import { RenderVertex, Vertex2D } from '../math/vertex2d';
-import { GameItem, IRenderable, Meshes } from './game-item';
+import { IRenderable, ItemData, Meshes } from './item-data';
 import { Mesh } from './mesh';
 import { Table } from './table';
 
@@ -33,7 +33,7 @@ import { Table } from './table';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/surface.cpp
  */
-export class SurfaceItem extends GameItem implements IRenderable {
+export class SurfaceItem extends ItemData implements IRenderable {
 
 	public fHitEvent: boolean = false;
 	public fDroppable: boolean = false;

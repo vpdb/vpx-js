@@ -17,21 +17,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BufferGeometry, Material as ThreeMaterial, Mesh as ThreeMesh, MeshStandardMaterial, Object3D } from 'three';
+import { BufferGeometry, Material as ThreeMaterial, MeshStandardMaterial, Object3D } from 'three';
+import { Storage } from '..';
 import { VpTableExporterOptions } from '../gltf/table-exporter';
 import { BiffParser } from '../io/biff-parser';
-import { Storage } from '../io/ole-doc';
+import { HitObject } from '../physics/hit-object';
+import { MoverObject } from '../physics/mover-object';
 import { Material } from './material';
 import { Mesh } from './mesh';
 import { Table } from './table';
 import { Texture } from './texture';
-import { MoverObject } from '../physics/mover-object';
-import { HitObject } from '../physics/hit-object';
 
 /**
- * The parent class for all game items.
+ * Parent class for game items parsed from the VPX file.
+ *
+ * It contains helper functions for parsing the data.
  */
-export abstract class GameItem extends BiffParser {
+export abstract class ItemData extends BiffParser {
 
 	public static TypeSurface = 0;
 	public static TypeFlipper = 1;
@@ -61,31 +63,31 @@ export abstract class GameItem extends BiffParser {
 
 	public static getType(type: number): string {
 		switch (type) {
-			case GameItem.TypeSurface: return 'Surface';
-			case GameItem.TypeFlipper: return 'Flipper';
-			case GameItem.TypeTimer: return 'Timer';
-			case GameItem.TypePlunger: return 'Plunger';
-			case GameItem.TypeTextbox: return 'Textbox';
-			case GameItem.TypeBumper: return 'Bumper';
-			case GameItem.TypeTrigger: return 'Trigger';
-			case GameItem.TypeLight: return 'Light';
-			case GameItem.TypeKicker: return 'Kicker';
-			case GameItem.TypeDecal: return 'Decal';
-			case GameItem.TypeGate: return 'Gate';
-			case GameItem.TypeSpinner: return 'Spinner';
-			case GameItem.TypeRamp: return 'Ramp';
-			case GameItem.TypeTable: return 'Table';
-			case GameItem.TypeLightCenter: return 'Light Center';
-			case GameItem.TypeDragPoint: return 'Drag Point';
-			case GameItem.TypeCollection: return 'Collection';
-			case GameItem.TypeDispReel: return 'Reel';
-			case GameItem.TypeLightSeq: return 'Light Sequence';
-			case GameItem.TypePrimitive: return 'Primitive';
-			case GameItem.TypeFlasher: return 'Flasher';
-			case GameItem.TypeRubber: return 'Rubber';
-			case GameItem.TypeHitTarget: return 'Hit Target';
-			case GameItem.TypeCount: return 'Count';
-			case GameItem.TypeInvalid: return 'Invalid';
+			case ItemData.TypeSurface: return 'Surface';
+			case ItemData.TypeFlipper: return 'Flipper';
+			case ItemData.TypeTimer: return 'Timer';
+			case ItemData.TypePlunger: return 'Plunger';
+			case ItemData.TypeTextbox: return 'Textbox';
+			case ItemData.TypeBumper: return 'Bumper';
+			case ItemData.TypeTrigger: return 'Trigger';
+			case ItemData.TypeLight: return 'Light';
+			case ItemData.TypeKicker: return 'Kicker';
+			case ItemData.TypeDecal: return 'Decal';
+			case ItemData.TypeGate: return 'Gate';
+			case ItemData.TypeSpinner: return 'Spinner';
+			case ItemData.TypeRamp: return 'Ramp';
+			case ItemData.TypeTable: return 'Table';
+			case ItemData.TypeLightCenter: return 'Light Center';
+			case ItemData.TypeDragPoint: return 'Drag Point';
+			case ItemData.TypeCollection: return 'Collection';
+			case ItemData.TypeDispReel: return 'Reel';
+			case ItemData.TypeLightSeq: return 'Light Sequence';
+			case ItemData.TypePrimitive: return 'Primitive';
+			case ItemData.TypeFlasher: return 'Flasher';
+			case ItemData.TypeRubber: return 'Rubber';
+			case ItemData.TypeHitTarget: return 'Hit Target';
+			case ItemData.TypeCount: return 'Count';
+			case ItemData.TypeInvalid: return 'Invalid';
 		}
 		return `Unknown type "${type}"`;
 	}

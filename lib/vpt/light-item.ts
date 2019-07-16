@@ -26,7 +26,7 @@ import { DragPoint } from '../math/dragpoint';
 import { Matrix3D } from '../math/matrix3d';
 import { SplineVertex } from '../math/spline-vertex';
 import { Vertex2D } from '../math/vertex2d';
-import { GameItem, IRenderable, Meshes } from './game-item';
+import { IRenderable, ItemData, Meshes } from './item-data';
 import { Material } from './material';
 import { Table } from './table';
 
@@ -35,7 +35,7 @@ import { Table } from './table';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/light.cpp
  */
-export class LightItem extends GameItem implements IRenderable {
+export class LightItem extends ItemData implements IRenderable {
 
 	public static readonly StateOff = 0;
 	public static readonly StateOn = 1;

@@ -25,7 +25,7 @@ import { Matrix3D } from '../math/matrix3d';
 import { SplineVertex } from '../math/spline-vertex';
 import { Vertex3DNoTex2 } from '../math/vertex';
 import { Vertex3D } from '../math/vertex3d';
-import { GameItem, IRenderable, Meshes } from './game-item';
+import { IRenderable, ItemData, Meshes } from './item-data';
 import { FLT_MAX, FLT_MIN, Mesh } from './mesh';
 import { Table } from './table';
 
@@ -34,7 +34,7 @@ import { Table } from './table';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/rubber.cpp
  */
-export class RubberItem extends GameItem implements IRenderable {
+export class RubberItem extends ItemData implements IRenderable {
 
 	public wzName!: string;
 	public height: number = f4(25);
