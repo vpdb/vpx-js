@@ -20,6 +20,7 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import sinonChai = require('sinon-chai');
+import { Mesh } from 'three';
 import { simulateCycles } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
@@ -105,6 +106,50 @@ describe('The VPinball plunger physics', () => {
 
 		const plungerState = popState(player, 'AutoPlunger');
 		expect(plungerState.frame).to.equal(0);
+	});
+
+	it('should apply the mesh transformation when animated', async () => {
+
+		// create scene
+		const gltf = await three.loadGlb(await table.exportGlb());
+		const plunger = table.plungers.find(p => p.getName() === 'CustomPlunger')!;
+
+		// retrieve plunger
+		const plungerObj = three.find<Mesh>(gltf, 'plungers', 'CustomPlunger');
+		const rodObj = plungerObj.children.find(c => c.name === 'rod') as Mesh;
+		const springObj = plungerObj.children.find(c => c.name === 'spring') as Mesh;
+
+		// apply player state to plunger
+		plunger.updateState(popState(player, 'CustomPlunger'), plungerObj);
+		rodObj.geometry.computeBoundingBox();
+		springObj.geometry.computeBoundingBox();
+
+		// get bounding boxes to compare with
+		const rodY = rodObj.geometry.boundingBox.min.y;
+		const springY = rodObj.geometry.boundingBox.min.y;
+
+		// pull plunger
+		plunger.pullBack();
+		simulateCycles(player, 50);
+
+		// apply again
+		plunger.updateState(popState(player, 'CustomPlunger'), plungerObj);
+		rodObj.geometry.computeBoundingBox();
+		springObj.geometry.computeBoundingBox();
+
+		// assert it's bigger now
+		expect(rodObj.geometry.boundingBox.min.y).to.be.above(rodY);
+		expect(springObj.geometry.boundingBox.min.y).to.be.above(springY);
+	});
+
+	it('should deal correctly with state', () => {
+		const state1 = new PlungerState(2);
+		const state2 = new PlungerState(3);
+		const state3 = new PlungerState(2);
+
+		expect(state1.equals(state2)).to.equal(false);
+		expect(state1.equals(state3)).to.equal(true);
+		expect(state1.equals(null as any)).to.equal(false);
 	});
 
 });

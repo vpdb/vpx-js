@@ -53,7 +53,7 @@ export class ThreeHelper {
 		return objects.children[0].children[0] as T;
 	}
 
-	public find<T extends Object3D>(gltf: GLTF, groupName: string, itemName: string, objectName: string): T {
+	public find<T extends Object3D>(gltf: GLTF, groupName: string, itemName: string, objectName?: string): T {
 		const table = this.getTable(gltf);
 		if (!table.children || !table.children.length) {
 			throw new Error('GLTF table has no children!');
@@ -70,6 +70,9 @@ export class ThreeHelper {
 			throw new Error('The "' + groupName + '" group of the GLTF table has no child named "' + itemName + '". (available: [' + objects.children.map(c => c.name).join(', ') + '])');
 		}
 
+		if (!objectName) {
+			return item as T;
+		}
 		const object = item.children.find(c => c.name === objectName);
 		if (!object) {
 			throw new Error('Item "' + itemName + '" of group "' + groupName + '" of the GLTF table has no child named "' + objectName + '". (available: [' + item.children.map(c => c.name).join(', ') + '])');
