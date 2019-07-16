@@ -131,11 +131,11 @@ export class TableData extends BiffParser {
 	public materials: Material[] = [];
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<TableData> {
-		const gameData = new TableData();
-		await storage.streamFiltered(itemName, 0, BiffParser.stream(gameData.fromTag.bind(gameData), {
+		const tableData = new TableData();
+		await storage.streamFiltered(itemName, 0, BiffParser.stream(tableData.fromTag.bind(tableData), {
 			streamedTags: [ 'CODE' ],
 		}));
-		return gameData;
+		return tableData;
 	}
 
 	public static fromSerialized(blob: { [key: string]: any }): TableData {

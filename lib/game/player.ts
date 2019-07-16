@@ -27,6 +27,7 @@ import { Ball } from '../vpt/ball/ball';
 import { BallData } from '../vpt/ball/ball-data';
 import { BallState } from '../vpt/ball/ball-state';
 import { FlipperHit } from '../vpt/flipper/flipper-hit';
+import { FlipperMover } from '../vpt/flipper/flipper-mover';
 
 export class Player {
 
@@ -34,7 +35,7 @@ export class Player {
 	private readonly table: Table;
 	private readonly balls: Ball[] = [];
 	private readonly movers: MoverObject[] = [];
-	private readonly flipperHits: FlipperHit[] = [];
+	private readonly flipperMovers: FlipperMover[] = [];
 	private readonly hitObjects: HitObject[] = [];
 	private stateCallback?: (name: string, state: any) => void;
 
@@ -87,8 +88,8 @@ export class Player {
 			let hitTime = dtime;
 
 			// find earliest time where a flipper collides with its stop
-			for (const flipperHit of this.flipperHits) {
-				const flipperHitTime = flipperHit.getHitTime();
+			for (const flipperMover of this.flipperMovers) {
+				const flipperHitTime = flipperMover.getHitTime();
 				if (flipperHitTime > 0 && flipperHitTime < hitTime) { //!! >= 0.f causes infinite loop
 					hitTime = flipperHitTime;
 				}
@@ -180,7 +181,7 @@ export class Player {
 			const curTimeUsec = Math.floor(now() * 1000) - deltaFrame; //!! one could also do this directly in the while loop condition instead (so that the while loop will really match with the current time), but that leads to some stuttering on some heavy frames
 
 			// hung in the physics loop over 200 milliseconds or the number of physics iterations to catch up on is high (i.e. very low/unplayable FPS)
-			// if ((curTimeUsec - initialTimeUsec > 200000) || (this.physIterations > ((this.table.gameData!.physicsMaxLoops === 0) || (this.table.gameData!.physicsMaxLoops === 0xFFFFFFFF) ? 0xFFFFFFFF : (this.table.gameData!.physicsMaxLoops! * (10000 / PHYSICS_STEPTIME))/*2*/))) {                                                             // can not keep up to real time
+			// if ((curTimeUsec - initialTimeUsec > 200000) || (this.physIterations > ((this.table.data!.physicsMaxLoops === 0) || (this.table.gameData!.physicsMaxLoops === 0xFFFFFFFF) ? 0xFFFFFFFF : (this.table.gameData!.physicsMaxLoops! * (10000 / PHYSICS_STEPTIME))/*2*/))) {                                                             // can not keep up to real time
 			// 	this.curPhysicsFrameTime = initialTimeUsec;                // skip physics forward ... slip-cycles -> 'slowed' down physics
 			// 	this.nextPhysicsFrameTime = initialTimeUsec + PHYSICS_STEPTIME;
 			// 	break;                                                     // go draw frame
@@ -324,8 +325,8 @@ export class Player {
 		this.movers.push(mover);
 	}
 
-	public addFlipperHit(flipperHit: FlipperHit) {
-		this.flipperHits.push(flipperHit);
+	public addFlipperMover(flipperMover: FlipperMover) {
+		this.flipperMovers.push(flipperMover);
 	}
 
 	public createBall(ballCreator: IBallCreationPosition, velocity: Vertex3D = new Vertex3D( 0.1, 0, 0), radius = 25, mass = 1): Ball {

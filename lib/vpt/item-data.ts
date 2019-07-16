@@ -17,16 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BufferGeometry, Material as ThreeMaterial, MeshStandardMaterial, Object3D } from 'three';
 import { Storage } from '..';
-import { VpTableExporterOptions } from '../gltf/table-exporter';
+import { RenderInfo } from '../game/irenderable';
 import { BiffParser } from '../io/biff-parser';
-import { HitObject } from '../physics/hit-object';
-import { MoverObject } from '../physics/mover-object';
-import { Material } from './material';
-import { Mesh } from './mesh';
 import { Table } from './table';
-import { Texture } from './texture';
 
 /**
  * Parent class for game items parsed from the VPX file.
@@ -129,32 +123,6 @@ export class TimerDataRoot {
 	public enabled: boolean = false;
 }
 
-export interface IRenderable {
-	getName(): string;
-	getMeshes(table: Table, opts: VpTableExporterOptions): Meshes;
-	isVisible(table: Table): boolean;
-	postProcessMaterial?(table: Table, geometry: BufferGeometry, material: MeshStandardMaterial): MeshStandardMaterial | MeshStandardMaterial[];
-}
-
-export interface IMovable<STATE> {
-	getName(): string;
-	updateState(state: STATE, obj: Object3D): void;
-	getMover(): MoverObject;
-}
-
-export interface IHittable {
-	getHitObject(): HitObject;
-}
-
 export interface Meshes {
 	[key: string]: RenderInfo;
-}
-
-export interface RenderInfo {
-	mesh?: Mesh;
-	geometry?: BufferGeometry;
-	map?: Texture;
-	normalMap?: Texture;
-	material?: Material;
-	threeMaterial?: ThreeMaterial;
 }

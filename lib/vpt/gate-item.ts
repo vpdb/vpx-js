@@ -23,6 +23,7 @@ import { gateLongPlateMesh } from '../../res/meshes/gate-long-plate-mesh';
 import { gatePlateMesh } from '../../res/meshes/gate-plate-mesh';
 import { gateWireMesh } from '../../res/meshes/gate-wire-mesh';
 import { gateWireRectangleMesh } from '../../res/meshes/gate-wire-rectangle-mesh';
+import { IRenderable } from '../game/irenderable';
 import { BiffParser } from '../io/biff-parser';
 import { Storage } from '../io/ole-doc';
 import { degToRad, f4 } from '../math/float';
@@ -30,7 +31,7 @@ import { Matrix3D } from '../math/matrix3d';
 import { Vertex2D } from '../math/vertex2d';
 import { Vertex3D } from '../math/vertex3d';
 import { logger } from '../util/logger';
-import { IRenderable, ItemData, Meshes } from './item-data';
+import { ItemData, Meshes } from './item-data';
 import { Mesh } from './mesh';
 import { Table } from './table';
 

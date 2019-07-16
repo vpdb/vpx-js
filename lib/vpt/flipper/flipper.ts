@@ -19,11 +19,13 @@
 
 import { Object3D } from 'three';
 import { Storage } from '../..';
+import { IMovable } from '../../game/imovable';
+import { IRenderable } from '../../game/irenderable';
 import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex2D } from '../../math/vertex2d';
-import { IMovable, IRenderable, Meshes } from '../item-data';
+import { Meshes } from '../item-data';
 import { Table } from '../table';
 import { FlipperData } from './flipper-data';
 import { FlipperHit } from './flipper-hit';
@@ -59,7 +61,7 @@ export class Flipper implements IRenderable, IMovable<FlipperState> {
 		this.state = new FlipperState(degToRad(data.startAngle));
 	}
 
-	public setupPlayer(player: Player, table: Table) {
+	public setupPlayer(player: Player, table: Table): void {
 		this.hit = FlipperHit.getInstance(this.data, player, table);
 	}
 

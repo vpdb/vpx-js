@@ -20,6 +20,8 @@
 
 import { BufferGeometry, ExtrudeBufferGeometry, Scene, Shape, Vector2 } from 'three';
 import { OleCompoundDoc, Storage } from '..';
+import { IMovable } from '../game/imovable';
+import { IRenderable } from '../game/irenderable';
 import { Player } from '../game/player';
 import { TableExporter, VpTableExporterOptions } from '../gltf/table-exporter';
 import { IBinaryReader } from '../io/ole-doc';
@@ -30,7 +32,7 @@ import { BumperItem } from './bumper-item';
 import { Flipper } from './flipper/flipper';
 import { GateItem } from './gate-item';
 import { HitTargetItem } from './hit-target-item';
-import { IMovable, IRenderable, ItemData, Meshes } from './item-data';
+import { ItemData, Meshes } from './item-data';
 import { KickerItem } from './kicker-item';
 import { LightItem } from './light-item';
 import { Material } from './material';
@@ -88,7 +90,7 @@ export class Table implements IRenderable {
 
 	public static fromSerialized(blob: { [key: string]: any }): Table {
 		const table = new Table();
-		table.data = TableData.fromSerialized(blob.gameData);
+		table.data = TableData.fromSerialized(blob.data);
 		for (const name of Object.keys(blob.flippers)) {
 			table.flippers[name] = Flipper.fromSerialized(blob.flippers[name].data.itemName, blob.flippers[name]);
 		}
@@ -97,18 +99,15 @@ export class Table implements IRenderable {
 
 	public setupPlayer(player: Player) {
 
-		// flippers
-		for (const flipperName of Object.keys(this.flippers)) {
-			const flipper = this.flippers[flipperName];
-			flipper.setupPlayer(player, this);
-			player.addMover(flipper.getMover());
-			player.addFlipperHit(flipper.getHit());
+		// link movables to player
+		for (const movable of this.getMovables()) {
+			movable.setupPlayer(player, this);
+			player.addMover(movable.getMover());
 		}
 
-		// plungers
-		for (const plunger of this.plungers) {
-			plunger.setupPlayer(player, this);
-			player.addMover(plunger.getMover());
+		// flippers are a special case
+		for (const flipper of Object.values(this.flippers)) {
+			player.addFlipperMover(flipper.getMover());
 		}
 	}
 
@@ -129,7 +128,7 @@ export class Table implements IRenderable {
 		}
 		/* istanbul ignore if */
 		if (!this.data) {
-			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
+			throw new Error('Table data is not loaded. Load table with tableDataOnly = false.');
 		}
 		return this.data.materials.find(m => m.szName === name);
 	}
@@ -141,7 +140,7 @@ export class Table implements IRenderable {
 	public getScaleZ(): number {
 		/* istanbul ignore if */
 		if (!this.data) {
-			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
+			throw new Error('Table data is not loaded. Load table with tableDataOnly = false.');
 		}
 		return f4(this.data.BG_scalez[this.data.BG_current_set]) || 1.0;
 	}
@@ -153,7 +152,7 @@ export class Table implements IRenderable {
 	public getTableHeight() {
 		/* istanbul ignore if */
 		if (!this.data) {
-			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
+			throw new Error('Table data is not loaded. Load table with tableDataOnly = false.');
 		}
 		return this.data.tableheight;
 	}
@@ -161,7 +160,7 @@ export class Table implements IRenderable {
 	public getDimensions(): { width: number, height: number } {
 		/* istanbul ignore if */
 		if (!this.data) {
-			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
+			throw new Error('Table data is not loaded. Load table with tableDataOnly = false.');
 		}
 		return {
 			width: this.data.right - this.data.left,
@@ -172,7 +171,7 @@ export class Table implements IRenderable {
 	public getPlayfieldMap(): string {
 		/* istanbul ignore if */
 		if (!this.data) {
-			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
+			throw new Error('Table data is not loaded. Load table with tableDataOnly = false.');
 		}
 		return this.data.szImage || '';
 	}
@@ -189,7 +188,7 @@ export class Table implements IRenderable {
 	public getSurfaceHeight(surface: string | undefined, x: number, y: number) {
 		/* istanbul ignore if */
 		if (!this.data) {
-			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
+			throw new Error('Table data is not loaded. Load table with tableDataOnly = false.');
 		}
 		if (!surface) {
 			return this.data.tableheight;
@@ -226,7 +225,7 @@ export class Table implements IRenderable {
 	public async getTableScript(): Promise<string> {
 		/* istanbul ignore if */
 		if (!this.data) {
-			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
+			throw new Error('Table data is not loaded. Load table with tableDataOnly = false.');
 		}
 		await this.doc.reopen();
 		try {
@@ -243,14 +242,14 @@ export class Table implements IRenderable {
 		this.doc = await OleCompoundDoc.load(reader);
 		try {
 
-			if (opts.gameDataOnly || !opts.tableInfoOnly) {
+			if (opts.tableDataOnly || !opts.tableInfoOnly) {
 				// open game storage
 				const gameStorage = this.doc.storage('GameStg');
 
 				// load game data
 				this.data = await TableData.fromStorage(gameStorage, 'GameData');
 
-				if (!opts.gameDataOnly) {
+				if (!opts.tableDataOnly) {
 
 					// load items
 					await this.loadGameItems(gameStorage, this.data.numGameItems, opts);
@@ -260,7 +259,7 @@ export class Table implements IRenderable {
 				}
 			}
 
-			if (opts.tableInfoOnly || !opts.gameDataOnly) {
+			if (opts.tableInfoOnly || !opts.tableDataOnly) {
 				await this.loadTableInfo();
 			}
 
@@ -272,7 +271,7 @@ export class Table implements IRenderable {
 	public getMeshes(table: Table, opts: VpTableExporterOptions): Meshes {
 		/* istanbul ignore if */
 		if (!this.data) {
-			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
+			throw new Error('Table data is not loaded. Load table with tableDataOnly = false.');
 		}
 		let geometry: BufferGeometry;
 		const dim = table.getDimensions();
@@ -463,7 +462,7 @@ export class Table implements IRenderable {
 	/* istanbul ignore next */
 	private get2DMesh(): Mesh {
 		if (!this.data) {
-			throw new Error('Game data is not loaded. Load table with gameDataOnly = false.');
+			throw new Error('Table data is not loaded. Load table with tableDataOnly = false.');
 		}
 		const rgv: Vertex3DNoTex2[] = [];
 		for (let i = 0; i < 7; i++) {
@@ -520,7 +519,7 @@ export interface TableLoadOptions {
 	/**
 	 * If set, don't parse game items but only game data (faster).
 	 */
-	gameDataOnly?: boolean;
+	tableDataOnly?: boolean;
 
 	/**
 	 * If set, ignore game storage and only parse table info.

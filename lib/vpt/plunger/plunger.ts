@@ -19,11 +19,13 @@
 
 import { Object3D } from 'three';
 import { Storage } from '../..';
+import { IMovable } from '../../game/imovable';
+import { IRenderable } from '../../game/irenderable';
 import { IBallCreationPosition, Player } from '../../game/player';
 import { VpTableExporterOptions } from '../../gltf/table-exporter';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
-import { IMovable, IRenderable, Meshes } from '../item-data';
+import { Meshes } from '../item-data';
 import { Table } from '../table';
 import { PlungerData } from './plunger-data';
 import { PlungerHit } from './plunger-hit';
@@ -55,7 +57,7 @@ export class Plunger implements IRenderable, IMovable<PlungerState>, IBallCreati
 		this.mesh = new PlungerMesh(data, table);
 	}
 
-	public setupPlayer(player: Player, table: Table) {
+	public setupPlayer(player: Player, table: Table): void {
 		this.hit = new PlungerHit(this.data, this.mesh.cFrames, player, table);
 		this.state = this.getMover().getState();
 	}
