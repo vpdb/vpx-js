@@ -20,13 +20,13 @@
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
+import { CollisionType } from '../../physics/collision-type';
 import { HitObject } from '../../physics/hit-object';
 import { GameData } from '../game-data';
 import { Ball } from './ball';
 import { BallData } from './ball-data';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
-import { CollisionType } from '../../physics/collision-type';
 
 /**
  * In the VP source code this is all part of ball.cpp. We'll try
@@ -45,7 +45,7 @@ export class BallHit extends HitObject {
 	private readonly angularMomentum = new Vertex3D();
 	private readonly angularVelocity = new Vertex3D();
 
-	private isFrozen: boolean;
+	public isFrozen: boolean;
 	private playfieldReflectionStrength: number;
 	private reflectionEnabled: boolean;
 	private forceReflection: boolean;
