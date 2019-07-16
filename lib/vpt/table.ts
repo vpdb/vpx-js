@@ -109,7 +109,6 @@ export class Table implements IRenderable {
 		for (const plunger of this.plungers) {
 			plunger.setupPlayer(player, this);
 			player.addMover(plunger.getMover());
-			player.addPlungerHit(plunger.getHit());
 		}
 	}
 

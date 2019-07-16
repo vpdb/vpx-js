@@ -17,23 +17,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { MoverObject } from '../../physics/mover-object';
-import { Ball } from './ball';
+export class BallData {
 
-export class BallMover implements MoverObject {
+	public readonly radius: number;
+	public readonly mass: number;
+	public readonly bulbIntensityScale: number;
+	public readonly color = 0xffffff;
 
-	private pball: Ball;
-
-	constructor(pball: Ball) {
-		this.pball = pball;
+	constructor(radius: number = 25, mass: number = 1, bulbIntensityScale = 1) {
+		this.radius = radius;
+		this.mass = mass;
+		this.bulbIntensityScale = bulbIntensityScale;
 	}
-
-	public updateDisplacements(dtime: number): void {
-		// TODO
-	}
-
-	public updateVelocities(): void {
-		// TODO
-	}
-
 }

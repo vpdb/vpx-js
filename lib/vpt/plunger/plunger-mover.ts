@@ -37,12 +37,12 @@ export class PlungerMover implements MoverObject {
 	/**
 	 * position of the on-screen plunger (left)
 	 */
-	private readonly x: number;
+	public readonly x: number;
 
 	/**
 	 * position of the on-screen plunger (right)
 	 */
-	private readonly x2: number;
+	public readonly x2: number;
 
 	/**
 	 * position of the on-screen plunger (bottom)

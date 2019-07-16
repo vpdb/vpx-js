@@ -22,6 +22,7 @@ import { FRect3D } from '../math/frect3d';
 // import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { IFireEvents } from './events';
+import { MoverObject } from './mover-object';
 // import { MoverObject } from './mover-object';
 
 export abstract class HitObject {
@@ -56,7 +57,10 @@ export abstract class HitObject {
 
 	// public abstract GetType(): CollisionType;
 	// public abstract CalcHitBBox(): void;
-	// public abstract GetMoverObject(): MoverObject | undefined;
+	public getMoverObject(): MoverObject | undefined {
+		return undefined;
+	}
+
 	// public abstract Collide(coll: CollisionEvent): void;
 
 	// public HitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {

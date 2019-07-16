@@ -17,23 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { MoverObject } from '../../physics/mover-object';
-import { Ball } from './ball';
-
-export class BallMover implements MoverObject {
-
-	private pball: Ball;
-
-	constructor(pball: Ball) {
-		this.pball = pball;
-	}
-
-	public updateDisplacements(dtime: number): void {
-		// TODO
-	}
-
-	public updateVelocities(): void {
-		// TODO
-	}
+/**
+ * This class creates a ball mesh.
+ */
+export class BallMesh {
 
 }
