@@ -19,6 +19,7 @@
 
 import { Vertex2D } from '../math/vertex2d';
 import { HitObject } from './hit-object';
+import { MoverObject } from './mover-object';
 
 export class HitLineZ extends HitObject {
 

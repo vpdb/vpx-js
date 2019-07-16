@@ -19,15 +19,16 @@
 
 import { Object3D } from 'three';
 import { Storage } from '../..';
-import { Player } from '../../game/player';
+import { IBallCreationPosition, Player } from '../../game/player';
 import { VpTableExporterOptions } from '../../gltf/table-exporter';
 import { Matrix3D } from '../../math/matrix3d';
-import { MoverObject } from '../../physics/mover-object';
+import { Vertex3D } from '../../math/vertex3d';
 import { IMovable, IRenderable, Meshes } from '../game-item';
 import { Table } from '../table';
 import { PlungerData } from './plunger-data';
 import { PlungerHit } from './plunger-hit';
 import { PlungerMesh } from './plunger-mesh';
+import { PlungerMover } from './plunger-mover';
 import { PlungerState } from './plunger-state';
 
 /**
@@ -35,7 +36,7 @@ import { PlungerState } from './plunger-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/plunger.cpp
  */
-export class Plunger implements IRenderable, IMovable<PlungerState> {
+export class Plunger implements IRenderable, IMovable<PlungerState>, IBallCreationPosition {
 
 	public static PLUNGER_HEIGHT = 50.0;
 
@@ -56,7 +57,7 @@ export class Plunger implements IRenderable, IMovable<PlungerState> {
 
 	public setupPlayer(player: Player, table: Table) {
 		this.hit = new PlungerHit(this.data, this.mesh.cFrames, player, table);
-		this.state = this.hit.plungerMover.getState();
+		this.state = this.getMover().getState();
 	}
 
 	public getName(): string {
@@ -103,8 +104,8 @@ export class Plunger implements IRenderable, IMovable<PlungerState> {
 		return this.data.isVisible();
 	}
 
-	public getMover(): MoverObject {
-		return this.hit!.plungerMover;
+	public getMover(): PlungerMover {
+		return this.getHit().getMoverObject();
 	}
 
 	public getHit(): PlungerHit {
@@ -112,7 +113,7 @@ export class Plunger implements IRenderable, IMovable<PlungerState> {
 	}
 
 	public pullBack(): void {
-		this.hit!.plungerMover.pullBack(this.data.speedPull);
+		this.getMover().pullBack(this.data.speedPull);
 	}
 
 	public fire(): void {
@@ -125,12 +126,12 @@ export class Plunger implements IRenderable, IMovable<PlungerState> {
 			// is constant (modulo some mechanical randomness).  Simulate
 			// this by triggering a release from the maximum retracted
 			// position.
-			this.hit!.plungerMover.fire(1.0);
+			this.getMover().fire(1.0);
 
 		} else {
 			// Regular plunger - trigger a release from the current
 			// position, using the keyboard firing strength.
-			this.hit!.plungerMover.fire();
+			this.getMover().fire();
 		}
 	}
 
@@ -150,6 +151,13 @@ export class Plunger implements IRenderable, IMovable<PlungerState> {
 			mesh.spring!.transform(matrix).applyToObject(springObj);
 		}
 		this.state = state;
+	}
+
+	public getBallCreationPosition(table: Table): Vertex3D {
+		const x = (this.getMover().x + this.getMover().x2) * 0.5;
+		const y = this.getMover().pos - (25.0 + 0.01); //!! assumes ball radius 25
+		const height = table.getSurfaceHeight(this.data.szSurface, x, y);
+		return new Vertex3D(x, y, height);
 	}
 }
 

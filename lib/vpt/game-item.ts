@@ -25,6 +25,8 @@ import { Material } from './material';
 import { Mesh } from './mesh';
 import { Table } from './table';
 import { Texture } from './texture';
+import { MoverObject } from '../physics/mover-object';
+import { HitObject } from '../physics/hit-object';
 
 /**
  * The parent class for all game items.
@@ -135,6 +137,11 @@ export interface IRenderable {
 export interface IMovable<STATE> {
 	getName(): string;
 	updateState(state: STATE, obj: Object3D): void;
+	getMover(): MoverObject;
+}
+
+export interface IHittable {
+	getHitObject(): HitObject;
 }
 
 export interface Meshes {

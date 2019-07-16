@@ -17,23 +17,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { MoverObject } from '../../physics/mover-object';
-import { Ball } from './ball';
+import { Vertex3D } from '../../math/vertex3d';
 
-export class BallMover implements MoverObject {
+/**
+ * The dynamic ball state.
+ *
+ * This is the data we need to properly position the ball on the playfield.
+ */
+export class BallState {
 
-	private pball: Ball;
+	public pos: Vertex3D;
+	public vel: Vertex3D;
 
-	constructor(pball: Ball) {
-		this.pball = pball;
+	constructor(pos: Vertex3D, vel: Vertex3D) {
+		this.pos = pos;
+		this.vel = vel;
 	}
-
-	public updateDisplacements(dtime: number): void {
-		// TODO
-	}
-
-	public updateVelocities(): void {
-		// TODO
-	}
-
 }

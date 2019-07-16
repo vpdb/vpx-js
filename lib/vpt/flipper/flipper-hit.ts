@@ -35,7 +35,7 @@ import { FlipperMover } from './flipper-mover';
 
 export class FlipperHit extends HitObject {
 
-	public readonly flipperMover: FlipperMover;
+	private readonly flipperMover: FlipperMover;
 	private readonly flipperData: FlipperData;
 	private readonly tableData: GameData;
 	private lastHitTime: number = 0;
@@ -137,7 +137,7 @@ export class FlipperHit extends HitObject {
 	// 	this.hitBBox.zhigh = this.flipperMover.hitCircleBase.hitBBox.zhigh;
 	// }
 
-	public GetMoverObject(): MoverObject {
+	public getMoverObject(): FlipperMover {
 		return this.flipperMover;
 	}
 

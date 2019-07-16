@@ -23,12 +23,12 @@ import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex2D } from '../../math/vertex2d';
-import { MoverObject } from '../../physics/mover-object';
 import { IMovable, IRenderable, Meshes } from '../game-item';
 import { Table } from '../table';
 import { FlipperData } from './flipper-data';
 import { FlipperHit } from './flipper-hit';
 import { FlipperMesh } from './flipper-mesh';
+import { FlipperMover } from './flipper-mover';
 import { FlipperState } from './flipper-state';
 
 /**
@@ -67,8 +67,8 @@ export class Flipper implements IRenderable, IMovable<FlipperState> {
 		return this.data.fVisible;
 	}
 
-	public getMover(): MoverObject {
-		return this.hit!.flipperMover;
+	public getMover(): FlipperMover {
+		return this.getHit().getMoverObject();
 	}
 
 	public getHit(): FlipperHit {
@@ -103,13 +103,13 @@ export class Flipper implements IRenderable, IMovable<FlipperState> {
 	}
 
 	public rotateToEnd(): void { // power stroke to hit ball, key/button down/pressed
-		this.hit!.flipperMover.enableRotateEvent = 1;
-		this.hit!.flipperMover.setSolenoidState(true);
+		this.getMover().enableRotateEvent = 1;
+		this.getMover().setSolenoidState(true);
 	}
 
 	public rotateToStart() { // return to park, key/button up/released
-		this.hit!.flipperMover.enableRotateEvent = -1;
-		this.hit!.flipperMover.setSolenoidState(false);
+		this.getMover().enableRotateEvent = -1;
+		this.getMover().setSolenoidState(false);
 	}
 
 	public updateState(state: FlipperState, obj: Object3D): void {

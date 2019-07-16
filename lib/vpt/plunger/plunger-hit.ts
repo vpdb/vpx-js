@@ -26,7 +26,7 @@ import { PlungerMover } from './plunger-mover';
 
 export class PlungerHit extends HitObject {
 
-	public readonly plungerMover: PlungerMover;
+	private readonly plungerMover: PlungerMover;
 
 	constructor(plungerData: PlungerData, cFrames: number, player: Player, table: Table) {
 		super();
@@ -45,5 +45,9 @@ export class PlungerHit extends HitObject {
 		this.hitBBox.zhigh = config.zHeight + Plunger.PLUNGER_HEIGHT;
 
 		this.plungerMover = new PlungerMover(config, plungerData, player, table.gameData!);
+	}
+
+	public getMoverObject(): PlungerMover {
+		return this.plungerMover;
 	}
 }

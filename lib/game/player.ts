@@ -1,19 +1,41 @@
+/*
+ * VPDB - Virtual Pinball Database
+ * Copyright (C) 2019 freezy <freezy@vpdb.io>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 
 import { Table } from '..';
 import { Vertex3D } from '../math/vertex3d';
 import { DEFAULT_STEPTIME, PHYSICS_STEPTIME } from '../physics/constants';
+import { HitObject } from '../physics/hit-object';
 import { MoverObject } from '../physics/mover-object';
 import { now } from '../refs.node';
+import { Ball } from '../vpt/ball/ball';
+import { BallData } from '../vpt/ball/ball-data';
+import { BallState } from '../vpt/ball/ball-state';
 import { FlipperHit } from '../vpt/flipper/flipper-hit';
-import { PlungerHit } from '../vpt/plunger/plunger-hit';
 
 export class Player {
 
 	public gravity = new Vertex3D();
 	private readonly table: Table;
+	private readonly balls: Ball[] = [];
 	private readonly movers: MoverObject[] = [];
 	private readonly flipperHits: FlipperHit[] = [];
-	private readonly plungerHits: PlungerHit[] = [];
+	private readonly hitObjects: HitObject[] = [];
 	private stateCallback?: (name: string, state: any) => void;
 
 	private minPhysLoopTime: number = 0;
@@ -306,8 +328,21 @@ export class Player {
 		this.flipperHits.push(flipperHit);
 	}
 
-	public addPlungerHit(plungerHit: PlungerHit) {
-		this.plungerHits.push(plungerHit);
+	public createBall(ballCreator: IBallCreationPosition, velocity: Vertex3D = new Vertex3D( 0.1, 0, 0), radius = 25, mass = 1): Ball {
+
+		const data = new BallData(radius, mass, this.table.gameData!.defaultBulbIntensityScaleOnBall);
+		const state = new BallState(ballCreator.getBallCreationPosition(this.table), velocity);
+		state.pos.z += data.radius;
+
+		const ball = new Ball(data, state, this.table.gameData!);
+
+		this.balls.push(ball);
+		this.movers.push(ball.getMover()); // balls are always added separately to this list!
+		this.hitObjects.push(ball.getHitObject());
+
+		//m_hitoctree_dynamic.FillFromVector(m_vho_dynamic);
+
+		return ball;
 	}
 
 	// public setGravity(slopeDeg: number, strength: number): void {
@@ -318,3 +353,7 @@ export class Player {
 }
 
 export type StateCallback = (name: string, state: any) => void;
+
+export interface IBallCreationPosition {
+	getBallCreationPosition(table: Table): Vertex3D;
+}
