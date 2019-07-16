@@ -19,6 +19,7 @@
 
 import { Vertex2D } from '../math/vertex2d';
 import { HitObject } from './hit-object';
+import { CollisionType } from './collision-type';
 
 export class LineSeg extends HitObject {
 
@@ -52,5 +53,9 @@ export class LineSeg extends HitObject {
 		const invLength = 1.0 / this.length;
 		this.normal = new Vertex2D(vT.y * invLength, -vT.x * invLength);
 		return this;
+	}
+
+	public getType(): CollisionType {
+		return CollisionType.LineSeg;
 	}
 }

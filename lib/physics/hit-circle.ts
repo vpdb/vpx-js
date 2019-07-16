@@ -19,12 +19,14 @@
 
 // import { solveQuadraticEq } from '../math/functions';
 import { Vertex2D } from '../math/vertex2d';
+import { CollisionType } from './collision-type';
 // import { Vertex3D } from '../math/vertex3d';
 // import { Ball } from '../vpt/ball/ball';
 // import { CollisionEvent } from './collision-event';
 // import { CollisionType } from './collision-type';
 // import { C_CONTACTVEL, C_LOWNORMVEL, PHYS_TOUCH } from './constants';
 import { HitObject } from './hit-object';
+
 // import { MoverObject } from './mover-object';
 
 export class HitCircle extends HitObject {
@@ -38,6 +40,10 @@ export class HitCircle extends HitObject {
 		this.radius = radius;
 		this.hitBBox.zlow = zLow;
 		this.hitBBox.zhigh = zHigh;
+	}
+
+	public getType(): CollisionType {
+		return CollisionType.Circle;
 	}
 
 	// public HitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {

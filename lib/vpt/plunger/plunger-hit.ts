@@ -18,6 +18,7 @@
  */
 
 import { Player } from '../../game/player';
+import { CollisionType } from '../../physics/collision-type';
 import { HitObject } from '../../physics/hit-object';
 import { Table } from '../table';
 import { Plunger, PlungerConfig } from './plunger';
@@ -49,5 +50,9 @@ export class PlungerHit extends HitObject {
 
 	public getMoverObject(): PlungerMover {
 		return this.plungerMover;
+	}
+
+	public getType(): CollisionType {
+		return CollisionType.Plunger;
 	}
 }

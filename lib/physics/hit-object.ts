@@ -55,7 +55,7 @@ export abstract class HitObject {
 	 */
 	private e: boolean = false;
 
-	// public abstract GetType(): CollisionType;
+	public abstract getType(): CollisionType;
 	// public abstract CalcHitBBox(): void;
 	public getMoverObject(): MoverObject | undefined {
 		return undefined;
