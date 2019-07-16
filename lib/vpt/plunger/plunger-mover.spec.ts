@@ -51,8 +51,7 @@ describe('The VPinball plunger physics', () => {
 
 		const parkFrame = plungerMover.cFrames - 1;
 
-		const state = player.popState();
-		const plungerState = (state as any).CustomPlunger as PlungerState;
+		const plungerState = popState(player, 'CustomPlunger');
 		expect(plungerState.frame).to.equal(parkFrame);
 	});
 
@@ -64,8 +63,7 @@ describe('The VPinball plunger physics', () => {
 		plunger.pullBack();
 		simulateCycles(player, 50);
 
-		const state = player.popState();
-		const plungerState = (state as any).CustomPlunger as PlungerState;
+		const plungerState = popState(player, 'CustomPlunger');
 		expect(plungerState.frame).to.equal(0);
 		expect(plungerMover.pos).to.equal(endPosition);
 	});
@@ -80,9 +78,38 @@ describe('The VPinball plunger physics', () => {
 		plunger.fire();
 		simulateCycles(player, 500);
 
-		const state = player.popState();
-		const plungerState = (state as any).CustomPlunger as PlungerState;
+		const plungerState = popState(player, 'CustomPlunger');
 		expect(plungerState.frame).to.equal(parkFrame);
 	});
 
+	it('should only fire a little when auto-fire is disabled', async () => {
+		const plunger = table.plungers.find(p => p.getName() === 'CustomPlunger')!;
+		const plungerMover = plunger.getMover() as PlungerMover;
+		const parkFrame = plungerMover.cFrames - 1;
+
+		plunger.fire();
+		simulateCycles(player, 50);
+
+		let plungerState = popState(player, 'CustomPlunger');
+		expect(plungerState.frame).to.equal(21);
+
+		simulateCycles(player, 180);
+		plungerState = popState(player, 'CustomPlunger');
+		expect(plungerState.frame).to.equal(parkFrame);
+	});
+
+	it('should fire fully when auto-fire is enabled', async () => {
+		const plunger = table.plungers.find(p => p.getName() === 'AutoPlunger')!;
+
+		plunger.fire();
+
+		const plungerState = popState(player, 'AutoPlunger');
+		expect(plungerState.frame).to.equal(0);
+	});
+
 });
+
+function popState(player: Player, name: string): PlungerState {
+	const state = player.popState();
+	return (state as any)[name] as PlungerState;
+}
