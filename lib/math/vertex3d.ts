@@ -31,9 +31,9 @@ export class Vertex3D implements Vertex {
 	set y(_y: number) { this._y = f4(_y); }
 	set z(_z: number) { this._z = f4(_z); }
 
-	get x() { return this._x; }
-	get y() { return this._y; }
-	get z() { return this._z; }
+	get x(): number { return this._x; }
+	get y(): number { return this._y; }
+	get z(): number { return this._z; }
 
 	private _x!: number;
 	private _y!: number;

@@ -149,7 +149,7 @@ export class FlipperHit extends HitObject {
 		this.elasticity = (this.flipperData.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
 			? this.flipperData.overrideElasticity!
 			: this.flipperData.elasticity!;
-		this.SetFriction((this.flipperData.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
+		this.setFriction((this.flipperData.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
 			? this.flipperData.overrideFriction!
 			: this.flipperData.friction!);
 		this.scatter = degToRad((this.flipperData.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))

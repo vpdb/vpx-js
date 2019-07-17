@@ -18,16 +18,21 @@
  */
 
 import { Table } from '..';
+import { Vertex2D } from '../math/vertex2d';
 import { Vertex3D } from '../math/vertex3d';
+import { CollisionEvent } from '../physics/collision-event';
 import { DEFAULT_STEPTIME, PHYSICS_STEPTIME } from '../physics/constants';
 import { HitObject } from '../physics/hit-object';
+import { LineSeg } from '../physics/line-seg';
 import { MoverObject } from '../physics/mover-object';
 import { now } from '../refs.node';
 import { Ball } from '../vpt/ball/ball';
 import { BallData } from '../vpt/ball/ball-data';
 import { BallState } from '../vpt/ball/ball-state';
-import { FlipperHit } from '../vpt/flipper/flipper-hit';
+import { HitPlane } from '../vpt/ball/hit-plane';
 import { FlipperMover } from '../vpt/flipper/flipper-mover';
+import { Hit3DPoly } from '../physics/hit-3dpoly';
+import { degToRad } from '../math/float';
 
 export class Player {
 
@@ -55,12 +60,18 @@ export class Player {
 	private startTimeUsec: number = 0;
 	private physPeriod: number = 0;
 
+	private hitPlayfield!: HitPlane; // HitPlanes cannot be part of octree (infinite size)
+	private hitTopGlass!: HitPlane;
 	private state: { [key: string]: any} = {};
 	public curMechPlungerPos: number = 0;
+	private recordContacts: boolean = false;
+	private contacts: CollisionEvent[] = [];
 
 	constructor(table: Table) {
 		this.table = table;
 		this.table.setupPlayer(this);
+
+		this.addCabinetBoundingHitShapes();
 	}
 
 	public setOnStateChanged(callback: StateCallback): void {
@@ -83,6 +94,68 @@ export class Player {
 		return state;
 	}
 
+	private addCabinetBoundingHitShapes(): void {
+
+		// simple outer borders:
+		let lineSeg: LineSeg;
+
+		lineSeg = new LineSeg(new Vertex2D(this.table.data!.right, this.table.data!.top), new Vertex2D(this.table.data!.right, this.table.data!.bottom), this.table.getTableHeight(), this.table.data!.glassheight);
+		this.hitObjects.push(lineSeg);
+
+		lineSeg = new LineSeg(new Vertex2D(this.table.data!.left, this.table.data!.bottom), new Vertex2D(this.table.data!.left, this.table.data!.top), this.table.getTableHeight(), this.table.data!.glassheight);
+		this.hitObjects.push(lineSeg);
+
+		lineSeg = new LineSeg(new Vertex2D(this.table.data!.right, this.table.data!.bottom), new Vertex2D(this.table.data!.left, this.table.data!.bottom), this.table.getTableHeight(), this.table.data!.glassheight);
+		this.hitObjects.push(lineSeg);
+
+		lineSeg = new LineSeg(new Vertex2D(this.table.data!.left, this.table.data!.top), new Vertex2D(this.table.data!.right, this.table.data!.top), this.table.getTableHeight(), this.table.data!.glassheight);
+		this.hitObjects.push(lineSeg);
+
+		// glass:
+		const rgv3D: Vertex3D[] = [
+			new Vertex3D(this.table.data!.left, this.table.data!.top, this.table.data!.glassheight),
+			new Vertex3D(this.table.data!.right, this.table.data!.top, this.table.data!.glassheight),
+			new Vertex3D(this.table.data!.right, this.table.data!.bottom, this.table.data!.glassheight),
+			new Vertex3D(this.table.data!.left, this.table.data!.bottom, this.table.data!.glassheight),
+		];
+		const ph3dpoly = new Hit3DPoly(rgv3D);
+		this.hitObjects.push(ph3dpoly);
+
+		// playfield
+		this.hitPlayfield = new HitPlane(new Vertex3D(0, 0, 1), this.table.getTableHeight())
+			.setFriction(this.getFriction())
+			.setElasticy(this.getElasticity(), this.getElasticityFalloff())
+			.setScatter(degToRad(this.getScatter()));
+
+		// glass
+		this.hitTopGlass = new HitPlane(new Vertex3D(0, 0, -1), this.table.data!.glassheight)
+			.setElasticy(0.2);
+	}
+
+	private getFriction(): number {
+		return this.table.data!.overridePhysics
+			? this.table.data!.overrideContactFriction
+			: this.table.data!.friction!;
+	}
+
+	private getElasticity(): number {
+		return this.table.data!.overridePhysics
+			? this.table.data!.overrideElasticity
+			: this.table.data!.elasticity!;
+	}
+
+	private getElasticityFalloff(): number {
+		return this.table.data!.overridePhysics
+			? this.table.data!.overrideElasticityFalloff
+			: this.table.data!.elasticityFalloff!;
+	}
+
+	private getScatter(): number {
+		return this.table.data!.overridePhysics
+			? this.table.data!.overrideScatterAngle
+			: this.table.data!.scatter!;
+	}
+
 	public physicsSimulateCycle(dtime: number) {
 		while (dtime > 0) {
 			let hitTime = dtime;
@@ -94,13 +167,59 @@ export class Player {
 					hitTime = flipperHitTime;
 				}
 			}
-			//console.log('updating in %sms (%sms)', hitTime, dtime);
 
-			for (const mover of this.movers) {
+			this.recordContacts = true;
+			this.contacts = [];
+
+			for (const pball of this.balls) {
+				const ballHit = pball.getHitObject();
+				if (!ballHit.isFrozen) { // don't play with frozen balls
+
+					ballHit.coll.hitTime = hitTime;          // search upto current hittime
+					ballHit.coll.obj = undefined;
+
+					// always check for playfield and top glass
+					if (!this.meshAsPlayfield) {
+						this.hitPlayfield.doHitTest(pball, pball.coll, this);
+					}
+
+					this.hitTopGlass.doHitTest(pball,  pball.coll, this);
+
+					if (Math.random() < 0.5) { // swap order of dynamic and static obj checks randomly
+						m_hitoctree_dynamic.HitTestBall(pball, pball - > m_coll);  // dynamic objects
+						m_hitoctree.HitTestBall(pball, pball - > m_coll);  // find the hit objects and hit times
+					} else {
+						m_hitoctree.HitTestBall(pball, pball - > m_coll);  // find the hit objects and hit times
+						m_hitoctree_dynamic.HitTestBall(pball, pball - > m_coll);  // dynamic objects
+					}
+
+					const htz = pball.coll.hitTime; // this ball's hit time
+				if (htz < 0. {f; }) pball - > m_coll.m_obj; = NULL; // no negative time allowed
+
+				if (pball - > m_coll.m_obj) {
+						///////////////////////////////////////////////////////////////////////////
+						if (htz <= hittime) {
+							hittime = htz;                       // record actual event time
+
+							if (htz < STATICTIME) {
+								/*if (!pball->m_coll.m_hitRigid) hittime = STATICTIME; // non-rigid ... set Static time
+                                else*/ if (--StaticCnts < 0) {
+								StaticCnts = 0;                // keep from wrapping
+								hittime = STATICTIME;
+							}
+							}
+						}
+					}
+				}
+			} // end loop over all balls
+
+		m_recordContacts = false;
+
+		for (const mover of this.movers) {
 				mover.updateDisplacements(hitTime);
 			}
 
-			dtime -= hitTime;
+		dtime -= hitTime;
 		}
 	}
 

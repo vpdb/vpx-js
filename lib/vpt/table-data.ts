@@ -73,7 +73,7 @@ export class TableData extends BiffParser {
 	public overwriteGlobalStereo3D: boolean = false;
 	public angletiltMax?: number;
 	public angletiltMin?: number;
-	public glassheight?: number;
+	public glassheight!: number;
 	public tableheight!: number;
 	public szImage?: string;
 	public szBallImage!: string;
@@ -129,6 +129,11 @@ export class TableData extends BiffParser {
 	public userDetailLevel?: number;
 	public numMaterials!: number;
 	public materials: Material[] = [];
+
+	public readonly overrideContactFriction = 0.075;
+	public readonly overrideElasticity = 0.25;
+	public readonly overrideElasticityFalloff = 0;
+	public readonly overrideScatterAngle = 0;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<TableData> {
 		const tableData = new TableData();

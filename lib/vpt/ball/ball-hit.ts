@@ -51,7 +51,7 @@ export class BallHit extends HitObject {
 	private forceReflection: boolean;
 	private visible: boolean;
 
-	private coll: CollisionEvent;
+	public coll: CollisionEvent;
 	private rcHitRadiusSqr?: number;
 	private defaultZ: number = 25.0; // normal height of the ball //!! remove?
 
