@@ -18,11 +18,15 @@
  */
 
 import { FRect3D } from '../math/frect3d';
+import { Ball } from '../vpt/ball/ball';
+import { CollisionEvent } from './collision-event';
 // import { Ball } from '../vpt/ball/ball';
 // import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { IFireEvents } from './events';
 import { MoverObject } from './mover-object';
+import { Player } from '../game/player';
+
 // import { MoverObject } from './mover-object';
 
 export abstract class HitObject {
@@ -77,8 +81,14 @@ export abstract class HitObject {
 	// 	coll.ball.HandleStaticContact(coll, this.friction, dtime);
 	// }
 
-	public SetFriction(friction: number): void {
+	public setFriction(friction: number): this {
 		this.friction = friction;
+		return this;
+	}
+
+	public setScatter(scatter: number): this {
+		this.scatter = scatter;
+		return this;
 	}
 
 	// public FireHitEvent(pball: Ball): void {
@@ -98,8 +108,51 @@ export abstract class HitObject {
 	// 	}
 	// }
 
-	public setZ(zLow: number, zHigh: number) {
+	public setElasticy(elasticity: number, elasticityFalloff?: number): this {
+		this.elasticity = elasticity;
+		if (elasticityFalloff) {
+			this.elasticityFalloff = elasticityFalloff;
+		}
+		return this;
+	}
+
+	public setZ(zLow: number, zHigh: number): this {
 		this.hitBBox.zlow = zLow;
 		this.hitBBox.zhigh = zHigh;
+		return this;
+	}
+
+	public doHitTest(pball: Ball, coll: CollisionEvent, player: Player) {
+		if (!pball) {
+			return;
+		}
+
+		if (this.objType === CollisionType.HitTarget && (((this as HitTarget).obj).data.isDropped)) {
+			return;
+		}
+
+		let newColl: CollisionEvent;
+		const newtime = this.hitTest(pball, coll.hitTime, !player.recordContacts ? coll : newColl);
+		const validhit = ((newtime >= 0) && !sign(newtime) && (newtime <= coll.hitTime));
+
+		if (!player.recordContacts) {// simply find first event
+			if (validhit) {
+			coll.ball = pball;
+			coll.obj = this;
+			coll.hitTime = newtime;
+			}
+		} else { // find first collision, but also remember all contacts
+			if (newColl.isContact || validhit) {
+				newColl.ball = pball;
+				newColl.obj = this;
+
+				if (newColl.m_isContact) {
+					player.contacts.push(newColl);
+				} else { //if (validhit)
+					coll = newColl;
+					coll.hitTime = newtime;
+				}
+			}
+		}
 	}
 }
