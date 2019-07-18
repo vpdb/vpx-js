@@ -51,12 +51,12 @@ export class HitKDNode {
 
 		for (let i = this.m_start; i < this.m_start + org_items; i++) {
 			const pho = this.m_hitoct.getItemAt(i);
-			if (ball !== pho && pho.hitBBox.intersect3D(pball.state.pos, pball.m_rcHitRadiusSqr)) {
-				this.doHitTest(pball, pho, coll);
+			if (pball !== pho && pho.hitBBox.intersect3D(pball.state.pos, pball.getHitObject().rcHitRadiusSqr)) {
+				pho.doHitTest(pball, coll);
 			}
 		}
 
-		if (this.m_children) { // not a leaf
+		if (this.m_children. && this.m_children.length) { // not a leaf
 			if (axis === 0) {
 				const vcenter = (this.m_rectbounds.left + this.m_rectbounds.right) * 0.5;
 				if (pball.getHitObject().hitBBox.left <= vcenter) {
