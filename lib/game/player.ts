@@ -21,7 +21,7 @@ import { Table } from '..';
 import { Vertex2D } from '../math/vertex2d';
 import { Vertex3D } from '../math/vertex3d';
 import { CollisionEvent } from '../physics/collision-event';
-import { DEFAULT_STEPTIME, PHYSICS_STEPTIME } from '../physics/constants';
+import { DEFAULT_STEPTIME, PHYSICS_STEPTIME, STATICTIME } from '../physics/constants';
 import { HitObject } from '../physics/hit-object';
 import { LineSeg } from '../physics/line-seg';
 import { MoverObject } from '../physics/mover-object';
@@ -64,8 +64,10 @@ export class Player {
 	private hitTopGlass!: HitPlane;
 	private state: { [key: string]: any} = {};
 	public curMechPlungerPos: number = 0;
-	private recordContacts: boolean = false;
+	public recordContacts: boolean = false;
 	private contacts: CollisionEvent[] = [];
+	private meshAsPlayfield: boolean = false;
+	private hitOcTreeDynamic: HitKD;
 
 	constructor(table: Table) {
 		this.table = table;
@@ -180,46 +182,47 @@ export class Player {
 
 					// always check for playfield and top glass
 					if (!this.meshAsPlayfield) {
-						this.hitPlayfield.doHitTest(pball, pball.coll, this);
+						this.hitPlayfield.doHitTest(pball, pball.getCollision(), this);
 					}
 
-					this.hitTopGlass.doHitTest(pball,  pball.coll, this);
+					this.hitTopGlass.doHitTest(pball,  pball.getCollision(), this);
 
 					if (Math.random() < 0.5) { // swap order of dynamic and static obj checks randomly
-						m_hitoctree_dynamic.HitTestBall(pball, pball - > m_coll);  // dynamic objects
-						m_hitoctree.HitTestBall(pball, pball - > m_coll);  // find the hit objects and hit times
+						this.hitOcTreeDynamic.HitTestBall(pball, pball.getCollision());  // dynamic objects
+						m_hitoctree.HitTestBall(pball, pball.getCollision());  // find the hit objects and hit times
 					} else {
-						m_hitoctree.HitTestBall(pball, pball - > m_coll);  // find the hit objects and hit times
-						m_hitoctree_dynamic.HitTestBall(pball, pball - > m_coll);  // dynamic objects
+						m_hitoctree.HitTestBall(pball, pball.getCollision());  // find the hit objects and hit times
+						m_hitoctree_dynamic.HitTestBall(pball, pball.getCollision());  // dynamic objects
 					}
 
-					const htz = pball.coll.hitTime; // this ball's hit time
-				if (htz < 0. {f; }) pball - > m_coll.m_obj; = NULL; // no negative time allowed
+					const htz = pball.getCollision().hitTime; // this ball's hit time
+					if (htz < 0) { // no negative time allowed
+						pball.getCollision().clear();
+					}
 
-				if (pball - > m_coll.m_obj) {
+					if (pball.getCollision().obj) {
 						///////////////////////////////////////////////////////////////////////////
-						if (htz <= hittime) {
-							hittime = htz;                       // record actual event time
+						if (htz <= hitTime) {
+							hitTime = htz;                         // record actual event time
 
 							if (htz < STATICTIME) {
-								/*if (!pball->m_coll.m_hitRigid) hittime = STATICTIME; // non-rigid ... set Static time
-                                else*/ if (--StaticCnts < 0) {
-								StaticCnts = 0;                // keep from wrapping
-								hittime = STATICTIME;
-							}
+								if (--StaticCnts < 0) {
+									StaticCnts = 0;                // keep from wrapping
+									hitTime = STATICTIME;
+								}
 							}
 						}
 					}
 				}
 			} // end loop over all balls
 
-		m_recordContacts = false;
+			this.recordContacts = false;
 
-		for (const mover of this.movers) {
+			for (const mover of this.movers) {
 				mover.updateDisplacements(hitTime);
 			}
 
-		dtime -= hitTime;
+			dtime -= hitTime;
 		}
 	}
 
