@@ -28,12 +28,13 @@ import { BallHit } from './ball-hit';
 import { BallMesh } from './ball-mesh';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
+import { CollisionEvent } from '../../physics/collision-event';
 
 export class Ball implements IMovable<BallState>, IHittable {
 
+	public readonly state: BallState;
 	private readonly data: BallData;
 	private readonly mesh: BallMesh;
-	private readonly state: BallState;
 	private readonly hit: BallHit;
 
 	// unique ID for each ball
@@ -63,6 +64,10 @@ export class Ball implements IMovable<BallState>, IHittable {
 
 	public getHitObject(): BallHit {
 		return this.hit;
+	}
+
+	public getCollision(): CollisionEvent {
+		return this.hit.coll;
 	}
 
 	public setupPlayer(player: Player, table: Table): void {

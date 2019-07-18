@@ -71,4 +71,8 @@ export class CollisionEvent {
 	constructor(ball: Ball) {
 		this.ball = ball;
 	}
+
+	public clear() {
+		this.obj = undefined;
+	}
 }
