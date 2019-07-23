@@ -25,7 +25,7 @@ import { HitObject } from './hit-object';
 
 export class HitKD {
 
-	private m_org_idx: number[];
+	public m_org_idx: number[];
 
 	private m_rootNode: HitKDNode;
 
@@ -34,10 +34,10 @@ export class HitKD {
 
 	private m_org_vho: HitObject[];
 
-	private tmp: number[];
+	public tmp: number[];
 
 	private m_nodes: HitKDNode[];
-	private m_num_nodes: number = 0;
+	public m_num_nodes: number = 0;
 
 	constructor() {
 		this.m_rootNode = new HitKDNode(this);
@@ -66,15 +66,15 @@ export class HitKD {
 	public fillFromVector(vho: HitObject[]): void {
 		this.init(vho);
 
-		this.m_rootNode.m_rectbounds.Clear();
+		this.m_rootNode.rectBounds.Clear();
 
-		this.m_rootNode.m_start = 0;
-		this.m_rootNode.m_items = this.m_num_items;
+		this.m_rootNode.start = 0;
+		this.m_rootNode.items = this.m_num_items;
 
 		for (let i = 0; i < this.m_num_items; ++i) {
 			const pho = vho[i];
 			pho.calcHitBBox(); //!! omit, as already calced?!
-			this.m_rootNode.m_rectbounds.extend(pho.hitBBox);
+			this.m_rootNode.rectBounds.extend(pho.hitBBox);
 			this.m_org_idx[i] = i;
 		}
 
@@ -84,10 +84,10 @@ export class HitKD {
 
 	public fillFromIndices(initialBounds?: FRect3D): void {
 		if (initialBounds) {
-			this.m_rootNode.m_rectbounds = initialBounds;
+			this.m_rootNode.rectBounds = initialBounds;
 
-			this.m_rootNode.m_start = 0;
-			this.m_rootNode.m_items = this.m_num_items;
+			this.m_rootNode.start = 0;
+			this.m_rootNode.items = this.m_num_items;
 
 			// assume that CalcHitBBox() was already called on the hit objects
 
@@ -95,15 +95,15 @@ export class HitKD {
 			this.initSseArrays();
 		} else {
 
-			this.m_rootNode.m_rectbounds.Clear();
+			this.m_rootNode.rectBounds.Clear();
 
-			this.m_rootNode.m_start = 0;
-			this.m_rootNode.m_items = this.m_num_items;
+			this.m_rootNode.start = 0;
+			this.m_rootNode.items = this.m_num_items;
 
 			for (let i = 0; i < this.m_num_items; ++i) {
 				const pho = this.getItemAt(i);
 				pho.calcHitBBox(); //!! omit, as already calced?!
-				this.m_rootNode.m_rectbounds.extend(pho.hitBBox);
+				this.m_rootNode.rectBounds.extend(pho.hitBBox);
 			}
 
 			this.m_rootNode.createNextLevel(0, 0);
@@ -121,29 +121,21 @@ export class HitKD {
 		this.tmp = [];
 	}
 
-	public hitTestBall(pball: Ball, coll: CollisionEvent): void {
-		this.m_rootNode.hitTestBallSse(pball, coll);
-	}
-
 	public hitTestXRay(pball: Ball, pvhoHit: HitObject[], coll: CollisionEvent) {
 		this.m_rootNode.hitTestXRay(pball, pvhoHit, coll);
-	}
-
-	private initSseArrays() {
-		// currently ignoring #ifdef KDTREE_SSE_LEAFTEST
 	}
 
 	public getItemAt(i: number): HitObject {
 		return this.m_org_vho[ this.m_org_idx[ i ] ];
 	}
 
-	private allocTwoNodes(): HitKDNode | null {
+	public allocTwoNodes(): HitKDNode[] {
 		if (this.m_num_nodes + 1 >= this.m_nodes.length) {       // space for two more nodes?
-			return null;
+			return [];
 
 		} else {
 			this.m_num_nodes += 2;
-			return this.m_nodes[this.m_num_nodes - 2];
+			return this.m_nodes.slice(this.m_num_nodes - 2);
 		}
 	}
 }
