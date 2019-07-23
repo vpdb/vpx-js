@@ -263,7 +263,7 @@ export class HitKDNode {
 		}
 
 		if (levelEmpty > 8) {// If 8 levels were all just subdividing the same objects without luck, exit & Free the nodes again (but at least empty space was cut off)
-			this.hitOct.m_num_nodes -= 2;
+			this.hitOct.numNodes -= 2;
 			this.children = [];
 			return;
 		}
@@ -281,11 +281,11 @@ export class HitKDNode {
 				const pho = this.hitOct.getItemAt(i);
 
 				if (pho.hitBBox.right < vcenter.x) {
-					this.hitOct.tmp[this.children[0].start + (this.children[0].items++)] = this.hitOct.m_org_idx[i];
+					this.hitOct.tmp[this.children[0].start + (this.children[0].items++)] = this.hitOct.orgIdx[i];
 				} else if (pho.hitBBox.left > vcenter.x) {
-					this.hitOct.tmp[this.children[1].start + (this.children[1].items++)] = this.hitOct.m_org_idx[i];
+					this.hitOct.tmp[this.children[1].start + (this.children[1].items++)] = this.hitOct.orgIdx[i];
 				} else {
-					this.hitOct.m_org_idx[this.start + (items++)] = this.hitOct.m_org_idx[i];
+					this.hitOct.orgIdx[this.start + (items++)] = this.hitOct.orgIdx[i];
 				}
 			}
 		} else if (axis === 1) {
@@ -293,11 +293,11 @@ export class HitKDNode {
 				const pho = this.hitOct.getItemAt(i);
 
 				if (pho.hitBBox.bottom < vcenter.y) {
-					this.hitOct.tmp[this.children[0].start + (this.children[0].items++)] = this.hitOct.m_org_idx[i];
+					this.hitOct.tmp[this.children[0].start + (this.children[0].items++)] = this.hitOct.orgIdx[i];
 				} else if (pho.hitBBox.top > vcenter.y) {
-					this.hitOct.tmp[this.children[1].start + (this.children[1].items++)] = this.hitOct.m_org_idx[i];
+					this.hitOct.tmp[this.children[1].start + (this.children[1].items++)] = this.hitOct.orgIdx[i];
 				} else {
-					this.hitOct.m_org_idx[this.start + (items++)] = this.hitOct.m_org_idx[i];
+					this.hitOct.orgIdx[this.start + (items++)] = this.hitOct.orgIdx[i];
 				}
 			}
 
@@ -306,11 +306,11 @@ export class HitKDNode {
 				const pho = this.hitOct.getItemAt(i);
 
 				if (pho.hitBBox.zhigh < vcenter.z) {
-					this.hitOct.tmp[this.children[0].start + (this.children[0].items++)] = this.hitOct.m_org_idx[i];
+					this.hitOct.tmp[this.children[0].start + (this.children[0].items++)] = this.hitOct.orgIdx[i];
 				} else if (pho.hitBBox.zlow > vcenter.z) {
-					this.hitOct.tmp[this.children[1].start + (this.children[1].items++)] = this.hitOct.m_org_idx[i];
+					this.hitOct.tmp[this.children[1].start + (this.children[1].items++)] = this.hitOct.orgIdx[i];
 				} else {
-					this.hitOct.m_org_idx[this.start + (items++)] = this.hitOct.m_org_idx[i];
+					this.hitOct.orgIdx[this.start + (items++)] = this.hitOct.orgIdx[i];
 				}
 			}
 		}
@@ -324,10 +324,10 @@ export class HitKDNode {
 
 		// copy temporary back //!! could omit this by doing everything inplace
 		for (let i = 0; i < this.children[0].items; i++) {
-			this.hitOct.m_org_idx[this.children[0].start + i] = this.hitOct.tmp[this.children[0].start + i];
+			this.hitOct.orgIdx[this.children[0].start + i] = this.hitOct.tmp[this.children[0].start + i];
 		}
 		for (let i = 0; i < this.children[1].items; i++) {
-			this.hitOct.m_org_idx[this.children[1].start + i] = this.hitOct.tmp[this.children[1].start + i];
+			this.hitOct.orgIdx[this.children[1].start + i] = this.hitOct.tmp[this.children[1].start + i];
 		}
 		//memcpy(&this.hitOct->m_org_idx[this.children[0].start], &this.hitOct->tmp[this.children[0].start], this.children[0].items*sizeof(unsigned int));
 		//memcpy(&this.hitOct->m_org_idx[this.children[1].start], &this.hitOct->tmp[this.children[1].start], this.children[1].this.items*sizeof(unsigned int));

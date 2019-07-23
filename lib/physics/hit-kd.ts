@@ -25,95 +25,92 @@ import { HitObject } from './hit-object';
 
 export class HitKD {
 
-	public m_org_idx: number[];
+	public orgIdx: number[] = [];
 
-	private m_rootNode: HitKDNode;
+	private rootNode: HitKDNode;
 
-	private m_num_items: number = 0;
-	private m_max_items: number = 0;
+	private numItems: number = 0;
+	private maxItems: number = 0;
 
-	private m_org_vho: HitObject[];
+	private orgVho: HitObject[] = [];
 
-	public tmp: number[];
+	public tmp: number[] = [];
 
-	private m_nodes: HitKDNode[];
-	public m_num_nodes: number = 0;
+	private nodes: HitKDNode[] = [];
+	public numNodes: number = 0;
 
 	constructor() {
-		this.m_rootNode = new HitKDNode(this);
+		this.rootNode = new HitKDNode(this);
 	}
 
 	public init(vho: HitObject[]) {
-		this.m_org_vho = vho;
-		this.m_num_items = vho.length;
+		this.orgVho = vho;
+		this.numItems = vho.length;
 
-		if (this.m_num_items > this.m_max_items) {
-			this.m_max_items = this.m_num_items;
+		if (this.numItems > this.maxItems) {
+			this.maxItems = this.numItems;
 
-			this.m_org_idx = [];
+			this.orgIdx = [];
 
 			this.tmp = [];
-			this.m_nodes = [];
+			this.nodes = [];
 		}
-		this.m_num_nodes = 0;
-		this.m_rootNode.reset(this);
+		this.numNodes = 0;
+		this.rootNode.reset(this);
 	}
 
 	public addElementByIndex(i: number): void {
-		this.m_org_idx.push(i);
+		this.orgIdx.push(i);
 	}
 
 	public fillFromVector(vho: HitObject[]): void {
 		this.init(vho);
 
-		this.m_rootNode.rectBounds.Clear();
+		this.rootNode.rectBounds.Clear();
 
-		this.m_rootNode.start = 0;
-		this.m_rootNode.items = this.m_num_items;
+		this.rootNode.start = 0;
+		this.rootNode.items = this.numItems;
 
-		for (let i = 0; i < this.m_num_items; ++i) {
+		for (let i = 0; i < this.numItems; ++i) {
 			const pho = vho[i];
 			pho.calcHitBBox(); //!! omit, as already calced?!
-			this.m_rootNode.rectBounds.extend(pho.hitBBox);
-			this.m_org_idx[i] = i;
+			this.rootNode.rectBounds.extend(pho.hitBBox);
+			this.orgIdx[i] = i;
 		}
 
-		this.m_rootNode.createNextLevel(0, 0);
-		this.initSseArrays();
+		this.rootNode.createNextLevel(0, 0);
 	}
 
 	public fillFromIndices(initialBounds?: FRect3D): void {
 		if (initialBounds) {
-			this.m_rootNode.rectBounds = initialBounds;
+			this.rootNode.rectBounds = initialBounds;
 
-			this.m_rootNode.start = 0;
-			this.m_rootNode.items = this.m_num_items;
+			this.rootNode.start = 0;
+			this.rootNode.items = this.numItems;
 
 			// assume that CalcHitBBox() was already called on the hit objects
 
-			this.m_rootNode.createNextLevel(0, 0);
-			this.initSseArrays();
+			this.rootNode.createNextLevel(0, 0);
 		} else {
 
-			this.m_rootNode.rectBounds.Clear();
+			this.rootNode.rectBounds.Clear();
 
-			this.m_rootNode.start = 0;
-			this.m_rootNode.items = this.m_num_items;
+			this.rootNode.start = 0;
+			this.rootNode.items = this.numItems;
 
-			for (let i = 0; i < this.m_num_items; ++i) {
+			for (let i = 0; i < this.numItems; ++i) {
 				const pho = this.getItemAt(i);
 				pho.calcHitBBox(); //!! omit, as already calced?!
-				this.m_rootNode.rectBounds.extend(pho.hitBBox);
+				this.rootNode.rectBounds.extend(pho.hitBBox);
 			}
 
-			this.m_rootNode.createNextLevel(0, 0);
-			this.initSseArrays();
+			this.rootNode.createNextLevel(0, 0);
 		}
 	}
 
 	// call when the bounding boxes of the HitObjects have changed to update the tree
 	public update(): void {
-		this.fillFromVector(this.m_org_vho);
+		this.fillFromVector(this.orgVho);
 	}
 
 	// call when finalizing a tree (no dynamic changes planned on it)
@@ -122,20 +119,20 @@ export class HitKD {
 	}
 
 	public hitTestXRay(pball: Ball, pvhoHit: HitObject[], coll: CollisionEvent) {
-		this.m_rootNode.hitTestXRay(pball, pvhoHit, coll);
+		this.rootNode.hitTestXRay(pball, pvhoHit, coll);
 	}
 
 	public getItemAt(i: number): HitObject {
-		return this.m_org_vho[ this.m_org_idx[ i ] ];
+		return this.orgVho[ this.orgIdx[ i ] ];
 	}
 
 	public allocTwoNodes(): HitKDNode[] {
-		if (this.m_num_nodes + 1 >= this.m_nodes.length) {       // space for two more nodes?
+		if (this.numNodes + 1 >= this.nodes.length) {       // space for two more nodes?
 			return [];
 
 		} else {
-			this.m_num_nodes += 2;
-			return this.m_nodes.slice(this.m_num_nodes - 2);
+			this.numNodes += 2;
+			return this.nodes.slice(this.numNodes - 2);
 		}
 	}
 }
