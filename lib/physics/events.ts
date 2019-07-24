@@ -22,11 +22,11 @@ export interface IFireEvents {
 	/**
 	 * while playing and the ball hits the mesh the hit threshold is updated here
 	 */
-	currentHitThreshold: number;
+	//currentHitThreshold: number;
 
-	FireGroupEvent(dispid: number): void;
-	GetDispatch(): IDispatch;
-	GetDebugCommands(): IDebugCommands;
+	//FireGroupEvent(dispid: number): void;
+	//GetDispatch(): IDispatch;
+	//GetDebugCommands(): IDebugCommands;
 }
 
 // tslint:disable-next-line:no-empty-interface

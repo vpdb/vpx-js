@@ -42,7 +42,7 @@ export class FRect3D {
 		this.zhigh = Math.max(this.zhigh, other.zhigh);
 	}
 
-	public intersect3D(sphereP: Vertex3D, sphereRsqr: number): boolean {
+	public intersectSphere(sphereP: Vertex3D, sphereRsqr: number): boolean {
 		let ex = Math.max(this.left - sphereP.x, 0) + Math.max(sphereP.x - this.right, 0);
 		let ey = Math.max(this.top - sphereP.y, 0) + Math.max(sphereP.y - this.bottom, 0);
 		let ez = Math.max(this.zlow - sphereP.z, 0) + Math.max(sphereP.z - this.zhigh, 0);
@@ -50,5 +50,14 @@ export class FRect3D {
 		ey *= ey;
 		ez *= ez;
 		return ex + ey + ez <= sphereRsqr;
+	}
+
+	public intersectRect(rc: FRect3D): boolean {
+		return this.right >= rc.left
+			&& this.bottom >= rc.top
+			&& this.left <= rc.right
+			&& this.top <= rc.bottom
+			&& this.zlow <= rc.zhigh
+			&& this.zhigh >= rc.zlow;
 	}
 }

@@ -28,13 +28,14 @@ import { FrameData } from './animation';
 import { ItemData, Meshes } from './item-data';
 import { FLT_MAX, Mesh } from './mesh';
 import { Table } from './table';
+import { IFireEvents } from '../physics/events';
 
 /**
  * VPinball's primitive.
  *
  * @see https://github.com/vpinball/vpinball/blob/master/primitive.cpp
  */
-export class PrimitiveItem extends ItemData implements IRenderable {
+export class PrimitiveItem extends ItemData implements IRenderable, IFireEvents {
 
 	private data: PrimitiveData = new PrimitiveData();
 	private mesh: Mesh = new Mesh();

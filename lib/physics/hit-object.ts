@@ -32,7 +32,7 @@ import { Player } from '../game/player';
 export abstract class HitObject {
 
 	private pfeDebug?: IFireEvents;
-	protected obj?: IFireEvents; // base object pointer (mainly used as IFireEvents, but also as HitTarget or Primitive or Trigger or Kicker or Gate, see below)
+	public obj?: IFireEvents; // base object pointer (mainly used as IFireEvents, but also as HitTarget or Primitive or Trigger or Kicker or Gate, see below)
 
 	private threshold: number = 0;  // threshold for firing an event (usually (always??) normal dot ball-velocity)
 
@@ -57,7 +57,7 @@ export abstract class HitObject {
 	 * are being part of the same Primitive element m_obj, to be able to early
 	 * out intersection traversal if primitive is flagged as not collidable
 	 */
-	private e: boolean = false;
+	public e: boolean = false;
 
 	public abstract getType(): CollisionType;
 	public abstract calcHitBBox(): void;
