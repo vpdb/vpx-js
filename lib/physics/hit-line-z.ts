@@ -42,6 +42,15 @@ export class HitLineZ extends HitObject {
 		return this;
 	}
 
+	public calcHitBBox(): void {
+		this.hitBBox.left = this.xy.x;
+		this.hitBBox.right = this.xy.x;
+		this.hitBBox.top = this.xy.y;
+		this.hitBBox.bottom = this.xy.y;
+
+		// zlow and zhigh set in ctor
+	}
+
 	public getType(): CollisionType {
 		return CollisionType.Joint;
 	}

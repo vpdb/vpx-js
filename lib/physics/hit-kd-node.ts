@@ -47,7 +47,7 @@ export class HitKDNode {
 		this.items = 0;
 	}
 
-	private hitTestBall(pball: Ball, coll: CollisionEvent, player: Player): void {
+	public hitTestBall(pball: Ball, coll: CollisionEvent, player: Player): void {
 
 		const orgItems = this.items & 0x3FFFFFFF;
 		const axis = this.items >> 30;

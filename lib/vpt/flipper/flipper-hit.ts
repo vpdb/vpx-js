@@ -19,6 +19,7 @@
 
 import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
+import { FRect3D } from '../../math/frect3d';
 import { CollisionType } from '../../physics/collision-type';
 // import { Vertex2D } from '../../math/vertex2d';
 // import { Vertex3D } from '../../math/vertex3d';
@@ -128,15 +129,16 @@ export class FlipperHit extends HitObject {
 	//
 	// }
 
-	// public CalcHitBBox(): void {
-	// 	// Allow roundoff
-	// 	this.hitBBox.left = this.flipperMover.hitCircleBase.center.x - this.flipperMover.flipperRadius - this.flipperMover.endRadius - 0.1;
-	// 	this.hitBBox.right = this.flipperMover.hitCircleBase.center.x + this.flipperMover.flipperRadius + this.flipperMover.endRadius + 0.1;
-	// 	this.hitBBox.top = this.flipperMover.hitCircleBase.center.y - this.flipperMover.flipperRadius - this.flipperMover.endRadius - 0.1;
-	// 	this.hitBBox.bottom = this.flipperMover.hitCircleBase.center.y + this.flipperMover.flipperRadius + this.flipperMover.endRadius + 0.1;
-	// 	this.hitBBox.zlow = this.flipperMover.hitCircleBase.hitBBox.zlow;
-	// 	this.hitBBox.zhigh = this.flipperMover.hitCircleBase.hitBBox.zhigh;
-	// }
+	public calcHitBBox(): void {
+		// Allow roundoff
+		this.hitBBox = new FRect3D();
+		this.hitBBox.left = this.flipperMover.hitCircleBase.center.x - this.flipperMover.flipperRadius - this.flipperMover.endRadius - 0.1;
+		this.hitBBox.right = this.flipperMover.hitCircleBase.center.x + this.flipperMover.flipperRadius + this.flipperMover.endRadius + 0.1;
+		this.hitBBox.top = this.flipperMover.hitCircleBase.center.y - this.flipperMover.flipperRadius - this.flipperMover.endRadius - 0.1;
+		this.hitBBox.bottom = this.flipperMover.hitCircleBase.center.y + this.flipperMover.flipperRadius + this.flipperMover.endRadius + 0.1;
+		this.hitBBox.zlow = this.flipperMover.hitCircleBase.hitBBox.zlow;
+		this.hitBBox.zhigh = this.flipperMover.hitCircleBase.hitBBox.zhigh;
+	}
 
 	public getMoverObject(): FlipperMover {
 		return this.flipperMover;

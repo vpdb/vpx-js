@@ -51,7 +51,26 @@ export class Hit3DPoly extends HitObject {
 		this.scatter = 0.;
 	}
 
+	public calcHitBBox(): void {
+		this.hitBBox.left = this.rgv[0].x;
+		this.hitBBox.right = this.rgv[0].x;
+		this.hitBBox.top = this.rgv[0].y;
+		this.hitBBox.bottom = this.rgv[0].y;
+		this.hitBBox.zlow = this.rgv[0].z;
+		this.hitBBox.zhigh = this.rgv[0].z;
+
+		for (let i = 1; i < this.rgv.length; i++) {
+			this.hitBBox.left = Math.min(this.rgv[i].x, this.hitBBox.left);
+			this.hitBBox.right = Math.max(this.rgv[i].x, this.hitBBox.right);
+			this.hitBBox.top = Math.min(this.rgv[i].y, this.hitBBox.top);
+			this.hitBBox.bottom = Math.max(this.rgv[i].y, this.hitBBox.bottom);
+			this.hitBBox.zlow = Math.min(this.rgv[i].z, this.hitBBox.zlow);
+			this.hitBBox.zhigh = Math.max(this.rgv[i].z, this.hitBBox.zhigh);
+		}
+	}
+
 	public getType(): CollisionType {
 		return CollisionType.Poly;
 	}
+
 }

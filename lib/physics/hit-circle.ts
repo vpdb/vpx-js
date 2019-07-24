@@ -58,16 +58,16 @@ export class HitCircle extends HitObject {
 	// public Collide(coll: CollisionEvent): void {
 	// 	coll.ball.Collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 	// }
-	//
-	// public CalcHitBBox(): void {
-	// 	// Allow roundoff
-	// 	this.hitBBox.left = this.center.x - this.radius;
-	// 	this.hitBBox.right = this.center.x + this.radius;
-	// 	this.hitBBox.top = this.center.y - this.radius;
-	// 	this.hitBBox.bottom = this.center.y + this.radius;
-	//
-	// 	// zlow & zhigh already set in ctor
-	// }
+
+	public calcHitBBox(): void {
+		// Allow roundoff
+		this.hitBBox.left = this.center.x - this.radius;
+		this.hitBBox.right = this.center.x + this.radius;
+		this.hitBBox.top = this.center.y - this.radius;
+		this.hitBBox.bottom = this.center.y + this.radius;
+		// zlow & zhigh already set in ctor
+	}
+
 	//
 	// public GetMoverObject(): MoverObject | undefined {
 	// 	return undefined;
