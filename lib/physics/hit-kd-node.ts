@@ -54,7 +54,7 @@ export class HitKDNode {
 
 		for (let i = this.start; i < this.start + orgItems; i++) {
 			const pho = this.hitOct.getItemAt(i);
-			if (pball.getHitObject() !== pho && pho.hitBBox.intersect3D(pball.state.pos, pball.getHitObject().rcHitRadiusSqr)) {
+			if (pball.getHitObject() !== pho && pho.hitBBox.intersectSphere(pball.state.pos, pball.getHitObject().rcHitRadiusSqr)) {
 				pho.doHitTest(pball, coll, player);
 			}
 		}
@@ -96,7 +96,7 @@ export class HitKDNode {
 
 		for (let i = this.start; i < this.start + orgItems; i++) {
 			const pho = this.hitOct.getItemAt(i);
-			if ((pball.getHitObject() !== pho) && pho.hitBBox.intersect3D(pball.state.pos, pball.getHitObject().rcHitRadiusSqr)) {
+			if ((pball.getHitObject() !== pho) && pho.hitBBox.intersectSphere(pball.state.pos, pball.getHitObject().rcHitRadiusSqr)) {
 				const newTime = pho.hitTest(pball, coll.hitTime, coll);
 				if (newTime >= 0) {
 					pvhoHit.push(pho);
