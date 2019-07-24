@@ -18,21 +18,23 @@
  */
 
 import { Table } from '..';
+import { degToRad } from '../math/float';
 import { Vertex2D } from '../math/vertex2d';
 import { Vertex3D } from '../math/vertex3d';
 import { CollisionEvent } from '../physics/collision-event';
-import { DEFAULT_STEPTIME, PHYSICS_STEPTIME, STATICTIME } from '../physics/constants';
+import { DEFAULT_STEPTIME, PHYSICS_STEPTIME, STATICCNTS, STATICTIME } from '../physics/constants';
+import { Hit3DPoly } from '../physics/hit-3dpoly';
+import { HitKD } from '../physics/hit-kd';
 import { HitObject } from '../physics/hit-object';
+import { HitQuadtree } from '../physics/hit-quadtree';
 import { LineSeg } from '../physics/line-seg';
 import { MoverObject } from '../physics/mover-object';
 import { now } from '../refs.node';
 import { Ball } from '../vpt/ball/ball';
 import { BallData } from '../vpt/ball/ball-data';
 import { BallState } from '../vpt/ball/ball-state';
-import { HitPlane } from '../vpt/ball/hit-plane';
+import { HitPlane } from '../physics/hit-plane';
 import { FlipperMover } from '../vpt/flipper/flipper-mover';
-import { Hit3DPoly } from '../physics/hit-3dpoly';
-import { degToRad } from '../math/float';
 
 export class Player {
 
@@ -65,9 +67,10 @@ export class Player {
 	private state: { [key: string]: any} = {};
 	public curMechPlungerPos: number = 0;
 	public recordContacts: boolean = false;
-	private contacts: CollisionEvent[] = [];
+	public contacts: CollisionEvent[] = [];
 	private meshAsPlayfield: boolean = false;
-	private hitOcTreeDynamic: HitKD;
+	private hitOcTreeDynamic: HitKD = new HitKD();
+	private hitOcTree: HitQuadtree = new HitQuadtree();
 
 	constructor(table: Table) {
 		this.table = table;
@@ -159,6 +162,12 @@ export class Player {
 	}
 
 	public physicsSimulateCycle(dtime: number) {
+
+		let StaticCnts = STATICCNTS;    // maximum number of static counts
+
+		// it's okay to have this code outside of the inner loop, as the ball hitrects already include the maximum distance they can travel in that timespan
+		this.hitOcTreeDynamic.update();
+
 		while (dtime > 0) {
 			let hitTime = dtime;
 
@@ -188,11 +197,11 @@ export class Player {
 					this.hitTopGlass.doHitTest(pball,  pball.getCollision(), this);
 
 					if (Math.random() < 0.5) { // swap order of dynamic and static obj checks randomly
-						this.hitOcTreeDynamic.HitTestBall(pball, pball.getCollision());  // dynamic objects
-						m_hitoctree.HitTestBall(pball, pball.getCollision());  // find the hit objects and hit times
+						this.hitOcTreeDynamic.hitTestBall(pball, pball.getCollision(), this);  // dynamic objects
+						this.hitOcTree.HitTestBall(pball, pball.getCollision(), this);         // find the hit objects and hit times
 					} else {
-						m_hitoctree.HitTestBall(pball, pball.getCollision());  // find the hit objects and hit times
-						m_hitoctree_dynamic.HitTestBall(pball, pball.getCollision());  // dynamic objects
+						this.hitOcTree.HitTestBall(pball, pball.getCollision(), this);         // find the hit objects and hit times
+						this.hitOcTreeDynamic.hitTestBall(pball, pball.getCollision(), this);  // dynamic objects
 					}
 
 					const htz = pball.getCollision().hitTime; // this ball's hit time
@@ -217,6 +226,14 @@ export class Player {
 			} // end loop over all balls
 
 			this.recordContacts = false;
+
+			// hittime now set ... or full frame if no hit
+			// now update displacements to collide-contact or end of physics frame
+			// !!!!! 2) move objects to hittime
+
+			if (hitTime > STATICTIME) { // allow more zeros next round
+				StaticCnts = STATICCNTS;
+			}
 
 			for (const mover of this.movers) {
 				mover.updateDisplacements(hitTime);
@@ -463,7 +480,7 @@ export class Player {
 		this.movers.push(ball.getMover()); // balls are always added separately to this list!
 		this.hitObjects.push(ball.getHitObject());
 
-		//m_hitoctree_dynamic.FillFromVector(m_vho_dynamic);
+		//this.hitOcTreeDynamic.fillFromVector(this.m_vho_dynamic);
 
 		return ball;
 	}

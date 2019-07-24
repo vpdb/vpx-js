@@ -17,9 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Vertex3D } from '../../math/vertex3d';
-import { CollisionType } from '../../physics/collision-type';
-import { HitObject } from '../../physics/hit-object';
+import { Vertex3D } from '../math/vertex3d';
+import { CollisionType } from './collision-type';
+import { HitObject } from './hit-object';
 
 export class HitPlane extends HitObject {
 
@@ -30,6 +30,10 @@ export class HitPlane extends HitObject {
 		super();
 		this.normal = normal;
 		this.d = d;
+	}
+
+	public calcHitBBox(): void {
+		// plane's not a box (i assume)
 	}
 
 	public getType(): CollisionType {

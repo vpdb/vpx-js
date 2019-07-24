@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Player } from '../game/player';
 import { FRect3D } from '../math/frect3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
@@ -116,6 +117,10 @@ export class HitKD {
 	// call when finalizing a tree (no dynamic changes planned on it)
 	public finalize(): void {
 		this.tmp = [];
+	}
+
+	public hitTestBall(pball: Ball, collision: CollisionEvent, player: Player) {
+		this.rootNode.hitTestBall(pball, collision, player);
 	}
 
 	public hitTestXRay(pball: Ball, pvhoHit: HitObject[], coll: CollisionEvent) {

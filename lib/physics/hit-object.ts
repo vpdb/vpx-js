@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Player } from '../game/player';
 import { FRect3D } from '../math/frect3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
@@ -25,7 +26,6 @@ import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { IFireEvents } from './events';
 import { MoverObject } from './mover-object';
-import { Player } from '../game/player';
 
 // import { MoverObject } from './mover-object';
 
@@ -131,7 +131,7 @@ export abstract class HitObject {
 			return;
 		}
 
-		let newColl: CollisionEvent;
+		const newColl = new CollisionEvent(pball);
 		const newtime = this.hitTest(pball, coll.hitTime, !player.recordContacts ? coll : newColl);
 		const validhit = ((newtime >= 0) && !sign(newtime) && (newtime <= coll.hitTime));
 
@@ -146,7 +146,7 @@ export abstract class HitObject {
 				newColl.ball = pball;
 				newColl.obj = this;
 
-				if (newColl.m_isContact) {
+				if (newColl.isContact) {
 					player.contacts.push(newColl);
 				} else { //if (validhit)
 					coll = newColl;

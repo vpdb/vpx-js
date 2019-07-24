@@ -48,6 +48,16 @@ export class PlungerHit extends HitObject {
 		this.plungerMover = new PlungerMover(config, plungerData, player, table.data!);
 	}
 
+	public calcHitBBox(): void {
+		// Allow roundoff
+		this.hitBBox.left = this.plungerMover.x - 0.1;
+		this.hitBBox.right = this.plungerMover.x2 + 0.1;
+		this.hitBBox.top = this.plungerMover.frameEnd - 0.1;
+		this.hitBBox.bottom = this.plungerMover.y + 0.1;
+
+		// zlow & zhigh gets set in constructor
+	}
+
 	public getMoverObject(): PlungerMover {
 		return this.plungerMover;
 	}

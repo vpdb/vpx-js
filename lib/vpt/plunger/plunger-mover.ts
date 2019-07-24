@@ -47,7 +47,7 @@ export class PlungerMover implements MoverObject {
 	/**
 	 * position of the on-screen plunger (bottom)
 	 */
-	private y: number = 0;
+	public y: number = 0;
 
 	// boundaries for detecting collisions
 	private readonly lineSegBase = new LineSeg(new Vertex2D(0, 0), new Vertex2D(0, 0), 0, 0);
@@ -254,7 +254,7 @@ export class PlungerMover implements MoverObject {
 	/**
 	 * maximum forward position, in absolute table coordinates
 	 */
-	private readonly frameEnd: number;
+	public readonly frameEnd: number;
 
 	/**
 	 * frame length

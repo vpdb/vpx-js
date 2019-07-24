@@ -45,6 +45,16 @@ export class LineSeg extends HitObject {
 		return this.calcNormal();
 	}
 
+	public calcHitBBox(): void {
+		// Allow roundoff
+		this.hitBBox.left = Math.min(this.v1.x, this.v2.x);
+		this.hitBBox.right = Math.max(this.v1.x, this.v2.x);
+		this.hitBBox.top = Math.min(this.v1.y, this.v2.y);
+		this.hitBBox.bottom = Math.max(this.v1.y, this.v2.y);
+
+		// zlow and zhigh were already set in ctor
+	}
+
 	private calcNormal(): this {
 		const vT = new Vertex2D(this.v1.x - this.v2.x, this.v1.y - this.v2.y);
 
