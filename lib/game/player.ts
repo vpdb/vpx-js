@@ -26,6 +26,7 @@ import { DEFAULT_STEPTIME, PHYSICS_STEPTIME, STATICCNTS, STATICTIME } from '../p
 import { Hit3DPoly } from '../physics/hit-3dpoly';
 import { HitKD } from '../physics/hit-kd';
 import { HitObject } from '../physics/hit-object';
+import { HitPlane } from '../physics/hit-plane';
 import { HitQuadtree } from '../physics/hit-quadtree';
 import { LineSeg } from '../physics/line-seg';
 import { MoverObject } from '../physics/mover-object';
@@ -33,7 +34,6 @@ import { now } from '../refs.node';
 import { Ball } from '../vpt/ball/ball';
 import { BallData } from '../vpt/ball/ball-data';
 import { BallState } from '../vpt/ball/ball-state';
-import { HitPlane } from '../physics/hit-plane';
 import { FlipperMover } from '../vpt/flipper/flipper-mover';
 
 export class Player {
@@ -68,9 +68,14 @@ export class Player {
 	public curMechPlungerPos: number = 0;
 	public recordContacts: boolean = false;
 	public contacts: CollisionEvent[] = [];
+
 	private meshAsPlayfield: boolean = false;
 	private hitOcTreeDynamic: HitKD = new HitKD();
 	private hitOcTree: HitQuadtree = new HitQuadtree();
+	private pactiveball?: Ball;
+	public swapBallCcollisionHandling: boolean = false;
+
+	// ball the script user can get with ActiveBall
 
 	constructor(table: Table) {
 		this.table = table;
@@ -237,6 +242,34 @@ export class Player {
 
 			for (const mover of this.movers) {
 				mover.updateDisplacements(hitTime);
+			}
+
+			// find balls that need to be collided and script'ed (generally there will be one, but more are possible)
+
+			for (let i = 0; i < this.balls.length; i++) { // use m_vball.size(), in case script deletes a ball
+
+				const pball = this.balls[i];
+
+				const pho = pball.getCollision().obj; // object that ball hit in trials
+				if (pho && pball.getCollision().hitTime <= hitTime) { // find balls with hit objects and minimum time
+					// now collision, contact and script reactions on active ball (object)+++++++++
+
+					this.pactiveball = pball;                       // For script that wants the ball doing the collision
+					pho.collide(pball.getCollision());                 //!!!!! 3) collision on active ball
+					pball.getCollision().obj = undefined;                  // remove trial hit object pointer
+
+					// Collide may have changed the velocity of the ball,
+					// and therefore the bounding box for the next hit cycle
+					if (this.balls[i] !== pball) { // Ball still exists? may have been deleted from list
+
+						// collision script deleted the ball, back up one count
+						--i;
+						continue;
+
+					} else {
+						pball.getHitObject().calcHitBBox(); // do new boundings
+					}
+				}
 			}
 
 			dtime -= hitTime;
