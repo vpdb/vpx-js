@@ -19,6 +19,7 @@
 
 // import { solveQuadraticEq } from '../math/functions';
 import { Vertex2D } from '../math/vertex2d';
+import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 // import { Vertex3D } from '../math/vertex3d';
 // import { Ball } from '../vpt/ball/ball';
@@ -54,10 +55,10 @@ export class HitCircle extends HitObject {
 	// public GetType(): CollisionType {
 	// 	return CollisionType.Circle;
 	// }
-	//
-	// public Collide(coll: CollisionEvent): void {
-	// 	coll.ball.Collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
-	// }
+
+	public collide(coll: CollisionEvent): void {
+		coll.ball.getHitObject().collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
+	}
 
 	public calcHitBBox(): void {
 		// Allow roundoff

@@ -50,7 +50,7 @@ export abstract class HitObject {
 	/**
 	 * FireEvents for m_obj?
 	 */
-	private fe: boolean = false;
+	protected fe: boolean = false;
 
 	/**
 	 * currently only used to determine which HitTriangles/HitLines/HitPoints
@@ -94,17 +94,18 @@ export abstract class HitObject {
 	public fireHitEvent(pball: Ball): void {
 		if (this.obj && this.fe && this.isEnabled) {
 
-			// is this the same place as last event? if same then ignore it
-			const distLs = (pball.eventPos.clone().sub(pball.pos!)).lengthSq();
-
-			pball.eventPos = pball.pos!;    //remember last collide position
-
-			// hit targets when used with a captured ball have always a too small distance
-			const normalDist = (this.objType === CollisionType.HitTarget) ? 0.0 : 0.25; //!! magic distance
-
-			if (distLs > normalDist) { // must be a new place if only by a little
-				//this.obj.FireGroupEvent(DISPID_HitEvents_Hit);
-			}
+			// fixme ifireevent
+			// // is this the same place as last event? if same then ignore it
+			// const distLs = (pball.eventPos.clone().sub(pball.pos!)).lengthSq();
+			//
+			// pball.eventPos = pball.pos!;    //remember last collide position
+			//
+			// // hit targets when used with a captured ball have always a too small distance
+			// const normalDist = (this.objType === CollisionType.HitTarget) ? 0.0 : 0.25; //!! magic distance
+			//
+			// if (distLs > normalDist) { // must be a new place if only by a little
+			// 	//this.obj.FireGroupEvent(DISPID_HitEvents_Hit);
+			// }
 		}
 	}
 

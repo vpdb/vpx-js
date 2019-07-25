@@ -28,6 +28,7 @@ import { TableData } from '../table-data';
 import { FlipperConfig } from './flipper';
 import { FlipperData } from './flipper-data';
 import { FlipperState } from './flipper-state';
+import { Vertex3D } from '../../math/vertex3d';
 
 export class FlipperMover implements MoverObject {
 
@@ -45,12 +46,12 @@ export class FlipperMover implements MoverObject {
 	public angleCur: number;
 
 	private curTorque: number;
-	private contactTorque?: number;
+	public contactTorque: number = 0;
 
 	public angleStart: number;
 	public angleEnd: number;
 
-	private inertia: number; // moment of inertia
+	public inertia: number; // moment of inertia
 
 	private zeroAngNorm: Vertex2D = new Vertex2D(); // base norms at zero degrees
 
@@ -59,7 +60,7 @@ export class FlipperMover implements MoverObject {
 	private readonly direction: boolean;
 
 	private solState: boolean; // is solenoid enabled?
-	private isInContact: boolean;
+	public isInContact: boolean;
 
 	public isEnabled: boolean = false;
 	public lastHitFace: boolean;
@@ -306,9 +307,9 @@ export class FlipperMover implements MoverObject {
 	}
 
 	// rigid body functions
-	// public surfaceVelocity(surfP: Vertex3D): Vertex3D {
-	// 	return FlipperMover.CrossZ(this.angleSpeed, surfP);
-	// }
+	public surfaceVelocity(surfP: Vertex3D): Vertex3D {
+		return Vertex3D.crossZ(this.angleSpeed, surfP);
+	}
 
 	// public surfaceAcceleration(surfP: Vertex3D): Vertex3D {
 	// 	// tangential acceleration = (0, 0, omega) x surfP
@@ -342,10 +343,10 @@ export class FlipperMover implements MoverObject {
 		}
 	}
 
-	// public applyImpulse(rotI: Vertex3D): void {
-	// 	// 	this.angularMomentum += rotI.z;            // only rotation about z axis
-	// 	// 	this.angleSpeed = this.angularMomentum / this.inertia;    // TODO: figure out moment of inertia
-	// 	// }
+	public applyImpulse(rotI: Vertex3D): void {
+		this.angularMomentum += rotI.z;            // only rotation about z axis
+		this.angleSpeed = this.angularMomentum / this.inertia;    // TODO: figure out moment of inertia
+	}
 
 	private changeState(lastAngle?: number) {
 		if (typeof lastAngle === 'undefined' || lastAngle !== this.angleCur) {

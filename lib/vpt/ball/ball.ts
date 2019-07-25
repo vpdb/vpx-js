@@ -33,7 +33,7 @@ import { BallState } from './ball-state';
 export class Ball implements IMovable<BallState>, IHittable {
 
 	public readonly state: BallState;
-	private readonly data: BallData;
+	public readonly data: BallData;
 	private readonly mesh: BallMesh;
 	private readonly hit: BallHit;
 

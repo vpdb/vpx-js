@@ -18,7 +18,9 @@
  */
 
 import { Vertex3D } from '../math/vertex3d';
+import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
+import { STATICTIME } from './constants';
 import { HitObject } from './hit-object';
 
 export class Hit3DPoly extends HitObject {
@@ -66,6 +68,50 @@ export class Hit3DPoly extends HitObject {
 			this.hitBBox.bottom = Math.max(this.rgv[i].y, this.hitBBox.bottom);
 			this.hitBBox.zlow = Math.min(this.rgv[i].z, this.hitBBox.zlow);
 			this.hitBBox.zhigh = Math.max(this.rgv[i].z, this.hitBBox.zhigh);
+		}
+	}
+
+	public collide(coll: CollisionEvent): void {
+		const pball = coll.ball;
+		const hitnormal = coll.hitNormal!;
+
+		if (this.objType !== CollisionType.Trigger) {
+			const dot = -(hitnormal.dot(pball.state.vel));
+
+			pball.getHitObject().collide3DWall(this.normal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
+
+			if (this.obj && this.fe && dot >= this.threshold) {
+				if (this.objType === CollisionType.Primitive) {
+					this.obj.currentHitThreshold = dot;
+					this.fireHitEvent(pball);
+
+				} else if (this.objType === CollisionType.HitTarget /*&& ((HitTarget*)m_obj)->m_d.m_isDropped == false*/) { // fixme HitTarget.isDropped
+					// fixme
+					// ((HitTarget*)m_obj)->m_hitEvent = true;
+					this.obj.currentHitThreshold = dot;
+					this.fireHitEvent(pball);
+				}
+			}
+		} else { // trigger:
+
+			if (pball.getHitObject().vpVolObjs.length === 0) {
+				return;
+			}
+
+			const i = pball.getHitObject().vpVolObjs.indexOf(this.obj!); // if -1 then not in objects volume set (i.e not already hit)
+
+			if ((!coll.hitFlag) === (i < 0)) { // Hit == NotAlreadyHit
+
+				pball.state.pos.add(pball.state.vel.clone().multiplyScalar(STATICTIME));      //move ball slightly forward
+
+				if (i < 0) {
+					pball.getHitObject().vpVolObjs.push(this.obj!);
+					// fixme ((Trigger*)m_obj)->FireGroupEvent(DISPID_HitEvents_Hit);
+				} else {
+					pball.getHitObject().vpVolObjs.splice(i, 1);
+					// fixme ((Trigger*)m_obj)->FireGroupEvent(DISPID_HitEvents_Unhit);
+				}
+			}
 		}
 	}
 

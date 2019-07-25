@@ -31,6 +31,7 @@ import { Ball } from './ball';
 import { BallData } from './ball-data';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
+import { IFireEvents } from '../../physics/events';
 
 /**
  * In the VP source code this is all part of ball.cpp. We'll try
@@ -45,8 +46,8 @@ export class BallHit extends HitObject {
 	private readonly tableData: TableData;
 
 	private readonly orientation = new Matrix3D().setIdentity();
-	private readonly invMass: number;
-	private readonly inertia: number;
+	public readonly invMass: number;
+	public readonly inertia: number;
 	private readonly angularMomentum = new Vertex3D();
 	private angularVelocity = new Vertex3D();
 
@@ -59,6 +60,8 @@ export class BallHit extends HitObject {
 	public coll: CollisionEvent;
 	public rcHitRadiusSqr: number = 0;
 	private defaultZ: number = 25.0;
+
+	public vpVolObjs: IFireEvents[] = [];
 
 	// normal height of the ball //!! remove?
 
@@ -261,13 +264,13 @@ export class BallHit extends HitObject {
 		}
 	}
 
-	private surfaceVelocity(surfP: Vertex3D): Vertex3D {
+	public surfaceVelocity(surfP: Vertex3D): Vertex3D {
 		return this.state.vel
 			.clone()
 			.add(Vertex3D.crossProduct(this.angularVelocity, surfP)); // linear velocity plus tangential velocity due to rotation
 	}
 
-	private applySurfaceImpulse(rotI: Vertex3D, impulse: Vertex3D): void {
+	public applySurfaceImpulse(rotI: Vertex3D, impulse: Vertex3D): void {
 		this.state.vel.add(impulse.clone().multiplyScalar(this.invMass));
 
 		this.angularMomentum.add(rotI);
