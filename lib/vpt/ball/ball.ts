@@ -21,6 +21,7 @@ import { Object3D } from 'three';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { Player } from '../../game/player';
+import { CollisionEvent } from '../../physics/collision-event';
 import { Table } from '../table';
 import { TableData } from '../table-data';
 import { BallData } from './ball-data';
@@ -28,7 +29,6 @@ import { BallHit } from './ball-hit';
 import { BallMesh } from './ball-mesh';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
-import { CollisionEvent } from '../../physics/collision-event';
 
 export class Ball implements IMovable<BallState>, IHittable {
 
@@ -38,7 +38,7 @@ export class Ball implements IMovable<BallState>, IHittable {
 	private readonly hit: BallHit;
 
 	// unique ID for each ball
-	private readonly id: number;
+	public readonly id: number;
 
 	private static idCounter = 0;
 
