@@ -47,6 +47,8 @@ export class PrimitiveItem extends ItemData implements IRenderable, IFireEvents 
 	private numIndices!: number;
 	public compressedIndices?: number;
 
+	public currentHitThreshold: number = 0;
+
 	public static async fromStorage(storage: Storage, itemName: string): Promise<PrimitiveItem> {
 		const primitiveItem = new PrimitiveItem(itemName);
 		await storage.streamFiltered(itemName, 4, BiffParser

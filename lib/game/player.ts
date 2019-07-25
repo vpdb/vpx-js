@@ -51,7 +51,7 @@ export class Player {
 	private lastTimeUsec: number = 0;
 	private lastFrameDuration: number = 0;
 	private cFrames: number = 0;
-	private timeMsec: number = 0;
+	public timeMsec: number = 0;
 	private lastFpsTime: number = 0;
 	private fps: number = 0;
 	private fpsAvg: number = 0;
@@ -73,6 +73,7 @@ export class Player {
 	private hitOcTreeDynamic: HitKD = new HitKD();
 	private hitOcTree: HitQuadtree = new HitQuadtree();
 	private pactiveball?: Ball;
+	public pactiveballBC?: Ball;
 	public swapBallCcollisionHandling: boolean = false;
 
 	// ball the script user can get with ActiveBall
@@ -255,7 +256,7 @@ export class Player {
 					// now collision, contact and script reactions on active ball (object)+++++++++
 
 					this.pactiveball = pball;                       // For script that wants the ball doing the collision
-					pho.collide(pball.getCollision());                 //!!!!! 3) collision on active ball
+					pho.collide(pball.getCollision(), this);                 //!!!!! 3) collision on active ball
 					pball.getCollision().obj = undefined;                  // remove trial hit object pointer
 
 					// Collide may have changed the velocity of the ball,

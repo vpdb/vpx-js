@@ -20,14 +20,18 @@
 import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
 import { FRect3D } from '../../math/frect3d';
+import { clamp } from '../../math/functions';
+import { Vertex3D } from '../../math/vertex3d';
+import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
+import { C_DISP_GAIN, C_DISP_LIMIT, C_EMBEDDED, C_EMBEDSHOT, C_LOWNORMVEL } from '../../physics/constants';
+import { elasticityWithFalloff } from '../../physics/functions';
 // import { Vertex2D } from '../../math/vertex2d';
 // import { Vertex3D } from '../../math/vertex3d';
 // import { CollisionEvent } from '../../physics/collision-event';
 // import { CollisionType } from '../../physics/collision-type';
 // import { C_CONTACTVEL, C_INTERATIONS, C_PRECISION, PHYS_TOUCH } from '../../physics/constants';
 import { HitObject } from '../../physics/hit-object';
-import { MoverObject } from '../../physics/mover-object';
 import { Table } from '../table';
 // import { Ball } from '../ball/ball';
 import { TableData } from '../table-data';
@@ -122,9 +126,6 @@ export class FlipperHit extends HitObject {
 		return CollisionType.Flipper;
 	}
 
-	// public Collide(coll: CollisionEvent): void {
-	// }
-
 	// public Contact(coll: CollisionEvent, dtime: number): void {
 	//
 	// }
@@ -138,6 +139,139 @@ export class FlipperHit extends HitObject {
 		this.hitBBox.bottom = this.flipperMover.hitCircleBase.center.y + this.flipperMover.flipperRadius + this.flipperMover.endRadius + 0.1;
 		this.hitBBox.zlow = this.flipperMover.hitCircleBase.hitBBox.zlow;
 		this.hitBBox.zhigh = this.flipperMover.hitCircleBase.hitBBox.zhigh;
+	}
+
+	public collide(coll: CollisionEvent, player: Player): void {
+		const pball = coll.ball;
+		const normal = coll.hitNormal!;
+
+		const rB = normal.clone().multiplyScalar(-pball.data.radius);
+		const hitPos = pball.state.pos.clone().add(rB);
+
+		const cF = new Vertex3D(
+			this.flipperMover.hitCircleBase.center.x,
+			this.flipperMover.hitCircleBase.center.y,
+			pball.state.pos.z);     // make sure collision happens in same z plane where ball is
+
+		const rF = hitPos.clone().sub(cF);       // displacement relative to flipper center
+
+		const vB = pball.getHitObject().surfaceVelocity(rB);
+		const vF = this.flipperMover.surfaceVelocity(rF);
+		const vrel = vB.clone().sub(vF);
+		let bnv = normal.dot(vrel);       // relative normal velocity
+
+		if (bnv >= -C_LOWNORMVEL) {							// nearly receding ... make sure of conditions
+															// otherwise if clearly approaching .. process the collision
+			if (bnv > C_LOWNORMVEL) {                       // is this velocity clearly receding (i.e must > a minimum)
+				return;
+			}
+			if (coll.hitDistance < -C_EMBEDDED) {
+				bnv = -C_EMBEDSHOT;							// has ball become embedded???, give it a kick
+			} else {
+				return;
+			}
+		}
+		player.pactiveballBC = pball; // Ball control most recently collided with flipper
+
+		// correct displacements, mostly from low velocity blindness, an alternative to true acceleration processing
+		let hdist = -C_DISP_GAIN * coll.hitDistance;		// distance found in hit detection
+		if (hdist > 1.0e-4) {
+			if (hdist > C_DISP_LIMIT) {
+				hdist = C_DISP_LIMIT; // crossing ramps, delta noise
+			}
+			pball.state.pos.add(coll.hitNormal!.clone().multiplyScalar(hdist));	// push along norm, back to free area; use the norm, but is not correct
+		}
+
+		// angular response to impulse in normal direction
+		const angResp = Vertex3D.crossProduct(rF, normal);
+
+		/*
+		 * Check if flipper is in contact with its stopper and the collision impulse
+		 * would push it beyond the stopper. In that case, don't allow any transfer
+		 * of kinetic energy from ball to flipper. This avoids overly dead bounces
+		 * in that case.
+		 */
+		const angImp = -angResp.z;     // minus because impulse will apply in -normal direction
+		let flipperResponseScaling = 1.0;
+		if (this.flipperMover.isInContact && this.flipperMover.contactTorque! * angImp >= 0.) {
+			// if impulse pushes against stopper, allow no loss of kinetic energy to flipper
+			// (still allow flipper recoil, but a diminished amount)
+			angResp.setZero();
+			flipperResponseScaling = 0.5;
+		}
+
+		/*
+		 * Rubber has a coefficient of restitution which decreases with the impact velocity.
+		 * We use a heuristic model which decreases the COR according to a falloff parameter:
+		 * 0 = no falloff, 1 = half the COR at 1 m/s (18.53 speed units)
+		 */
+		const epsilon = elasticityWithFalloff(this.elasticity, this.elasticityFalloff, bnv);
+
+		let impulse = -(1.0 + epsilon) * bnv / (pball.getHitObject().invMass + normal.dot(Vertex3D.crossProduct(angResp.clone().divideScalar(this.flipperMover.inertia), rF)));
+		const flipperImp = normal.clone().multiplyScalar(-(impulse * flipperResponseScaling));
+
+		const rotI = Vertex3D.crossProduct(rF, flipperImp);
+		if (this.flipperMover.isInContact) {
+			if (rotI.z * this.flipperMover.contactTorque < 0) {    // pushing against the solenoid?
+
+				// Get a bound on the time the flipper needs to return to static conditions.
+				// If it's too short, we treat the flipper as static during the whole collision.
+				const recoilTime = -rotI.z / this.flipperMover.contactTorque; // time flipper needs to eliminate this impulse, in 10ms
+
+				// Check ball normal velocity after collision. If the ball rebounded
+				// off the flipper, we need to make sure it does so with full
+				// reflection, i.e., treat the flipper as static, otherwise
+				// we get overly dead bounces.
+				const bnvAfter = bnv + impulse * pball.getHitObject().invMass;
+
+				if (recoilTime <= 0.5 || bnvAfter > 0.) {
+					// treat flipper as static for this impact
+					impulse = -(1.0 + epsilon) * bnv * pball.data.mass;
+					flipperImp.setZero();
+					rotI.setZero();
+				}
+			}
+		}
+
+		pball.state.vel.add(normal.clone().multiplyScalar(impulse * pball.getHitObject().invMass));      // new velocity for ball after impact
+		this.flipperMover.applyImpulse(rotI);
+
+		// apply friction
+		const tangent = vrel.clone().sub(normal.clone().multiplyScalar(vrel.dot(normal)));       // calc the tangential velocity
+
+		const tangentSpSq = tangent.lengthSq();
+		if (tangentSpSq > 1e-6) {
+			tangent.divideScalar(Math.sqrt(tangentSpSq));            // normalize to get tangent direction
+			const vt = vrel.dot(tangent);   // get speed in tangential direction
+
+			// compute friction impulse
+			const crossB = Vertex3D.crossProduct(rB, tangent);
+			let kt = pball.getHitObject().invMass + tangent.dot(Vertex3D.crossProduct(crossB.clone().divideScalar(pball.getHitObject().inertia), rB));
+
+			const crossF = Vertex3D.crossProduct(rF, tangent);
+			kt += tangent.dot(Vertex3D.crossProduct(crossF.clone().divideScalar(this.flipperMover.inertia), rF));    // flipper only has angular response
+
+			// friction impulse can't be greater than coefficient of friction times collision impulse (Coulomb friction cone)
+			const maxFric = this.friction * impulse;
+			const jt = clamp(-vt / kt, -maxFric, maxFric);
+
+			pball.getHitObject().applySurfaceImpulse(crossB.clone().multiplyScalar(jt), tangent.clone().multiplyScalar(jt));
+			this.flipperMover.applyImpulse(crossF.clone().multiplyScalar(-jt));
+		}
+
+		// fixme ifireevent
+		// if ((bnv < -0.25) && (g_pplayer->m_time_msec - m_last_hittime) > 250) // limit rate to 250 milliseconds per event
+		// {
+		// 	//!! unused const float distance = coll.m_hitmoment;                     // moment .... and the flipper response
+		// 	const flipperHit = /*(distance == 0.0f)*/ coll.m_hitmoment_bit ? -1.0f : -bnv; // move event processing to end of collision handler...
+		// 	if (flipperHit < 0.f)
+		// 	this.flipperMover.m_pflipper->FireGroupEvent(DISPID_HitEvents_Hit);        // simple hit event
+		// else
+		// 	this.flipperMover.m_pflipper->FireVoidEventParm(DISPID_FlipperEvents_Collide, flipperHit); // collision velocity (normal to face)
+		// }
+
+		this.lastHitTime = player.timeMsec; // keep resetting until idle for 250 milliseconds
+
 	}
 
 	public getMoverObject(): FlipperMover {

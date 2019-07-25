@@ -18,6 +18,7 @@
  */
 
 import { Vertex3D } from '../math/vertex3d';
+import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { HitObject } from './hit-object';
 
@@ -34,6 +35,16 @@ export class HitPlane extends HitObject {
 
 	public calcHitBBox(): void {
 		// plane's not a box (i assume)
+	}
+
+	public collide(coll: CollisionEvent): void {
+		coll.ball.getHitObject().collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
+
+		// if ball has penetrated, push it out of the plane
+		const bnd = this.normal.dot(coll.ball.state.pos) - coll.ball.data.radius - this.d; // distance from plane to ball surface
+		if (bnd < 0) {
+			coll.ball.state.pos.add(this.normal.clone().multiplyScalar(bnd));
+		}
 	}
 
 	public getType(): CollisionType {

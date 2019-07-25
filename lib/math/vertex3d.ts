@@ -162,9 +162,9 @@ export class Vertex3D implements Vertex {
 		return new Vertex2D(this.x, this.y);
 	}
 
-	// public setZero(): this {
-	// 	return this.set(0, 0, 0);
-	// }
+	public setZero(): this {
+		return this.set(0, 0, 0);
+	}
 
 	public static crossProduct(pv1: Vertex3D, pv2: Vertex3D): Vertex3D {
 		return new Vertex3D(
@@ -172,6 +172,10 @@ export class Vertex3D implements Vertex {
 			pv1.z * pv2.x - pv1.x * pv2.z,
 			pv1.x * pv2.y - pv1.y * pv2.x,
 		);
+	}
+
+	public static crossZ(rz: number, v: Vertex3D) {
+		return new Vertex3D(-rz * v.y, rz * v.x, 0);
 	}
 }
 

@@ -142,7 +142,7 @@ export class PlungerMover implements MoverObject {
 	 * strengths - make sure you understand all of the speed and
 	 * force calculations in hitplunger.cpp before proceeding.
 	 */
-	private mass: number = 30.0;
+	public mass: number = 30.0;
 
 	/**
 	 * Pull force.  This models the force being applied by the player
@@ -161,7 +161,7 @@ export class PlungerMover implements MoverObject {
 	 * moving ball, it gets a little bump.  This isn't a huge effect
 	 * but it's a nice bit of added realism.
 	 */
-	private reverseImpulse: number = 0.0;
+	public reverseImpulse: number = 0.0;
 
 	/**
 	 * Firing mode timer.  When this is non-zero, we're in a Fire
@@ -236,7 +236,7 @@ export class PlungerMover implements MoverObject {
 	 * we'll reverse course, simulating the bounce off the barrel
 	 * spring (or, if already in the bounce, the next reversal).
 	 */
-	private fireBounce: number = 0;
+	public fireBounce: number = 0;
 
 	/**
 	 * Relative rest position, as a fraction of the full range.  For
@@ -305,7 +305,7 @@ export class PlungerMover implements MoverObject {
 	 * the plunger strikes the ball, to simulate the mechanical
 	 * randomness in a real plunger)
 	 */
-	private scatterVelocity: number = 0;
+	public scatterVelocity: number = 0;
 
 	constructor(plungerConfig: PlungerConfig, plungerData: PlungerData, player: Player, tableData: TableData) {
 

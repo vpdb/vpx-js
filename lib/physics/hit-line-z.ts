@@ -20,6 +20,7 @@
 import { Vertex2D } from '../math/vertex2d';
 import { CollisionType } from './collision-type';
 import { HitObject } from './hit-object';
+import { CollisionEvent } from './collision-event';
 
 export class HitLineZ extends HitObject {
 
@@ -49,6 +50,15 @@ export class HitLineZ extends HitObject {
 		this.hitBBox.bottom = this.xy.y;
 
 		// zlow and zhigh set in ctor
+	}
+
+	public collide(coll: CollisionEvent): void {
+		const dot = coll.hitNormal!.dot(coll.ball.state.vel);
+		coll.ball.getHitObject().collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
+
+		if (dot <= -this.threshold) {
+			this.fireHitEvent(coll.ball);
+		}
 	}
 
 	public getType(): CollisionType {
