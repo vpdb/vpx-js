@@ -127,22 +127,24 @@ export abstract class HitObject {
 			return;
 		}
 
-		if (this.objType === CollisionType.HitTarget && (((this as HitTarget).obj).data.isDropped)) {
-			return;
-		}
+		// fixme abstract this away
+		//if (this.objType === CollisionType.HitTarget && (((this as HitTarget).obj).data.isDropped)) {
+		//	return;
+		//}
 
 		const newColl = new CollisionEvent(pball);
-		const newtime = this.hitTest(pball, coll.hitTime, !player.recordContacts ? coll : newColl);
-		const validhit = ((newtime >= 0) && !sign(newtime) && (newtime <= coll.hitTime));
+		const newTime = this.hitTest(pball, coll.hitTime, !player.recordContacts ? coll : newColl);
+		// fixme debug this, but in case sign is supposed to handle +/- infinity cases, javscript should cover that.
+		const validHit = (newTime >= 0) /*&& !sign(newTime)*/ && (newTime <= coll.hitTime);
 
 		if (!player.recordContacts) {// simply find first event
-			if (validhit) {
+			if (validHit) {
 			coll.ball = pball;
 			coll.obj = this;
-			coll.hitTime = newtime;
+			coll.hitTime = newTime;
 			}
 		} else { // find first collision, but also remember all contacts
-			if (newColl.isContact || validhit) {
+			if (newColl.isContact || validHit) {
 				newColl.ball = pball;
 				newColl.obj = this;
 
@@ -150,7 +152,7 @@ export abstract class HitObject {
 					player.contacts.push(newColl);
 				} else { //if (validhit)
 					coll = newColl;
-					coll.hitTime = newtime;
+					coll.hitTime = newTime;
 				}
 			}
 		}
