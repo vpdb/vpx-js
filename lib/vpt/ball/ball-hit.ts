@@ -23,7 +23,16 @@ import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
-import { C_DISP_GAIN, C_DISP_LIMIT, C_LOWNORMVEL } from '../../physics/constants';
+import {
+	C_CONTACTVEL,
+	C_DISP_GAIN,
+	C_DISP_LIMIT,
+	C_EMBEDVELLIMIT,
+	C_LOWNORMVEL,
+	C_PRECISION,
+	PHYS_TOUCH,
+} from '../../physics/constants';
+import { IFireEvents } from '../../physics/events';
 import { elasticityWithFalloff, hardScatter } from '../../physics/functions';
 import { HitObject } from '../../physics/hit-object';
 import { TableData } from '../table-data';
@@ -31,7 +40,6 @@ import { Ball } from './ball';
 import { BallData } from './ball-data';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
-import { IFireEvents } from '../../physics/events';
 
 /**
  * In the VP source code this is all part of ball.cpp. We'll try
@@ -276,6 +284,83 @@ export class BallHit extends HitObject {
 		this.angularMomentum.add(rotI);
 		this.angularVelocity = this.angularMomentum.clone().divideScalar(this.inertia);
 	}
+
+	public handleStaticContact(coll: CollisionEvent, friction: number, dtime: number, player: Player): void {
+		const normVel = this.state.vel.dot(coll.hitNormal!);      // this should be zero, but only up to +/- C_CONTACTVEL
+
+		// If some collision has changed the ball's velocity, we may not have to do anything.
+		if (normVel <= C_CONTACTVEL) {
+			const fe = player.gravity.clone().multiplyScalar(this.data.mass);   // external forces (only gravity for now)
+			const dot = fe.dot(coll.hitNormal!);
+			const normalForce = Math.max(0.0, -(dot * dtime + coll.hitOrgNormalVelocity!)); // normal force is always nonnegative
+
+			// Add just enough to kill original normal velocity and counteract the external forces.
+			this.state.vel.add(coll.hitNormal!.clone().multiplyScalar(normalForce));
+
+			// #ifdef C_EMBEDVELLIMIT
+			if (coll.hitDistance <= PHYS_TOUCH) {
+				this.state.vel.add(coll.hitNormal!.clone().multiplyScalar(Math.max(Math.min(C_EMBEDVELLIMIT, -coll.hitDistance), PHYS_TOUCH)));
+			}
+			// #endif
+
+			this.applyFriction(coll.hitNormal!, dtime, friction, player);
+		}
+	}
+
+	public applyFriction(hitnormal: Vertex3D, dtime: number, fricCoeff: number, player: Player): void {
+
+		const surfP = hitnormal.clone().multiplyScalar(-this.data.radius);    // surface contact point relative to center of mass
+
+		const surfVel = this.surfaceVelocity(surfP);
+		const slip = surfVel.clone().sub(hitnormal.clone().multiplyScalar(surfVel.dot(hitnormal)));       // calc the tangential slip velocity
+
+		const maxFric = fricCoeff * this.data.mass * - player.gravity.dot(hitnormal);
+
+		const slipspeed = slip.length();
+		let slipDir: Vertex3D;
+		let numer: number;
+		//slintf("Velocity: %.2f Angular velocity: %.2f Surface velocity: %.2f Slippage: %.2f\n", m_vel.Length(), m_angularvelocity.Length(), surfVel.Length(), slipspeed);
+		//if (slipspeed > 1e-6f)
+
+//#ifdef C_BALL_SPIN_HACK
+		const normVel = this.state.vel.dot(hitnormal);
+		if ((normVel <= 0.025) || (slipspeed < C_PRECISION)) { // check for <=0.025 originated from ball<->rubber collisions pushing the ball upwards, but this is still not enough, some could even use <=0.2
+			// slip speed zero - static friction case
+
+			const surfAcc = this.surfaceAcceleration(surfP, player);
+			const slipAcc = surfAcc.clone().sub(hitnormal.multiplyScalar(surfAcc.dot(hitnormal))) ; // calc the tangential slip acceleration
+
+			// neither slip velocity nor slip acceleration? nothing to do here
+			if (slipAcc.lengthSq() < 1e-6) {
+				return;
+			}
+
+			slipDir = slipAcc;
+			slipDir.normalize();
+
+			numer = -slipDir.dot(surfAcc);
+
+		} else {
+			// nonzero slip speed - dynamic friction case
+			slipDir = slip.clone().divideScalar(slipspeed);
+			numer = -slipDir.dot(surfVel);
+		}
+
+		const cp = Vertex3D.crossProduct(surfP, slipDir);
+		const denom = this.invMass + slipDir.dot(Vertex3D.crossProduct(cp.clone().divideScalar(this.inertia), surfP));
+		const fric = clamp(numer / denom, -maxFric, maxFric);
+
+		if (isFinite(fric)) {
+			this.applySurfaceImpulse(cp.clone().multiplyScalar(dtime * fric), slipDir.clone().multiplyScalar(dtime * fric));
+		}
+	}
+
+	private surfaceAcceleration(surfP: Vertex3D, player: Player): Vertex3D {
+		// if we had any external torque, we would have to add "(deriv. of ang.vel.) x surfP" here
+		return player.gravity.clone()
+			.multiplyScalar(this.invMass)                                                                          // linear acceleration
+			.add(Vertex3D.crossProduct(this.angularVelocity, Vertex3D.crossProduct(this.angularVelocity, surfP))); // centripetal acceleration
+	}
 }
 
 // export class Ball extends HitObject {
@@ -480,146 +565,14 @@ export class BallHit extends HitObject {
 // 		return CollisionType.Ball;
 // 	}
 //
-// 	public Collide(coll: CollisionEvent): void {
-// 		const pball = coll.ball;
-//
-// 		// make sure we process each ball/ball collision only once
-// 		// (but if we are frozen, there won't be a second collision event, so deal with it now!)
-// 		// if (((g_pplayer->m_swap_ball_collision_handling && pball >= this) || (!g_pplayer->m_swap_ball_collision_handling && pball <= this)) && !m_frozen) {
-// 		// 	return;
-// 		// }
-//
-// 		// target ball to object ball delta velocity
-// 		const vrel = pball.vel.clone().sub(this.vel);
-// 		const vnormal = coll.hitNormal!;
-// 		let dot = vrel.dot(vnormal);
-//
-// 		// correct displacements, mostly from low velocity, alternative to true acceleration processing
-// 		if (dot >= -C_LOWNORMVEL) {                        // nearly receding ... make sure of conditions
-// 			// otherwise if clearly approaching .. process the collision
-// 			if (dot > C_LOWNORMVEL) {                      // is this velocity clearly receding (i.e must > a minimum)
-// 				return;
-// 			}
-// //#ifdef C_EMBEDDED
-// 			if (coll.hitDistance < -C_EMBEDDED) {
-// 				dot = -C_EMBEDSHOT;                        // has ball become embedded???, give it a kick
-// 			} else {
-// 				return;
-// 			}
-// //#endif
-// 		}
-//
-// 		// send ball/ball collision event to script function
-// 		// if (dot < -0.25) {    // only collisions with at least some small true impact velocity (no contacts)
-// 		// 	g_pplayer->m_ptable->InvokeBallBallCollisionCallback(this, pball, -dot);
-// 		// }
-//
-// //#ifdef C_DISP_GAIN
-// 		let edist = -C_DISP_GAIN * coll.hitDistance;
-// 		if (edist > 1.0e-4) {
-// 			if (edist > C_DISP_LIMIT) {
-// 				edist = C_DISP_LIMIT;                      // crossing ramps, delta noise
-// 			}
-// 			if (!this.isFrozen) {                          // if the hitten ball is not frozen
-// 				edist *= 0.5;
-// 			}
-// 			pball.pos!.add(vnormal.clone().multiplyScalar(edist)); // push along norm, back to free area
-// 			// use the norm, but is not correct, but cheaply handled
-// 		}
-//
-// 		edist = -C_DISP_GAIN * this.coll.hitDistance;      // noisy value .... needs investigation
-// 		if (!this.isFrozen && edist > 1.0e-4) {
-// 			if (edist > C_DISP_LIMIT) {
-// 				edist = C_DISP_LIMIT;                      // crossing ramps, delta noise
-// 			}
-// 			edist *= 0.5;
-// 			this.pos!.sub(vnormal.clone().multiplyScalar(edist));  // pull along norm, back to free area
-// 		}
-// //#endif
-//
-// 		const myInvMass = this.isFrozen ? 0.0 : this.invMass;                  // frozen ball has infinite mass
-// 		const impulse = -(1.0 + 0.8) * dot / (myInvMass + pball.invMass);      // resitution = 0.8
-//
-// 		if (!this.isFrozen) {
-// 			this.vel.sub(vnormal.clone().multiplyScalar(impulse * myInvMass));
-// 		}
-//
-// 		pball.vel.add(vnormal.clone().multiplyScalar(impulse * pball.invMass));
-// 	}
+
 //
 // 	// public Contact(coll: CollisionEvent, dtime: number): void {
 // 	// }
 //
 
 //
-// 	public ApplyFriction(hitnormal: Vertex3D, dtime: number, fricCoeff: number): void {
-//
-// 		const surfP = hitnormal.clone().multiplyScalar(-this.radius);    // surface contact point relative to center of mass
-//
-// 		const surfVel = this.SurfaceVelocity(surfP);
-// 		const slip = surfVel.clone().sub(hitnormal.clone().multiplyScalar(surfVel.dot(hitnormal)));       // calc the tangential slip velocity
-//
-// 		const maxFric = fricCoeff * this.mass * - this.player.gravity.dot(hitnormal);
-//
-// 		const slipspeed = slip.length();
-// 		let slipDir: Vertex3D;
-// 		let numer: number;
-// 		//slintf("Velocity: %.2f Angular velocity: %.2f Surface velocity: %.2f Slippage: %.2f\n", m_vel.Length(), m_angularvelocity.Length(), surfVel.Length(), slipspeed);
-// 		//if (slipspeed > 1e-6f)
-//
-// //#ifdef C_BALL_SPIN_HACK
-// 		const normVel = this.vel.dot(hitnormal);
-// 		if ((normVel <= 0.025) || (slipspeed < C_PRECISION)) { // check for <=0.025 originated from ball<->rubber collisions pushing the ball upwards, but this is still not enough, some could even use <=0.2
-// 			// slip speed zero - static friction case
-//
-// 			const surfAcc = this.SurfaceAcceleration(surfP);
-// 			const slipAcc = surfAcc.clone().sub(hitnormal.multiplyScalar(surfAcc.dot(hitnormal))) ; // calc the tangential slip acceleration
-//
-// 			// neither slip velocity nor slip acceleration? nothing to do here
-// 			if (slipAcc.lengthSq() < 1e-6) {
-// 				return;
-// 			}
-//
-// 			slipDir = slipAcc;
-// 			slipDir.normalize();
-//
-// 			numer = -slipDir.dot(surfAcc);
-//
-// 		} else {
-// 			// nonzero slip speed - dynamic friction case
-// 			slipDir = slip.clone().divideScalar(slipspeed);
-// 			numer = -slipDir.dot(surfVel);
-// 		}
-//
-// 		const cp = Vertex3D.crossProduct(surfP, slipDir);
-// 		const denom = this.invMass + slipDir.dot(Vertex3D.crossProduct(cp.clone().divideScalar(this.inertia), surfP));
-// 		const fric = clamp(numer / denom, -maxFric, maxFric);
-//
-// 		if (isFinite(fric)) {
-// 			this.ApplySurfaceImpulse(cp.clone().multiplyScalar(dtime * fric), slipDir.clone().multiplyScalar(dtime * fric));
-// 		}
-// 	}
-//
-// 	public HandleStaticContact(coll: CollisionEvent, friction: number, dtime: number): void {
-// 		const normVel = this.vel.dot(coll.hitNormal!);      // this should be zero, but only up to +/- C_CONTACTVEL
-//
-// 		// If some collision has changed the ball's velocity, we may not have to do anything.
-// 		if (normVel <= C_CONTACTVEL) {
-// 			const fe = this.player.gravity.clone().multiplyScalar(this.mass);   // external forces (only gravity for now)
-// 			const dot = fe.dot(coll.hitNormal!);
-// 			const normalForce = Math.max(0.0, -(dot * dtime + coll.hitOrgNormalVelocity!)); // normal force is always nonnegative
-//
-// 			// Add just enough to kill original normal velocity and counteract the external forces.
-// 			this.vel.add(coll.hitNormal!.clone().multiplyScalar(normalForce));
-//
-// //#ifdef C_EMBEDVELLIMIT
-// 			if (coll.hitDistance <= PHYS_TOUCH) {
-// 				this.vel.add(coll.hitNormal!.clone().multiplyScalar(Math.max(Math.min(C_EMBEDVELLIMIT, -coll.hitDistance), PHYS_TOUCH)));
-// 			}
-// //#endif
-// 			this.ApplyFriction(coll.hitNormal!, dtime, friction);
-// 		}
-// 	}
+
 //
 
 //
