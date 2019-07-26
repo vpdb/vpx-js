@@ -58,14 +58,11 @@ export abstract class HitObject {
 	public abstract getType(): CollisionType;
 	public abstract calcHitBBox(): void;
 	public abstract collide(coll: CollisionEvent, player: Player): void;
+	public abstract hitTest(pball: Ball, dtime: number, coll: CollisionEvent): number;
 
 	public getMoverObject(): MoverObject | undefined {
 		return undefined;
 	}
-
-	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {
-		return -1;
-	} //!! shouldn't need to do this, but for whatever reason there is a pure virtual function call triggered otherwise that refuses to be debugged (all derived classes DO implement this one!)
 
 	/**
 	 * apply contact forces for the given time interval. Ball, Spinner and Gate do nothing here, Flipper has a specialized handling

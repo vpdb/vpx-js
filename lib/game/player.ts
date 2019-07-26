@@ -295,8 +295,8 @@ export class Player {
 			}
 			this.contacts = [];
 
-
 			dtime -= hitTime;
+			this.swapBallCcollisionHandling = !this.swapBallCcollisionHandling; // swap order of ball-ball collisions
 		}
 	}
 
