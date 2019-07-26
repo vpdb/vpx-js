@@ -21,13 +21,9 @@ import { Player } from '../game/player';
 import { FRect3D } from '../math/frect3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
-// import { Ball } from '../vpt/ball/ball';
-// import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { IFireEvents } from './events';
 import { MoverObject } from './mover-object';
-
-// import { MoverObject } from './mover-object';
 
 export abstract class HitObject {
 
@@ -71,15 +67,16 @@ export abstract class HitObject {
 		return -1;
 	} //!! shouldn't need to do this, but for whatever reason there is a pure virtual function call triggered otherwise that refuses to be debugged (all derived classes DO implement this one!)
 
-	// /**
-	//  * apply contact forces for the given time interval. Ball, Spinner and Gate do nothing here, Flipper has a specialized handling
-	//  * @param coll
-	//  * @param dtime
-	//  * @constructor
-	//  */
-	// public Contact(coll: CollisionEvent, dtime: number): void {
-	// 	coll.ball.HandleStaticContact(coll, this.friction, dtime);
-	// }
+	/**
+	 * apply contact forces for the given time interval. Ball, Spinner and Gate do nothing here, Flipper has a specialized handling
+	 * @param coll
+	 * @param dtime
+	 * @param player
+	 * @constructor
+	 */
+	public contact(coll: CollisionEvent, dtime: number, player: Player): void {
+		coll.ball.getHitObject().handleStaticContact(coll, this.friction, dtime, player);
+	}
 
 	public setFriction(friction: number): this {
 		this.friction = friction;

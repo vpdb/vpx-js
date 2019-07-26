@@ -273,6 +273,29 @@ export class Player {
 				}
 			}
 
+			/*
+			 * Now handle contacts.
+			 *
+			 * At this point UpdateDisplacements() was already called, so the state is different
+			 * from that at HitTest(). However, contacts have zero relative velocity, so
+			 * hopefully nothing catastrophic has happened in the meanwhile.
+			 *
+			 * Maybe a two-phase setup where we first process only contacts, then only collisions
+			 * could also work.
+			 */
+			if (Math.random() < 0.5) { // swap order of contact handling randomly
+				// tslint:disable-next-line:prefer-for-of
+				for (let i = 0; i < this.contacts.length; ++i) {
+					this.contacts[i].obj!.contact(this.contacts[i], hitTime, this);
+				}
+			} else {
+				for (let i = this.contacts.length - 1; i !== -1; --i) {
+					this.contacts[i].obj!.contact(this.contacts[i], hitTime, this);
+				}
+			}
+			this.contacts = [];
+
+
 			dtime -= hitTime;
 		}
 	}
