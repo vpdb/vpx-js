@@ -18,7 +18,7 @@
  */
 
 import { Player } from '../../game/player';
-import { clamp } from '../../math/functions';
+import { clamp, solveQuadraticEq } from '../../math/functions';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
@@ -35,6 +35,7 @@ import {
 import { IFireEvents } from '../../physics/events';
 import { elasticityWithFalloff, hardScatter } from '../../physics/functions';
 import { HitObject } from '../../physics/hit-object';
+import { FLT_MIN } from '../mesh';
 import { TableData } from '../table-data';
 import { Ball } from './ball';
 import { BallData } from './ball-data';
@@ -195,6 +196,98 @@ export class BallHit extends HitObject {
 			this.state.vel.sub(vnormal.clone().multiplyScalar(impulse * myInvMass));
 		}
 		pball.state.vel.add(vnormal.clone().multiplyScalar(impulse * pball.getHitObject().invMass));
+	}
+
+	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {
+		const d = this.state.pos!.clone().sub(pball.state.pos!);  // delta position
+		const dv = this.state.vel.clone().sub(pball.state.vel);   // delta velocity
+
+		let bcddsq = d.lengthSq();            // square of ball center's delta distance
+		let bcdd = Math.sqrt(bcddsq);         // length of delta
+
+		if (bcdd < 1.0e-8) {                  // two balls center-over-center embedded
+			d.z = -1.0;                       // patch up
+			pball.state.pos!.z -= d.z;              // lift up
+
+			bcdd = 1.0;                       // patch up
+			bcddsq = 1.0;                     // patch up
+			dv.z = 0.1;                       // small speed difference
+			pball.state.vel.z -= dv.z;
+		}
+
+		const b = dv.dot(d);                               // inner product
+		const bnv = b / bcdd;                              // normal speed of balls toward each other
+
+		if (bnv > C_LOWNORMVEL) {                          // dot of delta velocity and delta displacement, positive if receding no collison
+			return -1.0;
+		}
+
+		const totalradius = pball.data.radius + this.data.radius;
+		const bnd = bcdd - totalradius;                    // distance between ball surfaces
+
+		let hittime: number;
+//#ifdef BALL_CONTACTS //!! leads to trouble currently, might be due to missing contact handling for -both- balls?!
+		let isContact = false;
+//#endif
+		if (bnd <= PHYS_TOUCH) {                           // in contact?
+			if (bnd < pball.data.radius * -2.0) {
+				return -1.0;                               // embedded too deep?
+			}
+
+			if ((Math.abs(bnv) > C_CONTACTVEL)             // >fast velocity, return zero time
+				|| (bnd <= -PHYS_TOUCH)) {                 // zero time for rigid fast bodies
+				hittime = 0;                               // slow moving but embedded
+			} else {
+				hittime = bnd / -bnv;
+			}
+
+//#ifdef BALL_CONTACTS
+			if (Math.abs(bnv) <= C_CONTACTVEL) {
+				isContact = true;
+			}
+//#endif
+		} else {
+			// find collision time as solution of quadratic equation
+			//   at^2 + bt + c = 0
+			//	(length(m_vel - pball->m_vel)*t) ^ 2 + ((m_vel - pball->m_vel).(m_pos - pball->m_pos)) * 2 * t = totalradius*totalradius - length(m_pos - pball->m_pos)^2
+
+			const a = dv.lengthSq();                       // square of differential velocity
+			if (a < 1.0e-8) {
+				return -1.0;                               // ball moving really slow, then wait for contact
+			}
+
+			const sol = solveQuadraticEq(a, 2.0 * b, bcddsq - totalradius * totalradius);
+			if (!sol) {
+				return -1.0;
+			}
+			const [time1, time2] = sol;
+			hittime = (time1 * time2 < 0) ? Math.max(time1, time2) : Math.min(time1, time2); // find smallest nonnegative solution
+		}
+
+		if (!isFinite(hittime) || hittime < 0 || hittime > dtime) {
+			return -1.0; // .. was some time previous || beyond the next physics tick
+		}
+
+		const hitPos = pball.state.pos!.clone().add(dv.multiplyScalar(hittime)); // new ball position
+
+		//calc unit normal of collision
+		const hitnormal = hitPos.clone().sub(this.state.pos);
+		if (Math.abs(hitnormal.x) <= FLT_MIN && Math.abs(hitnormal.y) <= FLT_MIN && Math.abs(hitnormal.z) <= FLT_MIN) {
+			return -1;
+		}
+		coll.hitNormal = hitnormal;
+		coll.hitNormal.normalize();
+
+		coll.hitDistance = bnd;                            // actual contact distance
+
+//#ifdef BALL_CONTACTS
+		coll.isContact = isContact;
+		if (isContact) {
+			coll.hitOrgNormalVelocity = bnv;
+		}
+//#endif
+
+		return hittime;
 	}
 
 	public collide3DWall(hitNormal: Vertex3D, elasticity: number, elastFalloff: number, friction: number, scatterAngle: number): void {
@@ -433,14 +526,7 @@ export class BallHit extends HitObject {
 // 		this.szImage = this.tableData.szBallImage;
 // 		this.szImageFront = this.tableData.szBallImageFront;
 // 	}
-//
-// 	public Init(mass: number): void {
-//
-//
-// 	}
-//
-// 	// public RenderSetup(): void {
-// 	// }
+
 //
 // 	public UpdateDisplacements(dtime: number): void {
 // 		if (!this.isFrozen) {
@@ -462,131 +548,3 @@ export class BallHit extends HitObject {
 // 			this.angularvelocity = this.angularmomentum.clone().divideScalar(this.inertia);
 // 		}
 // 	}
-//
-// 	// tslint:disable-next-line:no-empty
-// 	public UpdateVelocities(): void {
-// 	}
-//
-// 	// From HitObject
-// 	public HitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {
-//
-// 		const d = this.pos!.clone().sub(pball.pos!);  // delta position
-// 		const dv = this.vel.clone().sub(pball.vel);   // delta velocity
-//
-// 		let bcddsq = d.lengthSq();            // square of ball center's delta distance
-// 		let bcdd = Math.sqrt(bcddsq);         // length of delta
-//
-// 		if (bcdd < 1.0e-8) {                  // two balls center-over-center embedded
-// 			d.z = -1.0;                       // patch up
-// 			pball.pos!.z -= d.z;              // lift up
-//
-// 			bcdd = 1.0;                       // patch up
-// 			bcddsq = 1.0;                     // patch up
-// 			dv.z = 0.1;                       // small speed difference
-// 			pball.vel.z -= dv.z;
-// 		}
-//
-// 		const b = dv.dot(d);                               // inner product
-// 		const bnv = b / bcdd;                              // normal speed of balls toward each other
-//
-// 		if (bnv > C_LOWNORMVEL) {                          // dot of delta velocity and delta displacement, positive if receding no collison
-// 			return -1.0;
-// 		}
-//
-// 		const totalradius = pball.radius + this.radius;
-// 		const bnd = bcdd - totalradius;                    // distance between ball surfaces
-//
-// 		let hittime: number;
-// //#ifdef BALL_CONTACTS //!! leads to trouble currently, might be due to missing contact handling for -both- balls?!
-// 		let isContact = false;
-// //#endif
-// 		if (bnd <= PHYS_TOUCH) {                           // in contact?
-// 			if (bnd < pball.radius * -2.0) {
-// 				return -1.0;                               // embedded too deep?
-// 			}
-//
-// 			if ((Math.abs(bnv) > C_CONTACTVEL)             // >fast velocity, return zero time
-// 				|| (bnd <= -PHYS_TOUCH)) {                 // zero time for rigid fast bodies
-// 				hittime = 0;                               // slow moving but embedded
-// 			} else {
-// 				hittime = bnd / -bnv;
-// 			}
-//
-// //#ifdef BALL_CONTACTS
-// 			if (Math.abs(bnv) <= C_CONTACTVEL) {
-// 				isContact = true;
-// 			}
-// //#endif
-// 		} else {
-// 			// find collision time as solution of quadratic equation
-// 			//   at^2 + bt + c = 0
-// 			//	(length(m_vel - pball->m_vel)*t) ^ 2 + ((m_vel - pball->m_vel).(m_pos - pball->m_pos)) * 2 * t = totalradius*totalradius - length(m_pos - pball->m_pos)^2
-//
-// 			const a = dv.lengthSq();                       // square of differential velocity
-// 			if (a < 1.0e-8) {
-// 				return -1.0;                               // ball moving really slow, then wait for contact
-// 			}
-//
-// 			const sol = solveQuadraticEq(a, 2.0 * b, bcddsq - totalradius * totalradius);
-// 			if (!sol) {
-// 				return -1.0;
-// 			}
-// 			const [time1, time2] = sol;
-// 			hittime = (time1 * time2 < 0) ? Math.max(time1, time2) : Math.min(time1, time2); // find smallest nonnegative solution
-// 		}
-//
-// 		if (!isFinite(hittime) || hittime < 0 || hittime > dtime) {
-// 			return -1.0; // .. was some time previous || beyond the next physics tick
-// 		}
-//
-// 		const hitPos = pball.pos!.clone().add(dv.multiplyScalar(hittime)); // new ball position
-//
-// 		//calc unit normal of collision
-// 		const hitnormal = hitPos.clone().sub(this.pos!);
-// 		if (Math.abs(hitnormal.x) <= FLT_MIN && Math.abs(hitnormal.y) <= FLT_MIN && Math.abs(hitnormal.z) <= FLT_MIN) {
-// 			return -1;
-// 		}
-// 		coll.hitNormal = hitnormal;
-// 		coll.hitNormal.normalize();
-//
-// 		coll.hitDistance = bnd;                            // actual contact distance
-//
-// //#ifdef BALL_CONTACTS
-// 		coll.isContact = isContact;
-// 		if (isContact) {
-// 			coll.hitOrgNormalVelocity = bnv;
-// 		}
-// //#endif
-//
-// 		return hittime;
-// 	}
-//
-// 	public GetType(): CollisionType {
-// 		return CollisionType.Ball;
-// 	}
-//
-
-//
-// 	// public Contact(coll: CollisionEvent, dtime: number): void {
-// 	// }
-//
-
-//
-
-//
-
-//
-// 	public SurfaceAcceleration(surfP: Vertex3D): Vertex3D {
-// 		// TODO
-// 		return new Vertex3D();
-// 	}
-//
-
-//
-// 	// public EnsureOMObject(): void {
-// 	// }
-//
-// 	public GetMoverObject(): MoverObject | undefined {
-// 		return undefined;
-// 	}
-// }

@@ -33,7 +33,7 @@ import { HitObject } from './hit-object';
 export class HitCircle extends HitObject {
 
 	public center: Vertex2D;
-	private readonly radius: number;
+	public readonly radius: number;
 
 	constructor(center: Vertex2D, radius: number, zLow: number, zHigh: number) {
 		super();

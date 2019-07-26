@@ -53,7 +53,7 @@ export class FlipperMover implements MoverObject {
 
 	public inertia: number; // moment of inertia
 
-	private zeroAngNorm: Vertex2D = new Vertex2D(); // base norms at zero degrees
+	public zeroAngNorm: Vertex2D = new Vertex2D(); // base norms at zero degrees
 
 	public enableRotateEvent: number; // -1,0,1
 
