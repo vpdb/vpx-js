@@ -75,6 +75,7 @@ export class Player {
 	private pactiveball?: Ball;
 	public pactiveballBC?: Ball;
 	public swapBallCcollisionHandling: boolean = false;
+	public lastPlungerHit: number;
 
 	// ball the script user can get with ActiveBall
 

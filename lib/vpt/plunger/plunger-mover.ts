@@ -50,17 +50,17 @@ export class PlungerMover implements MoverObject {
 	public y: number = 0;
 
 	// boundaries for detecting collisions
-	private readonly lineSegBase = new LineSeg(new Vertex2D(0, 0), new Vertex2D(0, 0), 0, 0);
-	private readonly lineSegEnd = new LineSeg(new Vertex2D(0, 0), new Vertex2D(0, 0), 0, 0);
-	private readonly lineSegSide: LineSeg[] = [
+	public readonly lineSegBase = new LineSeg(new Vertex2D(0, 0), new Vertex2D(0, 0), 0, 0);
+	public readonly lineSegEnd = new LineSeg(new Vertex2D(0, 0), new Vertex2D(0, 0), 0, 0);
+	public readonly lineSegSide: LineSeg[] = [
 		new LineSeg(new Vertex2D(0, 0), new Vertex2D(0, 0), 0, 0),
 		new LineSeg(new Vertex2D(0, 0), new Vertex2D(0, 0), 0, 0),
 	];
-	private readonly jointBase: HitLineZ[] = [
+	public readonly jointBase: HitLineZ[] = [
 		new HitLineZ(new Vertex2D(0, 0)),
 		new HitLineZ(new Vertex2D(0, 0)),
 	];
-	private readonly jointEnd: HitLineZ[] = [
+	public readonly jointEnd: HitLineZ[] = [
 		new HitLineZ(new Vertex2D(0, 0)),
 		new HitLineZ(new Vertex2D(0, 0)),
 	];
@@ -82,7 +82,7 @@ export class PlungerMover implements MoverObject {
 	/**
 	 * current rod speed, in table distance units per second(?)
 	 */
-	private speed: number = 0.0;
+	public speed: number = 0.0;
 
 	/**
 	 * Forward travel limit.  When we're about to collide with a ball,
@@ -116,7 +116,7 @@ export class PlungerMover implements MoverObject {
 	 * next displacement update, when the ball will have been moved
 	 * as well.
 	 */
-	private travelLimit: number = 0;
+	public travelLimit: number = 0;
 
 	/**
 	 * Mass of the moving parts.  This is in arbitrary units, and serves
