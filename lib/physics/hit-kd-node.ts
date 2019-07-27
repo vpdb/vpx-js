@@ -90,14 +90,14 @@ export class HitKDNode {
 		}
 	}
 
-	public hitTestXRay(pball: Ball, pvhoHit: HitObject[], coll: CollisionEvent): void {
+	public hitTestXRay(pball: Ball, pvhoHit: HitObject[], coll: CollisionEvent, player: Player): void {
 		const orgItems = this.items & 0x3FFFFFFF;
 		const axis = this.items >> 30;
 
 		for (let i = this.start; i < this.start + orgItems; i++) {
 			const pho = this.hitOct.getItemAt(i);
 			if ((pball.getHitObject() !== pho) && pho.hitBBox.intersectSphere(pball.state.pos, pball.getHitObject().rcHitRadiusSqr)) {
-				const newTime = pho.hitTest(pball, coll.hitTime, coll);
+				const newTime = pho.hitTest(pball, coll.hitTime, coll, player);
 				if (newTime >= 0) {
 					pvhoHit.push(pho);
 				}
@@ -108,28 +108,28 @@ export class HitKDNode {
 			if (axis === 0) {
 				const vCenter = (this.rectBounds.left + this.rectBounds.right) * 0.5;
 				if (pball.getHitObject().hitBBox.left <= vCenter) {
-					this.children[0].hitTestXRay(pball, pvhoHit, coll);
+					this.children[0].hitTestXRay(pball, pvhoHit, coll, player);
 				}
 				if (pball.getHitObject().hitBBox.right >= vCenter) {
-					this.children[1].hitTestXRay(pball, pvhoHit, coll);
+					this.children[1].hitTestXRay(pball, pvhoHit, coll, player);
 				}
 
 			} else if (axis === 1) {
 				const vCenter = (this.rectBounds.top + this.rectBounds.bottom) * 0.5;
 				if (pball.getHitObject().hitBBox.top <= vCenter) {
-					this.children[0].hitTestXRay(pball, pvhoHit, coll);
+					this.children[0].hitTestXRay(pball, pvhoHit, coll, player);
 				}
 				if (pball.getHitObject().hitBBox.bottom >= vCenter) {
-					this.children[1].hitTestXRay(pball, pvhoHit, coll);
+					this.children[1].hitTestXRay(pball, pvhoHit, coll, player);
 				}
 
 			} else {
 				const vCenter = (this.rectBounds.zlow + this.rectBounds.zhigh) * 0.5;
 				if (pball.getHitObject().hitBBox.zlow <= vCenter) {
-					this.children[0].hitTestXRay(pball, pvhoHit, coll);
+					this.children[0].hitTestXRay(pball, pvhoHit, coll, player);
 				}
 				if (pball.getHitObject().hitBBox.zhigh >= vCenter) {
-					this.children[1].hitTestXRay(pball, pvhoHit, coll);
+					this.children[1].hitTestXRay(pball, pvhoHit, coll, player);
 				}
 			}
 		}

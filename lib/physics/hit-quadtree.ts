@@ -34,11 +34,11 @@ export class HitQuadtree {
 	private vCenter: Vertex3D = new Vertex3D();
 	private isLeaf: boolean = true;
 
-	public AddElement(pho: HitObject): void {
+	public addElement(pho: HitObject): void {
 		this.vho.push(pho);
 	}
 
-	public Initialize(bounds?: FRect3D): void {
+	public initialize(bounds?: FRect3D): void {
 
 		if (!bounds) {
 			bounds = new FRect3D();
@@ -46,10 +46,10 @@ export class HitQuadtree {
 				bounds.extend(vho.hitBBox);
 			}
 		}
-		this.CreateNextLevel(bounds, 0, 0);
+		this.createNextLevel(bounds, 0, 0);
 	}
 
-	public HitTestBall(pball: Ball, coll: CollisionEvent, player: Player): void {
+	public hitTestBall(pball: Ball, coll: CollisionEvent, player: Player): void {
 		for (const vho of this.vho) {
 			if ((pball.getHitObject() !== vho)
 				&& pball.getHitObject().hitBBox.intersectRect(vho.hitBBox)
@@ -64,29 +64,29 @@ export class HitQuadtree {
 
 			if (pball.getHitObject().hitBBox.top <= this.vCenter.y) { // Top
 				if (fLeft) {
-					this.children[0].HitTestBall(pball, coll, player);
+					this.children[0].hitTestBall(pball, coll, player);
 				}
 				if (fRight) {
-					this.children[1].HitTestBall(pball, coll, player);
+					this.children[1].hitTestBall(pball, coll, player);
 				}
 			}
 			if (pball.getHitObject().hitBBox.bottom >= this.vCenter.y) { // Bottom
 				if (fLeft) {
-					this.children[2].HitTestBall(pball, coll, player);
+					this.children[2].hitTestBall(pball, coll, player);
 				}
 				if (fRight) {
-					this.children[3].HitTestBall(pball, coll, player);
+					this.children[3].hitTestBall(pball, coll, player);
 				}
 			}
 		}
 	}
 
-	public HitTestXRay(pball: Ball, pvhoHit: HitObject[], coll: CollisionEvent): void {
+	public hitTestXRay(pball: Ball, pvhoHit: HitObject[], coll: CollisionEvent, player: Player): void {
 		for (const pho of this.vho) {
 			if (pball.getHitObject() !== pho
 				&& pball.getHitObject().hitBBox.intersectRect(pho.hitBBox)
 				&& pho.hitBBox.intersectSphere(pball.state.pos, pball.getHitObject().rcHitRadiusSqr)) {
-				const newTime = pho.hitTest(pball, coll.hitTime, coll);
+				const newTime = pho.hitTest(pball, coll.hitTime, coll, player);
 				if (newTime >= 0) {
 					pvhoHit.push(pho);
 				}
@@ -99,24 +99,24 @@ export class HitQuadtree {
 
 			if (pball.getHitObject().hitBBox.top <= this.vCenter.y) { // Top
 				if (fLeft) {
-					this.children[0].HitTestXRay(pball, pvhoHit, coll);
+					this.children[0].hitTestXRay(pball, pvhoHit, coll, player);
 				}
 				if (fRight) {
-					this.children[1].HitTestXRay(pball, pvhoHit, coll);
+					this.children[1].hitTestXRay(pball, pvhoHit, coll, player);
 				}
 			}
 			if (pball.getHitObject().hitBBox.bottom >= this.vCenter.y) { // Bottom
 				if (fLeft) {
-					this.children[2].HitTestXRay(pball, pvhoHit, coll);
+					this.children[2].hitTestXRay(pball, pvhoHit, coll, player);
 				}
 				if (fRight) {
-					this.children[3].HitTestXRay(pball, pvhoHit, coll);
+					this.children[3].hitTestXRay(pball, pvhoHit, coll, player);
 				}
 			}
 		}
 	}
 
-	private CreateNextLevel(bounds: FRect3D, level: number, levelEmpty: number): void {
+	private createNextLevel(bounds: FRect3D, level: number, levelEmpty: number): void {
 		if (this.vho.length <= 4) { //!! magic
 			return;
 		}
@@ -198,7 +198,7 @@ export class HitQuadtree {
 				childBounds.bottom = (i & 2) ? bounds.bottom : this.vCenter.y;
 				childBounds.zhigh = bounds.zhigh;
 
-				this.children[i].CreateNextLevel(childBounds, level + 1, levelEmpty);
+				this.children[i].createNextLevel(childBounds, level + 1, levelEmpty);
 			}
 		}
 	}
