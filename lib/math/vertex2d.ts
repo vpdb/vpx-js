@@ -86,6 +86,15 @@ export class Vertex2D implements Vertex {
 	public length(): number {
 		return f4(Math.sqrt( f4(f4(this.x * this.x) + f4(this.y * this.y))));
 	}
+
+	public lengthSq() {
+		return this.x * this.x + this.y * this.y;
+	}
+
+	public dot(pv: Vertex2D) {
+		return this.x * pv.x + this.y * pv.y;
+	}
+
 }
 
 export class RenderVertex extends Vertex2D implements IRenderVertex {
