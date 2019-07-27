@@ -128,7 +128,7 @@ export abstract class HitObject {
 		//}
 
 		const newColl = new CollisionEvent(pball);
-		const newTime = this.hitTest(pball, coll.hitTime, !player.recordContacts ? coll : newColl);
+		const newTime = this.hitTest(pball, coll.hitTime, !player.recordContacts ? coll : newColl, player);
 		// fixme debug this, but in case sign is supposed to handle +/- infinity cases, javscript should cover that.
 		const validHit = (newTime >= 0) /*&& !sign(newTime)*/ && (newTime <= coll.hitTime);
 

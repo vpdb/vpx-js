@@ -123,8 +123,8 @@ export class HitKD {
 		this.rootNode.hitTestBall(pball, collision, player);
 	}
 
-	public hitTestXRay(pball: Ball, pvhoHit: HitObject[], coll: CollisionEvent) {
-		this.rootNode.hitTestXRay(pball, pvhoHit, coll);
+	public hitTestXRay(pball: Ball, pvhoHit: HitObject[], coll: CollisionEvent, player: Player) {
+		this.rootNode.hitTestXRay(pball, pvhoHit, coll, player);
 	}
 
 	public getItemAt(i: number): HitObject {

@@ -75,7 +75,7 @@ export class Player {
 	private pactiveball?: Ball;
 	public pactiveballBC?: Ball;
 	public swapBallCcollisionHandling: boolean = false;
-	public lastPlungerHit: number;
+	public lastPlungerHit: number = 0;
 
 	// ball the script user can get with ActiveBall
 
@@ -205,9 +205,9 @@ export class Player {
 
 					if (Math.random() < 0.5) { // swap order of dynamic and static obj checks randomly
 						this.hitOcTreeDynamic.hitTestBall(pball, pball.getCollision(), this);  // dynamic objects
-						this.hitOcTree.HitTestBall(pball, pball.getCollision(), this);         // find the hit objects and hit times
+						this.hitOcTree.hitTestBall(pball, pball.getCollision(), this);         // find the hit objects and hit times
 					} else {
-						this.hitOcTree.HitTestBall(pball, pball.getCollision(), this);         // find the hit objects and hit times
+						this.hitOcTree.hitTestBall(pball, pball.getCollision(), this);         // find the hit objects and hit times
 						this.hitOcTreeDynamic.hitTestBall(pball, pball.getCollision(), this);  // dynamic objects
 					}
 
