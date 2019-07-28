@@ -190,7 +190,7 @@ export class Player {
 			this.contacts = [];
 
 			for (const pball of this.balls) {
-				const ballHit = pball.getHitObject();
+				const ballHit = pball.hit;
 				if (!ballHit.isFrozen) { // don't play with frozen balls
 
 					ballHit.coll.hitTime = hitTime;          // search upto current hittime
@@ -269,7 +269,7 @@ export class Player {
 						continue;
 
 					} else {
-						pball.getHitObject().calcHitBBox(); // do new boundings
+						pball.hit.calcHitBBox(); // do new boundings
 					}
 				}
 			}
@@ -295,6 +295,8 @@ export class Player {
 				}
 			}
 			this.contacts = [];
+
+			// fixme ballspinhack
 
 			dtime -= hitTime;
 			this.swapBallCcollisionHandling = !this.swapBallCcollisionHandling; // swap order of ball-ball collisions
@@ -522,6 +524,10 @@ export class Player {
 		this.movers.push(mover);
 	}
 
+	public addHitObject(hitObject: HitObject) {
+		this.hitObjects.push(hitObject);
+	}
+
 	public addFlipperMover(flipperMover: FlipperMover) {
 		this.flipperMovers.push(flipperMover);
 	}
@@ -536,7 +542,7 @@ export class Player {
 
 		this.balls.push(ball);
 		this.movers.push(ball.getMover()); // balls are always added separately to this list!
-		this.hitObjects.push(ball.getHitObject());
+		this.hitObjects.push(ball.hit);
 
 		//this.hitOcTreeDynamic.fillFromVector(this.m_vho_dynamic);
 

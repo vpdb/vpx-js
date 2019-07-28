@@ -20,7 +20,9 @@
 
 import { BufferGeometry, ExtrudeBufferGeometry, Scene, Shape, Vector2 } from 'three';
 import { OleCompoundDoc, Storage } from '..';
+import { IHittable } from '../game/ihittable';
 import { IMovable } from '../game/imovable';
+import { IPlayable } from '../game/iplayable';
 import { IRenderable } from '../game/irenderable';
 import { Player } from '../game/player';
 import { TableExporter, VpTableExporterOptions } from '../gltf/table-exporter';
@@ -58,6 +60,7 @@ import { TriggerItem } from './trigger-item';
 export class Table implements IRenderable {
 
 	public data?: TableData;
+
 	public tableInfo: { [key: string]: string } = {};
 	public surfaces: { [key: string]: SurfaceItem } = {};
 	public primitives: { [key: string]: PrimitiveItem } = {};
@@ -99,10 +102,21 @@ export class Table implements IRenderable {
 
 	public setupPlayer(player: Player) {
 
+		// setup table elements with player
+		for (const playable of this.getPlayables()) {
+			playable.setupPlayer(player, this);
+		}
+
 		// link movables to player
 		for (const movable of this.getMovables()) {
-			movable.setupPlayer(player, this);
 			player.addMover(movable.getMover());
+		}
+
+		// link hittables to player
+		for (const hittable of this.getHittables()) {
+			for (const hitObject of hittable.getHitShapes()) {
+				player.addHitObject(hitObject);
+			}
 		}
 
 		// flippers are a special case
@@ -133,7 +147,15 @@ export class Table implements IRenderable {
 		return this.data.materials.find(m => m.szName === name);
 	}
 
-	public getMovables(): Array<IMovable<any>> {
+	public getPlayables(): Array<IPlayable<any>> {
+		return [ ...Object.values(this.flippers), ...this.plungers ];
+	}
+
+	public getMovables(): IMovable[] {
+		return [ ...Object.values(this.flippers), ...this.plungers ];
+	}
+
+	public getHittables(): IHittable[] {
 		return [ ...Object.values(this.flippers), ...this.plungers ];
 	}
 
@@ -417,7 +439,8 @@ export class Table implements IRenderable {
 				}
 
 				case ItemData.TypePlunger: {
-					this.plungers.push(await Plunger.fromStorage(storage, itemName, this));
+					const item = await Plunger.fromStorage(storage, itemName, this);
+					this.plungers.push(item);
 					break;
 				}
 

@@ -16,18 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-import { Object3D } from 'three';
-import { Table } from '..';
 import { MoverObject } from '../physics/mover-object';
-import { Player } from './player';
+import { IPlayable } from './iplayable';
 
-export interface IMovable<STATE> {
-
-	getName(): string;
+export interface IMovable extends IPlayable<any> {
 
 	getMover(): MoverObject;
-
-	setupPlayer(player: Player, table: Table): void;
-
-	updateState(state: STATE, obj: Object3D): void;
 }

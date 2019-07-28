@@ -16,9 +16,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-import { HitObject } from '../physics/hit-object';
-import { IPlayable } from './iplayable';
 
-export interface IHittable extends IPlayable<any> {
-	getHitShapes(): HitObject[];
+import { Object3D } from 'three';
+import { Table } from '..';
+import { Player } from './player';
+
+/**
+ * A table element that can interact with the game. This corresponds roughly
+ * to IEditable in VPinball.
+ */
+export interface IPlayable<STATE> {
+
+	getName(): string;
+
+	setupPlayer(player: Player, table: Table): void;
+
+	updateState(state: STATE, obj: Object3D): void;
 }

@@ -115,7 +115,7 @@ export class FlipperHit extends HitObject {
 
 		const rF = hitPos.clone().sub(cF);       // displacement relative to flipper center
 
-		const vB = pball.getHitObject().surfaceVelocity(rB);
+		const vB = pball.hit.surfaceVelocity(rB);
 		const vF = this.flipperMover.surfaceVelocity(rF);
 		const vrel = vB.clone().sub(vF);
 		let bnv = normal.dot(vrel);       // relative normal velocity
@@ -167,7 +167,7 @@ export class FlipperHit extends HitObject {
 		 */
 		const epsilon = elasticityWithFalloff(this.elasticity, this.elasticityFalloff, bnv);
 
-		let impulse = -(1.0 + epsilon) * bnv / (pball.getHitObject().invMass + normal.dot(Vertex3D.crossProduct(angResp.clone().divideScalar(this.flipperMover.inertia), rF)));
+		let impulse = -(1.0 + epsilon) * bnv / (pball.hit.invMass + normal.dot(Vertex3D.crossProduct(angResp.clone().divideScalar(this.flipperMover.inertia), rF)));
 		const flipperImp = normal.clone().multiplyScalar(-(impulse * flipperResponseScaling));
 
 		const rotI = Vertex3D.crossProduct(rF, flipperImp);
@@ -182,7 +182,7 @@ export class FlipperHit extends HitObject {
 				// off the flipper, we need to make sure it does so with full
 				// reflection, i.e., treat the flipper as static, otherwise
 				// we get overly dead bounces.
-				const bnvAfter = bnv + impulse * pball.getHitObject().invMass;
+				const bnvAfter = bnv + impulse * pball.hit.invMass;
 
 				if (recoilTime <= 0.5 || bnvAfter > 0.) {
 					// treat flipper as static for this impact
@@ -193,7 +193,7 @@ export class FlipperHit extends HitObject {
 			}
 		}
 
-		pball.state.vel.add(normal.clone().multiplyScalar(impulse * pball.getHitObject().invMass));      // new velocity for ball after impact
+		pball.state.vel.add(normal.clone().multiplyScalar(impulse * pball.hit.invMass));      // new velocity for ball after impact
 		this.flipperMover.applyImpulse(rotI);
 
 		// apply friction
@@ -206,7 +206,7 @@ export class FlipperHit extends HitObject {
 
 			// compute friction impulse
 			const crossB = Vertex3D.crossProduct(rB, tangent);
-			let kt = pball.getHitObject().invMass + tangent.dot(Vertex3D.crossProduct(crossB.clone().divideScalar(pball.getHitObject().inertia), rB));
+			let kt = pball.hit.invMass + tangent.dot(Vertex3D.crossProduct(crossB.clone().divideScalar(pball.hit.inertia), rB));
 
 			const crossF = Vertex3D.crossProduct(rF, tangent);
 			kt += tangent.dot(Vertex3D.crossProduct(crossF.clone().divideScalar(this.flipperMover.inertia), rF));    // flipper only has angular response
@@ -215,7 +215,7 @@ export class FlipperHit extends HitObject {
 			const maxFric = this.friction * impulse;
 			const jt = clamp(-vt / kt, -maxFric, maxFric);
 
-			pball.getHitObject().applySurfaceImpulse(crossB.clone().multiplyScalar(jt), tangent.clone().multiplyScalar(jt));
+			pball.hit.applySurfaceImpulse(crossB.clone().multiplyScalar(jt), tangent.clone().multiplyScalar(jt));
 			this.flipperMover.applyImpulse(crossF.clone().multiplyScalar(-jt));
 		}
 

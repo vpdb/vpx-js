@@ -40,7 +40,7 @@ export class HitPlane extends HitObject {
 	}
 
 	public collide(coll: CollisionEvent): void {
-		coll.ball.getHitObject().collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
+		coll.ball.hit.collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
 		// if ball has penetrated, push it out of the plane
 		const bnd = this.normal.dot(coll.ball.state.pos) - coll.ball.data.radius - this.d; // distance from plane to ball surface
