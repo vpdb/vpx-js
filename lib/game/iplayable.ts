@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Object3D } from 'three';
 import { Table } from '..';
 import { Player } from './player';
 
@@ -25,11 +24,9 @@ import { Player } from './player';
  * A table element that can interact with the game. This corresponds roughly
  * to IEditable in VPinball.
  */
-export interface IPlayable<STATE> {
+export interface IPlayable {
 
 	getName(): string;
 
 	setupPlayer(player: Player, table: Table): void;
-
-	updateState(state: STATE, obj: Object3D): void;
 }

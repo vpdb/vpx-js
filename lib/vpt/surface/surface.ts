@@ -18,12 +18,16 @@
  */
 
 import { Storage } from '../..';
+import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
+import { Player } from '../../game/player';
 import { VpTableExporterOptions } from '../../gltf/table-exporter';
 import { Matrix3D } from '../../math/matrix3d';
+import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { Table } from '../table';
 import { SurfaceData } from './surface-data';
+import { SurfaceHitGenerator } from './surface-hit-generator';
 import { SurfaceMesh } from './surface-mesh';
 
 /**
@@ -31,11 +35,13 @@ import { SurfaceMesh } from './surface-mesh';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/surface.cpp
  */
-export class Surface implements IRenderable {
+export class Surface implements IRenderable, IHittable {
 
+	private readonly itemName: string;
 	private readonly data: SurfaceData;
 	private readonly mesh: SurfaceMesh;
-	//private hit?: SurfaceHit;
+	private hitGenerator: SurfaceHitGenerator;
+	private hits: HitObject[] = [];
 
 	// public getters
 	get heightTop() { return this.data.heighttop; }
@@ -47,8 +53,10 @@ export class Surface implements IRenderable {
 	}
 
 	public constructor(itemName: string, data: SurfaceData) {
+		this.itemName = itemName;
 		this.data = data;
 		this.mesh = new SurfaceMesh();
+		this.hitGenerator = new SurfaceHitGenerator(data);
 	}
 
 	public getName(): string {
@@ -79,6 +87,14 @@ export class Surface implements IRenderable {
 		}
 
 		return meshes;
+	}
+
+	public setupPlayer(player: Player, table: Table): void {
+		this.hits.push(...this.hitGenerator.generateHitObjects());
+	}
+
+	public getHitShapes(): HitObject[] {
+		return this.hits;
 	}
 
 }

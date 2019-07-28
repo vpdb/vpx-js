@@ -19,6 +19,6 @@
 import { HitObject } from '../physics/hit-object';
 import { IPlayable } from './iplayable';
 
-export interface IHittable extends IPlayable<any> {
+export interface IHittable extends IPlayable {
 	getHitShapes(): HitObject[];
 }

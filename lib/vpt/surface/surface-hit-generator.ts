@@ -17,13 +17,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Object3D } from 'three';
-import { MoverObject } from '../physics/mover-object';
-import { IPlayable } from './iplayable';
+import { HitObject } from '../../physics/hit-object';
+import { SurfaceData } from './surface-data';
 
-export interface IMovable<STATE> extends IPlayable {
+export class SurfaceHitGenerator {
 
-	getMover(): MoverObject;
+	private readonly data: SurfaceData;
 
-	updateState(state: STATE, obj: Object3D): void;
+	constructor(data: SurfaceData) {
+		this.data = data;
+	}
+
+	public generateHitObjects(): HitObject[] {
+		return [];
+	}
 }

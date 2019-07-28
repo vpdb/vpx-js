@@ -32,7 +32,7 @@ import { BallMesh } from './ball-mesh';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
 
-export class Ball implements IPlayable<BallState>, IMovable, IHittable {
+export class Ball implements IPlayable, IMovable<BallState>, IHittable {
 
 	public readonly state: BallState;
 	public readonly data: BallData;
