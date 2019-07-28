@@ -75,6 +75,7 @@ export class Player {
 	private hitOcTree: HitQuadtree = new HitQuadtree();
 	private pactiveball?: Ball;
 	public pactiveballBC?: Ball;
+	private pactiveballDebug?: Ball;
 	public swapBallCcollisionHandling: boolean = false;
 	public lastPlungerHit: number = 0;
 
@@ -565,11 +566,52 @@ export class Player {
 
 		this.balls.push(ball);
 		this.movers.push(ball.getMover()); // balls are always added separately to this list!
-		this.hitObjects.push(ball.hit);
 
-		//this.hitOcTreeDynamic.fillFromVector(this.m_vho_dynamic);
+		this.hitObjectsDynamic.push(ball.hit);
+		this.hitOcTreeDynamic.fillFromVector(this.hitObjectsDynamic);
 
 		return ball;
+	}
+
+	public destroyBall(pball: Ball) {
+		if (!pball) {
+			return;
+		}
+
+		let activeball: boolean;
+		if (this.pactiveballBC === pball) {
+			activeball = true;
+			this.pactiveball = undefined;
+		} else {
+			activeball = false;
+		}
+
+		let debugball: boolean;
+		if (this.pactiveballDebug === pball) {
+			debugball = true;
+			this.pactiveballDebug = undefined;
+		} else {
+			debugball = false;
+		}
+
+		if (this.pactiveballBC === pball) {
+			this.pactiveballBC = undefined;
+		}
+
+		this.balls.splice(this.balls.indexOf(pball), 1);
+		this.movers.splice(this.movers.indexOf(pball.getMover()), 1);
+		this.hitObjectsDynamic.splice(this.hitObjectsDynamic.indexOf(pball.hit), 1);
+
+		this.hitOcTreeDynamic.fillFromVector(this.hitObjectsDynamic);
+
+		//m_vballDelete.push_back(pball);
+
+		if (debugball && this.balls.length > 0) {
+			this.pactiveballDebug = this.balls[0];
+		}
+		if (activeball && this.balls.length > 0) {
+			this.pactiveball = this.balls[0];
+		}
 	}
 
 	// public setGravity(slopeDeg: number, strength: number): void {
