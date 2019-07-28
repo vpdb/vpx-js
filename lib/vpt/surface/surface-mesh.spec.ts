@@ -17,10 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ThreeHelper } from '../three.helper';
-import { Table } from '../../lib';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
-import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
+import { ThreeHelper } from '../../../test/three.helper';
+import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { Table } from '../table';
 
 const three = new ThreeHelper();
 
@@ -34,8 +34,8 @@ describe('The VPinball surface generator', () => {
 	});
 
 	it('should generate a surface mesh', async () => {
-		const vertices = three.concatMeshes(gltf, 'surfaces','Wall',['surfacetop-Wall', 'surfaceside-Wall']);
-		let expectedVertices = [
+		const vertices = three.concatMeshes(gltf, 'surfaces', 'Wall', ['surfacetop-Wall', 'surfaceside-Wall']);
+		const expectedVertices = [
 			[251.000000, 353.000000, -0.000000],
 			[251.000000, 353.000000, -50.000000],
 			[252.024673, 365.885376, -50.000000],
@@ -306,8 +306,8 @@ describe('The VPinball surface generator', () => {
 	});
 
 	it('should generate a surface mesh with invisible top', async () => {
-		const vertices = three.concatMeshes(gltf, 'surfaces','TopInvisible', ['surfaceside-TopInvisible']);
-		let expectedVertices = [
+		const vertices = three.concatMeshes(gltf, 'surfaces', 'TopInvisible', ['surfaceside-TopInvisible']);
+		const expectedVertices = [
 			[379.000000, 1125.000000, -2.700000],
 			[379.000000, 1125.000000, -49.599998],
 			[210.126160, 1250.418091, -49.599998],
@@ -354,8 +354,8 @@ describe('The VPinball surface generator', () => {
 	});
 
 	it('should generate a surface mesh with invisible sides', async () => {
-		const vertices = three.concatMeshes(gltf, 'surfaces','SideInvisible', ['surfacetop-SideInvisible']);
-		let expectedVertices = [
+		const vertices = three.concatMeshes(gltf, 'surfaces', 'SideInvisible', ['surfacetop-SideInvisible']);
+		const expectedVertices = [
 			[455.000000, 1667.000000, -11.500000],
 			[450.444305, 1670.719604, -11.500000],
 			[445.294983, 1674.163086, -11.500000],
