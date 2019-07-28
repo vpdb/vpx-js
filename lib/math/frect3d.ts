@@ -10,15 +10,15 @@ export class FRect3D {
 	public zlow: number = 0;
 	public zhigh: number = 0;
 
-	constructor(x1?: number, x2?: number, y1?: number, y2?: number, z1?: number, z2?: number) {
+	constructor(left?: number, right?: number, top?: number, bottom?: number, zLow?: number, zHigh?: number) {
 		/* istanbul ignore if */
-		if (x1 && x2 && y1 && y2 && z1 && z2) {
-			this.left = x1;
-			this.right = x2;
-			this.top = y1;
-			this.bottom = y2;
-			this.zlow = z1;
-			this.zhigh = z2;
+		if (left && right && top && bottom && zLow && zHigh) {
+			this.left = left;
+			this.right = right;
+			this.top = top;
+			this.bottom = bottom;
+			this.zlow = zLow;
+			this.zhigh = zHigh;
 		} else {
 			this.Clear();
 		}
