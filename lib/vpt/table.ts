@@ -44,7 +44,7 @@ import { PrimitiveItem } from './primitive-item';
 import { RampItem } from './ramp-item';
 import { RubberItem } from './rubber-item';
 import { SpinnerItem } from './spinner-item';
-import { SurfaceItem } from './surface-item';
+import { Surface } from './surface/surface';
 import { TableData } from './table-data';
 import { TextBoxItem } from './textbox-item';
 import { Texture } from './texture';
@@ -62,7 +62,7 @@ export class Table implements IRenderable {
 	public data?: TableData;
 
 	public tableInfo: { [key: string]: string } = {};
-	public surfaces: { [key: string]: SurfaceItem } = {};
+	public surfaces: { [key: string]: Surface } = {};
 	public primitives: { [key: string]: PrimitiveItem } = {};
 	public textures: { [key: string]: Texture } = {};
 	public rubbers: { [key: string]: RubberItem } = {};
@@ -196,7 +196,7 @@ export class Table implements IRenderable {
 		}
 
 		if (this.surfaces[surface]) {
-			return f4(this.data.tableheight + this.surfaces[surface].heighttop);
+			return f4(this.data.tableheight + this.surfaces[surface].heightTop);
 		}
 
 		if (this.ramps[surface]) {
@@ -345,7 +345,7 @@ export class Table implements IRenderable {
 			switch (itemType) {
 
 				case ItemData.TypeSurface: {
-					const item = await SurfaceItem.fromStorage(storage, itemName);
+					const item = await Surface.fromStorage(storage, itemName);
 					this.surfaces[item.getName()] = item;
 					break;
 				}
