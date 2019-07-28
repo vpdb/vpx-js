@@ -80,7 +80,7 @@ export class Hit3DPoly extends HitObject {
 		if (this.objType !== CollisionType.Trigger) {
 			const dot = -(hitnormal.dot(pball.state.vel));
 
-			pball.getHitObject().collide3DWall(this.normal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
+			pball.hit.collide3DWall(this.normal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
 			if (this.obj && this.fe && dot >= this.threshold) {
 				if (this.objType === CollisionType.Primitive) {
@@ -96,21 +96,21 @@ export class Hit3DPoly extends HitObject {
 			}
 		} else { // trigger:
 
-			if (pball.getHitObject().vpVolObjs.length === 0) {
+			if (pball.hit.vpVolObjs.length === 0) {
 				return;
 			}
 
-			const i = pball.getHitObject().vpVolObjs.indexOf(this.obj!); // if -1 then not in objects volume set (i.e not already hit)
+			const i = pball.hit.vpVolObjs.indexOf(this.obj!); // if -1 then not in objects volume set (i.e not already hit)
 
 			if ((!coll.hitFlag) === (i < 0)) { // Hit == NotAlreadyHit
 
 				pball.state.pos.add(pball.state.vel.clone().multiplyScalar(STATICTIME));      //move ball slightly forward
 
 				if (i < 0) {
-					pball.getHitObject().vpVolObjs.push(this.obj!);
+					pball.hit.vpVolObjs.push(this.obj!);
 					// fixme ((Trigger*)m_obj)->FireGroupEvent(DISPID_HitEvents_Hit);
 				} else {
-					pball.getHitObject().vpVolObjs.splice(i, 1);
+					pball.hit.vpVolObjs.splice(i, 1);
 					// fixme ((Trigger*)m_obj)->FireGroupEvent(DISPID_HitEvents_Unhit);
 				}
 			}
@@ -164,9 +164,9 @@ export class Hit3DPoly extends HitObject {
 
 		} else { //non-rigid polygon
 			if (bnv * bnd >= 0) {                        // outside-receding || inside-approaching
-				if (!pball.getHitObject().vpVolObjs.length                 // temporary ball
+				if (!pball.hit.vpVolObjs.length                 // temporary ball
 					|| Math.abs(bnd) >= pball.data.radius * 0.5 // not too close ... nor too far away
-					|| inside !== pball.getHitObject().vpVolObjs.indexOf(this.obj!) < 0) { // ...ball outside and hit set or ball inside and no hit set
+					|| inside !== pball.hit.vpVolObjs.indexOf(this.obj!) < 0) { // ...ball outside and hit set or ball inside and no hit set
 					return -1.0;
 				}
 

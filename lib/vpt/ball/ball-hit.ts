@@ -190,12 +190,12 @@ export class BallHit extends HitObject {
 		}
 
 		const myInvMass = this.isFrozen ? 0.0 : this.invMass; // frozen ball has infinite mass
-		const impulse = -(1.0 + 0.8) * dot / (myInvMass + pball.getHitObject().invMass);    // resitution = 0.8
+		const impulse = -(1.0 + 0.8) * dot / (myInvMass + pball.hit.invMass);    // resitution = 0.8
 
 		if (!this.isFrozen) {
 			this.state.vel.sub(vnormal.clone().multiplyScalar(impulse * myInvMass));
 		}
-		pball.state.vel.add(vnormal.clone().multiplyScalar(impulse * pball.getHitObject().invMass));
+		pball.state.vel.add(vnormal.clone().multiplyScalar(impulse * pball.hit.invMass));
 	}
 
 	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {

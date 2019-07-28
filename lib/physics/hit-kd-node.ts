@@ -54,7 +54,7 @@ export class HitKDNode {
 
 		for (let i = this.start; i < this.start + orgItems; i++) {
 			const pho = this.hitOct.getItemAt(i);
-			if (pball.getHitObject() !== pho && pho.hitBBox.intersectSphere(pball.state.pos, pball.getHitObject().rcHitRadiusSqr)) {
+			if (pball.hit !== pho && pho.hitBBox.intersectSphere(pball.state.pos, pball.hit.rcHitRadiusSqr)) {
 				pho.doHitTest(pball, coll, player);
 			}
 		}
@@ -62,28 +62,28 @@ export class HitKDNode {
 		if (this.children && this.children.length) { // not a leaf
 			if (axis === 0) {
 				const vcenter = (this.rectBounds.left + this.rectBounds.right) * 0.5;
-				if (pball.getHitObject().hitBBox.left <= vcenter) {
+				if (pball.hit.hitBBox.left <= vcenter) {
 					this.children[0].hitTestBall(pball, coll, player);
 				}
-				if (pball.getHitObject().hitBBox.right >= vcenter) {
+				if (pball.hit.hitBBox.right >= vcenter) {
 					this.children[1].hitTestBall(pball, coll, player);
 				}
 
 			} else if (axis === 1) {
 				const vcenter = (this.rectBounds.top + this.rectBounds.bottom) * 0.5;
-				if (pball.getHitObject().hitBBox.top <= vcenter) {
+				if (pball.hit.hitBBox.top <= vcenter) {
 					this.children[0].hitTestBall(pball, coll, player);
 				}
-				if (pball.getHitObject().hitBBox.bottom >= vcenter) {
+				if (pball.hit.hitBBox.bottom >= vcenter) {
 					this.children[1].hitTestBall(pball, coll, player);
 				}
 
 			} else {
 				const vcenter = (this.rectBounds.zlow + this.rectBounds.zhigh) * 0.5;
-				if (pball.getHitObject().hitBBox.zlow <= vcenter) {
+				if (pball.hit.hitBBox.zlow <= vcenter) {
 					this.children[0].hitTestBall(pball, coll, player);
 				}
-				if (pball.getHitObject().hitBBox.zhigh >= vcenter) {
+				if (pball.hit.hitBBox.zhigh >= vcenter) {
 					this.children[1].hitTestBall(pball, coll, player);
 				}
 			}
@@ -96,7 +96,7 @@ export class HitKDNode {
 
 		for (let i = this.start; i < this.start + orgItems; i++) {
 			const pho = this.hitOct.getItemAt(i);
-			if ((pball.getHitObject() !== pho) && pho.hitBBox.intersectSphere(pball.state.pos, pball.getHitObject().rcHitRadiusSqr)) {
+			if ((pball.hit !== pho) && pho.hitBBox.intersectSphere(pball.state.pos, pball.hit.rcHitRadiusSqr)) {
 				const newTime = pho.hitTest(pball, coll.hitTime, coll, player);
 				if (newTime >= 0) {
 					pvhoHit.push(pho);
@@ -107,28 +107,28 @@ export class HitKDNode {
 		if (this.children && this.children.length) {// not a leaf
 			if (axis === 0) {
 				const vCenter = (this.rectBounds.left + this.rectBounds.right) * 0.5;
-				if (pball.getHitObject().hitBBox.left <= vCenter) {
+				if (pball.hit.hitBBox.left <= vCenter) {
 					this.children[0].hitTestXRay(pball, pvhoHit, coll, player);
 				}
-				if (pball.getHitObject().hitBBox.right >= vCenter) {
+				if (pball.hit.hitBBox.right >= vCenter) {
 					this.children[1].hitTestXRay(pball, pvhoHit, coll, player);
 				}
 
 			} else if (axis === 1) {
 				const vCenter = (this.rectBounds.top + this.rectBounds.bottom) * 0.5;
-				if (pball.getHitObject().hitBBox.top <= vCenter) {
+				if (pball.hit.hitBBox.top <= vCenter) {
 					this.children[0].hitTestXRay(pball, pvhoHit, coll, player);
 				}
-				if (pball.getHitObject().hitBBox.bottom >= vCenter) {
+				if (pball.hit.hitBBox.bottom >= vCenter) {
 					this.children[1].hitTestXRay(pball, pvhoHit, coll, player);
 				}
 
 			} else {
 				const vCenter = (this.rectBounds.zlow + this.rectBounds.zhigh) * 0.5;
-				if (pball.getHitObject().hitBBox.zlow <= vCenter) {
+				if (pball.hit.hitBBox.zlow <= vCenter) {
 					this.children[0].hitTestXRay(pball, pvhoHit, coll, player);
 				}
-				if (pball.getHitObject().hitBBox.zhigh >= vCenter) {
+				if (pball.hit.hitBBox.zhigh >= vCenter) {
 					this.children[1].hitTestXRay(pball, pvhoHit, coll, player);
 				}
 			}

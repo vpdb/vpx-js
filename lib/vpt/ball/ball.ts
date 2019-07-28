@@ -20,8 +20,10 @@
 import { Object3D } from 'three';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
+import { IPlayable } from '../../game/iplayable';
 import { Player } from '../../game/player';
 import { CollisionEvent } from '../../physics/collision-event';
+import { HitObject } from '../../physics/hit-object';
 import { Table } from '../table';
 import { TableData } from '../table-data';
 import { BallData } from './ball-data';
@@ -30,12 +32,12 @@ import { BallMesh } from './ball-mesh';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
 
-export class Ball implements IMovable<BallState>, IHittable {
+export class Ball implements IPlayable<BallState>, IMovable, IHittable {
 
 	public readonly state: BallState;
 	public readonly data: BallData;
 	private readonly mesh: BallMesh;
-	private readonly hit: BallHit;
+	public readonly hit: BallHit;
 
 	// unique ID for each ball
 	public readonly id: number;
@@ -62,15 +64,15 @@ export class Ball implements IMovable<BallState>, IHittable {
 		return this.hit.getMoverObject();
 	}
 
-	public getHitObject(): BallHit {
-		return this.hit;
-	}
-
 	public getCollision(): CollisionEvent {
 		return this.hit.coll;
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
 		// there is no ball yet on player setup
+	}
+
+	public getHitShapes(): HitObject[] {
+		return [ this.hit ];
 	}
 }

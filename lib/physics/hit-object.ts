@@ -72,7 +72,7 @@ export abstract class HitObject {
 	 * @constructor
 	 */
 	public contact(coll: CollisionEvent, dtime: number, player: Player): void {
-		coll.ball.getHitObject().handleStaticContact(coll, this.friction, dtime, player);
+		coll.ball.hit.handleStaticContact(coll, this.friction, dtime, player);
 	}
 
 	public setFriction(friction: number): this {

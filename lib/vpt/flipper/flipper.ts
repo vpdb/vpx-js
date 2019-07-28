@@ -19,12 +19,15 @@
 
 import { Object3D } from 'three';
 import { Storage } from '../..';
+import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
+import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
 import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex2D } from '../../math/vertex2d';
+import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { Table } from '../table';
 import { FlipperData } from './flipper-data';
@@ -38,7 +41,7 @@ import { FlipperState } from './flipper-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/flipper.cpp
  */
-export class Flipper implements IRenderable, IMovable<FlipperState> {
+export class Flipper implements IRenderable, IPlayable<FlipperState>, IMovable, IHittable {
 
 	private readonly data: FlipperData;
 	private readonly mesh: FlipperMesh;
@@ -70,11 +73,11 @@ export class Flipper implements IRenderable, IMovable<FlipperState> {
 	}
 
 	public getMover(): FlipperMover {
-		return this.getHit().getMoverObject();
+		return this.hit!.getMoverObject();
 	}
 
-	public getHit(): FlipperHit {
-		return this.hit!;
+	public getHitShapes(): HitObject[] {
+		return [ this.hit! ];
 	}
 
 	public getName(): string {

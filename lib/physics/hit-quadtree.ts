@@ -51,18 +51,18 @@ export class HitQuadtree {
 
 	public hitTestBall(pball: Ball, coll: CollisionEvent, player: Player): void {
 		for (const vho of this.vho) {
-			if ((pball.getHitObject() !== vho)
-				&& pball.getHitObject().hitBBox.intersectRect(vho.hitBBox)
-				&& vho.hitBBox.intersectSphere(pball.state.pos, pball.getHitObject().rcHitRadiusSqr)) {
+			if ((pball.hit !== vho)
+				&& pball.hit.hitBBox.intersectRect(vho.hitBBox)
+				&& vho.hitBBox.intersectSphere(pball.state.pos, pball.hit.rcHitRadiusSqr)) {
 				vho.doHitTest(pball, coll, player);
 			}
 		}
 
 		if (!this.isLeaf) {
-			const fLeft = pball.getHitObject().hitBBox.left <= this.vCenter.x;
-			const fRight = pball.getHitObject().hitBBox.right >= this.vCenter.x;
+			const fLeft = pball.hit.hitBBox.left <= this.vCenter.x;
+			const fRight = pball.hit.hitBBox.right >= this.vCenter.x;
 
-			if (pball.getHitObject().hitBBox.top <= this.vCenter.y) { // Top
+			if (pball.hit.hitBBox.top <= this.vCenter.y) { // Top
 				if (fLeft) {
 					this.children[0].hitTestBall(pball, coll, player);
 				}
@@ -70,7 +70,7 @@ export class HitQuadtree {
 					this.children[1].hitTestBall(pball, coll, player);
 				}
 			}
-			if (pball.getHitObject().hitBBox.bottom >= this.vCenter.y) { // Bottom
+			if (pball.hit.hitBBox.bottom >= this.vCenter.y) { // Bottom
 				if (fLeft) {
 					this.children[2].hitTestBall(pball, coll, player);
 				}
@@ -83,9 +83,9 @@ export class HitQuadtree {
 
 	public hitTestXRay(pball: Ball, pvhoHit: HitObject[], coll: CollisionEvent, player: Player): void {
 		for (const pho of this.vho) {
-			if (pball.getHitObject() !== pho
-				&& pball.getHitObject().hitBBox.intersectRect(pho.hitBBox)
-				&& pho.hitBBox.intersectSphere(pball.state.pos, pball.getHitObject().rcHitRadiusSqr)) {
+			if (pball.hit !== pho
+				&& pball.hit.hitBBox.intersectRect(pho.hitBBox)
+				&& pho.hitBBox.intersectSphere(pball.state.pos, pball.hit.rcHitRadiusSqr)) {
 				const newTime = pho.hitTest(pball, coll.hitTime, coll, player);
 				if (newTime >= 0) {
 					pvhoHit.push(pho);
@@ -94,10 +94,10 @@ export class HitQuadtree {
 		}
 
 		if (!this.isLeaf) {
-			const fLeft = (pball.getHitObject().hitBBox.left <= this.vCenter.x);
-			const fRight = (pball.getHitObject().hitBBox.right >= this.vCenter.x);
+			const fLeft = (pball.hit.hitBBox.left <= this.vCenter.x);
+			const fRight = (pball.hit.hitBBox.right >= this.vCenter.x);
 
-			if (pball.getHitObject().hitBBox.top <= this.vCenter.y) { // Top
+			if (pball.hit.hitBBox.top <= this.vCenter.y) { // Top
 				if (fLeft) {
 					this.children[0].hitTestXRay(pball, pvhoHit, coll, player);
 				}
@@ -105,7 +105,7 @@ export class HitQuadtree {
 					this.children[1].hitTestXRay(pball, pvhoHit, coll, player);
 				}
 			}
-			if (pball.getHitObject().hitBBox.bottom >= this.vCenter.y) { // Bottom
+			if (pball.hit.hitBBox.bottom >= this.vCenter.y) { // Bottom
 				if (fLeft) {
 					this.children[2].hitTestXRay(pball, pvhoHit, coll, player);
 				}

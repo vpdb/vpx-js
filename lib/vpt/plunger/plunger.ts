@@ -19,12 +19,15 @@
 
 import { Object3D } from 'three';
 import { Storage } from '../..';
+import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
+import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
 import { IBallCreationPosition, Player } from '../../game/player';
 import { VpTableExporterOptions } from '../../gltf/table-exporter';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
+import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { Table } from '../table';
 import { PlungerData } from './plunger-data';
@@ -38,7 +41,7 @@ import { PlungerState } from './plunger-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/plunger.cpp
  */
-export class Plunger implements IRenderable, IMovable<PlungerState>, IBallCreationPosition {
+export class Plunger implements IRenderable, IPlayable<PlungerState>, IMovable, IHittable, IBallCreationPosition {
 
 	public static PLUNGER_HEIGHT = 50.0;
 
@@ -107,11 +110,11 @@ export class Plunger implements IRenderable, IMovable<PlungerState>, IBallCreati
 	}
 
 	public getMover(): PlungerMover {
-		return this.getHit().getMoverObject();
+		return this.hit!.getMoverObject();
 	}
 
-	public getHit(): PlungerHit {
-		return this.hit!;
+	public getHitShapes(): HitObject[] {
+		return [ this.hit! ];
 	}
 
 	public pullBack(): void {

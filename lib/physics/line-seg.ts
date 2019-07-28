@@ -60,7 +60,7 @@ export class LineSeg extends HitObject {
 
 	public collide(coll: CollisionEvent): void {
 		const dot = coll.hitNormal!.dot(coll.ball.state.vel);
-		coll.ball.getHitObject().collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
+		coll.ball.hit.collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
 		if (dot <= -this.threshold) {
 			this.fireHitEvent(coll.ball);
@@ -87,7 +87,7 @@ export class LineSeg extends HitObject {
 
 	private hitTestBasic(pball: Ball, dtime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean) {
 
-		if (!this.isEnabled || pball.getHitObject().isFrozen) {
+		if (!this.isEnabled || pball.hit.isFrozen) {
 			return -1.0;
 		}
 
@@ -141,9 +141,9 @@ export class LineSeg extends HitObject {
 		} else { //non-rigid ... target hits
 			if (bnv * bnd >= 0) {                                // outside-receding || inside-approaching
 				if (this.objType !== CollisionType.Trigger                     // not a trigger
-					|| !pball.getHitObject().vpVolObjs.length   // is a trigger, so test:
+					|| !pball.hit.vpVolObjs.length   // is a trigger, so test:
 					|| (Math.abs(bnd) >= pball.data.radius * 0.5)        // not too close ... nor too far away
-					|| (inside !== (pball.getHitObject().vpVolObjs.indexOf(this.obj!) < 0))) { // ...ball outside and hit set or ball inside and no hit set
+					|| (inside !== (pball.hit.vpVolObjs.indexOf(this.obj!) < 0))) { // ...ball outside and hit set or ball inside and no hit set
 					return -1.0;
 				}
 				hittime = 0;
