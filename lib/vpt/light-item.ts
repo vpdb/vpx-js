@@ -18,11 +18,11 @@
  */
 
 import { BufferGeometry, ExtrudeBufferGeometry, MeshStandardMaterial, Path, Shape, Vector2 } from 'three';
+import { Storage } from '..';
 import { bulbLightMesh } from '../../res/meshes/bulb-light-mesh';
 import { bulbSocketMesh } from '../../res/meshes/bulb-socket-mesh';
 import { IRenderable } from '../game/irenderable';
 import { BiffParser } from '../io/biff-parser';
-import { Storage } from '../io/ole-doc';
 import { DragPoint } from '../math/dragpoint';
 import { Matrix3D } from '../math/matrix3d';
 import { SplineVertex } from '../math/spline-vertex';
@@ -128,7 +128,7 @@ export class LightItem extends ItemData implements IRenderable {
 
 		// go through surfaces and check the same
 		for (const surface of Object.values(table.surfaces)) {
-			if (surface.szImage === this.szOffImage) {
+			if (surface.image === this.szOffImage) {
 				return true;
 			}
 		}
