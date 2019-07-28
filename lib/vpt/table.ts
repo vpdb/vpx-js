@@ -24,10 +24,10 @@ import { IHittable } from '../game/ihittable';
 import { IMovable } from '../game/imovable';
 import { IPlayable } from '../game/iplayable';
 import { IRenderable } from '../game/irenderable';
-import { Player } from '../game/player';
 import { TableExporter, VpTableExporterOptions } from '../gltf/table-exporter';
 import { IBinaryReader } from '../io/ole-doc';
 import { f4 } from '../math/float';
+import { FRect3D } from '../math/frect3d';
 import { Vertex3DNoTex2 } from '../math/vertex';
 import { logger } from '../util/logger';
 import { BumperItem } from './bumper-item';
@@ -100,31 +100,6 @@ export class Table implements IRenderable {
 		return table;
 	}
 
-	public setupPlayer(player: Player) {
-
-		// setup table elements with player
-		for (const playable of this.getPlayables()) {
-			playable.setupPlayer(player, this);
-		}
-
-		// link movables to player
-		for (const movable of this.getMovables()) {
-			player.addMover(movable.getMover());
-		}
-
-		// link hittables to player
-		for (const hittable of this.getHittables()) {
-			for (const hitObject of hittable.getHitShapes()) {
-				player.addHitObject(hitObject);
-			}
-		}
-
-		// flippers are a special case
-		for (const flipper of Object.values(this.flippers)) {
-			player.addFlipperMover(flipper.getMover());
-		}
-	}
-
 	public getName(): string {
 		return this.data!.getName();
 	}
@@ -145,6 +120,10 @@ export class Table implements IRenderable {
 			throw new Error('Table data is not loaded. Load table with tableDataOnly = false.');
 		}
 		return this.data.materials.find(m => m.szName === name);
+	}
+
+	public getBoundingBox(): FRect3D {
+		return new FRect3D(this.data!.left, this.data!.right, this.data!.top, this.data!.bottom, this.getTableHeight(), this.data!.glassheight);
 	}
 
 	public getPlayables(): Array<IPlayable<any>> {

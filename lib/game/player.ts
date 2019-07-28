@@ -44,6 +44,7 @@ export class Player {
 	private readonly movers: MoverObject[] = [];
 	private readonly flipperMovers: FlipperMover[] = [];
 	private readonly hitObjects: HitObject[] = [];
+	private readonly hitObjectsDynamic: HitObject[] = [];
 	private stateCallback?: (name: string, state: any) => void;
 
 	private minPhysLoopTime: number = 0;
@@ -81,9 +82,9 @@ export class Player {
 
 	constructor(table: Table) {
 		this.table = table;
-		this.table.setupPlayer(this);
-
+		this.addTableElements(table);
 		this.addCabinetBoundingHitShapes();
+		this.initOcTree(table);
 	}
 
 	public setOnStateChanged(callback: StateCallback): void {
@@ -104,6 +105,33 @@ export class Player {
 		const state = this.state;
 		this.state = {};
 		return state;
+	}
+
+	private addTableElements(table: Table): void {
+
+		// setup table elements with player
+		for (const playable of table.getPlayables()) {
+			playable.setupPlayer(this, table);
+		}
+
+		// link movables to player
+		for (const movable of table.getMovables()) {
+			this.movers.push(movable.getMover());
+		}
+
+		// link hittables to player
+		for (const hittable of table.getHittables()) {
+			for (const hitObject of hittable.getHitShapes()) {
+				this.hitObjects.push(hitObject);
+				hitObject.calcHitBBox();
+				this.hitOcTree.addElement(hitObject);
+			}
+		}
+
+		// flippers are a special case
+		for (const flipper of Object.values(table.flippers)) {
+			this.flipperMovers.push(flipper.getMover());
+		}
 	}
 
 	private addCabinetBoundingHitShapes(): void {
@@ -142,6 +170,13 @@ export class Player {
 		// glass
 		this.hitTopGlass = new HitPlane(new Vertex3D(0, 0, -1), this.table.data!.glassheight)
 			.setElasticy(0.2);
+	}
+
+	private initOcTree(table: Table) {
+		const tableBounds = table.getBoundingBox();
+		this.hitOcTree.initialize(tableBounds);
+		// initialize hit structure for dynamic objects
+		this.hitOcTreeDynamic.fillFromVector(this.hitObjectsDynamic);
 	}
 
 	private getFriction(): number {
@@ -518,18 +553,6 @@ export class Player {
 		for (const mover of this.movers) {
 			mover.updateVelocities(); // always on integral physics frame boundary (spinner, gate, flipper, plunger, ball)
 		}
-	}
-
-	public addMover(mover: MoverObject) {
-		this.movers.push(mover);
-	}
-
-	public addHitObject(hitObject: HitObject) {
-		this.hitObjects.push(hitObject);
-	}
-
-	public addFlipperMover(flipperMover: FlipperMover) {
-		this.flipperMovers.push(flipperMover);
 	}
 
 	public createBall(ballCreator: IBallCreationPosition, velocity: Vertex3D = new Vertex3D( 0.1, 0, 0), radius = 25, mass = 1): Ball {

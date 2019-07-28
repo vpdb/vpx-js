@@ -26,8 +26,8 @@ import { Vertex3D } from '../../math/vertex3d';
  */
 export class BallState {
 
-	public pos: Vertex3D;
-	public vel: Vertex3D;
+	public readonly pos: Vertex3D;
+	public readonly vel: Vertex3D;
 
 	constructor(pos: Vertex3D, vel: Vertex3D) {
 		this.pos = pos;
