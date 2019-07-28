@@ -41,7 +41,7 @@ import { PlungerState } from './plunger-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/plunger.cpp
  */
-export class Plunger implements IRenderable, IPlayable<PlungerState>, IMovable, IHittable, IBallCreationPosition {
+export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, IHittable, IBallCreationPosition {
 
 	public static PLUNGER_HEIGHT = 50.0;
 

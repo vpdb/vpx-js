@@ -41,7 +41,7 @@ import { FlipperState } from './flipper-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/flipper.cpp
  */
-export class Flipper implements IRenderable, IPlayable<FlipperState>, IMovable, IHittable {
+export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, IHittable {
 
 	private readonly data: FlipperData;
 	private readonly mesh: FlipperMesh;

@@ -126,11 +126,11 @@ export class Table implements IRenderable {
 		return new FRect3D(this.data!.left, this.data!.right, this.data!.top, this.data!.bottom, this.getTableHeight(), this.data!.glassheight);
 	}
 
-	public getPlayables(): Array<IPlayable<any>> {
+	public getPlayables(): IPlayable[] {
 		return [ ...Object.values(this.flippers), ...this.plungers ];
 	}
 
-	public getMovables(): IMovable[] {
+	public getMovables(): Array<IMovable<any>> {
 		return [ ...Object.values(this.flippers), ...this.plungers ];
 	}
 
