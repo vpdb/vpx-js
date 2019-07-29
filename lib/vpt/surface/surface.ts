@@ -90,7 +90,7 @@ export class Surface implements IRenderable, IHittable {
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		this.hits.push(...this.hitGenerator.generateHitObjects());
+		this.hits.push(...this.hitGenerator.generateHitObjects(table));
 	}
 
 	public getHitShapes(): HitObject[] {

@@ -30,7 +30,7 @@ export abstract class HitObject {
 	private pfeDebug?: IFireEvents;
 	public obj?: IFireEvents; // base object pointer (mainly used as IFireEvents, but also as HitTarget or Primitive or Trigger or Kicker or Gate, see below)
 
-	protected threshold: number = 0;  // threshold for firing an event (usually (always??) normal dot ball-velocity)
+	public threshold: number = 0;  // threshold for firing an event (usually (always??) normal dot ball-velocity)
 
 	public hitBBox: FRect3D = new FRect3D();
 
@@ -46,7 +46,7 @@ export abstract class HitObject {
 	/**
 	 * FireEvents for m_obj?
 	 */
-	protected fe: boolean = false;
+	public fe: boolean = false;
 
 	/**
 	 * currently only used to determine which HitTriangles/HitLines/HitPoints
@@ -115,6 +115,10 @@ export abstract class HitObject {
 		this.hitBBox.zlow = zLow;
 		this.hitBBox.zhigh = zHigh;
 		return this;
+	}
+
+	public setEnabled(isEnabled: boolean) {
+		this.isEnabled = isEnabled;
 	}
 
 	public doHitTest(pball: Ball, coll: CollisionEvent, player: Player) {
