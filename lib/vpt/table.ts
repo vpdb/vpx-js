@@ -42,7 +42,7 @@ import { Mesh } from './mesh';
 import { Plunger } from './plunger/plunger';
 import { PrimitiveItem } from './primitive-item';
 import { RampItem } from './ramp-item';
-import { RubberItem } from './rubber-item';
+import { Rubber } from './rubber/rubber';
 import { SpinnerItem } from './spinner-item';
 import { Surface } from './surface/surface';
 import { TableData } from './table-data';
@@ -65,7 +65,7 @@ export class Table implements IRenderable {
 	public surfaces: { [key: string]: Surface } = {};
 	public primitives: { [key: string]: PrimitiveItem } = {};
 	public textures: { [key: string]: Texture } = {};
-	public rubbers: { [key: string]: RubberItem } = {};
+	public rubbers: { [key: string]: Rubber } = {};
 	public flippers: { [key: string]: Flipper } = {};
 	public bumpers: { [key: string]: BumperItem } = {};
 	public ramps: { [key: string]: RampItem } = {};
@@ -135,7 +135,7 @@ export class Table implements IRenderable {
 	}
 
 	public getHittables(): IHittable[] {
-		return [ ...Object.values(this.flippers), ...this.plungers ];
+		return [ ...Object.values(this.flippers), ...this.plungers, ...Object.values(this.surfaces) ];
 	}
 
 	public getScaleZ(): number {
@@ -362,7 +362,7 @@ export class Table implements IRenderable {
 				}
 
 				case ItemData.TypeRubber: {
-					const item = await RubberItem.fromStorage(storage, itemName);
+					const item = await Rubber.fromStorage(storage, itemName);
 					this.rubbers[item.getName()] = item;
 					break;
 				}
