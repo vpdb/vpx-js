@@ -17,42 +17,27 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Player } from '../game/player';
+import { FRect3D } from '../math/frect3d';
 import { solveQuadraticEq } from '../math/functions';
-import { Vertex2D } from '../math/vertex2d';
+import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { C_CONTACTVEL, PHYS_TOUCH } from './constants';
 import { HitObject } from './hit-object';
 
-export class HitLineZ extends HitObject {
+export class HitPoint extends HitObject {
 
-	protected xy: Vertex2D;
+	private readonly p: Vertex3D;
 
-	constructor(xy: Vertex2D, zlow?: number, zhigh?: number) {
+	constructor(p: Vertex3D) {
 		super();
-		this.xy = xy;
-		if (typeof zlow !== 'undefined') {
-			this.hitBBox.zlow = zlow;
-		}
-		if (typeof zhigh !== 'undefined') {
-			this.hitBBox.zhigh = zhigh;
-		}
-	}
-
-	public set(x: number, y: number): this {
-		this.xy.x = x;
-		this.xy.y = y;
-		return this;
+		this.p = p;
 	}
 
 	public calcHitBBox(): void {
-		this.hitBBox.left = this.xy.x;
-		this.hitBBox.right = this.xy.x;
-		this.hitBBox.top = this.xy.y;
-		this.hitBBox.bottom = this.xy.y;
-
-		// zlow and zhigh set in ctor
+		this.hitBBox = new FRect3D(this.p.x, this.p.x, this.p.y, this.p.y, this.p.z, this.p.z);
 	}
 
 	public collide(coll: CollisionEvent): void {
@@ -64,14 +49,16 @@ export class HitLineZ extends HitObject {
 		}
 	}
 
-	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {
+	public getType(): CollisionType {
+		return CollisionType.Point;
+	}
+
+	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent, player: Player): number {
 		if (!this.isEnabled) {
 			return -1.0;
 		}
 
-		const bp2d = new Vertex2D(pball.state.pos.x, pball.state.pos.y);
-		const dist = bp2d.clone().sub(this.xy);    // relative ball position
-		const dv = new Vertex2D(pball.state.vel.x, pball.state.vel.y);
+		const dist = pball.state.pos.clone().sub(this.p);  // relative ball position
 
 		const bcddsq = dist.lengthSq();  // ball center to line distance squared
 		const bcdd = Math.sqrt(bcddsq);           // distance ball to line
@@ -79,16 +66,16 @@ export class HitLineZ extends HitObject {
 			return -1.0;                           // no hit on exact center
 		}
 
-		const b = dist.dot(dv);
+		const b = dist.dot(pball.state.vel);
 		const bnv = b / bcdd;                   // ball normal velocity
 
 		if (bnv > C_CONTACTVEL) {
-			return -1.0;                           // clearly receding from radius
-		}
+			return -1.0;
+		}                           // clearly receding from radius
 
 		const bnd = bcdd - pball.data.radius;   // ball distance to line
 
-		const a = dv.lengthSq();
+		const a = pball.state.vel.lengthSq();
 
 		let hittime = 0;
 		let isContact = false;
@@ -97,14 +84,13 @@ export class HitLineZ extends HitObject {
 			if (Math.abs(bnv) <= C_CONTACTVEL) {
 				isContact = true;
 				hittime = 0;
-			} else {
-				hittime = /*std::max(0.0f,*/ -bnd / bnv /*)*/;   // estimate based on distance and speed along distance
+			} else {   // estimate based on distance and speed along distance
+				hittime = Math.max(0.0, -bnd / bnv);
 			}
-
 		} else {
 			if (a < 1.0e-8) {
-				return -1.0;    // no hit - ball not moving relative to object
-			}
+				return -1.0;
+			}    // no hit - ball not moving relative to object
 
 			const sol = solveQuadraticEq(a, 2.0 * b, bcddsq - pball.data.radius * pball.data.radius);
 			if (!sol) {
@@ -120,31 +106,19 @@ export class HitLineZ extends HitObject {
 			return -1.0; // contact out of physics frame
 		}
 
-		const hitz = pball.state.pos.z + hittime * pball.state.vel.z;   // ball z position at hit time
-
-		if (hitz < this.hitBBox.zlow || hitz > this.hitBBox.zhigh) {   // check z coordinate
-			return -1.0;
-		}
-
-		const hitx = pball.state.pos.x + hittime * pball.state.vel.x;   // ball x position at hit time
-		const hity = pball.state.pos.y + hittime * pball.state.vel.y;   // ball y position at hit time
-
-		const norm = new Vertex2D(hitx - this.xy.x, hity - this.xy.y);
-		norm.normalize();
-		coll.hitNormal!.set(norm.x, norm.y, 0.0);
+		const hitPos = pball.state.pos.clone().add(pball.state.vel.clone().multiplyScalar(hittime));
+		coll.hitNormal = hitPos.clone().sub(this.p);
+		coll.hitNormal.normalize();
 
 		coll.isContact = isContact;
 		if (isContact) {
 			coll.hitOrgNormalVelocity = bnv;
 		}
 
-		coll.hitDistance = bnd; // actual contact distance
+		coll.hitDistance = bnd;                    // actual contact distance
 		//coll.m_hitRigid = true;
 
 		return hittime;
 	}
 
-	public getType(): CollisionType {
-		return CollisionType.Joint;
-	}
 }

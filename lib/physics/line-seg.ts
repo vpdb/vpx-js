@@ -26,10 +26,10 @@ import { HitObject } from './hit-object';
 
 export class LineSeg extends HitObject {
 
-	private readonly v1: Vertex2D;
-	private readonly v2: Vertex2D;
-	private normal!: Vertex2D;
-	private length!: number;
+	protected readonly v1: Vertex2D;
+	protected readonly v2: Vertex2D;
+	protected normal!: Vertex2D;
+	protected length!: number;
 
 	constructor(p1: Vertex2D, p2: Vertex2D, zLow: number, zHigh: number) {
 		super();
@@ -85,7 +85,7 @@ export class LineSeg extends HitObject {
 		return CollisionType.LineSeg;
 	}
 
-	private hitTestBasic(pball: Ball, dtime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean) {
+	protected hitTestBasic(pball: Ball, dtime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean) {
 
 		if (!this.isEnabled || pball.hit.isFrozen) {
 			return -1.0;

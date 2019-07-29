@@ -21,6 +21,7 @@
 import { f4 } from './float';
 import { IRenderVertex, Vertex } from './vertex';
 import { Vertex2D } from './vertex2d';
+import { Matrix2D } from './matrix2d';
 
 export class Vertex3D implements Vertex {
 
@@ -117,6 +118,16 @@ export class Vertex3D implements Vertex {
 		this.x *= f4(scalar);
 		this.y *= f4(scalar);
 		this.z *= f4(scalar);
+		return this;
+	}
+
+	public applyMatrix2D(matrix: Matrix2D): this {
+		const x = matrix.matrix[0][0] * this.x + matrix.matrix[0][1] * this.y + matrix.matrix[0][2] * this.z;
+		const y = matrix.matrix[1][0] * this.x + matrix.matrix[1][1] * this.y + matrix.matrix[1][2] * this.z;
+		const z = matrix.matrix[2][0] * this.x + matrix.matrix[2][1] * this.y + matrix.matrix[2][2] * this.z;
+		this.x = x;
+		this.y = y;
+		this.z = z;
 		return this;
 	}
 
