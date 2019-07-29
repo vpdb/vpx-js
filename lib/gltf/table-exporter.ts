@@ -37,7 +37,7 @@ import { BumperItem } from '../vpt/bumper-item';
 import { Flipper } from '../vpt/flipper/flipper';
 import { PrimitiveItem } from '../vpt/primitive-item';
 import { RampItem } from '../vpt/ramp-item';
-import { RubberItem } from '../vpt/rubber-item';
+import { Rubber } from '../vpt/rubber/rubber';
 import { Surface } from '../vpt/surface/surface';
 import { Texture as VpTexture } from '../vpt/texture';
 import { IImage } from './image';
@@ -81,7 +81,7 @@ export class TableExporter {
 		const renderGroups: IRenderGroup[] = [
 			{ name: 'playfield', meshes: [ this.table ], enabled: !!this.opts.exportPlayfield },
 			{ name: 'primitives', meshes: Object.values<PrimitiveItem>(this.table.primitives), enabled: !!this.opts.exportPrimitives },
-			{ name: 'rubbers', meshes: Object.values<RubberItem>(this.table.rubbers), enabled: !!this.opts.exportRubbers },
+			{ name: 'rubbers', meshes: Object.values<Rubber>(this.table.rubbers), enabled: !!this.opts.exportRubbers },
 			{ name: 'surfaces', meshes: Object.values<Surface>(this.table.surfaces), enabled: !!this.opts.exportSurfaces},
 			{ name: 'flippers', meshes: Object.values<Flipper>(this.table.flippers), enabled: !!this.opts.exportFlippers},
 			{ name: 'bumpers', meshes: Object.values<BumperItem>(this.table.bumpers), enabled: !!this.opts.exportBumpers },
