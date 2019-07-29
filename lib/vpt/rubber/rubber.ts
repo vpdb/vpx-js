@@ -18,21 +18,27 @@
  */
 
 import { Storage } from '../..';
+import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
+import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { Table } from '../table';
 import { RubberData } from './rubber-data';
+import { RubberHitGenerator } from './rubber-hit-generator';
 import { RubberMeshGenerator } from './rubber-mesh-generator';
+import { Player } from '../../game/player';
 
 /**
  * VPinball's rubber item.
  *
  * @see https://github.com/vpinball/vpinball/blob/master/rubber.cpp
  */
-export class Rubber implements IRenderable {
+export class Rubber implements IRenderable, IHittable {
 
 	private readonly data: RubberData;
 	private readonly meshGenerator: RubberMeshGenerator;
+	private hitGenerator: RubberHitGenerator;
+	private hits: HitObject[] = [];
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Rubber> {
 		const data = await RubberData.fromStorage(storage, itemName);
@@ -42,6 +48,7 @@ export class Rubber implements IRenderable {
 	private constructor(data: RubberData) {
 		this.data = data;
 		this.meshGenerator = new RubberMeshGenerator(data);
+		this.hitGenerator = new RubberHitGenerator(data, this.meshGenerator);
 	}
 
 	public getName() {
@@ -62,5 +69,13 @@ export class Rubber implements IRenderable {
 				material: table.getMaterial(this.data.szMaterial),
 			},
 		};
+	}
+
+	public setupPlayer(player: Player, table: Table): void {
+		this.hits = this.hitGenerator.generateHitObjects(table);
+	}
+
+	public getHitShapes(): HitObject[] {
+		return this.hits;
 	}
 }

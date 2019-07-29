@@ -135,7 +135,12 @@ export class Table implements IRenderable {
 	}
 
 	public getHittables(): IHittable[] {
-		return [ ...Object.values(this.flippers), ...this.plungers, ...Object.values(this.surfaces) ];
+		return [
+			...Object.values(this.flippers),
+			...Object.values(this.surfaces),
+			...Object.values(this.rubbers),
+			...this.plungers,
+		];
 	}
 
 	public getScaleZ(): number {

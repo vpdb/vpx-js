@@ -37,12 +37,11 @@ export class RubberMeshGenerator {
 		this.data = data;
 	}
 
-	public getMeshes(table: Table): Mesh {
+	public getMeshes(table: Table, createHitShape: boolean = false): Mesh {
 
 		const mesh = new Mesh(`rubber-${this.data.getName()}`);
 		const acc = -1;
 		const staticRendering = true;
-		const createHitShape = false;
 		let accuracy: number;
 		if (table.getDetailLevel() < 5) {
 			accuracy = 6;
