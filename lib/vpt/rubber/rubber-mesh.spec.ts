@@ -17,11 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ThreeHelper } from '../three.helper';
-import { Table } from '../../lib';
-import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Mesh } from 'three';
-import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import { ThreeHelper } from '../../../test/three.helper';
+import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { Table } from '../table';
 
 const three = new ThreeHelper();
 
@@ -397,7 +397,7 @@ describe('The VPinball rubber generator', () => {
 			[475.170044, 454.563629, -27.408924],
 			[474.804108, 455.248657, -25.489544],
 			[474.939362, 454.995422, -23.438993],
-			[475.539612, 453.871796, -21.806713]
+			[475.539612, 453.871796, -21.806713],
 		];
 		three.expectVerticesInArray(expectedVertices, rubberMeshVertices);
 	});
