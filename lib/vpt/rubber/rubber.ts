@@ -27,6 +27,7 @@ import { RubberData } from './rubber-data';
 import { RubberHitGenerator } from './rubber-hit-generator';
 import { RubberMeshGenerator } from './rubber-mesh-generator';
 import { Player } from '../../game/player';
+import { Matrix3D } from '../../math/matrix3d';
 
 /**
  * VPinball's rubber item.
@@ -64,7 +65,7 @@ export class Rubber implements IRenderable, IHittable {
 		const mesh = this.meshGenerator.getMeshes(table);
 		return {
 			rubber: {
-				mesh,
+				mesh: mesh.transform(new Matrix3D().toRightHanded()),
 				map: table.getTexture(this.data.szImage),
 				material: table.getMaterial(this.data.szMaterial),
 			},
