@@ -37,10 +37,9 @@ export class RubberMeshGenerator {
 		this.data = data;
 	}
 
-	public getMeshes(table: Table, createHitShape: boolean = false): Mesh {
+	public getMeshes(table: Table, acc = -1, createHitShape: boolean = false): Mesh {
 
 		const mesh = new Mesh(`rubber-${this.data.getName()}`);
-		const acc = -1;
 		const staticRendering = true;
 		let accuracy: number;
 		if (table.getDetailLevel() < 5) {
@@ -177,7 +176,7 @@ export class RubberMeshGenerator {
 		this.middlePoint.z = f4(maxz + minz) * 0.5;
 
 		const [vertexMatrix, fullMatrix ] = this.getMatrices(table);
-		return mesh.transform(vertexMatrix.toRightHanded(), fullMatrix.toRightHanded());
+		return mesh.transform(vertexMatrix, fullMatrix);
 	}
 
 	private getMatrices(table: Table): [ Matrix3D, Matrix3D ] {

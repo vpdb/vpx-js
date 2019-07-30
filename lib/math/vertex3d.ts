@@ -22,6 +22,7 @@ import { f4 } from './float';
 import { IRenderVertex, Vertex } from './vertex';
 import { Vertex2D } from './vertex2d';
 import { Matrix2D } from './matrix2d';
+import { FLT_MIN } from '../vpt/mesh';
 
 export class Vertex3D implements Vertex {
 
@@ -102,6 +103,12 @@ export class Vertex3D implements Vertex {
 		return this.divideScalar( this.length() || 1 );
 	}
 
+	public normalizeSafe() {
+		if (!this.isZero()) {
+			this.normalize();
+		}
+	}
+
 	public length(): number {
 		return f4(Math.sqrt( f4(f4(f4(this.x * this.x) + f4(this.y * this.y)) + f4(this.z * this.z))));
 	}
@@ -175,6 +182,10 @@ export class Vertex3D implements Vertex {
 
 	public setZero(): this {
 		return this.set(0, 0, 0);
+	}
+
+	public isZero() {
+		return Math.abs(this.x) < FLT_MIN && Math.abs(this.y) < FLT_MIN && Math.abs(this.z) < FLT_MIN;
 	}
 
 	public static crossProduct(pv1: Vertex3D, pv2: Vertex3D): Vertex3D {
