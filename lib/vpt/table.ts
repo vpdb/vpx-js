@@ -43,7 +43,7 @@ import { Plunger } from './plunger/plunger';
 import { PrimitiveItem } from './primitive-item';
 import { RampItem } from './ramp-item';
 import { Rubber } from './rubber/rubber';
-import { SpinnerItem } from './spinner-item';
+import { Spinner } from './spinner/spinner';
 import { Surface } from './surface/surface';
 import { TableData } from './table-data';
 import { TextBoxItem } from './textbox-item';
@@ -74,7 +74,7 @@ export class Table implements IRenderable {
 	public gates: GateItem[] = [];
 	public kickers: KickerItem[] = [];
 	public triggers: TriggerItem[] = [];
-	public spinners: SpinnerItem[] = [];
+	public spinners: Spinner[] = [];
 	public timers: TimerItem[] = [];
 	public plungers: Plunger[] = [];
 	public textBoxes: TextBoxItem[] = [];
@@ -411,7 +411,7 @@ export class Table implements IRenderable {
 				}
 
 				case ItemData.TypeSpinner: {
-					this.spinners.push(await SpinnerItem.fromStorage(storage, itemName));
+					this.spinners.push(await Spinner.fromStorage(storage, itemName));
 					break;
 				}
 
