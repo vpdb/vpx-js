@@ -17,11 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ThreeHelper } from '../three.helper';
-import { Table } from '../../lib';
-import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Mesh } from 'three';
-import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import { ThreeHelper } from '../../../test/three.helper';
+import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { Table } from '../table';
 
 const three = new ThreeHelper();
 
@@ -825,7 +825,7 @@ describe('The VPinball spinner generator', () => {
 	it('should generate generate the plate only when bracket is invisible', async () => {
 		const plateMesh = three.find<Mesh>(gltf, 'spinners', 'WithoutBracket', 'spinnerplate-WithoutBracket');
 		const plateMeshVertices = three.vertices(plateMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[616.001465, 1175.200928, -77.000641],
 			[616.001465, 1170.799072, -77.000641],
 			[616.002258, 1170.799072, -42.999199],
