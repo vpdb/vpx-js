@@ -17,30 +17,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { MoverObject } from '../../physics/mover-object';
-import { SpinnerData } from './spinner-data';
+export class SpinnerState {
 
-export class SpinnerMover implements MoverObject {
+	/**
+	 * Angle in rad
+	 */
+	public readonly angle: number;
 
-	private readonly data: SpinnerData;
-
-	public anglespeed: number = 0;
-	public angle: number = 0;
-	public angleMax: number = 0;
-	public angleMin: number = 0;
-	public elasticity: number = 0;
-	public damping: number = 0;
-	public isVisible: boolean = false;
-
-	constructor(data: SpinnerData) {
-		this.data = data;
+	/**
+	 * New spinner state
+	 * @param angle Spinner angle in rad
+	 */
+	constructor(angle: number) {
+		this.angle = angle;
 	}
 
-	public updateDisplacements(dtime: number): void {
-		// todo
-	}
-
-	public updateVelocities(): void {
-		// todo
+	public equals(state: SpinnerState): boolean {
+		if (!state) {
+			return false;
+		}
+		if (state.angle === this.angle) {
+			return true;
+		}
+		return Math.abs(this.angle - state.angle) < 1e-6;
 	}
 }

@@ -32,10 +32,10 @@ export class SpinnerData extends ItemData {
 	public fShowBracket: boolean = false;
 	public height!: number;
 	public length!: number;
-	private damping?: number;
-	private angleMax?: number;
-	private angleMin?: number;
-	private elasticity?: number;
+	public damping?: number;
+	public angleMax?: number;
+	public angleMin?: number;
+	public elasticity?: number;
 	public fVisible: boolean = false;
 	public szImage?: string;
 	public szSurface?: string;

@@ -31,13 +31,17 @@ export class LineSeg extends HitObject {
 	protected normal!: Vertex2D;
 	protected length!: number;
 
-	constructor(p1: Vertex2D, p2: Vertex2D, zLow: number, zHigh: number) {
+	constructor(p1: Vertex2D, p2: Vertex2D, zLow: number, zHigh: number, objType?: CollisionType) {
 		super();
 		this.v1 = p1;
 		this.v2 = p2;
 		this.hitBBox.zlow = zLow;
 		this.hitBBox.zhigh = zHigh;
 		this.calcNormal();
+
+		if (objType) {
+			this.objType = objType;
+		}
 	}
 
 	public setSeg(x1: number, y1: number, x2: number, y2: number): this {
