@@ -30,7 +30,7 @@ import { f4 } from '../math/float';
 import { FRect3D } from '../math/frect3d';
 import { Vertex3DNoTex2 } from '../math/vertex';
 import { logger } from '../util/logger';
-import { BumperItem } from './bumper-item';
+import { Bumper } from './bumper/bumper';
 import { Flipper } from './flipper/flipper';
 import { GateItem } from './gate-item';
 import { HitTargetItem } from './hit-target-item';
@@ -67,7 +67,7 @@ export class Table implements IRenderable {
 	public textures: { [key: string]: Texture } = {};
 	public rubbers: { [key: string]: Rubber } = {};
 	public flippers: { [key: string]: Flipper } = {};
-	public bumpers: { [key: string]: BumperItem } = {};
+	public bumpers: { [key: string]: Bumper } = {};
 	public ramps: { [key: string]: RampItem } = {};
 	public lights: LightItem[] = [];
 	public hitTargets: HitTargetItem[] = [];
@@ -379,7 +379,7 @@ export class Table implements IRenderable {
 				}
 
 				case ItemData.TypeBumper: {
-					const item = await BumperItem.fromStorage(storage, itemName);
+					const item = await Bumper.fromStorage(storage, itemName);
 					this.bumpers[item.getName()] = item;
 					break;
 				}

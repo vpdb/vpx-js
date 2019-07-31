@@ -17,11 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ThreeHelper } from '../three.helper';
-import { Table } from '../../lib';
-import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Mesh } from 'three';
-import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import { ThreeHelper } from '../../../test/three.helper';
+import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { Table } from '../table';
 
 const three = new ThreeHelper();
 
@@ -35,7 +35,7 @@ describe('The VPinball bumper generator', () => {
 	});
 
 	it('should generate a scaled and rotated bumper mesh', async () => {
-		const bumperMesh = three.find<Mesh>(gltf, 'bumpers', 'Bumper1','bumper-socket-Bumper1');
+		const bumperMesh = three.find<Mesh>(gltf, 'bumpers', 'Bumper1', 'bumper-socket-Bumper1');
 		const bumperMeshVertices = three.vertices(bumperMesh);
 		const expectedVertices = [
 			[463.157959, 1244.674194, -4.921520],
