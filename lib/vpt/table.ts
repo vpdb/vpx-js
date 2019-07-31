@@ -40,7 +40,7 @@ import { LightItem } from './light-item';
 import { Material } from './material';
 import { Mesh } from './mesh';
 import { Plunger } from './plunger/plunger';
-import { PrimitiveItem } from './primitive-item';
+import { Primitive } from './primitive/primitive';
 import { RampItem } from './ramp-item';
 import { Rubber } from './rubber/rubber';
 import { Spinner } from './spinner/spinner';
@@ -63,7 +63,7 @@ export class Table implements IRenderable {
 
 	public tableInfo: { [key: string]: string } = {};
 	public surfaces: { [key: string]: Surface } = {};
-	public primitives: { [key: string]: PrimitiveItem } = {};
+	public primitives: { [key: string]: Primitive } = {};
 	public textures: { [key: string]: Texture } = {};
 	public rubbers: { [key: string]: Rubber } = {};
 	public flippers: { [key: string]: Flipper } = {};
@@ -356,7 +356,7 @@ export class Table implements IRenderable {
 				}
 
 				case ItemData.TypePrimitive: {
-					const item = await PrimitiveItem.fromStorage(storage, itemName);
+					const item = await Primitive.fromStorage(storage, itemName);
 					this.primitives[item.getName()] = item;
 					break;
 				}

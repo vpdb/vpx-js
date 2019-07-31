@@ -35,7 +35,7 @@ import { exportGltf } from '../refs.node';
 import { logger } from '../util/logger';
 import { Bumper } from '../vpt/bumper/bumper';
 import { Flipper } from '../vpt/flipper/flipper';
-import { PrimitiveItem } from '../vpt/primitive-item';
+import { Primitive } from '../vpt/primitive/primitive';
 import { RampItem } from '../vpt/ramp-item';
 import { Rubber } from '../vpt/rubber/rubber';
 import { Surface } from '../vpt/surface/surface';
@@ -80,7 +80,7 @@ export class TableExporter {
 
 		const renderGroups: IRenderGroup[] = [
 			{ name: 'playfield', meshes: [ this.table ], enabled: !!this.opts.exportPlayfield },
-			{ name: 'primitives', meshes: Object.values<PrimitiveItem>(this.table.primitives), enabled: !!this.opts.exportPrimitives },
+			{ name: 'primitives', meshes: Object.values<Primitive>(this.table.primitives), enabled: !!this.opts.exportPrimitives },
 			{ name: 'rubbers', meshes: Object.values<Rubber>(this.table.rubbers), enabled: !!this.opts.exportRubbers },
 			{ name: 'surfaces', meshes: Object.values<Surface>(this.table.surfaces), enabled: !!this.opts.exportSurfaces},
 			{ name: 'flippers', meshes: Object.values<Flipper>(this.table.flippers), enabled: !!this.opts.exportFlippers},
