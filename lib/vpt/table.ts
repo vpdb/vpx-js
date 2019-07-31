@@ -35,7 +35,7 @@ import { Flipper } from './flipper/flipper';
 import { Gate } from './gate/gate';
 import { HitTarget } from './hit-target/hit-target';
 import { ItemData, Meshes } from './item-data';
-import { KickerItem } from './kicker-item';
+import { Kicker } from './kicker/kicker';
 import { LightItem } from './light-item';
 import { Material } from './material';
 import { Mesh } from './mesh';
@@ -72,7 +72,7 @@ export class Table implements IRenderable {
 	public lights: LightItem[] = [];
 	public hitTargets: HitTarget[] = [];
 	public gates: Gate[] = [];
-	public kickers: KickerItem[] = [];
+	public kickers: Kicker[] = [];
 	public triggers: TriggerItem[] = [];
 	public spinners: Spinner[] = [];
 	public timers: TimerItem[] = [];
@@ -401,7 +401,7 @@ export class Table implements IRenderable {
 				}
 
 				case ItemData.TypeKicker: {
-					this.kickers.push(await KickerItem.fromStorage(storage, itemName));
+					this.kickers.push(await Kicker.fromStorage(storage, itemName));
 					break;
 				}
 
