@@ -20,6 +20,7 @@
 import { Player } from '../../game/player';
 import { degToRad, radToDeg } from '../../math/float';
 import { Vertex2D } from '../../math/vertex2d';
+import { Vertex3D } from '../../math/vertex3d';
 import { PHYS_FACTOR } from '../../physics/constants';
 import { HitCircle } from '../../physics/hit-circle';
 import { MoverObject } from '../../physics/mover-object';
@@ -28,7 +29,6 @@ import { TableData } from '../table-data';
 import { FlipperConfig } from './flipper';
 import { FlipperData } from './flipper-data';
 import { FlipperState } from './flipper-state';
-import { Vertex3D } from '../../math/vertex3d';
 
 export class FlipperMover implements MoverObject {
 
@@ -310,17 +310,6 @@ export class FlipperMover implements MoverObject {
 	public surfaceVelocity(surfP: Vertex3D): Vertex3D {
 		return Vertex3D.crossZ(this.angleSpeed, surfP);
 	}
-
-	// public surfaceAcceleration(surfP: Vertex3D): Vertex3D {
-	// 	// tangential acceleration = (0, 0, omega) x surfP
-	// 	const tangAcc = FlipperMover.CrossZ(this.angularAcceleration, surfP);
-	//
-	// 	// centripetal acceleration = (0,0,omega) x ( (0,0,omega) x surfP )
-	// 	const av2 = this.angleSpeed * this.angleSpeed;
-	// 	const centrAcc = new Vertex3D(-av2 * surfP.x, -av2 * surfP.y, 0);
-	//
-	// 	return tangAcc.add(centrAcc);
-	// }
 
 	public getHitTime(): number {
 		if (this.angleSpeed === 0) {
