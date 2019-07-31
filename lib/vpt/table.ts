@@ -32,7 +32,7 @@ import { Vertex3DNoTex2 } from '../math/vertex';
 import { logger } from '../util/logger';
 import { Bumper } from './bumper/bumper';
 import { Flipper } from './flipper/flipper';
-import { GateItem } from './gate-item';
+import { Gate } from './gate/gate';
 import { HitTargetItem } from './hit-target-item';
 import { ItemData, Meshes } from './item-data';
 import { KickerItem } from './kicker-item';
@@ -71,7 +71,7 @@ export class Table implements IRenderable {
 	public ramps: { [key: string]: RampItem } = {};
 	public lights: LightItem[] = [];
 	public hitTargets: HitTargetItem[] = [];
-	public gates: GateItem[] = [];
+	public gates: Gate[] = [];
 	public kickers: KickerItem[] = [];
 	public triggers: TriggerItem[] = [];
 	public spinners: Spinner[] = [];
@@ -396,7 +396,7 @@ export class Table implements IRenderable {
 				}
 
 				case ItemData.TypeGate: {
-					this.gates.push(await GateItem.fromStorage(storage, itemName));
+					this.gates.push(await Gate.fromStorage(storage, itemName));
 					break;
 				}
 
