@@ -33,7 +33,7 @@ import { Table } from '..';
 import { IRenderable, RenderInfo } from '../game/irenderable';
 import { exportGltf } from '../refs.node';
 import { logger } from '../util/logger';
-import { BumperItem } from '../vpt/bumper-item';
+import { Bumper } from '../vpt/bumper/bumper';
 import { Flipper } from '../vpt/flipper/flipper';
 import { PrimitiveItem } from '../vpt/primitive-item';
 import { RampItem } from '../vpt/ramp-item';
@@ -84,7 +84,7 @@ export class TableExporter {
 			{ name: 'rubbers', meshes: Object.values<Rubber>(this.table.rubbers), enabled: !!this.opts.exportRubbers },
 			{ name: 'surfaces', meshes: Object.values<Surface>(this.table.surfaces), enabled: !!this.opts.exportSurfaces},
 			{ name: 'flippers', meshes: Object.values<Flipper>(this.table.flippers), enabled: !!this.opts.exportFlippers},
-			{ name: 'bumpers', meshes: Object.values<BumperItem>(this.table.bumpers), enabled: !!this.opts.exportBumpers },
+			{ name: 'bumpers', meshes: Object.values<Bumper>(this.table.bumpers), enabled: !!this.opts.exportBumpers },
 			{ name: 'ramps', meshes: Object.values<RampItem>(this.table.ramps), enabled: !!this.opts.exportRamps },
 			{ name: 'lightBulbs', meshes: this.table.lights.filter(l => l.isBulbLight()), enabled: !!this.opts.exportLightBulbs },
 			{ name: 'playfieldLights', meshes: this.table.lights.filter(l => l.isSurfaceLight(this.table)), enabled: !!this.opts.exportPlayfieldLights },
