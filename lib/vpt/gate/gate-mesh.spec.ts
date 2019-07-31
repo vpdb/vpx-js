@@ -17,11 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ThreeHelper } from '../three.helper';
-import { Table } from '../../lib';
-import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Mesh } from 'three';
-import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import { ThreeHelper } from '../../../test/three.helper';
+import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { Table } from '../table';
 
 const three = new ThreeHelper();
 
@@ -1872,7 +1872,7 @@ describe('The VPinball gate generator', () => {
 			[407.000183, 270.600311, -99.580597],
 			[406.575897, 270.600311, -99.756302],
 		];
-		three.expectVerticesInArray(expectedVertices, gateWireMeshVertices,4);
+		three.expectVerticesInArray(expectedVertices, gateWireMeshVertices, 4);
 
 		const gateBracketMesh = three.find<Mesh>(gltf, 'gates', 'SurfaceGate', 'gatebracket-SurfaceGate');
 		const gateBracketMeshVertices = three.vertices(gateBracketMesh);
