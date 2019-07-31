@@ -21,13 +21,13 @@ import { Player } from '../game/player';
 import { FRect3D } from '../math/frect3d';
 import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
-import { PrimitiveItem } from '../vpt/primitive-item';
+import { Primitive } from '../vpt/primitive/primitive';
 import { CollisionEvent } from './collision-event';
 import { HitObject } from './hit-object';
 
 export class HitQuadtree {
 
-	private unique?: PrimitiveItem; // everything below/including this node shares the same original primitive object (just for early outs if not collidable)
+	private unique?: Primitive; // everything below/including this node shares the same original primitive object (just for early outs if not collidable)
 
 	private vho: HitObject[] = [];
 	private children: HitQuadtree[] = [];
@@ -133,13 +133,13 @@ export class HitQuadtree {
 
 		const vRemain: HitObject[] = []; // hit objects which did not go to a quadrant
 
-		this.unique = this.vho[0].e ? this.vho[0].obj as PrimitiveItem : undefined;
+		this.unique = this.vho[0].e ? this.vho[0].obj as Primitive : undefined;
 
 		// sort items into appropriate child nodes
 		for (const pho of this.vho) {
 			let oct: number;
 
-			if ((pho.e ? (pho.obj as PrimitiveItem) : undefined) !== this.unique) { // are all objects in current node unique/belong to the same primitive?
+			if ((pho.e ? (pho.obj as Primitive) : undefined) !== this.unique) { // are all objects in current node unique/belong to the same primitive?
 				this.unique = undefined;
 			}
 
