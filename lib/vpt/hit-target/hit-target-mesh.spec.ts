@@ -17,11 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ThreeHelper } from '../three.helper';
-import { Table } from '../../lib';
-import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Mesh } from 'three';
-import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import { ThreeHelper } from '../../../test/three.helper';
+import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { Table } from '../table';
 
 const three = new ThreeHelper();
 
@@ -37,7 +37,7 @@ describe('The VPinball hit target generator', () => {
 	it('should generate a beveled drop target mesh', async () => {
 		const targetMesh = three.find<Mesh>(gltf, 'hitTargets', 'DropTargetBeveled', 'hittarget-DropTargetBeveled');
 		const targetMeshVertices = three.vertices(targetMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[141.800003, 1081.800049, -15.592000],
 			[108.199997, 1081.800049, -15.592000],
 			[138.600006, 1081.800049, -47.591999],
@@ -133,7 +133,7 @@ describe('The VPinball hit target generator', () => {
 	it('should generate a flat simple drop target mesh', async () => {
 		const targetMesh = three.find<Mesh>(gltf, 'hitTargets', 'DropTargetFlatSimple', 'hittarget-DropTargetFlatSimple');
 		const targetMeshVertices = three.vertices(targetMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[236.600006, 1074.111694, -55.677631],
 			[236.600006, 1078.199951, -15.677632],
 			[236.600006, 1078.199951, -55.677631],
@@ -209,7 +209,7 @@ describe('The VPinball hit target generator', () => {
 	it('should generate a simple drop target mesh', async () => {
 		const targetMesh = three.find<Mesh>(gltf, 'hitTargets', 'DropTargetSimple', 'hittarget-DropTargetSimple');
 		const targetMeshVertices = three.vertices(targetMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[341.799988, 1076.599976, -4.326368],
 			[308.200012, 1076.599976, -4.326368],
 			[341.799988, 1076.599976, -55.526367],
@@ -253,7 +253,7 @@ describe('The VPinball hit target generator', () => {
 	it('should generate a fat rectangular hit target mesh', async () => {
 		const targetMesh = three.find<Mesh>(gltf, 'hitTargets', 'HitFatTargetRect', 'hittarget-HitFatTargetRect');
 		const targetMeshVertices = three.vertices(targetMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[434.606049, 1078.595215, -52.631870],
 			[434.606049, 1073.795288, -22.631872],
 			[434.606049, 1078.595215, -22.631872],
@@ -563,7 +563,7 @@ describe('The VPinball hit target generator', () => {
 	it('should generate a fat slim (uh) hit target mesh', async () => {
 		const targetMesh = three.find<Mesh>(gltf, 'hitTargets', 'HitFatTargetSlim', 'hittarget-HitFatTargetSlim');
 		const targetMeshVertices = three.vertices(targetMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[519.003784, 1070.616211, -51.962143],
 			[519.003784, 1065.816406, -21.962145],
 			[519.003784, 1070.616211, -21.962145],
@@ -873,7 +873,7 @@ describe('The VPinball hit target generator', () => {
 	it('should generate a square fat hit target mesh', async () => {
 		const targetMesh = three.find<Mesh>(gltf, 'hitTargets', 'HitFatTargetSquare', 'hittarget-HitFatTargetSquare');
 		const targetMeshVertices = three.vertices(targetMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[624.452820, 1074.630127, -52.711937],
 			[624.452820, 1069.830322, -22.711937],
 			[624.452820, 1074.630127, -22.711937],
@@ -1183,7 +1183,7 @@ describe('The VPinball hit target generator', () => {
 	it('should generate a rectangular hit target mesh', async () => {
 		const targetMesh = three.find<Mesh>(gltf, 'hitTargets', 'HitTargetRect', 'hittarget-HitTargetRect');
 		const targetMeshVertices = three.vertices(targetMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[748.009338, 1077.785156, -21.205215],
 			[748.009338, 1081.306641, -21.205215],
 			[748.009949, 1081.306641, -48.406338],
@@ -1350,9 +1350,9 @@ describe('The VPinball hit target generator', () => {
 	});
 
 	it('should generate a round hit target mesh', async () => {
-		const targetMesh = three.find<Mesh>(gltf, 'hitTargets', 'HitTargetRound','hittarget-HitTargetRound');
+		const targetMesh = three.find<Mesh>(gltf, 'hitTargets', 'HitTargetRound', 'hittarget-HitTargetRound');
 		const targetMeshVertices = three.vertices(targetMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[841.835388, 1075.742310, -31.127136],
 			[842.211853, 1079.262329, -34.949760],
 			[842.211853, 1075.742310, -34.949760],
@@ -1569,7 +1569,7 @@ describe('The VPinball hit target generator', () => {
 	it('should generate a slim hit target mesh', async () => {
 		const targetMesh = three.find<Mesh>(gltf, 'hitTargets', 'HitTargetSlim', 'hittarget-HitTargetSlim');
 		const targetMeshVertices = three.vertices(targetMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[930.017212, 1073.734863, -22.593569],
 			[932.924744, 1073.734863, -24.404257],
 			[930.017212, 1070.214478, -22.593569],
@@ -1726,7 +1726,7 @@ describe('The VPinball hit target generator', () => {
 	it('should generate target mesh that has been scaled', async () => {
 		const targetMesh = three.find<Mesh>(gltf, 'hitTargets', 'ScaledTarget', 'hittarget-ScaledTarget');
 		const targetMeshVertices = three.vertices(targetMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[538.704163, 935.013367, -39.510002],
 			[484.629150, 935.013367, -39.510002],
 			[538.704163, 935.013367, -86.966003],
@@ -1770,7 +1770,7 @@ describe('The VPinball hit target generator', () => {
 	it('should generate target mesh that has been rotated', async () => {
 		const targetMesh = three.find<Mesh>(gltf, 'hitTargets', 'RotatedTarget', 'hittarget-RotatedTarget');
 		const targetMeshVertices = three.vertices(targetMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[634.649292, 939.057983, -4.326368],
 			[604.845764, 923.543274, -4.326368],
 			[634.649292, 939.057983, -55.526367],
@@ -1814,7 +1814,7 @@ describe('The VPinball hit target generator', () => {
 	it('should generate target mesh that has been dropped', async () => {
 		const targetMesh = three.find<Mesh>(gltf, 'hitTargets', 'DroppedTarget', 'hittarget-DroppedTarget');
 		const targetMeshVertices = three.vertices(targetMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[476.466675, 814.599976, -4.326368],
 			[442.866699, 814.599976, -4.326368],
 			[476.466675, 814.599976, -55.526367],
