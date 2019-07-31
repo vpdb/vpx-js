@@ -33,7 +33,7 @@ import { logger } from '../util/logger';
 import { Bumper } from './bumper/bumper';
 import { Flipper } from './flipper/flipper';
 import { Gate } from './gate/gate';
-import { HitTargetItem } from './hit-target-item';
+import { HitTarget } from './hit-target/hit-target';
 import { ItemData, Meshes } from './item-data';
 import { KickerItem } from './kicker-item';
 import { LightItem } from './light-item';
@@ -70,7 +70,7 @@ export class Table implements IRenderable {
 	public bumpers: { [key: string]: Bumper } = {};
 	public ramps: { [key: string]: RampItem } = {};
 	public lights: LightItem[] = [];
-	public hitTargets: HitTargetItem[] = [];
+	public hitTargets: HitTarget[] = [];
 	public gates: Gate[] = [];
 	public kickers: KickerItem[] = [];
 	public triggers: TriggerItem[] = [];
@@ -391,7 +391,7 @@ export class Table implements IRenderable {
 				}
 
 				case ItemData.TypeHitTarget: {
-					this.hitTargets.push(await HitTargetItem.fromStorage(storage, itemName));
+					this.hitTargets.push(await HitTarget.fromStorage(storage, itemName));
 					break;
 				}
 
