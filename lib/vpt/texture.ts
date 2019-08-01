@@ -25,7 +25,7 @@ import { BiffParser } from '../io/biff-parser';
 import { getRawImage, loadImage, streamImage } from '../refs.node';
 import { logger } from '../util/logger';
 import { Binary } from './binary';
-import { Table } from './table';
+import { Table } from './table/table';
 
 /**
  * VPinball's texture.
@@ -85,15 +85,15 @@ export class Texture extends BiffParser {
 
 	/**
 	 * Returns the image of the texture, as JPG if opaque, or JPEG otherwise.
-	 * @param vpt
+	 * @param table
 	 */
-	public async getImage(vpt: Table): Promise<IImage> {
+	public async getImage(table: Table): Promise<IImage> {
 
 		if (this.isRaw()) {
 			return await loadImage(this.getName(), getRawImage(this.pdsBuffer!.getData(), this.width, this.height));
 
 		} else {
-			const data = await vpt.streamStorage<Buffer>('GameStg', storage => streamImage(storage, this.storageName, this.binary, this.localPath));
+			const data = await table.streamStorage<Buffer>('GameStg', storage => streamImage(storage, this.storageName, this.binary, this.localPath));
 			if (!data || !data.length) {
 				throw new Error(`Cannot load image data for texture ${this.getName()}`);
 			}

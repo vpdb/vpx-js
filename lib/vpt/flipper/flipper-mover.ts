@@ -25,7 +25,7 @@ import { PHYS_FACTOR } from '../../physics/constants';
 import { HitCircle } from '../../physics/hit-circle';
 import { MoverObject } from '../../physics/mover-object';
 import { logger } from '../../util/logger';
-import { TableData } from '../table-data';
+import { TableData } from '../table/table-data';
 import { FlipperConfig } from './flipper';
 import { FlipperData } from './flipper-data';
 import { FlipperState } from './flipper-state';

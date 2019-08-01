@@ -21,7 +21,7 @@ import { Storage } from '../..';
 import { IRenderable } from '../../game/irenderable';
 import { Matrix3D } from '../../math/matrix3d';
 import { Meshes } from '../item-data';
-import { Table } from '../table';
+import { Table } from '../table/table';
 import { GateData } from './gate-data';
 import { GateMeshGenerator } from './gate-mesh-generator';
 

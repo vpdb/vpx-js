@@ -18,11 +18,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Storage } from '..';
-import { BiffParser } from '../io/biff-parser';
-import { Vertex2D } from '../math/vertex2d';
-import { Vertex3D } from '../math/vertex3d';
-import { Material, SaveMaterial, SavePhysicsMaterial } from './material';
+import { Storage } from '../..';
+import { BiffParser } from '../../io/biff-parser';
+import { Vertex2D } from '../../math/vertex2d';
+import { Vertex3D } from '../../math/vertex3d';
+import { Material, SaveMaterial, SavePhysicsMaterial } from '../material';
 
 /**
  * Global data about the table.
@@ -141,21 +141,6 @@ export class TableData extends BiffParser {
 			streamedTags: [ 'CODE' ],
 		}));
 		return tableData;
-	}
-
-	public static fromSerialized(blob: { [key: string]: any }): TableData {
-		const data = new TableData();
-
-		// primitives
-		for (const key of Object.keys(blob)) {
-			(data as any)[key] = blob[key];
-		}
-
-		// objects
-		data.offset = new Vertex2D(blob.offset._x, blob.offset._y);
-		data.materials = blob.materials.map((m: any) => Material.fromSerialized(m));
-
-		return data;
 	}
 
 	private constructor() {

@@ -36,7 +36,7 @@ import { IFireEvents } from '../../physics/events';
 import { elasticityWithFalloff, hardScatter } from '../../physics/functions';
 import { HitObject } from '../../physics/hit-object';
 import { FLT_MIN } from '../mesh';
-import { TableData } from '../table-data';
+import { TableData } from '../table/table-data';
 import { Ball } from './ball';
 import { BallData } from './ball-data';
 import { BallMover } from './ball-mover';

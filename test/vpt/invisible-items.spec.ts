@@ -33,7 +33,7 @@ describe('The VPinball parser for invisible elements', () => {
 	});
 
 	it('should parse a timer item', async () => {
-		const timer = vpt.timers.find(t => t.getName() === 'Timer')!;
+		const timer = vpt.timers.Timer;
 		expect(timer).to.be.an('object');
 		expect(timer.timer.interval).to.equal(100);
 		expect(timer.vCenter.x).to.equal(-133.5);
@@ -41,7 +41,7 @@ describe('The VPinball parser for invisible elements', () => {
 	});
 
 	it('should parse a plunger item', async () => {
-		const plunger = vpt.plungers.find(t => t.getName() === 'Plunger1')!;
+		const plunger = vpt.plungers.Plunger1;
 		expect(plunger).to.be.an('object');
 		expect(plunger.getData().width).to.equal(25);
 		expect(plunger.getData().center.x).to.equal(877.7000122070312);
@@ -51,7 +51,7 @@ describe('The VPinball parser for invisible elements', () => {
 	});
 
 	it('should parse a text box item', async () => {
-		const textBox= vpt.textBoxes.find(t => t.getName() === 'TextBox1')!;
+		const textBox= vpt.textBoxes.TextBox1;
 		expect(textBox).to.be.an('object');
 		expect(textBox.backColor).to.equal(0xff0000);
 		expect(textBox.fontColor).to.equal(0x0000ff);

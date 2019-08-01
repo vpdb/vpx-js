@@ -22,7 +22,7 @@ import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
-import { Table } from '../table';
+import { Table } from '../table/table';
 import { RubberData } from './rubber-data';
 import { RubberHitGenerator } from './rubber-hit-generator';
 import { RubberMeshGenerator } from './rubber-mesh-generator';

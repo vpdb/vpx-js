@@ -29,7 +29,7 @@ import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
-import { Table } from '../table';
+import { Table } from '../table/table';
 import { PlungerData } from './plunger-data';
 import { PlungerHit } from './plunger-hit';
 import { PlungerMesh } from './plunger-mesh';
@@ -50,14 +50,14 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 	private state?: PlungerState;
 	private hit?: PlungerHit;
 
-	public static async fromStorage(storage: Storage, itemName: string, table: Table): Promise<Plunger> {
+	public static async fromStorage(storage: Storage, itemName: string): Promise<Plunger> {
 		const data = await PlungerData.fromStorage(storage, itemName);
-		return new Plunger(itemName, data, table);
+		return new Plunger(itemName, data);
 	}
 
-	public constructor(itemName: string, data: PlungerData, table: Table) {
+	public constructor(itemName: string, data: PlungerData) {
 		this.data = data;
-		this.mesh = new PlungerMesh(data, table);
+		this.mesh = new PlungerMesh(data);
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
@@ -74,7 +74,7 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 	}
 
 	public getMeshes(table: Table, opts: VpTableExporterOptions): Meshes {
-		const plunger = this.mesh.generateMeshes(0);
+		const plunger = this.mesh.generateMeshes(0, table);
 		const meshes: Meshes = {};
 		const material = table.getMaterial(this.data.szMaterial);
 		const map = table.getTexture(this.data.szImage);
@@ -140,12 +140,12 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 		}
 	}
 
-	public updateState(state: PlungerState, obj: Object3D): void {
+	public updateState(state: PlungerState, obj: Object3D, table: Table): void {
 		if (state.equals(this.state!)) {
 			return;
 		}
 		const matrix = new Matrix3D().toRightHanded();
-		const mesh = this.mesh.generateMeshes(state.frame);
+		const mesh = this.mesh.generateMeshes(state.frame, table);
 
 		const rodObj = obj.children.find(o => o.name === 'rod') as any;
 		if (rodObj) {

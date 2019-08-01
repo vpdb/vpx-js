@@ -23,7 +23,7 @@ import { HitLineZ } from '../../physics/hit-line-z';
 import { LineSeg } from '../../physics/line-seg';
 import { MoverObject } from '../../physics/mover-object';
 import { logger } from '../../util/logger';
-import { TableData } from '../table-data';
+import { TableData } from '../table/table-data';
 import { Plunger, PlungerConfig } from './plunger';
 import { PlungerData } from './plunger-data';
 import { PlungerState } from './plunger-state';
