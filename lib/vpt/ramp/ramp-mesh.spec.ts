@@ -17,11 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ThreeHelper } from '../three.helper';
-import { Table } from '../../lib';
-import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Mesh } from 'three';
-import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import { ThreeHelper } from '../../../test/three.helper';
+import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { Table } from '../table';
 
 const three = new ThreeHelper();
 
@@ -39,7 +39,7 @@ describe('The VPinball ramp generator', () => {
 
 	it('should generate a flat ramp mesh', async () => {
 		const vertices = three.concatMeshes(gltf, 'ramps', 'Flat', ['rampfloor-Flat', 'rampleft-Flat', 'rampright-Flat']);
-		let expectedVertices = [
+		const expectedVertices = [
 			[217.559097, 1201.483398, -0.000000],
 			[125.305038, 1240.588623, -0.000000],
 			[214.102509, 1194.188354, -0.871972],
@@ -221,7 +221,7 @@ describe('The VPinball ramp generator', () => {
 	it('should generate a flat ramp mesh with only left wall', async () => {
 		three.expectNoObject(gltf, 'ramps', 'FlatL', 'rampright-FlatL');
 		const vertices = three.concatMeshes(gltf, 'ramps', 'FlatL', ['rampfloor-FlatL', 'rampleft-FlatL']);
-		let expectedVertices = [
+		const expectedVertices = [
 			[353.603241, 1076.285522, -0.000000],
 			[280.025848, 1090.824097, -0.000000],
 			[350.920929, 1060.276978, -1.733521],
@@ -379,7 +379,7 @@ describe('The VPinball ramp generator', () => {
 	it('should generate a flat ramp mesh with only right wall', async () => {
 		three.expectNoObject(gltf, 'ramps', 'FlatR', 'rampleft-FlatR');
 		const vertices = three.concatMeshes(gltf, 'ramps', 'FlatR', ['rampfloor-FlatR', 'rampright-FlatR']);
-		let expectedVertices = [
+		const expectedVertices = [
 			[270.290283, 1102.751343, -5.500000],
 			[205.314346, 1140.209839, -5.500000],
 			[264.490631, 1093.397095, -6.497561],
@@ -566,7 +566,7 @@ describe('The VPinball ramp generator', () => {
 
 	it('should generate a wire ramp with one wire', async () => {
 		const vertices = three.concatMeshes(gltf, 'ramps', 'Wire1', ['rampwire1-Wire1']);
-		let expectedVertices = [
+		const expectedVertices = [
 			[402.053558, 1000.492188, -3.833626],
 			[400.337463, 999.845276, -2.872509],
 			[399.364929, 999.257324, -1.141706],
@@ -851,7 +851,7 @@ describe('The VPinball ramp generator', () => {
 		three.expectNoObject(gltf, 'ramps', 'Wire2', 'rampwire3-Wire2');
 		three.expectNoObject(gltf, 'ramps', 'Wire2', 'rampwire4-Wire2');
 		const vertices = three.concatMeshes(gltf, 'ramps', 'Wire2', ['rampwire1-Wire2', 'rampwire2-Wire2']);
-		let expectedVertices = [
+		const expectedVertices = [
 			[599.545166, 1000.018738, -25.248489],
 			[596.605652, 1000.570435, -22.773182],
 			[595.204590, 1000.521301, -19.152876],
@@ -1646,13 +1646,13 @@ describe('The VPinball ramp generator', () => {
 			[577.847717, 541.377441, -88.697639],
 
 		];
-		three.expectVerticesInArray(expectedVertices, vertices,2);
+		three.expectVerticesInArray(expectedVertices, vertices, 2);
 	});
 
 	it('should generate a wire ramp with three wires, third at left', async () => {
 		three.expectNoObject(gltf, 'ramps', 'Wire3L', 'rampwire1-Wire3L');
 		const vertices = three.concatMeshes(gltf, 'ramps', 'Wire3L', ['rampwire2-Wire3L', 'rampwire3-Wire3L', 'rampwire4-Wire3L']);
-		let expectedVertices = [
+		const expectedVertices = [
 			[655.798157, 975.216125, -53.536175],
 			[654.051819, 974.289429, -52.920765],
 			[652.847290, 973.561340, -51.402164],
@@ -3425,7 +3425,7 @@ describe('The VPinball ramp generator', () => {
 	it('should generate a wire ramp with three wires, third at right', async () => {
 		three.expectNoObject(gltf, 'ramps', 'Wire3R', 'rampwire2-Wire3R');
 		const vertices = three.concatMeshes(gltf, 'ramps', 'Wire3R', ['rampwire1-Wire3R', 'rampwire3-Wire3R', 'rampwire4-Wire3R']);
-		let expectedVertices = [
+		const expectedVertices = [
 			[679.283569, 1189.179688, -44.999237],
 			[678.895996, 1188.866943, -44.858063],
 			[678.621338, 1188.632813, -44.486973],
@@ -5053,7 +5053,7 @@ describe('The VPinball ramp generator', () => {
 
 	it('should generate a wire ramp with four wires', async () => {
 		const vertices = three.concatMeshes(gltf, 'ramps', 'Wire4', ['rampwire1-Wire4', 'rampwire2-Wire4', 'rampwire3-Wire4', 'rampwire4-Wire4']);
-		let expectedVertices = [
+		const expectedVertices = [
 			[657.640747, 1371.505615, -48.039097],
 			[656.193237, 1370.111084, -47.443428],
 			[655.205322, 1369.055664, -45.925095],
@@ -7319,10 +7319,10 @@ describe('The VPinball ramp generator', () => {
 		three.expectNoObject(gltf, 'ramps', 'Invisible');
 	});
 
-	it('should generate a flipper on a flat ramp', async() => {
+	it('should generate a flipper on a flat ramp', async () => {
 		const flipperBaseMesh = three.find<Mesh>(gltfOnSurface, 'flippers', 'FlipperOnFlat', 'flipperbase-FlipperOnFlat');
 		const flipperBaseMeshVertices = three.vertices(flipperBaseMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[293.108154, 1515.057495, -100.187653],
 			[293.108154, 1515.057495, -150.212646],
 			[294.565002, 1515.690918, -150.212646],
@@ -7431,10 +7431,10 @@ describe('The VPinball ramp generator', () => {
 		three.expectVerticesInArray(expectedVertices, flipperBaseMeshVertices);
 	});
 
-	it('should generate a flipper on top of an inclined ramp', async() => {
+	it('should generate a flipper on top of an inclined ramp', async () => {
 		const flipperBaseMesh = three.find<Mesh>(gltfOnSurface, 'flippers', 'FlipperOnInclinedTop', 'flipperbase-FlipperOnInclinedTop');
 		const flipperBaseMeshVertices = three.vertices(flipperBaseMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[680.623291, 1418.624878, -254.559128],
 			[680.623291, 1418.624878, -304.584137],
 			[679.380066, 1419.613770, -304.584137],
@@ -7543,10 +7543,10 @@ describe('The VPinball ramp generator', () => {
 		three.expectVerticesInArray(expectedVertices, flipperBaseMeshVertices);
 	});
 
-	it('should generate a flipper on bottom of an inclined ramp', async() => {
+	it('should generate a flipper on bottom of an inclined ramp', async () => {
 		const flipperBaseMesh = three.find<Mesh>(gltfOnSurface, 'flippers', 'FlipperOnInclidedBottom', 'flipperbase-FlipperOnInclidedBottom');
 		const flipperBaseMeshVertices = three.vertices(flipperBaseMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[548.623291, 1724.624878, -107.018631],
 			[548.623291, 1724.624878, -157.043625],
 			[547.380066, 1725.613770, -157.043625],
