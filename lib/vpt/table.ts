@@ -41,7 +41,7 @@ import { Material } from './material';
 import { Mesh } from './mesh';
 import { Plunger } from './plunger/plunger';
 import { Primitive } from './primitive/primitive';
-import { RampItem } from './ramp-item';
+import { Ramp } from './ramp/ramp';
 import { Rubber } from './rubber/rubber';
 import { Spinner } from './spinner/spinner';
 import { Surface } from './surface/surface';
@@ -68,7 +68,7 @@ export class Table implements IRenderable {
 	public rubbers: { [key: string]: Rubber } = {};
 	public flippers: { [key: string]: Flipper } = {};
 	public bumpers: { [key: string]: Bumper } = {};
-	public ramps: { [key: string]: RampItem } = {};
+	public ramps: { [key: string]: Ramp } = {};
 	public lights: LightItem[] = [];
 	public hitTargets: HitTarget[] = [];
 	public gates: Gate[] = [];
@@ -385,7 +385,7 @@ export class Table implements IRenderable {
 				}
 
 				case ItemData.TypeRamp: {
-					const item = await RampItem.fromStorage(storage, itemName);
+					const item = await Ramp.fromStorage(storage, itemName);
 					this.ramps[item.getName()] = item;
 					break;
 				}

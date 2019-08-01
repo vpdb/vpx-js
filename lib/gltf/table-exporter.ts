@@ -36,7 +36,7 @@ import { logger } from '../util/logger';
 import { Bumper } from '../vpt/bumper/bumper';
 import { Flipper } from '../vpt/flipper/flipper';
 import { Primitive } from '../vpt/primitive/primitive';
-import { RampItem } from '../vpt/ramp-item';
+import { Ramp } from '../vpt/ramp/ramp';
 import { Rubber } from '../vpt/rubber/rubber';
 import { Surface } from '../vpt/surface/surface';
 import { Texture as VpTexture } from '../vpt/texture';
@@ -85,7 +85,7 @@ export class TableExporter {
 			{ name: 'surfaces', meshes: Object.values<Surface>(this.table.surfaces), enabled: !!this.opts.exportSurfaces},
 			{ name: 'flippers', meshes: Object.values<Flipper>(this.table.flippers), enabled: !!this.opts.exportFlippers},
 			{ name: 'bumpers', meshes: Object.values<Bumper>(this.table.bumpers), enabled: !!this.opts.exportBumpers },
-			{ name: 'ramps', meshes: Object.values<RampItem>(this.table.ramps), enabled: !!this.opts.exportRamps },
+			{ name: 'ramps', meshes: Object.values<Ramp>(this.table.ramps), enabled: !!this.opts.exportRamps },
 			{ name: 'lightBulbs', meshes: this.table.lights.filter(l => l.isBulbLight()), enabled: !!this.opts.exportLightBulbs },
 			{ name: 'playfieldLights', meshes: this.table.lights.filter(l => l.isSurfaceLight(this.table)), enabled: !!this.opts.exportPlayfieldLights },
 			{ name: 'hitTargets', meshes: this.table.hitTargets, enabled: !!this.opts.exportHitTargets },
