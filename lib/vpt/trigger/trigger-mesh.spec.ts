@@ -17,11 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ThreeHelper } from '../three.helper';
-import { Table } from '../../lib';
-import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Mesh } from 'three';
-import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import { ThreeHelper } from '../../../test/three.helper';
+import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { Table } from '../table';
 
 const three = new ThreeHelper();
 
@@ -37,7 +37,7 @@ describe('The VPinball trigger generator', () => {
 	it('should generate a button trigger mesh', async () => {
 		const triggerMesh = three.find<Mesh>(gltf, 'triggers', 'Button', 'trigger-Button');
 		const triggerMeshVertices = three.vertices(triggerMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[153.706131, 1409.760376, -5.273650],
 			[157.152893, 1409.340820, -7.728700],
 			[155.714630, 1411.171509, -7.728700],
@@ -581,7 +581,7 @@ describe('The VPinball trigger generator', () => {
 	it('should generate a star trigger mesh', async () => {
 		const triggerMesh = three.find<Mesh>(gltf, 'triggers', 'Star', 'trigger-Star');
 		const triggerMeshVertices = three.vertices(triggerMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[398.788025, 1437.033936, -8.024473],
 			[403.929718, 1436.411621, -8.024500],
 			[403.313416, 1439.552856, -8.024473],
@@ -820,7 +820,7 @@ describe('The VPinball trigger generator', () => {
 	it('should generate a wire A trigger mesh', async () => {
 		const triggerMesh = three.find<Mesh>(gltf, 'triggers', 'WireA', 'trigger-WireA');
 		const triggerMeshVertices = three.vertices(triggerMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[510.584137, 1405.083740, -33.562248],
 			[510.584106, 1382.195068, 29.149363],
 			[509.942322, 1383.282349, 29.149363],
@@ -877,7 +877,7 @@ describe('The VPinball trigger generator', () => {
 	it('should generate a wire B trigger mesh', async () => {
 		const triggerMesh = three.find<Mesh>(gltf, 'triggers', 'WireB', 'trigger-WireB');
 		const triggerMeshVertices = three.vertices(triggerMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[632.321655, 1405.005005, -39.694489],
 			[632.321655, 1359.432495, 9.088539],
 			[631.679871, 1360.433350, 9.513376],
@@ -934,7 +934,7 @@ describe('The VPinball trigger generator', () => {
 	it('should generate a wire C trigger mesh', async () => {
 		const triggerMesh = three.find<Mesh>(gltf, 'triggers', 'WireC', 'trigger-WireC');
 		const triggerMeshVertices = three.vertices(triggerMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[868.305176, 1412.048950, 59.187416],
 			[868.305176, 1469.892944, 25.860090],
 			[867.663391, 1469.060059, 25.161194],
@@ -991,7 +991,7 @@ describe('The VPinball trigger generator', () => {
 	it('should generate a wire D trigger mesh', async () => {
 		const triggerMesh = three.find<Mesh>(gltf, 'triggers', 'WireD', 'trigger-WireD');
 		const triggerMeshVertices = three.vertices(triggerMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[503.068207, 1569.602173, -1.965605],
 			[503.078491, 1570.138184, -1.522005],
 			[503.141296, 1574.468994, -8.003286],
@@ -1202,7 +1202,7 @@ describe('The VPinball trigger generator', () => {
 	it('should generate a wire trigger mesh with a thick wire', async () => {
 		const triggerMesh = three.find<Mesh>(gltf, 'triggers', 'ThickWire', 'trigger-ThickWire');
 		const triggerMeshVertices = three.vertices(triggerMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[306.821442, 1563.499390, -1.965605],
 			[306.690918, 1564.019409, -1.522005],
 			[305.616730, 1568.215454, -8.003286],
@@ -1413,7 +1413,7 @@ describe('The VPinball trigger generator', () => {
 	it('should generate a wire trigger mesh on a surface', async () => {
 		const triggerMesh = three.find<Mesh>(gltf, 'triggers', 'Surface', 'trigger-Surface');
 		const triggerMeshVertices = three.vertices(triggerMesh);
-		let expectedVertices = [
+		const expectedVertices = [
 			[491.855377, 120.284477, -33.562248],
 			[491.855347, 97.395813, 29.149363],
 			[491.213562, 98.483093, 29.149363],

@@ -49,7 +49,7 @@ import { TableData } from './table-data';
 import { TextBoxItem } from './textbox-item';
 import { Texture } from './texture';
 import { TimerItem } from './timer-item';
-import { TriggerItem } from './trigger-item';
+import { Trigger } from './trigger/trigger';
 
 /**
  * A Visual Pinball table.
@@ -73,7 +73,7 @@ export class Table implements IRenderable {
 	public hitTargets: HitTarget[] = [];
 	public gates: Gate[] = [];
 	public kickers: Kicker[] = [];
-	public triggers: TriggerItem[] = [];
+	public triggers: Trigger[] = [];
 	public spinners: Spinner[] = [];
 	public timers: TimerItem[] = [];
 	public plungers: Plunger[] = [];
@@ -406,7 +406,7 @@ export class Table implements IRenderable {
 				}
 
 				case ItemData.TypeTrigger: {
-					this.triggers.push(await TriggerItem.fromStorage(storage, itemName));
+					this.triggers.push(await Trigger.fromStorage(storage, itemName));
 					break;
 				}
 

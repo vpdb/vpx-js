@@ -61,6 +61,7 @@ export class Ramp implements IRenderable {
 	public getName() {
 		return this.data.getName();
 	}
+
 	public isVisible(): boolean {
 		return this.data.fVisible && this.data.widthTop > 0 && this.data.widthBottom > 0;
 	}
