@@ -17,6 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-export { Table } from './vpt/table';
+export { Table } from './vpt/table/table';
 export { OleCompoundDoc, Storage } from './io/ole-doc';
 export { Logger } from './util/logger';

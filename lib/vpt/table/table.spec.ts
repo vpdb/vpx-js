@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ThreeHelper } from '../three.helper';
-import { Table } from '../../lib';
-import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
-import { Mesh } from 'three';
 import { expect } from 'chai';
-import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
+import { Mesh } from 'three';
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import { ThreeHelper } from '../../../test/three.helper';
+import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { Table } from './table';
 
 const three = new ThreeHelper();
 
@@ -53,16 +53,16 @@ describe('The VPinball table generator', () => {
 	});
 
 	it('should read the table info correctly', async () => {
-		expect(vpt.tableInfo.TableRules).to.equal('Rules');
-		expect(vpt.tableInfo.AuthorName).to.equal('Table Author');
-		expect(vpt.tableInfo.TableName).to.equal('Table Name');
-		expect(vpt.tableInfo.TableBlurb).to.equal('Short Blurb');
-		expect(vpt.tableInfo.ReleaseDate).to.equal('2019-04-14');
-		expect(vpt.tableInfo.AuthorEmail).to.equal('test@vpdb.io');
-		expect(vpt.tableInfo.customdata1).to.equal('customvalue1');
-		expect(vpt.tableInfo.AuthorWebSite).to.equal('https://vpdb.io');
-		expect(vpt.tableInfo.TableVersion).to.equal('Version');
-		expect(vpt.tableInfo.TableDescription).to.equal('Description');
+		expect(vpt.info!.TableRules).to.equal('Rules');
+		expect(vpt.info!.AuthorName).to.equal('Table Author');
+		expect(vpt.info!.TableName).to.equal('Table Name');
+		expect(vpt.info!.TableBlurb).to.equal('Short Blurb');
+		expect(vpt.info!.ReleaseDate).to.equal('2019-04-14');
+		expect(vpt.info!.AuthorEmail).to.equal('test@vpdb.io');
+		expect(vpt.info!.customdata1).to.equal('customvalue1');
+		expect(vpt.info!.AuthorWebSite).to.equal('https://vpdb.io');
+		expect(vpt.info!.TableVersion).to.equal('Version');
+		expect(vpt.info!.TableDescription).to.equal('Description');
 	});
 
 	it('should not crash when reading a corrupt file', async () => {
@@ -74,11 +74,6 @@ describe('The VPinball table generator', () => {
 		}
 	});
 
-	it('should serialize the table correctly', async () => {
-		const table = await Table.load(new NodeBinaryReader(three.fixturePath('table-flipper.vpx')));
-		const unserializedTable = Table.fromSerialized(table);
-		expect(unserializedTable.flippers.FlipperR.getName).to.be.a('function');
-	});
 });
 
 function compareArray(arr1: any[], arr2: any[]) {

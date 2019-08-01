@@ -22,7 +22,7 @@ import { DragPoint } from '../../math/dragpoint';
 import { Vertex3DNoTex2 } from '../../math/vertex';
 import { RenderVertex, Vertex2D } from '../../math/vertex2d';
 import { Mesh } from '../mesh';
-import { Table } from '../table';
+import { Table } from '../table/table';
 import { SurfaceData } from './surface-data';
 
 export class SurfaceMesh {

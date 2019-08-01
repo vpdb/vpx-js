@@ -134,7 +134,7 @@ export class LightData extends ItemData {
 		 *   - If at least three other lights have the same texture, we assume
 		 *     it's a surface light.
 		 */
-		return table.lights.filter(l => l.offImage === this.szOffImage).length > 3;
+		return Object.values(table.lights).filter(l => l.offImage === this.szOffImage).length > 3;
 	}
 
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {

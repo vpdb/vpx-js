@@ -21,7 +21,7 @@ import { Mesh } from 'three';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { ThreeHelper } from '../../../test/three.helper';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
-import { Table } from '../table';
+import { Table } from '../table/table';
 
 const three = new ThreeHelper();
 

@@ -23,7 +23,7 @@ import { HitObject } from '../../physics/hit-object';
 import { HitPoint } from '../../physics/hit-point';
 import { HitTriangle } from '../../physics/hit-triangle';
 import { Mesh } from '../mesh';
-import { Table } from '../table';
+import { Table } from '../table/table';
 import { RubberData } from './rubber-data';
 import { RubberMeshGenerator } from './rubber-mesh-generator';
 

@@ -17,9 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Table } from '../..';
 import { Vertex3DNoTex2 } from '../../math/vertex';
 import { Mesh } from '../mesh';
-import { Table } from '../table';
 import { PlungerType } from './plunger';
 import { PlungerData } from './plunger-data';
 import { PlungerDesc } from './plunger-desc';
@@ -28,20 +28,19 @@ const PLUNGER_FRAME_COUNT = 25;
 
 export class PlungerMesh {
 
-	private readonly table: Table;
 	private readonly data: PlungerData;
 
 	public readonly cFrames: number;
-	private readonly zHeight: number;
 	private readonly stroke: number;
 	private readonly beginY: number;
 	private readonly endY: number;
 	private readonly invScale: number;
 	private readonly dyPerFrame: number;
 	private readonly circlePoints: number;
-	private readonly zScale: number;
 	private readonly srcCells: number;
 	private readonly cellWid: number;
+	private zHeight: number = 0;
+	private zScale: number = 1;
 
 	/** Rod bottom position */
 	private rodY: number;
@@ -56,10 +55,9 @@ export class PlungerMesh {
 	private indicesPerFrame!: number;
 	private desc!: PlungerDesc;
 
-	constructor(data: PlungerData, table: Table) {
+	constructor(data: PlungerData) {
 		this.data = data;
-		this.table = table;
-		this.zHeight = table.getSurfaceHeight(data.szSurface, data.center.x, data.center.y) + data.zAdjust;
+
 		this.stroke = data.stroke!;
 		this.beginY = data.center.y;
 		this.endY = data.center.y - this.stroke;
@@ -73,7 +71,6 @@ export class PlungerMesh {
 		this.springRadius = 0.0;
 		this.springMinSpacing = 2.2;
 		this.rodY = this.beginY + data.height;
-		this.zScale = table.getScaleZ();
 
 		// note the number of cells in the source image
 		this.srcCells = data.animFrames || 1;
@@ -85,8 +82,10 @@ export class PlungerMesh {
 		this.cellWid = 1.0 / this.srcCells;
 	}
 
-	public generateMeshes(frame: number): { rod?: Mesh, spring?: Mesh, flat?: Mesh } {
+	public generateMeshes(frame: number, table: Table): { rod?: Mesh, spring?: Mesh, flat?: Mesh } {
 
+		this.zHeight = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y) + this.data.zAdjust;
+		this.zScale = table.getScaleZ();
 		this.desc = this.getDesc();
 
 		// get the number of lathe points from the descriptor

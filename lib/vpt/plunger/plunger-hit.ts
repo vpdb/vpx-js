@@ -23,7 +23,7 @@ import { CollisionType } from '../../physics/collision-type';
 import { C_DISP_GAIN, C_DISP_LIMIT, C_EMBEDDED, C_EMBEDSHOT, C_LOWNORMVEL } from '../../physics/constants';
 import { HitObject } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
-import { Table } from '../table';
+import { Table } from '../table/table';
 import { Plunger, PlungerConfig } from './plunger';
 import { PlungerData } from './plunger-data';
 import { PlungerMover } from './plunger-mover';

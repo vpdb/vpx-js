@@ -23,7 +23,7 @@ import { IRenderable } from '../../game/irenderable';
 import { Matrix3D } from '../../math/matrix3d';
 import { Meshes } from '../item-data';
 import { Material } from '../material';
-import { Table } from '../table';
+import { Table } from '../table/table';
 import { LightData } from './light-data';
 import { LightMeshGenerator } from './light-mesh-generator';
 

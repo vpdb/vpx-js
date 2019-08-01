@@ -23,7 +23,7 @@ import { degToRad, f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { Mesh } from '../mesh';
-import { Table } from '../table';
+import { Table } from '../table/table';
 import { SpinnerData } from './spinner-data';
 
 export class SpinnerMeshGenerator {

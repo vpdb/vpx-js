@@ -20,7 +20,7 @@
 import { Storage } from '..';
 import { RenderInfo } from '../game/irenderable';
 import { BiffParser } from '../io/biff-parser';
-import { Table } from './table';
+import { Table } from './table/table';
 
 /**
  * Parent class for game items parsed from the VPX file.

@@ -24,7 +24,7 @@ import { Matrix3D } from '../../math/matrix3d';
 import { Vertex2D } from '../../math/vertex2d';
 import { Meshes } from '../item-data';
 import { Mesh } from '../mesh';
-import { Table } from '../table';
+import { Table } from '../table/table';
 import { RampData } from './ramp-data';
 import { RampMeshGenerator } from './ramp-mesh-generator';
 

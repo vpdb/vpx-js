@@ -25,7 +25,7 @@ import { Vertex3DNoTex2 } from '../../math/vertex';
 import { Vertex3D } from '../../math/vertex3d';
 import { Meshes } from '../item-data';
 import { FLT_MAX, FLT_MIN, Mesh } from '../mesh';
-import { Table } from '../table';
+import { Table } from '../table/table';
 import { RubberData } from './rubber-data';
 
 export class RubberMeshGenerator {

@@ -25,7 +25,7 @@ import { simulateCycles } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
-import { Table } from '../table';
+import { Table } from '../table/table';
 import { PlungerMover } from './plunger-mover';
 import { PlungerState } from './plunger-state';
 
@@ -47,7 +47,7 @@ describe('The VPinball plunger physics', () => {
 	});
 
 	it('should be in the correct initial state', async () => {
-		const plunger = table.plungers.find(p => p.getName() === 'CustomPlunger')!;
+		const plunger = table.plungers.CustomPlunger!;
 		const plungerMover = plunger.getMover() as PlungerMover;
 
 		const parkFrame = plungerMover.cFrames - 1;
@@ -57,7 +57,7 @@ describe('The VPinball plunger physics', () => {
 	});
 
 	it('should move to the end when pulled back', async () => {
-		const plunger = table.plungers.find(p => p.getName() === 'CustomPlunger')!;
+		const plunger = table.plungers.CustomPlunger;
 		const plungerMover = plunger.getMover() as PlungerMover;
 		const endPosition = plunger.getData().center.y;
 
@@ -70,7 +70,7 @@ describe('The VPinball plunger physics', () => {
 	});
 
 	it('should move back after being fired', async () => {
-		const plunger = table.plungers.find(p => p.getName() === 'CustomPlunger')!;
+		const plunger = table.plungers.CustomPlunger;
 		const plungerMover = plunger.getMover() as PlungerMover;
 		const parkFrame = plungerMover.cFrames - 1;
 
@@ -84,7 +84,7 @@ describe('The VPinball plunger physics', () => {
 	});
 
 	it('should only fire a little when auto-fire is disabled', async () => {
-		const plunger = table.plungers.find(p => p.getName() === 'CustomPlunger')!;
+		const plunger = table.plungers.CustomPlunger;
 		const plungerMover = plunger.getMover() as PlungerMover;
 		const parkFrame = plungerMover.cFrames - 1;
 
@@ -100,7 +100,7 @@ describe('The VPinball plunger physics', () => {
 	});
 
 	it('should fire fully when auto-fire is enabled', async () => {
-		const plunger = table.plungers.find(p => p.getName() === 'AutoPlunger')!;
+		const plunger = table.plungers.AutoPlunger;
 
 		plunger.fire();
 
@@ -112,7 +112,7 @@ describe('The VPinball plunger physics', () => {
 
 		// create scene
 		const gltf = await three.loadGlb(await table.exportGlb());
-		const plunger = table.plungers.find(p => p.getName() === 'CustomPlunger')!;
+		const plunger = table.plungers.CustomPlunger;
 
 		// retrieve plunger
 		const plungerObj = three.find<Mesh>(gltf, 'plungers', 'CustomPlunger');
@@ -120,7 +120,7 @@ describe('The VPinball plunger physics', () => {
 		const springObj = plungerObj.children.find(c => c.name === 'spring') as Mesh;
 
 		// apply player state to plunger
-		plunger.updateState(popState(player, 'CustomPlunger'), plungerObj);
+		plunger.updateState(popState(player, 'CustomPlunger'), plungerObj, table);
 		rodObj.geometry.computeBoundingBox();
 		springObj.geometry.computeBoundingBox();
 
@@ -133,7 +133,7 @@ describe('The VPinball plunger physics', () => {
 		simulateCycles(player, 50);
 
 		// apply again
-		plunger.updateState(popState(player, 'CustomPlunger'), plungerObj);
+		plunger.updateState(popState(player, 'CustomPlunger'), plungerObj, table);
 		rodObj.geometry.computeBoundingBox();
 		springObj.geometry.computeBoundingBox();
 

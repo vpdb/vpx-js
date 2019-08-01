@@ -18,7 +18,7 @@
  */
 
 import { HitTargetData } from './hit-target-data';
-import { Table } from '../table';
+import { Table } from '../table/table';
 import { Matrix3D } from '../../math/matrix3d';
 import { degToRad, f4 } from '../../math/float';
 import { Vertex3D } from '../../math/vertex3d';

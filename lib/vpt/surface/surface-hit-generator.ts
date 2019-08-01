@@ -29,7 +29,7 @@ import { HitObject } from '../../physics/hit-object';
 import { HitPoint } from '../../physics/hit-point';
 import { LineSeg } from '../../physics/line-seg';
 import { LineSegSlingshot } from '../../physics/line-seg-slingshot';
-import { Table } from '../table';
+import { Table } from '../table/table';
 import { SurfaceData } from './surface-data';
 
 export class SurfaceHitGenerator {

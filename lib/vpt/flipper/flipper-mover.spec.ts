@@ -21,12 +21,12 @@ import * as chai from 'chai';
 import { expect } from 'chai';
 import { spy } from 'sinon';
 import sinonChai = require('sinon-chai');
+import { Table } from '../..';
 import { simulateCycles } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { degToRad } from '../../math/float';
-import { Table } from '../table';
 import { FlipperMover } from './flipper-mover';
 import { FlipperState } from './flipper-state';
 

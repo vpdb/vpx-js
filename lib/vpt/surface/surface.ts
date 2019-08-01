@@ -25,7 +25,7 @@ import { VpTableExporterOptions } from '../../gltf/table-exporter';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
-import { Table } from '../table';
+import { Table } from '../table/table';
 import { SurfaceData } from './surface-data';
 import { SurfaceHitGenerator } from './surface-hit-generator';
 import { SurfaceMesh } from './surface-mesh';

@@ -21,7 +21,7 @@ import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3DNoTex2 } from '../../math/vertex';
 import { FLT_MAX, Mesh } from '../mesh';
-import { Table } from '../table';
+import { Table } from '../table/table';
 import { PrimitiveData } from './primitive-data';
 
 export class PrimitiveMeshGenerator {

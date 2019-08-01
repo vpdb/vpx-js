@@ -22,7 +22,7 @@ import { IRenderable } from '../../game/irenderable';
 import { Matrix3D } from '../../math/matrix3d';
 import { IFireEvents } from '../../physics/events';
 import { Meshes } from '../item-data';
-import { Table } from '../table';
+import { Table } from '../table/table';
 import { PrimitiveData } from './primitive-data';
 import { PrimitiveMeshGenerator } from './primitive-mesh-generator';
 

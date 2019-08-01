@@ -18,6 +18,7 @@
  */
 
 import { Object3D } from 'three';
+import { Table } from '..';
 import { MoverObject } from '../physics/mover-object';
 import { IPlayable } from './iplayable';
 
@@ -25,5 +26,5 @@ export interface IMovable<STATE> extends IPlayable {
 
 	getMover(): MoverObject;
 
-	updateState(state: STATE, obj: Object3D): void;
+	updateState(state: STATE, obj: Object3D, table: Table): void;
 }

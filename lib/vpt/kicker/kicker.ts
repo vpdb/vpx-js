@@ -21,7 +21,7 @@ import { Storage } from '../..';
 import { IRenderable } from '../../game/irenderable';
 import { Matrix3D } from '../../math/matrix3d';
 import { Meshes } from '../item-data';
-import { Table } from '../table';
+import { Table } from '../table/table';
 import { Texture } from '../texture';
 import { KickerData } from './kicker-data';
 import { KickerMeshGenerator } from './kicker-mesh-generator';

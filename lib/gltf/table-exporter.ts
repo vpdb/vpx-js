@@ -86,14 +86,14 @@ export class TableExporter {
 			{ name: 'flippers', meshes: Object.values<Flipper>(this.table.flippers), enabled: !!this.opts.exportFlippers},
 			{ name: 'bumpers', meshes: Object.values<Bumper>(this.table.bumpers), enabled: !!this.opts.exportBumpers },
 			{ name: 'ramps', meshes: Object.values<Ramp>(this.table.ramps), enabled: !!this.opts.exportRamps },
-			{ name: 'lightBulbs', meshes: this.table.lights.filter(l => l.isBulbLight()), enabled: !!this.opts.exportLightBulbs },
-			{ name: 'playfieldLights', meshes: this.table.lights.filter(l => l.isSurfaceLight(this.table)), enabled: !!this.opts.exportPlayfieldLights },
-			{ name: 'hitTargets', meshes: this.table.hitTargets, enabled: !!this.opts.exportHitTargets },
-			{ name: 'gates', meshes: this.table.gates, enabled: !!this.opts.exportGates },
-			{ name: 'kickers', meshes: this.table.kickers, enabled: !!this.opts.exportKickers },
-			{ name: 'triggers', meshes: this.table.triggers, enabled: !!this.opts.exportTriggers },
-			{ name: 'spinners', meshes: this.table.spinners, enabled: !!this.opts.exportSpinners },
-			{ name: 'plungers', meshes: this.table.plungers, enabled: !!this.opts.exportPlungers },
+			{ name: 'lightBulbs', meshes: Object.values(this.table.lights).filter(l => l.isBulbLight()), enabled: !!this.opts.exportLightBulbs },
+			{ name: 'playfieldLights', meshes: Object.values(this.table.lights).filter(l => l.isSurfaceLight(this.table)), enabled: !!this.opts.exportPlayfieldLights },
+			{ name: 'hitTargets', meshes: Object.values(this.table.hitTargets), enabled: !!this.opts.exportHitTargets },
+			{ name: 'gates', meshes: Object.values(this.table.gates), enabled: !!this.opts.exportGates },
+			{ name: 'kickers', meshes: Object.values(this.table.kickers), enabled: !!this.opts.exportKickers },
+			{ name: 'triggers', meshes: Object.values(this.table.triggers), enabled: !!this.opts.exportTriggers },
+			{ name: 'spinners', meshes: Object.values(this.table.spinners), enabled: !!this.opts.exportSpinners },
+			{ name: 'plungers', meshes: Object.values(this.table.plungers), enabled: !!this.opts.exportPlungers },
 		];
 
 		// meshes
@@ -132,7 +132,7 @@ export class TableExporter {
 
 		// light bulb lights
 		if (this.opts.exportLightBulbLights) {
-			for (const lightInfo of this.table.lights.filter(l => l.isBulbLight())) {
+			for (const lightInfo of Object.values(this.table.lights).filter(l => l.isBulbLight())) {
 				const light = new PointLight(lightInfo.color, lightInfo.intensity, lightInfo.falloff * TableExporter.scale, 2);
 				const itemGroup = new Group();
 				itemGroup.name = lightInfo.getName();

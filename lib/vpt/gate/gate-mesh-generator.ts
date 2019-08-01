@@ -28,7 +28,7 @@ import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { logger } from '../../util/logger';
 import { Mesh } from '../mesh';
-import { Table } from '../table';
+import { Table } from '../table/table';
 import { Gate } from './gate';
 import { GateData } from './gate-data';
 
