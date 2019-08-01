@@ -36,7 +36,7 @@ import { Gate } from './gate/gate';
 import { HitTarget } from './hit-target/hit-target';
 import { ItemData, Meshes } from './item-data';
 import { Kicker } from './kicker/kicker';
-import { LightItem } from './light-item';
+import { Light } from './light/light';
 import { Material } from './material';
 import { Mesh } from './mesh';
 import { Plunger } from './plunger/plunger';
@@ -69,7 +69,7 @@ export class Table implements IRenderable {
 	public flippers: { [key: string]: Flipper } = {};
 	public bumpers: { [key: string]: Bumper } = {};
 	public ramps: { [key: string]: Ramp } = {};
-	public lights: LightItem[] = [];
+	public lights: Light[] = [];
 	public hitTargets: HitTarget[] = [];
 	public gates: Gate[] = [];
 	public kickers: Kicker[] = [];
@@ -362,7 +362,7 @@ export class Table implements IRenderable {
 				}
 
 				case ItemData.TypeLight: {
-					this.lights.push(await LightItem.fromStorage(storage, itemName));
+					this.lights.push(await Light.fromStorage(storage, itemName));
 					break;
 				}
 
