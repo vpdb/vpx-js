@@ -29,6 +29,7 @@ import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
+import { ItemState } from '../item-state';
 import { Table } from '../table/table';
 import { PlungerData } from './plunger-data';
 import { PlungerHit } from './plunger-hit';
@@ -47,7 +48,7 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 
 	private readonly data: PlungerData;
 	private readonly mesh: PlungerMesh;
-	private state?: PlungerState;
+	private state: PlungerState;
 	private hit?: PlungerHit;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Plunger> {
@@ -58,11 +59,11 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 	public constructor(itemName: string, data: PlungerData) {
 		this.data = data;
 		this.mesh = new PlungerMesh(data);
+		this.state = new PlungerState(this.getName(), 0);
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		this.hit = new PlungerHit(this.data, this.mesh.cFrames, player, table);
-		this.state = this.getMover().getState();
+		this.hit = new PlungerHit(this.data, this.state, this.mesh.cFrames, player, table);
 	}
 
 	public getName(): string {
@@ -71,6 +72,10 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 
 	public getData(): PlungerData {
 		return this.data;
+	}
+
+	public getState(): ItemState {
+		return this.state!;
 	}
 
 	public getMeshes(table: Table, opts: VpTableExporterOptions): Meshes {

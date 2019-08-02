@@ -17,18 +17,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-export class PlungerState {
+/* tslint:disable:variable-name */
+import { ItemState } from '../item-state';
+
+export class PlungerState extends ItemState {
 
 	/**
 	 * Which frame to render
 	 */
-	public readonly frame: number;
+	public frame: number;
 
-	/**
-	 * New plunger state
-	 * @param frame Which frame of the plunger position is to render
-	 */
-	constructor(frame: number) {
+	constructor(name: string, frame: number) {
+		super(name);
 		this.frame = frame;
 	}
 
@@ -37,5 +37,9 @@ export class PlungerState {
 			return false;
 		}
 		return state.frame === this.frame;
+	}
+
+	public clone(): PlungerState {
+		return new PlungerState(this.name, this.frame);
 	}
 }
