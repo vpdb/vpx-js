@@ -35,6 +35,7 @@ import { FlipperHit } from './flipper-hit';
 import { FlipperMesh } from './flipper-mesh';
 import { FlipperMover } from './flipper-mover';
 import { FlipperState } from './flipper-state';
+import { ItemState } from '../item-state';
 
 /**
  * VPinball's flippers
@@ -53,19 +54,14 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		return new Flipper(itemName, data);
 	}
 
-	public static fromSerialized(itemName: string, blob: { [key: string]: any }): Flipper {
-		const data = FlipperData.fromSerialized(itemName, blob.data);
-		return new Flipper(itemName, data);
-	}
-
 	public constructor(itemName: string, data: FlipperData) {
 		this.data = data;
 		this.mesh = new FlipperMesh();
-		this.state = new FlipperState(degToRad(data.startAngle));
+		this.state = new FlipperState(this.getName(), this.data.startAngle);
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		this.hit = FlipperHit.getInstance(this.data, player, table);
+		this.hit = FlipperHit.getInstance(this.data, this.state, player, table);
 	}
 
 	public isVisible(): boolean {
@@ -74,6 +70,10 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 
 	public getMover(): FlipperMover {
 		return this.hit!.getMoverObject();
+	}
+
+	public getState(): FlipperState {
+		return this.state;
 	}
 
 	public getHitShapes(): HitObject[] {
@@ -118,10 +118,6 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	}
 
 	public updateState(state: FlipperState, obj: Object3D): void {
-		if (state.equals(this.state)) {
-			return;
-		}
-
 		const matToOrigin = new Matrix3D().setTranslation(-this.data.center.x, -this.data.center.y, 0);
 		const matFromOrigin = new Matrix3D().setTranslation(this.data.center.x, this.data.center.y, 0);
 		const matRotate = new Matrix3D().rotateZMatrix(state.angle - this.state.angle);

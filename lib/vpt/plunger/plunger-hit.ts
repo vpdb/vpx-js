@@ -17,48 +17,49 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Table } from '../..';
 import { Player } from '../../game/player';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { C_DISP_GAIN, C_DISP_LIMIT, C_EMBEDDED, C_EMBEDSHOT, C_LOWNORMVEL } from '../../physics/constants';
 import { HitObject } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
-import { Table } from '../table/table';
 import { Plunger, PlungerConfig } from './plunger';
 import { PlungerData } from './plunger-data';
 import { PlungerMover } from './plunger-mover';
+import { PlungerState } from './plunger-state';
 
 export class PlungerHit extends HitObject {
 
-	private readonly plungerMover: PlungerMover;
-	private readonly plungerData: PlungerData;
+	private readonly mover: PlungerMover;
+	private readonly data: PlungerData;
 
-	constructor(plungerData: PlungerData, cFrames: number, player: Player, table: Table) {
+	constructor(data: PlungerData, state: PlungerState, cFrames: number, player: Player, table: Table) {
 		super();
-		const zHeight = table.getSurfaceHeight(plungerData.szSurface, plungerData.center.x, plungerData.center.y);
+		const zHeight = table.getSurfaceHeight(data.szSurface, data.center.x, data.center.y);
 		const config: PlungerConfig = {
-			x: plungerData.center.x - plungerData.width,
-			y: plungerData.center.y + plungerData.height,
-			x2: plungerData.center.x + plungerData.width,
+			x: data.center.x - data.width,
+			y: data.center.y + data.height,
+			x2: data.center.x + data.width,
 			zHeight,
-			frameTop: plungerData.center.y - plungerData.stroke!,
-			frameBottom: plungerData.center.y,
+			frameTop: data.center.y - data.stroke!,
+			frameBottom: data.center.y,
 			cFrames,
 		};
 
 		this.hitBBox.zlow = config.zHeight;
 		this.hitBBox.zhigh = config.zHeight + Plunger.PLUNGER_HEIGHT;
 
-		this.plungerData = plungerData;
-		this.plungerMover = new PlungerMover(config, plungerData, player, table.data!);
+		this.data = data;
+		this.mover = new PlungerMover(config, data, state, player, table.data!);
 	}
 
 	public calcHitBBox(): void {
 		// Allow roundoff
-		this.hitBBox.left = this.plungerMover.x - 0.1;
-		this.hitBBox.right = this.plungerMover.x2 + 0.1;
-		this.hitBBox.top = this.plungerMover.frameEnd - 0.1;
-		this.hitBBox.bottom = this.plungerMover.y + 0.1;
+		this.hitBBox.left = this.mover.x - 0.1;
+		this.hitBBox.right = this.mover.x2 + 0.1;
+		this.hitBBox.top = this.mover.frameEnd - 0.1;
+		this.hitBBox.bottom = this.mover.y + 0.1;
 
 		// zlow & zhigh gets set in constructor
 	}
@@ -91,13 +92,13 @@ export class PlungerHit extends HitObject {
 		}
 
 		// figure the basic impulse
-		const impulse = dot * -1.45 / (1.0 + 1.0 / this.plungerMover.mass);
+		const impulse = dot * -1.45 / (1.0 + 1.0 / this.mover.mass);
 
 		// We hit the ball, so attenuate any plunger bounce we have queued up
 		// for a Fire event.  Real plungers bounce quite a bit when fired without
 		// hitting anything, but bounce much less when they hit something, since
 		// most of the momentum gets transfered out of the plunger and to the ball.
-		this.plungerMover.fireBounce *= 0.6;
+		this.mover.fireBounce *= 0.6;
 
 		// Check for a downward collision with the tip.  This is the moving
 		// part of the plunger, so it has some special handling.
@@ -119,8 +120,8 @@ export class PlungerHit extends HitObject {
 			// isn't entirely unreasonable physically - you could look at it as
 			// accounting for the spring tension and friction.
 			const reverseImpulseFudgeFactor = .22;
-			this.plungerMover.reverseImpulse = pball.state.vel.y * impulse
-				* (pball.data.mass / this.plungerMover.mass)
+			this.mover.reverseImpulse = pball.state.vel.y * impulse
+				* (pball.data.mass / this.mover.mass)
 				* reverseImpulseFudgeFactor;
 		}
 
@@ -129,7 +130,7 @@ export class PlungerHit extends HitObject {
 
 		pball.state.vel.multiplyScalar(0.999);           //friction all axiz     //!! TODO: fix this
 
-		const scatterVel = this.plungerMover.scatterVelocity; // fixme * g_pplayer->m_ptable->m_globalDifficulty;// apply dificulty weighting
+		const scatterVel = this.mover.scatterVelocity; // fixme * g_pplayer->m_ptable->m_globalDifficulty;// apply dificulty weighting
 
 		if (scatterVel > 0 && Math.abs(pball.state.vel.y) > scatterVel) { //skip if low velocity
 			let scatter = Math.random() * 2 - 1;                                                   // -1.0f..1.0f
@@ -157,7 +158,7 @@ export class PlungerHit extends HitObject {
 		// of the plunger.  These are just like hitting a wall.
 		// Check all and find the nearest collision.
 
-		newtime = this.plungerMover.lineSegBase.hitTest(pball, dtime, hit);
+		newtime = this.mover.lineSegBase.hitTest(pball, dtime, hit);
 		if (newtime >= 0 && newtime <= hittime) {
 			fHit = true;
 			hittime = newtime;
@@ -167,7 +168,7 @@ export class PlungerHit extends HitObject {
 		}
 
 		for (let i = 0; i < 2; i++) {
-			newtime = this.plungerMover.lineSegSide[i].hitTest(pball, hittime, hit);
+			newtime = this.mover.lineSegSide[i].hitTest(pball, hittime, hit);
 			if (newtime >= 0 && newtime <= hittime) {
 				fHit = true;
 				hittime = newtime;
@@ -176,7 +177,7 @@ export class PlungerHit extends HitObject {
 				coll.hitVel!.y = 0;
 			}
 
-			newtime = this.plungerMover.jointBase[i].hitTest(pball, hittime, hit);
+			newtime = this.mover.jointBase[i].hitTest(pball, hittime, hit);
 			if (newtime >= 0 && newtime <= hittime) {
 				fHit = true;
 				hittime = newtime;
@@ -205,7 +206,7 @@ export class PlungerHit extends HitObject {
 		// (nominally) const Ball instance, save the old value so that we can
 		// restore it when we're done.
 		const oldvely = pball.state.vel.y;   // save the old velocity value
-		pball.state.vel.y -= this.plungerMover.speed;     // WARNING! EVIL OVERRIDE OF CONST INSTANCE POINTER!!!
+		pball.state.vel.y -= this.mover.speed;     // WARNING! EVIL OVERRIDE OF CONST INSTANCE POINTER!!!
 
 		// Figure the impulse from hitting the moving end.
 		// Calculate this as the product of the plunger speed and the
@@ -233,11 +234,11 @@ export class PlungerHit extends HitObject {
 		// arbitrary lower bound to prevent division by zero and/or crazy
 		// physics.)
 		const ballMass = pball.data.mass > 0.05 ? pball.data.mass : 0.05;
-		const xferRatio = this.plungerData.momentumXfer / ballMass;
-		const deltay = this.plungerMover.speed * xferRatio;
+		const xferRatio = this.data.momentumXfer / ballMass;
+		const deltay = this.mover.speed * xferRatio;
 
 		// check the moving bits
-		newtime = this.plungerMover.lineSegEnd.hitTest(pball, hittime, hit);
+		newtime = this.mover.lineSegEnd.hitTest(pball, hittime, hit);
 		if (newtime >= 0 && newtime <= hittime) {
 			fHit = true;
 			hittime = newtime;
@@ -247,7 +248,7 @@ export class PlungerHit extends HitObject {
 		}
 
 		for (let i = 0; i < 2; i++) {
-			newtime = this.plungerMover.jointEnd[i].hitTest(pball, hittime, hit);
+			newtime = this.mover.jointEnd[i].hitTest(pball, hittime, hit);
 			if (newtime >= 0 && newtime <= hittime) {
 				fHit = true;
 				hittime = newtime;
@@ -289,8 +290,8 @@ export class PlungerHit extends HitObject {
 			// enough to let the ball move a little bit, so that there's a
 			// non-zero time to the next collision with the plunger.  We'll
 			// then catch up again and push it along a little further.
-			if (this.plungerMover.travelLimit < this.plungerMover.pos) {
-				this.plungerMover.travelLimit = this.plungerMover.pos; // HACK
+			if (this.mover.travelLimit < this.mover.pos) {
+				this.mover.travelLimit = this.mover.pos; // HACK
 			}
 
 			// If the distance is negative, it means the objects are
@@ -312,7 +313,7 @@ export class PlungerHit extends HitObject {
 	}
 
 	public getMoverObject(): PlungerMover {
-		return this.plungerMover;
+		return this.mover;
 	}
 
 	public getType(): CollisionType {

@@ -31,6 +31,7 @@ import { BallHit } from './ball-hit';
 import { BallMesh } from './ball-mesh';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
+import { ItemState } from '../item-state';
 
 export class Ball implements IPlayable, IMovable<BallState>, IHittable {
 
@@ -58,6 +59,10 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable {
 
 	public updateState(state: BallState, obj: Object3D): void {
 		// TODO move ball
+	}
+
+	public getState(): ItemState {
+		return this.state;
 	}
 
 	public getMover(): BallMover {

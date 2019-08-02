@@ -18,19 +18,29 @@
  */
 
 import { Vertex3D } from '../../math/vertex3d';
+import { ItemState } from '../item-state';
 
 /**
  * The dynamic ball state.
  *
  * This is the data we need to properly position the ball on the playfield.
  */
-export class BallState {
+export class BallState extends ItemState {
 
 	public readonly pos: Vertex3D;
 	public readonly vel: Vertex3D;
 
-	constructor(pos: Vertex3D, vel: Vertex3D) {
+	constructor(name: string, pos: Vertex3D, vel: Vertex3D) {
+		super(name);
 		this.pos = pos;
 		this.vel = vel;
+	}
+
+	public clone(): ItemState {
+		return new BallState(this.name, this.pos.clone(), this.vel.clone());
+	}
+
+	public equals(state: ItemState): boolean {
+		return true;
 	}
 }

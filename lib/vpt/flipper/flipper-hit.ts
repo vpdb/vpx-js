@@ -45,43 +45,47 @@ import { TableData } from '../table/table-data';
 import { FlipperConfig } from './flipper';
 import { FlipperData } from './flipper-data';
 import { FlipperMover } from './flipper-mover';
+import { FlipperState } from './flipper-state';
 
 export class FlipperHit extends HitObject {
 
-	private readonly flipperMover: FlipperMover;
-	private readonly flipperData: FlipperData;
+	private readonly mover: FlipperMover;
+	private readonly data: FlipperData;
+	private readonly state: FlipperState;
 	private readonly tableData: TableData;
 	private lastHitTime: number = 0;
 
-	public static getInstance(flipperData: FlipperData, player: Player, table: Table): FlipperHit {
-		const height = table.getSurfaceHeight(flipperData.szSurface, flipperData.center.x, flipperData.center.y);
-		if (flipperData.flipperRadiusMin > 0 && flipperData.flipperRadiusMax > flipperData.flipperRadiusMin) {
-			flipperData.flipperRadius = flipperData.flipperRadiusMax - (flipperData.flipperRadiusMax - flipperData.flipperRadiusMin) /* m_ptable->m_globalDifficulty*/;
-			flipperData.flipperRadius = Math.max(flipperData.flipperRadius, flipperData.baseRadius - flipperData.endRadius + 0.05);
+	public static getInstance(data: FlipperData, state: FlipperState, player: Player, table: Table): FlipperHit {
+		const height = table.getSurfaceHeight(data.szSurface, data.center.x, data.center.y);
+		if (data.flipperRadiusMin > 0 && data.flipperRadiusMax > data.flipperRadiusMin) {
+			data.flipperRadius = data.flipperRadiusMax - (data.flipperRadiusMax - data.flipperRadiusMin) /* m_ptable->m_globalDifficulty*/;
+			data.flipperRadius = Math.max(data.flipperRadius, data.baseRadius - data.endRadius + 0.05);
 		} else {
-			flipperData.flipperRadius = flipperData.flipperRadiusMax;
+			data.flipperRadius = data.flipperRadiusMax;
 		}
 		return new FlipperHit({
-				center: flipperData.center,
-				baseRadius: Math.max(flipperData.baseRadius, 0.01),
-				endRadius: Math.max(flipperData.endRadius, 0.01),
-				flipperRadius: Math.max(flipperData.flipperRadius, 0.01),
-				angleStart: degToRad(flipperData.startAngle),
-				angleEnd: degToRad(flipperData.endAngle),
+				center: data.center,
+				baseRadius: Math.max(data.baseRadius, 0.01),
+				endRadius: Math.max(data.endRadius, 0.01),
+				flipperRadius: Math.max(data.flipperRadius, 0.01),
+				angleStart: degToRad(data.startAngle),
+				angleEnd: degToRad(data.endAngle),
 				zLow: height,
-				zHigh: height + flipperData.height,
+				zHigh: height + data.height,
 			},
-			flipperData,
+			data,
+			state,
 			player,
 			table.data!,
 		);
 	}
 
-	constructor(config: FlipperConfig, data: FlipperData, player: Player, tableData: TableData) {
+	constructor(config: FlipperConfig, data: FlipperData, state: FlipperState, player: Player, tableData: TableData) {
 		super();
-		this.flipperMover = new FlipperMover(config, data, player, tableData);
-		this.flipperMover.isEnabled = data.fEnabled;
-		this.flipperData = data;
+		this.mover = new FlipperMover(config, data, state, player, tableData);
+		this.mover.isEnabled = data.fEnabled;
+		this.data = data;
+		this.state = state;
 		this.tableData = tableData;
 		this.UpdatePhysicsFromFlipper();
 	}
@@ -93,12 +97,12 @@ export class FlipperHit extends HitObject {
 	public calcHitBBox(): void {
 		// Allow roundoff
 		this.hitBBox = new FRect3D();
-		this.hitBBox.left = this.flipperMover.hitCircleBase.center.x - this.flipperMover.flipperRadius - this.flipperMover.endRadius - 0.1;
-		this.hitBBox.right = this.flipperMover.hitCircleBase.center.x + this.flipperMover.flipperRadius + this.flipperMover.endRadius + 0.1;
-		this.hitBBox.top = this.flipperMover.hitCircleBase.center.y - this.flipperMover.flipperRadius - this.flipperMover.endRadius - 0.1;
-		this.hitBBox.bottom = this.flipperMover.hitCircleBase.center.y + this.flipperMover.flipperRadius + this.flipperMover.endRadius + 0.1;
-		this.hitBBox.zlow = this.flipperMover.hitCircleBase.hitBBox.zlow;
-		this.hitBBox.zhigh = this.flipperMover.hitCircleBase.hitBBox.zhigh;
+		this.hitBBox.left = this.mover.hitCircleBase.center.x - this.mover.flipperRadius - this.mover.endRadius - 0.1;
+		this.hitBBox.right = this.mover.hitCircleBase.center.x + this.mover.flipperRadius + this.mover.endRadius + 0.1;
+		this.hitBBox.top = this.mover.hitCircleBase.center.y - this.mover.flipperRadius - this.mover.endRadius - 0.1;
+		this.hitBBox.bottom = this.mover.hitCircleBase.center.y + this.mover.flipperRadius + this.mover.endRadius + 0.1;
+		this.hitBBox.zlow = this.mover.hitCircleBase.hitBBox.zlow;
+		this.hitBBox.zhigh = this.mover.hitCircleBase.hitBBox.zhigh;
 	}
 
 	public collide(coll: CollisionEvent, player: Player): void {
@@ -109,14 +113,14 @@ export class FlipperHit extends HitObject {
 		const hitPos = pball.state.pos.clone().add(rB);
 
 		const cF = new Vertex3D(
-			this.flipperMover.hitCircleBase.center.x,
-			this.flipperMover.hitCircleBase.center.y,
+			this.mover.hitCircleBase.center.x,
+			this.mover.hitCircleBase.center.y,
 			pball.state.pos.z);     // make sure collision happens in same z plane where ball is
 
 		const rF = hitPos.clone().sub(cF);       // displacement relative to flipper center
 
 		const vB = pball.hit.surfaceVelocity(rB);
-		const vF = this.flipperMover.surfaceVelocity(rF);
+		const vF = this.mover.surfaceVelocity(rF);
 		const vrel = vB.clone().sub(vF);
 		let bnv = normal.dot(vrel);       // relative normal velocity
 
@@ -153,7 +157,7 @@ export class FlipperHit extends HitObject {
 		 */
 		const angImp = -angResp.z;     // minus because impulse will apply in -normal direction
 		let flipperResponseScaling = 1.0;
-		if (this.flipperMover.isInContact && this.flipperMover.contactTorque! * angImp >= 0.) {
+		if (this.mover.isInContact && this.mover.contactTorque! * angImp >= 0.) {
 			// if impulse pushes against stopper, allow no loss of kinetic energy to flipper
 			// (still allow flipper recoil, but a diminished amount)
 			angResp.setZero();
@@ -167,16 +171,16 @@ export class FlipperHit extends HitObject {
 		 */
 		const epsilon = elasticityWithFalloff(this.elasticity, this.elasticityFalloff, bnv);
 
-		let impulse = -(1.0 + epsilon) * bnv / (pball.hit.invMass + normal.dot(Vertex3D.crossProduct(angResp.clone().divideScalar(this.flipperMover.inertia), rF)));
+		let impulse = -(1.0 + epsilon) * bnv / (pball.hit.invMass + normal.dot(Vertex3D.crossProduct(angResp.clone().divideScalar(this.mover.inertia), rF)));
 		const flipperImp = normal.clone().multiplyScalar(-(impulse * flipperResponseScaling));
 
 		const rotI = Vertex3D.crossProduct(rF, flipperImp);
-		if (this.flipperMover.isInContact) {
-			if (rotI.z * this.flipperMover.contactTorque < 0) {    // pushing against the solenoid?
+		if (this.mover.isInContact) {
+			if (rotI.z * this.mover.contactTorque < 0) {    // pushing against the solenoid?
 
 				// Get a bound on the time the flipper needs to return to static conditions.
 				// If it's too short, we treat the flipper as static during the whole collision.
-				const recoilTime = -rotI.z / this.flipperMover.contactTorque; // time flipper needs to eliminate this impulse, in 10ms
+				const recoilTime = -rotI.z / this.mover.contactTorque; // time flipper needs to eliminate this impulse, in 10ms
 
 				// Check ball normal velocity after collision. If the ball rebounded
 				// off the flipper, we need to make sure it does so with full
@@ -194,7 +198,7 @@ export class FlipperHit extends HitObject {
 		}
 
 		pball.state.vel.add(normal.clone().multiplyScalar(impulse * pball.hit.invMass));      // new velocity for ball after impact
-		this.flipperMover.applyImpulse(rotI);
+		this.mover.applyImpulse(rotI);
 
 		// apply friction
 		const tangent = vrel.clone().sub(normal.clone().multiplyScalar(vrel.dot(normal)));       // calc the tangential velocity
@@ -209,14 +213,14 @@ export class FlipperHit extends HitObject {
 			let kt = pball.hit.invMass + tangent.dot(Vertex3D.crossProduct(crossB.clone().divideScalar(pball.hit.inertia), rB));
 
 			const crossF = Vertex3D.crossProduct(rF, tangent);
-			kt += tangent.dot(Vertex3D.crossProduct(crossF.clone().divideScalar(this.flipperMover.inertia), rF));    // flipper only has angular response
+			kt += tangent.dot(Vertex3D.crossProduct(crossF.clone().divideScalar(this.mover.inertia), rF));    // flipper only has angular response
 
 			// friction impulse can't be greater than coefficient of friction times collision impulse (Coulomb friction cone)
 			const maxFric = this.friction * impulse;
 			const jt = clamp(-vt / kt, -maxFric, maxFric);
 
 			pball.hit.applySurfaceImpulse(crossB.clone().multiplyScalar(jt), tangent.clone().multiplyScalar(jt));
-			this.flipperMover.applyImpulse(crossF.clone().multiplyScalar(-jt));
+			this.mover.applyImpulse(crossF.clone().multiplyScalar(-jt));
 		}
 
 		// fixme ifireevent
@@ -234,11 +238,11 @@ export class FlipperHit extends HitObject {
 	}
 
 	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {
-		if (!this.flipperMover.isEnabled) {
+		if (!this.mover.isEnabled) {
 			return -1;
 		}
 
-		const lastface = this.flipperMover.lastHitFace;
+		const lastface = this.mover.lastHitFace;
 
 		// for effective computing, adding a last face hit value to speed calculations
 		// a ball can only hit one face never two
@@ -253,7 +257,7 @@ export class FlipperHit extends HitObject {
 
 		hittime = this.hitTestFlipperFace(pball, dtime, coll, !lastface); //second face
 		if (hittime >= 0) {
-			this.flipperMover.lastHitFace = !lastface; // change this face to check first // HACK
+			this.mover.lastHitFace = !lastface; // change this face to check first // HACK
 			return hittime;
 		}
 
@@ -262,7 +266,7 @@ export class FlipperHit extends HitObject {
 			return hittime;
 		}
 
-		hittime = this.flipperMover.hitCircleBase.hitTest(pball, dtime, coll);
+		hittime = this.mover.hitCircleBase.hitTest(pball, dtime, coll);
 		if (hittime >= 0) {
 
 			coll.hitVel = new Vertex2D();
@@ -277,33 +281,33 @@ export class FlipperHit extends HitObject {
 	}
 
 	public getMoverObject(): FlipperMover {
-		return this.flipperMover;
+		return this.mover;
 	}
 
 	public UpdatePhysicsFromFlipper(): void {
-		this.elasticityFalloff = (this.flipperData.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
-			? this.flipperData.overrideElasticityFalloff!
-			: this.flipperData.elasticityFalloff!;
-		this.elasticity = (this.flipperData.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
-			? this.flipperData.overrideElasticity!
-			: this.flipperData.elasticity!;
-		this.setFriction((this.flipperData.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
-			? this.flipperData.overrideFriction!
-			: this.flipperData.friction!);
-		this.scatter = degToRad((this.flipperData.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
-			? this.flipperData.overrideScatterAngle!
-			: this.flipperData.scatter!);
+		this.elasticityFalloff = (this.data.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
+			? this.data.overrideElasticityFalloff!
+			: this.data.elasticityFalloff!;
+		this.elasticity = (this.data.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
+			? this.data.overrideElasticity!
+			: this.data.elasticity!;
+		this.setFriction((this.data.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
+			? this.data.overrideFriction!
+			: this.data.friction!);
+		this.scatter = degToRad((this.data.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
+			? this.data.overrideScatterAngle!
+			: this.data.scatter!);
 	}
 
 	public hitTestFlipperFace(pball: Ball, dtime: number, coll: CollisionEvent, face1: boolean): number {
-		const angleCur = this.flipperMover.angleCur;
-		let anglespeed = this.flipperMover.angleSpeed;    // rotation rate
+		const angleCur = this.state.angle;
+		let anglespeed = this.mover.angleSpeed;    // rotation rate
 
-		const flipperbase = this.flipperMover.hitCircleBase.center;
-		const feRadius = this.flipperMover.endRadius;
+		const flipperbase = this.mover.hitCircleBase.center;
+		const feRadius = this.mover.endRadius;
 
-		const angleMin = Math.min(this.flipperMover.angleStart, this.flipperMover.angleEnd);
-		const angleMax = Math.max(this.flipperMover.angleStart, this.flipperMover.angleEnd);
+		const angleMin = Math.min(this.mover.angleStart, this.mover.angleEnd);
+		const angleMax = Math.max(this.mover.angleStart, this.mover.angleEnd);
 
 		const ballr  = pball.data.radius;
 		const ballvx = pball.state.vel.x;
@@ -311,14 +315,14 @@ export class FlipperHit extends HitObject {
 
 		// flipper positions at zero degrees rotation
 
-		let ffnx = this.flipperMover.zeroAngNorm.x;       // flipper face normal vector //Face2
+		let ffnx = this.mover.zeroAngNorm.x;       // flipper face normal vector //Face2
 		if (face1) {                           // negative for face1 (left face)
 			ffnx = -ffnx;
 		}
-		const ffny = this.flipperMover.zeroAngNorm.y; // norm y component same for either face
+		const ffny = this.mover.zeroAngNorm.y; // norm y component same for either face
 		const vp = new Vertex2D(                                 // face segment V1 point
-			this.flipperMover.hitCircleBase.radius * ffnx,     // face endpoint of line segment on base radius
-			this.flipperMover.hitCircleBase.radius * ffny,
+			this.mover.hitCircleBase.radius * ffnx,     // face endpoint of line segment on base radius
+			this.mover.hitCircleBase.radius * ffny,
 		);
 
 		const F = new Vertex2D();				// flipper face normal
@@ -436,7 +440,7 @@ export class FlipperHit extends HitObject {
 
 		const bfftd = ballvtx * T.x + ballvty * T.y;			// ball to flipper face tanget distance
 
-		const len = this.flipperMover.flipperRadius * this.flipperMover.zeroAngNorm.x; // face segment length ... e.g. same on either face
+		const len = this.mover.flipperRadius * this.mover.zeroAngNorm.x; // face segment length ... e.g. same on either face
 		if (bfftd < -C_TOL_ENDPNTS || bfftd > len + C_TOL_ENDPNTS) {
 			return -1.0; // not in range of touching
 		}
@@ -456,8 +460,8 @@ export class FlipperHit extends HitObject {
 		coll.hitNormal!.z = 0.0;
 
 		const dist = new Vertex2D( // calculate moment from flipper base center
-			pball.state.pos.x + ballvx * t - ballr * F.x - this.flipperMover.hitCircleBase.center.x, // center of ball + projected radius to contact point
-			pball.state.pos.y + ballvy * t - ballr * F.y - this.flipperMover.hitCircleBase.center.y, // all at time t
+			pball.state.pos.x + ballvx * t - ballr * F.x - this.mover.hitCircleBase.center.x, // center of ball + projected radius to contact point
+			pball.state.pos.y + ballvy * t - ballr * F.y - this.mover.hitCircleBase.center.y, // all at time t
 		);
 
 		const distance = Math.sqrt(dist.x * dist.x + dist.y * dist.y);	// distance from base center to contact point
@@ -497,16 +501,16 @@ export class FlipperHit extends HitObject {
 
 	private hitTestFlipperEnd(pball: Ball, dtime: number, coll: CollisionEvent): number {
 
-		const angleCur = this.flipperMover.angleCur;
-		let anglespeed = this.flipperMover.angleSpeed;		// rotation rate
+		const angleCur = this.state.angle;
+		let anglespeed = this.mover.angleSpeed;		// rotation rate
 
-		const flipperbase = this.flipperMover.hitCircleBase.center;
+		const flipperbase = this.mover.hitCircleBase.center;
 
-		const angleMin = Math.min(this.flipperMover.angleStart, this.flipperMover.angleEnd);
-		const angleMax = Math.max(this.flipperMover.angleStart, this.flipperMover.angleEnd);
+		const angleMin = Math.min(this.mover.angleStart, this.mover.angleEnd);
+		const angleMax = Math.max(this.mover.angleStart, this.mover.angleEnd);
 
 		const ballr = pball.data.radius;
-		const feRadius = this.flipperMover.endRadius;
+		const feRadius = this.mover.endRadius;
 
 		const ballrEndr = feRadius + ballr; // magnititude of (ball - flipperEnd)
 
@@ -518,7 +522,7 @@ export class FlipperHit extends HitObject {
 
 		const vp = new Vertex2D(
 			0.0,                           // m_flipperradius * sin(0);
-			-this.flipperMover.flipperRadius, // m_flipperradius * (-cos(0));
+			-this.mover.flipperRadius, // m_flipperradius * (-cos(0));
 		);
 
 		let ballvtx = 0;
@@ -633,8 +637,8 @@ export class FlipperHit extends HitObject {
 		coll.hitNormal.z = 0.0;
 
 		const dist = new Vertex2D(
-			pball.state.pos.x + ballvx * t - ballr * coll.hitNormal.x - this.flipperMover.hitCircleBase.center.x, // vector from base to flipperEnd plus the projected End radius
-			pball.state.pos.y + ballvy * t - ballr * coll.hitNormal.y - this.flipperMover.hitCircleBase.center.y);
+			pball.state.pos.x + ballvx * t - ballr * coll.hitNormal.x - this.mover.hitCircleBase.center.x, // vector from base to flipperEnd plus the projected End radius
+			pball.state.pos.y + ballvy * t - ballr * coll.hitNormal.y - this.mover.hitCircleBase.center.y);
 
 		const distance = Math.sqrt(dist.x * dist.x + dist.y * dist.y); // distance from base center to contact point
 
@@ -671,6 +675,6 @@ export class FlipperHit extends HitObject {
 	}
 
 	public getHitTime(): number {
-		return this.flipperMover.getHitTime();
+		return this.mover.getHitTime();
 	}
 }

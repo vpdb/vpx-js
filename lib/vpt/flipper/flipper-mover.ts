@@ -32,7 +32,9 @@ import { FlipperState } from './flipper-state';
 
 export class FlipperMover implements MoverObject {
 
-	private flipperData: FlipperData;
+	private readonly data: FlipperData;
+	private readonly state: FlipperState;
+
 	private tableData: TableData;
 
 	public hitCircleBase: HitCircle;
@@ -43,7 +45,6 @@ export class FlipperMover implements MoverObject {
 	private angularMomentum: number;
 	private angularAcceleration: number;
 	public angleSpeed: number;
-	public angleCur: number;
 
 	private curTorque: number;
 	public contactTorque: number = 0;
@@ -66,10 +67,11 @@ export class FlipperMover implements MoverObject {
 	public lastHitFace: boolean;
 	private player!: Player;
 
-	constructor(config: FlipperConfig, flipperData: FlipperData, player: Player, tableData: TableData) {
+	constructor(config: FlipperConfig, flipperData: FlipperData, state: FlipperState, player: Player, tableData: TableData) {
 
 		this.hitCircleBase = new HitCircle(config.center, config.baseRadius, config.zLow, config.zHigh);
-		this.flipperData = flipperData;
+		this.data = flipperData;
+		this.state = state;
 		this.tableData = tableData;
 		this.player = player;
 
@@ -88,7 +90,7 @@ export class FlipperMover implements MoverObject {
 
 		this.angleStart = config.angleStart;
 		this.angleEnd = config.angleEnd;
-		this.angleCur = config.angleStart;
+		this.state.angle = config.angleStart;
 
 		this.angularMomentum = 0;
 		this.angularAcceleration = 0;
@@ -104,37 +106,34 @@ export class FlipperMover implements MoverObject {
 
 		this.zeroAngNorm.x =  Math.sqrt(1.0 - ratio * ratio); // F2 Norm, used in Green's transform, in FPM time search  // =  sinf(faceNormOffset)
 		this.zeroAngNorm.y = -ratio;                   // F1 norm, change sign of x component, i.e -zeroAngNorm.x // = -cosf(faceNormOffset)
-
-		this.changeState();
 	}
 
 	public updateDisplacements(dtime: number): void {
 
-		const lastAngle = this.angleCur;
-		this.angleCur += this.angleSpeed * dtime;          // move flipper angle
+		const lastAngle = this.state.angle;
+		this.state.angle += this.angleSpeed * dtime;          // move flipper angle
 
 		const angleMin = Math.min(this.angleStart, this.angleEnd);
 		const angleMax = Math.max(this.angleStart, this.angleEnd);
 
-		if (this.angleCur > angleMax) {
-			this.angleCur = angleMax;
+		if (this.state.angle > angleMax) {
+			this.state.angle = angleMax;
 		}
-		if (this.angleCur < angleMin) {
-			this.angleCur = angleMin;
+		if (this.state.angle < angleMin) {
+			this.state.angle = angleMin;
 		}
 
 		if (Math.abs(this.angleSpeed) < 0.0005) {          // avoids 'jumping balls' when two or more balls held on flipper (and more other balls are in play) //!! make dependent on physics update rate
-			this.changeState(lastAngle);
 			return;
 		}
 
 		let handleEvent = false;
 
-		if (this.angleCur === angleMax) {                  // hit stop?
+		if (this.state.angle === angleMax) {                  // hit stop?
 			if (this.angleSpeed > 0) {
 				handleEvent = true;
 			}
-		} else if (this.angleCur === angleMin) {
+		} else if (this.state.angle === angleMin) {
 			if (this.angleSpeed < 0) {
 				handleEvent = true;
 			}
@@ -146,21 +145,18 @@ export class FlipperMover implements MoverObject {
 			this.angleSpeed = this.angularMomentum / this.inertia;
 
 			if (this.enableRotateEvent > 0) {
-				logger().info('[%s] Flipper is up', this.flipperData.getName());
+				logger().info('[%s] Flipper is up', this.data.getName());
 				// this.m_pflipper->FireVoidEventParm(DISPID_LimitEvents_EOS, anglespd); // send EOS event
 				//
 				// g_pplayer->this.m_pininput.this.m_leftkey_down_usec_EOS = usec(); // debug only
 				// g_pplayer->this.m_pininput.this.m_leftkey_down_frame_EOS = g_pplayer->this.m_overall_frames;
 
 			} else if (this.enableRotateEvent < 0) {
-				logger().info('[%s] Flipper is down', this.flipperData.getName());
+				logger().info('[%s] Flipper is down', this.data.getName());
 				// this.m_pflipper->FireVoidEventParm(DISPID_LimitEvents_BOS, anglespd); // send Beginning of Stroke/Park event
 			}
 			this.enableRotateEvent = 0;
 		}
-
-		// announce movement
-		this.changeState(lastAngle);
 	}
 
 	public updateVelocities(): void {
@@ -172,9 +168,9 @@ export class FlipperMover implements MoverObject {
 
 		// hold coil is weaker
 		const eosAngle = degToRad(this.getTorqueDampingAngle());
-		if (Math.abs(this.angleCur - this.angleEnd) < eosAngle) {
+		if (Math.abs(this.state.angle - this.angleEnd) < eosAngle) {
 			// fade in/out damping, depending on angle to end
-			const lerp = Math.sqrt(Math.sqrt(Math.abs(this.angleCur - this.angleEnd) / eosAngle));
+			const lerp = Math.sqrt(Math.sqrt(Math.abs(this.state.angle - this.angleEnd) / eosAngle));
 			desiredTorque *= lerp + this.getTorqueDamping() * (1 - lerp);
 		}
 
@@ -204,15 +200,15 @@ export class FlipperMover implements MoverObject {
 			const angleMin = Math.min(this.angleStart, this.angleEnd);
 			const angleMax = Math.max(this.angleStart, this.angleEnd);
 
-			if (this.angleCur >= angleMax - 1e-2 && torque > 0) {
-				this.angleCur = angleMax;
+			if (this.state.angle >= angleMax - 1e-2 && torque > 0) {
+				this.state.angle = angleMax;
 				this.isInContact = true;
 				this.contactTorque = torque;
 				this.angularMomentum = 0;
 				torque = 0;
 
-			} else if (this.angleCur <= angleMin + 1e-2 && torque < 0) {
-				this.angleCur = angleMin;
+			} else if (this.state.angle <= angleMin + 1e-2 && torque < 0) {
+				this.state.angle = angleMin;
 				this.isInContact = true;
 				this.contactTorque = torque;
 				this.angularMomentum = 0;
@@ -230,18 +226,18 @@ export class FlipperMover implements MoverObject {
 	}
 
 	// public getStrokeRatio(): number {
-	// 	return (this.angleCur - this.angleStart) / (this.angleEnd - this.angleStart); // End == Start cannot happen, as handled in ctor
+	// 	return (this.state.angle - this.angleStart) / (this.angleEnd - this.angleStart); // End == Start cannot happen, as handled in ctor
 	// }
 
 	// public setStartAngle(r: number): void {
 	// 	this.angleStart = r;
 	// 	const angleMin = Math.min(this.angleStart, this.angleEnd);
 	// 	const angleMax = Math.max(this.angleStart, this.angleEnd);
-	// 	if (this.angleCur > angleMax) {
-	// 		this.angleCur = angleMax;
+	// 	if (this.state.angle > angleMax) {
+	// 		this.state.angle = angleMax;
 	// 	}
-	// 	if (this.angleCur < angleMin) {
-	// 		this.angleCur = angleMin;
+	// 	if (this.state.angle < angleMin) {
+	// 		this.state.angle = angleMin;
 	// 	}
 	// }
 
@@ -250,11 +246,11 @@ export class FlipperMover implements MoverObject {
 	// 	const angleMin = Math.min(this.angleStart, this.angleEnd);
 	// 	const angleMax = Math.max(this.angleStart, this.angleEnd);
 	//
-	// 	if (this.angleCur > angleMax) {
-	// 		this.angleCur = angleMax;
+	// 	if (this.state.angle > angleMax) {
+	// 		this.state.angle = angleMax;
 	// 	}
-	// 	if (this.angleCur < angleMin) {
-	// 		this.angleCur = angleMin;
+	// 	if (this.state.angle < angleMin) {
+	// 		this.state.angle = angleMin;
 	// 	}
 	// }
 
@@ -268,41 +264,41 @@ export class FlipperMover implements MoverObject {
 
 	public getReturnRatio(): number {
 		return this.doOverridePhysics()
-			? this.flipperData.overrideReturnStrength!
-			: this.flipperData.return!;
+			? this.data.overrideReturnStrength!
+			: this.data.return!;
 	}
 
 	public getStrength(): number {
 		return this.doOverridePhysics()
-			? this.flipperData.overrideStrength!
-			: this.flipperData.strength!;
+			? this.data.overrideStrength!
+			: this.data.strength!;
 	}
 
 	private getTorqueDampingAngle(): number {
 		return this.doOverridePhysics()
-			? this.flipperData.overrideTorqueDampingAngle!
-			: this.flipperData.torqueDampingAngle!;
+			? this.data.overrideTorqueDampingAngle!
+			: this.data.torqueDampingAngle!;
 	}
 	private getFlipperMass(): number {
 		return this.doOverridePhysics()
-			? this.flipperData.overrideMass!
-			: this.flipperData.mass;
+			? this.data.overrideMass!
+			: this.data.mass;
 	}
 
 	private getTorqueDamping(): number {
 		return this.doOverridePhysics()
-			? this.flipperData.overrideTorqueDamping!
-			: this.flipperData.torqueDamping!;
+			? this.data.overrideTorqueDamping!
+			: this.data.torqueDamping!;
 	}
 
 	private getRampUpSpeed(): number {
 		return this.doOverridePhysics()
-			? this.flipperData.overrideCoilRampUp!
-			: this.flipperData.rampUp!;
+			? this.data.overrideCoilRampUp!
+			: this.data.rampUp!;
 	}
 
 	private doOverridePhysics(): boolean {
-		return !!this.flipperData.overridePhysics
+		return !!this.data.overridePhysics
 			|| (this.tableData.overridePhysicsFlipper && !!this.tableData.overridePhysics);
 	}
 
@@ -320,8 +316,8 @@ export class FlipperMover implements MoverObject {
 		const angleMax = Math.max(this.angleStart, this.angleEnd);
 
 		const dist = this.angleSpeed > 0
-			? angleMax - this.angleCur       // >= 0
-			: angleMin - this.angleCur;      // <= 0
+			? angleMax - this.state.angle       // >= 0
+			: angleMin - this.state.angle;      // <= 0
 
 		const hitTime = dist / this.angleSpeed;
 
@@ -335,11 +331,5 @@ export class FlipperMover implements MoverObject {
 	public applyImpulse(rotI: Vertex3D): void {
 		this.angularMomentum += rotI.z;            // only rotation about z axis
 		this.angleSpeed = this.angularMomentum / this.inertia;    // TODO: figure out moment of inertia
-	}
-
-	private changeState(lastAngle?: number) {
-		if (typeof lastAngle === 'undefined' || lastAngle !== this.angleCur) {
-			this.player.changeState(this.flipperData.getName(), new FlipperState(this.angleCur));
-		}
 	}
 }

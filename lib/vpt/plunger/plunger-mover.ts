@@ -30,7 +30,8 @@ import { PlungerState } from './plunger-state';
 
 export class PlungerMover implements MoverObject {
 
-	private readonly plungerData: PlungerData;
+	private readonly data: PlungerData;
+	private readonly state: PlungerState;
 	private readonly player: Player;
 	private readonly tableData: TableData;
 
@@ -74,9 +75,8 @@ export class PlungerMover implements MoverObject {
 	private _pos: number = 0;
 	get pos() { return this._pos; }
 	set pos(pos) {
-		const lastPos = this._pos;
 		this._pos = pos;
-		this.changeState(lastPos);
+		this.state.frame = this.getFrame();
 	}
 
 	/**
@@ -307,37 +307,38 @@ export class PlungerMover implements MoverObject {
 	 */
 	public scatterVelocity: number = 0;
 
-	constructor(plungerConfig: PlungerConfig, plungerData: PlungerData, player: Player, tableData: TableData) {
+	constructor(config: PlungerConfig, data: PlungerData, state: PlungerState, player: Player, tableData: TableData) {
 
-		this.plungerData = plungerData;
+		this.data = data;
+		this.state = state;
 		this.player = player;
 		this.tableData = tableData;
 
-		this.x = plungerConfig.x;
-		this.x2 = plungerConfig.x2;
-		this.frameEnd = plungerConfig.frameTop;
-		this.frameStart = plungerConfig.frameBottom;
-		this.frameLen = plungerConfig.frameBottom - plungerConfig.frameTop;
-		this.cFrames = plungerConfig.cFrames;
-		this.travelLimit = plungerConfig.frameTop;
-		this.scatterVelocity = plungerData.scatterVelocity;
+		this.x = config.x;
+		this.x2 = config.x2;
+		this.frameEnd = config.frameTop;
+		this.frameStart = config.frameBottom;
+		this.frameLen = config.frameBottom - config.frameTop;
+		this.cFrames = config.cFrames;
+		this.travelLimit = config.frameTop;
+		this.scatterVelocity = data.scatterVelocity;
 
 		// The rest position is taken from the "park position" property
-		const restPos = plungerData.parkPosition;
+		const restPos = data.parkPosition;
 
 		// start at the rest position
 		this.restPos = restPos;
-		this.pos = plungerConfig.frameTop + (restPos * this.frameLen);
+		this.pos = config.frameTop + (restPos * this.frameLen);
 
-		this.lineSegBase.setZ(plungerConfig.zHeight, plungerConfig.zHeight + Plunger.PLUNGER_HEIGHT);
-		this.lineSegSide[0].setZ(plungerConfig.zHeight, plungerConfig.zHeight + Plunger.PLUNGER_HEIGHT);
-		this.lineSegSide[1].setZ(plungerConfig.zHeight, plungerConfig.zHeight + Plunger.PLUNGER_HEIGHT);
-		this.lineSegEnd.setZ(plungerConfig.zHeight, plungerConfig.zHeight + Plunger.PLUNGER_HEIGHT);
+		this.lineSegBase.setZ(config.zHeight, config.zHeight + Plunger.PLUNGER_HEIGHT);
+		this.lineSegSide[0].setZ(config.zHeight, config.zHeight + Plunger.PLUNGER_HEIGHT);
+		this.lineSegSide[1].setZ(config.zHeight, config.zHeight + Plunger.PLUNGER_HEIGHT);
+		this.lineSegEnd.setZ(config.zHeight, config.zHeight + Plunger.PLUNGER_HEIGHT);
 
-		this.jointBase[0].setZ(plungerConfig.zHeight, plungerConfig.zHeight + Plunger.PLUNGER_HEIGHT);
-		this.jointBase[1].setZ(plungerConfig.zHeight, plungerConfig.zHeight + Plunger.PLUNGER_HEIGHT);
-		this.jointEnd[0].setZ(plungerConfig.zHeight, plungerConfig.zHeight + Plunger.PLUNGER_HEIGHT);
-		this.jointEnd[1].setZ(plungerConfig.zHeight, plungerConfig.zHeight + Plunger.PLUNGER_HEIGHT);
+		this.jointBase[0].setZ(config.zHeight, config.zHeight + Plunger.PLUNGER_HEIGHT);
+		this.jointBase[1].setZ(config.zHeight, config.zHeight + Plunger.PLUNGER_HEIGHT);
+		this.jointEnd[0].setZ(config.zHeight, config.zHeight + Plunger.PLUNGER_HEIGHT);
+		this.jointEnd[1].setZ(config.zHeight, config.zHeight + Plunger.PLUNGER_HEIGHT);
 
 		this.setObjects(this.pos);
 	}
@@ -397,12 +398,12 @@ export class PlungerMover implements MoverObject {
 		const strokeEventLimit = this.frameLen / 50.0;
 		const strokeEventHysteresis = strokeEventLimit * 2.0;
 		if (this.fStrokeEventsArmed && this.pos + dx > this.frameStart - strokeEventLimit) {
-			logger().info('[%s] Pulled back.', this.plungerData.getName());
+			logger().info('[%s] Pulled back.', this.data.getName());
 			//this.plunger->FireVoidEventParm(DISPID_LimitEvents_BOS, fabsf(this.speed));
 			this.fStrokeEventsArmed = false;
 
 		} else if (this.fStrokeEventsArmed && this.pos + dx < this.frameEnd + strokeEventLimit) {
-			logger().info('[%s] Fired.', this.plungerData.getName());
+			logger().info('[%s] Fired.', this.data.getName());
 			//this.plunger->FireVoidEventParm(DISPID_LimitEvents_EOS, fabsf(this.speed));
 			this.fStrokeEventsArmed = false;
 
@@ -449,7 +450,7 @@ export class PlungerMover implements MoverObject {
 		const ReleaseThreshold = 0.2;
 
 		// note if we're acting as an auto plunger
-		const autoPlunger = this.plungerData.autoPlunger;
+		const autoPlunger = this.data.autoPlunger;
 
 		// check which forces are acting on us
 		if (this.fireTimer > 0) {
@@ -657,7 +658,7 @@ export class PlungerMover implements MoverObject {
 			const normalize = this.tableData.plungerNormalize / 13.0 / 100.0;
 			const dt = 0.1;
 			this.speed *= plungerFriction;
-			this.speed += error * this.frameLen * this.plungerData.mechStrength / this.mass * normalize * dt;
+			this.speed += error * this.frameLen * this.data.mechStrength / this.mass * normalize * dt;
 
 			// add any reverse impulse to the result
 			this.speed += this.reverseImpulse;
@@ -705,7 +706,7 @@ export class PlungerMover implements MoverObject {
 		// is upwards, so the speed is negative.
 		const dx = startPos - this.restPos;
 		const normalize = this.tableData.plungerNormalize / 13.0 / 100.0;
-		this.fireSpeed = -this.plungerData.speedFire * dx * this.frameLen / this.mass * normalize;
+		this.fireSpeed = -this.data.speedFire * dx * this.frameLen / this.mass * normalize;
 
 		// Figure the target stopping position for the
 		// bounce off of the barrel spring.  Treat this
@@ -736,15 +737,8 @@ export class PlungerMover implements MoverObject {
 		this.jointEnd[1].set(this.x2, len);
 	}
 
-	private changeState(lastPos?: number) {
-		if (typeof lastPos === 'undefined' || lastPos !== this.pos) {
-			this.player.changeState(this.plungerData.getName(), this.getState());
-		}
-	}
-
-	public getState(): PlungerState {
+	public getFrame(): number {
 		const frame0 = Math.floor((this.pos - this.frameStart) / (this.frameEnd - this.frameStart) * (this.cFrames - 1) + 0.5);
-		const frame = frame0 < 0 ? 0 : frame0 >= this.cFrames ? this.cFrames - 1 : frame0;
-		return new PlungerState(frame);
+		return frame0 < 0 ? 0 : frame0 >= this.cFrames ? this.cFrames - 1 : frame0;
 	}
 }

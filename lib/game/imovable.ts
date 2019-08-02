@@ -21,10 +21,13 @@ import { Object3D } from 'three';
 import { Table } from '..';
 import { MoverObject } from '../physics/mover-object';
 import { IPlayable } from './iplayable';
+import { ItemState } from '../vpt/item-state';
 
 export interface IMovable<STATE> extends IPlayable {
 
 	getMover(): MoverObject;
+
+	getState(): ItemState;
 
 	updateState(state: STATE, obj: Object3D, table: Table): void;
 }

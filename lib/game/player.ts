@@ -35,6 +35,7 @@ import { Ball } from '../vpt/ball/ball';
 import { BallData } from '../vpt/ball/ball-data';
 import { BallState } from '../vpt/ball/ball-state';
 import { FlipperMover } from '../vpt/flipper/flipper-mover';
+import { ItemState } from '../vpt/item-state';
 
 export class Player {
 
@@ -65,7 +66,7 @@ export class Player {
 
 	private hitPlayfield!: HitPlane; // HitPlanes cannot be part of octree (infinite size)
 	private hitTopGlass!: HitPlane;
-	private state: { [key: string]: any} = {};
+	//private state: { [key: string]: any} = {};
 	public curMechPlungerPos: number = 0;
 	public recordContacts: boolean = false;
 	public contacts: CollisionEvent[] = [];
@@ -79,6 +80,9 @@ export class Player {
 	public swapBallCcollisionHandling: boolean = false;
 	public lastPlungerHit: number = 0;
 
+	private previousStates: { [key: string]: ItemState } = {};
+	private currentStates: { [key: string]: ItemState } = {};
+
 	// ball the script user can get with ActiveBall
 
 	constructor(table: Table) {
@@ -88,24 +92,17 @@ export class Player {
 		this.initOcTree(table);
 	}
 
-	public setOnStateChanged(callback: StateCallback): void {
-		this.stateCallback = callback;
-	}
-
-	public changeState(name: string, state: any) {
-		if (this.stateCallback && (!this.state[name] || !this.state[name].equals(state))) {
-			this.stateCallback(name, state);
+	public popState(): ItemState[] {
+		const changedStates: ItemState[] = [];
+		for (const name of Object.keys(this.currentStates)) {
+			const currentState = this.currentStates[name];
+			const previousState = this.previousStates[name];
+			if (!currentState.equals(previousState)) {
+				changedStates.push(currentState);
+				this.previousStates[name] = currentState.clone();
+			}
 		}
-		this.state[name] = state;
-	}
-
-	public popState() {
-		if (Object.keys(this.state).length === 0) {
-			return false;
-		}
-		const state = this.state;
-		this.state = {};
-		return state;
+		return changedStates;
 	}
 
 	private addTableElements(table: Table): void {
@@ -118,6 +115,9 @@ export class Player {
 		// link movables to player
 		for (const movable of table.getMovables()) {
 			this.movers.push(movable.getMover());
+			const state = movable.getState();
+			this.currentStates[state.getName()] = state;
+			this.previousStates[state.getName()] = state.clone();
 		}
 
 		// link hittables to player
@@ -559,7 +559,7 @@ export class Player {
 	public createBall(ballCreator: IBallCreationPosition, velocity: Vertex3D = new Vertex3D( 0.1, 0, 0), radius = 25, mass = 1): Ball {
 
 		const data = new BallData(radius, mass, this.table.data!.defaultBulbIntensityScaleOnBall);
-		const state = new BallState(ballCreator.getBallCreationPosition(this.table), velocity);
+		const state = new BallState('ball', ballCreator.getBallCreationPosition(this.table), velocity);
 		state.pos.z += data.radius;
 
 		const ball = new Ball(data, state, this.table.data!);
@@ -619,6 +619,7 @@ export class Player {
 	// 	this.gravity.y = Math.sin(degToRad(slopeDeg)) * strength;
 	// 	this.gravity.z = -Math.cos(degToRad(slopeDeg)) * strength;
 	// }
+
 }
 
 export type StateCallback = (name: string, state: any) => void;

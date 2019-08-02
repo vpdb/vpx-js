@@ -17,30 +17,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-/* tslint:disable:variable-name */
+export abstract class ItemState {
 
-import { ItemState } from '../item-state';
+	protected readonly name: string;
 
-export class FlipperState extends ItemState {
-
-	/**
-	 * Angle in rad
-	 */
-	public angle: number;
-
-	constructor(name: string, angle: number) {
-		super(name);
-		this.angle = angle;
+	public constructor(name: string) {
+		this.name = name;
 	}
 
-	public equals(state: FlipperState): boolean {
-		if (!state) {
-			return false;
-		}
-		return state.angle === this.angle;
-	}
+	public abstract clone(): ItemState;
+	public abstract equals(state: ItemState): boolean;
 
-	public clone(): FlipperState {
-		return new FlipperState(this.name, this.angle);
+	public getName() {
+		return this.name;
 	}
 }
