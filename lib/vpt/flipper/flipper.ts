@@ -46,7 +46,7 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 
 	private readonly data: FlipperData;
 	private readonly mesh: FlipperMesh;
-	private state: FlipperState;
+	private readonly state: FlipperState;
 	private hit?: FlipperHit;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Flipper> {
@@ -120,11 +120,11 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	public updateState(state: FlipperState, obj: Object3D): void {
 		const matToOrigin = new Matrix3D().setTranslation(-this.data.center.x, -this.data.center.y, 0);
 		const matFromOrigin = new Matrix3D().setTranslation(this.data.center.x, this.data.center.y, 0);
-		const matRotate = new Matrix3D().rotateZMatrix(state.angle - this.state.angle);
+		const matRotate = new Matrix3D().rotateZMatrix(this.state.angle - degToRad(this.data.startAngle));
 		const matrix = matToOrigin.multiply(matRotate).multiply(matFromOrigin);
-		this.state = state;
 
-		obj.applyMatrix(matrix.toThreeMatrix4());
+		obj.matrix = matrix.toThreeMatrix4();
+		obj.matrixWorldNeedsUpdate = true;
 	}
 
 	public getFlipperData(): FlipperData {
