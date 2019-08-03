@@ -35,7 +35,6 @@ import { FlipperHit } from './flipper-hit';
 import { FlipperMesh } from './flipper-mesh';
 import { FlipperMover } from './flipper-mover';
 import { FlipperState } from './flipper-state';
-import { ItemState } from '../item-state';
 
 /**
  * VPinball's flippers
@@ -117,7 +116,7 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		this.getMover().setSolenoidState(false);
 	}
 
-	public updateState(state: FlipperState, obj: Object3D): void {
+	public applyState(obj: Object3D): void {
 		const matToOrigin = new Matrix3D().setTranslation(-this.data.center.x, -this.data.center.y, 0);
 		const matFromOrigin = new Matrix3D().setTranslation(this.data.center.x, this.data.center.y, 0);
 		const matRotate = new Matrix3D().rotateZMatrix(this.state.angle - degToRad(this.data.startAngle));
