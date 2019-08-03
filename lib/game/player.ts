@@ -79,6 +79,8 @@ export class Player {
 	private pactiveballDebug?: Ball;
 	public swapBallCcollisionHandling: boolean = false;
 	public lastPlungerHit: number = 0;
+	public ballControl = false;
+	public pBCTarget?: Vertex3D;
 
 	private previousStates: { [key: string]: ItemState } = {};
 	private currentStates: { [key: string]: ItemState } = {};
@@ -552,7 +554,7 @@ export class Player {
 
 	public updateVelocities() {
 		for (const mover of this.movers) {
-			mover.updateVelocities(); // always on integral physics frame boundary (spinner, gate, flipper, plunger, ball)
+			mover.updateVelocities(this); // always on integral physics frame boundary (spinner, gate, flipper, plunger, ball)
 		}
 	}
 
