@@ -24,7 +24,7 @@ import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
 import { IBallCreationPosition, Player } from '../../game/player';
-import { VpTableExporterOptions } from '../../gltf/table-exporter';
+import { VpTableExporterOptions } from '../table/table-exporter';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';

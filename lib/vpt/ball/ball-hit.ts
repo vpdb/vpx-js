@@ -19,7 +19,7 @@
 
 import { Player } from '../../game/player';
 import { clamp, solveQuadraticEq } from '../../math/functions';
-import { Matrix3D } from '../../math/matrix3d';
+import { Matrix2D } from '../../math/matrix2d';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
@@ -41,7 +41,6 @@ import { Ball } from './ball';
 import { BallData } from './ball-data';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
-import { Matrix2D } from '../../math/matrix2d';
 
 /**
  * In the VP source code this is all part of ball.cpp. We'll try
@@ -72,8 +71,6 @@ export class BallHit extends HitObject {
 	private defaultZ: number = 25.0;
 
 	public vpVolObjs: IFireEvents[] = [];
-
-	// normal height of the ball //!! remove?
 
 	/**
 	 * Creates a new ball hit.
@@ -456,96 +453,3 @@ export class BallHit extends HitObject {
 			.add(Vertex3D.crossProduct(this.angularVelocity, Vertex3D.crossProduct(this.angularVelocity, surfP))); // centripetal acceleration
 	}
 }
-
-// export class Ball extends HitObject {
-//
-// 	private readonly player: Player;
-// 	private readonly tableData: GameData;
-// 	private color = 0xffffff;
-//
-// 	// Per frame info
-// 	//CCO(BallEx) * m_pballex; // Object model version of the ball
-//
-// 	private szImage: string;
-// 	private szImageFront: string;
-//
-// 	private pinballEnv?: Texture;
-// 	private pinballDecal?: Texture;
-// 	public vpVolObjs?: IFireEvents[]; // vector of triggers and kickers we are now inside (stored as IFireEvents* though, as HitObject.m_obj stores it like that!)
-//
-// 	private coll: CollisionEvent;  // collision information, may not be a actual hit if something else happens first
-//
-// 	private ballMover: BallMover;
-//
-// 	public pos?: Vertex3D;
-// 	public defaultZ = 25.0;       // normal height of the ball //!! remove?
-//
-// 	private oldpos: Vertex3D[] = []; // for the optional ball trails
-// 	private ringCounterOldPos = 0;
-//
-// 	public vel = new Vertex3D();        // ball velocity
-// 	private oldVel?: Vertex3D;
-//
-// 	public radius = 25;
-// 	private mass = 1;
-// 	private invMass = 1;
-//
-// 	private rcHitRadiusSqr?: number; // extended (by m_vel + magic) squared radius, used in collision detection
-//
-// 	public eventPos = new Vertex3D(-1, -1, -1);  // last hit event position (to filter hit 'equal' hit events)
-//
-// 	private orientation =  new Matrix3D().setIdentity();
-// 	private angularmomentum = new Vertex3D();
-// 	private angularvelocity = new Vertex3D();
-// 	private inertia: number;
-//
-// 	private id: number; // unique ID for each ball
-//
-// 	public bulbIntensityScale = 1; // to dampen/increase contribution of the bulb lights (locally/by script)
-//
-// 	private playfieldReflectionStrength = 1;
-//
-// 	public isFrozen = false;
-// 	private reflectionEnabled = true;
-// 	private forceReflection = false;
-// 	private visible = true;
-// 	private decalMode?: boolean;
-//
-// 	private static ballID: number;
-//
-// 	// increased for each ball created to have an unique ID for scripts for each ball
-//
-// 	constructor(player: Player, tableData: GameData) {
-// 		super();
-// 		this.player = player;
-// 		this.tableData = tableData;
-// 		this.id = Ball.ballID;
-// 		Ball.ballID++;
-// 		this.coll = new CollisionEvent(this);
-// 		this.inertia = (2.0 / 5.0) * this.radius * this.radius * this.mass;
-// 		this.ballMover = new BallMover(this);
-// 		this.szImage = this.tableData.szBallImage;
-// 		this.szImageFront = this.tableData.szBallImageFront;
-// 	}
-
-//
-// 	public UpdateDisplacements(dtime: number): void {
-// 		if (!this.isFrozen) {
-// 			const ds = this.vel.clone().multiplyScalar(dtime);
-// 			this.pos!.add(ds);
-//
-// 			this.CalcHitBBox();
-//
-// 			const mat3 = new Matrix3D();
-// 			mat3.createSkewSymmetric(this.angularvelocity);
-//
-// 			const addedorientation = new Matrix3D();
-// 			addedorientation.multiply(mat3, this.orientation);
-// 			addedorientation.multiplyScalar(dtime);
-//
-// 			this.orientation.addMatrix(addedorientation, this.orientation);
-// 			this.orientation.orthoNormalize();
-//
-// 			this.angularvelocity = this.angularmomentum.clone().divideScalar(this.inertia);
-// 		}
-// 	}

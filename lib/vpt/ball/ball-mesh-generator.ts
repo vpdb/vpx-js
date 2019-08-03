@@ -17,9 +17,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { ballMesh } from '../../../res/meshes/ball-mesh';
+import { Mesh } from '../mesh';
+import { BallData } from './ball-data';
+
 /**
  * This class creates a ball mesh.
  */
-export class BallMesh {
+export class BallMeshGenerator {
 
+	private readonly data: BallData;
+
+	constructor(data: BallData) {
+		this.data = data;
+	}
+
+	public getMesh(): Mesh {
+		return ballMesh;
+	}
 }

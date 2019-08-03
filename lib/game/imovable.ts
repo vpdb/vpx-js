@@ -20,8 +20,9 @@
 import { Object3D } from 'three';
 import { Table } from '..';
 import { MoverObject } from '../physics/mover-object';
-import { IPlayable } from './iplayable';
 import { ItemState } from '../vpt/item-state';
+import { IPlayable } from './iplayable';
+import { Player } from './player';
 
 export interface IMovable<STATE extends ItemState> extends IPlayable {
 
@@ -29,5 +30,5 @@ export interface IMovable<STATE extends ItemState> extends IPlayable {
 
 	getState(): STATE;
 
-	applyState(obj: Object3D, table: Table): void;
+	applyState(obj: Object3D, table: Table, player: Player): void;
 }

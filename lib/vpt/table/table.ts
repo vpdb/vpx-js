@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Scene } from 'three';
+import { Group, Mesh, Scene } from 'three';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
-import { TableExporter, VpTableExporterOptions } from '../../gltf/table-exporter';
+import { TableExporter, VpTableExporterOptions } from './table-exporter';
 import { IBinaryReader, Storage } from '../../io/ole-doc';
 import { f4 } from '../../math/float';
 import { FRect3D } from '../../math/frect3d';
@@ -296,6 +296,11 @@ export class Table implements IRenderable {
 	public async exportGlb(opts?: VpTableExporterOptions): Promise<Buffer> {
 		const exporter = new TableExporter(this, opts || {});
 		return await exporter.exportGlb();
+	}
+
+	public async exportElement(renderable: IRenderable, opts?: VpTableExporterOptions): Promise<Group> {
+		const exporter = new TableExporter(this, opts || {});
+		return await exporter.createItemMesh(renderable);
 	}
 
 	public async streamStorage<T>(name: string, streamer: (stg: Storage) => Promise<T>): Promise<T> {
