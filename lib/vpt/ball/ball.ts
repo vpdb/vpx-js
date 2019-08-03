@@ -18,20 +18,19 @@
  */
 
 import { Object3D } from 'three';
+import { Table } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { Player } from '../../game/player';
 import { CollisionEvent } from '../../physics/collision-event';
 import { HitObject } from '../../physics/hit-object';
-import { Table } from '../table/table';
 import { TableData } from '../table/table-data';
 import { BallData } from './ball-data';
 import { BallHit } from './ball-hit';
 import { BallMesh } from './ball-mesh';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
-import { ItemState } from '../item-state';
 
 export class Ball implements IPlayable, IMovable<BallState>, IHittable {
 
@@ -57,11 +56,11 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable {
 		return `Ball${this.id}`;
 	}
 
-	public updateState(state: BallState, obj: Object3D): void {
+	public applyState(obj: Object3D): void {
 		// TODO move ball
 	}
 
-	public getState(): ItemState {
+	public getState(): BallState {
 		return this.state;
 	}
 

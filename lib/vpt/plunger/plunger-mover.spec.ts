@@ -120,7 +120,7 @@ describe('The VPinball plunger physics', () => {
 		const springObj = plungerObj.children.find(c => c.name === 'spring') as Mesh;
 
 		// apply player state to plunger
-		plunger.updateState(popState(player, 'CustomPlunger'), plungerObj, table);
+		plunger.applyState(popState(player, 'CustomPlunger'), plungerObj, table);
 		rodObj.geometry.computeBoundingBox();
 		springObj.geometry.computeBoundingBox();
 
@@ -133,7 +133,7 @@ describe('The VPinball plunger physics', () => {
 		simulateCycles(player, 50);
 
 		// apply again
-		plunger.updateState(popState(player, 'CustomPlunger'), plungerObj, table);
+		plunger.applyState(popState(player, 'CustomPlunger'), plungerObj, table);
 		rodObj.geometry.computeBoundingBox();
 		springObj.geometry.computeBoundingBox();
 

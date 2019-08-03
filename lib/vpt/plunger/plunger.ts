@@ -74,7 +74,7 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 		return this.data;
 	}
 
-	public getState(): ItemState {
+	public getState(): PlungerState {
 		return this.state!;
 	}
 
@@ -145,12 +145,10 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 		}
 	}
 
-	public updateState(state: PlungerState, obj: Object3D, table: Table): void {
-		if (state.equals(this.state!)) {
-			return;
-		}
+	public applyState(obj: Object3D, table: Table): void {
+
 		const matrix = new Matrix3D().toRightHanded();
-		const mesh = this.mesh.generateMeshes(state.frame, table);
+		const mesh = this.mesh.generateMeshes(this.state.frame, table);
 
 		const rodObj = obj.children.find(o => o.name === 'rod') as any;
 		if (rodObj) {
@@ -160,7 +158,6 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 		if (springObj) {
 			mesh.spring!.transform(matrix).applyToObject(springObj);
 		}
-		this.state = state;
 	}
 
 	public getBallCreationPosition(table: Table): Vertex3D {
