@@ -41,6 +41,7 @@ import { Ball } from './ball';
 import { BallData } from './ball-data';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
+import { Matrix2D } from '../../math/matrix2d';
 
 /**
  * In the VP source code this is all part of ball.cpp. We'll try
@@ -54,11 +55,11 @@ export class BallHit extends HitObject {
 	private readonly mover: BallMover;
 	private readonly tableData: TableData;
 
-	private readonly orientation = new Matrix3D().setIdentity();
+	public readonly orientation = new Matrix2D();
 	public readonly invMass: number;
 	public readonly inertia: number;
-	private readonly angularMomentum = new Vertex3D();
-	private angularVelocity = new Vertex3D();
+	public readonly angularMomentum = new Vertex3D();
+	public angularVelocity = new Vertex3D();
 
 	public isFrozen: boolean;
 	private playfieldReflectionStrength: number;
@@ -90,7 +91,7 @@ export class BallHit extends HitObject {
 		this.data = data;
 		this.state = state;
 		this.tableData = tableData;
-		this.mover = new BallMover(ball);
+		this.mover = new BallMover(this.id, data, state, this);
 
 		// Only called by real balls, not temporary objects created for physics/rendering
 		this.invMass = 1.0 / data.mass;

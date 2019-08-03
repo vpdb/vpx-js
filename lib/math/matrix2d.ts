@@ -47,4 +47,69 @@ export class Matrix2D {
 		this.matrix[1][2] = axis.y * axis.z * (1.0 - rcos) + axis.x * rsin;
 		this.matrix[2][2] = axis.z * axis.z + rcos * (1.0 - axis.z * axis.z);
 	}
+
+	public createSkewSymmetric(pv3D: Vertex3D) {
+		this.matrix[0][0] = 0;
+		this.matrix[0][1] = -pv3D.z;
+		this.matrix[0][2] = pv3D.y;
+		this.matrix[1][0] = pv3D.z;
+		this.matrix[1][1] = 0;
+		this.matrix[1][2] = -pv3D.x;
+		this.matrix[2][0] = -pv3D.y;
+		this.matrix[2][1] = pv3D.x;
+		this.matrix[2][2] = 0;
+	}
+
+	public clone(): Matrix2D {
+		const matrix = new Matrix2D();
+		Object.assign(matrix.matrix, this.matrix);
+		return matrix;
+	}
+
+	public multiplyMatrix(pmat1: Matrix2D, pmat2: Matrix2D) {
+		const matans = new Matrix2D() ;
+		for (let i = 0; i < 3; ++i) {
+			for (let l = 0; l < 3; ++l) {
+				matans.matrix[i][l] = pmat1.matrix[i][0] * pmat2.matrix[0][l] +
+					pmat1.matrix[i][1] * pmat2.matrix[1][l] +
+					pmat1.matrix[i][2] * pmat2.matrix[2][l];
+			}
+		}
+		Object.assign(this.matrix, matans.matrix);
+	}
+
+	public multiplyScalar(scalar: number) {
+		for (let i = 0; i < 3; ++i) {
+			for (let l = 0; l < 3; ++l) {
+				this.matrix[i][l] *= scalar;
+			}
+		}
+	}
+
+	public addMatrix(pmat1: Matrix2D, pmat2: Matrix2D) {
+		for (let i = 0; i < 3; ++i) {
+			for (let l = 0; l < 3; ++l) {
+				this.matrix[i][l] = pmat1.matrix[i][l] + pmat2.matrix[i][l];
+			}
+		}
+	}
+
+	public orthoNormalize() {
+		const vX = new Vertex3D(this.matrix[0][0], this.matrix[1][0], this.matrix[2][0]);
+		let vY = new Vertex3D(this.matrix[0][1], this.matrix[1][1], this.matrix[2][1]);
+		const vZ = Vertex3D.crossProduct(vX, vY);
+		vX.normalize();
+		vZ.normalize();
+		vY = Vertex3D.crossProduct(vZ, vX);
+
+		this.matrix[0][0] = vX.x;
+		this.matrix[0][1] = vY.x;
+		this.matrix[0][2] = vZ.x;
+		this.matrix[1][0] = vX.y;
+		this.matrix[1][1] = vY.y;
+		this.matrix[1][2] = vZ.y;
+		this.matrix[2][0] = vX.z;
+		this.matrix[2][1] = vY.z;
+		this.matrix[2][2] = vZ.z;
+	}
 }
