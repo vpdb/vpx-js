@@ -21,11 +21,11 @@ import * as chai from 'chai';
 import { expect } from 'chai';
 import sinonChai = require('sinon-chai');
 import { Mesh } from 'three';
+import { Table } from '../..';
 import { simulateCycles } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
-import { Table } from '../table/table';
 import { PlungerMover } from './plunger-mover';
 import { PlungerState } from './plunger-state';
 
@@ -91,7 +91,7 @@ describe('The VPinball plunger physics', () => {
 		plunger.fire();
 		simulateCycles(player, 50);
 
-		let plungerState = popState(player, 'CustomPlunger');
+		let plungerState = plunger.getState();
 		expect(plungerState.frame).to.equal(21);
 
 		simulateCycles(player, 180);
@@ -155,6 +155,6 @@ describe('The VPinball plunger physics', () => {
 });
 
 function popState(player: Player, name: string): PlungerState {
-	const state = player.popState();
-	return (state as any)[name] as PlungerState;
+	const states = player.popState();
+	return states.find(s => s.getName() === name) as PlungerState;
 }
