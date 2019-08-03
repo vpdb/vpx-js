@@ -21,7 +21,7 @@ import { Storage } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { Player } from '../../game/player';
-import { VpTableExporterOptions } from '../../gltf/table-exporter';
+import { VpTableExporterOptions } from '../table/table-exporter';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';

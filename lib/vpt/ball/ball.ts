@@ -22,33 +22,37 @@ import { Table } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
+import { IRenderable } from '../../game/irenderable';
 import { Player } from '../../game/player';
+import { Matrix3D } from '../../math/matrix3d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { HitObject } from '../../physics/hit-object';
+import { Meshes } from '../item-data';
 import { TableData } from '../table/table-data';
+import { VpTableExporterOptions } from '../table/table-exporter';
 import { BallData } from './ball-data';
 import { BallHit } from './ball-hit';
-import { BallMesh } from './ball-mesh';
+import { BallMeshGenerator } from './ball-mesh-generator';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
 
-export class Ball implements IPlayable, IMovable<BallState>, IHittable {
+export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRenderable {
 
 	public readonly state: BallState;
 	public readonly data: BallData;
-	private readonly mesh: BallMesh;
+	private readonly meshGenerator: BallMeshGenerator;
 	public readonly hit: BallHit;
 
 	// unique ID for each ball
 	public readonly id: number;
 
-	private static idCounter = 0;
+	public static idCounter = 0;
 
 	constructor(data: BallData, state: BallState, tableData: TableData) {
 		this.id = Ball.idCounter++;
 		this.data = data;
 		this.state = state;
-		this.mesh = new BallMesh();
+		this.meshGenerator = new BallMeshGenerator(data);
 		this.hit = new BallHit(this, data, state, tableData);
 	}
 
@@ -56,8 +60,22 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable {
 		return `Ball${this.id}`;
 	}
 
-	public applyState(obj: Object3D): void {
-		// TODO move ball
+	public applyState(obj: Object3D, table: Table, player: Player): void {
+		const zheight = !this.hit.isFrozen ? this.state.pos.z : this.state.pos.z - this.data.radius;
+		const orientation = new Matrix3D().set([
+			[this.hit.orientation.matrix[0][0], this.hit.orientation.matrix[1][0], this.hit.orientation.matrix[2][0], 0.0],
+			[this.hit.orientation.matrix[0][1], this.hit.orientation.matrix[1][1], this.hit.orientation.matrix[2][1], 0.0],
+			[this.hit.orientation.matrix[0][2], this.hit.orientation.matrix[1][2], this.hit.orientation.matrix[2][2], 0.0],
+			[0, 0, 0, 1],
+		]);
+		const trans = new Matrix3D().setTranslation(this.state.pos.x, this.state.pos.y, zheight);
+		const matrix = new Matrix3D()
+			.setScaling(this.data.radius, this.data.radius, this.data.radius)
+			.preMultiply(orientation)
+			.multiply(trans);
+
+		obj.matrix = matrix.toThreeMatrix4();
+		obj.matrixWorldNeedsUpdate = true;
 	}
 
 	public getState(): BallState {
@@ -78,5 +96,13 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable {
 
 	public getHitShapes(): HitObject[] {
 		return [ this.hit ];
+	}
+
+	public getMeshes(table: Table, opts: VpTableExporterOptions): Meshes {
+		return { ball: { mesh: this.meshGenerator.getMesh().transform(new Matrix3D().toRightHanded()) } };
+	}
+
+	public isVisible(table: Table): boolean {
+		return true;
 	}
 }

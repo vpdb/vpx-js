@@ -40,7 +40,11 @@ export class BallState extends ItemState {
 		return new BallState(this.name, this.pos.clone(), this.vel.clone());
 	}
 
-	public equals(state: ItemState): boolean {
-		return true;
+	public equals(state: BallState): boolean {
+		if (!state) {
+			return false;
+		}
+		return this.pos.x === state.pos.x && this.pos.y === state.pos.y && this.pos.z === state.pos.z
+			&& this.vel.x === state.vel.x && this.vel.y === state.vel.y && this.vel.z === state.vel.z;
 	}
 }

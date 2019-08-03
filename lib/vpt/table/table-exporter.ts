@@ -21,7 +21,7 @@ import {
 	Color,
 	DoubleSide,
 	Group,
-	Mesh,
+	Mesh as ThreeMesh,
 	MeshStandardMaterial,
 	PointLight,
 	RGBAFormat,
@@ -29,18 +29,18 @@ import {
 	Scene,
 	Texture,
 } from 'three';
-import { Table } from '..';
-import { IRenderable, RenderInfo } from '../game/irenderable';
-import { exportGltf } from '../refs.node';
-import { logger } from '../util/logger';
-import { Bumper } from '../vpt/bumper/bumper';
-import { Flipper } from '../vpt/flipper/flipper';
-import { Primitive } from '../vpt/primitive/primitive';
-import { Ramp } from '../vpt/ramp/ramp';
-import { Rubber } from '../vpt/rubber/rubber';
-import { Surface } from '../vpt/surface/surface';
-import { Texture as VpTexture } from '../vpt/texture';
-import { IImage } from './image';
+import { IRenderable, RenderInfo } from '../../game/irenderable';
+import { IImage } from '../../gltf/image';
+import { exportGltf } from '../../refs.node';
+import { logger } from '../../util/logger';
+import { Bumper } from '../bumper/bumper';
+import { Flipper } from '../flipper/flipper';
+import { Primitive } from '../primitive/primitive';
+import { Ramp } from '../ramp/ramp';
+import { Rubber } from '../rubber/rubber';
+import { Surface } from '../surface/surface';
+import { Texture as VpTexture } from '../texture';
+import { Table } from './table';
 
 export class TableExporter {
 
@@ -51,7 +51,7 @@ export class TableExporter {
 	private readonly playfield: Group;
 	private readonly images: Map<string, IImage> = new Map();
 
-	constructor(table: Table, opts: VpTableExporterOptions) {
+	constructor(table: Table, opts: VpTableExporterOptions = {}) {
 		this.opts = Object.assign({}, defaultOptions, opts);
 
 		const dim = table.getDimensions();
@@ -104,22 +104,7 @@ export class TableExporter {
 			const itemTypeGroup = new Group();
 			itemTypeGroup.name = group.name;
 			for (const renderable of group.meshes.filter(i => i.isVisible(this.table))) {
-				const objects = renderable.getMeshes(this.table, this.opts);
-				let obj: RenderInfo;
-				const itemGroup = new Group();
-				itemGroup.name = renderable.getName();
-				for (obj of Object.values(objects)) {
-					/* istanbul ignore if */
-					if (!obj.geometry && !obj.mesh) {
-						throw new Error('Mesh export must either provide mesh or geometry.');
-					}
-					const geometry = obj.geometry || obj.mesh!.getBufferGeometry();
-					const material = await this.getMaterial(obj);
-					const postProcessedMaterial = renderable.postProcessMaterial ? renderable.postProcessMaterial(this.table, geometry, material) : material;
-					const mesh = new Mesh(geometry, postProcessedMaterial);
-					mesh.name = (obj.geometry || obj.mesh!).name;
-					itemGroup.add(mesh);
-				}
+				const itemGroup = await this.createItemMesh(renderable);
 				itemTypeGroup.add(itemGroup);
 			}
 			if (itemTypeGroup.children.length > 0) {
@@ -161,6 +146,32 @@ export class TableExporter {
 		this.scene.add(this.playfield);
 
 		return this.scene;
+	}
+
+	public async createItemMesh(renderable: IRenderable): Promise<Group> {
+		const objects = renderable.getMeshes(this.table, this.opts);
+		let obj: RenderInfo;
+		const itemGroup = new Group();
+		itemGroup.name = renderable.getName();
+		for (obj of Object.values(objects)) {
+			const mesh = await this.createElementMesh(renderable, obj);
+			itemGroup.add(mesh);
+		}
+		return itemGroup;
+	}
+
+	private async createElementMesh(renderable: IRenderable, obj: RenderInfo): Promise<ThreeMesh> {
+		/* istanbul ignore if */
+		if (!obj.geometry && !obj.mesh) {
+			throw new Error('Mesh export must either provide mesh or geometry.');
+		}
+		const geometry = obj.geometry || obj.mesh!.getBufferGeometry();
+		const material = await this.getMaterial(obj);
+		const postProcessedMaterial = renderable.postProcessMaterial ? renderable.postProcessMaterial(this.table, geometry, material) : material;
+		const mesh = new ThreeMesh(geometry, postProcessedMaterial);
+		mesh.name = (obj.geometry || obj.mesh!).name;
+
+		return mesh;
 	}
 
 	private async export<T>(): Promise<T> {

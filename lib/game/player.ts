@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventEmitter } from 'events';
 import { Table } from '..';
 import { degToRad } from '../math/float';
 import { Vertex2D } from '../math/vertex2d';
@@ -37,11 +38,11 @@ import { BallState } from '../vpt/ball/ball-state';
 import { FlipperMover } from '../vpt/flipper/flipper-mover';
 import { ItemState } from '../vpt/item-state';
 
-export class Player {
+export class Player extends EventEmitter {
 
 	public gravity = new Vertex3D();
 	private readonly table: Table;
-	private readonly balls: Ball[] = [];
+	public readonly balls: Ball[] = [];
 	private readonly movers: MoverObject[] = [];
 	private readonly flipperMovers: FlipperMover[] = [];
 	private readonly hitObjects: HitObject[] = [];
@@ -88,6 +89,7 @@ export class Player {
 	// ball the script user can get with ActiveBall
 
 	constructor(table: Table) {
+		super();
 		this.table = table;
 		this.addTableElements(table);
 		this.addCabinetBoundingHitShapes();
@@ -561,16 +563,18 @@ export class Player {
 	public createBall(ballCreator: IBallCreationPosition, velocity: Vertex3D = new Vertex3D( 0.1, 0, 0), radius = 25, mass = 1): Ball {
 
 		const data = new BallData(radius, mass, this.table.data!.defaultBulbIntensityScaleOnBall);
-		const state = new BallState('ball', ballCreator.getBallCreationPosition(this.table), velocity);
+		const state = new BallState(`Ball${Ball.idCounter}`, ballCreator.getBallCreationPosition(this.table), velocity);
 		state.pos.z += data.radius;
 
 		const ball = new Ball(data, state, this.table.data!);
 
 		this.balls.push(ball);
 		this.movers.push(ball.getMover()); // balls are always added separately to this list!
+		this.currentStates[ball.getName()] = state;
 
 		this.hitObjectsDynamic.push(ball.hit);
 		this.hitOcTreeDynamic.fillFromVector(this.hitObjectsDynamic);
+		this.emit('ballCreated', ball.getName());
 
 		return ball;
 	}
@@ -614,6 +618,8 @@ export class Player {
 		if (activeball && this.balls.length > 0) {
 			this.pactiveball = this.balls[0];
 		}
+
+		this.emit('ballDestroyed', pball.getName());
 	}
 
 	// public setGravity(slopeDeg: number, strength: number): void {

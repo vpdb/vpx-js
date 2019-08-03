@@ -68,7 +68,7 @@ import {
 	GltfScene,
 } from './gltf';
 import { IImage } from './image';
-import { ParseOptions } from './table-exporter';
+import { ParseOptions } from '../vpt/table/table-exporter';
 
 const gltfPipeline = require('gltf-pipeline');
 const PromisePool = require('es6-promise-pool');
