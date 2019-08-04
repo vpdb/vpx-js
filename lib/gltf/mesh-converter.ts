@@ -74,6 +74,7 @@ export class MeshConverter {
 		const geometry = object.geometry;
 		const bufferGeometry = new BufferGeometry();
 
+		bufferGeometry.name = this.mesh.name;
 		bufferGeometry.addAttribute('position', new Float32BufferAttribute(geometry.vertices, 3));
 
 		if (geometry.normals.length > 0) {

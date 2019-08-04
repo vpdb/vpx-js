@@ -17,28 +17,34 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ItemState } from '../item-state';
+import { HitLine3D } from '../physics/hit-line-3d';
+import { Vertex3D } from './vertex3d';
 
-export class SpinnerState extends ItemState {
+export class EdgeSet {
 
-	/**
-	 * Angle in rad
-	 */
-	public angle: number;
+	private readonly edges: { [key: string]: [number, number] } = {};
 
-	constructor(name: string, angle: number) {
-		super(name);
-		this.angle = angle;
+	public add(a: number, b: number) {
+		this.edges[this.getKey(a, b)] = [a, b];
 	}
 
-	public equals(state: SpinnerState): boolean {
-		if (!state) {
-			return false;
+	public has(a: number, b: number): boolean {
+		return !!this.edges[this.getKey(a, b)];
+	}
+
+	public addHitEdge(i: number, j: number, vi: Vertex3D, vj: Vertex3D): HitLine3D[] {
+		// create pair uniquely identifying the edge (i,j)
+		const a = Math.min(i, j);
+		const b = Math.max(i, j);
+
+		if (!this.has(a, b)) {   // edge not yet added?
+			this.add(a, b);
+			return [new HitLine3D(vi, vj)];
 		}
-		return state.angle === this.angle;
+		return [];
 	}
 
-	public clone(): SpinnerState {
-		return new SpinnerState(this.name, this.angle);
+	private getKey(a: number, b: number): string {
+		return `${a},${b}`;
 	}
 }

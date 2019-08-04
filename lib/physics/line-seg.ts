@@ -90,7 +90,7 @@ export class LineSeg extends HitObject {
 		return CollisionType.LineSeg;
 	}
 
-	protected hitTestBasic(pball: Ball, dtime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean) {
+	public hitTestBasic(pball: Ball, dtime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean) {
 
 		if (!this.isEnabled || pball.hit.isFrozen) {
 			return -1.0;

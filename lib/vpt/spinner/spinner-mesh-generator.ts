@@ -38,7 +38,7 @@ export class SpinnerMeshGenerator {
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
 		const posZ = f4(height + this.data.height);
 
-		if (this.data.fShowBracket) {
+		if (this.data.showBracket) {
 			return {
 				plate: this.getPlateMesh(table, posZ),
 				bracket: this.getBracketMesh(table, posZ),

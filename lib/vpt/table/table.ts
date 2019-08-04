@@ -17,12 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Group, Mesh, Scene } from 'three';
+import { Group, Scene } from 'three';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
-import { TableExporter, VpTableExporterOptions } from './table-exporter';
 import { IBinaryReader, Storage } from '../../io/ole-doc';
 import { f4 } from '../../math/float';
 import { FRect3D } from '../../math/frect3d';
@@ -46,6 +45,7 @@ import { Texture } from '../texture';
 import { TimerItem } from '../timer-item';
 import { Trigger } from '../trigger/trigger';
 import { TableData } from './table-data';
+import { TableExporter, VpTableExporterOptions } from './table-exporter';
 import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
 
@@ -97,84 +97,29 @@ export class Table implements IRenderable {
 		if (loadedTable.info) {
 			this.info = loadedTable.info;
 		}
-		if (this.isLoaded(loadedTable.textures)) {
-			for (const item of loadedTable.textures!) {
-				this.textures[item.getName()] = item;
-			}
-		}
-		if (this.isLoaded(loadedTable.bumpers)) {
-			for (const item of loadedTable.bumpers!) {
-				this.bumpers[item.getName()] = item;
-			}
-		}
-		if (this.isLoaded(loadedTable.flippers)) {
-			for (const item of loadedTable.flippers!) {
-				this.flippers[item.getName()] = item;
-			}
-		}
-		if (this.isLoaded(loadedTable.gates)) {
-			for (const item of loadedTable.gates!) {
-				this.gates[item.getName()] = item;
-			}
-		}
-		if (this.isLoaded(loadedTable.hitTargets)) {
-			for (const item of loadedTable.hitTargets!) {
-				this.hitTargets[item.getName()] = item;
-			}
-		}
-		if (this.isLoaded(loadedTable.kickers)) {
-			for (const item of loadedTable.kickers!) {
-				this.kickers[item.getName()] = item;
-			}
-		}
-		if (this.isLoaded(loadedTable.lights)) {
-			for (const item of loadedTable.lights!) {
-				this.lights[item.getName()] = item;
-			}
-		}
-		if (this.isLoaded(loadedTable.plungers)) {
-			for (const item of loadedTable.plungers!) {
-				this.plungers[item.getName()] = item;
-			}
-		}
-		if (this.isLoaded(loadedTable.primitives)) {
-			for (const item of loadedTable.primitives!) {
-				this.primitives[item.getName()] = item;
-			}
-		}
-		if (this.isLoaded(loadedTable.ramps)) {
-			for (const item of loadedTable.ramps!) {
-				this.ramps[item.getName()] = item;
-			}
-		}
-		if (this.isLoaded(loadedTable.rubbers)) {
-			for (const item of loadedTable.rubbers!) {
-				this.rubbers[item.getName()] = item;
-			}
-		}
-		if (this.isLoaded(loadedTable.spinners)) {
-			for (const item of loadedTable.spinners!) {
-				this.spinners[item.getName()] = item;
-			}
-		}
-		if (this.isLoaded(loadedTable.surfaces)) {
-			for (const item of loadedTable.surfaces!) {
-				this.surfaces[item.getName()] = item;
-			}
-		}
-		if (this.isLoaded(loadedTable.textBoxes)) {
-			for (const item of loadedTable.textBoxes!) {
-				this.textBoxes[item.getName()] = item;
-			}
-		}
-		if (this.isLoaded(loadedTable.timers)) {
-			for (const item of loadedTable.timers!) {
-				this.timers[item.getName()] = item;
-			}
-		}
-		if (this.isLoaded(loadedTable.triggers)) {
-			for (const item of loadedTable.triggers!) {
-				this.triggers[item.getName()] = item;
+		const items: Array<[any, any]> = [
+			[loadedTable.textures, this.textures],
+			[loadedTable.bumpers, this.bumpers],
+			[loadedTable.flippers, this.flippers],
+			[loadedTable.gates, this.gates],
+			[loadedTable.hitTargets, this.hitTargets],
+			[loadedTable.kickers, this.kickers],
+			[loadedTable.lights, this.lights],
+			[loadedTable.plungers, this.plungers],
+			[loadedTable.primitives, this.primitives],
+			[loadedTable.ramps, this.ramps],
+			[loadedTable.rubbers, this.rubbers],
+			[loadedTable.spinners, this.spinners],
+			[loadedTable.surfaces, this.surfaces],
+			[loadedTable.textBoxes, this.textBoxes],
+			[loadedTable.timers, this.timers],
+			[loadedTable.triggers, this.triggers],
+		];
+		for (const i of items) {
+			if (isLoaded(i[0])) {
+				for (const item of i[0]) {
+					i[1][item.getName()] = item;
+				}
 			}
 		}
 	}
@@ -212,6 +157,8 @@ export class Table implements IRenderable {
 			...Object.values(this.rubbers),
 			...Object.values(this.plungers),
 			...Object.values(this.kickers),
+			...Object.values(this.spinners),
+			...Object.values(this.primitives),
 		];
 	}
 
@@ -219,6 +166,7 @@ export class Table implements IRenderable {
 		return [
 			...Object.values(this.flippers),
 			...Object.values(this.plungers),
+			...Object.values(this.spinners),
 		];
 	}
 
@@ -229,6 +177,8 @@ export class Table implements IRenderable {
 			...Object.values(this.rubbers),
 			...Object.values(this.plungers),
 			...Object.values(this.kickers),
+			...Object.values(this.spinners),
+			...Object.values(this.primitives),
 		];
 	}
 
@@ -343,10 +293,10 @@ export class Table implements IRenderable {
 			},
 		};
 	}
+}
 
-	private isLoaded(items: any[] | undefined) {
-		return items && items.length > 0;
-	}
+function isLoaded(items: any[] | undefined) {
+	return items && items.length > 0;
 }
 
 export interface TableLoadOptions {

@@ -54,10 +54,10 @@ export class TableData extends BiffParser {
 	public overridePhysics?: number;
 	public overridePhysicsFlipper: boolean = false;
 	public Gravity?: number;
-	public friction?: number;
-	public elasticity?: number;
-	public elasticityFalloff?: number;
-	public scatter?: number;
+	public friction!: number;
+	public elasticity!: number;
+	public elasticityFalloff!: number;
+	public scatter!: number;
 	public defaultScatter?: number;
 	public nudgeTime?: number;
 	public plungerNormalize!: number;

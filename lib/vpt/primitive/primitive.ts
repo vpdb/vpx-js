@@ -18,12 +18,16 @@
  */
 
 import { Storage } from '../..';
+import { Table } from '../..';
+import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
+import { Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
 import { IFireEvents } from '../../physics/events';
+import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
-import { Table } from '../table/table';
 import { PrimitiveData } from './primitive-data';
+import { PrimitiveHitGenerator } from './primitive-hit-generator';
 import { PrimitiveMeshGenerator } from './primitive-mesh-generator';
 
 /**
@@ -31,12 +35,14 @@ import { PrimitiveMeshGenerator } from './primitive-mesh-generator';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/primitive.cpp
  */
-export class Primitive implements IRenderable, IFireEvents {
+export class Primitive implements IRenderable, IHittable, IFireEvents {
 
 	public currentHitThreshold: number = 0;
 
 	private readonly data: PrimitiveData;
 	private readonly meshGenerator: PrimitiveMeshGenerator;
+	private readonly hitGenerator: PrimitiveHitGenerator;
+	private hits: HitObject[] = [];
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Primitive> {
 		const data = await PrimitiveData.fromStorage(storage, itemName);
@@ -46,6 +52,7 @@ export class Primitive implements IRenderable, IFireEvents {
 	private constructor(data: PrimitiveData) {
 		this.data = data;
 		this.meshGenerator = new PrimitiveMeshGenerator(data);
+		this.hitGenerator = new PrimitiveHitGenerator(data);
 	}
 
 	public getName() {
@@ -65,5 +72,13 @@ export class Primitive implements IRenderable, IFireEvents {
 				material: table.getMaterial(this.data.szMaterial),
 			},
 		};
+	}
+
+	public setupPlayer(player: Player, table: Table): void {
+		this.hits = this.hitGenerator.generateHitObjects(table);
+	}
+
+	public getHitShapes(): HitObject[] {
+		return this.hits;
 	}
 }

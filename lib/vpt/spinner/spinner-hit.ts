@@ -29,15 +29,20 @@ import { LineSeg } from '../../physics/line-seg';
 import { Ball } from '../ball/ball';
 import { SpinnerData } from './spinner-data';
 import { SpinnerMover } from './spinner-mover';
+import { SpinnerState } from './spinner-state';
 
 export class SpinnerHit extends HitObject {
 
-	private lineseg: LineSeg[] = [];
-	private spinnerMover: SpinnerMover;
+	private readonly data: SpinnerData;
+	private readonly state: SpinnerState;
+	private readonly mover: SpinnerMover;
+	private readonly lineSegs: LineSeg[] = [];
 
-	constructor(data: SpinnerData, height: number) {
+	constructor(data: SpinnerData, state: SpinnerState, height: number) {
 		super();
 
+		this.data = data;
+		this.state = state;
 		const halfLength = data.length * 0.5;
 
 		const radAngle = degToRad(data.rotation);
@@ -52,28 +57,58 @@ export class SpinnerHit extends HitObject {
 			data.vCenter.x + cs * (halfLength + PHYS_SKIN), //oversize by the ball radius
 			data.vCenter.y + sn * (halfLength + PHYS_SKIN), //this will prevent clipping
 		);
-		this.lineseg.push(new LineSeg(v1, v2, height, height + (2.0 * PHYS_SKIN), CollisionType.Spinner));
-		this.lineseg.push(new LineSeg(v2.clone(), v1.clone(), height, height + (2.0 * PHYS_SKIN), CollisionType.Spinner));
+		this.lineSegs.push(new LineSeg(v1, v2, height, height + (2.0 * PHYS_SKIN), CollisionType.Spinner));
+		this.lineSegs.push(new LineSeg(v2.clone(), v1.clone(), height, height + (2.0 * PHYS_SKIN), CollisionType.Spinner));
 
-		this.spinnerMover = new SpinnerMover(data);
-		this.spinnerMover.angleMax = degToRad(data.angleMax!);
-		this.spinnerMover.angleMin = degToRad(data.angleMin!);
+		this.mover = new SpinnerMover(data, state);
+		this.mover.angleMax = degToRad(data.angleMax!);
+		this.mover.angleMin = degToRad(data.angleMin!);
 
-		this.spinnerMover.angle = clamp(0.0, this.spinnerMover.angleMin, this.spinnerMover.angleMax);
-		this.spinnerMover.anglespeed = 0;
+		this.state.angle = clamp(0.0, this.mover.angleMin, this.mover.angleMax);
+		this.mover.anglespeed = 0;
 		// compute proper damping factor for physics framerate
-		this.spinnerMover.damping = Math.pow(data.damping!, PHYS_FACTOR);
+		this.mover.damping = Math.pow(data.damping!, PHYS_FACTOR);
 
-		this.spinnerMover.elasticity = data.elasticity!;
-		this.spinnerMover.isVisible = data.fVisible;
+		this.mover.elasticity = data.elasticity!;
+		this.mover.isVisible = data.fVisible;
+	}
+
+	public getMoverObject(): SpinnerMover {
+		return this.mover;
 	}
 
 	public calcHitBBox(): void {
-		// todo
+		// Bounding rect for both lines will be the same
+		this.lineSegs[0].calcHitBBox();
+		this.hitBBox = this.lineSegs[0].hitBBox;
 	}
 
 	public collide(coll: CollisionEvent, player: Player): void {
-		// todo
+
+		const dot = coll.hitNormal!.dot(coll.ball.hit.vel);
+		if (dot < 0) { //hit from back doesn't count
+			return;
+		}
+
+		const h = this.data.height * 0.5;
+		//linear speed = ball speed
+		//angular speed = linear/radius (height of hit)
+
+		// h is the height of the spinner axis;
+		// Since the spinner has no mass in our equation, the spot
+		// h -coll.m_radius will be moving a at linear rate of
+		// 'speed'.  We can calculate the angular speed from that.
+
+		this.mover.anglespeed = Math.abs(dot); // use this until a better value comes along
+		if (Math.abs(h) > 1.0) {			// avoid divide by zero
+			this.mover.anglespeed /= h;
+		}
+		this.mover.anglespeed *= this.mover.damping;
+
+		// We encoded which side of the spinner the ball hit
+		if (coll.hitFlag) {
+			this.mover.anglespeed = -this.mover.anglespeed;
+		}
 	}
 
 	public getType(): CollisionType {
@@ -81,8 +116,18 @@ export class SpinnerHit extends HitObject {
 	}
 
 	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent, player: Player): number {
-		// todo
-		return 0;
-	}
+		if (!this.isEnabled) {
+			return -1.0;
+		}
+		for (let i = 0; i < 2; ++i) {
+			const hittime = this.lineSegs[i].hitTestBasic(pball, dtime, coll, false, true, false); // any face, lateral, non-rigid
+			if (hittime >= 0) {
+				// signal the Collide() function that the hit is on the front or back side
+				coll.hitFlag = !i;
 
+				return hittime;
+			}
+		}
+		return -1.0;
+	}
 }

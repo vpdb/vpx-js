@@ -40,7 +40,7 @@ export class Surface implements IRenderable, IHittable {
 	private readonly itemName: string;
 	private readonly data: SurfaceData;
 	private readonly mesh: SurfaceMesh;
-	private hitGenerator: SurfaceHitGenerator;
+	private readonly hitGenerator: SurfaceHitGenerator;
 	private hits: HitObject[] = [];
 
 	// public getters

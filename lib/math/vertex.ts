@@ -19,6 +19,7 @@
 
 /* tslint:disable:variable-name adjacent-overload-signatures */
 import { f4 } from './float';
+import { Vertex3D } from './vertex3d';
 
 export interface Vertex {
 	x: number;
@@ -88,6 +89,10 @@ export class Vertex3DNoTex2 {
 		vertex.tu = f4(buffer.readFloatLE(offset + 24));
 		vertex.tv = f4(buffer.readFloatLE(offset + 28));
 		return vertex;
+	}
+
+	public getVertex(): Vertex3D {
+		return new Vertex3D(this._x, this._y, this._z);
 	}
 
 	public clone(): Vertex3DNoTex2 {
