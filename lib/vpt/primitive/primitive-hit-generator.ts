@@ -75,7 +75,7 @@ export class PrimitiveHitGenerator {
 					this.data.mesh.vertices[i].z,
 				);
 			}
-			let progIndices: ProgMeshTriData[] = [];
+			const progIndices: ProgMeshTriData[] = [];
 			let i2 = 0;
 			for (let i = 0; i < this.data.mesh.indices.length; i += 3) {
 				const t = new ProgMeshTriData([
@@ -87,14 +87,11 @@ export class PrimitiveHitGenerator {
 					progIndices[i2++] = t;
 				}
 			}
-			let [ progMap, progPerm ] = progressiveMesh(progVertices, progIndices);
+			const [ progMap, progPerm ] = progressiveMesh(progVertices, progIndices);
 			permuteVertices(progPerm, progVertices, progIndices);
-			progPerm = [];
 
 			const progNewIndices: ProgMeshTriData[] = [];
 			reMapIndices(reducedVertices, progIndices, progNewIndices, progMap);
-			progIndices = [];
-			progMap = [];
 
 			const addedEdges = new EdgeSet();
 
@@ -179,6 +176,7 @@ export class PrimitiveHitGenerator {
 			}
 			obj.threshold = this.data.threshold;
 			obj.setType(CollisionType.Primitive);
+			// FIXME event
 			//obj->m_obj = (IFireEvents *)this;
 			obj.e = true;
 			obj.fe = this.data.fHitEvent;
