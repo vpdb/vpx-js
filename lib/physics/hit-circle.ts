@@ -61,7 +61,7 @@ export class HitCircle extends HitObject {
 		return this.hitTestBasicRadius(pball, dtime, coll, true, true, true);
 	}
 
-	private hitTestBasicRadius(pball: Ball, dtime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean): number {
+	protected hitTestBasicRadius(pball: Ball, dtime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean): number {
 		if (!this.isEnabled || pball.hit.isFrozen) {
 			return -1.0;
 		}

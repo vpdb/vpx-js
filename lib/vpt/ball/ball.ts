@@ -25,6 +25,7 @@ import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
 import { Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
+import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
@@ -47,6 +48,9 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRendera
 	public readonly id: number;
 
 	public static idCounter = 0;
+
+	// ugly hacks
+	public oldVel?: Vertex3D;
 
 	constructor(data: BallData, state: BallState, tableData: TableData) {
 		this.id = Ball.idCounter++;

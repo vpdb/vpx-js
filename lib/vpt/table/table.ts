@@ -206,11 +206,20 @@ export class Table implements IRenderable {
 	}
 
 	public getPlayables(): IPlayable[] {
-		return [ ...Object.values(this.flippers), ...Object.values(this.plungers) ];
+		return [
+			...Object.values(this.flippers),
+			...Object.values(this.surfaces),
+			...Object.values(this.rubbers),
+			...Object.values(this.plungers),
+			...Object.values(this.kickers),
+		];
 	}
 
 	public getMovables(): Array<IMovable<any>> {
-		return [ ...Object.values(this.flippers), ...Object.values(this.plungers) ];
+		return [
+			...Object.values(this.flippers),
+			...Object.values(this.plungers),
+		];
 	}
 
 	public getHittables(): IHittable[] {
@@ -219,6 +228,7 @@ export class Table implements IRenderable {
 			...Object.values(this.surfaces),
 			...Object.values(this.rubbers),
 			...Object.values(this.plungers),
+			...Object.values(this.kickers),
 		];
 	}
 
