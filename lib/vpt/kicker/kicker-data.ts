@@ -29,17 +29,17 @@ export class KickerData extends ItemData {
 	public vCenter!: Vertex2D;
 	public radius: number = 25;
 	private scatter?: number;
-	private hitAccuracy: number = 0.7;
-	private hitHeight: number = 40;
+	public hitAccuracy: number = 0.7;
+	public hitHeight: number = 40;
 	public orientation: number = 0;
 	public szMaterial?: string;
 	private fTimerEnabled: boolean = false;
-	private fEnabled: boolean = true;
+	public fEnabled: boolean = true;
 	private TimerInterval?: number;
 	public szSurface?: string;
 	private wzName!: string;
-	private fFallThrough: boolean = false;
-	private legacyMode: boolean = false;
+	public fallThrough: boolean = false;
+	public legacyMode: boolean = false;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<KickerData> {
 		const kickerData = new KickerData(itemName);
@@ -74,7 +74,7 @@ export class KickerData extends ItemData {
 				break;
 			case 'SURF': this.szSurface = this.getString(buffer, len); break;
 			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
-			case 'FATH': this.fFallThrough = this.getBool(buffer); break;
+			case 'FATH': this.fallThrough = this.getBool(buffer); break;
 			case 'LEMO': this.legacyMode = this.getBool(buffer); break;
 			default:
 				this.getUnknownBlock(buffer, tag);

@@ -18,12 +18,17 @@
  */
 
 import { Storage } from '../..';
+import { Table } from '../..';
+import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
+import { IBallCreationPosition, Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
+import { Vertex3D } from '../../math/vertex3d';
+import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
-import { Table } from '../table/table';
 import { Texture } from '../texture';
 import { KickerData } from './kicker-data';
+import { KickerHit } from './kicker-hit';
 import { KickerMeshGenerator } from './kicker-mesh-generator';
 
 /**
@@ -31,7 +36,7 @@ import { KickerMeshGenerator } from './kicker-mesh-generator';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/kicker.cpp
  */
-export class Kicker implements IRenderable {
+export class Kicker implements IRenderable, IHittable, IBallCreationPosition {
 
 	public static TypeKickerInvisible = 0;
 	public static TypeKickerHole = 1;
@@ -43,6 +48,7 @@ export class Kicker implements IRenderable {
 
 	private readonly data: KickerData;
 	private readonly meshGenerator: KickerMeshGenerator;
+	private hit?: KickerHit;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Kicker> {
 		const data = await KickerData.fromStorage(storage, itemName);
@@ -70,6 +76,21 @@ export class Kicker implements IRenderable {
 				map: this.getTexture(),
 			},
 		};
+	}
+
+	public getHitShapes(): HitObject[] {
+		return [ this.hit! ];
+	}
+
+	public setupPlayer(player: Player, table: Table): void {
+		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
+		const radius = this.data.radius * (this.data.legacyMode ? (this.data.fallThrough ? 0.75 : 0.6) : 1); // reduce the hit circle radius because only the inner circle of the kicker should start a hit event
+		this.hit = new KickerHit(this.data, table, this.data.vCenter, radius, height, height + this.data.hitHeight); // height of kicker hit cylinder
+	}
+
+	public getBallCreationPosition(table: Table): Vertex3D {
+		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
+		return new Vertex3D(this.hit!.center.x, this.hit!.center.y, height);
 	}
 
 	private getTexture(): Texture {

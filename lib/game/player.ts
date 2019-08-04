@@ -37,6 +37,7 @@ import { BallData } from '../vpt/ball/ball-data';
 import { BallState } from '../vpt/ball/ball-state';
 import { FlipperMover } from '../vpt/flipper/flipper-mover';
 import { ItemState } from '../vpt/item-state';
+import { logger } from '../util/logger';
 
 export class Player extends EventEmitter {
 
@@ -164,6 +165,7 @@ export class Player extends EventEmitter {
 			new Vertex3D(this.table.data!.left, this.table.data!.bottom, this.table.data!.glassheight),
 		];
 		const ph3dpoly = new Hit3DPoly(rgv3D);
+		ph3dpoly.calcHitBBox();
 		this.hitObjects.push(ph3dpoly);
 
 		// playfield
@@ -175,6 +177,8 @@ export class Player extends EventEmitter {
 		// glass
 		this.hitTopGlass = new HitPlane(new Vertex3D(0, 0, -1), this.table.data!.glassheight)
 			.setElasticy(0.2);
+
+		logger().info('[Player] Playfield hit objects set.', this.hitObjects);
 	}
 
 	private initOcTree(table: Table) {
@@ -241,7 +245,7 @@ export class Player extends EventEmitter {
 						this.hitPlayfield.doHitTest(pball, pball.getCollision(), this);
 					}
 
-					this.hitTopGlass.doHitTest(pball,  pball.getCollision(), this);
+					this.hitTopGlass.doHitTest(pball, pball.getCollision(), this);
 
 					if (Math.random() < 0.5) { // swap order of dynamic and static obj checks randomly
 						this.hitOcTreeDynamic.hitTestBall(pball, pball.getCollision(), this);  // dynamic objects
@@ -560,7 +564,7 @@ export class Player extends EventEmitter {
 		}
 	}
 
-	public createBall(ballCreator: IBallCreationPosition, velocity: Vertex3D = new Vertex3D( 0.1, 0, 0), radius = 25, mass = 1): Ball {
+	public createBall(ballCreator: IBallCreationPosition, velocity: Vertex3D = new Vertex3D(0.1, 0, 0), radius = 25, mass = 1): Ball {
 
 		const data = new BallData(radius, mass, this.table.data!.defaultBulbIntensityScaleOnBall);
 		const state = new BallState(`Ball${Ball.idCounter}`, ballCreator.getBallCreationPosition(this.table), velocity);

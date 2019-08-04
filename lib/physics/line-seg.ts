@@ -38,6 +38,7 @@ export class LineSeg extends HitObject {
 		this.hitBBox.zlow = zLow;
 		this.hitBBox.zhigh = zHigh;
 		this.calcNormal();
+		this.calcHitBBox();
 
 		if (objType) {
 			this.objType = objType;
