@@ -20,6 +20,7 @@
 import { EventEmitter } from 'events';
 import { Table } from '..';
 import { degToRad } from '../math/float';
+import { Matrix2D } from '../math/matrix2d';
 import { Vertex2D } from '../math/vertex2d';
 import { Vertex3D } from '../math/vertex3d';
 import { CollisionEvent } from '../physics/collision-event';
@@ -32,13 +33,12 @@ import { HitQuadtree } from '../physics/hit-quadtree';
 import { LineSeg } from '../physics/line-seg';
 import { MoverObject } from '../physics/mover-object';
 import { now } from '../refs.node';
+import { logger } from '../util/logger';
 import { Ball } from '../vpt/ball/ball';
 import { BallData } from '../vpt/ball/ball-data';
 import { BallState } from '../vpt/ball/ball-state';
 import { FlipperMover } from '../vpt/flipper/flipper-mover';
 import { ItemState } from '../vpt/item-state';
-import { logger } from '../util/logger';
-import { Matrix2D } from '../math/matrix2d';
 
 export class Player extends EventEmitter {
 

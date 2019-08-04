@@ -121,6 +121,10 @@ export abstract class HitObject {
 		this.isEnabled = isEnabled;
 	}
 
+	public setType(type: CollisionType) {
+		this.objType = type;
+	}
+
 	public doHitTest(pball: Ball, coll: CollisionEvent, player: Player) {
 		if (!pball) {
 			return;
