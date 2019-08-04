@@ -20,7 +20,6 @@
 import { Table } from '../..';
 import { EdgeSet } from '../../math/edge-set';
 import { Vertex3D } from '../../math/vertex3d';
-import { HitLine3D } from '../../physics/hit-line-3d';
 import { HitObject } from '../../physics/hit-object';
 import { HitPoint } from '../../physics/hit-point';
 import { HitTriangle } from '../../physics/hit-triangle';
@@ -70,17 +69,8 @@ export class RubberHitGenerator {
 	}
 
 	private static generateHitEdge(mesh: Mesh, addedEdges: EdgeSet, i: number, j: number): HitObject[] {
-		// create pair uniquely identifying the edge (i,j)
-		const a = Math.min(i, j);
-		const b = Math.max(i, j);
-
-		if (!addedEdges.has(a, b)) {   // edge not yet added?
-			addedEdges.add(a, b);
-			const v1 = new Vertex3D(mesh.vertices[i].x, mesh.vertices[i].y, mesh.vertices[i].z);
-			const v2 = new Vertex3D(mesh.vertices[j].x, mesh.vertices[j].y, mesh.vertices[j].z);
-			return [ new HitLine3D(v1, v2) ];
-		} else {
-			return [];
-		}
+		const v1 = new Vertex3D(mesh.vertices[i].x, mesh.vertices[i].y, mesh.vertices[i].z);
+		const v2 = new Vertex3D(mesh.vertices[j].x, mesh.vertices[j].y, mesh.vertices[j].z);
+		return addedEdges.addHitEdge(i, j, v1, v2);
 	}
 }

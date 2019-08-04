@@ -20,31 +20,32 @@
 import { HitLine3D } from '../physics/hit-line-3d';
 import { Vertex3D } from './vertex3d';
 
+/**
+ * This implements a set based on a number pair.
+ * The order in which the numbers are provided doesn't matter because they
+ * are sorted prior to checking the index.
+ */
 export class EdgeSet {
 
-	private readonly edges: { [key: string]: [number, number] } = {};
+	private readonly edges = new Set<string>();
 
-	public add(a: number, b: number) {
-		this.edges[this.getKey(a, b)] = [a, b];
+	public add(i: number, j: number) {
+		this.edges.add(this.getKey(i, j));
 	}
 
-	public has(a: number, b: number): boolean {
-		return !!this.edges[this.getKey(a, b)];
+	public has(i: number, j: number): boolean {
+		return this.edges.has(this.getKey(i, j));
 	}
 
 	public addHitEdge(i: number, j: number, vi: Vertex3D, vj: Vertex3D): HitLine3D[] {
-		// create pair uniquely identifying the edge (i,j)
-		const a = Math.min(i, j);
-		const b = Math.max(i, j);
-
-		if (!this.has(a, b)) {   // edge not yet added?
-			this.add(a, b);
+		if (!this.has(i, j)) {   // edge not yet added?
+			this.add(i, j);
 			return [new HitLine3D(vi, vj)];
 		}
 		return [];
 	}
 
-	private getKey(a: number, b: number): string {
-		return `${a},${b}`;
+	private getKey(i: number, j: number): string {
+		return `${Math.min(i, j)},${Math.max(i, j)}`;
 	}
 }
