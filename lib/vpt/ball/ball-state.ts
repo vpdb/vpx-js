@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Matrix2D } from '../../math/matrix2d';
 import { Vertex3D } from '../../math/vertex3d';
 import { ItemState } from '../item-state';
 
@@ -28,16 +29,16 @@ import { ItemState } from '../item-state';
 export class BallState extends ItemState {
 
 	public readonly pos: Vertex3D;
-	public readonly vel: Vertex3D;
+	public readonly orientation = new Matrix2D();
 
-	constructor(name: string, pos: Vertex3D, vel: Vertex3D) {
+	constructor(name: string, pos: Vertex3D, orientation: Matrix2D) {
 		super(name);
 		this.pos = pos;
-		this.vel = vel;
+		this.orientation = orientation;
 	}
 
 	public clone(): ItemState {
-		return new BallState(this.name, this.pos.clone(), this.vel.clone());
+		return new BallState(this.name, this.pos.clone(), this.orientation.clone());
 	}
 
 	public equals(state: BallState): boolean {
@@ -45,6 +46,8 @@ export class BallState extends ItemState {
 			return false;
 		}
 		return this.pos.x === state.pos.x && this.pos.y === state.pos.y && this.pos.z === state.pos.z
-			&& this.vel.x === state.vel.x && this.vel.y === state.vel.y && this.vel.z === state.vel.z;
+			&& this.orientation.matrix[0][0] === state.orientation.matrix[0][0] && this.orientation.matrix[0][1] === state.orientation.matrix[0][1] && this.orientation.matrix[0][2] === state.orientation.matrix[0][2]
+			&& this.orientation.matrix[1][0] === state.orientation.matrix[1][0] && this.orientation.matrix[1][1] === state.orientation.matrix[1][1] && this.orientation.matrix[1][2] === state.orientation.matrix[1][2]
+			&& this.orientation.matrix[2][0] === state.orientation.matrix[2][0] && this.orientation.matrix[2][1] === state.orientation.matrix[2][1] && this.orientation.matrix[2][2] === state.orientation.matrix[2][2];
 	}
 }

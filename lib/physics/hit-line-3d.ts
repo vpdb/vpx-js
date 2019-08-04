@@ -75,7 +75,7 @@ export class HitLine3D extends HitLineZ {
 		const pball = coll.ball;
 		const hitnormal = coll.hitNormal!;
 
-		const dot = -hitnormal.dot(pball.state.vel);
+		const dot = -hitnormal.dot(pball.hit.vel);
 		pball.hit.collide3DWall(hitnormal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
 		if (this.obj && this.fe && dot >= this.threshold) {
@@ -99,7 +99,7 @@ export class HitLine3D extends HitLineZ {
 
 		// transform ball to cylinder coordinate system
 		const oldPos = pball.state.pos.clone();
-		const oldVel = pball.state.vel.clone();
+		const oldVel = pball.hit.vel.clone();
 		pball.state.pos.applyMatrix2D(this.matrix);
 		pball.state.pos.applyMatrix2D(this.matrix);
 
@@ -111,7 +111,7 @@ export class HitLine3D extends HitLineZ {
 		const hittime = super.hitTest(pball, dtime, coll);
 
 		pball.state.pos.set(oldPos.x, oldPos.y, oldPos.z); // see above
-		pball.state.vel.set(oldVel.x, oldVel.y, oldVel.z);
+		pball.hit.vel.set(oldVel.x, oldVel.y, oldVel.z);
 		this.hitBBox.zlow = oldz.x;   // HACK
 		this.hitBBox.zhigh = oldz.y;  // dto.
 

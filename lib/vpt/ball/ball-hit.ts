@@ -19,7 +19,6 @@
 
 import { Player } from '../../game/player';
 import { clamp, solveQuadraticEq } from '../../math/functions';
-import { Matrix2D } from '../../math/matrix2d';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
@@ -54,7 +53,7 @@ export class BallHit extends HitObject {
 	private readonly mover: BallMover;
 	private readonly tableData: TableData;
 
-	public readonly orientation = new Matrix2D();
+	public readonly vel: Vertex3D;
 	public readonly invMass: number;
 	public readonly inertia: number;
 	public readonly angularMomentum = new Vertex3D();
@@ -78,16 +77,18 @@ export class BallHit extends HitObject {
 	 * @param ball Reference to ball
 	 * @param data Static ball data
 	 * @param state Dynamic ball state
+	 * @param velocity Initial velocity
 	 * @param tableData Table data
 	 * @see void Ball::Init(const float mass)
 	 */
-	constructor(ball: Ball, data: BallData, state: BallState, tableData: TableData) {
+	constructor(ball: Ball, data: BallData, state: BallState, velocity: Vertex3D, tableData: TableData) {
 		super();
 
 		this.id = ball.id;
 		this.data = data;
 		this.state = state;
 		this.tableData = tableData;
+		this.vel = velocity;
 		this.mover = new BallMover(this.id, data, state, this);
 
 		// Only called by real balls, not temporary objects created for physics/rendering
@@ -110,7 +111,7 @@ export class BallHit extends HitObject {
 
 	public calcHitBBox(): void {
 
-		const vl = this.state.vel.length() + this.data.radius + 0.05; //!! 0.05f = paranoia
+		const vl = this.vel.length() + this.data.radius + 0.05; //!! 0.05f = paranoia
 		this.hitBBox.left = this.state.pos.x - vl;
 		this.hitBBox.right = this.state.pos.x + vl;
 		this.hitBBox.top = this.state.pos.y - vl;
@@ -147,7 +148,7 @@ export class BallHit extends HitObject {
 		}
 
 		// target ball to object ball delta velocity
-		const vrel = pball.state.vel.clone().sub(this.state.vel);
+		const vrel = pball.hit.vel.clone().sub(this.vel);
 		const vnormal = coll.hitNormal!;
 		const dot = vrel.dot(vnormal);
 
@@ -191,14 +192,14 @@ export class BallHit extends HitObject {
 		const impulse = -(1.0 + 0.8) * dot / (myInvMass + pball.hit.invMass);    // resitution = 0.8
 
 		if (!this.isFrozen) {
-			this.state.vel.sub(vnormal.clone().multiplyScalar(impulse * myInvMass));
+			this.vel.sub(vnormal.clone().multiplyScalar(impulse * myInvMass));
 		}
-		pball.state.vel.add(vnormal.clone().multiplyScalar(impulse * pball.hit.invMass));
+		pball.hit.vel.add(vnormal.clone().multiplyScalar(impulse * pball.hit.invMass));
 	}
 
 	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {
 		const d = this.state.pos!.clone().sub(pball.state.pos!);  // delta position
-		const dv = this.state.vel.clone().sub(pball.state.vel);   // delta velocity
+		const dv = this.vel.clone().sub(pball.hit.vel);   // delta velocity
 
 		let bcddsq = d.lengthSq();            // square of ball center's delta distance
 		let bcdd = Math.sqrt(bcddsq);         // length of delta
@@ -210,7 +211,7 @@ export class BallHit extends HitObject {
 			bcdd = 1.0;                       // patch up
 			bcddsq = 1.0;                     // patch up
 			dv.z = 0.1;                       // small speed difference
-			pball.state.vel.z -= dv.z;
+			pball.hit.vel.z -= dv.z;
 		}
 
 		const b = dv.dot(d);                               // inner product
@@ -291,7 +292,7 @@ export class BallHit extends HitObject {
 	public collide3DWall(hitNormal: Vertex3D, elasticity: number, elastFalloff: number, friction: number, scatterAngle: number): void {
 
 		//speed normal to wall
-		let dot = this.state.vel.dot(hitNormal);
+		let dot = this.vel.dot(hitNormal);
 
 		if (dot >= -C_LOWNORMVEL) {                        // nearly receding ... make sure of conditions
 			// otherwise if clearly approaching .. process the collision
@@ -318,7 +319,7 @@ export class BallHit extends HitObject {
 
 		elasticity = elasticityWithFalloff(elasticity, elastFalloff, dot);
 		dot *= -(1.0 + elasticity);
-		this.state.vel.add(hitNormal.multiplyScalar(dot));                           // apply collision impulse (along normal, so no torque)
+		this.vel.add(hitNormal.multiplyScalar(dot));                           // apply collision impulse (along normal, so no torque)
 
 		// compute friction impulse
 
@@ -356,28 +357,28 @@ export class BallHit extends HitObject {
 			scatter *= (1.0 - scatter * scatter) * 2.59808 * scatterAngle; // shape quadratic distribution and scale
 			const radsin = Math.sin(scatter);              // Green's transform matrix... rotate angle delta
 			const radcos = Math.cos(scatter);              // rotational transform from current position to position at time t
-			const vxt = this.state.vel.x;
-			const vyt = this.state.vel.y;
-			this.state.vel.x = vxt * radcos - vyt * radsin;      // rotate to random scatter angle
-			this.state.vel.y = vyt * radcos + vxt * radsin;
+			const vxt = this.vel.x;
+			const vyt = this.vel.y;
+			this.vel.x = vxt * radcos - vyt * radsin;      // rotate to random scatter angle
+			this.vel.y = vyt * radcos + vxt * radsin;
 		}
 	}
 
 	public surfaceVelocity(surfP: Vertex3D): Vertex3D {
-		return this.state.vel
+		return this.vel
 			.clone()
 			.add(Vertex3D.crossProduct(this.angularVelocity, surfP)); // linear velocity plus tangential velocity due to rotation
 	}
 
 	public applySurfaceImpulse(rotI: Vertex3D, impulse: Vertex3D): void {
-		this.state.vel.add(impulse.clone().multiplyScalar(this.invMass));
+		this.vel.add(impulse.clone().multiplyScalar(this.invMass));
 
 		this.angularMomentum.add(rotI);
 		this.angularVelocity = this.angularMomentum.clone().divideScalar(this.inertia);
 	}
 
 	public handleStaticContact(coll: CollisionEvent, friction: number, dtime: number, player: Player): void {
-		const normVel = this.state.vel.dot(coll.hitNormal!);      // this should be zero, but only up to +/- C_CONTACTVEL
+		const normVel = this.vel.dot(coll.hitNormal!);      // this should be zero, but only up to +/- C_CONTACTVEL
 
 		// If some collision has changed the ball's velocity, we may not have to do anything.
 		if (normVel <= C_CONTACTVEL) {
@@ -386,11 +387,11 @@ export class BallHit extends HitObject {
 			const normalForce = Math.max(0.0, -(dot * dtime + coll.hitOrgNormalVelocity!)); // normal force is always nonnegative
 
 			// Add just enough to kill original normal velocity and counteract the external forces.
-			this.state.vel.add(coll.hitNormal!.clone().multiplyScalar(normalForce));
+			this.vel.add(coll.hitNormal!.clone().multiplyScalar(normalForce));
 
 			// #ifdef C_EMBEDVELLIMIT
 			if (coll.hitDistance <= PHYS_TOUCH) {
-				this.state.vel.add(coll.hitNormal!.clone().multiplyScalar(Math.max(Math.min(C_EMBEDVELLIMIT, -coll.hitDistance), PHYS_TOUCH)));
+				this.vel.add(coll.hitNormal!.clone().multiplyScalar(Math.max(Math.min(C_EMBEDVELLIMIT, -coll.hitDistance), PHYS_TOUCH)));
 			}
 			// #endif
 
@@ -414,7 +415,7 @@ export class BallHit extends HitObject {
 		//if (slipspeed > 1e-6f)
 
 //#ifdef C_BALL_SPIN_HACK
-		const normVel = this.state.vel.dot(hitnormal);
+		const normVel = this.vel.dot(hitnormal);
 		if ((normVel <= 0.025) || (slipspeed < C_PRECISION)) { // check for <=0.025 originated from ball<->rubber collisions pushing the ball upwards, but this is still not enough, some could even use <=0.2
 			// slip speed zero - static friction case
 

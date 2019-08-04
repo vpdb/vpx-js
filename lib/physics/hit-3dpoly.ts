@@ -78,7 +78,7 @@ export class Hit3DPoly extends HitObject {
 		const hitnormal = coll.hitNormal!;
 
 		if (this.objType !== CollisionType.Trigger) {
-			const dot = -(hitnormal.dot(pball.state.vel));
+			const dot = -hitnormal.dot(pball.hit.vel);
 
 			pball.hit.collide3DWall(this.normal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
@@ -104,7 +104,7 @@ export class Hit3DPoly extends HitObject {
 
 			if ((!coll.hitFlag) === (i < 0)) { // Hit == NotAlreadyHit
 
-				pball.state.pos.add(pball.state.vel.clone().multiplyScalar(STATICTIME));      //move ball slightly forward
+				pball.state.pos.add(pball.hit.vel.clone().multiplyScalar(STATICTIME));      //move ball slightly forward
 
 				if (i < 0) {
 					pball.hit.vpVolObjs.push(this.obj!);
@@ -122,7 +122,7 @@ export class Hit3DPoly extends HitObject {
 			return -1.0;
 		}
 
-		const bnv = this.normal.dot(pball.state.vel);  //speed in Normal-vector direction
+		const bnv = this.normal.dot(pball.hit.vel);  //speed in Normal-vector direction
 
 		if ((this.objType !== CollisionType.Trigger) && (bnv > C_LOWNORMVEL)) { // return if clearly ball is receding from object
 			return -1.0;
@@ -181,7 +181,7 @@ export class Hit3DPoly extends HitObject {
 			return -1.0;
 		}
 
-		hitPos.add(pball.state.vel.clone().multiplyScalar(hittime));     // advance hit point to contact
+		hitPos.add(pball.hit.vel.clone().multiplyScalar(hittime));     // advance hit point to contact
 
 		// Do a point in poly test, using the xy plane, to see if the hit point is inside the polygon
 		// this need to be changed to a point in polygon on 3D plane

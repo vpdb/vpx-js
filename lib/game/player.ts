@@ -38,6 +38,7 @@ import { BallState } from '../vpt/ball/ball-state';
 import { FlipperMover } from '../vpt/flipper/flipper-mover';
 import { ItemState } from '../vpt/item-state';
 import { logger } from '../util/logger';
+import { Matrix2D } from '../math/matrix2d';
 
 export class Player extends EventEmitter {
 
@@ -567,10 +568,10 @@ export class Player extends EventEmitter {
 	public createBall(ballCreator: IBallCreationPosition, velocity: Vertex3D = new Vertex3D(0.1, 0, 0), radius = 25, mass = 1): Ball {
 
 		const data = new BallData(radius, mass, this.table.data!.defaultBulbIntensityScaleOnBall);
-		const state = new BallState(`Ball${Ball.idCounter}`, ballCreator.getBallCreationPosition(this.table), velocity);
+		const state = new BallState(`Ball${Ball.idCounter}`, ballCreator.getBallCreationPosition(this.table), new Matrix2D());
 		state.pos.z += data.radius;
 
-		const ball = new Ball(data, state, this.table.data!);
+		const ball = new Ball(data, state, velocity, this.table.data!);
 
 		this.balls.push(ball);
 		this.movers.push(ball.getMover()); // balls are always added separately to this list!

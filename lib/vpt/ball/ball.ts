@@ -52,12 +52,12 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRendera
 	// ugly hacks
 	public oldVel?: Vertex3D;
 
-	constructor(data: BallData, state: BallState, tableData: TableData) {
+	constructor(data: BallData, state: BallState, velocity: Vertex3D, tableData: TableData) {
 		this.id = Ball.idCounter++;
 		this.data = data;
 		this.state = state;
 		this.meshGenerator = new BallMeshGenerator(data);
-		this.hit = new BallHit(this, data, state, tableData);
+		this.hit = new BallHit(this, data, state, velocity, tableData);
 	}
 
 	public getName(): string {
@@ -67,9 +67,9 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRendera
 	public applyState(obj: Object3D, table: Table, player: Player): void {
 		const zheight = !this.hit.isFrozen ? this.state.pos.z : this.state.pos.z - this.data.radius;
 		const orientation = new Matrix3D().set([
-			[this.hit.orientation.matrix[0][0], this.hit.orientation.matrix[1][0], this.hit.orientation.matrix[2][0], 0.0],
-			[this.hit.orientation.matrix[0][1], this.hit.orientation.matrix[1][1], this.hit.orientation.matrix[2][1], 0.0],
-			[this.hit.orientation.matrix[0][2], this.hit.orientation.matrix[1][2], this.hit.orientation.matrix[2][2], 0.0],
+			[this.state.orientation.matrix[0][0], this.state.orientation.matrix[1][0], this.state.orientation.matrix[2][0], 0.0],
+			[this.state.orientation.matrix[0][1], this.state.orientation.matrix[1][1], this.state.orientation.matrix[2][1], 0.0],
+			[this.state.orientation.matrix[0][2], this.state.orientation.matrix[1][2], this.state.orientation.matrix[2][2], 0.0],
 			[0, 0, 0, 1],
 		]);
 		const trans = new Matrix3D().setTranslation(this.state.pos.x, this.state.pos.y, zheight);
