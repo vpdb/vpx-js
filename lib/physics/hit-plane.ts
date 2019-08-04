@@ -54,7 +54,7 @@ export class HitPlane extends HitObject {
 			return -1.0;
 		}
 
-		const bnv = this.normal.dot(pball.state.vel);       // speed in normal direction
+		const bnv = this.normal.dot(pball.hit.vel);       // speed in normal direction
 
 		if (bnv > C_CONTACTVEL) {                 // return if clearly ball is receding from object
 			return -1.0;

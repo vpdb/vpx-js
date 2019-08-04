@@ -68,7 +68,7 @@ export class HitCircle extends HitObject {
 
 		const c = new Vertex3D(this.center.x, this.center.y, 0.0);
 		const dist = pball.state.pos.clone().sub(c);    // relative ball position
-		const dv = pball.state.vel;
+		const dv = pball.hit.vel;
 
 		const capsule3D = (!lateral && pball.state.pos.z > this.hitBBox.zhigh);
 
@@ -150,7 +150,7 @@ export class HitCircle extends HitObject {
 			return -1.0; // contact out of physics frame
 		}
 
-		const hitz = pball.state.pos.z + pball.state.vel.z * hittime; // rolling point
+		const hitz = pball.state.pos.z + pball.hit.vel.z * hittime; // rolling point
 
 		if ((hitz + pball.data.radius * 0.5 < this.hitBBox.zlow)
 			|| !capsule3D && (hitz - pball.data.radius * 0.5) > this.hitBBox.zhigh
@@ -158,8 +158,8 @@ export class HitCircle extends HitObject {
 			return -1.0;
 		}
 
-		const hitx = pball.state.pos.x + pball.state.vel.x * hittime;
-		const hity = pball.state.pos.y + pball.state.vel.y * hittime;
+		const hitx = pball.state.pos.x + pball.hit.vel.x * hittime;
+		const hity = pball.state.pos.y + pball.hit.vel.y * hittime;
 
 		const sqrlen = (hitx - c.x) * (hitx - c.x) + (hity - c.y) * (hity - c.y);
 

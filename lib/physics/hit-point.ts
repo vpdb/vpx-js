@@ -41,7 +41,7 @@ export class HitPoint extends HitObject {
 	}
 
 	public collide(coll: CollisionEvent): void {
-		const dot = coll.hitNormal!.dot(coll.ball.state.vel);
+		const dot = coll.hitNormal!.dot(coll.ball.hit.vel);
 		coll.ball.hit.collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
 		if (dot <= -this.threshold) {
@@ -66,7 +66,7 @@ export class HitPoint extends HitObject {
 			return -1.0;                           // no hit on exact center
 		}
 
-		const b = dist.dot(pball.state.vel);
+		const b = dist.dot(pball.hit.vel);
 		const bnv = b / bcdd;                   // ball normal velocity
 
 		if (bnv > C_CONTACTVEL) {
@@ -75,7 +75,7 @@ export class HitPoint extends HitObject {
 
 		const bnd = bcdd - pball.data.radius;   // ball distance to line
 
-		const a = pball.state.vel.lengthSq();
+		const a = pball.hit.vel.lengthSq();
 
 		let hittime = 0;
 		let isContact = false;
@@ -106,7 +106,7 @@ export class HitPoint extends HitObject {
 			return -1.0; // contact out of physics frame
 		}
 
-		const hitPos = pball.state.pos.clone().add(pball.state.vel.clone().multiplyScalar(hittime));
+		const hitPos = pball.state.pos.clone().add(pball.hit.vel.clone().multiplyScalar(hittime));
 		coll.hitNormal = hitPos.clone().sub(this.p);
 		coll.hitNormal.normalize();
 

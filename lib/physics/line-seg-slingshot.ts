@@ -39,7 +39,7 @@ export class LineSegSlingshot extends LineSeg {
 		const pball = coll.ball;
 		const hitnormal = coll.hitNormal!;
 
-		const dot = coll.hitNormal!.dot(coll.ball.state.vel); // normal velocity to slingshot
+		const dot = coll.hitNormal!.dot(coll.ball.hit.vel); // normal velocity to slingshot
 
 		const threshold = (dot <= -this.surfaceData.slingshotThreshold);  // normal greater than threshold?
 
@@ -60,7 +60,7 @@ export class LineSegSlingshot extends LineSeg {
 			// will match the previous physics
 			force *= this.force; //-80;
 
-			pball.state.vel.sub(hitnormal.clone().multiplyScalar(force));	// boost velocity, drive into slingshot (counter normal), allow CollideWall to handle the remainder
+			pball.hit.vel.sub(hitnormal.clone().multiplyScalar(force));	// boost velocity, drive into slingshot (counter normal), allow CollideWall to handle the remainder
 		}
 
 		pball.hit.collide3DWall(hitnormal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);

@@ -60,7 +60,7 @@ export class HitTriangle extends HitObject {
 		const pball = coll.ball;
 		const hitnormal = coll.hitNormal!;
 
-		const dot = -(hitnormal.dot(pball.state.vel));
+		const dot = -(hitnormal.dot(pball.hit.vel));
 
 		pball.hit.collide3DWall(this.normal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
@@ -86,7 +86,7 @@ export class HitTriangle extends HitObject {
 			return -1.0;
 		}
 
-		const bnv = this.normal.dot(pball.state.vel);     // speed in Normal-vector direction
+		const bnv = this.normal.dot(pball.hit.vel);     // speed in Normal-vector direction
 
 		if (bnv > C_CONTACTVEL) {						// return if clearly ball is receding from object
 			return -1.0;
@@ -123,7 +123,7 @@ export class HitTriangle extends HitObject {
 			return -1.0;	// time is outside this frame ... no collision
 		}
 
-		hitPos.add(pball.state.vel.clone().multiplyScalar(hittime));	// advance hit point to contact
+		hitPos.add(pball.hit.vel.clone().multiplyScalar(hittime));	// advance hit point to contact
 
 		// check if hitPos is within the triangle
 

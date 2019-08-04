@@ -197,7 +197,7 @@ export class FlipperHit extends HitObject {
 			}
 		}
 
-		pball.state.vel.add(normal.clone().multiplyScalar(impulse * pball.hit.invMass));      // new velocity for ball after impact
+		pball.hit.vel.add(normal.clone().multiplyScalar(impulse * pball.hit.invMass));      // new velocity for ball after impact
 		this.mover.applyImpulse(rotI);
 
 		// apply friction
@@ -310,8 +310,8 @@ export class FlipperHit extends HitObject {
 		const angleMax = Math.max(this.mover.angleStart, this.mover.angleEnd);
 
 		const ballr  = pball.data.radius;
-		const ballvx = pball.state.vel.x;
-		const ballvy = pball.state.vel.y;
+		const ballvx = pball.hit.vel.x;
+		const ballvy = pball.hit.vel.y;
 
 		// flipper positions at zero degrees rotation
 
@@ -445,7 +445,7 @@ export class FlipperHit extends HitObject {
 			return -1.0; // not in range of touching
 		}
 
-		const hitz = pball.state.pos.z + pball.state.vel.z * t;	// check for a hole, relative to ball rolling point at hittime
+		const hitz = pball.state.pos.z + pball.hit.vel.z * t;	// check for a hole, relative to ball rolling point at hittime
 
 		//check limits of object's height and depth
 		if ((hitz + ballr * 0.5) < this.hitBBox.zlow || (hitz - ballr * 0.5) > this.hitBBox.zhigh) {
@@ -517,8 +517,8 @@ export class FlipperHit extends HitObject {
 		const ballx = pball.state.pos.x;
 		const bally = pball.state.pos.y;
 
-		const ballvx = pball.state.vel.x;
-		const ballvy = pball.state.vel.y;
+		const ballvx = pball.hit.vel.x;
+		const ballvy = pball.hit.vel.y;
 
 		const vp = new Vertex2D(
 			0.0,                           // m_flipperradius * sin(0);
@@ -621,7 +621,7 @@ export class FlipperHit extends HitObject {
 		}
 
 		// here ball and flipper end are in contact .. well in most cases, near and embedded solutions need calculations
-		const hitz = pball.state.pos.z + pball.state.vel.z * t; // check for a hole, relative to ball rolling point at hittime
+		const hitz = pball.state.pos.z + pball.hit.vel.z * t; // check for a hole, relative to ball rolling point at hittime
 
 		if ((hitz + ballr * 0.5) < this.hitBBox.zlow		//check limits of object's height and depth
 			|| (hitz - ballr * 0.5) > this.hitBBox.zhigh) {

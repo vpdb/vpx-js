@@ -56,7 +56,7 @@ export class HitLineZ extends HitObject {
 	}
 
 	public collide(coll: CollisionEvent): void {
-		const dot = coll.hitNormal!.dot(coll.ball.state.vel);
+		const dot = coll.hitNormal!.dot(coll.ball.hit.vel);
 		coll.ball.hit.collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
 		if (dot <= -this.threshold) {
@@ -71,7 +71,7 @@ export class HitLineZ extends HitObject {
 
 		const bp2d = new Vertex2D(pball.state.pos.x, pball.state.pos.y);
 		const dist = bp2d.clone().sub(this.xy);    // relative ball position
-		const dv = new Vertex2D(pball.state.vel.x, pball.state.vel.y);
+		const dv = new Vertex2D(pball.hit.vel.x, pball.hit.vel.y);
 
 		const bcddsq = dist.lengthSq();  // ball center to line distance squared
 		const bcdd = Math.sqrt(bcddsq);           // distance ball to line
@@ -120,14 +120,14 @@ export class HitLineZ extends HitObject {
 			return -1.0; // contact out of physics frame
 		}
 
-		const hitz = pball.state.pos.z + hittime * pball.state.vel.z;   // ball z position at hit time
+		const hitz = pball.state.pos.z + hittime * pball.hit.vel.z;   // ball z position at hit time
 
 		if (hitz < this.hitBBox.zlow || hitz > this.hitBBox.zhigh) {   // check z coordinate
 			return -1.0;
 		}
 
-		const hitx = pball.state.pos.x + hittime * pball.state.vel.x;   // ball x position at hit time
-		const hity = pball.state.pos.y + hittime * pball.state.vel.y;   // ball y position at hit time
+		const hitx = pball.state.pos.x + hittime * pball.hit.vel.x;   // ball x position at hit time
+		const hity = pball.state.pos.y + hittime * pball.hit.vel.y;   // ball y position at hit time
 
 		const norm = new Vertex2D(hitx - this.xy.x, hity - this.xy.y);
 		norm.normalize();

@@ -67,7 +67,7 @@ export class PlungerHit extends HitObject {
 	public collide(coll: CollisionEvent, player: Player): void {
 		const pball = coll.ball;
 
-		let dot = (pball.state.vel.x - coll.hitVel!.x) * coll.hitNormal!.x + (pball.state.vel.y - coll.hitVel!.y) * coll.hitNormal!.y;
+		let dot = (pball.hit.vel.x - coll.hitVel!.x) * coll.hitNormal!.x + (pball.hit.vel.y - coll.hitVel!.y) * coll.hitNormal!.y;
 
 		if (dot >= -C_LOWNORMVEL) {              // nearly receding ... make sure of conditions
 			// otherwise if clearly approaching .. process the collision
@@ -120,22 +120,22 @@ export class PlungerHit extends HitObject {
 			// isn't entirely unreasonable physically - you could look at it as
 			// accounting for the spring tension and friction.
 			const reverseImpulseFudgeFactor = .22;
-			this.mover.reverseImpulse = pball.state.vel.y * impulse
+			this.mover.reverseImpulse = pball.hit.vel.y * impulse
 				* (pball.data.mass / this.mover.mass)
 				* reverseImpulseFudgeFactor;
 		}
 
 		// update the ball speed for the impulse
-		pball.state.vel.add(coll.hitNormal!.clone().multiplyScalar(impulse));
+		pball.hit.vel.add(coll.hitNormal!.clone().multiplyScalar(impulse));
 
-		pball.state.vel.multiplyScalar(0.999);           //friction all axiz     //!! TODO: fix this
+		pball.hit.vel.multiplyScalar(0.999);           //friction all axiz     //!! TODO: fix this
 
 		const scatterVel = this.mover.scatterVelocity; // fixme * g_pplayer->m_ptable->m_globalDifficulty;// apply dificulty weighting
 
-		if (scatterVel > 0 && Math.abs(pball.state.vel.y) > scatterVel) { //skip if low velocity
+		if (scatterVel > 0 && Math.abs(pball.hit.vel.y) > scatterVel) { //skip if low velocity
 			let scatter = Math.random() * 2 - 1;                                                   // -1.0f..1.0f
 			scatter *= (1.0 - scatter * scatter) * 2.59808 * scatterVel;     // shape quadratic distribution and scale
-			pball.state.vel.y += scatter;
+			pball.hit.vel.y += scatter;
 		}
 	}
 
@@ -205,8 +205,8 @@ export class PlungerHit extends HitObject {
 		// messes with the ball IDs.  Before changing the speed value in the
 		// (nominally) const Ball instance, save the old value so that we can
 		// restore it when we're done.
-		const oldvely = pball.state.vel.y;   // save the old velocity value
-		pball.state.vel.y -= this.mover.speed;     // WARNING! EVIL OVERRIDE OF CONST INSTANCE POINTER!!!
+		const oldvely = pball.hit.vel.y;   // save the old velocity value
+		pball.hit.vel.y -= this.mover.speed;     // WARNING! EVIL OVERRIDE OF CONST INSTANCE POINTER!!!
 
 		// Figure the impulse from hitting the moving end.
 		// Calculate this as the product of the plunger speed and the
@@ -259,7 +259,7 @@ export class PlungerHit extends HitObject {
 		}
 
 		// restore the original ball velocity (WARNING! CONST POINTER OVERRIDE!)
-		pball.state.vel.y = oldvely;
+		pball.hit.vel.y = oldvely;
 
 		// check for a hit
 		if (fHit) {

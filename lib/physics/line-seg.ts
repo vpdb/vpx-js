@@ -64,7 +64,7 @@ export class LineSeg extends HitObject {
 	}
 
 	public collide(coll: CollisionEvent): void {
-		const dot = coll.hitNormal!.dot(coll.ball.state.vel);
+		const dot = coll.hitNormal!.dot(coll.ball.hit.vel);
 		coll.ball.hit.collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
 		if (dot <= -this.threshold) {
@@ -96,8 +96,8 @@ export class LineSeg extends HitObject {
 			return -1.0;
 		}
 
-		const ballvx = pball.state.vel.x;						// ball velocity
-		const ballvy = pball.state.vel.y;
+		const ballvx = pball.hit.vel.x;						// ball velocity
+		const ballvy = pball.hit.vel.y;
 
 		const bnv = ballvx * this.normal.x + ballvy * this.normal.y;		// ball velocity normal to segment, positive if receding, zero=parallel
 		let bUnHit = (bnv > C_LOWNORMVEL);
@@ -173,7 +173,7 @@ export class LineSeg extends HitObject {
 		}
 
 		const ballr = pball.data.radius;
-		const hitz = pball.state.pos.z + pball.state.vel.z * hittime;  // check too high or low relative to ball rolling point at hittime
+		const hitz = pball.state.pos.z + pball.hit.vel.z * hittime;  // check too high or low relative to ball rolling point at hittime
 
 		if (hitz + ballr * 0.5 < this.hitBBox.zlow                  // check limits of object's height and depth
 		|| hitz - ballr * 0.5 > this.hitBBox.zhigh) {

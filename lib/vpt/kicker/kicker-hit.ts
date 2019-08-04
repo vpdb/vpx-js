@@ -79,7 +79,7 @@ export class KickerHit extends HitCircle {
 
 			if (this.data.legacyMode || newBall) {
 				// move ball slightly forward
-				pball.state.pos.add(pball.state.vel.clone().multiplyScalar(STATICTIME));
+				pball.state.pos.add(pball.hit.vel.clone().multiplyScalar(STATICTIME));
 			}
 
 			if (i < 0) { // entering Kickers volume
@@ -99,11 +99,11 @@ export class KickerHit extends HitCircle {
 					// if so we take the last "good" velocity to help the ball moving over the critical spot at the kicker bevel
 					// this hack seems to work only if the kicker is on the playfield, a kicker attached to a wall has still problems
 					// because the friction calculation for a wall is also different
-					const length = pball.state.vel.length();
+					const length = pball.hit.vel.length();
 					if (length < 0.2) {
-						pball.state.vel.set(pball.oldVel!.x, pball.oldVel!.y, pball.oldVel!.z);
+						pball.hit.vel.set(pball.oldVel!.x, pball.oldVel!.y, pball.oldVel!.z);
 					}
-					pball.oldVel = pball.state.vel.clone();
+					pball.oldVel = pball.hit.vel.clone();
 				}
 
 				if (hitEvent) {
@@ -134,7 +134,7 @@ export class KickerHit extends HitCircle {
 						// if we don't change the height of the ball we get a lot of hit events while the ball is falling!!
 
 						// Only mess with variables if ball was not kicked during event
-						pball.state.vel.setZero();
+						pball.hit.vel.setZero();
 						pball.hit.angularMomentum.setZero();
 						pball.hit.angularVelocity.setZero();
 						pball.state.pos.x = this.center.x;
@@ -179,14 +179,14 @@ export class KickerHit extends HitCircle {
 			let surfVel: Vertex3D;
 			let tangent: Vertex3D;
 			let surfP: Vertex3D;
-			const dot = -pball.state.vel.dot(hitnorm);
+			const dot = -pball.hit.vel.dot(hitnorm);
 			const reactionImpulse = pball.data.mass * Math.abs(dot);
 
 			surfP = hitnormal.clone().multiplyScalar(-pball.data.radius);    // surface contact point relative to center of mass
 			surfVel = pball.hit.surfaceVelocity(surfP);         // velocity at impact point
 			tangent = surfVel.clone().sub(hitnorm.clone().multiplyScalar(surfVel.dot(hitnormal))); // calc the tangential velocity
 
-			pball.state.vel.add(hitnorm.clone().multiplyScalar(dot)); // apply collision impulse (along normal, so no torque)
+			pball.hit.vel.add(hitnorm.clone().multiplyScalar(dot)); // apply collision impulse (along normal, so no torque)
 
 			const friction = 0.3;
 			const tangentSpSq = tangent.lengthSq();
