@@ -93,8 +93,8 @@ export class Player extends EventEmitter {
 	constructor(table: Table) {
 		super();
 		this.table = table;
-		this.addTableElements(table);
 		this.addCabinetBoundingHitShapes();
+		this.addTableElements(table);
 		this.initOcTree(table);
 	}
 
@@ -131,7 +131,6 @@ export class Player extends EventEmitter {
 			for (const hitObject of hittable.getHitShapes()) {
 				this.hitObjects.push(hitObject);
 				hitObject.calcHitBBox();
-				this.hitOcTree.addElement(hitObject);
 			}
 		}
 
@@ -183,6 +182,10 @@ export class Player extends EventEmitter {
 	}
 
 	private initOcTree(table: Table) {
+
+		for (const hitObject of this.hitObjects) {
+			this.hitOcTree.addElement(hitObject);
+		}
 		const tableBounds = table.getBoundingBox();
 		this.hitOcTree.initialize(tableBounds);
 		// initialize hit structure for dynamic objects
