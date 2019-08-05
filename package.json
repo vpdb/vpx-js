@@ -40,7 +40,7 @@
 		"gltf-pipeline": "github:freezy/gltf-pipeline#hotfix/dedupe",
 		"gm": "^1.23.1",
 		"pngquant": "^3.0.0",
-		"sharp": "^0.22.1",
+		"sharp": "^0.23.0",
 		"three": "^0.106.0"
 	},
 	"devDependencies": {
