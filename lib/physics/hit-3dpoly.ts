@@ -146,42 +146,42 @@ export class Hit3DPoly extends HitObject {
 			}
 
 			if (bnd <= PHYS_TOUCH) {
-				if (inside || (Math.abs(bnv) > C_CONTACTVEL) // fast velocity, return zero time
+				if (inside || (Math.abs(bnv) > C_CONTACTVEL)                   // fast velocity, return zero time
 					//zero time for rigid fast bodies
-					|| (bnd <= (-PHYS_TOUCH))) {   // slow moving but embedded
+					|| (bnd <= (-PHYS_TOUCH))) {                               // slow moving but embedded
 					hittime = 0;
 
 				} else {
-					hittime = bnd * (1.0 / (2.0 * PHYS_TOUCH)) + 0.5;	// don't compete for fast zero time events
+					hittime = bnd * (1.0 / (2.0 * PHYS_TOUCH)) + 0.5;          // don't compete for fast zero time events
 				}
 
-			} else if (Math.abs(bnv) > C_LOWNORMVEL) {           // not velocity low?
-				hittime = bnd / -bnv;                     // rate ok for safe divide
+			} else if (Math.abs(bnv) > C_LOWNORMVEL) {                         // not velocity low?
+				hittime = bnd / -bnv;                                          // rate ok for safe divide
 
 			} else {
-				return -1.0;                             // wait for touching
+				return -1.0;                                                   // wait for touching
 			}
 
-		} else { //non-rigid polygon
-			if (bnv * bnd >= 0) {                        // outside-receding || inside-approaching
-				if (!pball.hit.vpVolObjs.length                 // temporary ball
-					|| Math.abs(bnd) >= pball.data.radius * 0.5 // not too close ... nor too far away
-					|| inside !== pball.hit.vpVolObjs.indexOf(this.obj!) < 0) { // ...ball outside and hit set or ball inside and no hit set
+		} else { // non-rigid polygon
+			if (bnv * bnd >= 0) {                                              // outside-receding || inside-approaching
+				if (!pball.hit.vpVolObjs.length                                // temporary ball
+					|| Math.abs(bnd) >= pball.data.radius * 0.5                // not too close ... nor too far away
+					|| inside !== pball.hit.vpVolObjs.indexOf(this.obj!) < 0) {// ...ball outside and hit set or ball inside and no hit set
 					return -1.0;
 				}
 
 				hittime = 0;
-				bUnHit = !inside;	// ball on outside is UnHit, otherwise it's a Hit
+				bUnHit = !inside;                                              // ball on outside is UnHit, otherwise it's a Hit
 			} else {
 				hittime = bnd / (-bnv);
 			}
 		}
 
-		if (!isFinite(hittime) || hittime < 0 || hittime > dtime) { // time is outside this frame ... no collision
+		if (!isFinite(hittime) || hittime < 0 || hittime > dtime) {            // time is outside this frame ... no collision
 			return -1.0;
 		}
 
-		hitPos.add(pball.hit.vel.clone().multiplyScalar(hittime));     // advance hit point to contact
+		hitPos.add(pball.hit.vel.clone().multiplyScalar(hittime));             // advance hit point to contact
 
 		// Do a point in poly test, using the xy plane, to see if the hit point is inside the polygon
 		// this need to be changed to a point in polygon on 3D plane

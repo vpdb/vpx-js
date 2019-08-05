@@ -65,7 +65,7 @@ export class LineSegSlingshot extends LineSeg {
 
 		pball.hit.collide3DWall(hitnormal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
-		// FIXME below
+		// FIXME event slingshot
 		// if (this.obj && this.fe && /*!m_psurface->m_fDisabled && */threshold) {
 		// 	// is this the same place as last event? if same then ignore it
 		// 	const dist_ls = (pball->m_Event_Pos - pball->m_pos).LengthSquared();

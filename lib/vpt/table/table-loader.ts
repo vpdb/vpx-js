@@ -48,7 +48,7 @@ export class TableLoader {
 		this.doc = await OleCompoundDoc.load(reader);
 		try {
 
-			const loadedTable: LoadedTable = {};
+			const loadedTable: LoadedTable = { items: [] };
 			if (opts.tableDataOnly || !opts.tableInfoOnly) {
 
 				// open game storage
@@ -122,94 +122,102 @@ export class TableLoader {
 
 		// go through all game items
 		for (let i = 0; i < numItems; i++) {
+			let item: any;
 			const itemName = `GameItem${i}`;
 			const itemData = await storage.read(itemName, 0, 4);
 			const itemType = itemData.readInt32LE(0);
 			switch (itemType) {
 
 				case ItemData.TypeSurface: {
-					const item = await Surface.fromStorage(storage, itemName);
+					item = await Surface.fromStorage(storage, itemName);
 					loadedTable.surfaces.push(item);
 					break;
 				}
 
 				case ItemData.TypePrimitive: {
-					const item = await Primitive.fromStorage(storage, itemName);
+					item = await Primitive.fromStorage(storage, itemName);
 					loadedTable.primitives.push(item);
 					break;
 				}
 
 				case ItemData.TypeLight: {
-					const item = await Light.fromStorage(storage, itemName);
+					item = await Light.fromStorage(storage, itemName);
 					loadedTable.lights.push(item);
 					break;
 				}
 
 				case ItemData.TypeRubber: {
-					const item = await Rubber.fromStorage(storage, itemName);
+					item = await Rubber.fromStorage(storage, itemName);
 					loadedTable.rubbers.push(item);
 					break;
 				}
 
 				case ItemData.TypeFlipper: {
-					const item = await Flipper.fromStorage(storage, itemName);
+					item = await Flipper.fromStorage(storage, itemName);
 					loadedTable.flippers.push(item);
 					break;
 				}
 
 				case ItemData.TypeBumper: {
-					const item = await Bumper.fromStorage(storage, itemName);
+					item = await Bumper.fromStorage(storage, itemName);
 					loadedTable.bumpers.push(item);
 					break;
 				}
 
 				case ItemData.TypeRamp: {
-					const item = await Ramp.fromStorage(storage, itemName);
+					item = await Ramp.fromStorage(storage, itemName);
 					loadedTable.ramps.push(item);
 					break;
 				}
 
 				case ItemData.TypeHitTarget: {
-					loadedTable.hitTargets.push(await HitTarget.fromStorage(storage, itemName));
+					item = await HitTarget.fromStorage(storage, itemName);
+					loadedTable.hitTargets.push(item);
 					break;
 				}
 
 				case ItemData.TypeGate: {
-					loadedTable.gates.push(await Gate.fromStorage(storage, itemName));
+					item = await Gate.fromStorage(storage, itemName);
+					loadedTable.gates.push(item);
 					break;
 				}
 
 				case ItemData.TypeKicker: {
-					loadedTable.kickers.push(await Kicker.fromStorage(storage, itemName));
+					item = await Kicker.fromStorage(storage, itemName);
+					loadedTable.kickers.push(item);
 					break;
 				}
 
 				case ItemData.TypeTrigger: {
-					loadedTable.triggers.push(await Trigger.fromStorage(storage, itemName));
+					item = await Trigger.fromStorage(storage, itemName);
+					loadedTable.triggers.push(item);
 					break;
 				}
 
 				case ItemData.TypeSpinner: {
-					loadedTable.spinners.push(await Spinner.fromStorage(storage, itemName));
+					item = await Spinner.fromStorage(storage, itemName);
+					loadedTable.spinners.push(item);
 					break;
 				}
 
 				case ItemData.TypeTimer: {
+					item = await TimerItem.fromStorage(storage, itemName);
 					if (opts.loadInvisibleItems) {
-						loadedTable.timers.push(await TimerItem.fromStorage(storage, itemName));
+						loadedTable.timers.push(item);
 					}
 					break;
 				}
 
 				case ItemData.TypePlunger: {
-					const item = await Plunger.fromStorage(storage, itemName);
+					item = await Plunger.fromStorage(storage, itemName);
 					loadedTable.plungers.push(item);
 					break;
 				}
 
 				case ItemData.TypeTextbox: {
+					item = await TextBoxItem.fromStorage(storage, itemName);
 					if (opts.loadInvisibleItems) {
-						loadedTable.textBoxes.push(await TextBoxItem.fromStorage(storage, itemName));
+						loadedTable.textBoxes.push(item);
 					}
 					break;
 				}
@@ -217,6 +225,9 @@ export class TableLoader {
 				default:
 					// ignore the rest for now
 					break;
+			}
+			if (item) {
+				loadedTable.items.push(item);
 			}
 			if (!stats[ItemData.getType(itemType)]) {
 				stats[ItemData.getType(itemType)] = 1;
@@ -251,6 +262,7 @@ export class TableLoader {
 export interface LoadedTable {
 	data?: TableData;
 	info?: { [key: string]: string };
+	items: any[];
 
 	textures?: Texture[];
 

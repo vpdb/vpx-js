@@ -21,12 +21,13 @@ import { Storage } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { Player } from '../../game/player';
-import { VpTableExporterOptions } from '../table/table-exporter';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { Table } from '../table/table';
+import { VpTableExporterOptions } from '../table/table-exporter';
 import { SurfaceData } from './surface-data';
+import { SurfaceEvents } from './surface-events';
 import { SurfaceHitGenerator } from './surface-hit-generator';
 import { SurfaceMesh } from './surface-mesh';
 
@@ -42,6 +43,7 @@ export class Surface implements IRenderable, IHittable {
 	private readonly mesh: SurfaceMesh;
 	private readonly hitGenerator: SurfaceHitGenerator;
 	private hits: HitObject[] = [];
+	private events?: SurfaceEvents;
 
 	// public getters
 	get heightTop() { return this.data.heighttop; }
@@ -90,7 +92,8 @@ export class Surface implements IRenderable, IHittable {
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		this.hits = this.hitGenerator.generateHitObjects(table);
+		this.events = new SurfaceEvents();
+		this.hits = this.hitGenerator.generateHitObjects(this.events, table);
 	}
 
 	public getHitShapes(): HitObject[] {

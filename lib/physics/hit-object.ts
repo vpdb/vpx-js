@@ -130,14 +130,14 @@ export abstract class HitObject {
 			return;
 		}
 
-		// fixme abstract this away
+		// fixme hittarget
 		//if (this.objType === CollisionType.HitTarget && (((this as HitTarget).obj).data.isDropped)) {
 		//	return;
 		//}
 
 		const newColl = new CollisionEvent(pball);
 		const newTime = this.hitTest(pball, coll.hitTime, !player.recordContacts ? coll : newColl, player);
-		// fixme debug this, but in case sign is supposed to handle +/- infinity cases, javscript should cover that.
+		// fixme debug this, but in case sign is supposed to handle +/- infinity cases, javascript should cover that.
 		const validHit = (newTime >= 0) /*&& !sign(newTime)*/ && (newTime <= coll.hitTime);
 
 		if (!player.recordContacts) {// simply find first event

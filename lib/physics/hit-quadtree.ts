@@ -24,10 +24,11 @@ import { Ball } from '../vpt/ball/ball';
 import { Primitive } from '../vpt/primitive/primitive';
 import { CollisionEvent } from './collision-event';
 import { HitObject } from './hit-object';
+import { PrimitiveEvents } from '../vpt/primitive/primitive-events';
 
 export class HitQuadtree {
 
-	private unique?: Primitive; // everything below/including this node shares the same original primitive object (just for early outs if not collidable)
+	private unique?: PrimitiveEvents; // everything below/including this node shares the same original primitive object (just for early outs if not collidable)
 
 	private vho: HitObject[] = [];
 	private children: HitQuadtree[] = [];
@@ -133,13 +134,14 @@ export class HitQuadtree {
 
 		const vRemain: HitObject[] = []; // hit objects which did not go to a quadrant
 
-		this.unique = this.vho[0].e ? this.vho[0].obj as Primitive : undefined;
+		// TODO check if casting in C++ results in null if not the cast type
+		this.unique = this.vho[0].e ? this.vho[0].obj as PrimitiveEvents : undefined;
 
 		// sort items into appropriate child nodes
 		for (const pho of this.vho) {
 			let oct: number;
 
-			if ((pho.e ? (pho.obj as Primitive) : undefined) !== this.unique) { // are all objects in current node unique/belong to the same primitive?
+			if ((pho.e ? (pho.obj as PrimitiveEvents) : undefined) !== this.unique) { // are all objects in current node unique/belong to the same primitive?
 				this.unique = undefined;
 			}
 

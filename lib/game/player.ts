@@ -93,8 +93,8 @@ export class Player extends EventEmitter {
 	constructor(table: Table) {
 		super();
 		this.table = table;
-		this.addCabinetBoundingHitShapes();
 		this.addTableElements(table);
+		this.addCabinetBoundingHitShapes();
 		this.initOcTree(table);
 	}
 

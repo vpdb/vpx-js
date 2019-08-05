@@ -59,6 +59,7 @@ export class Table implements IRenderable {
 
 	public readonly data?: TableData;
 	public readonly info?: { [key: string]: string };
+	public readonly items: any[];
 
 	public readonly textures: { [key: string]: Texture } = {};
 
@@ -90,6 +91,7 @@ export class Table implements IRenderable {
 
 	private constructor(loader: TableLoader, loadedTable: LoadedTable) {
 		this.loader = loader;
+		this.items = loadedTable.items;
 		if (loadedTable.data) {
 			this.data = loadedTable.data;
 			this.meshGenerator = new TableMeshGenerator(loadedTable.data);
@@ -151,35 +153,15 @@ export class Table implements IRenderable {
 	}
 
 	public getPlayables(): IPlayable[] {
-		return [
-			...Object.values(this.flippers),
-			...Object.values(this.surfaces),
-			...Object.values(this.rubbers),
-			...Object.values(this.plungers),
-			...Object.values(this.kickers),
-			...Object.values(this.spinners),
-			...Object.values(this.primitives),
-		];
+		return this.items.filter(item => !!item.setupPlayer);
 	}
 
 	public getMovables(): Array<IMovable<any>> {
-		return [
-			...Object.values(this.flippers),
-			...Object.values(this.plungers),
-			...Object.values(this.spinners),
-		];
+		return this.items.filter(item => !!item.getMover);
 	}
 
 	public getHittables(): IHittable[] {
-		return [
-			...Object.values(this.flippers),
-			...Object.values(this.surfaces),
-			...Object.values(this.rubbers),
-			...Object.values(this.plungers),
-			...Object.values(this.kickers),
-			...Object.values(this.spinners),
-			...Object.values(this.primitives),
-		];
+		return this.items.filter(item => !!item.getHitShapes);
 	}
 
 	public getScaleZ(): number {

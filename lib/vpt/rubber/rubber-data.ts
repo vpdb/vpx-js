@@ -32,10 +32,10 @@ export class RubberData extends ItemData {
 	public fHitEvent: boolean = false;
 	public szMaterial?: string;
 	public szImage?: string;
-	public elasticity?: number;
-	public elasticityFalloff?: number;
-	public friction?: number;
-	public scatter?: number;
+	public elasticity!: number;
+	public elasticityFalloff!: number;
+	public friction!: number;
+	public scatter!: number;
 	public fCollidable: boolean = true;
 	public fVisible: boolean = true;
 	public fReflectionEnabled: boolean = true;

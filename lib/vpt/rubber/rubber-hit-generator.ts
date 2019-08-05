@@ -26,6 +26,9 @@ import { HitTriangle } from '../../physics/hit-triangle';
 import { Mesh } from '../mesh';
 import { RubberData } from './rubber-data';
 import { RubberMeshGenerator } from './rubber-mesh-generator';
+import { RubberEvents } from './rubber-events';
+import { degToRad } from '../../math/float';
+import { CollisionType } from '../../physics/collision-type';
 
 export class RubberHitGenerator {
 
@@ -37,7 +40,7 @@ export class RubberHitGenerator {
 		this.meshGenerator = meshGenerator;
 	}
 
-	public generateHitObjects(table: Table): HitObject[] {
+	public generateHitObjects(events: RubberEvents, table: Table): HitObject[] {
 
 		const hitObjects: HitObject[] = [];
 		const addedEdges: EdgeSet = new EdgeSet();
@@ -64,6 +67,32 @@ export class RubberHitGenerator {
 		for (const mv of mesh.vertices) {
 			const v = new Vertex3D(mv.x, mv.y, mv.z);
 			hitObjects.push(new HitPoint(v));
+		}
+		return this.updateCommonParameters(hitObjects, events, table);
+	}
+
+	private updateCommonParameters(hitObjects: HitObject[], events: RubberEvents, table: Table): HitObject[] {
+		const mat = table.getMaterial(this.data.szPhysicsMaterial);
+		for (const obj of hitObjects) {
+			if (mat && !this.data.fOverwritePhysics) {
+				obj.setElasticy(mat.fElasticity, mat.fElasticityFalloff);
+				obj.setFriction(mat.fFriction);
+				obj.setScatter(degToRad(mat.fScatterAngle));
+
+			} else {
+				obj.setElasticy(this.data.elasticity, this.data.elasticityFalloff);
+				obj.setFriction(this.data.friction);
+				obj.setScatter(degToRad(this.data.scatter));
+			}
+
+			obj.setEnabled(this.data.fCollidable);
+
+			// the rubber is of type ePrimitive for triggering the event in HitTriangle::Collide()
+			obj.setType(CollisionType.Primitive);
+			// hard coded threshold for now
+			obj.threshold = 2.0;
+			obj.obj = events;
+			obj.fe = this.data.fHitEvent;
 		}
 		return hitObjects;
 	}
