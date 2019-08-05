@@ -31,6 +31,7 @@ import { HitPoint } from '../../physics/hit-point';
 import { LineSeg } from '../../physics/line-seg';
 import { LineSegSlingshot } from '../../physics/line-seg-slingshot';
 import { SurfaceData } from './surface-data';
+import { SurfaceEvents } from './surface-events';
 
 export class SurfaceHitGenerator {
 
@@ -41,12 +42,12 @@ export class SurfaceHitGenerator {
 		this.data = data;
 	}
 
-	public generateHitObjects(table: Table): HitObject[] {
-		const polys = this.generate3DPolys(table);
-		return this.updateCommonParameters(polys, table);
+	public generateHitObjects(events: SurfaceEvents, table: Table): HitObject[] {
+		const polys = this.generate3DPolys(events, table);
+		return this.updateCommonParameters(polys, events, table);
 	}
 
-	private generate3DPolys(table: Table): HitObject[] {
+	private generate3DPolys(events: SurfaceEvents, table: Table): HitObject[] {
 
 		const hitObjects: HitObject[] = [];
 		const vvertex: RenderVertex[] = DragPoint.getRgVertex<RenderVertex>(this.data.dragPoints, () => new RenderVertex(), CatmullCurve2D.fromVertex2D as any);
@@ -71,7 +72,7 @@ export class SurfaceHitGenerator {
 			const pv2 = vvertex[(i + 1) % count];
 			const pv3 = vvertex[(i + 2) % count];
 
-			hitObjects.push(...this.generateLinePolys(pv2, pv3, table));
+			hitObjects.push(...this.generateLinePolys(pv2, pv3, events, table));
 		}
 
 		hitObjects.push(new Hit3DPoly(rgv3Dt));
@@ -83,7 +84,7 @@ export class SurfaceHitGenerator {
 		return hitObjects;
 	}
 
-	private generateLinePolys(pv1: RenderVertex, pv2: RenderVertex, table: Table): HitObject[] {
+	private generateLinePolys(pv1: RenderVertex, pv2: RenderVertex, events: SurfaceEvents, table: Table): HitObject[] {
 
 		const linePolys: HitObject[] = [];
 		const bottom = this.data.heightbottom + table.getTableHeight();
@@ -97,7 +98,7 @@ export class SurfaceHitGenerator {
 			plinesling.force = this.data.slingshotforce;
 
 			// slingshots always have hit events
-			// FIXME: plinesling.obj = (IFireEvents*)this;
+			plinesling.obj = events;
 			plinesling.fe = true;
 			plinesling.threshold = this.data.threshold!;
 
@@ -125,7 +126,7 @@ export class SurfaceHitGenerator {
 		return linePolys;
 	}
 
-	private updateCommonParameters(hitObjects: HitObject[], table: Table): HitObject[] {
+	private updateCommonParameters(hitObjects: HitObject[], events: SurfaceEvents, table: Table): HitObject[] {
 		const mat = table.getMaterial(this.data.szPhysicsMaterial);
 		for (const obj of hitObjects) {
 
@@ -141,12 +142,11 @@ export class SurfaceHitGenerator {
 				obj.setEnabled(this.data.fCollidable);
 			}
 
-			// FIXME events
-			// if (this.data.fHitEvent) {
-			// 	obj.obj = (IFireEvents*)this;
-			// 	obj.fe = true;
-			// 	obj.threshold = this.data.threshold!;
-			// }
+			if (this.data.fHitEvent) {
+				obj.obj = events;
+				obj.fe = true;
+				obj.threshold = this.data.threshold!;
+			}
 		}
 		return hitObjects;
 	}

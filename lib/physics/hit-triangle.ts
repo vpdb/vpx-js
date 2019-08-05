@@ -70,6 +70,7 @@ export class HitTriangle extends HitObject {
 				this.fireHitEvent(pball);
 
 			} else if (this.objType === CollisionType.HitTarget /*FIXME && ((HitTarget*)m_obj)->m_d.m_isDropped == false*/) {
+				// fixme hittarget
 				//((HitTarget*)m_obj)->m_hitEvent = true;
 				this.obj.currentHitThreshold = dot;
 				this.fireHitEvent(pball);

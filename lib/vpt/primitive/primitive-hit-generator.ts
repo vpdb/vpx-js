@@ -34,6 +34,7 @@ import { HitObject } from '../../physics/hit-object';
 import { HitPoint } from '../../physics/hit-point';
 import { HitTriangle } from '../../physics/hit-triangle';
 import { PrimitiveData } from './primitive-data';
+import { PrimitiveEvents } from './primitive-events';
 
 export class PrimitiveHitGenerator {
 
@@ -43,7 +44,7 @@ export class PrimitiveHitGenerator {
 		this.data = data;
 	}
 
-	public generateHitObjects(table: Table): HitObject[] {
+	public generateHitObjects(table: Table, events: PrimitiveEvents): HitObject[] {
 
 		const hitObjects: HitObject[] = [];
 
@@ -148,10 +149,10 @@ export class PrimitiveHitGenerator {
 				hitObjects.push(new HitPoint(vertex.getVertex()));
 			}
 		}
-		return this.updateCommonParameters(hitObjects, table);
+		return this.updateCommonParameters(hitObjects, events, table);
 	}
 
-	private updateCommonParameters(hitObjects: HitObject[], table: Table): HitObject[] {
+	private updateCommonParameters(hitObjects: HitObject[], events: PrimitiveEvents, table: Table): HitObject[] {
 		const mat = table.getMaterial(this.data.szPhysicsMaterial);
 		for (const obj of hitObjects) {
 			if (!this.data.useAsPlayfield) {
@@ -176,8 +177,7 @@ export class PrimitiveHitGenerator {
 			}
 			obj.threshold = this.data.threshold;
 			obj.setType(CollisionType.Primitive);
-			// FIXME event
-			//obj->m_obj = (IFireEvents *)this;
+			obj.obj = events;
 			obj.e = true;
 			obj.fe = this.data.fHitEvent;
 		}

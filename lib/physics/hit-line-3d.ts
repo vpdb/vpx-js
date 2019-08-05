@@ -83,7 +83,8 @@ export class HitLine3D extends HitLineZ {
 				this.obj.currentHitThreshold = dot;
 				// FIXME event
 				//FireHitEvent(pball);
-			} else if (this.objType === CollisionType.HitTarget /*&& ((HitTarget*)m_obj)->m_d.m_isDropped == false*/) { // FIXME event
+			} else if (this.objType === CollisionType.HitTarget /*&& ((HitTarget*)m_obj)->m_d.m_isDropped == false*/) { // FIXME hittarget
+				// FIXME hittarget
 				//((HitTarget*)m_obj)->m_hitEvent = true;
 				this.obj.currentHitThreshold = dot;
 				// FIXME event

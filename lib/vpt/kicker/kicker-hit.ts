@@ -27,10 +27,12 @@ import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { STATICTIME } from '../../physics/constants';
+import { IFireEvents } from '../../physics/events';
 import { HitCircle } from '../../physics/hit-circle';
 import { Ball } from '../ball/ball';
 import { FLT_MAX } from '../mesh';
 import { KickerData } from './kicker-data';
+import { KickerEvents } from './kicker-events';
 
 export class KickerHit extends HitCircle {
 
@@ -38,6 +40,7 @@ export class KickerHit extends HitCircle {
 	private ball?: Ball;  // The ball inside this kicker
 	private lastCapturedBall?: Ball;
 	private hitMesh: Vertex3D[] = [];
+	public obj: IFireEvents;
 
 	constructor(data: KickerData, table: Table, center: Vertex2D, radius: number, zLow: number, zHigh: number) {
 		super(center, radius, zLow, zHigh);
@@ -57,8 +60,7 @@ export class KickerHit extends HitCircle {
 
 		this.isEnabled = this.data.fEnabled;
 		this.objType = CollisionType.Kicker;
-		// FIXME events
-		// this.obj = (IFireEvents*)this;
+		this.obj = new KickerEvents();
 	}
 
 	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {
@@ -73,7 +75,7 @@ export class KickerHit extends HitCircle {
 			return;
 		}
 
-		const i = pball.hit.vpVolObjs.indexOf(this.obj!); // check if kicker in ball's volume set
+		const i = pball.hit.vpVolObjs.indexOf(this.obj); // check if kicker in ball's volume set
 
 		if (newBall || (!hitbit === i < 0)) {            // New or (Hit && !Vol || UnHit && Vol)
 

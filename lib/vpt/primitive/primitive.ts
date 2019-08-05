@@ -29,6 +29,7 @@ import { Meshes } from '../item-data';
 import { PrimitiveData } from './primitive-data';
 import { PrimitiveHitGenerator } from './primitive-hit-generator';
 import { PrimitiveMeshGenerator } from './primitive-mesh-generator';
+import { PrimitiveEvents } from './primitive-events';
 
 /**
  * VPinball's primitive.
@@ -43,6 +44,7 @@ export class Primitive implements IRenderable, IHittable, IFireEvents {
 	private readonly meshGenerator: PrimitiveMeshGenerator;
 	private readonly hitGenerator: PrimitiveHitGenerator;
 	private hits: HitObject[] = [];
+	private events?: PrimitiveEvents;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Primitive> {
 		const data = await PrimitiveData.fromStorage(storage, itemName);
@@ -75,7 +77,8 @@ export class Primitive implements IRenderable, IHittable, IFireEvents {
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		this.hits = this.hitGenerator.generateHitObjects(table);
+		this.events = new PrimitiveEvents(this.getName());
+		this.hits = this.hitGenerator.generateHitObjects(table, this.events);
 	}
 
 	public getHitShapes(): HitObject[] {

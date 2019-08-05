@@ -144,11 +144,11 @@ export class LineSeg extends HitObject {
 				return -1.0;                                      // wait for touching
 			}
 		} else { //non-rigid ... target hits
-			if (bnv * bnd >= 0) {                                // outside-receding || inside-approaching
-				if (this.objType !== CollisionType.Trigger                     // not a trigger
-					|| !pball.hit.vpVolObjs.length   // is a trigger, so test:
-					|| (Math.abs(bnd) >= pball.data.radius * 0.5)        // not too close ... nor too far away
-					|| (inside !== (pball.hit.vpVolObjs.indexOf(this.obj!) < 0))) { // ...ball outside and hit set or ball inside and no hit set
+			if (bnv * bnd >= 0) {                                                  // outside-receding || inside-approaching
+				if (this.objType !== CollisionType.Trigger                         // not a trigger
+					|| !pball.hit.vpVolObjs.length                                 // is a trigger, so test:
+					|| Math.abs(bnd) >= pball.data.radius * 0.5                    // not too close ... nor too far away
+					|| inside !== (pball.hit.vpVolObjs.indexOf(this.obj!) < 0)) {  // ...ball outside and hit set or ball inside and no hit set
 					return -1.0;
 				}
 				hittime = 0;

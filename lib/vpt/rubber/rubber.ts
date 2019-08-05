@@ -28,6 +28,7 @@ import { RubberHitGenerator } from './rubber-hit-generator';
 import { RubberMeshGenerator } from './rubber-mesh-generator';
 import { Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
+import { RubberEvents } from './rubber-events';
 
 /**
  * VPinball's rubber item.
@@ -40,6 +41,7 @@ export class Rubber implements IRenderable, IHittable {
 	private readonly meshGenerator: RubberMeshGenerator;
 	private hitGenerator: RubberHitGenerator;
 	private hits: HitObject[] = [];
+	private events?: RubberEvents;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Rubber> {
 		const data = await RubberData.fromStorage(storage, itemName);
@@ -73,7 +75,8 @@ export class Rubber implements IRenderable, IHittable {
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		this.hits = this.hitGenerator.generateHitObjects(table);
+		this.events = new RubberEvents();
+		this.hits = this.hitGenerator.generateHitObjects(this.events, table);
 	}
 
 	public getHitShapes(): HitObject[] {
