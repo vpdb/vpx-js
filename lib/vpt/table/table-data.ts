@@ -53,7 +53,7 @@ export class TableData extends BiffParser {
 	public BG_current_set: number = 0;
 	public overridePhysics?: number;
 	public overridePhysicsFlipper: boolean = false;
-	public Gravity?: number;
+	public Gravity!: number;
 	public friction!: number;
 	public elasticity!: number;
 	public elasticityFalloff!: number;

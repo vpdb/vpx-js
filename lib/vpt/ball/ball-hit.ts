@@ -77,18 +77,18 @@ export class BallHit extends HitObject {
 	 * @param ball Reference to ball
 	 * @param data Static ball data
 	 * @param state Dynamic ball state
-	 * @param velocity Initial velocity
+	 * @param initialVelocity Initial velocity
 	 * @param tableData Table data
 	 * @see void Ball::Init(const float mass)
 	 */
-	constructor(ball: Ball, data: BallData, state: BallState, velocity: Vertex3D, tableData: TableData) {
+	constructor(ball: Ball, data: BallData, state: BallState, initialVelocity: Vertex3D, tableData: TableData) {
 		super();
 
 		this.id = ball.id;
 		this.data = data;
 		this.state = state;
 		this.tableData = tableData;
-		this.vel = velocity;
+		this.vel = initialVelocity;
 		this.mover = new BallMover(this.id, data, state, this);
 
 		// Only called by real balls, not temporary objects created for physics/rendering

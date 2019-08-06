@@ -36,6 +36,7 @@ import { PlungerHit } from './plunger-hit';
 import { PlungerMesh } from './plunger-mesh';
 import { PlungerMover } from './plunger-mover';
 import { PlungerState } from './plunger-state';
+import { Ball } from '../ball/ball';
 
 /**
  * VPinball's plunger.
@@ -165,6 +166,14 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 		const y = this.getMover().pos - (25.0 + 0.01); //!! assumes ball radius 25
 		const height = table.getSurfaceHeight(this.data.szSurface, x, y);
 		return new Vertex3D(x, y, height);
+	}
+
+	public getBallCreationVelocity(table: Table): Vertex3D {
+		return new Vertex3D(0, 0, 0);
+	}
+
+	public onBallCreated(player: Player, ball: Ball): void {
+		// nothing to be done
 	}
 }
 
