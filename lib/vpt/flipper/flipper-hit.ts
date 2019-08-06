@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Table } from '../..';
 import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
 import { FRect3D } from '../../math/frect3d';
@@ -40,7 +41,6 @@ import {
 import { elasticityWithFalloff } from '../../physics/functions';
 import { HitObject } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
-import { Table } from '../table/table';
 import { TableData } from '../table/table-data';
 import { FlipperConfig } from './flipper';
 import { FlipperData } from './flipper-data';
@@ -105,6 +105,109 @@ export class FlipperHit extends HitObject {
 		this.hitBBox.zhigh = this.mover.hitCircleBase.hitBBox.zhigh;
 	}
 
+	public contact(coll: CollisionEvent, dtime: number, player: Player): void {
+		const ball = coll.ball;
+		const normal = coll.hitNormal!;
+
+//#ifdef C_EMBEDDED
+		if (coll.hitDistance < -C_EMBEDDED) {
+			// magic to avoid balls being pushed by each other through resting flippers!
+			ball.hit.vel.add(normal.clone().multiplyScalar(0.1));
+		}
+//#endif
+
+		const rB = normal.clone().multiplyScalar(-ball.data.radius);
+		const hitPos = ball.state.pos.clone().add(rB);
+
+		const cF = new Vertex3D(
+			this.mover.hitCircleBase.center.x,
+			this.mover.hitCircleBase.center.y,
+			ball.state.pos.z,                              // make sure collision happens in same z plane where ball is
+		);
+
+		const rF = hitPos.clone().sub(cF);                 // displacement relative to flipper center
+		const vB = ball.hit.surfaceVelocity(rB);
+		const vF = this.mover.surfaceVelocity(rF);
+		const vrel = vB.clone().sub(vF);
+
+		const normVel = vrel.dot(normal);   // this should be zero, but only up to +/- C_CONTACTVEL
+
+		// If some collision has changed the ball's velocity, we may not have to do anything.
+		if (normVel <= C_CONTACTVEL) {
+
+			// compute accelerations of point on ball and flipper
+			const aB = ball.hit.surfaceAcceleration(rB, player);
+			const aF = this.mover.surfaceAcceleration(rF);
+			const arel = aB.clone().sub(aF);
+
+			// time derivative of the normal vector
+			const normalDeriv = Vertex3D.crossZ(this.mover.angleSpeed, normal);
+
+			// relative acceleration in the normal direction
+			const normAcc = arel.dot(normal) + 2.0 * normalDeriv.dot(vrel);
+
+			if (normAcc >= 0) {
+				return;     // objects accelerating away from each other, nothing to do
+			}
+
+			// hypothetical accelerations arising from a unit contact force in normal direction
+			const aBc = normal.clone().multiplyScalar(ball.hit.invMass);
+			const cross = Vertex3D.crossProduct(rF, normal.clone().multiplyScalar(-1));
+			const aFc = Vertex3D.crossProduct(cross.clone().divideScalar(this.mover.inertia), rF);
+			const contactForceAcc = normal.dot(aBc.clone().sub(aFc));
+
+			// find j >= 0 such that normAcc + j * contactForceAcc >= 0  (bodies should not accelerate towards each other)
+			const j = -normAcc / contactForceAcc;
+
+			// kill any existing normal velocity
+			ball.hit.vel.add(normal.clone().multiplyScalar(j * dtime * ball.hit.invMass - coll.hitOrgNormalVelocity));
+			this.mover.applyImpulse(cross.clone().multiplyScalar(j * dtime));
+
+			// apply friction
+
+			// first check for slippage
+			const slip = vrel.sub(normal.clone().multiplyScalar(normVel));       // calc the tangential slip velocity
+			const maxFric = j * this.friction;
+			const slipspeed = slip.length();
+			let slipDir: Vertex3D;
+			let crossF: Vertex3D;
+			let numer: number;
+			let denomF: number;
+
+			if (slipspeed < C_PRECISION) {
+				// slip speed zero - static friction case
+				const slipAcc = arel.sub(normal.clone().multiplyScalar(arel.dot(normal)));       // calc the tangential slip acceleration
+
+				// neither slip velocity nor slip acceleration? nothing to do here
+				if (slipAcc.lengthSq() < 1e-6) {
+					return;
+				}
+
+				slipDir = slipAcc;
+				slipDir.normalize();
+
+				numer = -slipDir.dot(arel);
+				crossF = Vertex3D.crossProduct(rF, slipDir);
+				denomF = slipDir.dot(Vertex3D.crossProduct(crossF.clone().divideScalar(-this.mover.inertia), rF));
+
+			} else {
+				// nonzero slip speed - dynamic friction case
+				slipDir = slip.clone().divideScalar(slipspeed);
+
+				numer = -slipDir.dot(vrel);
+				crossF = Vertex3D.crossProduct(rF, slipDir);
+				denomF = slipDir.dot(Vertex3D.crossProduct(crossF.clone().divideScalar(this.mover.inertia), rF));
+			}
+
+			const crossB = Vertex3D.crossProduct(rB, slipDir);
+			const denomB = ball.hit.invMass + slipDir.dot(Vertex3D.crossProduct(crossB.clone().divideScalar(ball.hit.inertia), rB));
+			const fric = clamp(numer / (denomB + denomF), -maxFric, maxFric);
+
+			ball.hit.applySurfaceImpulse(crossB.clone().multiplyScalar(dtime * fric), slipDir.clone().multiplyScalar(dtime * fric));
+			this.mover.applyImpulse(crossF.clone().multiplyScalar(-dtime * fric));
+		}
+	}
+
 	public collide(coll: CollisionEvent, player: Player): void {
 		const pball = coll.ball;
 		const normal = coll.hitNormal!;
@@ -124,19 +227,21 @@ export class FlipperHit extends HitObject {
 		const vrel = vB.clone().sub(vF);
 		let bnv = normal.dot(vrel);       // relative normal velocity
 
-		if (bnv >= -C_LOWNORMVEL) {							// nearly receding ... make sure of conditions
-															// otherwise if clearly approaching .. process the collision
-			if (bnv > C_LOWNORMVEL) {                       // is this velocity clearly receding (i.e must > a minimum)
-				return;
+		if (bnv >= -C_LOWNORMVEL) {                        // nearly receding ... make sure of conditions
+			if (bnv > C_LOWNORMVEL) {                      // otherwise if clearly approaching .. process the collision
+				return;                                    // is this velocity clearly receding (i.e must > a minimum)
 			}
+//#ifdef C_EMBEDDED
 			if (coll.hitDistance < -C_EMBEDDED) {
-				bnv = -C_EMBEDSHOT;							// has ball become embedded???, give it a kick
+				bnv = -C_EMBEDSHOT;                        // has ball become embedded???, give it a kick
 			} else {
 				return;
 			}
+//#endif
 		}
 		player.pactiveballBC = pball; // Ball control most recently collided with flipper
 
+//#ifdef C_DISP_GAIN
 		// correct displacements, mostly from low velocity blindness, an alternative to true acceleration processing
 		let hdist = -C_DISP_GAIN * coll.hitDistance;		// distance found in hit detection
 		if (hdist > 1.0e-4) {
@@ -145,6 +250,7 @@ export class FlipperHit extends HitObject {
 			}
 			pball.state.pos.add(coll.hitNormal!.clone().multiplyScalar(hdist));	// push along norm, back to free area; use the norm, but is not correct
 		}
+//#endif
 
 		// angular response to impulse in normal direction
 		const angResp = Vertex3D.crossProduct(rF, normal);
@@ -223,7 +329,7 @@ export class FlipperHit extends HitObject {
 			this.mover.applyImpulse(crossF.clone().multiplyScalar(-jt));
 		}
 
-		// fixme ifireevent
+		// fixme event
 		// if ((bnv < -0.25) && (g_pplayer->m_time_msec - m_last_hittime) > 250) // limit rate to 250 milliseconds per event
 		// {
 		// 	//!! unused const float distance = coll.m_hitmoment;                     // moment .... and the flipper response

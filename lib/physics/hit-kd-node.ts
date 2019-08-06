@@ -55,17 +55,17 @@ export class HitKDNode {
 		for (let i = this.start; i < this.start + orgItems; i++) {
 			const pho = this.hitOct.getItemAt(i);
 			if (pball.hit !== pho && pho.hitBBox.intersectSphere(pball.state.pos, pball.hit.rcHitRadiusSqr)) {
-				pho.doHitTest(pball, coll, player);
+				pball.setCollision(pho.doHitTest(pball, coll, player));
 			}
 		}
 
 		if (this.children && this.children.length) { // not a leaf
 			if (axis === 0) {
-				const vcenter = (this.rectBounds.left + this.rectBounds.right) * 0.5;
-				if (pball.hit.hitBBox.left <= vcenter) {
+				const vCenter = (this.rectBounds.left + this.rectBounds.right) * 0.5;
+				if (pball.hit.hitBBox.left <= vCenter) {
 					this.children[0].hitTestBall(pball, coll, player);
 				}
-				if (pball.hit.hitBBox.right >= vcenter) {
+				if (pball.hit.hitBBox.right >= vCenter) {
 					this.children[1].hitTestBall(pball, coll, player);
 				}
 

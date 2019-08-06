@@ -51,10 +51,11 @@ export class HitQuadtree {
 
 	public hitTestBall(pball: Ball, coll: CollisionEvent, player: Player): void {
 		for (const vho of this.vho) {
-			if ((pball.hit !== vho)
-				&& pball.hit.hitBBox.intersectRect(vho.hitBBox)
+			if (pball.hit !== vho                                              // ball can not hit itself
+				&& vho.hitBBox.intersectRect(pball.hit.hitBBox)
 				&& vho.hitBBox.intersectSphere(pball.state.pos, pball.hit.rcHitRadiusSqr)) {
-				vho.doHitTest(pball, coll, player);
+
+				pball.setCollision(vho.doHitTest(pball, coll, player));
 			}
 		}
 
@@ -203,5 +204,4 @@ export class HitQuadtree {
 			}
 		}
 	}
-
 }

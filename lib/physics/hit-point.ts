@@ -53,60 +53,60 @@ export class HitPoint extends HitObject {
 		return CollisionType.Point;
 	}
 
-	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent, player: Player): number {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: Player): number {
 		if (!this.isEnabled) {
 			return -1.0;
 		}
 
-		const dist = pball.state.pos.clone().sub(this.p);  // relative ball position
+		const dist = ball.state.pos.clone().sub(this.p);   // relative ball position
 
-		const bcddsq = dist.lengthSq();  // ball center to line distance squared
-		const bcdd = Math.sqrt(bcddsq);           // distance ball to line
+		const bcddsq = dist.lengthSq();                    // ball center to line distance squared
+		const bcdd = Math.sqrt(bcddsq);                    // distance ball to line
 		if (bcdd <= 1.0e-6) {
-			return -1.0;                           // no hit on exact center
+			return -1.0;                                   // no hit on exact center
 		}
 
-		const b = dist.dot(pball.hit.vel);
-		const bnv = b / bcdd;                   // ball normal velocity
+		const b = dist.dot(ball.hit.vel);
+		const bnv = b / bcdd;                              // ball normal velocity
 
 		if (bnv > C_CONTACTVEL) {
-			return -1.0;
-		}                           // clearly receding from radius
+			return -1.0;                                   // clearly receding from radius
+		}
 
-		const bnd = bcdd - pball.data.radius;   // ball distance to line
+		const bnd = bcdd - ball.data.radius;               // ball distance to line
+		const a = ball.hit.vel.lengthSq();
 
-		const a = pball.hit.vel.lengthSq();
-
-		let hittime = 0;
+		let hitTime = 0;
 		let isContact = false;
 
-		if (bnd < PHYS_TOUCH) {      // already in collision distance?
+		if (bnd < PHYS_TOUCH) {                            // already in collision distance?
 			if (Math.abs(bnv) <= C_CONTACTVEL) {
 				isContact = true;
-				hittime = 0;
-			} else {   // estimate based on distance and speed along distance
-				hittime = Math.max(0.0, -bnd / bnv);
+				hitTime = 0;
+			} else {                                       // estimate based on distance and speed along distance
+				hitTime = Math.max(0.0, -bnd / bnv);
 			}
 		} else {
 			if (a < 1.0e-8) {
-				return -1.0;
-			}    // no hit - ball not moving relative to object
+				return -1.0;                               // no hit - ball not moving relative to object
+			}
 
-			const sol = solveQuadraticEq(a, 2.0 * b, bcddsq - pball.data.radius * pball.data.radius);
+			const sol = solveQuadraticEq(a, 2.0 * b, bcddsq - ball.data.radius * ball.data.radius);
 			if (!sol) {
 				return -1.0;
 			}
 			const time1 = sol[0];
 			const time2 = sol[1];
 
-			hittime = (time1 * time2 < 0) ? Math.max(time1, time2) : Math.min(time1, time2); // find smallest nonnegative solution
+			// find smallest non-negative solution
+			hitTime = (time1 * time2 < 0) ? Math.max(time1, time2) : Math.min(time1, time2);
 		}
 
-		if (!isFinite(hittime) || hittime < 0 || hittime > dtime) {
+		if (!isFinite(hitTime) || hitTime < 0 || hitTime > dTime) {
 			return -1.0; // contact out of physics frame
 		}
 
-		const hitPos = pball.state.pos.clone().add(pball.hit.vel.clone().multiplyScalar(hittime));
+		const hitPos = ball.state.pos.clone().add(ball.hit.vel.clone().multiplyScalar(hitTime));
 		coll.hitNormal = hitPos.clone().sub(this.p);
 		coll.hitNormal.normalize();
 
@@ -115,10 +115,9 @@ export class HitPoint extends HitObject {
 			coll.hitOrgNormalVelocity = bnv;
 		}
 
-		coll.hitDistance = bnd;                    // actual contact distance
+		coll.hitDistance = bnd;                            // actual contact distance
 		//coll.m_hitRigid = true;
 
-		return hittime;
+		return hitTime;
 	}
-
 }

@@ -69,19 +69,21 @@ export class PlungerHit extends HitObject {
 
 		let dot = (pball.hit.vel.x - coll.hitVel!.x) * coll.hitNormal!.x + (pball.hit.vel.y - coll.hitVel!.y) * coll.hitNormal!.y;
 
-		if (dot >= -C_LOWNORMVEL) {              // nearly receding ... make sure of conditions
-			// otherwise if clearly approaching .. process the collision
-			if (dot > C_LOWNORMVEL) {   // is this velocity clearly receding (i.e must > a minimum)
-				return;
+		if (dot >= -C_LOWNORMVEL) {                        // nearly receding ... make sure of conditions
+			if (dot > C_LOWNORMVEL) {                      // otherwise if clearly approaching .. process the collision
+				return;                                    // is this velocity clearly receding (i.e must > a minimum)
 			}
+//#ifdef C_EMBEDDED
 			if (coll.hitDistance < -C_EMBEDDED) {
 				dot = -C_EMBEDSHOT;             // has ball become embedded???, give it a kick
 			} else {
 				return;
 			}
+//#endif
 		}
 		player.pactiveballBC = pball; // Ball control most recently collided with plunger
 
+//#ifdef C_DISP_GAIN
 		// correct displacements, mostly from low velocity blidness, an alternative to true acceleration processing
 		let hdist = -C_DISP_GAIN * coll.hitDistance;         // distance found in hit detection
 		if (hdist > 1.0e-4) {
@@ -90,6 +92,7 @@ export class PlungerHit extends HitObject {
 			}                                         // crossing ramps, delta noise
 			pball.state.pos.add(coll.hitNormal!.clone().multiplyScalar(hdist));    // push along norm, back to free area (use the norm, but is not correct)
 		}
+//#endif
 
 		// figure the basic impulse
 		const impulse = dot * -1.45 / (1.0 + 1.0 / this.mover.mass);
@@ -127,7 +130,6 @@ export class PlungerHit extends HitObject {
 
 		// update the ball speed for the impulse
 		pball.hit.vel.add(coll.hitNormal!.clone().multiplyScalar(impulse));
-
 		pball.hit.vel.multiplyScalar(0.999);           //friction all axiz     //!! TODO: fix this
 
 		const scatterVel = this.mover.scatterVelocity; // fixme * g_pplayer->m_ptable->m_globalDifficulty;// apply dificulty weighting

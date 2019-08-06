@@ -332,4 +332,15 @@ export class FlipperMover implements MoverObject {
 		this.angularMomentum += rotI.z;            // only rotation about z axis
 		this.angleSpeed = this.angularMomentum / this.inertia;    // TODO: figure out moment of inertia
 	}
+
+	public surfaceAcceleration(surfP: Vertex3D): Vertex3D {
+		// tangential acceleration = (0, 0, omega) x surfP
+		const tangAcc = Vertex3D.crossZ(this.angularAcceleration, surfP);
+
+		// centripetal acceleration = (0,0,omega) x ( (0,0,omega) x surfP )
+		const av2 = this.angleSpeed * this.angleSpeed;
+		const centrAcc = new Vertex3D(-av2 * surfP.x, -av2 * surfP.y, 0);
+
+		return tangAcc.add(centrAcc);
+	}
 }
