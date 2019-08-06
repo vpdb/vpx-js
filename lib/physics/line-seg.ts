@@ -90,28 +90,32 @@ export class LineSeg extends HitObject {
 		return CollisionType.LineSeg;
 	}
 
-	public hitTestBasic(pball: Ball, dtime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean) {
+	public hitTestBasic(ball: Ball, dTime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean) {
 
-		if (!this.isEnabled || pball.hit.isFrozen) {
+		if (!this.isEnabled || ball.hit.isFrozen) {
 			return -1.0;
 		}
 
-		const ballvx = pball.hit.vel.x;						// ball velocity
-		const ballvy = pball.hit.vel.y;
+		// ball velocity
+		const ballVx = ball.hit.vel.x;
+		const ballVy = ball.hit.vel.y;
 
-		const bnv = ballvx * this.normal.x + ballvy * this.normal.y;		// ball velocity normal to segment, positive if receding, zero=parallel
-		let bUnHit = (bnv > C_LOWNORMVEL);
+		// ball velocity normal to segment, positive if receding, zero=parallel
+		const bnv = ballVx * this.normal.x + ballVy * this.normal.y;
+		let isUnHit = (bnv > C_LOWNORMVEL);
 
-		if (direction && (bnv > C_LOWNORMVEL)) {					// direction true and clearly receding from normal face
+		// direction true and clearly receding from normal face
+		if (direction && (bnv > C_LOWNORMVEL)) {
 			return -1.0;
 		}
 
-		const ballx = pball.state.pos.x;						// ball position
-		const bally = pball.state.pos.y;
+		// ball position
+		const ballX = ball.state.pos.x;
+		const ballY = ball.state.pos.y;
 
 		// ball normal distance: contact distance normal to segment. lateral contact subtract the ball radius
-		const rollingRadius = lateral ? pball.data.radius : C_TOL_RADIUS; //lateral or rolling point
-		const bcpd = (ballx - this.v1.x) * this.normal.x + (bally - this.v1.y) * this.normal.y; // ball center to plane distance
+		const rollingRadius = lateral ? ball.data.radius : C_TOL_RADIUS; //lateral or rolling point
+		const bcpd = (ballX - this.v1.x) * this.normal.x + (ballY - this.v1.y) * this.normal.y; // ball center to plane distance
 		let bnd = bcpd - rollingRadius;
 
 		// for a spinner add the ball radius otherwise the ball goes half through the spinner until it moves
@@ -119,71 +123,74 @@ export class LineSeg extends HitObject {
 			bnd = bcpd + rollingRadius;
 		}
 
-		const inside = (bnd <= 0);						// in ball inside object volume
+		const inside = (bnd <= 0);                                   // in ball inside object volume
 
-		let hittime;
+		let hitTime;
 		if (rigid) {
-			if ((bnd < -pball.data.radius) || (lateral && bcpd < 0)) {
-				return -1.0;	// (ball normal distance) excessive pentratration of object skin ... no collision HACK //!! *2 necessary?
+			if (bnd < -ball.data.radius || lateral && bcpd < 0) {
+				// (ball normal distance) excessive penetration of object skin ... no collision HACK
+				return -1.0;
 			}
 			if (lateral && (bnd <= PHYS_TOUCH)) {
 				if (inside
-					|| (Math.abs(bnv) > C_CONTACTVEL)			// fast velocity, return zero time
-					// zero time for rigid fast bodies
-					|| (bnd <= (-PHYS_TOUCH))) {
-					hittime = 0;									// slow moving but embedded
+					|| Math.abs(bnv) > C_CONTACTVEL                  // fast velocity, return zero time
+					|| bnd <= -PHYS_TOUCH) {                         // zero time for rigid fast bodies
+					hitTime = 0;                                     // slow moving but embedded
 
 				} else {
-					hittime = bnd * (1.0 / (2.0 * PHYS_TOUCH)) + 0;	        // don't compete for fast zero time events
+					hitTime = bnd * (1.0 / (2.0 * PHYS_TOUCH));      // don't compete for fast zero time events
 				}
 
-			} else if (Math.abs(bnv) > C_LOWNORMVEL) {                  // not velocity low ????
-				hittime = bnd / -bnv;                              // rate ok for safe divide
+			} else if (Math.abs(bnv) > C_LOWNORMVEL) {               // not velocity low ????
+				hitTime = bnd / -bnv;                                // rate ok for safe divide
 
 			} else {
-				return -1.0;                                      // wait for touching
+				return -1.0;                                         // wait for touching
 			}
 		} else { //non-rigid ... target hits
-			if (bnv * bnd >= 0) {                                                  // outside-receding || inside-approaching
-				if (this.objType !== CollisionType.Trigger                         // not a trigger
-					|| !pball.hit.vpVolObjs.length                                 // is a trigger, so test:
-					|| Math.abs(bnd) >= pball.data.radius * 0.5                    // not too close ... nor too far away
-					|| inside !== (pball.hit.vpVolObjs.indexOf(this.obj!) < 0)) {  // ...ball outside and hit set or ball inside and no hit set
+			if (bnv * bnd >= 0) {                                                 // outside-receding || inside-approaching
+				if (this.objType !== CollisionType.Trigger                        // not a trigger
+					|| !ball.hit.vpVolObjs.length                                 // is a trigger, so test:
+					|| Math.abs(bnd) >= ball.data.radius * 0.5                    // not too close ... nor too far away
+					|| inside !== (ball.hit.vpVolObjs.indexOf(this.obj!) < 0)) {  // ...ball outside and hit set or ball inside and no hit set
 					return -1.0;
 				}
-				hittime = 0;
-				bUnHit = !inside;	// ball on outside is UnHit, otherwise it's a Hit
+				hitTime = 0;
+				isUnHit = !inside;                                    // ball on outside is UnHit, otherwise it's a Hit
 			} else {
-				hittime = bnd / -bnv;
+				hitTime = bnd / -bnv;
 			}
 		}
 
-		if (!isFinite(hittime) || hittime < 0 || hittime > dtime) {
+		if (!isFinite(hitTime) || hitTime < 0 || hitTime > dTime) {
 			return -1.0; // time is outside this frame ... no collision
 		}
-		const btv = ballvx * this.normal.y - ballvy * this.normal.x;      // ball velocity tangent to segment with respect to direction from V1 to V2
-		const btd = (ballx - this.v1.x) * this.normal.y - (bally - this.v1.y) * this.normal.x // ball tangent distance
-			+ btv * hittime;                                       // ball tangent distance (projection) (initial position + velocity * hitime)
+		const btv = ballVx * this.normal.y - ballVy * this.normal.x; // ball velocity tangent to segment with respect to direction from V1 to V2
+		const btd = (ballX - this.v1.x) * this.normal.y
+			- (ballY - this.v1.y) * this.normal.x                    // ball tangent distance
+			+ btv * hitTime;                                         // ball tangent distance (projection) (initial position + velocity * hitime)
 
-		if (btd < -C_TOL_ENDPNTS || btd > length + C_TOL_ENDPNTS) { // is the contact off the line segment???
+		if (btd < -C_TOL_ENDPNTS || btd > length + C_TOL_ENDPNTS) {  // is the contact off the line segment???
 			return -1.0;
 		}
-		if (!rigid) {                                               // non rigid body collision? return direction
-			coll.hitFlag = bUnHit;                               // UnHit signal is receding from outside target
+		if (!rigid) {                                                // non rigid body collision? return direction
+			coll.hitFlag = isUnHit;                                  // UnHit signal is receding from outside target
 		}
 
-		const ballr = pball.data.radius;
-		const hitz = pball.state.pos.z + pball.hit.vel.z * hittime;  // check too high or low relative to ball rolling point at hittime
+		const ballRadius = ball.data.radius;
+		const hitZ = ball.state.pos.z + ball.hit.vel.z * hitTime;    // check too high or low relative to ball rolling point at hittime
 
-		if (hitz + ballr * 0.5 < this.hitBBox.zlow                  // check limits of object's height and depth
-		|| hitz - ballr * 0.5 > this.hitBBox.zhigh) {
+		if (hitZ + ballRadius * 0.5 < this.hitBBox.zlow              // check limits of object's height and depth
+			|| hitZ - ballRadius * 0.5 > this.hitBBox.zhigh) {
 			return -1.0;
 		}
-		coll.hitNormal!.x = this.normal.x; // hit normal is same as line segment normal
+
+		// hit normal is same as line segment normal
+		coll.hitNormal!.x = this.normal.x;
 		coll.hitNormal!.y = this.normal.y;
 		coll.hitNormal!.z = 0.0;
 
-		coll.hitDistance = bnd;      // actual contact distance ...
+		coll.hitDistance = bnd;        // actual contact distance ...
 		//coll.m_hitRigid = rigid;     // collision type
 
 		// check for contact
@@ -192,6 +199,6 @@ export class LineSeg extends HitObject {
 			coll.hitOrgNormalVelocity = bnv;
 		}
 
-		return hittime;
+		return hitTime;
 	}
 }

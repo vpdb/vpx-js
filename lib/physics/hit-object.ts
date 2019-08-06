@@ -56,8 +56,11 @@ export abstract class HitObject {
 	public e: boolean = false;
 
 	public abstract getType(): CollisionType;
+
 	public abstract calcHitBBox(): void;
+
 	public abstract collide(coll: CollisionEvent, player: Player): void;
+
 	public abstract hitTest(pball: Ball, dtime: number, coll: CollisionEvent, player: Player): number;
 
 	public getMoverObject(): MoverObject | undefined {
@@ -103,9 +106,9 @@ export abstract class HitObject {
 		}
 	}
 
-	public setElasticy(elasticity: number, elasticityFalloff?: number): this {
+	public setElasticity(elasticity: number, elasticityFalloff?: number): this {
 		this.elasticity = elasticity;
-		if (elasticityFalloff) {
+		if (elasticityFalloff !== undefined) {
 			this.elasticityFalloff = elasticityFalloff;
 		}
 		return this;
@@ -125,30 +128,30 @@ export abstract class HitObject {
 		this.objType = type;
 	}
 
-	public doHitTest(pball: Ball, coll: CollisionEvent, player: Player) {
-		if (!pball) {
-			return;
+	public doHitTest(ball: Ball, coll: CollisionEvent, player: Player): CollisionEvent {
+		if (!ball) {
+			return coll;
 		}
 
 		// fixme hittarget
 		//if (this.objType === CollisionType.HitTarget && (((this as HitTarget).obj).data.isDropped)) {
-		//	return;
+		//	return coll;
 		//}
 
-		const newColl = new CollisionEvent(pball);
-		const newTime = this.hitTest(pball, coll.hitTime, !player.recordContacts ? coll : newColl, player);
-		// fixme debug this, but in case sign is supposed to handle +/- infinity cases, javascript should cover that.
-		const validHit = (newTime >= 0) /*&& !sign(newTime)*/ && (newTime <= coll.hitTime);
+		const newColl = new CollisionEvent(ball);
+		const newTime = this.hitTest(ball, coll.hitTime, !player.recordContacts ? coll : newColl, player);
+		const validHit = newTime >= 0 && newTime <= coll.hitTime;
 
-		if (!player.recordContacts) {// simply find first event
+		if (!player.recordContacts) {            // simply find first event
 			if (validHit) {
-			coll.ball = pball;
-			coll.obj = this;
-			coll.hitTime = newTime;
+				coll.ball = ball;
+				coll.obj = this;
+				coll.hitTime = newTime;
 			}
-		} else { // find first collision, but also remember all contacts
+
+		} else {                                 // find first collision, but also remember all contacts
 			if (newColl.isContact || validHit) {
-				newColl.ball = pball;
+				newColl.ball = ball;
 				newColl.obj = this;
 
 				if (newColl.isContact) {
@@ -159,5 +162,6 @@ export abstract class HitObject {
 				}
 			}
 		}
+		return coll;
 	}
 }

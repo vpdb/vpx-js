@@ -75,12 +75,12 @@ export class RubberHitGenerator {
 		const mat = table.getMaterial(this.data.szPhysicsMaterial);
 		for (const obj of hitObjects) {
 			if (mat && !this.data.fOverwritePhysics) {
-				obj.setElasticy(mat.fElasticity, mat.fElasticityFalloff);
+				obj.setElasticity(mat.fElasticity, mat.fElasticityFalloff);
 				obj.setFriction(mat.fFriction);
 				obj.setScatter(degToRad(mat.fScatterAngle));
 
 			} else {
-				obj.setElasticy(this.data.elasticity, this.data.elasticityFalloff);
+				obj.setElasticity(this.data.elasticity, this.data.elasticityFalloff);
 				obj.setFriction(this.data.friction);
 				obj.setScatter(degToRad(this.data.scatter));
 			}

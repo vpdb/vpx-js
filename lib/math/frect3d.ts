@@ -11,8 +11,7 @@ export class FRect3D {
 	public zhigh: number = 0;
 
 	constructor(left?: number, right?: number, top?: number, bottom?: number, zLow?: number, zHigh?: number) {
-		/* istanbul ignore if */
-		if (left !== undefined && right !== undefined && top !== undefined  && bottom !== undefined  && zLow !== undefined  && zHigh !== undefined ) {
+		if (left !== undefined && right !== undefined && top !== undefined && bottom !== undefined  && zLow !== undefined  && zHigh !== undefined ) {
 			this.left = left;
 			this.right = right;
 			this.top = top;

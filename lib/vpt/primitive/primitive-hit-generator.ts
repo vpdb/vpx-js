@@ -157,12 +157,12 @@ export class PrimitiveHitGenerator {
 		for (const obj of hitObjects) {
 			if (!this.data.useAsPlayfield) {
 				if (mat && !this.data.fOverwritePhysics) {
-					obj.setElasticy(mat.fElasticity, mat.fElasticityFalloff);
+					obj.setElasticity(mat.fElasticity, mat.fElasticityFalloff);
 					obj.setFriction(mat.fFriction);
 					obj.setScatter(degToRad(mat.fScatterAngle));
 
 				} else {
-					obj.setElasticy(this.data.elasticity, this.data.elasticityFalloff);
+					obj.setElasticity(this.data.elasticity, this.data.elasticityFalloff);
 					obj.setFriction(this.data.friction);
 					obj.setScatter(degToRad(this.data.scatter));
 				}
@@ -170,7 +170,7 @@ export class PrimitiveHitGenerator {
 				obj.setEnabled(this.data.fCollidable);
 
 			} else {
-				obj.setElasticy(table.data!.elasticity, table.data!.elasticityFalloff);
+				obj.setElasticity(table.data!.elasticity, table.data!.elasticityFalloff);
 				obj.setFriction(table.data!.friction);
 				obj.setScatter(degToRad(table.data!.scatter));
 				obj.setEnabled(true);

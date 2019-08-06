@@ -131,12 +131,12 @@ export class SurfaceHitGenerator {
 		for (const obj of hitObjects) {
 
 			if (mat && !this.data.fOverwritePhysics) {
-				obj.setElasticy(mat.fElasticity);
+				obj.setElasticity(mat.fElasticity);
 				obj.setFriction(mat.fFriction);
 				obj.setScatter(degToRad(mat.fScatterAngle));
 
 			} else {
-				obj.setElasticy(this.data.elasticity!);
+				obj.setElasticity(this.data.elasticity!);
 				obj.setFriction(this.data.friction!);
 				obj.setScatter(degToRad(this.data.scatter!));
 				obj.setEnabled(this.data.fCollidable);

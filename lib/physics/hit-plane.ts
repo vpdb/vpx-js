@@ -35,11 +35,16 @@ export class HitPlane extends HitObject {
 		this.d = d;
 	}
 
+	public getType(): CollisionType {
+		return CollisionType.Plane;
+	}
+
 	public calcHitBBox(): void {
 		// plane's not a box (i assume)
 	}
 
 	public collide(coll: CollisionEvent): void {
+
 		coll.ball.hit.collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
 		// if ball has penetrated, push it out of the plane
@@ -49,54 +54,53 @@ export class HitPlane extends HitObject {
 		}
 	}
 
-	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): number {
 		if (!this.isEnabled) {
 			return -1.0;
 		}
 
-		const bnv = this.normal.dot(pball.hit.vel);       // speed in normal direction
+		const bnv = this.normal.dot(ball.hit.vel);         // speed in normal direction
 
-		if (bnv > C_CONTACTVEL) {                 // return if clearly ball is receding from object
+		if (bnv > C_CONTACTVEL) {                          // return if clearly ball is receding from object
 			return -1.0;
 		}
 
-		const bnd = this.normal.dot(pball.state.pos) - pball.data.radius - this.d; // distance from plane to ball surface
+		const bnd = this.normal.dot(ball.state.pos) - ball.data.radius - this.d; // distance from plane to ball surface
 
-		if (bnd < pball.data.radius * -2.0) { //!! solely responsible for ball through playfield?? check other places, too (radius*2??)
-			return -1.0;   // excessive penetration of plane ... no collision HACK
+		//!! solely responsible for ball through playfield?? check other places, too (radius*2??)
+		if (bnd < ball.data.radius * -2.0) {
+			// excessive penetration of plane ... no collision HACK
+			return -1.0;
 		}
 
-		let hittime: number;
+		let hitTime: number;
 		if (Math.abs(bnv) <= C_CONTACTVEL) {
 			if (Math.abs(bnd) <= PHYS_TOUCH) {
 				coll.isContact = true;
 				coll.hitNormal = this.normal;
-				coll.hitOrgNormalVelocity = bnv; // remember original normal velocity
+				coll.hitOrgNormalVelocity = bnv;           // remember original normal velocity
 				coll.hitDistance = bnd;
-				//coll.m_hitRigid = true;
-				return 0.0;    // hittime is ignored for contacts
+				//coll.hitRigid = true;
+				return 0.0;                                // hit time is ignored for contacts
 			} else {
-				return -1.0;   // large distance, small velocity -> no hit
+				return -1.0;                               // large distance, small velocity -> no hit
 			}
 		}
 
-		hittime = bnd / (-bnv);                   // rate ok for safe divide
-		if (hittime < 0) {
-			hittime = 0.0;     // already penetrating? then collide immediately
+		hitTime = bnd / (-bnv);                            // rate ok for safe divide
+		if (hitTime < 0) {
+			hitTime = 0.0;                                 // already penetrating? then collide immediately
 		}
 
-		if (!isFinite(hittime) || hittime < 0 || hittime > dtime) {
-			return -1.0;       // time is outside this frame ... no collision
+		if (!isFinite(hitTime) || hitTime < 0 || hitTime > dTime) {
+			// time is outside this frame ... no collision
+			return -1.0;
 		}
 
 		coll.hitNormal = this.normal;
-		coll.hitDistance = bnd;                // actual contact distance
-		//coll.m_hitRigid = true;               // collision type
+		coll.hitDistance = bnd;                            // actual contact distance
+		//coll.m_hitRigid = true;                          // collision type
 
-		return hittime;
-	}
-
-	public getType(): CollisionType {
-		return CollisionType.Plane;
+		return hitTime;
 	}
 }

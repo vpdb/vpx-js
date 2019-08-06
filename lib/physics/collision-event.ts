@@ -35,29 +35,34 @@ export class CollisionEvent {
 	public obj?: HitObject;
 
 	/**
-	 * when the collision happens (relative to current physics state)
+	 * Set to true if impact velocity is ~0
+	 */
+	public isContact: boolean = false;
+
+	/**
+	 * When the collision happens (relative to current physics state)
 	 */
 	public hitTime: number = 0;
 
 	/**
-	 * hit distance
+	 * Hit distance
 	 */
 	public hitDistance: number = 0;
 
 	/**
-	 * additional collision information
+	 * Additional collision information
 	 */
 	public hitNormal?: Vertex3D;
 
 	/**
-	 * only "correctly" used by plunger and flipper
+	 * Only "correctly" used by plunger and flipper
 	 */
 	public hitVel?: Vertex2D;
 
 	/**
-	 * only set if isContact is true
+	 * Only set if isContact is true
 	 */
-	public hitOrgNormalVelocity?: number;
+	public hitOrgNormalVelocity: number = 0;
 
 	public hitMomentBit: boolean = false;
 
@@ -65,8 +70,6 @@ export class CollisionEvent {
 	 * UnHit signal/direction of hit/side of hit (spinner/gate)
 	 */
 	public hitFlag: boolean = false;
-
-	public isContact: boolean = false;
 
 	constructor(ball: Ball) {
 		this.ball = ball;

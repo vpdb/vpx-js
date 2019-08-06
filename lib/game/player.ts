@@ -178,12 +178,12 @@ export class Player extends EventEmitter {
 		// playfield
 		this.hitPlayfield = new HitPlane(new Vertex3D(0, 0, 1), this.table.getTableHeight())
 			.setFriction(this.getFriction())
-			.setElasticy(this.getElasticity(), this.getElasticityFalloff())
+			.setElasticity(this.getElasticity(), this.getElasticityFalloff())
 			.setScatter(degToRad(this.getScatter()));
 
 		// glass
 		this.hitTopGlass = new HitPlane(new Vertex3D(0, 0, -1), this.table.data!.glassheight)
-			.setElasticy(0.2);
+			.setElasticity(0.2);
 
 		logger().info('[Player] Playfield hit objects set.', this.hitObjects);
 	}
@@ -223,15 +223,15 @@ export class Player extends EventEmitter {
 			: this.table.data!.scatter!;
 	}
 
-	public physicsSimulateCycle(dtime: number) {
+	public physicsSimulateCycle(dTime: number) {
 
 		let StaticCnts = STATICCNTS;    // maximum number of static counts
 
 		// it's okay to have this code outside of the inner loop, as the ball hitrects already include the maximum distance they can travel in that timespan
 		this.hitOcTreeDynamic.update();
 
-		while (dtime > 0) {
-			let hitTime = dtime;
+		while (dTime > 0) {
+			let hitTime = dTime;
 
 			// find earliest time where a flipper collides with its stop
 			for (const flipperMover of this.flipperMovers) {
@@ -244,41 +244,43 @@ export class Player extends EventEmitter {
 			this.recordContacts = true;
 			this.contacts = [];
 
-			for (const pball of this.balls) {
-				const ballHit = pball.hit;
-				if (!ballHit.isFrozen) { // don't play with frozen balls
+			for (const ball of this.balls) {
+				const ballHit = ball.hit;
 
-					ballHit.coll.hitTime = hitTime;          // search upto current hittime
+				if (!ballHit.isFrozen) {                   // don't play with frozen balls
+
+					ballHit.coll.hitTime = hitTime;        // search upto current hit time
 					ballHit.coll.obj = undefined;
 
 					// always check for playfield and top glass
 					if (!this.meshAsPlayfield) {
-						this.hitPlayfield.doHitTest(pball, pball.getCollision(), this);
+						ball.setCollision(this.hitPlayfield.doHitTest(ball, ball.getCollision(), this));
 					}
+					ball.setCollision(this.hitTopGlass.doHitTest(ball, ball.getCollision(), this));
 
-					this.hitTopGlass.doHitTest(pball, pball.getCollision(), this);
-
-					if (Math.random() < 0.5) { // swap order of dynamic and static obj checks randomly
-						this.hitOcTreeDynamic.hitTestBall(pball, pball.getCollision(), this);  // dynamic objects
-						this.hitOcTree.hitTestBall(pball, pball.getCollision(), this);         // find the hit objects and hit times
+					// swap order of dynamic and static obj checks randomly
+					if (Math.random() < 0.5) {
+						this.hitOcTreeDynamic.hitTestBall(ball, ball.getCollision(), this);  // dynamic objects
+						this.hitOcTree.hitTestBall(ball, ball.getCollision(), this);         // find the hit objects and hit times
 					} else {
-						this.hitOcTree.hitTestBall(pball, pball.getCollision(), this);         // find the hit objects and hit times
-						this.hitOcTreeDynamic.hitTestBall(pball, pball.getCollision(), this);  // dynamic objects
+						this.hitOcTree.hitTestBall(ball, ball.getCollision(), this);         // find the hit objects and hit times
+						this.hitOcTreeDynamic.hitTestBall(ball, ball.getCollision(), this);  // dynamic objects
 					}
 
-					const htz = pball.getCollision().hitTime; // this ball's hit time
-					if (htz < 0) { // no negative time allowed
-						pball.getCollision().clear();
+					const htz = ball.getCollision().hitTime;                                 // this ball's hit time
+
+					if (htz < 0) {                         // no negative time allowed
+						ball.getCollision().clear();
 					}
 
-					if (pball.getCollision().obj) {
+					if (ball.getCollision().obj) {
 						///////////////////////////////////////////////////////////////////////////
 						if (htz <= hitTime) {
-							hitTime = htz;                         // record actual event time
+							hitTime = htz;                 // record actual event time
 
 							if (htz < STATICTIME) {
 								if (--StaticCnts < 0) {
-									StaticCnts = 0;                // keep from wrapping
+									StaticCnts = 0;        // keep from wrapping
 									hitTime = STATICTIME;
 								}
 							}
@@ -302,29 +304,28 @@ export class Player extends EventEmitter {
 			}
 
 			// find balls that need to be collided and script'ed (generally there will be one, but more are possible)
+			for (let i = 0; i < this.balls.length; i++) {
 
-			for (let i = 0; i < this.balls.length; i++) { // use m_vball.size(), in case script deletes a ball
+				const ball = this.balls[i];
+				const pho = ball.getCollision().obj; // object that ball hit in trials
 
-				const pball = this.balls[i];
-
-				const pho = pball.getCollision().obj; // object that ball hit in trials
-				if (pho && pball.getCollision().hitTime <= hitTime) { // find balls with hit objects and minimum time
+				// find balls with hit objects and minimum time
+				if (pho && ball.getCollision().hitTime <= hitTime) {
 					// now collision, contact and script reactions on active ball (object)+++++++++
 
-					this.pactiveball = pball;                       // For script that wants the ball doing the collision
-					pho.collide(pball.getCollision(), this);                 //!!!!! 3) collision on active ball
-					pball.getCollision().obj = undefined;                  // remove trial hit object pointer
+					this.pactiveball = ball;                         // For script that wants the ball doing the collision
+					pho.collide(ball.getCollision(), this);          // !!!!! 3) collision on active ball
+					ball.getCollision().obj = undefined;             // remove trial hit object pointer
 
 					// Collide may have changed the velocity of the ball,
 					// and therefore the bounding box for the next hit cycle
-					if (this.balls[i] !== pball) { // Ball still exists? may have been deleted from list
+					if (this.balls[i] !== ball) { // Ball still exists? may have been deleted from list
 
 						// collision script deleted the ball, back up one count
 						--i;
-						continue;
 
 					} else {
-						pball.hit.calcHitBBox(); // do new boundings
+						ball.hit.calcHitBBox(); // do new boundings
 					}
 				}
 			}
@@ -353,7 +354,7 @@ export class Player extends EventEmitter {
 
 			// fixme ballspinhack
 
-			dtime -= hitTime;
+			dTime -= hitTime;
 			this.swapBallCcollisionHandling = !this.swapBallCcollisionHandling; // swap order of ball-ball collisions
 		}
 	}

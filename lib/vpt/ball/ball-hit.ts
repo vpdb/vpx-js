@@ -25,7 +25,7 @@ import { CollisionType } from '../../physics/collision-type';
 import {
 	C_CONTACTVEL,
 	C_DISP_GAIN,
-	C_DISP_LIMIT,
+	C_DISP_LIMIT, C_EMBEDDED, C_EMBEDSHOT,
 	C_EMBEDVELLIMIT,
 	C_LOWNORMVEL,
 	C_PRECISION,
@@ -149,52 +149,59 @@ export class BallHit extends HitObject {
 
 		// target ball to object ball delta velocity
 		const vrel = pball.hit.vel.clone().sub(this.vel);
-		const vnormal = coll.hitNormal!;
-		const dot = vrel.dot(vnormal);
+		const vNormal = coll.hitNormal!;
+		let dot = vrel.dot(vNormal);
 
 		// correct displacements, mostly from low velocity, alternative to true acceleration processing
-		if (dot >= -C_LOWNORMVEL) {								// nearly receding ... make sure of conditions
-																// otherwise if clearly approaching .. process the collision
-			if (dot > C_LOWNORMVEL) {						// is this velocity clearly receding (i.e must > a minimum)
+		if (dot >= -C_LOWNORMVEL) {                        // nearly receding ... make sure of conditions
+			if (dot > C_LOWNORMVEL) {                      // otherwise if clearly approaching .. process the collision
+				return;                                    // is this velocity clearly receding (i.e must > a minimum)
+			}
+//#ifdef C_EMBEDDED
+			if (coll.hitDistance < -C_EMBEDDED) {
+				dot = -C_EMBEDSHOT;                        // has ball become embedded???, give it a kick
+			} else {
 				return;
 			}
+//#endif
 		}
 
-		// fixme send ball/ball collision event to script function
+		// fixme script
+		// send ball/ball collision event to script function
 		// if (dot < -0.25f) {   // only collisions with at least some small true impact velocity (no contacts)
 		// 	g_pplayer->m_ptable->InvokeBallBallCollisionCallback(this, pball, -dot);
 		// }
 
-		if (C_DISP_GAIN) {
-			let edist = -C_DISP_GAIN * coll.hitDistance;
-			if (edist > 1.0e-4) {
-				if (edist > C_DISP_LIMIT) {
-					edist = C_DISP_LIMIT;		// crossing ramps, delta noise
-				}
-				if (!this.isFrozen) {	// if the hitten ball is not frozen
-					edist *= 0.5;
-				}
-				pball.state.pos.add(vnormal.clone().multiplyScalar(edist)); // push along norm, back to free area
-				// use the norm, but is not correct, but cheaply handled
+//#ifdef C_DISP_GAIN
+		let eDist = -C_DISP_GAIN * coll.hitDistance;
+		if (eDist > 1.0e-4) {
+			if (eDist > C_DISP_LIMIT) {
+				eDist = C_DISP_LIMIT;		// crossing ramps, delta noise
 			}
-
-			edist = -C_DISP_GAIN * this.coll.hitDistance;	// noisy value .... needs investigation
-			if (!this.isFrozen && edist > 1.0e-4) {
-				if (edist > C_DISP_LIMIT) {
-					edist = C_DISP_LIMIT;		// crossing ramps, delta noise
-				}
-				edist *= 0.5;
-				this.state.pos.sub(vnormal.multiplyScalar(edist));       // pull along norm, back to free area
+			if (!this.isFrozen) {	// if the hit ball is not frozen
+				eDist *= 0.5;
 			}
+			pball.state.pos.add(vNormal.clone().multiplyScalar(eDist)); // push along norm, back to free area
+			// use the norm, but is not correct, but cheaply handled
 		}
+
+		eDist = -C_DISP_GAIN * this.coll.hitDistance;	// noisy value .... needs investigation
+		if (!this.isFrozen && eDist > 1.0e-4) {
+			if (eDist > C_DISP_LIMIT) {
+				eDist = C_DISP_LIMIT;		// crossing ramps, delta noise
+			}
+			eDist *= 0.5;
+			this.state.pos.sub(vNormal.clone().multiplyScalar(eDist));       // pull along norm, back to free area
+		}
+//#endif
 
 		const myInvMass = this.isFrozen ? 0.0 : this.invMass; // frozen ball has infinite mass
 		const impulse = -(1.0 + 0.8) * dot / (myInvMass + pball.hit.invMass);    // resitution = 0.8
 
 		if (!this.isFrozen) {
-			this.vel.sub(vnormal.clone().multiplyScalar(impulse * myInvMass));
+			this.vel.sub(vNormal.clone().multiplyScalar(impulse * myInvMass));
 		}
-		pball.hit.vel.add(vnormal.clone().multiplyScalar(impulse * pball.hit.invMass));
+		pball.hit.vel.add(vNormal.clone().multiplyScalar(impulse * pball.hit.invMass));
 	}
 
 	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {
@@ -221,10 +228,10 @@ export class BallHit extends HitObject {
 			return -1.0;
 		}
 
-		const totalradius = pball.data.radius + this.data.radius;
-		const bnd = bcdd - totalradius;                    // distance between ball surfaces
+		const totalRadius = pball.data.radius + this.data.radius;
+		const bnd = bcdd - totalRadius;                    // distance between ball surfaces
 
-		let hittime: number;
+		let hitTime: number;
 //#ifdef BALL_CONTACTS //!! leads to trouble currently, might be due to missing contact handling for -both- balls?!
 		let isContact = false;
 //#endif
@@ -235,9 +242,9 @@ export class BallHit extends HitObject {
 
 			if ((Math.abs(bnv) > C_CONTACTVEL)             // >fast velocity, return zero time
 				|| (bnd <= -PHYS_TOUCH)) {                 // zero time for rigid fast bodies
-				hittime = 0;                               // slow moving but embedded
+				hitTime = 0;                               // slow moving but embedded
 			} else {
-				hittime = bnd / -bnv;
+				hitTime = bnd / -bnv;
 			}
 
 //#ifdef BALL_CONTACTS
@@ -255,21 +262,21 @@ export class BallHit extends HitObject {
 				return -1.0;                               // ball moving really slow, then wait for contact
 			}
 
-			const sol = solveQuadraticEq(a, 2.0 * b, bcddsq - totalradius * totalradius);
+			const sol = solveQuadraticEq(a, 2.0 * b, bcddsq - totalRadius * totalRadius);
 			if (!sol) {
 				return -1.0;
 			}
 			const [time1, time2] = sol;
-			hittime = (time1 * time2 < 0) ? Math.max(time1, time2) : Math.min(time1, time2); // find smallest nonnegative solution
+			hitTime = (time1 * time2 < 0) ? Math.max(time1, time2) : Math.min(time1, time2); // find smallest nonnegative solution
 		}
 
-		if (!isFinite(hittime) || hittime < 0 || hittime > dtime) {
+		if (!isFinite(hitTime) || hitTime < 0 || hitTime > dtime) {
 			return -1.0; // .. was some time previous || beyond the next physics tick
 		}
 
-		const hitPos = pball.state.pos!.clone().add(dv.multiplyScalar(hittime)); // new ball position
+		const hitPos = pball.state.pos!.clone().add(dv.clone().multiplyScalar(hitTime)); // new ball position
 
-		//calc unit normal of collision
+		// calc unit normal of collision
 		const hitnormal = hitPos.clone().sub(this.state.pos);
 		if (Math.abs(hitnormal.x) <= FLT_MIN && Math.abs(hitnormal.y) <= FLT_MIN && Math.abs(hitnormal.z) <= FLT_MIN) {
 			return -1;
@@ -286,47 +293,51 @@ export class BallHit extends HitObject {
 		}
 //#endif
 
-		return hittime;
+		return hitTime;
 	}
 
-	public collide3DWall(hitNormal: Vertex3D, elasticity: number, elastFalloff: number, friction: number, scatterAngle: number): void {
+	public collide3DWall(hitNormal: Vertex3D, elasticity: number, elasticityFalloff: number, friction: number, scatterAngle: number): void {
 
-		//speed normal to wall
+		// speed normal to wall
 		let dot = this.vel.dot(hitNormal);
 
 		if (dot >= -C_LOWNORMVEL) {                        // nearly receding ... make sure of conditions
-			// otherwise if clearly approaching .. process the collision
-			if (dot > C_LOWNORMVEL) {                      //is this velocity clearly receding (i.e must > a minimum)
+			if (dot > C_LOWNORMVEL) {                      // otherwise if clearly approaching .. process the collision
+				return;                                    // is this velocity clearly receding (i.e must > a minimum)
+			}
+//#ifdef C_EMBEDDED
+			if (this.coll.hitDistance < -C_EMBEDDED) {
+				dot = -C_EMBEDSHOT;                        // has ball become embedded???, give it a kick
+			} else {
 				return;
 			}
+//#endif
 		}
 
-		if (C_DISP_GAIN) { //#ifdef C_DISP_GAIN
-			// correct displacements, mostly from low velocity, alternative to acceleration processing
-			let hdist = -C_DISP_GAIN * this.coll.hitDistance;        // limit delta noise crossing ramps,
-			if (hdist > 1.0e-4) {                                    // when hit detection checked it what was the displacement
-				if (hdist > C_DISP_LIMIT) {
-					hdist = C_DISP_LIMIT;                            // crossing ramps, delta noise
-				}
-				this.state.pos!.add(hitNormal.multiplyScalar(hdist));      // push along norm, back to free area
-				// use the norm, but this is not correct, reverse time is correct
+//#ifdef C_DISP_GAIN
+		// correct displacements, mostly from low velocity, alternative to acceleration processing
+		let hDist = -C_DISP_GAIN * this.coll.hitDistance;  // limit delta noise crossing ramps,
+		if (hDist > 1.0e-4) {                              // when hit detection checked it what was the displacement
+			if (hDist > C_DISP_LIMIT) {
+				hDist = C_DISP_LIMIT;                      // crossing ramps, delta noise
 			}
-		} //#endif
+			// push along norm, back to free area
+			this.state.pos!.add(hitNormal.clone().multiplyScalar(hDist));
+			// use the norm, but this is not correct, reverse time is correct
+		}
+//#endif
 
 		// magnitude of the impulse which is just sufficient to keep the ball from
 		// penetrating the wall (needed for friction computations)
 		const reactionImpulse = this.data.mass * Math.abs(dot);
 
-		elasticity = elasticityWithFalloff(elasticity, elastFalloff, dot);
+		elasticity = elasticityWithFalloff(elasticity, elasticityFalloff, dot);
 		dot *= -(1.0 + elasticity);
-		this.vel.add(hitNormal.multiplyScalar(dot));                           // apply collision impulse (along normal, so no torque)
+		this.vel.add(hitNormal.clone().multiplyScalar(dot));                   // apply collision impulse (along normal, so no torque)
 
 		// compute friction impulse
-
-		const surfP = hitNormal.clone().multiplyScalar(-this.data.radius);          // surface contact point relative to center of mass
-
+		const surfP = hitNormal.clone().multiplyScalar(-this.data.radius);     // surface contact point relative to center of mass
 		const surfVel = this.surfaceVelocity(surfP);                           // velocity at impact point
-
 		const tangent = surfVel.clone().sub(hitNormal.clone().multiplyScalar(surfVel.dot(hitNormal))); // calc the tangential velocity
 
 		const tangentSpSq = tangent.lengthSq();
@@ -399,14 +410,14 @@ export class BallHit extends HitObject {
 		}
 	}
 
-	public applyFriction(hitnormal: Vertex3D, dtime: number, fricCoeff: number, player: Player): void {
+	public applyFriction(hitNormal: Vertex3D, dtime: number, fricCoeff: number, player: Player): void {
 
-		const surfP = hitnormal.clone().multiplyScalar(-this.data.radius);    // surface contact point relative to center of mass
+		const surfP = hitNormal.clone().multiplyScalar(-this.data.radius);    // surface contact point relative to center of mass
 
 		const surfVel = this.surfaceVelocity(surfP);
-		const slip = surfVel.clone().sub(hitnormal.clone().multiplyScalar(surfVel.dot(hitnormal)));       // calc the tangential slip velocity
+		const slip = surfVel.clone().sub(hitNormal.clone().multiplyScalar(surfVel.dot(hitNormal)));       // calc the tangential slip velocity
 
-		const maxFric = fricCoeff * this.data.mass * - player.gravity.dot(hitnormal);
+		const maxFric = fricCoeff * this.data.mass * - player.gravity.dot(hitNormal);
 
 		const slipspeed = slip.length();
 		let slipDir: Vertex3D;
@@ -415,12 +426,12 @@ export class BallHit extends HitObject {
 		//if (slipspeed > 1e-6f)
 
 //#ifdef C_BALL_SPIN_HACK
-		const normVel = this.vel.dot(hitnormal);
+		const normVel = this.vel.dot(hitNormal);
 		if ((normVel <= 0.025) || (slipspeed < C_PRECISION)) { // check for <=0.025 originated from ball<->rubber collisions pushing the ball upwards, but this is still not enough, some could even use <=0.2
 			// slip speed zero - static friction case
 
 			const surfAcc = this.surfaceAcceleration(surfP, player);
-			const slipAcc = surfAcc.clone().sub(hitnormal.multiplyScalar(surfAcc.dot(hitnormal))) ; // calc the tangential slip acceleration
+			const slipAcc = surfAcc.clone().sub(hitNormal.clone().multiplyScalar(surfAcc.dot(hitNormal))) ; // calc the tangential slip acceleration
 
 			// neither slip velocity nor slip acceleration? nothing to do here
 			if (slipAcc.lengthSq() < 1e-6) {
@@ -447,9 +458,10 @@ export class BallHit extends HitObject {
 		}
 	}
 
-	private surfaceAcceleration(surfP: Vertex3D, player: Player): Vertex3D {
+	public surfaceAcceleration(surfP: Vertex3D, player: Player): Vertex3D {
 		// if we had any external torque, we would have to add "(deriv. of ang.vel.) x surfP" here
-		return player.gravity.clone()
+		return player.gravity
+			.clone()
 			.multiplyScalar(this.invMass)                                                                          // linear acceleration
 			.add(Vertex3D.crossProduct(this.angularVelocity, Vertex3D.crossProduct(this.angularVelocity, surfP))); // centripetal acceleration
 	}

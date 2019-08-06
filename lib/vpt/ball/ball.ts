@@ -94,6 +94,10 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRendera
 		return this.hit.coll;
 	}
 
+	public setCollision(coll: CollisionEvent) {
+		return this.hit.coll = coll;
+	}
+
 	public setupPlayer(player: Player, table: Table): void {
 		// there is no ball yet on player setup
 	}
