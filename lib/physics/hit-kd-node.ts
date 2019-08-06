@@ -173,7 +173,7 @@ export class HitKDNode {
 
 		// create children, calc bboxes
 		this.children = this.hitOct.allocTwoNodes();
-		if (!this.children) {
+		if (this.children.length === 0) {
 			// ran out of nodes - abort
 			return;
 		}

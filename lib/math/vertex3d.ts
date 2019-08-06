@@ -18,11 +18,11 @@
  */
 
 /* tslint:disable:variable-name adjacent-overload-signatures */
+import { FLT_MIN } from '../vpt/mesh';
 import { f4 } from './float';
+import { Matrix2D } from './matrix2d';
 import { IRenderVertex, Vertex } from './vertex';
 import { Vertex2D } from './vertex2d';
-import { Matrix2D } from './matrix2d';
-import { FLT_MIN } from '../vpt/mesh';
 
 export class Vertex3D implements Vertex {
 

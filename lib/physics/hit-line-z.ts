@@ -24,6 +24,7 @@ import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { C_CONTACTVEL, PHYS_TOUCH } from './constants';
 import { HitObject } from './hit-object';
+import { Vertex3D } from '../math/vertex3d';
 
 export class HitLineZ extends HitObject {
 
@@ -120,18 +121,18 @@ export class HitLineZ extends HitObject {
 			return -1.0; // contact out of physics frame
 		}
 
-		const hitz = pball.state.pos.z + hittime * pball.hit.vel.z;   // ball z position at hit time
+		const hitz = pball.state.pos.z + hittime * pball.hit.vel.z;  // ball z position at hit time
 
-		if (hitz < this.hitBBox.zlow || hitz > this.hitBBox.zhigh) {   // check z coordinate
+		if (hitz < this.hitBBox.zlow || hitz > this.hitBBox.zhigh) { // check z coordinate
 			return -1.0;
 		}
 
-		const hitx = pball.state.pos.x + hittime * pball.hit.vel.x;   // ball x position at hit time
-		const hity = pball.state.pos.y + hittime * pball.hit.vel.y;   // ball y position at hit time
+		const hitx = pball.state.pos.x + hittime * pball.hit.vel.x;  // ball x position at hit time
+		const hity = pball.state.pos.y + hittime * pball.hit.vel.y;  // ball y position at hit time
 
 		const norm = new Vertex2D(hitx - this.xy.x, hity - this.xy.y);
 		norm.normalize();
-		coll.hitNormal!.set(norm.x, norm.y, 0.0);
+		coll.hitNormal = new Vertex3D(norm.x, norm.y, 0.0);
 
 		coll.isContact = isContact;
 		if (isContact) {
