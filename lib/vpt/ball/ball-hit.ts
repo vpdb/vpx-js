@@ -322,7 +322,7 @@ export class BallHit extends HitObject {
 				hDist = C_DISP_LIMIT;                      // crossing ramps, delta noise
 			}
 			// push along norm, back to free area
-			this.state.pos!.add(hitNormal.clone().multiplyScalar(hDist));
+			this.state.pos.add(hitNormal.clone().multiplyScalar(hDist));
 			// use the norm, but this is not correct, reverse time is correct
 		}
 //#endif
@@ -347,14 +347,14 @@ export class BallHit extends HitObject {
 
 			// compute friction impulse
 			const cross = Vertex3D.crossProduct(surfP, tangent);
-			const kt = this.invMass + tangent.dot(Vertex3D.crossProduct(cross.divideScalar(this.inertia), surfP));
+			const kt = this.invMass + tangent.dot(Vertex3D.crossProduct(cross.clone().divideScalar(this.inertia), surfP));
 
 			// friction impulse can't be greather than coefficient of friction times collision impulse (Coulomb friction cone)
 			const maxFric = friction * reactionImpulse;
 			const jt = clamp(-vt / kt, -maxFric, maxFric);
 
 			if (isFinite(jt)) {
-				this.applySurfaceImpulse(cross.multiplyScalar(jt), tangent.multiplyScalar(jt));
+				this.applySurfaceImpulse(cross.clone().multiplyScalar(jt), tangent.clone().multiplyScalar(jt));
 			}
 		}
 

@@ -102,7 +102,7 @@ export class Hit3DPoly extends HitObject {
 
 			const i = pball.hit.vpVolObjs.indexOf(this.obj!); // if -1 then not in objects volume set (i.e not already hit)
 
-			if ((!coll.hitFlag) === (i < 0)) { // Hit == NotAlreadyHit
+			if (!coll.hitFlag === i < 0) { // Hit == NotAlreadyHit
 
 				pball.state.pos.add(pball.hit.vel.clone().multiplyScalar(STATICTIME));      //move ball slightly forward
 

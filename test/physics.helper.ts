@@ -32,4 +32,5 @@ export function simulateCycles(player: Player, duration: number, tickDuration = 
 		player.updateVelocities();
 		player.physicsSimulateCycle(tickDuration);
 	}
+
 }

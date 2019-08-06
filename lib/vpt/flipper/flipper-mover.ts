@@ -34,8 +34,8 @@ export class FlipperMover implements MoverObject {
 
 	private readonly data: FlipperData;
 	private readonly state: FlipperState;
-
-	private tableData: TableData;
+	private readonly player: Player;
+	private readonly tableData: TableData;
 
 	public hitCircleBase: HitCircle;
 	public endRadius: number;
@@ -65,20 +65,19 @@ export class FlipperMover implements MoverObject {
 
 	public isEnabled: boolean = false;
 	public lastHitFace: boolean;
-	private player!: Player;
 
 	constructor(config: FlipperConfig, flipperData: FlipperData, state: FlipperState, player: Player, tableData: TableData) {
 
 		this.hitCircleBase = new HitCircle(config.center, config.baseRadius, config.zLow, config.zHigh);
 		this.data = flipperData;
 		this.state = state;
-		this.tableData = tableData;
 		this.player = player;
+		this.tableData = tableData;
 
-		this.endRadius = config.endRadius;         // radius of flipper end
-		this.flipperRadius = config.flipperRadius;    // radius of flipper arc, center-to-center radius
+		this.endRadius = config.endRadius;                 // radius of flipper end
+		this.flipperRadius = config.flipperRadius;         // radius of flipper arc, center-to-center radius
 
-		if (config.angleEnd === config.angleStart) { // otherwise hangs forever in collisions/updates
+		if (config.angleEnd === config.angleStart) {       // otherwise hangs forever in collisions/updates
 			config.angleEnd += 0.0001;
 		}
 
@@ -102,16 +101,15 @@ export class FlipperMover implements MoverObject {
 		const mass = this.getFlipperMass();
 		this.inertia = (1.0 / 3.0) * mass * (config.flipperRadius * config.flipperRadius);
 
-		this.lastHitFace = false; // used to optimize hit face search order
+		this.lastHitFace = false;                          // used to optimize hit face search order
 
-		this.zeroAngNorm.x =  Math.sqrt(1.0 - ratio * ratio); // F2 Norm, used in Green's transform, in FPM time search  // =  sinf(faceNormOffset)
-		this.zeroAngNorm.y = -ratio;                   // F1 norm, change sign of x component, i.e -zeroAngNorm.x // = -cosf(faceNormOffset)
+		this.zeroAngNorm.x =  Math.sqrt(1.0 - ratio * ratio);     // F2 Norm, used in Green's transform, in FPM time search  // =  sinf(faceNormOffset)
+		this.zeroAngNorm.y = -ratio;                                 // F1 norm, change sign of x component, i.e -zeroAngNorm.x // = -cosf(faceNormOffset)
 	}
 
 	public updateDisplacements(dtime: number): void {
 
-		const lastAngle = this.state.angle;
-		this.state.angle += this.angleSpeed * dtime;          // move flipper angle
+		this.state.angle += this.angleSpeed * dtime;       // move flipper angle
 
 		const angleMin = Math.min(this.angleStart, this.angleEnd);
 		const angleMax = Math.max(this.angleStart, this.angleEnd);
@@ -129,7 +127,7 @@ export class FlipperMover implements MoverObject {
 
 		let handleEvent = false;
 
-		if (this.state.angle === angleMax) {                  // hit stop?
+		if (this.state.angle === angleMax) {               // hit stop?
 			if (this.angleSpeed > 0) {
 				handleEvent = true;
 			}
@@ -146,6 +144,7 @@ export class FlipperMover implements MoverObject {
 
 			if (this.enableRotateEvent > 0) {
 				logger().info('[%s] Flipper is up', this.data.getName());
+				// fixme event
 				// this.m_pflipper->FireVoidEventParm(DISPID_LimitEvents_EOS, anglespd); // send EOS event
 				//
 				// g_pplayer->this.m_pininput.this.m_leftkey_down_usec_EOS = usec(); // debug only
@@ -314,7 +313,6 @@ export class FlipperMover implements MoverObject {
 
 		const angleMin = Math.min(this.angleStart, this.angleEnd);
 		const angleMax = Math.max(this.angleStart, this.angleEnd);
-
 		const dist = this.angleSpeed > 0
 			? angleMax - this.state.angle       // >= 0
 			: angleMin - this.state.angle;      // <= 0
