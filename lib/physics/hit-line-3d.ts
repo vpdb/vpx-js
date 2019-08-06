@@ -71,6 +71,10 @@ export class HitLine3D extends HitLineZ {
 		this.hitBBox.zhigh = Math.max(v1.z, v2.z);
 	}
 
+	public calcHitBBox(): void {
+		// already one in constructor
+	}
+
 	public collide(coll: CollisionEvent): void {
 		const pball = coll.ball;
 		const hitnormal = coll.hitNormal!;
