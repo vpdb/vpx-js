@@ -30,6 +30,8 @@ import { Texture } from '../texture';
 import { KickerData } from './kicker-data';
 import { KickerHit } from './kicker-hit';
 import { KickerMeshGenerator } from './kicker-mesh-generator';
+import { Ball } from '../ball/ball';
+import { FLT_MAX } from '../mesh';
 
 /**
  * VPinball's kickers.
@@ -90,7 +92,17 @@ export class Kicker implements IRenderable, IHittable, IBallCreationPosition {
 
 	public getBallCreationPosition(table: Table): Vertex3D {
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
-		return new Vertex3D(this.hit!.center.x, this.hit!.center.y, height);
+		return new Vertex3D(this.hit!.center.x, this.hit!.center.y, height + 100);
+	}
+
+	public getBallCreationVelocity(table: Table): Vertex3D {
+		return new Vertex3D(0.1, 0, 0);
+	}
+
+	public onBallCreated(player: Player, ball: Ball): void {
+		ball.getCollision().hitFlag = true;                        // HACK: avoid capture leaving kicker
+		const hitNormal = new Vertex3D(FLT_MAX, FLT_MAX, FLT_MAX); // unused due to newBall being true
+		this.hit!.doCollide(player, ball, hitNormal, false, true);
 	}
 
 	private getTexture(): Texture {

@@ -52,12 +52,12 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRendera
 	// ugly hacks
 	public oldVel?: Vertex3D;
 
-	constructor(data: BallData, state: BallState, velocity: Vertex3D, tableData: TableData) {
+	constructor(data: BallData, state: BallState, initialVelocity: Vertex3D, tableData: TableData) {
 		this.id = Ball.idCounter++;
 		this.data = data;
 		this.state = state;
 		this.meshGenerator = new BallMeshGenerator(data);
-		this.hit = new BallHit(this, data, state, velocity, tableData);
+		this.hit = new BallHit(this, data, state, initialVelocity, tableData);
 	}
 
 	public getName(): string {
@@ -78,7 +78,7 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRendera
 			.preMultiply(orientation)
 			.multiply(trans);
 
-		obj.matrix = matrix.toThreeMatrix4();
+		obj.matrix = matrix.toRightHanded().toThreeMatrix4();
 		obj.matrixWorldNeedsUpdate = true;
 	}
 

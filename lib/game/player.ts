@@ -24,7 +24,15 @@ import { Matrix2D } from '../math/matrix2d';
 import { Vertex2D } from '../math/vertex2d';
 import { Vertex3D } from '../math/vertex3d';
 import { CollisionEvent } from '../physics/collision-event';
-import { DEFAULT_STEPTIME, PHYSICS_STEPTIME, STATICCNTS, STATICTIME } from '../physics/constants';
+import {
+	DEFAULT_STEPTIME,
+	DEFAULT_TABLE_GRAVITY,
+	DEFAULT_TABLE_MAX_SLOPE,
+	DEFAULT_TABLE_MIN_SLOPE,
+	PHYSICS_STEPTIME,
+	STATICCNTS,
+	STATICTIME,
+} from '../physics/constants';
 import { Hit3DPoly } from '../physics/hit-3dpoly';
 import { HitKD } from '../physics/hit-kd';
 import { HitObject } from '../physics/hit-object';
@@ -69,8 +77,6 @@ export class Player extends EventEmitter {
 
 	private hitPlayfield!: HitPlane; // HitPlanes cannot be part of octree (infinite size)
 	private hitTopGlass!: HitPlane;
-	//private state: { [key: string]: any} = {};
-	public curMechPlungerPos: number = 0;
 	public recordContacts: boolean = false;
 	public contacts: CollisionEvent[] = [];
 
@@ -96,6 +102,7 @@ export class Player extends EventEmitter {
 		this.addTableElements(table);
 		this.addCabinetBoundingHitShapes();
 		this.initOcTree(table);
+		this.initPhysics(table);
 	}
 
 	public popState(): ItemState[] {
@@ -568,13 +575,13 @@ export class Player extends EventEmitter {
 		}
 	}
 
-	public createBall(ballCreator: IBallCreationPosition, velocity: Vertex3D = new Vertex3D(0.1, 0, 0), radius = 25, mass = 1): Ball {
+	public createBall(ballCreator: IBallCreationPosition, radius = 25, mass = 1): Ball {
 
 		const data = new BallData(radius, mass, this.table.data!.defaultBulbIntensityScaleOnBall);
 		const state = new BallState(`Ball${Ball.idCounter}`, ballCreator.getBallCreationPosition(this.table), new Matrix2D());
 		state.pos.z += data.radius;
 
-		const ball = new Ball(data, state, velocity, this.table.data!);
+		const ball = new Ball(data, state, ballCreator.getBallCreationVelocity(this.table), this.table.data!);
 
 		this.balls.push(ball);
 		this.movers.push(ball.getMover()); // balls are always added separately to this list!
@@ -636,10 +643,19 @@ export class Player extends EventEmitter {
 	// 	this.gravity.z = -Math.cos(degToRad(slopeDeg)) * strength;
 	// }
 
-}
+	private initPhysics(table: Table) {
+		const minSlope = table.data!.overridePhysics ? DEFAULT_TABLE_MIN_SLOPE : table.data!.angletiltMin!;
+		const maxSlope = table.data!.overridePhysics ? DEFAULT_TABLE_MAX_SLOPE : table.data!.angletiltMax!;
+		const slope = minSlope + (maxSlope - minSlope) * table.data!.globalDifficulty!;
 
-export type StateCallback = (name: string, state: any) => void;
+		this.gravity.x = 0;
+		this.gravity.y = Math.sin(degToRad(slope)) * (table.data!.overridePhysics ? DEFAULT_TABLE_GRAVITY : table.data!.Gravity);
+		this.gravity.z = -Math.cos(degToRad(slope)) * (table.data!.overridePhysics ? DEFAULT_TABLE_GRAVITY : table.data!.Gravity);
+	}
+}
 
 export interface IBallCreationPosition {
 	getBallCreationPosition(table: Table): Vertex3D;
+	getBallCreationVelocity(table: Table): Vertex3D;
+	onBallCreated(player: Player, ball: Ball): void;
 }
