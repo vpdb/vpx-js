@@ -21,10 +21,9 @@ import { Player } from '../game/player';
 import { FRect3D } from '../math/frect3d';
 import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
-import { Primitive } from '../vpt/primitive/primitive';
+import { PrimitiveEvents } from '../vpt/primitive/primitive-events';
 import { CollisionEvent } from './collision-event';
 import { HitObject } from './hit-object';
-import { PrimitiveEvents } from '../vpt/primitive/primitive-events';
 
 export class HitQuadtree {
 
@@ -169,8 +168,8 @@ export class HitQuadtree {
 		}
 
 		// originally: m_vho.swap(vRemain);
-		this.vho.splice(0, this.vho.length); // clear array
-		this.vho.push(...vRemain);                  // fill array
+		const vho = this.vho.splice(0, this.vho.length, ...vRemain); // replace vho content with vRemain content
+		vRemain.splice(0, vRemain.length, ...vho);                   // replace vRemain content with vho content
 
 		// check if at least two nodes feature objects, otherwise don't bother subdividing further
 		let countEmpty = (this.vho.length === 0) ? 1 : 0;
