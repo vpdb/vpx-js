@@ -97,6 +97,10 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 		return this.data.isVisible();
 	}
 
+	public isCollidable(): boolean {
+		return true;
+	}
+
 	public setupPlayer(player: Player, table: Table): void {
 		this.hit = new PlungerHit(this.data, this.state, this.mesh.cFrames, player, table);
 	}

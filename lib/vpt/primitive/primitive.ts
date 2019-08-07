@@ -65,6 +65,10 @@ export class Primitive implements IRenderable, IHittable, IFireEvents {
 		return this.data.fVisible;
 	}
 
+	public isCollidable(): boolean {
+		return this.data.fCollidable;
+	}
+
 	public getMeshes(table: Table): Meshes {
 		return {
 			primitive: {

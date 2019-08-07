@@ -69,6 +69,10 @@ export class Surface implements IRenderable, IHittable {
 		return this.data.fSideVisible || this.data.fTopBottomVisible;
 	}
 
+	public isCollidable(): boolean {
+		return this.data.fCollidable;
+	}
+
 	public getMeshes(table: Table, opts: VpTableExporterOptions): Meshes {
 		const meshes: Meshes = {};
 		const surface = this.mesh.generateMeshes(this.data, table);

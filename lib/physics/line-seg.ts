@@ -55,10 +55,10 @@ export class LineSeg extends HitObject {
 		this.v1.y = y1;
 		this.v2.x = x2;
 		this.v2.y = y2;
-		return this.calcNormal();
+		return this.calcNormal().calcHitBBox();
 	}
 
-	public calcHitBBox(): void {
+	public calcHitBBox(): this {
 		// Allow roundoff
 		this.hitBBox.left = Math.min(this.v1.x, this.v2.x);
 		this.hitBBox.right = Math.max(this.v1.x, this.v2.x);
@@ -66,6 +66,7 @@ export class LineSeg extends HitObject {
 		this.hitBBox.bottom = Math.max(this.v1.y, this.v2.y);
 
 		// zlow and zhigh were already set in constructor
+		return this;
 	}
 
 	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): HitTestResult {

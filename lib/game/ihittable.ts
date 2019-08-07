@@ -20,5 +20,6 @@ import { HitObject } from '../physics/hit-object';
 import { IPlayable } from './iplayable';
 
 export interface IHittable extends IPlayable {
+	isCollidable(): boolean;
 	getHitShapes(): HitObject[];
 }
