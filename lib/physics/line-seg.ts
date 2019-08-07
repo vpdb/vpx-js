@@ -68,20 +68,11 @@ export class LineSeg extends HitObject {
 		// zlow and zhigh were already set in constructor
 	}
 
-	public collide(coll: CollisionEvent): void {
-		const dot = coll.hitNormal!.dot(coll.ball.hit.vel);
-		coll.ball.hit.collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
-
-		if (dot <= -this.threshold) {
-			this.fireHitEvent(coll.ball);
-		}
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): number {
+		return this.hitTestBasic(ball, dTime, coll, true, true, true); // normal face, lateral, rigid
 	}
 
-	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {
-		return this.hitTestBasic(pball, dtime, coll, true, true, true); // normal face, lateral, rigid
-	}
-
-	public hitTestBasic(ball: Ball, dTime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean) {
+	public hitTestBasic(ball: Ball, dTime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean): number {
 
 		if (!this.isEnabled || ball.hit.isFrozen) {
 			return -1.0;
@@ -186,6 +177,15 @@ export class LineSeg extends HitObject {
 			coll.hitOrgNormalVelocity = bnv;
 		}
 		return hitTime;
+	}
+
+	public collide(coll: CollisionEvent): void {
+		const dot = coll.hitNormal!.dot(coll.ball.hit.vel);
+		coll.ball.hit.collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
+
+		if (dot <= -this.threshold) {
+			this.fireHitEvent(coll.ball);
+		}
 	}
 
 	private calcNormal(): this {

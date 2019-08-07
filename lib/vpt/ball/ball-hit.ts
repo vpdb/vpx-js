@@ -47,6 +47,11 @@ import { BallState } from './ball-state';
  */
 export class BallHit extends HitObject {
 
+	public isFrozen: boolean;
+	public coll: CollisionEvent;
+	public rcHitRadiusSqr: number = 0;
+	public vpVolObjs: IFireEvents[] = [];
+
 	private readonly id: number; // same as ball id
 	private readonly data: BallData;
 	private readonly state: BallState;
@@ -59,17 +64,12 @@ export class BallHit extends HitObject {
 	public readonly angularMomentum = new Vertex3D();
 	public angularVelocity = new Vertex3D();
 
-	public isFrozen: boolean;
 	private playfieldReflectionStrength: number;
 	private reflectionEnabled: boolean;
 	private forceReflection: boolean;
 	private visible: boolean;
 
-	public coll: CollisionEvent;
-	public rcHitRadiusSqr: number = 0;
 	private defaultZ: number = 25.0;
-
-	public vpVolObjs: IFireEvents[] = [];
 
 	/**
 	 * Creates a new ball hit.
@@ -136,72 +136,6 @@ export class BallHit extends HitObject {
 
 	public getType(): CollisionType {
 		return CollisionType.Flipper;
-	}
-
-	public collide(coll: CollisionEvent, player: Player): void {
-		const pball = coll.ball;
-
-		// make sure we process each ball/ball collision only once
-		// (but if we are frozen, there won't be a second collision event, so deal with it now!)
-		if ((player.swapBallCcollisionHandling && pball.id >= this.id || !player.swapBallCcollisionHandling && pball.id <= this.id) && !this.isFrozen) {
-			return;
-		}
-
-		// target ball to object ball delta velocity
-		const vrel = pball.hit.vel.clone().sub(this.vel);
-		const vNormal = coll.hitNormal!;
-		let dot = vrel.dot(vNormal);
-
-		// correct displacements, mostly from low velocity, alternative to true acceleration processing
-		if (dot >= -C_LOWNORMVEL) {                        // nearly receding ... make sure of conditions
-			if (dot > C_LOWNORMVEL) {                      // otherwise if clearly approaching .. process the collision
-				return;                                    // is this velocity clearly receding (i.e must > a minimum)
-			}
-//#ifdef C_EMBEDDED
-			if (coll.hitDistance < -C_EMBEDDED) {
-				dot = -C_EMBEDSHOT;                        // has ball become embedded???, give it a kick
-			} else {
-				return;
-			}
-//#endif
-		}
-
-		// fixme script
-		// send ball/ball collision event to script function
-		// if (dot < -0.25f) {   // only collisions with at least some small true impact velocity (no contacts)
-		// 	g_pplayer->m_ptable->InvokeBallBallCollisionCallback(this, pball, -dot);
-		// }
-
-//#ifdef C_DISP_GAIN
-		let eDist = -C_DISP_GAIN * coll.hitDistance;
-		if (eDist > 1.0e-4) {
-			if (eDist > C_DISP_LIMIT) {
-				eDist = C_DISP_LIMIT;		// crossing ramps, delta noise
-			}
-			if (!this.isFrozen) {	// if the hit ball is not frozen
-				eDist *= 0.5;
-			}
-			pball.state.pos.add(vNormal.clone().multiplyScalar(eDist)); // push along norm, back to free area
-			// use the norm, but is not correct, but cheaply handled
-		}
-
-		eDist = -C_DISP_GAIN * this.coll.hitDistance;	// noisy value .... needs investigation
-		if (!this.isFrozen && eDist > 1.0e-4) {
-			if (eDist > C_DISP_LIMIT) {
-				eDist = C_DISP_LIMIT;		// crossing ramps, delta noise
-			}
-			eDist *= 0.5;
-			this.state.pos.sub(vNormal.clone().multiplyScalar(eDist));       // pull along norm, back to free area
-		}
-//#endif
-
-		const myInvMass = this.isFrozen ? 0.0 : this.invMass; // frozen ball has infinite mass
-		const impulse = -(1.0 + 0.8) * dot / (myInvMass + pball.hit.invMass);    // resitution = 0.8
-
-		if (!this.isFrozen) {
-			this.vel.sub(vNormal.clone().multiplyScalar(impulse * myInvMass));
-		}
-		pball.hit.vel.add(vNormal.clone().multiplyScalar(impulse * pball.hit.invMass));
 	}
 
 	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {
@@ -294,6 +228,72 @@ export class BallHit extends HitObject {
 //#endif
 
 		return hitTime;
+	}
+
+	public collide(coll: CollisionEvent, player: Player): void {
+		const ball = coll.ball;
+
+		// make sure we process each ball/ball collision only once
+		// (but if we are frozen, there won't be a second collision event, so deal with it now!)
+		if ((player.swapBallCcollisionHandling && ball.id >= this.id || !player.swapBallCcollisionHandling && ball.id <= this.id) && !this.isFrozen) {
+			return;
+		}
+
+		// target ball to object ball delta velocity
+		const vRel = ball.hit.vel.clone().sub(this.vel);
+		const vNormal = coll.hitNormal!;
+		let dot = vRel.dot(vNormal);
+
+		// correct displacements, mostly from low velocity, alternative to true acceleration processing
+		if (dot >= -C_LOWNORMVEL) {                        // nearly receding ... make sure of conditions
+			if (dot > C_LOWNORMVEL) {                      // otherwise if clearly approaching .. process the collision
+				return;                                    // is this velocity clearly receding (i.e must > a minimum)
+			}
+//#ifdef C_EMBEDDED
+			if (coll.hitDistance < -C_EMBEDDED) {
+				dot = -C_EMBEDSHOT;                        // has ball become embedded???, give it a kick
+			} else {
+				return;
+			}
+//#endif
+		}
+
+		// fixme script
+		// send ball/ball collision event to script function
+		// if (dot < -0.25f) {   // only collisions with at least some small true impact velocity (no contacts)
+		// 	g_pplayer->m_ptable->InvokeBallBallCollisionCallback(this, pball, -dot);
+		// }
+
+//#ifdef C_DISP_GAIN
+		let eDist = -C_DISP_GAIN * coll.hitDistance;
+		if (eDist > 1.0e-4) {
+			if (eDist > C_DISP_LIMIT) {
+				eDist = C_DISP_LIMIT;		// crossing ramps, delta noise
+			}
+			if (!this.isFrozen) {	// if the hit ball is not frozen
+				eDist *= 0.5;
+			}
+			ball.state.pos.add(vNormal.clone().multiplyScalar(eDist)); // push along norm, back to free area
+			// use the norm, but is not correct, but cheaply handled
+		}
+
+		eDist = -C_DISP_GAIN * this.coll.hitDistance;	// noisy value .... needs investigation
+		if (!this.isFrozen && eDist > 1.0e-4) {
+			if (eDist > C_DISP_LIMIT) {
+				eDist = C_DISP_LIMIT;		// crossing ramps, delta noise
+			}
+			eDist *= 0.5;
+			this.state.pos.sub(vNormal.clone().multiplyScalar(eDist));       // pull along norm, back to free area
+		}
+//#endif
+
+		const myInvMass = this.isFrozen ? 0.0 : this.invMass; // frozen ball has infinite mass
+		const impulse = -(1.0 + 0.8) * dot / (myInvMass + ball.hit.invMass);    // resitution = 0.8
+
+		if (!this.isFrozen) {
+			this.vel.sub(vNormal.clone().multiplyScalar(impulse * myInvMass));
+		}
+		ball.hit.vel.add(vNormal.clone().multiplyScalar(impulse * ball.hit.invMass));
 	}
 
 	public collide3DWall(hitNormal: Vertex3D, elasticity: number, elasticityFalloff: number, friction: number, scatterAngle: number): void {

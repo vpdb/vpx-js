@@ -56,9 +56,9 @@ export class HitCircle extends HitObject {
 		// zlow & zhigh already set in ctor
 	}
 
-	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {
+	public hitTest(ball: Ball, dtime: number, coll: CollisionEvent): number {
 		//normal face, lateral, rigid
-		return this.hitTestBasicRadius(pball, dtime, coll, true, true, true);
+		return this.hitTestBasicRadius(ball, dtime, coll, true, true, true);
 	}
 
 	protected hitTestBasicRadius(ball: Ball, dTime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean): number {

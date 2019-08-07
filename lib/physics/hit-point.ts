@@ -36,21 +36,12 @@ export class HitPoint extends HitObject {
 		this.p = p;
 	}
 
-	public calcHitBBox(): void {
-		this.hitBBox = new FRect3D(this.p.x, this.p.x, this.p.y, this.p.y, this.p.z, this.p.z);
-	}
-
-	public collide(coll: CollisionEvent): void {
-		const dot = coll.hitNormal!.dot(coll.ball.hit.vel);
-		coll.ball.hit.collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
-
-		if (dot <= -this.threshold) {
-			this.fireHitEvent(coll.ball);
-		}
-	}
-
 	public getType(): CollisionType {
 		return CollisionType.Point;
+	}
+
+	public calcHitBBox(): void {
+		this.hitBBox = new FRect3D(this.p.x, this.p.x, this.p.y, this.p.y, this.p.z, this.p.z);
 	}
 
 	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: Player): number {
@@ -119,5 +110,14 @@ export class HitPoint extends HitObject {
 		//coll.m_hitRigid = true;
 
 		return hitTime;
+	}
+
+	public collide(coll: CollisionEvent): void {
+		const dot = coll.hitNormal!.dot(coll.ball.hit.vel);
+		coll.ball.hit.collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
+
+		if (dot <= -this.threshold) {
+			this.fireHitEvent(coll.ball);
+		}
 	}
 }

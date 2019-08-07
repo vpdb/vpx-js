@@ -54,6 +54,14 @@ export class PlungerHit extends HitObject {
 		this.mover = new PlungerMover(config, data, state, player, table.data!);
 	}
 
+	public getMoverObject(): PlungerMover {
+		return this.mover;
+	}
+
+	public getType(): CollisionType {
+		return CollisionType.Plunger;
+	}
+
 	public calcHitBBox(): void {
 		// Allow roundoff
 		this.hitBBox.left = this.mover.x - 0.1;
@@ -64,88 +72,10 @@ export class PlungerHit extends HitObject {
 		// zlow & zhigh gets set in constructor
 	}
 
-	public collide(coll: CollisionEvent, player: Player): void {
-		const pball = coll.ball;
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: Player): number {
 
-		let dot = (pball.hit.vel.x - coll.hitVel!.x) * coll.hitNormal!.x + (pball.hit.vel.y - coll.hitVel!.y) * coll.hitNormal!.y;
-
-		if (dot >= -C_LOWNORMVEL) {                        // nearly receding ... make sure of conditions
-			if (dot > C_LOWNORMVEL) {                      // otherwise if clearly approaching .. process the collision
-				return;                                    // is this velocity clearly receding (i.e must > a minimum)
-			}
-//#ifdef C_EMBEDDED
-			if (coll.hitDistance < -C_EMBEDDED) {
-				dot = -C_EMBEDSHOT;             // has ball become embedded???, give it a kick
-			} else {
-				return;
-			}
-//#endif
-		}
-		player.pactiveballBC = pball; // Ball control most recently collided with plunger
-
-//#ifdef C_DISP_GAIN
-		// correct displacements, mostly from low velocity blidness, an alternative to true acceleration processing
-		let hdist = -C_DISP_GAIN * coll.hitDistance;         // distance found in hit detection
-		if (hdist > 1.0e-4) {
-			if (hdist > C_DISP_LIMIT) {
-				hdist = C_DISP_LIMIT;
-			}                                         // crossing ramps, delta noise
-			pball.state.pos.add(coll.hitNormal!.clone().multiplyScalar(hdist));    // push along norm, back to free area (use the norm, but is not correct)
-		}
-//#endif
-
-		// figure the basic impulse
-		const impulse = dot * -1.45 / (1.0 + 1.0 / this.mover.mass);
-
-		// We hit the ball, so attenuate any plunger bounce we have queued up
-		// for a Fire event.  Real plungers bounce quite a bit when fired without
-		// hitting anything, but bounce much less when they hit something, since
-		// most of the momentum gets transfered out of the plunger and to the ball.
-		this.mover.fireBounce *= 0.6;
-
-		// Check for a downward collision with the tip.  This is the moving
-		// part of the plunger, so it has some special handling.
-		if (coll.hitVel!.y !== 0.0) {
-			// The tip hit the ball (or vice versa).
-			//
-			// Figure the reverse impulse to the plunger.  If the ball was moving
-			// and the plunger wasn't, a little of the ball's momentum should
-			// transfer to the plunger.  (Ideally this would just fall out of the
-			// momentum calculations organically, the way it works in real life,
-			// but our physics are pretty fake here.  So we add a bit to the
-			// fakeness here to make it at least look a little more realistic.)
-			//
-			// Figure the reverse impulse as the dot product times the ball's
-			// y velocity, multiplied by the ratio between the ball's collision
-			// mass and the plunger's nominal mass.  In practice this is *almost*
-			// satisfyingly realistic, but the bump seems a little too big.  So
-			// apply a fudge factor to make it look more real.  The fudge factor
-			// isn't entirely unreasonable physically - you could look at it as
-			// accounting for the spring tension and friction.
-			const reverseImpulseFudgeFactor = .22;
-			this.mover.reverseImpulse = pball.hit.vel.y * impulse
-				* (pball.data.mass / this.mover.mass)
-				* reverseImpulseFudgeFactor;
-		}
-
-		// update the ball speed for the impulse
-		pball.hit.vel.add(coll.hitNormal!.clone().multiplyScalar(impulse));
-		pball.hit.vel.multiplyScalar(0.999);           //friction all axiz     //!! TODO: fix this
-
-		const scatterVel = this.mover.scatterVelocity; // fixme * g_pplayer->m_ptable->m_globalDifficulty;// apply dificulty weighting
-
-		if (scatterVel > 0 && Math.abs(pball.hit.vel.y) > scatterVel) { //skip if low velocity
-			let scatter = Math.random() * 2 - 1;                                                   // -1.0f..1.0f
-			scatter *= (1.0 - scatter * scatter) * 2.59808 * scatterVel;     // shape quadratic distribution and scale
-			pball.hit.vel.y += scatter;
-		}
-	}
-
-	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent, player: Player): number {
-		//Ball * const pball = const_cast<Ball*>(pball_);   // HACK; needed below // evil cast to non-const, but not so expensive as constructor for full copy (and avoids screwing with the ball IDs)
-
-		let hittime = dtime; //start time
-		let fHit = false;
+		let hitTime = dTime; //start time
+		let isHit = false;
 
 		// If we got here, then the ball is close enough to the plunger
 		// to where we should animate the button's light.
@@ -153,37 +83,36 @@ export class PlungerHit extends HitObject {
 		player.lastPlungerHit = player.timeMsec;
 
 		// We are close enable the plunger light.
-		const hit = new CollisionEvent(pball);
-		let newtime: number;
+		const hit = new CollisionEvent(ball);
 
 		// Check for hits on the non-moving parts, like the side of back
 		// of the plunger.  These are just like hitting a wall.
 		// Check all and find the nearest collision.
 
-		newtime = this.mover.lineSegBase.hitTest(pball, dtime, hit);
-		if (newtime >= 0 && newtime <= hittime) {
-			fHit = true;
-			hittime = newtime;
-			coll = hit;
+		let newTime = this.mover.lineSegBase.hitTest(ball, dTime, hit);
+		if (newTime >= 0 && newTime <= hitTime) {
+			isHit = true;
+			hitTime = newTime;
+			coll.set(hit);
 			coll.hitVel!.x = 0;
 			coll.hitVel!.y = 0;
 		}
 
 		for (let i = 0; i < 2; i++) {
-			newtime = this.mover.lineSegSide[i].hitTest(pball, hittime, hit);
-			if (newtime >= 0 && newtime <= hittime) {
-				fHit = true;
-				hittime = newtime;
-				coll = hit;
+			newTime = this.mover.lineSegSide[i].hitTest(ball, hitTime, hit);
+			if (newTime >= 0 && newTime <= hitTime) {
+				isHit = true;
+				hitTime = newTime;
+				coll.set(hit);
 				coll.hitVel!.x = 0;
 				coll.hitVel!.y = 0;
 			}
 
-			newtime = this.mover.jointBase[i].hitTest(pball, hittime, hit);
-			if (newtime >= 0 && newtime <= hittime) {
-				fHit = true;
-				hittime = newtime;
-				coll = hit;
+			newTime = this.mover.jointBase[i].hitTest(ball, hitTime, hit);
+			if (newTime >= 0 && newTime <= hitTime) {
+				isHit = true;
+				hitTime = newTime;
+				coll.set(hit);
 				coll.hitVel!.x = 0;
 				coll.hitVel!.y = 0;
 			}
@@ -207,8 +136,8 @@ export class PlungerHit extends HitObject {
 		// messes with the ball IDs.  Before changing the speed value in the
 		// (nominally) const Ball instance, save the old value so that we can
 		// restore it when we're done.
-		const oldvely = pball.hit.vel.y;   // save the old velocity value
-		pball.hit.vel.y -= this.mover.speed;     // WARNING! EVIL OVERRIDE OF CONST INSTANCE POINTER!!!
+		const oldVelY = ball.hit.vel.y;   // save the old velocity value
+		ball.hit.vel.y -= this.mover.speed;     // WARNING! EVIL OVERRIDE OF CONST INSTANCE POINTER!!!
 
 		// Figure the impulse from hitting the moving end.
 		// Calculate this as the product of the plunger speed and the
@@ -235,36 +164,36 @@ export class PlungerHit extends HitObject {
 		// multiply the legacy calculation by 1.0/1.0 == 1.0.  (Set an
 		// arbitrary lower bound to prevent division by zero and/or crazy
 		// physics.)
-		const ballMass = pball.data.mass > 0.05 ? pball.data.mass : 0.05;
+		const ballMass = ball.data.mass > 0.05 ? ball.data.mass : 0.05;
 		const xferRatio = this.data.momentumXfer / ballMass;
-		const deltay = this.mover.speed * xferRatio;
+		const deltaY = this.mover.speed * xferRatio;
 
 		// check the moving bits
-		newtime = this.mover.lineSegEnd.hitTest(pball, hittime, hit);
-		if (newtime >= 0 && newtime <= hittime) {
-			fHit = true;
-			hittime = newtime;
-			coll = hit;
+		newTime = this.mover.lineSegEnd.hitTest(ball, hitTime, hit);
+		if (newTime >= 0 && newTime <= hitTime) {
+			isHit = true;
+			hitTime = newTime;
+			coll.set(hit);
 			coll.hitVel!.x = 0;
-			coll.hitVel!.y = deltay;
+			coll.hitVel!.y = deltaY;
 		}
 
 		for (let i = 0; i < 2; i++) {
-			newtime = this.mover.jointEnd[i].hitTest(pball, hittime, hit);
-			if (newtime >= 0 && newtime <= hittime) {
-				fHit = true;
-				hittime = newtime;
-				coll = hit;
+			newTime = this.mover.jointEnd[i].hitTest(ball, hitTime, hit);
+			if (newTime >= 0 && newTime <= hitTime) {
+				isHit = true;
+				hitTime = newTime;
+				coll.set(hit);
 				coll.hitVel!.x = 0;
-				coll.hitVel!.y = deltay;
+				coll.hitVel!.y = deltaY;
 			}
 		}
 
 		// restore the original ball velocity (WARNING! CONST POINTER OVERRIDE!)
-		pball.hit.vel.y = oldvely;
+		ball.hit.vel.y = oldVelY;
 
 		// check for a hit
-		if (fHit) {
+		if (isHit) {
 			// We hit the ball.  Set a travel limit to freeze the plunger at
 			// its current position for the next displacement update.  This
 			// is necessary in case we have a relatively heavy ball with a
@@ -300,13 +229,13 @@ export class PlungerHit extends HitObject {
 			// overlapping.  Make certain that we give the ball enough
 			// of an impulse to get it not to overlap.
 			if (coll.hitDistance <= 0.0
-				&& coll.hitVel!.y === deltay
-				&& Math.abs(deltay) < Math.abs(coll.hitDistance)) {
+				&& coll.hitVel!.y === deltaY
+				&& Math.abs(deltaY) < Math.abs(coll.hitDistance)) {
 				coll.hitVel!.y = -Math.abs(coll.hitDistance);
 			}
 
 			// return the collision time delta
-			return hittime;
+			return hitTime;
 
 		} else {
 			// no collision
@@ -314,11 +243,80 @@ export class PlungerHit extends HitObject {
 		}
 	}
 
-	public getMoverObject(): PlungerMover {
-		return this.mover;
-	}
+	public collide(coll: CollisionEvent, player: Player): void {
+		const ball = coll.ball;
 
-	public getType(): CollisionType {
-		return CollisionType.Plunger;
+		let dot = (ball.hit.vel.x - coll.hitVel!.x) * coll.hitNormal!.x + (ball.hit.vel.y - coll.hitVel!.y) * coll.hitNormal!.y;
+		if (dot >= -C_LOWNORMVEL) {                        // nearly receding ... make sure of conditions
+			if (dot > C_LOWNORMVEL) {                      // otherwise if clearly approaching .. process the collision
+				return;                                    // is this velocity clearly receding (i.e must > a minimum)
+			}
+//#ifdef C_EMBEDDED
+			if (coll.hitDistance < -C_EMBEDDED) {
+				dot = -C_EMBEDSHOT;                        // has ball become embedded? give it a kick
+			} else {
+				return;
+			}
+//#endif
+		}
+		player.pactiveballBC = ball;                       // Ball control most recently collided with plunger
+
+//#ifdef C_DISP_GAIN
+		// correct displacements, mostly from low velocity blidness, an alternative to true acceleration processing
+		let hDist = -C_DISP_GAIN * coll.hitDistance;       // distance found in hit detection
+		if (hDist > 1.0e-4) {
+			if (hDist > C_DISP_LIMIT) {
+				hDist = C_DISP_LIMIT;
+			}                                              // crossing ramps, delta noise
+			// push along norm, back to free area (use the norm, but is not correct)
+			ball.state.pos.add(coll.hitNormal!.clone().multiplyScalar(hDist));
+		}
+//#endif
+
+		// figure the basic impulse
+		const impulse = dot * -1.45 / (1.0 + 1.0 / this.mover.mass);
+
+		// We hit the ball, so attenuate any plunger bounce we have queued up
+		// for a Fire event.  Real plungers bounce quite a bit when fired without
+		// hitting anything, but bounce much less when they hit something, since
+		// most of the momentum gets transfered out of the plunger and to the ball.
+		this.mover.fireBounce *= 0.6;
+
+		// Check for a downward collision with the tip.  This is the moving
+		// part of the plunger, so it has some special handling.
+		if (coll.hitVel!.y !== 0.0) {
+			// The tip hit the ball (or vice versa).
+			//
+			// Figure the reverse impulse to the plunger.  If the ball was moving
+			// and the plunger wasn't, a little of the ball's momentum should
+			// transfer to the plunger.  (Ideally this would just fall out of the
+			// momentum calculations organically, the way it works in real life,
+			// but our physics are pretty fake here.  So we add a bit to the
+			// fakeness here to make it at least look a little more realistic.)
+			//
+			// Figure the reverse impulse as the dot product times the ball's
+			// y velocity, multiplied by the ratio between the ball's collision
+			// mass and the plunger's nominal mass.  In practice this is *almost*
+			// satisfyingly realistic, but the bump seems a little too big.  So
+			// apply a fudge factor to make it look more real.  The fudge factor
+			// isn't entirely unreasonable physically - you could look at it as
+			// accounting for the spring tension and friction.
+			const reverseImpulseFudgeFactor = .22;
+			this.mover.reverseImpulse = ball.hit.vel.y * impulse
+				* (ball.data.mass / this.mover.mass)
+				* reverseImpulseFudgeFactor;
+		}
+
+		// update the ball speed for the impulse
+		ball.hit.vel.add(coll.hitNormal!.clone().multiplyScalar(impulse));
+		ball.hit.vel.multiplyScalar(0.999);           //friction all axiz     //!! TODO: fix this
+
+		const scatterVel = this.mover.scatterVelocity; // fixme * g_pplayer->m_ptable->m_globalDifficulty;// apply dificulty weighting
+
+		if (scatterVel > 0 && Math.abs(ball.hit.vel.y) > scatterVel) {         // skip if low velocity
+			let scatter = Math.random() * 2 - 1;                               // -1.0f..1.0f
+			scatter *= (1.0 - scatter * scatter) * 2.59808 * scatterVel;       // shape quadratic distribution and scale
+			ball.hit.vel.y += scatter;
+		}
 	}
 }

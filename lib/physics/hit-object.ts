@@ -59,9 +59,9 @@ export abstract class HitObject {
 
 	public abstract calcHitBBox(): void;
 
-	public abstract collide(coll: CollisionEvent, player: Player): void;
+	public abstract hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: Player): number;
 
-	public abstract hitTest(pball: Ball, dtime: number, coll: CollisionEvent, player: Player): number;
+	public abstract collide(coll: CollisionEvent, player: Player): void;
 
 	public getMoverObject(): MoverObject | undefined {
 		return undefined;

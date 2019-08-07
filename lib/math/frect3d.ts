@@ -10,6 +10,10 @@ export class FRect3D {
 	public zlow: number = 0;
 	public zhigh: number = 0;
 
+	get width() { return Math.abs(this.left - this.right); }
+	get height() { return Math.abs(this.top - this.bottom); }
+	get depth() { return Math.abs(this.zlow - this.zhigh); }
+
 	constructor(left?: number, right?: number, top?: number, bottom?: number, zLow?: number, zHigh?: number) {
 		if (left !== undefined && right !== undefined && top !== undefined && bottom !== undefined  && zLow !== undefined  && zHigh !== undefined ) {
 			this.left = left;
