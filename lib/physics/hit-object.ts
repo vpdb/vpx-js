@@ -59,7 +59,7 @@ export abstract class HitObject {
 
 	public abstract calcHitBBox(): void;
 
-	public abstract hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: Player): number;
+	public abstract hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: Player): HitTestResult;
 
 	public abstract collide(coll: CollisionEvent, player: Player): void;
 
@@ -138,8 +138,14 @@ export abstract class HitObject {
 		//	return coll;
 		//}
 
-		const newColl = new CollisionEvent(ball);
-		const newTime = this.hitTest(ball, coll.hitTime, !player.recordContacts ? coll : newColl, player);
+		let newColl = new CollisionEvent(ball);
+		const hitResult = this.hitTest(ball, coll.hitTime, !player.recordContacts ? coll : newColl, player);
+		const newTime = hitResult.hitTime;
+		if (!player.recordContacts) {
+			coll = hitResult.coll;
+		} else {
+			newColl = hitResult.coll;
+		}
 		const validHit = newTime >= 0 && newTime <= coll.hitTime;
 
 		if (!player.recordContacts) {            // simply find first event
@@ -164,4 +170,9 @@ export abstract class HitObject {
 		}
 		return coll;
 	}
+}
+
+export interface HitTestResult {
+	hitTime: number;
+	coll: CollisionEvent;
 }

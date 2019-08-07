@@ -23,7 +23,7 @@ import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { C_CONTACTVEL, C_LOWNORMVEL, PHYS_TOUCH } from './constants';
-import { HitObject } from './hit-object';
+import { HitObject, HitTestResult } from './hit-object';
 
 export class HitTriangle extends HitObject {
 
@@ -60,14 +60,14 @@ export class HitTriangle extends HitObject {
 		this.hitBBox.zhigh = Math.max(this.rgv[0].z, Math.max(this.rgv[1].z, this.rgv[2].z));
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: Player): number {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: Player): HitTestResult {
 		if (!this.isEnabled) {
-			return -1.0;
+			return { hitTime: -1.0, coll };
 		}
 
 		const bnv = this.normal.dot(ball.hit.vel);         // speed in Normal-vector direction
 		if (bnv > C_CONTACTVEL) {                          // return if clearly ball is receding from object
-			return -1.0;
+			return { hitTime: -1.0, coll };
 		}
 
 		// Point on the ball that will hit the polygon, if it hits at all
@@ -76,7 +76,7 @@ export class HitTriangle extends HitObject {
 
 		if (bnd < -ball.data.radius) {
 			// (ball normal distance) excessive penetration of object skin ... no collision HACK
-			return -1.0;
+			return { hitTime: -1.0, coll };
 		}
 
 		let isContact = false;
@@ -98,11 +98,11 @@ export class HitTriangle extends HitObject {
 			hitTime = bnd / -bnv;                          // rate ok for safe divide
 
 		} else {
-			return -1.0;                                   // wait for touching
+			return { hitTime: -1.0, coll };                // wait for touching
 		}
 
 		if (!isFinite(hitTime) || hitTime < 0 || hitTime > dTime) {
-			return -1.0;                                   // time is outside this frame ... no collision
+			return { hitTime: -1.0, coll };                // time is outside this frame ... no collision
 		}
 
 		// advance hit point to contact
@@ -138,10 +138,10 @@ export class HitTriangle extends HitObject {
 				coll.isContact = true;
 				coll.hitOrgNormalVelocity = bnv;
 			}
-			return hitTime;
+			return { hitTime, coll };
 
 		} else {
-			return -1.0;
+			return { hitTime: -1.0, coll };
 		}
 	}
 
