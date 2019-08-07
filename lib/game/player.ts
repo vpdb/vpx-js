@@ -259,11 +259,11 @@ export class Player extends EventEmitter {
 
 					// swap order of dynamic and static obj checks randomly
 					if (Math.random() < 0.5) {
-						this.hitOcTreeDynamic.hitTestBall(ball, ball.getCollision(), this);  // dynamic objects
-						this.hitOcTree.hitTestBall(ball, ball.getCollision(), this);         // find the hit objects and hit times
+						ball.setCollision(this.hitOcTreeDynamic.hitTestBall(ball, ball.getCollision(), this));  // dynamic objects
+						ball.setCollision(this.hitOcTree.hitTestBall(ball, ball.getCollision(), this));         // find the hit objects and hit times
 					} else {
-						this.hitOcTree.hitTestBall(ball, ball.getCollision(), this);         // find the hit objects and hit times
-						this.hitOcTreeDynamic.hitTestBall(ball, ball.getCollision(), this);  // dynamic objects
+						ball.setCollision(this.hitOcTree.hitTestBall(ball, ball.getCollision(), this));         // find the hit objects and hit times
+						ball.setCollision(this.hitOcTreeDynamic.hitTestBall(ball, ball.getCollision(), this));  // dynamic objects
 					}
 
 					const htz = ball.getCollision().hitTime;                                 // this ball's hit time

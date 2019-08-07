@@ -47,7 +47,7 @@ export class HitKDNode {
 		this.items = 0;
 	}
 
-	public hitTestBall(pball: Ball, coll: CollisionEvent, player: Player): void {
+	public hitTestBall(pball: Ball, coll: CollisionEvent, player: Player): CollisionEvent {
 
 		const orgItems = this.items & 0x3FFFFFFF;
 		const axis = this.items >> 30;
@@ -55,7 +55,7 @@ export class HitKDNode {
 		for (let i = this.start; i < this.start + orgItems; i++) {
 			const pho = this.hitOct.getItemAt(i);
 			if (pball.hit !== pho && pho.hitBBox.intersectSphere(pball.state.pos, pball.hit.rcHitRadiusSqr)) {
-				pball.setCollision(pho.doHitTest(pball, coll, player));
+				coll = pho.doHitTest(pball, coll, player);
 			}
 		}
 
@@ -63,31 +63,32 @@ export class HitKDNode {
 			if (axis === 0) {
 				const vCenter = (this.rectBounds.left + this.rectBounds.right) * 0.5;
 				if (pball.hit.hitBBox.left <= vCenter) {
-					this.children[0].hitTestBall(pball, coll, player);
+					coll = this.children[0].hitTestBall(pball, coll, player);
 				}
 				if (pball.hit.hitBBox.right >= vCenter) {
-					this.children[1].hitTestBall(pball, coll, player);
+					coll = this.children[1].hitTestBall(pball, coll, player);
 				}
 
 			} else if (axis === 1) {
 				const vcenter = (this.rectBounds.top + this.rectBounds.bottom) * 0.5;
 				if (pball.hit.hitBBox.top <= vcenter) {
-					this.children[0].hitTestBall(pball, coll, player);
+					coll = this.children[0].hitTestBall(pball, coll, player);
 				}
 				if (pball.hit.hitBBox.bottom >= vcenter) {
-					this.children[1].hitTestBall(pball, coll, player);
+					coll = this.children[1].hitTestBall(pball, coll, player);
 				}
 
 			} else {
 				const vcenter = (this.rectBounds.zlow + this.rectBounds.zhigh) * 0.5;
 				if (pball.hit.hitBBox.zlow <= vcenter) {
-					this.children[0].hitTestBall(pball, coll, player);
+					coll = this.children[0].hitTestBall(pball, coll, player);
 				}
 				if (pball.hit.hitBBox.zhigh >= vcenter) {
-					this.children[1].hitTestBall(pball, coll, player);
+					coll = this.children[1].hitTestBall(pball, coll, player);
 				}
 			}
 		}
+		return coll;
 	}
 
 	public hitTestXRay(pball: Ball, pvhoHit: HitObject[], coll: CollisionEvent, player: Player): void {
