@@ -55,6 +55,10 @@ export class Hit3DPoly extends HitObject {
 		this.scatter = 0.;
 	}
 
+	public getType(): CollisionType {
+		return CollisionType.Poly;
+	}
+
 	public calcHitBBox(): void {
 		this.hitBBox.left = this.rgv[0].x;
 		this.hitBBox.right = this.rgv[0].x;
@@ -74,74 +78,70 @@ export class Hit3DPoly extends HitObject {
 	}
 
 	public collide(coll: CollisionEvent): void {
-		const pball = coll.ball;
-		const hitnormal = coll.hitNormal!;
+		const ball = coll.ball;
+		const hitNormal = coll.hitNormal!;
 
 		if (this.objType !== CollisionType.Trigger) {
-			const dot = -hitnormal.dot(pball.hit.vel);
-
-			pball.hit.collide3DWall(this.normal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
+			const dot = -hitNormal.dot(ball.hit.vel);
+			ball.hit.collide3DWall(this.normal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
 			if (this.obj && this.fe && dot >= this.threshold) {
 				if (this.objType === CollisionType.Primitive) {
 					this.obj.currentHitThreshold = dot;
-					this.fireHitEvent(pball);
+					this.fireHitEvent(ball);
 
-				} else if (this.objType === CollisionType.HitTarget /*&& ((HitTarget*)m_obj)->m_d.m_isDropped == false*/) { // fixme HitTarget.isDropped
-					// fixme
+				} else if (this.objType === CollisionType.HitTarget /*&& ((HitTarget*)m_obj)->m_d.m_isDropped == false*/) { // fixme hittarget
+					// fixme hittarget
 					// ((HitTarget*)m_obj)->m_hitEvent = true;
 					this.obj.currentHitThreshold = dot;
-					this.fireHitEvent(pball);
+					this.fireHitEvent(ball);
 				}
 			}
-		} else { // trigger:
 
-			if (pball.hit.vpVolObjs.length === 0) {
+		} else { // trigger
+			if (ball.hit.vpVolObjs.length === 0) {
 				return;
 			}
-
-			const i = pball.hit.vpVolObjs.indexOf(this.obj!); // if -1 then not in objects volume set (i.e not already hit)
-
+			const i = ball.hit.vpVolObjs.indexOf(this.obj!);                             // if -1 then not in objects volume set (i.e not already hit)
 			if (!coll.hitFlag === i < 0) { // Hit == NotAlreadyHit
-
-				pball.state.pos.add(pball.hit.vel.clone().multiplyScalar(STATICTIME));      //move ball slightly forward
-
+				ball.state.pos.add(ball.hit.vel.clone().multiplyScalar(STATICTIME));     // move ball slightly forward
 				if (i < 0) {
-					pball.hit.vpVolObjs.push(this.obj!);
-					// fixme ((Trigger*)m_obj)->FireGroupEvent(DISPID_HitEvents_Hit);
+					ball.hit.vpVolObjs.push(this.obj!);
+					// fixme event
+					// ((Trigger*)m_obj)->FireGroupEvent(DISPID_HitEvents_Hit);
+
 				} else {
-					pball.hit.vpVolObjs.splice(i, 1);
-					// fixme ((Trigger*)m_obj)->FireGroupEvent(DISPID_HitEvents_Unhit);
+					ball.hit.vpVolObjs.splice(i, 1);
+					// fixme event
+					// ((Trigger*)m_obj)->FireGroupEvent(DISPID_HitEvents_Unhit);
 				}
 			}
 		}
 	}
 
-	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): number {
 		if (!this.isEnabled) {
 			return -1.0;
 		}
 
-		const bnv = this.normal.dot(pball.hit.vel);  //speed in Normal-vector direction
+		const bnv = this.normal.dot(ball.hit.vel);                                       // speed in Normal-vector direction
 
-		if ((this.objType !== CollisionType.Trigger) && (bnv > C_LOWNORMVEL)) { // return if clearly ball is receding from object
+		if ((this.objType !== CollisionType.Trigger) && (bnv > C_LOWNORMVEL)) {          // return if clearly ball is receding from object
 			return -1.0;
 		}
 
 		// Point on the ball that will hit the polygon, if it hits at all
-		const hitPos = pball.state.pos.clone().sub(this.normal.clone().multiplyScalar(pball.data.radius)); // nearest point on ball ... projected radius along norm
-
-		const bnd = this.normal.dot(hitPos.clone().sub(this.rgv[0])); // distance from plane to ball
+		const hitPos = ball.state.pos.clone().sub(this.normal.clone().multiplyScalar(ball.data.radius)); // nearest point on ball ... projected radius along norm
+		const bnd = this.normal.dot(hitPos.clone().sub(this.rgv[0]));                    // distance from plane to ball
 
 		let bUnHit = bnv > C_LOWNORMVEL;
-		const inside = bnd <= 0;                // in ball inside object volume
-
+		const inside = bnd <= 0;                                                         // in ball inside object volume
 		const rigid = (this.objType !== CollisionType.Trigger);
-		let hittime: number;
+		let hitTime: number;
 
-		if (rigid) { //rigid polygon
-
-			if (bnd < -pball.data.radius) { // (ball normal distance) excessive penetration of object skin ... no collision HACK //!! *2 necessary?
+		if (rigid) {                                                                     // rigid polygon
+			if (bnd < -ball.data.radius) {
+				// (ball normal distance) excessive penetration of object skin ... no collision HACK //!! *2 necessary?
 				return -1.0;
 			}
 
@@ -149,48 +149,46 @@ export class Hit3DPoly extends HitObject {
 				if (inside || (Math.abs(bnv) > C_CONTACTVEL)                   // fast velocity, return zero time
 					//zero time for rigid fast bodies
 					|| (bnd <= (-PHYS_TOUCH))) {                               // slow moving but embedded
-					hittime = 0;
+					hitTime = 0;
 
 				} else {
-					hittime = bnd * (1.0 / (2.0 * PHYS_TOUCH)) + 0.5;          // don't compete for fast zero time events
+					hitTime = bnd * (1.0 / (2.0 * PHYS_TOUCH)) + 0.5;          // don't compete for fast zero time events
 				}
 
 			} else if (Math.abs(bnv) > C_LOWNORMVEL) {                         // not velocity low?
-				hittime = bnd / -bnv;                                          // rate ok for safe divide
+				hitTime = bnd / -bnv;                                          // rate ok for safe divide
 
 			} else {
 				return -1.0;                                                   // wait for touching
 			}
-
 		} else { // non-rigid polygon
 			if (bnv * bnd >= 0) {                                              // outside-receding || inside-approaching
-				if (!pball.hit.vpVolObjs.length                                // temporary ball
-					|| Math.abs(bnd) >= pball.data.radius * 0.5                // not too close ... nor too far away
-					|| inside !== pball.hit.vpVolObjs.indexOf(this.obj!) < 0) {// ...ball outside and hit set or ball inside and no hit set
+				if (!ball.hit.vpVolObjs.length                                 // temporary ball
+					|| Math.abs(bnd) >= ball.data.radius * 0.5                 // not too close ... nor too far away
+					|| inside !== ball.hit.vpVolObjs.indexOf(this.obj!) < 0) { // ...ball outside and hit set or ball inside and no hit set
 					return -1.0;
 				}
-
-				hittime = 0;
+				hitTime = 0;
 				bUnHit = !inside;                                              // ball on outside is UnHit, otherwise it's a Hit
+
 			} else {
-				hittime = bnd / (-bnv);
+				hitTime = bnd / (-bnv);
 			}
 		}
 
-		if (!isFinite(hittime) || hittime < 0 || hittime > dtime) {            // time is outside this frame ... no collision
+		if (!isFinite(hitTime) || hitTime < 0 || hitTime > dTime) {            // time is outside this frame ... no collision
 			return -1.0;
 		}
 
-		hitPos.add(pball.hit.vel.clone().multiplyScalar(hittime));             // advance hit point to contact
+		hitPos.add(ball.hit.vel.clone().multiplyScalar(hitTime));              // advance hit point to contact
 
 		// Do a point in poly test, using the xy plane, to see if the hit point is inside the polygon
 		// this need to be changed to a point in polygon on 3D plane
-
 		let x2 = this.rgv[0].x;
 		let y2 = this.rgv[0].y;
 		let hx2 = (hitPos.x >= x2);
 		let hy2 = (hitPos.y <= y2);
-		let crosscount = 0;	// count of lines which the hit point is to the left of
+		let crossCount = 0;                                                    // count of lines which the hit point is to the left of
 		for (let i = 0; i < this.rgv.length; i++) {
 			const x1 = x2;
 			const y1 = y2;
@@ -203,45 +201,40 @@ export class Hit3DPoly extends HitObject {
 			hx2 = (hitPos.x >= x2);
 			hy2 = (hitPos.y <= y2);
 
-			if ((y1 === y2) || (hy1 && hy2) || (!hy1 && !hy2) || (hx1 && hx2)) { // Hit point is on the right of the line
+			if ((y1 === y2) || (hy1 && hy2) || (!hy1 && !hy2) || (hx1 && hx2)) {         // Hit point is on the right of the line
 				continue;
 			}
 
 			if (!hx1 && !hx2) {
-				crosscount ^= 1;
+				crossCount ^= 1;
 				continue;
 			}
 
 			if (x2 === x1) {
 				if (!hx2) {
-					crosscount ^= 1;
+					crossCount ^= 1;
 				}
 				continue;
 			}
 
 			// Now the hard part - the hit point is in the line bounding box
 			if (x2 - (y2 - hitPos.y) * (x1 - x2) / (y1 - y2) > hitPos.x) {
-				crosscount ^= 1;
+				crossCount ^= 1;
 			}
 		}
 
-		if (crosscount & 1) {
+		if (crossCount & 1) {
 			coll.hitNormal = this.normal;
 
-			if (!rigid) {                // non rigid body collision? return direction
-				coll.hitFlag = bUnHit; // UnHit signal	is receding from outside target
+			if (!rigid) {                                                      // non rigid body collision? return direction
+				coll.hitFlag = bUnHit;                                         // UnHit signal is receding from outside target
 			}
 
-			coll.hitDistance = bnd;   // 3dhit actual contact distance ...
-			//coll.m_hitRigid = rigid;  // collision type
+			coll.hitDistance = bnd;                                            // 3dhit actual contact distance ...
+			//coll.m_hitRigid = rigid;                                         // collision type
 
-			return hittime;
+			return hitTime;
 		}
 		return -1.0;
 	}
-
-	public getType(): CollisionType {
-		return CollisionType.Poly;
-	}
-
 }

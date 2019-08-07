@@ -28,8 +28,8 @@ import { HitLineZ } from './hit-line-z';
 export class HitLine3D extends HitLineZ {
 
 	private readonly matrix: Matrix2D = new Matrix2D();
-	private readonly zlow: number = 0;
-	private readonly zhigh: number = 0;
+	private readonly zLow: number = 0;
+	private readonly zHigh: number = 0;
 
 	constructor(v1: Vertex3D, v2: Vertex3D) {
 		super(new Vertex2D()); // correct xy is set later below
@@ -37,31 +37,26 @@ export class HitLine3D extends HitLineZ {
 		vLine.normalize();
 
 		// Axis of rotation to make 3D cylinder a cylinder along the z-axis
-		const transaxis = new Vertex3D(
-			vLine.y,
-			-vLine.x,
-			0,
-		);
-
-		const l = transaxis.lengthSq();
+		const transAxis = new Vertex3D(vLine.y, -vLine.x, 0);
+		const l = transAxis.lengthSq();
 		if (l <= 1e-6) {     // line already points in z axis?
-			transaxis.set(1, 0, 0);            // choose arbitrary rotation vector
+			transAxis.set(1, 0, 0);            // choose arbitrary rotation vector
 		} else {
-			transaxis.divideScalar(Math.sqrt(l));
+			transAxis.divideScalar(Math.sqrt(l));
 		}
 
 		// Angle to rotate the line into the z-axis
 		const dot = vLine.z; //vLine.Dot(&vup);
 
-		this.matrix.rotationAroundAxis(transaxis, -Math.sqrt(1 - dot * dot), dot);
+		this.matrix.rotationAroundAxis(transAxis, -Math.sqrt(1 - dot * dot), dot);
 
-		const vtrans1 = v1.clone().applyMatrix2D(this.matrix);
-		const vtrans2z = v2.clone().applyMatrix2D(this.matrix).z;
+		const vTrans1 = v1.clone().applyMatrix2D(this.matrix);
+		const vTrans2z = v2.clone().applyMatrix2D(this.matrix).z;
 
 		// set up HitLineZ parameters
-		this.xy = new Vertex2D(vtrans1.x, vtrans1.y);
-		this.zlow = Math.min(vtrans1.z, vtrans2z);
-		this.zhigh = Math.max(vtrans1.z, vtrans2z);
+		this.xy = new Vertex2D(vTrans1.x, vTrans1.y);
+		this.zLow = Math.min(vTrans1.z, vTrans2z);
+		this.zHigh = Math.max(vTrans1.z, vTrans2z);
 
 		this.hitBBox.left = Math.min(v1.x, v2.x);
 		this.hitBBox.right = Math.max(v1.x, v2.x);
@@ -75,56 +70,52 @@ export class HitLine3D extends HitLineZ {
 		// already one in constructor
 	}
 
-	public collide(coll: CollisionEvent): void {
-		const pball = coll.ball;
-		const hitnormal = coll.hitNormal!;
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): number {
+		if (!this.isEnabled) {
+			return -1.0;
+		}
+		// transform ball to cylinder coordinate system
+		const oldPos = ball.state.pos.clone();
+		const oldVel = ball.hit.vel.clone();
+		ball.state.pos.applyMatrix2D(this.matrix);
+		ball.state.pos.applyMatrix2D(this.matrix);
 
-		const dot = -hitnormal.dot(pball.hit.vel);
-		pball.hit.collide3DWall(hitnormal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
+		// and update z bounds of LineZ with transformed coordinates
+		const oldZ = new Vertex2D(this.hitBBox.zlow, this.hitBBox.zhigh);
+		this.hitBBox.zlow = this.zLow;   // HACK; needed below // evil cast to non-const, should actually change the stupid HitLineZ to have explicit z coordinates!
+		this.hitBBox.zhigh = this.zHigh; // dto.
+
+		const hitTime = super.hitTest(ball, dTime, coll);
+
+		ball.state.pos.set(oldPos.x, oldPos.y, oldPos.z); // see above
+		ball.hit.vel.set(oldVel.x, oldVel.y, oldVel.z);
+		this.hitBBox.zlow = oldZ.x;   // HACK
+		this.hitBBox.zhigh = oldZ.y;  // dto.
+
+		if (hitTime >= 0) {      // transform hit normal back to world coordinate system
+			coll.hitNormal = this.matrix.multiplyVectorT(coll.hitNormal!);
+		}
+		return hitTime;
+	}
+
+	public collide(coll: CollisionEvent): void {
+		const ball = coll.ball;
+		const hitNormal = coll.hitNormal!;
+
+		const dot = -hitNormal.dot(ball.hit.vel);
+		ball.hit.collide3DWall(hitNormal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
 		if (this.obj && this.fe && dot >= this.threshold) {
 			if (this.objType === CollisionType.Primitive) {
 				this.obj.currentHitThreshold = dot;
-				// FIXME event
-				//FireHitEvent(pball);
+				this.fireHitEvent(ball);
+
 			} else if (this.objType === CollisionType.HitTarget /*&& ((HitTarget*)m_obj)->m_d.m_isDropped == false*/) { // FIXME hittarget
 				// FIXME hittarget
 				//((HitTarget*)m_obj)->m_hitEvent = true;
 				this.obj.currentHitThreshold = dot;
-				// FIXME event
-				//FireHitEvent(pball);
+				this.fireHitEvent(ball);
 			}
 		}
 	}
-
-	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {
-		if (!this.isEnabled) {
-			return -1.0;
-		}
-
-		// transform ball to cylinder coordinate system
-		const oldPos = pball.state.pos.clone();
-		const oldVel = pball.hit.vel.clone();
-		pball.state.pos.applyMatrix2D(this.matrix);
-		pball.state.pos.applyMatrix2D(this.matrix);
-
-		// and update z bounds of LineZ with transformed coordinates
-		const oldz = new Vertex2D(this.hitBBox.zlow, this.hitBBox.zhigh);
-		this.hitBBox.zlow = this.zlow;   // HACK; needed below // evil cast to non-const, should actually change the stupid HitLineZ to have explicit z coordinates!
-		this.hitBBox.zhigh = this.zhigh; // dto.
-
-		const hittime = super.hitTest(pball, dtime, coll);
-
-		pball.state.pos.set(oldPos.x, oldPos.y, oldPos.z); // see above
-		pball.hit.vel.set(oldVel.x, oldVel.y, oldVel.z);
-		this.hitBBox.zlow = oldz.x;   // HACK
-		this.hitBBox.zhigh = oldz.y;  // dto.
-
-		if (hittime >= 0) {      // transform hit normal back to world coordinate system
-			coll.hitNormal = this.matrix.multiplyVectorT(coll.hitNormal!);
-		}
-
-		return hittime;
-	}
-
 }

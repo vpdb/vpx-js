@@ -47,94 +47,94 @@ export class HitKDNode {
 		this.items = 0;
 	}
 
-	public hitTestBall(pball: Ball, coll: CollisionEvent, player: Player): CollisionEvent {
+	public hitTestBall(ball: Ball, coll: CollisionEvent, player: Player): CollisionEvent {
 
 		const orgItems = this.items & 0x3FFFFFFF;
 		const axis = this.items >> 30;
 
 		for (let i = this.start; i < this.start + orgItems; i++) {
 			const pho = this.hitOct.getItemAt(i);
-			if (pball.hit !== pho && pho.hitBBox.intersectSphere(pball.state.pos, pball.hit.rcHitRadiusSqr)) {
-				coll = pho.doHitTest(pball, coll, player);
+			if (ball.hit !== pho && pho.hitBBox.intersectSphere(ball.state.pos, ball.hit.rcHitRadiusSqr)) {
+				coll = pho.doHitTest(ball, coll, player);
 			}
 		}
 
 		if (this.children && this.children.length) { // not a leaf
 			if (axis === 0) {
 				const vCenter = (this.rectBounds.left + this.rectBounds.right) * 0.5;
-				if (pball.hit.hitBBox.left <= vCenter) {
-					coll = this.children[0].hitTestBall(pball, coll, player);
+				if (ball.hit.hitBBox.left <= vCenter) {
+					coll = this.children[0].hitTestBall(ball, coll, player);
 				}
-				if (pball.hit.hitBBox.right >= vCenter) {
-					coll = this.children[1].hitTestBall(pball, coll, player);
+				if (ball.hit.hitBBox.right >= vCenter) {
+					coll = this.children[1].hitTestBall(ball, coll, player);
 				}
 
 			} else if (axis === 1) {
-				const vcenter = (this.rectBounds.top + this.rectBounds.bottom) * 0.5;
-				if (pball.hit.hitBBox.top <= vcenter) {
-					coll = this.children[0].hitTestBall(pball, coll, player);
+				const vCenter = (this.rectBounds.top + this.rectBounds.bottom) * 0.5;
+				if (ball.hit.hitBBox.top <= vCenter) {
+					coll = this.children[0].hitTestBall(ball, coll, player);
 				}
-				if (pball.hit.hitBBox.bottom >= vcenter) {
-					coll = this.children[1].hitTestBall(pball, coll, player);
+				if (ball.hit.hitBBox.bottom >= vCenter) {
+					coll = this.children[1].hitTestBall(ball, coll, player);
 				}
 
 			} else {
-				const vcenter = (this.rectBounds.zlow + this.rectBounds.zhigh) * 0.5;
-				if (pball.hit.hitBBox.zlow <= vcenter) {
-					coll = this.children[0].hitTestBall(pball, coll, player);
+				const vCenter = (this.rectBounds.zlow + this.rectBounds.zhigh) * 0.5;
+				if (ball.hit.hitBBox.zlow <= vCenter) {
+					coll = this.children[0].hitTestBall(ball, coll, player);
 				}
-				if (pball.hit.hitBBox.zhigh >= vcenter) {
-					coll = this.children[1].hitTestBall(pball, coll, player);
+				if (ball.hit.hitBBox.zhigh >= vCenter) {
+					coll = this.children[1].hitTestBall(ball, coll, player);
 				}
 			}
 		}
 		return coll;
 	}
 
-	public hitTestXRay(pball: Ball, pvhoHit: HitObject[], coll: CollisionEvent, player: Player): void {
-		const orgItems = this.items & 0x3FFFFFFF;
-		const axis = this.items >> 30;
-
-		for (let i = this.start; i < this.start + orgItems; i++) {
-			const pho = this.hitOct.getItemAt(i);
-			if ((pball.hit !== pho) && pho.hitBBox.intersectSphere(pball.state.pos, pball.hit.rcHitRadiusSqr)) {
-				const newTime = pho.hitTest(pball, coll.hitTime, coll, player);
-				if (newTime >= 0) {
-					pvhoHit.push(pho);
-				}
-			}
-		}
-
-		if (this.children && this.children.length) {// not a leaf
-			if (axis === 0) {
-				const vCenter = (this.rectBounds.left + this.rectBounds.right) * 0.5;
-				if (pball.hit.hitBBox.left <= vCenter) {
-					this.children[0].hitTestXRay(pball, pvhoHit, coll, player);
-				}
-				if (pball.hit.hitBBox.right >= vCenter) {
-					this.children[1].hitTestXRay(pball, pvhoHit, coll, player);
-				}
-
-			} else if (axis === 1) {
-				const vCenter = (this.rectBounds.top + this.rectBounds.bottom) * 0.5;
-				if (pball.hit.hitBBox.top <= vCenter) {
-					this.children[0].hitTestXRay(pball, pvhoHit, coll, player);
-				}
-				if (pball.hit.hitBBox.bottom >= vCenter) {
-					this.children[1].hitTestXRay(pball, pvhoHit, coll, player);
-				}
-
-			} else {
-				const vCenter = (this.rectBounds.zlow + this.rectBounds.zhigh) * 0.5;
-				if (pball.hit.hitBBox.zlow <= vCenter) {
-					this.children[0].hitTestXRay(pball, pvhoHit, coll, player);
-				}
-				if (pball.hit.hitBBox.zhigh >= vCenter) {
-					this.children[1].hitTestXRay(pball, pvhoHit, coll, player);
-				}
-			}
-		}
-	}
+	// public hitTestXRay(ball: Ball, vhoHit: HitObject[], coll: CollisionEvent, player: Player): void {
+	// 	const orgItems = this.items & 0x3FFFFFFF;
+	// 	const axis = this.items >> 30;
+	//
+	// 	for (let i = this.start; i < this.start + orgItems; i++) {
+	// 		const pho = this.hitOct.getItemAt(i);
+	// 		if ((ball.hit !== pho) && pho.hitBBox.intersectSphere(ball.state.pos, ball.hit.rcHitRadiusSqr)) {
+	// 			const newTime = pho.hitTest(ball, coll.hitTime, coll, player);
+	// 			if (newTime >= 0) {
+	// 				vhoHit.push(pho);
+	// 			}
+	// 		}
+	// 	}
+	//
+	// 	if (this.children && this.children.length) {// not a leaf
+	// 		if (axis === 0) {
+	// 			const vCenter = (this.rectBounds.left + this.rectBounds.right) * 0.5;
+	// 			if (ball.hit.hitBBox.left <= vCenter) {
+	// 				this.children[0].hitTestXRay(ball, vhoHit, coll, player);
+	// 			}
+	// 			if (ball.hit.hitBBox.right >= vCenter) {
+	// 				this.children[1].hitTestXRay(ball, vhoHit, coll, player);
+	// 			}
+	//
+	// 		} else if (axis === 1) {
+	// 			const vCenter = (this.rectBounds.top + this.rectBounds.bottom) * 0.5;
+	// 			if (ball.hit.hitBBox.top <= vCenter) {
+	// 				this.children[0].hitTestXRay(ball, vhoHit, coll, player);
+	// 			}
+	// 			if (ball.hit.hitBBox.bottom >= vCenter) {
+	// 				this.children[1].hitTestXRay(ball, vhoHit, coll, player);
+	// 			}
+	//
+	// 		} else {
+	// 			const vCenter = (this.rectBounds.zlow + this.rectBounds.zhigh) * 0.5;
+	// 			if (ball.hit.hitBBox.zlow <= vCenter) {
+	// 				this.children[0].hitTestXRay(ball, vhoHit, coll, player);
+	// 			}
+	// 			if (ball.hit.hitBBox.zhigh >= vCenter) {
+	// 				this.children[1].hitTestXRay(ball, vhoHit, coll, player);
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	public createNextLevel(level: number, levelEmpty: number): void {
 		const orgItems = (this.items & 0x3FFFFFFF);
@@ -144,27 +144,27 @@ export class HitKDNode {
 			return;
 		}
 
-		const vdiag = new Vertex3D(
+		const vDiag = new Vertex3D(
 			this.rectBounds.right - this.rectBounds.left,
 			this.rectBounds.bottom - this.rectBounds.top,
 			this.rectBounds.zhigh - this.rectBounds.zlow,
 		);
 
 		let axis: number;
-		if ((vdiag.x > vdiag.y) && (vdiag.x > vdiag.z)) {
-			if (vdiag.x < 0.0001) { //!! magic
+		if (vDiag.x > vDiag.y && vDiag.x > vDiag.z) {
+			if (vDiag.x < 0.0001) { //!! magic
 				return;
 			}
 			axis = 0;
 
-		} else if (vdiag.y > vdiag.z) {
-			if (vdiag.y < 0.0001) { //!!
+		} else if (vDiag.y > vDiag.z) {
+			if (vDiag.y < 0.0001) { //!!
 				return;
 			}
 			axis = 1;
 
 		} else {
-			if (vdiag.z < 0.0001) { //!!
+			if (vDiag.z < 0.0001) { //!!
 				return;
 			}
 			axis = 2;
@@ -181,22 +181,22 @@ export class HitKDNode {
 		this.children[0].rectBounds = this.rectBounds;
 		this.children[1].rectBounds = this.rectBounds;
 
-		const vcenter = new Vertex3D(
+		const vCenter = new Vertex3D(
 			(this.rectBounds.left + this.rectBounds.right) * 0.5,
 			(this.rectBounds.top + this.rectBounds.bottom) * 0.5,
 			(this.rectBounds.zlow + this.rectBounds.zhigh) * 0.5,
 		);
 		if (axis === 0) {
-			this.children[0].rectBounds.right = vcenter.x;
-			this.children[1].rectBounds.left = vcenter.x;
+			this.children[0].rectBounds.right = vCenter.x;
+			this.children[1].rectBounds.left = vCenter.x;
 
 		} else if (axis === 1) {
-			this.children[0].rectBounds.bottom = vcenter.y;
-			this.children[1].rectBounds.top = vcenter.y;
+			this.children[0].rectBounds.bottom = vCenter.y;
+			this.children[1].rectBounds.top = vCenter.y;
 
 		} else {
-			this.children[0].rectBounds.zhigh = vcenter.z;
-			this.children[1].rectBounds.zlow = vcenter.z;
+			this.children[0].rectBounds.zhigh = vCenter.z;
+			this.children[1].rectBounds.zlow = vCenter.z;
 		}
 
 		this.children[0].hitOct = this.hitOct; //!! meh
@@ -211,10 +211,10 @@ export class HitKDNode {
 			for (let i = this.start; i < this.start + orgItems; ++i) {
 				const pho = this.hitOct.getItemAt(i);
 
-				if (pho.hitBBox.right < vcenter.x) {
+				if (pho.hitBBox.right < vCenter.x) {
 					this.children[0].items++;
 
-				} else if (pho.hitBBox.left > vcenter.x) {
+				} else if (pho.hitBBox.left > vCenter.x) {
 					this.children[1].items++;
 				}
 			}
@@ -223,10 +223,10 @@ export class HitKDNode {
 			for (let i = this.start; i < this.start + orgItems; ++i) {
 				const pho = this.hitOct.getItemAt(i);
 
-				if (pho.hitBBox.bottom < vcenter.y) {
+				if (pho.hitBBox.bottom < vCenter.y) {
 					this.children[0].items++;
 
-				} else if (pho.hitBBox.top > vcenter.y) {
+				} else if (pho.hitBBox.top > vCenter.y) {
 					this.children[1].items++;
 				}
 			}
@@ -235,10 +235,10 @@ export class HitKDNode {
 			for (let i = this.start; i < this.start + orgItems; ++i) {
 				const pho = this.hitOct.getItemAt(i);
 
-				if (pho.hitBBox.zhigh < vcenter.z) {
+				if (pho.hitBBox.zhigh < vCenter.z) {
 					this.children[0].items++;
 
-				} else if (pho.hitBBox.zlow > vcenter.z) {
+				} else if (pho.hitBBox.zlow > vCenter.z) {
 					this.children[1].items++;
 				}
 			}
@@ -281,9 +281,9 @@ export class HitKDNode {
 			for (let i = this.start; i < this.start + orgItems; ++i) {
 				const pho = this.hitOct.getItemAt(i);
 
-				if (pho.hitBBox.right < vcenter.x) {
+				if (pho.hitBBox.right < vCenter.x) {
 					this.hitOct.tmp[this.children[0].start + (this.children[0].items++)] = this.hitOct.orgIdx[i];
-				} else if (pho.hitBBox.left > vcenter.x) {
+				} else if (pho.hitBBox.left > vCenter.x) {
 					this.hitOct.tmp[this.children[1].start + (this.children[1].items++)] = this.hitOct.orgIdx[i];
 				} else {
 					this.hitOct.orgIdx[this.start + (items++)] = this.hitOct.orgIdx[i];
@@ -293,9 +293,9 @@ export class HitKDNode {
 			for (let i = this.start; i < this.start + orgItems; ++i) {
 				const pho = this.hitOct.getItemAt(i);
 
-				if (pho.hitBBox.bottom < vcenter.y) {
+				if (pho.hitBBox.bottom < vCenter.y) {
 					this.hitOct.tmp[this.children[0].start + (this.children[0].items++)] = this.hitOct.orgIdx[i];
-				} else if (pho.hitBBox.top > vcenter.y) {
+				} else if (pho.hitBBox.top > vCenter.y) {
 					this.hitOct.tmp[this.children[1].start + (this.children[1].items++)] = this.hitOct.orgIdx[i];
 				} else {
 					this.hitOct.orgIdx[this.start + (items++)] = this.hitOct.orgIdx[i];
@@ -306,9 +306,9 @@ export class HitKDNode {
 			for (let i = this.start; i < this.start + orgItems; ++i) {
 				const pho = this.hitOct.getItemAt(i);
 
-				if (pho.hitBBox.zhigh < vcenter.z) {
+				if (pho.hitBBox.zhigh < vCenter.z) {
 					this.hitOct.tmp[this.children[0].start + (this.children[0].items++)] = this.hitOct.orgIdx[i];
-				} else if (pho.hitBBox.zlow > vcenter.z) {
+				} else if (pho.hitBBox.zlow > vCenter.z) {
 					this.hitOct.tmp[this.children[1].start + (this.children[1].items++)] = this.hitOct.orgIdx[i];
 				} else {
 					this.hitOct.orgIdx[this.start + (items++)] = this.hitOct.orgIdx[i];

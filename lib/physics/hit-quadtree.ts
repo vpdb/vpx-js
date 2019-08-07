@@ -49,74 +49,74 @@ export class HitQuadtree {
 		this.createNextLevel(bounds, 0, 0);
 	}
 
-	public hitTestBall(pball: Ball, coll: CollisionEvent, player: Player): CollisionEvent {
+	public hitTestBall(ball: Ball, coll: CollisionEvent, player: Player): CollisionEvent {
 		for (const vho of this.vho) {
-			if (pball.hit !== vho                                              // ball can not hit itself
-				&& vho.hitBBox.intersectRect(pball.hit.hitBBox)
-				&& vho.hitBBox.intersectSphere(pball.state.pos, pball.hit.rcHitRadiusSqr)) {
+			if (ball.hit !== vho                                              // ball can not hit itself
+				&& vho.hitBBox.intersectRect(ball.hit.hitBBox)
+				&& vho.hitBBox.intersectSphere(ball.state.pos, ball.hit.rcHitRadiusSqr)) {
 
-				coll = vho.doHitTest(pball, coll, player);
+				coll = vho.doHitTest(ball, coll, player);
 			}
 		}
 
 		if (!this.isLeaf) {
-			const fLeft = pball.hit.hitBBox.left <= this.vCenter.x;
-			const fRight = pball.hit.hitBBox.right >= this.vCenter.x;
+			const fLeft = ball.hit.hitBBox.left <= this.vCenter.x;
+			const fRight = ball.hit.hitBBox.right >= this.vCenter.x;
 
-			if (pball.hit.hitBBox.top <= this.vCenter.y) { // Top
+			if (ball.hit.hitBBox.top <= this.vCenter.y) { // Top
 				if (fLeft) {
-					coll = this.children[0].hitTestBall(pball, coll, player);
+					coll = this.children[0].hitTestBall(ball, coll, player);
 				}
 				if (fRight) {
-					coll = this.children[1].hitTestBall(pball, coll, player);
+					coll = this.children[1].hitTestBall(ball, coll, player);
 				}
 			}
-			if (pball.hit.hitBBox.bottom >= this.vCenter.y) { // Bottom
+			if (ball.hit.hitBBox.bottom >= this.vCenter.y) { // Bottom
 				if (fLeft) {
-					coll = this.children[2].hitTestBall(pball, coll, player);
+					coll = this.children[2].hitTestBall(ball, coll, player);
 				}
 				if (fRight) {
-					coll = this.children[3].hitTestBall(pball, coll, player);
+					coll = this.children[3].hitTestBall(ball, coll, player);
 				}
 			}
 		}
 		return coll;
 	}
 
-	public hitTestXRay(pball: Ball, pvhoHit: HitObject[], coll: CollisionEvent, player: Player): void {
-		for (const pho of this.vho) {
-			if (pball.hit !== pho
-				&& pball.hit.hitBBox.intersectRect(pho.hitBBox)
-				&& pho.hitBBox.intersectSphere(pball.state.pos, pball.hit.rcHitRadiusSqr)) {
-				const newTime = pho.hitTest(pball, coll.hitTime, coll, player);
-				if (newTime >= 0) {
-					pvhoHit.push(pho);
-				}
-			}
-		}
-
-		if (!this.isLeaf) {
-			const fLeft = (pball.hit.hitBBox.left <= this.vCenter.x);
-			const fRight = (pball.hit.hitBBox.right >= this.vCenter.x);
-
-			if (pball.hit.hitBBox.top <= this.vCenter.y) { // Top
-				if (fLeft) {
-					this.children[0].hitTestXRay(pball, pvhoHit, coll, player);
-				}
-				if (fRight) {
-					this.children[1].hitTestXRay(pball, pvhoHit, coll, player);
-				}
-			}
-			if (pball.hit.hitBBox.bottom >= this.vCenter.y) { // Bottom
-				if (fLeft) {
-					this.children[2].hitTestXRay(pball, pvhoHit, coll, player);
-				}
-				if (fRight) {
-					this.children[3].hitTestXRay(pball, pvhoHit, coll, player);
-				}
-			}
-		}
-	}
+	// public hitTestXRay(ball: Ball, pvhoHit: HitObject[], coll: CollisionEvent, player: Player): void {
+	// 	for (const pho of this.vho) {
+	// 		if (ball.hit !== pho
+	// 			&& ball.hit.hitBBox.intersectRect(pho.hitBBox)
+	// 			&& pho.hitBBox.intersectSphere(ball.state.pos, ball.hit.rcHitRadiusSqr)) {
+	// 			const newTime = pho.hitTest(ball, coll.hitTime, coll, player);
+	// 			if (newTime >= 0) {
+	// 				pvhoHit.push(pho);
+	// 			}
+	// 		}
+	// 	}
+	//
+	// 	if (!this.isLeaf) {
+	// 		const fLeft = (ball.hit.hitBBox.left <= this.vCenter.x);
+	// 		const fRight = (ball.hit.hitBBox.right >= this.vCenter.x);
+	//
+	// 		if (ball.hit.hitBBox.top <= this.vCenter.y) { // Top
+	// 			if (fLeft) {
+	// 				this.children[0].hitTestXRay(ball, pvhoHit, coll, player);
+	// 			}
+	// 			if (fRight) {
+	// 				this.children[1].hitTestXRay(ball, pvhoHit, coll, player);
+	// 			}
+	// 		}
+	// 		if (ball.hit.hitBBox.bottom >= this.vCenter.y) { // Bottom
+	// 			if (fLeft) {
+	// 				this.children[2].hitTestXRay(ball, pvhoHit, coll, player);
+	// 			}
+	// 			if (fRight) {
+	// 				this.children[3].hitTestXRay(ball, pvhoHit, coll, player);
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	private createNextLevel(bounds: FRect3D, level: number, levelEmpty: number): void {
 		if (this.vho.length <= 4) { //!! magic

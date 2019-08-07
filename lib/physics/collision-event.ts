@@ -78,4 +78,18 @@ export class CollisionEvent {
 	public clear() {
 		this.obj = undefined;
 	}
+
+	public set(coll: CollisionEvent): this {
+		this.ball = coll.ball;
+		this.obj = coll.obj;
+		this.isContact = coll.isContact;
+		this.hitTime = coll.hitTime;
+		this.hitDistance = coll.hitDistance;
+		this.hitNormal = coll.hitNormal;
+		this.hitVel = coll.hitVel;
+		this.hitOrgNormalVelocity = coll.hitOrgNormalVelocity;
+		this.hitMomentBit = coll.hitMomentBit;
+		this.hitFlag = coll.hitFlag;
+		return this;
+	}
 }

@@ -484,7 +484,6 @@ export class Player extends EventEmitter {
 		this.balls.splice(this.balls.indexOf(pball), 1);
 		this.movers.splice(this.movers.indexOf(pball.getMover()), 1);
 		this.hitObjectsDynamic.splice(this.hitObjectsDynamic.indexOf(pball.hit), 1);
-
 		this.hitOcTreeDynamic.fillFromVector(this.hitObjectsDynamic);
 
 		//m_vballDelete.push_back(pball);

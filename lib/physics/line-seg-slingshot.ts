@@ -36,34 +36,33 @@ export class LineSegSlingshot extends LineSeg {
 	}
 
 	public collide(coll: CollisionEvent): void {
-		const pball = coll.ball;
-		const hitnormal = coll.hitNormal!;
+		const ball = coll.ball;
+		const hitNormal = coll.hitNormal!;
 
-		const dot = coll.hitNormal!.dot(coll.ball.hit.vel); // normal velocity to slingshot
+		const dot = coll.hitNormal!.dot(coll.ball.hit.vel);                    // normal velocity to slingshot
+		const threshold = (dot <= -this.surfaceData.slingshotThreshold);       // normal greater than threshold?
 
-		const threshold = (dot <= -this.surfaceData.slingshotThreshold);  // normal greater than threshold?
+		// fixme surface
+		if (/*!this.m_psurface->m_fDisabled && */threshold) {                  // enabled and if velocity greater than threshold level
+			const len = (this.v2.x - this.v1.x) * hitNormal.y - (this.v2.y - this.v1.y) * hitNormal.x; // length of segment, Unit TAN points from V1 to V2
 
-		if (/*!this.m_psurface->m_fDisabled && */threshold) { // enabled and if velocity greater than threshold level
-			const len = (this.v2.x - this.v1.x) * hitnormal.y - (this.v2.y - this.v1.y) * hitnormal.x; // length of segment, Unit TAN points from V1 to V2
-
-			const vhitpoint = new Vertex2D(
-				pball.state.pos.x - hitnormal.x * pball.data.radius, //project ball radius along norm
-				pball.state.pos.y - hitnormal.y * pball.data.radius,
+			const vHitPoint = new Vertex2D(
+				ball.state.pos.x - hitNormal.x * ball.data.radius,             // project ball radius along norm
+				ball.state.pos.y - hitNormal.y * ball.data.radius,
 			);
 
 			// vhitpoint will now be the point where the ball hits the line
 			// Calculate this distance from the center of the slingshot to get force
-
-			const btd = (vhitpoint.x - this.v1.x) * hitnormal.y - (vhitpoint.y - this.v1.y) * hitnormal.x; // distance to vhit from V1
-			let force = (Math.abs(len) > 1.0e-6) ? ((btd + btd) / len - 1.0) : -1.0;	// -1..+1
-			force = 0.5 * (1.0 - force * force);	//!! maximum value 0.5 ...I think this should have been 1.0...oh well
+			const btd = (vHitPoint.x - this.v1.x) * hitNormal.y - (vHitPoint.y - this.v1.y) * hitNormal.x; // distance to vhit from V1
+			let force = (Math.abs(len) > 1.0e-6) ? ((btd + btd) / len - 1.0) : -1.0;                       // -1..+1
+			force = 0.5 * (1.0 - force * force);                               // !! maximum value 0.5 ...I think this should have been 1.0...oh well
 			// will match the previous physics
 			force *= this.force; //-80;
 
-			pball.hit.vel.sub(hitnormal.clone().multiplyScalar(force));	// boost velocity, drive into slingshot (counter normal), allow CollideWall to handle the remainder
+			ball.hit.vel.sub(hitNormal.clone().multiplyScalar(force));	// boost velocity, drive into slingshot (counter normal), allow CollideWall to handle the remainder
 		}
 
-		pball.hit.collide3DWall(hitnormal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
+		ball.hit.collide3DWall(hitNormal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
 		// FIXME event slingshot
 		// if (this.obj && this.fe && /*!m_psurface->m_fDisabled && */threshold) {
@@ -78,5 +77,4 @@ export class LineSegSlingshot extends LineSeg {
 		// 	}
 		// }
 	}
-
 }

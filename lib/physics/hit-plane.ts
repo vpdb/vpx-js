@@ -43,18 +43,6 @@ export class HitPlane extends HitObject {
 		// plane's not a box (i assume)
 	}
 
-	public collide(coll: CollisionEvent): void {
-
-		coll.ball.hit.collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
-
-		// distance from plane to ball surface
-		const bnd = this.normal.dot(coll.ball.state.pos) - coll.ball.data.radius - this.d;
-		if (bnd < 0) {
-			// if ball has penetrated, push it out of the plane
-			coll.ball.state.pos.add(this.normal.clone().multiplyScalar(bnd));
-		}
-	}
-
 	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): number {
 		if (!this.isEnabled) {
 			return -1.0;
@@ -101,5 +89,16 @@ export class HitPlane extends HitObject {
 		coll.hitDistance = bnd;                            // actual contact distance
 
 		return hitTime;
+	}
+
+	public collide(coll: CollisionEvent): void {
+		coll.ball.hit.collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
+
+		// distance from plane to ball surface
+		const bnd = this.normal.dot(coll.ball.state.pos) - coll.ball.data.radius - this.d;
+		if (bnd < 0) {
+			// if ball has penetrated, push it out of the plane
+			coll.ball.state.pos.add(this.normal.clone().multiplyScalar(bnd));
+		}
 	}
 }

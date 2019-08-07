@@ -50,12 +50,12 @@ export class SpinnerHit extends HitObject {
 		const cs = Math.cos(radAngle);
 
 		const v1 = new Vertex2D(
-			data.vCenter.x - cs * (halfLength + PHYS_SKIN), //through the edge of the
-			data.vCenter.y - sn * (halfLength + PHYS_SKIN), //spinner
+			data.vCenter.x - cs * (halfLength + PHYS_SKIN), // through the edge of the
+			data.vCenter.y - sn * (halfLength + PHYS_SKIN), // spinner
 		);
 		const v2 = new Vertex2D(
-			data.vCenter.x + cs * (halfLength + PHYS_SKIN), //oversize by the ball radius
-			data.vCenter.y + sn * (halfLength + PHYS_SKIN), //this will prevent clipping
+			data.vCenter.x + cs * (halfLength + PHYS_SKIN), // oversize by the ball radius
+			data.vCenter.y + sn * (halfLength + PHYS_SKIN), // this will prevent clipping
 		);
 		this.lineSegs.push(new LineSeg(v1, v2, height, height + (2.0 * PHYS_SKIN), CollisionType.Spinner));
 		this.lineSegs.push(new LineSeg(v2.clone(), v1.clone(), height, height + (2.0 * PHYS_SKIN), CollisionType.Spinner));
@@ -77,10 +77,29 @@ export class SpinnerHit extends HitObject {
 		return this.mover;
 	}
 
+	public getType(): CollisionType {
+		return CollisionType.Spinner;
+	}
+
 	public calcHitBBox(): void {
 		// Bounding rect for both lines will be the same
 		this.lineSegs[0].calcHitBBox();
 		this.hitBBox = this.lineSegs[0].hitBBox;
+	}
+
+	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent, player: Player): number {
+		if (!this.isEnabled) {
+			return -1.0;
+		}
+		for (let i = 0; i < 2; ++i) {
+			const hitTime = this.lineSegs[i].hitTestBasic(pball, dtime, coll, false, true, false); // any face, lateral, non-rigid
+			if (hitTime >= 0) {
+				// signal the Collide() function that the hit is on the front or back side
+				coll.hitFlag = !i;
+				return hitTime;
+			}
+		}
+		return -1.0;
 	}
 
 	public collide(coll: CollisionEvent, player: Player): void {
@@ -109,25 +128,5 @@ export class SpinnerHit extends HitObject {
 		if (coll.hitFlag) {
 			this.mover.anglespeed = -this.mover.anglespeed;
 		}
-	}
-
-	public getType(): CollisionType {
-		return CollisionType.Spinner;
-	}
-
-	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent, player: Player): number {
-		if (!this.isEnabled) {
-			return -1.0;
-		}
-		for (let i = 0; i < 2; ++i) {
-			const hittime = this.lineSegs[i].hitTestBasic(pball, dtime, coll, false, true, false); // any face, lateral, non-rigid
-			if (hittime >= 0) {
-				// signal the Collide() function that the hit is on the front or back side
-				coll.hitFlag = !i;
-
-				return hittime;
-			}
-		}
-		return -1.0;
 	}
 }

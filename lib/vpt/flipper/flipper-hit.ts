@@ -87,7 +87,7 @@ export class FlipperHit extends HitObject {
 		this.data = data;
 		this.state = state;
 		this.tableData = tableData;
-		this.UpdatePhysicsFromFlipper();
+		this.updatePhysicsFromFlipper();
 	}
 
 	public getType(): CollisionType {
@@ -105,7 +105,49 @@ export class FlipperHit extends HitObject {
 		this.hitBBox.zhigh = this.mover.hitCircleBase.hitBBox.zhigh;
 	}
 
-	public contact(coll: CollisionEvent, dtime: number, player: Player): void {
+	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {
+		if (!this.mover.isEnabled) {
+			return -1;
+		}
+		const lastFace = this.mover.lastHitFace;
+
+		// for effective computing, adding a last face hit value to speed calculations
+		// a ball can only hit one face never two
+		// also if a ball hits a face then it can not hit either radius
+		// so only check these if a face is not hit
+		// endRadius is more likely than baseRadius ... so check it first
+
+		let hitTime = this.hitTestFlipperFace(pball, dtime, coll, lastFace); // first face
+		if (hitTime >= 0) {
+			return hitTime;
+		}
+
+		hitTime = this.hitTestFlipperFace(pball, dtime, coll, !lastFace); //second face
+		if (hitTime >= 0) {
+			this.mover.lastHitFace = !lastFace; // change this face to check first // HACK
+			return hitTime;
+		}
+
+		hitTime = this.hitTestFlipperEnd(pball, dtime, coll); // end radius
+		if (hitTime >= 0) {
+			return hitTime;
+		}
+
+		hitTime = this.mover.hitCircleBase.hitTest(pball, dtime, coll);
+		if (hitTime >= 0) {
+
+			coll.hitVel = new Vertex2D();
+			coll.hitVel.x = 0;		//Tangent velocity of contact point (rotate Normal right)
+			coll.hitVel.y = 0;		//units: rad*d/t (Radians*diameter/time
+			coll.hitMomentBit = true;
+
+			return hitTime;
+		} else {
+			return -1.0;	// no hits
+		}
+	}
+
+	public contact(coll: CollisionEvent, dTime: number, player: Player): void {
 		const ball = coll.ball;
 		const normal = coll.hitNormal!;
 
@@ -128,9 +170,9 @@ export class FlipperHit extends HitObject {
 		const rF = hitPos.clone().sub(cF);                 // displacement relative to flipper center
 		const vB = ball.hit.surfaceVelocity(rB);
 		const vF = this.mover.surfaceVelocity(rF);
-		const vrel = vB.clone().sub(vF);
+		const vRel = vB.clone().sub(vF);
 
-		const normVel = vrel.dot(normal);   // this should be zero, but only up to +/- C_CONTACTVEL
+		const normVel = vRel.dot(normal);   // this should be zero, but only up to +/- C_CONTACTVEL
 
 		// If some collision has changed the ball's velocity, we may not have to do anything.
 		if (normVel <= C_CONTACTVEL) {
@@ -138,13 +180,13 @@ export class FlipperHit extends HitObject {
 			// compute accelerations of point on ball and flipper
 			const aB = ball.hit.surfaceAcceleration(rB, player);
 			const aF = this.mover.surfaceAcceleration(rF);
-			const arel = aB.clone().sub(aF);
+			const aRel = aB.clone().sub(aF);
 
 			// time derivative of the normal vector
 			const normalDeriv = Vertex3D.crossZ(this.mover.angleSpeed, normal);
 
 			// relative acceleration in the normal direction
-			const normAcc = arel.dot(normal) + 2.0 * normalDeriv.dot(vrel);
+			const normAcc = aRel.dot(normal) + 2.0 * normalDeriv.dot(vRel);
 
 			if (normAcc >= 0) {
 				return;     // objects accelerating away from each other, nothing to do
@@ -160,23 +202,23 @@ export class FlipperHit extends HitObject {
 			const j = -normAcc / contactForceAcc;
 
 			// kill any existing normal velocity
-			ball.hit.vel.add(normal.clone().multiplyScalar(j * dtime * ball.hit.invMass - coll.hitOrgNormalVelocity));
-			this.mover.applyImpulse(cross.clone().multiplyScalar(j * dtime));
+			ball.hit.vel.add(normal.clone().multiplyScalar(j * dTime * ball.hit.invMass - coll.hitOrgNormalVelocity));
+			this.mover.applyImpulse(cross.clone().multiplyScalar(j * dTime));
 
 			// apply friction
 
 			// first check for slippage
-			const slip = vrel.sub(normal.clone().multiplyScalar(normVel));       // calc the tangential slip velocity
+			const slip = vRel.sub(normal.clone().multiplyScalar(normVel));       // calc the tangential slip velocity
 			const maxFric = j * this.friction;
-			const slipspeed = slip.length();
+			const slipSpeed = slip.length();
 			let slipDir: Vertex3D;
 			let crossF: Vertex3D;
 			let numer: number;
 			let denomF: number;
 
-			if (slipspeed < C_PRECISION) {
+			if (slipSpeed < C_PRECISION) {
 				// slip speed zero - static friction case
-				const slipAcc = arel.sub(normal.clone().multiplyScalar(arel.dot(normal)));       // calc the tangential slip acceleration
+				const slipAcc = aRel.sub(normal.clone().multiplyScalar(aRel.dot(normal)));       // calc the tangential slip acceleration
 
 				// neither slip velocity nor slip acceleration? nothing to do here
 				if (slipAcc.lengthSq() < 1e-6) {
@@ -186,15 +228,15 @@ export class FlipperHit extends HitObject {
 				slipDir = slipAcc;
 				slipDir.normalize();
 
-				numer = -slipDir.dot(arel);
+				numer = -slipDir.dot(aRel);
 				crossF = Vertex3D.crossProduct(rF, slipDir);
 				denomF = slipDir.dot(Vertex3D.crossProduct(crossF.clone().divideScalar(-this.mover.inertia), rF));
 
 			} else {
 				// nonzero slip speed - dynamic friction case
-				slipDir = slip.clone().divideScalar(slipspeed);
+				slipDir = slip.clone().divideScalar(slipSpeed);
 
-				numer = -slipDir.dot(vrel);
+				numer = -slipDir.dot(vRel);
 				crossF = Vertex3D.crossProduct(rF, slipDir);
 				denomF = slipDir.dot(Vertex3D.crossProduct(crossF.clone().divideScalar(this.mover.inertia), rF));
 			}
@@ -203,26 +245,26 @@ export class FlipperHit extends HitObject {
 			const denomB = ball.hit.invMass + slipDir.dot(Vertex3D.crossProduct(crossB.clone().divideScalar(ball.hit.inertia), rB));
 			const fric = clamp(numer / (denomB + denomF), -maxFric, maxFric);
 
-			ball.hit.applySurfaceImpulse(crossB.clone().multiplyScalar(dtime * fric), slipDir.clone().multiplyScalar(dtime * fric));
-			this.mover.applyImpulse(crossF.clone().multiplyScalar(-dtime * fric));
+			ball.hit.applySurfaceImpulse(crossB.clone().multiplyScalar(dTime * fric), slipDir.clone().multiplyScalar(dTime * fric));
+			this.mover.applyImpulse(crossF.clone().multiplyScalar(-dTime * fric));
 		}
 	}
 
 	public collide(coll: CollisionEvent, player: Player): void {
-		const pball = coll.ball;
+		const ball = coll.ball;
 		const normal = coll.hitNormal!;
 
-		const rB = normal.clone().multiplyScalar(-pball.data.radius);
-		const hitPos = pball.state.pos.clone().add(rB);
+		const rB = normal.clone().multiplyScalar(-ball.data.radius);
+		const hitPos = ball.state.pos.clone().add(rB);
 
 		const cF = new Vertex3D(
 			this.mover.hitCircleBase.center.x,
 			this.mover.hitCircleBase.center.y,
-			pball.state.pos.z);     // make sure collision happens in same z plane where ball is
+			ball.state.pos.z);     // make sure collision happens in same z plane where ball is
 
 		const rF = hitPos.clone().sub(cF);       // displacement relative to flipper center
 
-		const vB = pball.hit.surfaceVelocity(rB);
+		const vB = ball.hit.surfaceVelocity(rB);
 		const vF = this.mover.surfaceVelocity(rF);
 		const vrel = vB.clone().sub(vF);
 		let bnv = normal.dot(vrel);       // relative normal velocity
@@ -239,7 +281,7 @@ export class FlipperHit extends HitObject {
 			}
 //#endif
 		}
-		player.pactiveballBC = pball; // Ball control most recently collided with flipper
+		player.pactiveballBC = ball; // Ball control most recently collided with flipper
 
 //#ifdef C_DISP_GAIN
 		// correct displacements, mostly from low velocity blindness, an alternative to true acceleration processing
@@ -248,7 +290,7 @@ export class FlipperHit extends HitObject {
 			if (hdist > C_DISP_LIMIT) {
 				hdist = C_DISP_LIMIT; // crossing ramps, delta noise
 			}
-			pball.state.pos.add(coll.hitNormal!.clone().multiplyScalar(hdist));	// push along norm, back to free area; use the norm, but is not correct
+			ball.state.pos.add(coll.hitNormal!.clone().multiplyScalar(hdist));	// push along norm, back to free area; use the norm, but is not correct
 		}
 //#endif
 
@@ -277,7 +319,7 @@ export class FlipperHit extends HitObject {
 		 */
 		const epsilon = elasticityWithFalloff(this.elasticity, this.elasticityFalloff, bnv);
 
-		let impulse = -(1.0 + epsilon) * bnv / (pball.hit.invMass + normal.dot(Vertex3D.crossProduct(angResp.clone().divideScalar(this.mover.inertia), rF)));
+		let impulse = -(1.0 + epsilon) * bnv / (ball.hit.invMass + normal.dot(Vertex3D.crossProduct(angResp.clone().divideScalar(this.mover.inertia), rF)));
 		const flipperImp = normal.clone().multiplyScalar(-(impulse * flipperResponseScaling));
 
 		const rotI = Vertex3D.crossProduct(rF, flipperImp);
@@ -292,18 +334,18 @@ export class FlipperHit extends HitObject {
 				// off the flipper, we need to make sure it does so with full
 				// reflection, i.e., treat the flipper as static, otherwise
 				// we get overly dead bounces.
-				const bnvAfter = bnv + impulse * pball.hit.invMass;
+				const bnvAfter = bnv + impulse * ball.hit.invMass;
 
 				if (recoilTime <= 0.5 || bnvAfter > 0.) {
 					// treat flipper as static for this impact
-					impulse = -(1.0 + epsilon) * bnv * pball.data.mass;
+					impulse = -(1.0 + epsilon) * bnv * ball.data.mass;
 					flipperImp.setZero();
 					rotI.setZero();
 				}
 			}
 		}
 
-		pball.hit.vel.add(normal.clone().multiplyScalar(impulse * pball.hit.invMass));      // new velocity for ball after impact
+		ball.hit.vel.add(normal.clone().multiplyScalar(impulse * ball.hit.invMass));      // new velocity for ball after impact
 		this.mover.applyImpulse(rotI);
 
 		// apply friction
@@ -316,7 +358,7 @@ export class FlipperHit extends HitObject {
 
 			// compute friction impulse
 			const crossB = Vertex3D.crossProduct(rB, tangent);
-			let kt = pball.hit.invMass + tangent.dot(Vertex3D.crossProduct(crossB.clone().divideScalar(pball.hit.inertia), rB));
+			let kt = ball.hit.invMass + tangent.dot(Vertex3D.crossProduct(crossB.clone().divideScalar(ball.hit.inertia), rB));
 
 			const crossF = Vertex3D.crossProduct(rF, tangent);
 			kt += tangent.dot(Vertex3D.crossProduct(crossF.clone().divideScalar(this.mover.inertia), rF));    // flipper only has angular response
@@ -325,7 +367,7 @@ export class FlipperHit extends HitObject {
 			const maxFric = this.friction * impulse;
 			const jt = clamp(-vt / kt, -maxFric, maxFric);
 
-			pball.hit.applySurfaceImpulse(crossB.clone().multiplyScalar(jt), tangent.clone().multiplyScalar(jt));
+			ball.hit.applySurfaceImpulse(crossB.clone().multiplyScalar(jt), tangent.clone().multiplyScalar(jt));
 			this.mover.applyImpulse(crossF.clone().multiplyScalar(-jt));
 		}
 
@@ -343,54 +385,11 @@ export class FlipperHit extends HitObject {
 		this.lastHitTime = player.timeMsec; // keep resetting until idle for 250 milliseconds
 	}
 
-	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {
-		if (!this.mover.isEnabled) {
-			return -1;
-		}
-
-		const lastface = this.mover.lastHitFace;
-
-		// for effective computing, adding a last face hit value to speed calculations
-		// a ball can only hit one face never two
-		// also if a ball hits a face then it can not hit either radius
-		// so only check these if a face is not hit
-		// endRadius is more likely than baseRadius ... so check it first
-
-		let hittime = this.hitTestFlipperFace(pball, dtime, coll, lastface); // first face
-		if (hittime >= 0) {
-			return hittime;
-		}
-
-		hittime = this.hitTestFlipperFace(pball, dtime, coll, !lastface); //second face
-		if (hittime >= 0) {
-			this.mover.lastHitFace = !lastface; // change this face to check first // HACK
-			return hittime;
-		}
-
-		hittime = this.hitTestFlipperEnd(pball, dtime, coll); // end radius
-		if (hittime >= 0) {
-			return hittime;
-		}
-
-		hittime = this.mover.hitCircleBase.hitTest(pball, dtime, coll);
-		if (hittime >= 0) {
-
-			coll.hitVel = new Vertex2D();
-			coll.hitVel.x = 0;		//Tangent velocity of contact point (rotate Normal right)
-			coll.hitVel.y = 0;		//units: rad*d/t (Radians*diameter/time
-			coll.hitMomentBit = true;
-
-			return hittime;
-		} else {
-			return -1.0;	// no hits
-		}
-	}
-
 	public getMoverObject(): FlipperMover {
 		return this.mover;
 	}
 
-	public UpdatePhysicsFromFlipper(): void {
+	public updatePhysicsFromFlipper(): void {
 		this.elasticityFalloff = (this.data.overridePhysics || (this.tableData.overridePhysicsFlipper && this.tableData.overridePhysics))
 			? this.data.overrideElasticityFalloff!
 			: this.data.elasticityFalloff!;
@@ -405,37 +404,36 @@ export class FlipperHit extends HitObject {
 			: this.data.scatter!);
 	}
 
-	public hitTestFlipperFace(pball: Ball, dtime: number, coll: CollisionEvent, face1: boolean): number {
+	public hitTestFlipperFace(ball: Ball, dTime: number, coll: CollisionEvent, face1: boolean): number {
 		const angleCur = this.state.angle;
-		let anglespeed = this.mover.angleSpeed;    // rotation rate
+		let angleSpeed = this.mover.angleSpeed;    // rotation rate
 
-		const flipperbase = this.mover.hitCircleBase.center;
+		const flipperBase = this.mover.hitCircleBase.center;
 		const feRadius = this.mover.endRadius;
 
 		const angleMin = Math.min(this.mover.angleStart, this.mover.angleEnd);
 		const angleMax = Math.max(this.mover.angleStart, this.mover.angleEnd);
 
-		const ballr  = pball.data.radius;
-		const ballvx = pball.hit.vel.x;
-		const ballvy = pball.hit.vel.y;
+		const ballRadius  = ball.data.radius;
+		const ballVx = ball.hit.vel.x;
+		const ballVy = ball.hit.vel.y;
 
 		// flipper positions at zero degrees rotation
-
-		let ffnx = this.mover.zeroAngNorm.x;       // flipper face normal vector //Face2
-		if (face1) {                           // negative for face1 (left face)
+		let ffnx = this.mover.zeroAngNorm.x;               // flipper face normal vector //Face2
+		if (face1) {                                       // negative for face1 (left face)
 			ffnx = -ffnx;
 		}
-		const ffny = this.mover.zeroAngNorm.y; // norm y component same for either face
-		const vp = new Vertex2D(                                 // face segment V1 point
+		const ffny = this.mover.zeroAngNorm.y;             // norm y component same for either face
+		const vp = new Vertex2D(                           // face segment V1 point
 			this.mover.hitCircleBase.radius * ffnx,     // face endpoint of line segment on base radius
 			this.mover.hitCircleBase.radius * ffny,
 		);
 
-		const F = new Vertex2D();				// flipper face normal
+		const F = new Vertex2D();                          // flipper face normal
 
-		let bffnd: number = 0;				// ball flipper face normal distance (negative for normal side)
-		let ballvtx: number = 0;	// new ball position at time t in flipper face coordinate
-		let ballvty: number = 0;
+		let bffnd: number = 0;                             // ball flipper face normal distance (negative for normal side)
+		let ballVtx: number = 0;                           // new ball position at time t in flipper face coordinate
+		let ballVty: number = 0;
 		let contactAng: number = 0;
 
 		// Modified False Position control
@@ -446,64 +444,65 @@ export class FlipperHit extends HitObject {
 		let d1: number = 0;
 		let dp: number = 0;
 
-		//start first interval ++++++++++++++++++++++++++
+		// start first interval ++++++++++++++++++++++++++
 		let k: number;
 		for (k = 1; k <= C_INTERATIONS; ++k) {
+
 			// determine flipper rotation direction, limits and parking
+			contactAng = angleCur + angleSpeed * t;        // angle at time t
 
-			contactAng = angleCur + anglespeed * t;					// angle at time t
-
-			if (contactAng >= angleMax) {			// stop here
+			if (contactAng >= angleMax) {                  // stop here
 				contactAng = angleMax;
 
-			} else if (contactAng <= angleMin) {		// stop here
+			} else if (contactAng <= angleMin) {           // stop here
 				contactAng = angleMin;
 			}
 
-			const radsin = Math.sin(contactAng); //  Green's transform matrix... rotate angle delta
-			const radcos = Math.cos(contactAng); //  rotational transform from current position to position at time t
+			const radSin = Math.sin(contactAng);           // Green's transform matrix... rotate angle delta
+			const radCos = Math.cos(contactAng);           // rotational transform from current position to position at time t
 
-			F.x = ffnx * radcos - ffny * radsin;  // rotate to time t, norm and face offset point
-			F.y = ffny * radcos + ffnx * radsin;
+			F.x = ffnx * radCos - ffny * radSin;           // rotate to time t, norm and face offset point
+			F.y = ffny * radCos + ffnx * radSin;
 
 			const vt = new Vertex2D(
-				vp.x * radcos - vp.y * radsin + flipperbase.x, //rotate and translate to world position
-				vp.y * radcos + vp.x * radsin + flipperbase.y,
+				vp.x * radCos - vp.y * radSin + flipperBase.x,       // rotate and translate to world position
+				vp.y * radCos + vp.x * radSin + flipperBase.y,
 			);
 
-			ballvtx = pball.state.pos.x + ballvx * t - vt.x;	// new ball position relative to rotated line segment endpoint
-			ballvty = pball.state.pos.y + ballvy * t - vt.y;
+			ballVtx = ball.state.pos.x + ballVx * t - vt.x;          // new ball position relative to rotated line segment endpoint
+			ballVty = ball.state.pos.y + ballVy * t - vt.y;
 
-			bffnd = ballvtx * F.x + ballvty * F.y - ballr; // normal distance to segment
+			bffnd = ballVtx * F.x + ballVty * F.y - ballRadius;      // normal distance to segment
 
 			if (Math.abs(bffnd) <= C_PRECISION) {
 				break;
 			}
 
 			// loop control, boundary checks, next estimate, etc.
+			if (k === 1) {                                 // end of pass one ... set full interval pass, t = dtime
 
-			if (k === 1) {   // end of pass one ... set full interval pass, t = dtime
 				// test for already inside flipper plane, either embedded or beyond the face endpoints
-				if (bffnd < -(pball.data.radius + feRadius)) {
-					return -1.0; // wrong side of face, or too deeply embedded
+				if (bffnd < -(ball.data.radius + feRadius)) {
+					return -1.0;                           // wrong side of face, or too deeply embedded
 				}
 				if (bffnd <= PHYS_TOUCH) {
-					break; // inside the clearance limits, go check face endpoints
+					break;                                 // inside the clearance limits, go check face endpoints
 				}
-				t0 = t1 = dtime;
+				t0 = t1 = dTime;
 				d0 = 0;
-				d1 = bffnd; // set for second pass, so t=dtime
+				d1 = bffnd;                                // set for second pass, so t=dtime
 
-			} else if (k === 2) { // end pass two, check if zero crossing on initial interval, exit
+			} else if (k === 2) {                          // end pass two, check if zero crossing on initial interval, exit
 				if (dp * bffnd > 0.0) {
-					return -1.0; // no solution ... no obvious zero crossing
+					return -1.0;                           // no solution ... no obvious zero crossing
 				}
 				t0 = 0;
-				t1 = dtime;
+				t1 = dTime;
 				d0 = dp;
 				d1 = bffnd; // testing MFP estimates
-			} else { // (k >= 3) // MFP root search +++++++++++++++++++++++++++++++++++++++++
-				if (bffnd * d0 <= 0.0) {									// zero crossing
+
+			} else { // (k >= 3)                           // MFP root search +++++++++++++++++++++++++++++++++++++++++
+				if (bffnd * d0 <= 0.0) {                   // zero crossing
 					t1 = t;
 					d1 = bffnd;
 					if (dp * bffnd > 0.0) {
@@ -519,263 +518,265 @@ export class FlipperHit extends HitObject {
 				} // move left limits
 			}
 
-			t = t0 - d0 * (t1 - t0) / (d1 - d0);					// next estimate
-			dp = bffnd;	// remember
-		} //for loop
+			t = t0 - d0 * (t1 - t0) / (d1 - d0);           // next estimate
+			dp = bffnd;                                    // remember
+		}
 
-		//+++ End time interation loop found time t soultion ++++++
-
+		// +++ End time iteration loop found time t soultion ++++++
 		if (!isFinite(t)
 			|| t < 0
-			|| t > dtime								// time is outside this frame ... no collision
-			|| ((k > C_INTERATIONS)
-				&& (Math.abs(bffnd) > pball.data.radius * 0.25))) { // last ditch effort to accept a near solution
+			|| t > dTime                                   // time is outside this frame ... no collision
+			|| (k > C_INTERATIONS && Math.abs(bffnd) > ball.data.radius * 0.25)) { // last ditch effort to accept a near solution
+
 			return -1.0; // no solution
 		}
 
 		// here ball and flipper face are in contact... past the endpoints, also, don't forget embedded and near solution
-
-		const T = new Vertex2D();          // flipper face tangent
-		if (face1) {           // left face?
+		const T = new Vertex2D();                          // flipper face tangent
+		if (face1) {                                       // left face?
 			T.x = -F.y;
 			T.y = F.x;
-		} else { // rotate to form Tangent vector
+		} else {                                           // rotate to form Tangent vector
 			T.x = F.y;
 			T.y = -F.x;
 		}
 
-		const bfftd = ballvtx * T.x + ballvty * T.y;			// ball to flipper face tanget distance
+		const bfftd = ballVtx * T.x + ballVty * T.y;       // ball to flipper face tangent distance
 
-		const len = this.mover.flipperRadius * this.mover.zeroAngNorm.x; // face segment length ... e.g. same on either face
+		const len = this.mover.flipperRadius * this.mover.zeroAngNorm.x;       // face segment length ... e.g. same on either face
 		if (bfftd < -C_TOL_ENDPNTS || bfftd > len + C_TOL_ENDPNTS) {
-			return -1.0; // not in range of touching
+			return -1.0;                                                       // not in range of touching
 		}
 
-		const hitz = pball.state.pos.z + pball.hit.vel.z * t;	// check for a hole, relative to ball rolling point at hittime
+		const hitz = ball.state.pos.z + ball.hit.vel.z * t;                    // check for a hole, relative to ball rolling point at hittime
 
-		//check limits of object's height and depth
-		if ((hitz + ballr * 0.5) < this.hitBBox.zlow || (hitz - ballr * 0.5) > this.hitBBox.zhigh) {
+		// check limits of object's height and depth
+		if ((hitz + ballRadius * 0.5) < this.hitBBox.zlow || (hitz - ballRadius * 0.5) > this.hitBBox.zhigh) {
 			return -1.0;
 		}
 
 		// ok we have a confirmed contact, calc the stats, remember there are "near" solution, so all
 		// parameters need to be calculated from the actual configuration, i.e contact radius must be calc'ed
 
-		coll.hitNormal!.x = F.x;	// hit normal is same as line segment normal
-		coll.hitNormal!.y = F.y;
-		coll.hitNormal!.z = 0.0;
+		// hit normal is same as line segment normal
+		coll.hitNormal = new Vertex3D(F.x, F.y, 0);
 
 		const dist = new Vertex2D( // calculate moment from flipper base center
-			pball.state.pos.x + ballvx * t - ballr * F.x - this.mover.hitCircleBase.center.x, // center of ball + projected radius to contact point
-			pball.state.pos.y + ballvy * t - ballr * F.y - this.mover.hitCircleBase.center.y, // all at time t
+			ball.state.pos.x + ballVx * t - ballRadius * F.x - this.mover.hitCircleBase.center.x, // center of ball + projected radius to contact point
+			ball.state.pos.y + ballVy * t - ballRadius * F.y - this.mover.hitCircleBase.center.y, // all at time t
 		);
 
-		const distance = Math.sqrt(dist.x * dist.x + dist.y * dist.y);	// distance from base center to contact point
+		const distance = Math.sqrt(dist.x * dist.x + dist.y * dist.y);         // distance from base center to contact point
 
 		const invDist = 1.0 / distance;
-		coll.hitVel!.x = -dist.y * invDist;		//Unit Tangent velocity of contact point(rotate Normal clockwise)
-		coll.hitVel!.y = dist.x * invDist;
+		coll.hitVel = new Vertex2D(-dist.y * invDist, dist.x * invDist);       // Unit Tangent velocity of contact point(rotate Normal clockwise)
 		//coll.hitvelocity.z = 0.0f; // used as normal velocity so far, only if isContact is set, see below
 
-		if (contactAng >= angleMax && anglespeed > 0 || contactAng <= angleMin && anglespeed < 0) { // hit limits ???
-			anglespeed = 0.0;							// rotation stopped
+		if (contactAng >= angleMax && angleSpeed > 0 || contactAng <= angleMin && angleSpeed < 0) { // hit limits ???
+			angleSpeed = 0.0;                                                  // rotation stopped
 		}
 
-		//!! unused coll.m_hitmoment = distance;				//moment arm diameter
 		coll.hitMomentBit = (distance === 0);
-		//!! unused coll.m_hitangularrate = anglespeed;		//radians/time at collison
 
-		const dv = new Vertex2D(
-			ballvx - coll.hitVel!.x * anglespeed * distance,
-			ballvy - coll.hitVel!.y * anglespeed * distance,
-		); //delta velocity ball to face
+		const dv = new Vertex2D(                                               // delta velocity ball to face
+			ballVx - coll.hitVel!.x * angleSpeed * distance,
+			ballVy - coll.hitVel!.y * angleSpeed * distance,
+		);
 
-		const bnv = dv.x * coll.hitNormal!.x + dv.y * coll.hitNormal!.y;  //dot Normal to delta v
+		const bnv = dv.x * coll.hitNormal!.x + dv.y * coll.hitNormal!.y;       // dot Normal to delta v
 
 		if (Math.abs(bnv) <= C_CONTACTVEL && bffnd <= PHYS_TOUCH) {
 			coll.isContact = true;
 			coll.hitOrgNormalVelocity = bnv;
 		} else if (bnv > C_LOWNORMVEL) {
-			return -1.0; // not hit ... ball is receding from endradius already, must have been embedded
+			return -1.0;                                   // not hit ... ball is receding from endradius already, must have been embedded
 		}
 
-		coll.hitDistance = bffnd;			//normal ...actual contact distance ...
+		coll.hitDistance = bffnd;                          // normal ...actual contact distance ...
 		//coll.m_hitRigid = true;				// collision type
 
 		return t;
 	}
 
-	private hitTestFlipperEnd(pball: Ball, dtime: number, coll: CollisionEvent): number {
+	private hitTestFlipperEnd(ball: Ball, dTime: number, coll: CollisionEvent): number {
 
 		const angleCur = this.state.angle;
-		let anglespeed = this.mover.angleSpeed;		// rotation rate
+		let angleSpeed = this.mover.angleSpeed;            // rotation rate
 
-		const flipperbase = this.mover.hitCircleBase.center;
+		const flipperBase = this.mover.hitCircleBase.center;
 
 		const angleMin = Math.min(this.mover.angleStart, this.mover.angleEnd);
 		const angleMax = Math.max(this.mover.angleStart, this.mover.angleEnd);
 
-		const ballr = pball.data.radius;
+		const ballRadius = ball.data.radius;
 		const feRadius = this.mover.endRadius;
 
-		const ballrEndr = feRadius + ballr; // magnititude of (ball - flipperEnd)
+		const ballEndRadius = feRadius + ballRadius;       // magnititude of (ball - flipperEnd)
 
-		const ballx = pball.state.pos.x;
-		const bally = pball.state.pos.y;
+		const ballX = ball.state.pos.x;
+		const ballY = ball.state.pos.y;
 
-		const ballvx = pball.hit.vel.x;
-		const ballvy = pball.hit.vel.y;
+		const ballVx = ball.hit.vel.x;
+		const ballVy = ball.hit.vel.y;
 
 		const vp = new Vertex2D(
-			0.0,                           // m_flipperradius * sin(0);
-			-this.mover.flipperRadius, // m_flipperradius * (-cos(0));
+			0.0,                                           // m_flipperradius * sin(0);
+			-this.mover.flipperRadius,                     // m_flipperradius * (-cos(0));
 		);
 
-		let ballvtx = 0;
-		let ballvty = 0;	// new ball position at time t in flipper face coordinate
+		let ballVtx = 0;
+		let ballVty = 0;                                   // new ball position at time t in flipper face coordinate
 		let contactAng = 0;
-		let bfend = 0;
-		let cbcedist = 0;
+		let bFend = 0;
+		let cbceDist = 0;
 		let t0 = 0;
 		let t1 = 0;
 		let d0 = 0;
 		let d1 = 0;
 		let dp = 0;
 
-		let t = 0; //start first interval ++++++++++++++++++++++++++
+		// start first interval ++++++++++++++++++++++++++
+		let t = 0;
 		let k: number;
 		for (k = 1; k <= C_INTERATIONS; ++k) {
 
 			// determine flipper rotation direction, limits and parking
-			contactAng = angleCur + anglespeed * t; // angle at time t
+			contactAng = angleCur + angleSpeed * t; // angle at time t
 
 			if (contactAng >= angleMax) {
-				contactAng = angleMax; // stop here
+				contactAng = angleMax;                     // stop here
 			} else if (contactAng <= angleMin) {
-				contactAng = angleMin; // stop here
+				contactAng = angleMin;                     // stop here
 			}
 
-			const radsin = Math.sin(contactAng); // Green's transform matrix... rotate angle delta
-			const radcos = Math.cos(contactAng); // rotational transform from zero position to position at time t
+			const radSin = Math.sin(contactAng);           // Green's transform matrix... rotate angle delta
+			const radCos = Math.cos(contactAng);           // rotational transform from zero position to position at time t
 
 			// rotate angle delta unit vector, rotates system according to flipper face angle
 			const vt = new Vertex2D(
-				vp.x * radcos - vp.y * radsin + flipperbase.x, //rotate and translate to world position
-				vp.y * radcos + vp.x * radsin + flipperbase.y,
+				vp.x * radCos - vp.y * radSin + flipperBase.x,       // rotate and translate to world position
+				vp.y * radCos + vp.x * radSin + flipperBase.y,
 			);
 
-			ballvtx = ballx + ballvx * t - vt.x; // new ball position relative to flipper end radius
-			ballvty = bally + ballvy * t - vt.y;
+			ballVtx = ballX + ballVx * t - vt.x;           // new ball position relative to flipper end radius
+			ballVty = ballY + ballVy * t - vt.y;
 
-			cbcedist = Math.sqrt(ballvtx * ballvtx + ballvty * ballvty); // center ball to center end radius distance
+			// center ball to center end radius distance
+			cbceDist = Math.sqrt(ballVtx * ballVtx + ballVty * ballVty);
 
-			bfend = cbcedist - ballrEndr; // ball face-to-radius surface distance
+			// ball face-to-radius surface distance
+			bFend = cbceDist - ballEndRadius;
 
-			if (Math.abs(bfend) <= C_PRECISION) {
+			if (Math.abs(bFend) <= C_PRECISION) {
 				break;
 			}
 
 			if (k === 1) {                                 // end of pass one ... set full interval pass, t = dtime
 				// test for extreme conditions
-				if (bfend < -(pball.data.radius + feRadius)) {
-					// too deeply embedded, ambigious position
+				if (bFend < -(ball.data.radius + feRadius)) {
+					// too deeply embedded, ambiguous position
 					return -1.0;
 				}
-				if (bfend <= PHYS_TOUCH) {
+				if (bFend <= PHYS_TOUCH) {
 					// inside the clearance limits
 					break;
 				}
 				// set for second pass, force t=dtime
-				t0 = t1 = dtime; d0 = 0; d1 = bfend;
+				t0 = t1 = dTime;
+				d0 = 0;
+				d1 = bFend;
 
 			} else if (k === 2) {                          // end pass two, check if zero crossing on initial interval, exit if none
-				if (dp * bfend > 0.0) {
+				if (dp * bFend > 0.0) {
 					// no solution ... no obvious zero crossing
 					return -1.0;
 				}
 
 				t0 = 0;
-				t1 = dtime;
+				t1 = dTime;
 				d0 = dp;
-				d1 = bfend; // set initial boundaries
+				d1 = bFend; // set initial boundaries
 
 			} else {                                       // (k >= 3) // MFP root search
-				if (bfend * d0 <= 0.0) {// zero crossing
+				if (bFend * d0 <= 0.0) {                   // zero crossing
 					t1 = t;
-					d1 = bfend;
-					if (dp * bfend > 0) {
+					d1 = bFend;
+					if (dp * bFend > 0) {
 						d0 *= 0.5;
 					}
 				} else {
 					t0 = t;
-					d0 = bfend;
-					if (dp * bfend > 0) {
+					d0 = bFend;
+					if (dp * bFend > 0) {
 						d1 *= 0.5;
 					}
 				}	// 	move left interval limit
 			}
 
 			t = t0 - d0 * (t1 - t0) / (d1 - d0); // estimate next t
-			dp = bfend; // remember
+			dp = bFend; // remember
 
-		} //for loop
-		//+++ End time interation loop found time t soultion ++++++
+		}
+
+		//+++ End time interaction loop found time t solution ++++++
 
 		// time is outside this frame ... no collision
-		if (!isFinite(t) || t < 0 || t > dtime || ((k > C_INTERATIONS) && (Math.abs(bfend) > pball.data.radius * 0.25))) { // last ditch effort to accept a solution
+		if (!isFinite(t) || t < 0 || t > dTime || ((k > C_INTERATIONS) && (Math.abs(bFend) > ball.data.radius * 0.25))) { // last ditch effort to accept a solution
 			return -1.0; // no solution
 		}
 
 		// here ball and flipper end are in contact .. well in most cases, near and embedded solutions need calculations
-		const hitz = pball.state.pos.z + pball.hit.vel.z * t; // check for a hole, relative to ball rolling point at hittime
+		const hitZ = ball.state.pos.z + ball.hit.vel.z * t; // check for a hole, relative to ball rolling point at hittime
 
-		if ((hitz + ballr * 0.5) < this.hitBBox.zlow		//check limits of object's height and depth
-			|| (hitz - ballr * 0.5) > this.hitBBox.zhigh) {
+		// check limits of object's height and depth
+		if (hitZ + ballRadius * 0.5 < this.hitBBox.zlow || (hitZ - ballRadius * 0.5) > this.hitBBox.zhigh) {
 			return -1.0;
 		}
 
 		// ok we have a confirmed contact, calc the stats, remember there are "near" solution, so all
 		// parameters need to be calculated from the actual configuration, i.e. contact radius must be calc'ed
-		const invCbcedist = 1.0 / cbcedist;
+		const invCbceDist = 1.0 / cbceDist;
 		coll.hitNormal = new Vertex3D();
-		coll.hitNormal.x = ballvtx * invCbcedist;				// normal vector from flipper end to ball
-		coll.hitNormal.y = ballvty * invCbcedist;
+		coll.hitNormal.x = ballVtx * invCbceDist;          // normal vector from flipper end to ball
+		coll.hitNormal.y = ballVty * invCbceDist;
 		coll.hitNormal.z = 0.0;
 
+		// vector from base to flipperEnd plus the projected End radius
 		const dist = new Vertex2D(
-			pball.state.pos.x + ballvx * t - ballr * coll.hitNormal.x - this.mover.hitCircleBase.center.x, // vector from base to flipperEnd plus the projected End radius
-			pball.state.pos.y + ballvy * t - ballr * coll.hitNormal.y - this.mover.hitCircleBase.center.y);
+			ball.state.pos.x + ballVx * t - ballRadius * coll.hitNormal.x - this.mover.hitCircleBase.center.x,
+			ball.state.pos.y + ballVy * t - ballRadius * coll.hitNormal.y - this.mover.hitCircleBase.center.y,
+		);
 
-		const distance = Math.sqrt(dist.x * dist.x + dist.y * dist.y); // distance from base center to contact point
+		// distance from base center to contact point
+		const distance = Math.sqrt(dist.x * dist.x + dist.y * dist.y);
 
-		if ((contactAng >= angleMax && anglespeed > 0) || (contactAng <= angleMin && anglespeed < 0)) { // hit limits ???
-			anglespeed = 0; // rotation stopped
+		// hit limits ???
+		if (contactAng >= angleMax && angleSpeed > 0 || (contactAng <= angleMin && angleSpeed < 0)) {
+			angleSpeed = 0;                                // rotation stopped
 		}
 
+		// Unit Tangent vector velocity of contact point(rotate normal right)
 		const invDistance = 1.0 / distance;
-		coll.hitVel = new Vertex2D();
-		coll.hitVel.x = -dist.y * invDistance; //Unit Tangent vector velocity of contact point(rotate normal right)
-		coll.hitVel.y = dist.x * invDistance;
-
+		coll.hitVel = new Vertex2D(-dist.y * invDistance, dist.x * invDistance);
 		coll.hitMomentBit = (distance === 0);
 
 		// recheck using actual contact angle of velocity direction
 		const dv = new Vertex2D(
-			ballvx - coll.hitVel.x * anglespeed * distance,
-			ballvy - coll.hitVel.y * anglespeed * distance); //delta velocity ball to face
+			ballVx - coll.hitVel.x * angleSpeed * distance,                    // delta velocity ball to face
+			ballVy - coll.hitVel.y * angleSpeed * distance,
+		);
 
-		const bnv = dv.x * coll.hitNormal.x + dv.y * coll.hitNormal.y;  //dot Normal to delta v
+		const bnv = dv.x * coll.hitNormal.x + dv.y * coll.hitNormal.y;         // dot Normal to delta v
 
 		if (bnv >= 0) {
 			return -1.0; // not hit ... ball is receding from face already, must have been embedded or shallow angled
 		}
 
-		if (Math.abs(bnv) <= C_CONTACTVEL && bfend <= PHYS_TOUCH) {
+		if (Math.abs(bnv) <= C_CONTACTVEL && bFend <= PHYS_TOUCH) {
 			coll.isContact = true;
 			coll.hitOrgNormalVelocity = bnv;
 		}
-
-		coll.hitDistance = bfend;			//actual contact distance ..
+		coll.hitDistance = bFend;                          // actual contact distance ..
 
 		return t;
 	}

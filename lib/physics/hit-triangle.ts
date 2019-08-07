@@ -47,6 +47,10 @@ export class HitTriangle extends HitObject {
 		this.scatter = 0;
 	}
 
+	public getType(): CollisionType {
+		return CollisionType.Triangle;
+	}
+
 	public calcHitBBox(): void {
 		this.hitBBox.left = Math.min(this.rgv[0].x, Math.min(this.rgv[1].x, this.rgv[2].x));
 		this.hitBBox.right = Math.max(this.rgv[0].x, Math.max(this.rgv[1].x, this.rgv[2].x));
@@ -56,39 +60,12 @@ export class HitTriangle extends HitObject {
 		this.hitBBox.zhigh = Math.max(this.rgv[0].z, Math.max(this.rgv[1].z, this.rgv[2].z));
 	}
 
-	public collide(coll: CollisionEvent, player: Player): void {
-		const ball = coll.ball;
-		const hitNormal = coll.hitNormal!;
-
-		const dot = -(hitNormal.dot(ball.hit.vel));
-
-		ball.hit.collide3DWall(this.normal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
-
-		if (this.obj && this.fe && dot >= this.threshold) {
-			if (this.objType === CollisionType.Primitive) {
-				this.obj.currentHitThreshold = dot;
-				this.fireHitEvent(ball);
-
-			} else if (this.objType === CollisionType.HitTarget /*FIXME && ((HitTarget*)m_obj)->m_d.m_isDropped == false*/) {
-				// fixme hittarget
-				//((HitTarget*)m_obj)->m_hitEvent = true;
-				this.obj.currentHitThreshold = dot;
-				this.fireHitEvent(ball);
-			}
-		}
-	}
-
-	public getType(): CollisionType {
-		return CollisionType.Triangle;
-	}
-
 	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: Player): number {
 		if (!this.isEnabled) {
 			return -1.0;
 		}
 
 		const bnv = this.normal.dot(ball.hit.vel);         // speed in Normal-vector direction
-
 		if (bnv > C_CONTACTVEL) {                          // return if clearly ball is receding from object
 			return -1.0;
 		}
@@ -165,6 +142,28 @@ export class HitTriangle extends HitObject {
 
 		} else {
 			return -1.0;
+		}
+	}
+
+	public collide(coll: CollisionEvent, player: Player): void {
+		const ball = coll.ball;
+		const hitNormal = coll.hitNormal!;
+
+		const dot = -(hitNormal.dot(ball.hit.vel));
+
+		ball.hit.collide3DWall(this.normal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
+
+		if (this.obj && this.fe && dot >= this.threshold) {
+			if (this.objType === CollisionType.Primitive) {
+				this.obj.currentHitThreshold = dot;
+				this.fireHitEvent(ball);
+
+			} else if (this.objType === CollisionType.HitTarget /*FIXME && ((HitTarget*)m_obj)->m_d.m_isDropped == false*/) {
+				// fixme hittarget
+				//((HitTarget*)m_obj)->m_hitEvent = true;
+				this.obj.currentHitThreshold = dot;
+				this.fireHitEvent(ball);
+			}
 		}
 	}
 

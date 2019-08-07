@@ -18,25 +18,23 @@
  */
 
 import { Object3D } from 'three';
-import { Storage } from '../..';
+import { Storage, Table } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
 import { IBallCreationPosition, Player } from '../../game/player';
-import { VpTableExporterOptions } from '../table/table-exporter';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
+import { Ball } from '../ball/ball';
 import { Meshes } from '../item-data';
-import { ItemState } from '../item-state';
-import { Table } from '../table/table';
+import { VpTableExporterOptions } from '../table/table-exporter';
 import { PlungerData } from './plunger-data';
 import { PlungerHit } from './plunger-hit';
 import { PlungerMesh } from './plunger-mesh';
 import { PlungerMover } from './plunger-mover';
 import { PlungerState } from './plunger-state';
-import { Ball } from '../ball/ball';
 
 /**
  * VPinball's plunger.
@@ -49,7 +47,7 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 
 	private readonly data: PlungerData;
 	private readonly mesh: PlungerMesh;
-	private state: PlungerState;
+	private readonly state: PlungerState;
 	private hit?: PlungerHit;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Plunger> {
@@ -61,10 +59,6 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 		this.data = data;
 		this.mesh = new PlungerMesh(data);
 		this.state = new PlungerState(this.getName(), 0);
-	}
-
-	public setupPlayer(player: Player, table: Table): void {
-		this.hit = new PlungerHit(this.data, this.state, this.mesh.cFrames, player, table);
 	}
 
 	public getName(): string {
@@ -88,31 +82,23 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 		const matrix = new Matrix3D().toRightHanded();
 
 		if (plunger.rod) {
-			meshes.rod = {
-				mesh: plunger.rod.transform(matrix),
-				material,
-				map,
-			};
+			meshes.rod = { mesh: plunger.rod.transform(matrix), material, map };
 		}
 		if (plunger.spring) {
-			meshes.spring = {
-				mesh: plunger.spring.transform(matrix),
-				material,
-				map,
-			};
+			meshes.spring = { mesh: plunger.spring.transform(matrix), material, map };
 		}
 		if (plunger.flat) {
-			meshes.flat = {
-				mesh: plunger.flat.transform(matrix),
-				material,
-				map,
-			};
+			meshes.flat = { mesh: plunger.flat.transform(matrix), material, map };
 		}
 		return meshes;
 	}
 
 	public isVisible(table: Table): boolean {
 		return this.data.isVisible();
+	}
+
+	public setupPlayer(player: Player, table: Table): void {
+		this.hit = new PlungerHit(this.data, this.state, this.mesh.cFrames, player, table);
 	}
 
 	public getMover(): PlungerMover {

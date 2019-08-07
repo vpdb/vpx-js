@@ -343,9 +343,9 @@ export class PlungerMover implements MoverObject {
 		this.setObjects(this.pos);
 	}
 
-	public updateDisplacements(dtime: number): void {
+	public updateDisplacements(dTime: number): void {
 		// figure the travel distance
-		const dx = dtime * this.speed;
+		const dx = dTime * this.speed;
 
 		// figure the position change
 		this.pos += dx;
@@ -358,7 +358,7 @@ export class PlungerMover implements MoverObject {
 		// if we're in firing mode and we've crossed the bounce position, reverse course
 		const relPos = (this.pos - this.frameEnd) / this.frameLen;
 		const bouncePos = this.restPos + this.fireBounce;
-		if (this.fireTimer !== 0 && dtime !== 0.0 && ((this.fireSpeed < 0.0 ? relPos <= bouncePos : relPos >= bouncePos))) {
+		if (this.fireTimer !== 0 && dTime !== 0.0 && ((this.fireSpeed < 0.0 ? relPos <= bouncePos : relPos >= bouncePos))) {
 			// stop at the bounce position
 			this.pos = this.frameEnd + bouncePos * this.frameLen;
 
@@ -375,7 +375,7 @@ export class PlungerMover implements MoverObject {
 		}
 
 		// limit motion to the valid range
-		if (dtime !== 0.0) {
+		if (dTime !== 0.0) {
 			if (this.pos < this.frameEnd) {
 				this.speed = 0.0;
 				this.pos = this.frameEnd;
@@ -399,11 +399,13 @@ export class PlungerMover implements MoverObject {
 		const strokeEventHysteresis = strokeEventLimit * 2.0;
 		if (this.fStrokeEventsArmed && this.pos + dx > this.frameStart - strokeEventLimit) {
 			logger().info('[%s] Pulled back.', this.data.getName());
+			// fixme event
 			//this.plunger->FireVoidEventParm(DISPID_LimitEvents_BOS, fabsf(this.speed));
 			this.fStrokeEventsArmed = false;
 
 		} else if (this.fStrokeEventsArmed && this.pos + dx < this.frameEnd + strokeEventLimit) {
 			logger().info('[%s] Fired.', this.data.getName());
+			// fixme event
 			//this.plunger->FireVoidEventParm(DISPID_LimitEvents_EOS, fabsf(this.speed));
 			this.fStrokeEventsArmed = false;
 
