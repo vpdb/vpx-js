@@ -23,6 +23,7 @@ import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { C_CONTACTVEL, C_LOWNORMVEL, C_TOL_ENDPNTS, C_TOL_RADIUS, PHYS_TOUCH } from './constants';
 import { HitObject } from './hit-object';
+import { Vertex3D } from '../math/vertex3d';
 
 export class LineSeg extends HitObject {
 
@@ -45,6 +46,10 @@ export class LineSeg extends HitObject {
 		}
 	}
 
+	public getType(): CollisionType {
+		return CollisionType.LineSeg;
+	}
+
 	public setSeg(x1: number, y1: number, x2: number, y2: number): this {
 		this.v1.x = x1;
 		this.v1.y = y1;
@@ -60,7 +65,7 @@ export class LineSeg extends HitObject {
 		this.hitBBox.top = Math.min(this.v1.y, this.v2.y);
 		this.hitBBox.bottom = Math.max(this.v1.y, this.v2.y);
 
-		// zlow and zhigh were already set in ctor
+		// zlow and zhigh were already set in constructor
 	}
 
 	public collide(coll: CollisionEvent): void {
@@ -76,20 +81,6 @@ export class LineSeg extends HitObject {
 		return this.hitTestBasic(pball, dtime, coll, true, true, true); // normal face, lateral, rigid
 	}
 
-	private calcNormal(): this {
-		const vT = new Vertex2D(this.v1.x - this.v2.x, this.v1.y - this.v2.y);
-
-		// Set up line normal
-		this.length = vT.length();
-		const invLength = 1.0 / this.length;
-		this.normal = new Vertex2D(vT.y * invLength, -vT.x * invLength);
-		return this;
-	}
-
-	public getType(): CollisionType {
-		return CollisionType.LineSeg;
-	}
-
 	public hitTestBasic(ball: Ball, dTime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean) {
 
 		if (!this.isEnabled || ball.hit.isFrozen) {
@@ -102,10 +93,10 @@ export class LineSeg extends HitObject {
 
 		// ball velocity normal to segment, positive if receding, zero=parallel
 		const bnv = ballVx * this.normal.x + ballVy * this.normal.y;
-		let isUnHit = (bnv > C_LOWNORMVEL);
+		let isUnHit = bnv > C_LOWNORMVEL;
 
 		// direction true and clearly receding from normal face
-		if (direction && (bnv > C_LOWNORMVEL)) {
+		if (direction && bnv > C_LOWNORMVEL) {
 			return -1.0;
 		}
 
@@ -114,7 +105,7 @@ export class LineSeg extends HitObject {
 		const ballY = ball.state.pos.y;
 
 		// ball normal distance: contact distance normal to segment. lateral contact subtract the ball radius
-		const rollingRadius = lateral ? ball.data.radius : C_TOL_RADIUS; //lateral or rolling point
+		const rollingRadius = lateral ? ball.data.radius : C_TOL_RADIUS;       // lateral or rolling point
 		const bcpd = (ballX - this.v1.x) * this.normal.x + (ballY - this.v1.y) * this.normal.y; // ball center to plane distance
 		let bnd = bcpd - rollingRadius;
 
@@ -123,22 +114,21 @@ export class LineSeg extends HitObject {
 			bnd = bcpd + rollingRadius;
 		}
 
-		const inside = (bnd <= 0);                                   // in ball inside object volume
-
+		const inside = bnd <= 0;                                     // in ball inside object volume
 		let hitTime;
 		if (rigid) {
 			if (bnd < -ball.data.radius || lateral && bcpd < 0) {
 				// (ball normal distance) excessive penetration of object skin ... no collision HACK
 				return -1.0;
 			}
-			if (lateral && (bnd <= PHYS_TOUCH)) {
+			if (lateral && bnd <= PHYS_TOUCH) {
 				if (inside
 					|| Math.abs(bnv) > C_CONTACTVEL                  // fast velocity, return zero time
 					|| bnd <= -PHYS_TOUCH) {                         // zero time for rigid fast bodies
 					hitTime = 0;                                     // slow moving but embedded
 
 				} else {
-					hitTime = bnd * (1.0 / (2.0 * PHYS_TOUCH));      // don't compete for fast zero time events
+					hitTime = bnd * (1.0 / (2.0 * PHYS_TOUCH)) + 0.5; // don't compete for fast zero time events
 				}
 
 			} else if (Math.abs(bnv) > C_LOWNORMVEL) {               // not velocity low ????
@@ -170,7 +160,7 @@ export class LineSeg extends HitObject {
 			- (ballY - this.v1.y) * this.normal.x                    // ball tangent distance
 			+ btv * hitTime;                                         // ball tangent distance (projection) (initial position + velocity * hitime)
 
-		if (btd < -C_TOL_ENDPNTS || btd > length + C_TOL_ENDPNTS) {  // is the contact off the line segment???
+		if (btd < -C_TOL_ENDPNTS || btd > this.length + C_TOL_ENDPNTS) {  // is the contact off the line segment???
 			return -1.0;
 		}
 		if (!rigid) {                                                // non rigid body collision? return direction
@@ -186,10 +176,7 @@ export class LineSeg extends HitObject {
 		}
 
 		// hit normal is same as line segment normal
-		coll.hitNormal!.x = this.normal.x;
-		coll.hitNormal!.y = this.normal.y;
-		coll.hitNormal!.z = 0.0;
-
+		coll.hitNormal = new Vertex3D(this.normal.x, this.normal.y, 0.0);
 		coll.hitDistance = bnd;        // actual contact distance ...
 		//coll.m_hitRigid = rigid;     // collision type
 
@@ -198,7 +185,16 @@ export class LineSeg extends HitObject {
 			coll.isContact = true;
 			coll.hitOrgNormalVelocity = bnv;
 		}
-
 		return hitTime;
+	}
+
+	private calcNormal(): this {
+		const vT = new Vertex2D(this.v1.x - this.v2.x, this.v1.y - this.v2.y);
+
+		// Set up line normal
+		this.length = vT.length();
+		const invLength = 1.0 / this.length;
+		this.normal = new Vertex2D(vT.y * invLength, -vT.x * invLength);
+		return this;
 	}
 }

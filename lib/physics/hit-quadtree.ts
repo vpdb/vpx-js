@@ -49,13 +49,13 @@ export class HitQuadtree {
 		this.createNextLevel(bounds, 0, 0);
 	}
 
-	public hitTestBall(pball: Ball, coll: CollisionEvent, player: Player): void {
+	public hitTestBall(pball: Ball, coll: CollisionEvent, player: Player): CollisionEvent {
 		for (const vho of this.vho) {
 			if (pball.hit !== vho                                              // ball can not hit itself
 				&& vho.hitBBox.intersectRect(pball.hit.hitBBox)
 				&& vho.hitBBox.intersectSphere(pball.state.pos, pball.hit.rcHitRadiusSqr)) {
 
-				pball.setCollision(vho.doHitTest(pball, coll, player));
+				coll = vho.doHitTest(pball, coll, player);
 			}
 		}
 
@@ -65,21 +65,22 @@ export class HitQuadtree {
 
 			if (pball.hit.hitBBox.top <= this.vCenter.y) { // Top
 				if (fLeft) {
-					this.children[0].hitTestBall(pball, coll, player);
+					coll = this.children[0].hitTestBall(pball, coll, player);
 				}
 				if (fRight) {
-					this.children[1].hitTestBall(pball, coll, player);
+					coll = this.children[1].hitTestBall(pball, coll, player);
 				}
 			}
 			if (pball.hit.hitBBox.bottom >= this.vCenter.y) { // Bottom
 				if (fLeft) {
-					this.children[2].hitTestBall(pball, coll, player);
+					coll = this.children[2].hitTestBall(pball, coll, player);
 				}
 				if (fRight) {
-					this.children[3].hitTestBall(pball, coll, player);
+					coll = this.children[3].hitTestBall(pball, coll, player);
 				}
 			}
 		}
+		return coll;
 	}
 
 	public hitTestXRay(pball: Ball, pvhoHit: HitObject[], coll: CollisionEvent, player: Player): void {

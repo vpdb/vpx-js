@@ -119,8 +119,8 @@ export class HitKD {
 		this.tmp = [];
 	}
 
-	public hitTestBall(pball: Ball, collision: CollisionEvent, player: Player) {
-		this.rootNode.hitTestBall(pball, collision, player);
+	public hitTestBall(pball: Ball, collision: CollisionEvent, player: Player): CollisionEvent {
+		return this.rootNode.hitTestBall(pball, collision, player);
 	}
 
 	public hitTestXRay(pball: Ball, pvhoHit: HitObject[], coll: CollisionEvent, player: Player) {

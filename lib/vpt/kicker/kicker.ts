@@ -92,7 +92,7 @@ export class Kicker implements IRenderable, IHittable, IBallCreationPosition {
 
 	public getBallCreationPosition(table: Table): Vertex3D {
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
-		return new Vertex3D(this.hit!.center.x, this.hit!.center.y, height + 100);
+		return new Vertex3D(this.hit!.center.x, this.hit!.center.y, height);
 	}
 
 	public getBallCreationVelocity(table: Table): Vertex3D {

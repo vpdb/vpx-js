@@ -47,9 +47,10 @@ export class HitPlane extends HitObject {
 
 		coll.ball.hit.collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
-		// if ball has penetrated, push it out of the plane
-		const bnd = this.normal.dot(coll.ball.state.pos) - coll.ball.data.radius - this.d; // distance from plane to ball surface
+		// distance from plane to ball surface
+		const bnd = this.normal.dot(coll.ball.state.pos) - coll.ball.data.radius - this.d;
 		if (bnd < 0) {
+			// if ball has penetrated, push it out of the plane
 			coll.ball.state.pos.add(this.normal.clone().multiplyScalar(bnd));
 		}
 	}
@@ -80,7 +81,6 @@ export class HitPlane extends HitObject {
 				coll.hitNormal = this.normal;
 				coll.hitOrgNormalVelocity = bnv;           // remember original normal velocity
 				coll.hitDistance = bnd;
-				//coll.hitRigid = true;
 				return 0.0;                                // hit time is ignored for contacts
 			} else {
 				return -1.0;                               // large distance, small velocity -> no hit
@@ -99,7 +99,6 @@ export class HitPlane extends HitObject {
 
 		coll.hitNormal = this.normal;
 		coll.hitDistance = bnd;                            // actual contact distance
-		//coll.m_hitRigid = true;                          // collision type
 
 		return hitTime;
 	}
