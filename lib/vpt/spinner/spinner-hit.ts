@@ -24,7 +24,7 @@ import { Vertex2D } from '../../math/vertex2d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { PHYS_FACTOR, PHYS_SKIN } from '../../physics/constants';
-import { HitObject } from '../../physics/hit-object';
+import { HitObject, HitTestResult } from '../../physics/hit-object';
 import { LineSeg } from '../../physics/line-seg';
 import { Ball } from '../ball/ball';
 import { SpinnerData } from './spinner-data';
@@ -87,19 +87,20 @@ export class SpinnerHit extends HitObject {
 		this.hitBBox = this.lineSegs[0].hitBBox;
 	}
 
-	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent, player: Player): number {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: Player): HitTestResult {
 		if (!this.isEnabled) {
-			return -1.0;
+			return { hitTime: -1.0, coll };
 		}
 		for (let i = 0; i < 2; ++i) {
-			const hitTime = this.lineSegs[i].hitTestBasic(pball, dtime, coll, false, true, false); // any face, lateral, non-rigid
+			let hitTime: number;
+			({ hitTime, coll } = this.lineSegs[i].hitTestBasic(ball, dTime, coll, false, true, false)); // any face, lateral, non-rigid
 			if (hitTime >= 0) {
 				// signal the Collide() function that the hit is on the front or back side
 				coll.hitFlag = !i;
-				return hitTime;
+				return { hitTime, coll };
 			}
 		}
-		return -1.0;
+		return { hitTime: -1.0, coll };
 	}
 
 	public collide(coll: CollisionEvent, player: Player): void {

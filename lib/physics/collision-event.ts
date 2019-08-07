@@ -25,12 +25,12 @@ import { HitObject } from './hit-object';
 export class CollisionEvent {
 
 	/**
-	 * the ball that collided with smth
+	 * The ball that collided with something
 	 */
 	public ball: Ball;
 
 	/**
-	 * what the ball collided with
+	 * What the ball collided with
 	 */
 	public obj?: HitObject;
 
@@ -79,17 +79,17 @@ export class CollisionEvent {
 		this.obj = undefined;
 	}
 
-	public set(coll: CollisionEvent): this {
-		this.ball = coll.ball;
-		this.obj = coll.obj;
-		this.isContact = coll.isContact;
-		this.hitTime = coll.hitTime;
-		this.hitDistance = coll.hitDistance;
-		this.hitNormal = coll.hitNormal;
-		this.hitVel = coll.hitVel;
-		this.hitOrgNormalVelocity = coll.hitOrgNormalVelocity;
-		this.hitMomentBit = coll.hitMomentBit;
-		this.hitFlag = coll.hitFlag;
-		return this;
-	}
+	// public set(coll: CollisionEvent): this {
+	// 	this.ball = coll.ball;
+	// 	this.obj = coll.obj;
+	// 	this.isContact = coll.isContact;
+	// 	this.hitTime = coll.hitTime;
+	// 	this.hitDistance = coll.hitDistance;
+	// 	this.hitNormal = coll.hitNormal;
+	// 	this.hitVel = coll.hitVel;
+	// 	this.hitOrgNormalVelocity = coll.hitOrgNormalVelocity;
+	// 	this.hitMomentBit = coll.hitMomentBit;
+	// 	this.hitFlag = coll.hitFlag;
+	// 	return this;
+	// }
 }

@@ -18,12 +18,12 @@
  */
 
 import { Vertex2D } from '../math/vertex2d';
+import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { C_CONTACTVEL, C_LOWNORMVEL, C_TOL_ENDPNTS, C_TOL_RADIUS, PHYS_TOUCH } from './constants';
-import { HitObject } from './hit-object';
-import { Vertex3D } from '../math/vertex3d';
+import { HitObject, HitTestResult } from './hit-object';
 
 export class LineSeg extends HitObject {
 
@@ -68,14 +68,14 @@ export class LineSeg extends HitObject {
 		// zlow and zhigh were already set in constructor
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): number {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): HitTestResult {
 		return this.hitTestBasic(ball, dTime, coll, true, true, true); // normal face, lateral, rigid
 	}
 
-	public hitTestBasic(ball: Ball, dTime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean): number {
+	public hitTestBasic(ball: Ball, dTime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean): HitTestResult {
 
 		if (!this.isEnabled || ball.hit.isFrozen) {
-			return -1.0;
+			return { hitTime: -1.0, coll };
 		}
 
 		// ball velocity
@@ -88,7 +88,7 @@ export class LineSeg extends HitObject {
 
 		// direction true and clearly receding from normal face
 		if (direction && bnv > C_LOWNORMVEL) {
-			return -1.0;
+			return { hitTime: -1.0, coll };
 		}
 
 		// ball position
@@ -110,7 +110,7 @@ export class LineSeg extends HitObject {
 		if (rigid) {
 			if (bnd < -ball.data.radius || lateral && bcpd < 0) {
 				// (ball normal distance) excessive penetration of object skin ... no collision HACK
-				return -1.0;
+				return { hitTime: -1.0, coll };
 			}
 			if (lateral && bnd <= PHYS_TOUCH) {
 				if (inside
@@ -126,7 +126,7 @@ export class LineSeg extends HitObject {
 				hitTime = bnd / -bnv;                                // rate ok for safe divide
 
 			} else {
-				return -1.0;                                         // wait for touching
+				return { hitTime: -1.0, coll };                      // wait for touching
 			}
 		} else { //non-rigid ... target hits
 			if (bnv * bnd >= 0) {                                                 // outside-receding || inside-approaching
@@ -134,7 +134,7 @@ export class LineSeg extends HitObject {
 					|| !ball.hit.vpVolObjs.length                                 // is a trigger, so test:
 					|| Math.abs(bnd) >= ball.data.radius * 0.5                    // not too close ... nor too far away
 					|| inside !== (ball.hit.vpVolObjs.indexOf(this.obj!) < 0)) {  // ...ball outside and hit set or ball inside and no hit set
-					return -1.0;
+					return { hitTime: -1.0, coll };
 				}
 				hitTime = 0;
 				isUnHit = !inside;                                    // ball on outside is UnHit, otherwise it's a Hit
@@ -144,7 +144,7 @@ export class LineSeg extends HitObject {
 		}
 
 		if (!isFinite(hitTime) || hitTime < 0 || hitTime > dTime) {
-			return -1.0; // time is outside this frame ... no collision
+			return { hitTime: -1.0, coll };                          // time is outside this frame ... no collision
 		}
 		const btv = ballVx * this.normal.y - ballVy * this.normal.x; // ball velocity tangent to segment with respect to direction from V1 to V2
 		const btd = (ballX - this.v1.x) * this.normal.y
@@ -152,7 +152,7 @@ export class LineSeg extends HitObject {
 			+ btv * hitTime;                                         // ball tangent distance (projection) (initial position + velocity * hitime)
 
 		if (btd < -C_TOL_ENDPNTS || btd > this.length + C_TOL_ENDPNTS) {  // is the contact off the line segment???
-			return -1.0;
+			return { hitTime: -1.0, coll };
 		}
 		if (!rigid) {                                                // non rigid body collision? return direction
 			coll.hitFlag = isUnHit;                                  // UnHit signal is receding from outside target
@@ -163,7 +163,7 @@ export class LineSeg extends HitObject {
 
 		if (hitZ + ballRadius * 0.5 < this.hitBBox.zlow              // check limits of object's height and depth
 			|| hitZ - ballRadius * 0.5 > this.hitBBox.zhigh) {
-			return -1.0;
+			return { hitTime: -1.0, coll };
 		}
 
 		// hit normal is same as line segment normal
@@ -176,7 +176,7 @@ export class LineSeg extends HitObject {
 			coll.isContact = true;
 			coll.hitOrgNormalVelocity = bnv;
 		}
-		return hitTime;
+		return { hitTime, coll };
 	}
 
 	public collide(coll: CollisionEvent): void {

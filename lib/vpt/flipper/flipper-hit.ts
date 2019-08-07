@@ -39,7 +39,7 @@ import {
 	PHYS_TOUCH,
 } from '../../physics/constants';
 import { elasticityWithFalloff } from '../../physics/functions';
-import { HitObject } from '../../physics/hit-object';
+import { HitObject, HitTestResult } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
 import { TableData } from '../table/table-data';
 import { FlipperConfig } from './flipper';
@@ -105,9 +105,9 @@ export class FlipperHit extends HitObject {
 		this.hitBBox.zhigh = this.mover.hitCircleBase.hitBBox.zhigh;
 	}
 
-	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {
+	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): HitTestResult {
 		if (!this.mover.isEnabled) {
-			return -1;
+			return { hitTime: -1.0, coll };
 		}
 		const lastFace = this.mover.lastHitFace;
 
@@ -119,21 +119,21 @@ export class FlipperHit extends HitObject {
 
 		let hitTime = this.hitTestFlipperFace(pball, dtime, coll, lastFace); // first face
 		if (hitTime >= 0) {
-			return hitTime;
+			return { hitTime, coll };
 		}
 
 		hitTime = this.hitTestFlipperFace(pball, dtime, coll, !lastFace); //second face
 		if (hitTime >= 0) {
 			this.mover.lastHitFace = !lastFace; // change this face to check first // HACK
-			return hitTime;
+			return { hitTime, coll };
 		}
 
 		hitTime = this.hitTestFlipperEnd(pball, dtime, coll); // end radius
 		if (hitTime >= 0) {
-			return hitTime;
+			return { hitTime, coll };
 		}
 
-		hitTime = this.mover.hitCircleBase.hitTest(pball, dtime, coll);
+		({ hitTime, coll } = this.mover.hitCircleBase.hitTest(pball, dtime, coll));
 		if (hitTime >= 0) {
 
 			coll.hitVel = new Vertex2D();
@@ -141,9 +141,9 @@ export class FlipperHit extends HitObject {
 			coll.hitVel.y = 0;		//units: rad*d/t (Radians*diameter/time
 			coll.hitMomentBit = true;
 
-			return hitTime;
+			return { hitTime, coll };
 		} else {
-			return -1.0;	// no hits
+			return { hitTime: -1.0, coll }; // no hits
 		}
 	}
 

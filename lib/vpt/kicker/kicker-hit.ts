@@ -33,6 +33,7 @@ import { Ball } from '../ball/ball';
 import { FLT_MAX } from '../mesh';
 import { KickerData } from './kicker-data';
 import { KickerEvents } from './kicker-events';
+import { HitTestResult } from '../../physics/hit-object';
 
 export class KickerHit extends HitCircle {
 
@@ -63,9 +64,9 @@ export class KickerHit extends HitCircle {
 		this.obj = new KickerEvents();
 	}
 
-	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): number {
+	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): HitTestResult {
 		//any face, not-lateral, non-rigid
-		return  this.hitTestBasicRadius(pball, dtime, coll, false, false, false);
+		return this.hitTestBasicRadius(pball, dtime, coll, false, false, false);
 	}
 
 	public doCollide(player: Player, pball: Ball, hitnormal: Vertex3D, hitbit: boolean, newBall: boolean) {

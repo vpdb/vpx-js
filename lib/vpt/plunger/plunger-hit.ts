@@ -22,7 +22,7 @@ import { Player } from '../../game/player';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { C_DISP_GAIN, C_DISP_LIMIT, C_EMBEDDED, C_EMBEDSHOT, C_LOWNORMVEL } from '../../physics/constants';
-import { HitObject } from '../../physics/hit-object';
+import { HitObject, HitTestResult } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
 import { Plunger, PlungerConfig } from './plunger';
 import { PlungerData } from './plunger-data';
@@ -72,7 +72,7 @@ export class PlungerHit extends HitObject {
 		// zlow & zhigh gets set in constructor
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: Player): number {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: Player): HitTestResult {
 
 		let hitTime = dTime; //start time
 		let isHit = false;
@@ -83,36 +83,37 @@ export class PlungerHit extends HitObject {
 		player.lastPlungerHit = player.timeMsec;
 
 		// We are close enable the plunger light.
-		const hit = new CollisionEvent(ball);
+		let hit = new CollisionEvent(ball);
+		let newTime: number;
 
 		// Check for hits on the non-moving parts, like the side of back
 		// of the plunger.  These are just like hitting a wall.
 		// Check all and find the nearest collision.
 
-		let newTime = this.mover.lineSegBase.hitTest(ball, dTime, hit);
+		({ hitTime: newTime, coll: hit } = this.mover.lineSegBase.hitTest(ball, dTime, hit));
 		if (newTime >= 0 && newTime <= hitTime) {
 			isHit = true;
 			hitTime = newTime;
-			coll.set(hit);
+			coll = hit;
 			coll.hitVel!.x = 0;
 			coll.hitVel!.y = 0;
 		}
 
 		for (let i = 0; i < 2; i++) {
-			newTime = this.mover.lineSegSide[i].hitTest(ball, hitTime, hit);
+			({ hitTime: newTime, coll: hit } = this.mover.lineSegSide[i].hitTest(ball, hitTime, hit));
 			if (newTime >= 0 && newTime <= hitTime) {
 				isHit = true;
 				hitTime = newTime;
-				coll.set(hit);
+				coll = hit;
 				coll.hitVel!.x = 0;
 				coll.hitVel!.y = 0;
 			}
 
-			newTime = this.mover.jointBase[i].hitTest(ball, hitTime, hit);
+			({ hitTime: newTime, coll: hit } = this.mover.jointBase[i].hitTest(ball, hitTime, hit));
 			if (newTime >= 0 && newTime <= hitTime) {
 				isHit = true;
 				hitTime = newTime;
-				coll.set(hit);
+				coll = hit;
 				coll.hitVel!.x = 0;
 				coll.hitVel!.y = 0;
 			}
@@ -169,21 +170,21 @@ export class PlungerHit extends HitObject {
 		const deltaY = this.mover.speed * xferRatio;
 
 		// check the moving bits
-		newTime = this.mover.lineSegEnd.hitTest(ball, hitTime, hit);
+		({ hitTime: newTime, coll: hit } = this.mover.lineSegEnd.hitTest(ball, hitTime, hit));
 		if (newTime >= 0 && newTime <= hitTime) {
 			isHit = true;
 			hitTime = newTime;
-			coll.set(hit);
+			coll = hit;
 			coll.hitVel!.x = 0;
 			coll.hitVel!.y = deltaY;
 		}
 
 		for (let i = 0; i < 2; i++) {
-			newTime = this.mover.jointEnd[i].hitTest(ball, hitTime, hit);
+			({ hitTime: newTime, coll: hit } = this.mover.jointEnd[i].hitTest(ball, hitTime, hit));
 			if (newTime >= 0 && newTime <= hitTime) {
 				isHit = true;
 				hitTime = newTime;
-				coll.set(hit);
+				coll = hit;
 				coll.hitVel!.x = 0;
 				coll.hitVel!.y = deltaY;
 			}
@@ -235,11 +236,11 @@ export class PlungerHit extends HitObject {
 			}
 
 			// return the collision time delta
-			return hitTime;
+			return { hitTime, coll };
 
 		} else {
 			// no collision
-			return -1.0;
+			return { hitTime: -1.0, coll };
 		}
 	}
 
