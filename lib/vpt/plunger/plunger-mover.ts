@@ -518,6 +518,7 @@ export class PlungerMover implements MoverObject {
 			// perform any other tasks it normally does when the
 			// actual Launch Ball button is pressed.
 			if (this.player) {
+				// fixme event
 				//g_pplayer->this.ptable->FireKeyEvent(DISPID_GameEvents_KeyDown, g_pplayer->this.rgKeys[ePlungerKey]);
 			}
 
@@ -656,7 +657,7 @@ export class PlungerMover implements MoverObject {
 			// timing, so we need to adjust for the new VP 10 time base.  VP 10
 			// runs physics frames at roughly 10x the rate of VP 9, so the time
 			// per frame is about 1/10 the VP 9 time.
-			const plungerFriction = 0.9;
+			const plungerFriction = 0.95;
 			const normalize = this.tableData.plungerNormalize / 13.0 / 100.0;
 			const dt = 0.1;
 			this.speed *= plungerFriction;

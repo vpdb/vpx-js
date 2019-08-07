@@ -113,4 +113,8 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRendera
 	public isVisible(table: Table): boolean {
 		return true;
 	}
+
+	public isCollidable(): boolean {
+		return true;
+	}
 }

@@ -161,7 +161,7 @@ export class Table implements IRenderable {
 	}
 
 	public getHittables(): IHittable[] {
-		return this.items.filter(item => !!item.getHitShapes);
+		return this.items.filter(item => !!item.getHitShapes && item.isCollidable());
 	}
 
 	public getScaleZ(): number {

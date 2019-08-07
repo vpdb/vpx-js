@@ -67,6 +67,10 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		return this.data.fVisible;
 	}
 
+	public isCollidable(): boolean {
+		return true;
+	}
+
 	public getMover(): FlipperMover {
 		return this.hit!.getMoverObject();
 	}

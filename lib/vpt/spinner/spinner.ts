@@ -70,6 +70,10 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		return this.data.fVisible;
 	}
 
+	public isCollidable(): boolean {
+		return true;
+	}
+
 	public getMeshes(table: Table): Meshes {
 		const spinner = this.meshGenerator.generateMeshes(table);
 		const meshes: Meshes = {};

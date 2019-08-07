@@ -70,6 +70,10 @@ export class Kicker implements IRenderable, IHittable, IBallCreationPosition {
 		return this.data.kickerType !== Kicker.TypeKickerInvisible;
 	}
 
+	public isCollidable(): boolean {
+		return true;
+	}
+
 	public getMeshes(table: Table): Meshes {
 		return {
 			kicker: {
