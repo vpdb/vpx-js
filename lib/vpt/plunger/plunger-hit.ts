@@ -28,6 +28,7 @@ import { Plunger, PlungerConfig } from './plunger';
 import { PlungerData } from './plunger-data';
 import { PlungerMover } from './plunger-mover';
 import { PlungerState } from './plunger-state';
+import { Vertex2D } from '../../math/vertex2d';
 
 export class PlungerHit extends HitObject {
 
@@ -95,8 +96,7 @@ export class PlungerHit extends HitObject {
 			isHit = true;
 			hitTime = newTime;
 			coll = hit;
-			coll.hitVel!.x = 0;
-			coll.hitVel!.y = 0;
+			coll.hitVel = new Vertex2D(0, 0);
 		}
 
 		for (let i = 0; i < 2; i++) {
@@ -105,8 +105,7 @@ export class PlungerHit extends HitObject {
 				isHit = true;
 				hitTime = newTime;
 				coll = hit;
-				coll.hitVel!.x = 0;
-				coll.hitVel!.y = 0;
+				coll.hitVel = new Vertex2D(0, 0);
 			}
 
 			({ hitTime: newTime, coll: hit } = this.mover.jointBase[i].hitTest(ball, hitTime, hit));
@@ -114,8 +113,7 @@ export class PlungerHit extends HitObject {
 				isHit = true;
 				hitTime = newTime;
 				coll = hit;
-				coll.hitVel!.x = 0;
-				coll.hitVel!.y = 0;
+				coll.hitVel = new Vertex2D(0, 0);
 			}
 		}
 
@@ -175,8 +173,7 @@ export class PlungerHit extends HitObject {
 			isHit = true;
 			hitTime = newTime;
 			coll = hit;
-			coll.hitVel!.x = 0;
-			coll.hitVel!.y = deltaY;
+			coll.hitVel = new Vertex2D(0, deltaY);
 		}
 
 		for (let i = 0; i < 2; i++) {
@@ -185,8 +182,7 @@ export class PlungerHit extends HitObject {
 				isHit = true;
 				hitTime = newTime;
 				coll = hit;
-				coll.hitVel!.x = 0;
-				coll.hitVel!.y = deltaY;
+				coll.hitVel = new Vertex2D(0, deltaY);
 			}
 		}
 
