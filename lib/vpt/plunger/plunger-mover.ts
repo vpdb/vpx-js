@@ -48,7 +48,7 @@ export class PlungerMover implements MoverObject {
 	/**
 	 * position of the on-screen plunger (bottom)
 	 */
-	public y: number = 0;
+	public y: number;
 
 	// boundaries for detecting collisions
 	public readonly lineSegBase = new LineSeg(new Vertex2D(0, 0), new Vertex2D(0, 0), 0, 0);
@@ -316,6 +316,7 @@ export class PlungerMover implements MoverObject {
 
 		this.x = config.x;
 		this.x2 = config.x2;
+		this.y = config.y;
 		this.frameEnd = config.frameTop;
 		this.frameStart = config.frameBottom;
 		this.frameLen = config.frameBottom - config.frameTop;
