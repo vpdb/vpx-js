@@ -3,7 +3,7 @@
 *A port of the best pinball simulator out there*
 
 [![Build Status][travis-image]][travis-url]
-[![codecov](https://codecov.io/gh/vpdb/vpx-toolbox/branch/master/graph/badge.svg)](https://codecov.io/gh/vpdb/vpx-toolbox)
+[![codecov](https://codecov.io/gh/vpdb/vpx-js/branch/master/graph/badge.svg)](https://codecov.io/gh/vpdb/vpx-js)
 [![Dependencies][dependencies-image]][dependencies-url]
 
 ## Features
@@ -94,7 +94,7 @@ We're currently using the metalness/shininess model which seems to work well.
 
 GPLv2, see [LICENSE](LICENSE).
 
-[travis-image]: https://img.shields.io/travis/vpdb/vpx-toolbox.svg?style=flat-square
-[travis-url]: https://travis-ci.org/vpdb/vpx-toolbox
-[dependencies-image]: https://david-dm.org/vpdb/vpx-toolbox.svg?style=flat-square
-[dependencies-url]: https://david-dm.org/vpdb/vpx-toolbox
+[travis-image]: https://img.shields.io/travis/vpdb/vpx-js.svg?style=flat-square
+[travis-url]: https://travis-ci.org/vpdb/vpx-js
+[dependencies-image]: https://david-dm.org/vpdb/vpx-js.svg?style=flat-square
+[dependencies-url]: https://david-dm.org/vpdb/vpx-js
