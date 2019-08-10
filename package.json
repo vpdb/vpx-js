@@ -1,12 +1,12 @@
 {
-	"name": "vpx-toolbox",
+	"name": "vpx-js",
 	"version": "1.2.0",
-	"description": "A set of utils to deal with Visual Pinball files.",
+	"description": "Visual Pinball for Node.js and the Browser",
 	"main": "dist/lib/index.js",
 	"types": "dist/lib/index.d.ts",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/vpdb/vpx-toolbox"
+		"url": "https://github.com/vpdb/vpx-js"
 	},
 	"scripts": {
 		"build": "rimraf dist && tsc && cp -r res/maps dist/res",
@@ -40,35 +40,35 @@
 		"gltf-pipeline": "github:freezy/gltf-pipeline#hotfix/dedupe",
 		"gm": "^1.23.1",
 		"pngquant": "^3.0.0",
-		"sharp": "^0.22.1",
-		"three": "^0.106.0"
+		"sharp": "^0.23.0",
+		"three": "^0.107.0"
 	},
 	"devDependencies": {
-		"@types/chai": "4.1.7",
+		"@types/chai": "4.2.0",
 		"@types/gm": "1.18.3",
 		"@types/microtime": "2.1.0",
 		"@types/mocha": "5.2.7",
-		"@types/node": "12.6.4",
+		"@types/node": "12.7.1",
 		"@types/sharp": "0.22.2",
 		"@types/sinon": "7.0.13",
-		"@types/sinon-chai": "3.2.2",
+		"@types/sinon-chai": "3.2.3",
 		"chai": "4.2.0",
 		"esm": "3.2.25",
 		"looks-same": "7.2.1",
 		"microtime": "3.0.0",
-		"mocha": "6.1.4",
+		"mocha": "6.2.0",
 		"nyc": "14.1.1",
 		"rimraf": "2.6.3",
-		"sinon": "7.3.2",
+		"sinon": "7.4.1",
 		"sinon-chai": "3.3.0",
 		"ts-node": "8.3.0",
 		"tslint": "5.18.0",
 		"typescript": "3.5.3"
 	},
 	"bugs": {
-		"url": "https://github.com/vpdb/vpx-toolbox/issues"
+		"url": "https://github.com/vpdb/vpx-js/issues"
 	},
-	"homepage": "https://github.com/vpdb/vpx-toolbox#readme",
+	"homepage": "https://github.com/vpdb/vpx-js#readme",
 	"nyc": {
 		"require": [
 			"ts-node/register"

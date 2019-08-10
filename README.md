@@ -1,6 +1,6 @@
-# VPX Toolbox
+# Visual Pinball X in JavaScript
 
-*A set of Node.js tools that handles Visual Pinball files.*
+*A port of the best pinball simulator out there*
 
 [![Build Status][travis-image]][travis-url]
 [![codecov](https://codecov.io/gh/vpdb/vpx-toolbox/branch/master/graph/badge.svg)](https://codecov.io/gh/vpdb/vpx-toolbox)
@@ -8,125 +8,64 @@
 
 ## Features
 
-Convert `.vpx` files to [GLTF](https://www.khronos.org/gltf/) files.
+This isn't a ready-to-use game. It's a library of loosely-coupled components that
+implement some of Visual Pinball's features.
 
-- `.vpx` files are the binary files that [Visual Pinball](https://sourceforge.net/projects/vpinball/) 
-  uses to store a pinball game.
-- `.glb`/`.gltf` files contain 3D scenes in an open and royalty-free format. 
-  Tooling for this format is [excellent](https://github.com/KhronosGroup/glTF#gltf-tools)
-  and I don't know of any 3D modelling software that doesn't support it.
+Visual Pinball's player can be split into three parts:
+
+1. The rendering engine
+2. The physics engine
+3. The scripting engine
+    
+This library allows exporting a VPX file into a [three.js](https://threejs.org/)
+scene, which covers the first point. A physics loop is implemented by the `Player`
+class. Collision detection and rigid body dynamics will be fully ported, covering
+the second part. The third part is still TODO, more details can be found [here](https://github.com/freezy/vpweb/issues/1).  
+    
+### Rendering 
+
+VPX-JS allows reading a VPX file file and exporting a three.js scene directly
+in the browser. However, it also supports export to [GLTF](https://www.khronos.org/gltf/)
+files, which is nice, because it allows off-loading the export to a server.
 
 So why use this when Visual Pinball already has an [OBJ](https://en.wikipedia.org/wiki/Wavefront_.obj_file)
-export feature? Well, VPX Toolbox does some more things:
+export feature? Well, VPX-JS does some more things:
 
 - GLTF is somewhat more powerful than OBJ. It allows us to include materials, 
   textures and lights in one single file.
-- VPX Toolbox does some optimizations when reading data from the `.vpx` file:
+- VPX-JS does some optimizations when reading data from the `.vpx` file:
    - PNG textures with no transparency are converted to JPEG
    - PNG textures with transparency are [PNG-crushed](https://en.wikipedia.org/wiki/Pngcrush)
    - Meshes are compressed using [Draco](https://google.github.io/draco/)
 - It's platform-independent, so you can run it on Linux and MacOS as well.
 
+![image](https://user-images.githubusercontent.com/70426/56841267-0419fc00-688d-11e9-9996-6d84070da392.png)
+
+### Physics
+
+VPX-JS uses the same physics code than Visual Pinball. That means the gameplay
+is identical in the browser than when running VPX. 
+
+### Scripting and VPM
+
+For scripting, see [this issue](https://github.com/freezy/vpweb/issues/1). About
+VPM, there isn't a JavaScript implementation of PinMAME yet. However, @neophob
+wrote a [WPC emulator](https://github.com/neophob/wpc-emu) from scratch that will
+cover many games already. 
+
 ## Installation
 
-- Install [Node.js](https://nodejs.org/en/)
-- Open a terminal and type:
+Clone the repo and use it! At some point it'll be on NPM.
 
 ```bash
-npm install -g vpx-toolbox
+git clone https://github.com/vpdb/vpx-js.git
+cd vpx-js
+npm run build
 ```
 
 ## Usage
 
-### Extract Table Script
-
-To print the table script via CLI:
-
-```bash
-vptscript <source.vpx>
-```
-
-Using the API:
-
-```js
-const { Table } = require(`vpx-toolbox`);
-
-(async () => {
-	
-	// parse the table
-	const vpt = await Table.load('my-table.vpx');
-	
-	// read script
-	const script = await vpt.getTableScript();
-	console.log(script);
-})();
-```
-
-### Convert to GLTF
-
-CLI:
-
-```bash
-vpt2glb <source.vpx> [<destination.glb>]
-```
-
-Additional options are `--compress-vertices`, `--skip-optimize`, `--no-textures`,
-`--no-materials` and `--no-lights`. You can also skip generation of individual
-item types by using `--no-primitives`, `--no-triggers`, `--no-kickers`, `--no-gates`,
-`--no-targets`, `--no-flippers`, `--no-bumpers`, `--no-ramps`, `--no-surfaces`, 
-`--no-rubbers`, `--no-bulbs`, `--no-surface-lights` and `--no-playfield`.    
-    
-Otherwise, the API is quite simple:
-
-```js
-const { writeFileSync } = require('fs');
-const { Table } = require(`vpx-toolbox`);
-
-(async () => {
-	
-	// parse the table
-	const vpt = await Table.load('my-table.vpx');
-
-	// export the table to GLB
-	const glb = await vpt.exportGlb({
-		applyTextures: true,
-		applyMaterials: true,
-		exportLightBulbLights: true,
-		optimizeTextures: true,
-		gltfOptions: { compressVertices: true, forcePowerOfTwoTextures: true },
-		exportPrimitives: true,
-		exportTriggers: true,
-		exportKickers: true,
-		exportGates: true,
-		exportHitTargets: true,
-		exportFlippers: true,
-		exportBumpers: true,
-		exportRamps: true,
-		exportSurfaces: true,
-		exportRubbers: true,
-		exportLightBulbs: true,
-		exportPlayfieldLights: true,
-		exportPlayfield: true,
-	});
-
-	// write to disk
-	writeFileSync('my-table.glb', glb);	
-})();
-```
- 
-## Result
-
-For a quick check you can use one of the [various](https://sandbox.babylonjs.com/)
-[online](https://threejs.org/editor/) [viewers](https://gltf-viewer.donmccurdy.com/). 
-The default Windows [3D Viewer](https://en.wikipedia.org/wiki/Microsoft_3D_Viewer) comes
-with GLTF support as well, however it doesn't support the Dracos extensions, so 
-you'll need to disable mesh compression if you want to open it with 3D Viewer.
-
-VPDB uses this to display 3D models in the browser:
-
-![image](https://user-images.githubusercontent.com/70426/56841267-0419fc00-688d-11e9-9996-6d84070da392.png)
-
-[Live version](https://vpdb.io/games/dk/releases/pkvazc1pw) (click on *3D View*)
+WIP. The API will be documented when it's considered stable.
 
 ## Tests
 
