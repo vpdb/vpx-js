@@ -25,13 +25,13 @@ import { IBallCreationPosition, Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
+import { Ball } from '../ball/ball';
 import { Meshes } from '../item-data';
+import { FLT_MAX } from '../mesh';
 import { Texture } from '../texture';
 import { KickerData } from './kicker-data';
 import { KickerHit } from './kicker-hit';
 import { KickerMeshGenerator } from './kicker-mesh-generator';
-import { Ball } from '../ball/ball';
-import { FLT_MAX } from '../mesh';
 
 /**
  * VPinball's kickers.

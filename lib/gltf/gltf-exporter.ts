@@ -54,6 +54,7 @@ import {
 	Vector3,
 } from 'three';
 import { logger } from '../util/logger';
+import { ParseOptions } from '../vpt/table/table-exporter';
 import {
 	GltfAnimationSampler,
 	GltfBufferView,
@@ -68,7 +69,6 @@ import {
 	GltfScene,
 } from './gltf';
 import { IImage } from './image';
-import { ParseOptions } from '../vpt/table/table-exporter';
 
 const gltfPipeline = require('gltf-pipeline');
 const PromisePool = require('es6-promise-pool');

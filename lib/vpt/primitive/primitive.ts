@@ -27,9 +27,9 @@ import { IFireEvents } from '../../physics/events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { PrimitiveData } from './primitive-data';
+import { PrimitiveEvents } from './primitive-events';
 import { PrimitiveHitGenerator } from './primitive-hit-generator';
 import { PrimitiveMeshGenerator } from './primitive-mesh-generator';
-import { PrimitiveEvents } from './primitive-events';
 
 /**
  * VPinball's primitive.

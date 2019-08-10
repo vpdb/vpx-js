@@ -20,15 +20,15 @@
 import { Storage } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
+import { Player } from '../../game/player';
+import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { Table } from '../table/table';
 import { RubberData } from './rubber-data';
+import { RubberEvents } from './rubber-events';
 import { RubberHitGenerator } from './rubber-hit-generator';
 import { RubberMeshGenerator } from './rubber-mesh-generator';
-import { Player } from '../../game/player';
-import { Matrix3D } from '../../math/matrix3d';
-import { RubberEvents } from './rubber-events';
 
 /**
  * VPinball's rubber item.

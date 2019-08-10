@@ -29,11 +29,11 @@ import { CollisionType } from '../../physics/collision-type';
 import { STATICTIME } from '../../physics/constants';
 import { IFireEvents } from '../../physics/events';
 import { HitCircle } from '../../physics/hit-circle';
+import { HitTestResult } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
 import { FLT_MAX } from '../mesh';
 import { KickerData } from './kicker-data';
 import { KickerEvents } from './kicker-events';
-import { HitTestResult } from '../../physics/hit-object';
 
 export class KickerHit extends HitCircle {
 
