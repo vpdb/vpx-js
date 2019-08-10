@@ -19,11 +19,11 @@
 
 /* tslint:disable:no-bitwise */
 import { BufferGeometry, ExtrudeBufferGeometry, Shape, Vector2 } from 'three';
-import { VpTableExporterOptions } from './table-exporter';
 import { Vertex3DNoTex2 } from '../../math/vertex';
 import { Mesh } from '../mesh';
 import { Table } from './table';
 import { TableData } from './table-data';
+import { VpTableExporterOptions } from './table-exporter';
 
 export class TableMeshGenerator {
 

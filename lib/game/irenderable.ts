@@ -19,10 +19,10 @@
 
 import { BufferGeometry, Material as ThreeMaterial, MeshStandardMaterial } from 'three';
 import { Table } from '..';
-import { VpTableExporterOptions } from '../vpt/table/table-exporter';
 import { Meshes } from '../vpt/item-data';
 import { Material } from '../vpt/material';
 import { Mesh } from '../vpt/mesh';
+import { VpTableExporterOptions } from '../vpt/table/table-exporter';
 import { Texture } from '../vpt/texture';
 
 export interface IRenderable {

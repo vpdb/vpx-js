@@ -19,16 +19,16 @@
 
 import { Table } from '../..';
 import { EdgeSet } from '../../math/edge-set';
+import { degToRad } from '../../math/float';
 import { Vertex3D } from '../../math/vertex3d';
+import { CollisionType } from '../../physics/collision-type';
 import { HitObject } from '../../physics/hit-object';
 import { HitPoint } from '../../physics/hit-point';
 import { HitTriangle } from '../../physics/hit-triangle';
 import { Mesh } from '../mesh';
 import { RubberData } from './rubber-data';
-import { RubberMeshGenerator } from './rubber-mesh-generator';
 import { RubberEvents } from './rubber-events';
-import { degToRad } from '../../math/float';
-import { CollisionType } from '../../physics/collision-type';
+import { RubberMeshGenerator } from './rubber-mesh-generator';
 
 export class RubberHitGenerator {
 
