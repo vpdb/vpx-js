@@ -363,22 +363,12 @@ export class Player extends EventEmitter {
 	 *
 	 * Call this before rendering each frame.
 	 *
-	 * @param time Absolute time in microseconds
-	 * @return Absolute time in microseconds
+	 * @param time Absolute time in milliseconds
+	 * @return Absolute time in milliseconds
 	 */
 	public updatePhysics(time?: number): number {
 
-		const initialTimeUsec = time || Math.floor(now() * 1000);
-
-		// DJRobX's crazy latency-reduction code
-		const deltaFrame = 0;
-		// if (this.minPhysLoopTime > 0 && this.lastFlipTime > 0) {
-		//
-		// 	// We want the physics loops to sync up to the the frames, not
-		// 	// the post-render period, as that can cause some judder.
-		// 	deltaFrame = initialTimeUsec - this.lastFlipTime;
-		// 	initialTimeUsec -= deltaFrame;
-		// }
+		const initialTimeUsec = time !== undefined ? time * 1000 : Math.floor(now() * 1000);
 
 //#ifdef FPS
 		this.lastFrameDuration = initialTimeUsec - this.lastTimeUsec;
@@ -427,7 +417,7 @@ export class Player extends EventEmitter {
 			firstCycle = false;
 		} // end while (m_curPhysicsFrameTime < initial_time_usec)
 
-		this.physPeriod = (Math.floor(now() * 1000) - deltaFrame) - initialTimeUsec;
+		this.physPeriod = Math.floor(now() * 1000) - initialTimeUsec;
 		return initialTimeUsec;
 	}
 
