@@ -18,6 +18,9 @@
  */
 
 import { Player } from '../lib/game/player';
+import { Ball } from '../lib/vpt/ball/ball';
+import { Table } from '../lib';
+import { Vertex3D } from '../lib/math/vertex3d';
 
 /**
  * Simulates a given number of milliseconds.
@@ -33,4 +36,29 @@ export function simulateCycles(player: Player, duration: number, tickDuration = 
 		player.physicsSimulateCycle(tickDuration);
 	}
 
+}
+
+/**
+ * Creates a ball at the given position
+ * @param player
+ * @param x Position at x
+ * @param y Position at y
+ * @param z Position at z
+ * @param vx Velocity for x
+ * @param vy Velocity for y
+ * @param vz Velocity for z
+ * @returns Created ball
+ */
+export function createBall(player: Player, x: number, y: number, z: number, vx = 0, vy = 0, vz = 0): Ball {
+	return player.createBall({
+		getBallCreationPosition(t: Table): Vertex3D {
+			return new Vertex3D(x, y, z);
+		},
+		getBallCreationVelocity(t: Table): Vertex3D {
+			return new Vertex3D(vx, vy, vz);
+		},
+		onBallCreated(p: Player, b: Ball): void {
+			// do nothing
+		},
+	});
 }

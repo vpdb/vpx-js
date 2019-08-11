@@ -21,13 +21,10 @@ import * as chai from 'chai';
 import { expect } from 'chai';
 import sinonChai = require('sinon-chai');
 import { Table } from '../..';
-import { simulateCycles } from '../../../test/physics.helper';
+import { createBall } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
-import { degToRad } from '../../math/float';
-import { Vertex3D } from '../../math/vertex3d';
-import { Ball } from './ball';
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
@@ -66,18 +63,21 @@ describe('The VPinball ball physics', () => {
 		expect(ball.getState().pos.z).to.be.below(50);  // ball nearly reached the playfield
 	});
 
-});
+	it('should let the ball move to the right direction with velocity', async () => {
 
-function createBall(player: Player, x: number, y: number, z: number): Ball {
-	return player.createBall({
-		getBallCreationPosition(t: Table): Vertex3D {
-			return new Vertex3D(x, y, z);
-		},
-		getBallCreationVelocity(t: Table): Vertex3D {
-			return new Vertex3D(0, 0, 0);
-		},
-		onBallCreated(p: Player, b: Ball): void {
-			// do nothing
-		},
+		const ball = createBall(player, 500, 500, 500, 10);
+
+		// assert initial position with velocity
+		expect(ball.getState().pos.x).to.equal(500);
+		expect(ball.getState().pos.y).to.equal(500);
+		expect(ball.getState().pos.z).to.equal(525); // radius gets added
+
+		player.updatePhysics(0);
+		player.updatePhysics(250);
+
+		expect(ball.getState().pos.x).to.be.above(700); // moves this time
+		expect(ball.getState().pos.y).to.be.above(500);
+		expect(ball.getState().pos.z).to.be.below(50);
 	});
-}
+
+});
