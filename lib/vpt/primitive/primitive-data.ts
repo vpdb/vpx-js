@@ -43,8 +43,8 @@ export class PrimitiveData extends ItemData {
 	public Sides!: number;
 	public szMaterial?: string;
 	private SideColor: number = 0x969696;
-	public fVisible: boolean = false;
-	private fReflectionEnabled: boolean = true;
+	public isVisible: boolean = false;
+	private isReflectionEnabled: boolean = true;
 	public DrawTexturesInside: boolean = false;
 	public fHitEvent: boolean = false;
 	public threshold!: number;
@@ -54,7 +54,7 @@ export class PrimitiveData extends ItemData {
 	public scatter!: number;
 	private edgeFactorUI: number = 0.25;
 	public collisionReductionFactor!: number;
-	public fCollidable: boolean = true;
+	public isCollidable: boolean = true;
 	public isToy: boolean = false;
 	public szPhysicsMaterial?: string;
 	public fOverwritePhysics: boolean = false;
@@ -102,8 +102,8 @@ export class PrimitiveData extends ItemData {
 			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
 			case 'SCOL': this.SideColor = this.getInt(buffer); break;
-			case 'TVIS': this.fVisible = this.getBool(buffer); break;
-			case 'REEN': this.fReflectionEnabled = this.getBool(buffer); break;
+			case 'TVIS': this.isVisible = this.getBool(buffer); break;
+			case 'REEN': this.isReflectionEnabled = this.getBool(buffer); break;
 			case 'DTXI': this.DrawTexturesInside = this.getBool(buffer); break;
 			case 'HTEV': this.fHitEvent = this.getBool(buffer); break;
 			case 'THRS': this.threshold = this.getFloat(buffer); break;
@@ -113,7 +113,7 @@ export class PrimitiveData extends ItemData {
 			case 'RSCT': this.scatter = this.getFloat(buffer); break;
 			case 'EFUI': this.edgeFactorUI = this.getFloat(buffer); break;
 			case 'CORF': this.collisionReductionFactor = this.getFloat(buffer); break;
-			case 'CLDR': this.fCollidable = this.getBool(buffer); break; // originally "CLDRP"
+			case 'CLDR': this.isCollidable = this.getBool(buffer); break; // originally "CLDRP"
 			case 'ISTO': this.isToy = this.getBool(buffer); break;
 			case 'MAPH': this.szPhysicsMaterial = this.getString(buffer, len); break;
 			case 'OVPH': this.fOverwritePhysics = this.getBool(buffer); break;

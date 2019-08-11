@@ -29,11 +29,13 @@ import { TableData } from '../table/table-data';
 import { FlipperConfig } from './flipper';
 import { FlipperData } from './flipper-data';
 import { FlipperState } from './flipper-state';
+import { FireEvent, FireEvents } from '../../physics/fire-events';
 
 export class FlipperMover implements MoverObject {
 
 	private readonly data: FlipperData;
 	private readonly state: FlipperState;
+	private readonly fireEvents: FireEvents;
 	private readonly player: Player;
 	private readonly tableData: TableData;
 
@@ -66,8 +68,9 @@ export class FlipperMover implements MoverObject {
 	public isEnabled: boolean = false;
 	public lastHitFace: boolean;
 
-	constructor(config: FlipperConfig, flipperData: FlipperData, state: FlipperState, player: Player, tableData: TableData) {
+	constructor(config: FlipperConfig, flipperData: FlipperData, state: FlipperState, fireEvents: FireEvents, player: Player, tableData: TableData) {
 
+		this.fireEvents = fireEvents;
 		this.hitCircleBase = new HitCircle(config.center, config.baseRadius, config.zLow, config.zHigh);
 		this.data = flipperData;
 		this.state = state;
@@ -144,15 +147,14 @@ export class FlipperMover implements MoverObject {
 
 			if (this.enableRotateEvent > 0) {
 				logger().info('[%s] Flipper is up', this.data.getName());
-				// fixme event
-				// this.m_pflipper->FireVoidEventParm(DISPID_LimitEvents_EOS, anglespd); // send EOS event
-				//
+				this.fireEvents.fireVoidEventParm(FireEvent.LimitEventsEOS, anglespd); // send EOS event
+
 				// g_pplayer->this.m_pininput.this.m_leftkey_down_usec_EOS = usec(); // debug only
 				// g_pplayer->this.m_pininput.this.m_leftkey_down_frame_EOS = g_pplayer->this.m_overall_frames;
 
 			} else if (this.enableRotateEvent < 0) {
 				logger().info('[%s] Flipper is down', this.data.getName());
-				// this.m_pflipper->FireVoidEventParm(DISPID_LimitEvents_BOS, anglespd); // send Beginning of Stroke/Park event
+				this.fireEvents.fireVoidEventParm(FireEvent.LimitEventsBOS, anglespd); // send Beginning of Stroke/Park event
 			}
 			this.enableRotateEvent = 0;
 		}

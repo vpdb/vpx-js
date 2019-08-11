@@ -24,6 +24,7 @@ import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { C_CONTACTVEL, C_LOWNORMVEL, PHYS_TOUCH, STATICTIME } from './constants';
 import { HitObject, HitTestResult } from './hit-object';
+import { FireEvent } from './fire-events';
 
 export class Hit3DPoly extends HitObject {
 
@@ -107,13 +108,11 @@ export class Hit3DPoly extends HitObject {
 				ball.state.pos.add(ball.hit.vel.clone().multiplyScalar(STATICTIME));     // move ball slightly forward
 				if (i < 0) {
 					ball.hit.vpVolObjs.push(this.obj!);
-					// fixme event
-					// ((Trigger*)m_obj)->FireGroupEvent(DISPID_HitEvents_Hit);
+					this.obj!.fireGroupEvent(FireEvent.HitEventsHit);
 
 				} else {
 					ball.hit.vpVolObjs.splice(i, 1);
-					// fixme event
-					// ((Trigger*)m_obj)->FireGroupEvent(DISPID_HitEvents_Unhit);
+					this.obj!.fireGroupEvent(FireEvent.HitEventsUnhit);
 				}
 			}
 		}

@@ -29,30 +29,29 @@ import { NodeBinaryReader } from '../../io/binary-reader.node';
 chai.use(sinonChai);
 const three = new ThreeHelper();
 
-describe('The VPinball ball collision', () => {
+describe('The VPinball flipper collision', () => {
 
 	let table: Table;
 	let player: Player;
 
 	before(async () => {
-		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-empty.vpx')));
+		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-flipper.vpx')));
 	});
 
 	beforeEach(() => {
 		player = new Player(table);
 	});
 
-	it('should hit the bottom of the playfield', async () => {
+	it('should collide with the ball', async () => {
 
-		const ball = createBall(player, 500, 2100, 0);
+		// put ball on top of default flipper
+		const ball = createBall(player, 350, 1040, 0);
 
 		player.updatePhysics(0);
 		player.updatePhysics(2000);
 
-		expect(Math.round(ball.getState().pos.y)).to.equal(2197);
-
-		player.updatePhysics(3000);
-		expect(Math.round(ball.getState().pos.y)).to.equal(2197);
+		expect(ball.getState().pos.x).to.be.above(420); // diverted to the right
+		expect(ball.getState().pos.y).to.be.above(1100); // but still below
 	});
 
 });

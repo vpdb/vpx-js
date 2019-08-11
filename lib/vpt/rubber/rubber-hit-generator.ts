@@ -22,12 +22,12 @@ import { EdgeSet } from '../../math/edge-set';
 import { degToRad } from '../../math/float';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionType } from '../../physics/collision-type';
+import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { HitPoint } from '../../physics/hit-point';
 import { HitTriangle } from '../../physics/hit-triangle';
 import { Mesh } from '../mesh';
 import { RubberData } from './rubber-data';
-import { RubberEvents } from './rubber-events';
 import { RubberMeshGenerator } from './rubber-mesh-generator';
 
 export class RubberHitGenerator {
@@ -40,7 +40,7 @@ export class RubberHitGenerator {
 		this.meshGenerator = meshGenerator;
 	}
 
-	public generateHitObjects(events: RubberEvents, table: Table): HitObject[] {
+	public generateHitObjects(fireEvents: FireEvents, table: Table): HitObject[] {
 
 		const hitObjects: HitObject[] = [];
 		const addedEdges: EdgeSet = new EdgeSet();
@@ -68,10 +68,10 @@ export class RubberHitGenerator {
 			const v = new Vertex3D(mv.x, mv.y, mv.z);
 			hitObjects.push(new HitPoint(v));
 		}
-		return this.updateCommonParameters(hitObjects, events, table);
+		return this.updateCommonParameters(hitObjects, fireEvents, table);
 	}
 
-	private updateCommonParameters(hitObjects: HitObject[], events: RubberEvents, table: Table): HitObject[] {
+	private updateCommonParameters(hitObjects: HitObject[], fireEvents: FireEvents, table: Table): HitObject[] {
 		const mat = table.getMaterial(this.data.szPhysicsMaterial);
 		for (const obj of hitObjects) {
 			if (mat && !this.data.fOverwritePhysics) {
@@ -91,7 +91,7 @@ export class RubberHitGenerator {
 			obj.setType(CollisionType.Primitive);
 			// hard coded threshold for now
 			obj.threshold = 2.0;
-			obj.obj = events;
+			obj.obj = fireEvents;
 			obj.fe = this.data.fHitEvent;
 		}
 		return hitObjects;

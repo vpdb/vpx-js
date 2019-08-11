@@ -22,16 +22,14 @@ import { FRect3D } from '../math/frect3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
-import { IFireEvents } from './events';
+import { FireEvent, FireEvents } from './fire-events';
 import { MoverObject } from './mover-object';
 
 export abstract class HitObject {
 
-	private pfeDebug?: IFireEvents;
-	public obj?: IFireEvents; // base object pointer (mainly used as IFireEvents, but also as HitTarget or Primitive or Trigger or Kicker or Gate, see below)
+	public obj?: FireEvents; // base object pointer (mainly used as IFireEvents, but also as HitTarget or Primitive or Trigger or Kicker or Gate, see below)
 
 	public threshold: number = 0;  // threshold for firing an event (usually (always??) normal dot ball-velocity)
-
 	public hitBBox: FRect3D = new FRect3D();
 
 	protected elasticity: number = 0.3;
@@ -40,7 +38,6 @@ export abstract class HitObject {
 	protected scatter: number = 0; // in radians
 
 	protected objType: CollisionType = CollisionType.Null;
-
 	protected isEnabled: boolean = true;
 
 	/**
@@ -88,21 +85,21 @@ export abstract class HitObject {
 		return this;
 	}
 
-	public fireHitEvent(pball: Ball): void {
+	public fireHitEvent(ball: Ball): void {
 		if (this.obj && this.fe && this.isEnabled) {
 
-			// fixme ifireevent
-			// // is this the same place as last event? if same then ignore it
-			// const distLs = (pball.eventPos.clone().sub(pball.pos!)).lengthSq();
-			//
-			// pball.eventPos = pball.pos!;    //remember last collide position
-			//
-			// // hit targets when used with a captured ball have always a too small distance
-			// const normalDist = (this.objType === CollisionType.HitTarget) ? 0.0 : 0.25; //!! magic distance
-			//
-			// if (distLs > normalDist) { // must be a new place if only by a little
-			// 	//this.obj.FireGroupEvent(DISPID_HitEvents_Hit);
-			// }
+			// is this the same place as last event? if same then ignore it
+			const distLs = (ball.hit.eventPos.clone().sub(ball.state.pos)).lengthSq();
+
+			// remember last collide position
+			ball.hit.eventPos.set(ball.state.pos.x, ball.state.pos.y, ball.state.pos.z);
+
+			// hit targets when used with a captured ball have always a too small distance
+			const normalDist = (this.objType === CollisionType.HitTarget) ? 0.0 : 0.25; // magic distance
+
+			if (distLs > normalDist) { // must be a new place if only by a little
+				this.obj!.fireGroupEvent(FireEvent.HitEventsHit);
+			}
 		}
 	}
 

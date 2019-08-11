@@ -17,13 +17,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Storage } from '../..';
+import { EventEmitter } from 'events';
 import { Table } from '../..';
+import { Storage } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { IBallCreationPosition, Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
+import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
 import { Meshes } from '../item-data';
@@ -38,7 +40,7 @@ import { KickerMeshGenerator } from './kicker-mesh-generator';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/kicker.cpp
  */
-export class Kicker implements IRenderable, IHittable, IBallCreationPosition {
+export class Kicker extends EventEmitter implements IRenderable, IHittable, IBallCreationPosition {
 
 	public static TypeKickerInvisible = 0;
 	public static TypeKickerHole = 1;
@@ -50,6 +52,7 @@ export class Kicker implements IRenderable, IHittable, IBallCreationPosition {
 
 	private readonly data: KickerData;
 	private readonly meshGenerator: KickerMeshGenerator;
+	private fireEvents?: FireEvents;
 	private hit?: KickerHit;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Kicker> {
@@ -58,6 +61,7 @@ export class Kicker implements IRenderable, IHittable, IBallCreationPosition {
 	}
 
 	private constructor(data: KickerData) {
+		super();
 		this.data = data;
 		this.meshGenerator = new KickerMeshGenerator(data);
 	}
@@ -90,8 +94,12 @@ export class Kicker implements IRenderable, IHittable, IBallCreationPosition {
 
 	public setupPlayer(player: Player, table: Table): void {
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
-		const radius = this.data.radius * (this.data.legacyMode ? (this.data.fallThrough ? 0.75 : 0.6) : 1); // reduce the hit circle radius because only the inner circle of the kicker should start a hit event
-		this.hit = new KickerHit(this.data, table, this.data.vCenter, radius, height, height + this.data.hitHeight); // height of kicker hit cylinder
+
+		// reduce the hit circle radius because only the inner circle of the kicker should start a hit event
+		const radius = this.data.radius * (this.data.legacyMode ? (this.data.fallThrough ? 0.75 : 0.6) : 1);
+
+		this.fireEvents = new FireEvents(this);
+		this.hit = new KickerHit(this.data, this.fireEvents, table, this.data.vCenter, radius, height, height + this.data.hitHeight); // height of kicker hit cylinder
 	}
 
 	public getBallCreationPosition(table: Table): Vertex3D {

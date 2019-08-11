@@ -18,8 +18,8 @@
  */
 
 import { Object3D } from 'three';
-import { Table } from '../..';
 import { Storage } from '../..';
+import { Table } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
@@ -28,6 +28,7 @@ import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex2D } from '../../math/vertex2d';
+import { FireEvents } from '../../physics/fire-events';
 import { HitCircle } from '../../physics/hit-circle';
 import { HitObject } from '../../physics/hit-object';
 import { MoverObject } from '../../physics/mover-object';
@@ -49,6 +50,7 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	private readonly meshGenerator: SpinnerMeshGenerator;
 	private readonly state: SpinnerState;
 	private hit?: SpinnerHit;
+	private fireEvents?: FireEvents;
 	private hitCircles: HitCircle[] = [];
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Spinner> {
@@ -119,7 +121,8 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		this.data.angleMin = angleMin;
 		this.data.angleMax = angleMax;
 
-		this.hit = new SpinnerHit(this.data, this.state, height);
+		this.fireEvents = new FireEvents(this);
+		this.hit = new SpinnerHit(this.data, this.state, this.fireEvents, height);
 
 		if (this.data.showBracket) {
 			/*add a hit shape for the bracket if shown, just in case if the bracket spinner height is low enough so the ball can hit it*/

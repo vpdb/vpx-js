@@ -35,6 +35,7 @@ import { FlipperHit } from './flipper-hit';
 import { FlipperMesh } from './flipper-mesh';
 import { FlipperMover } from './flipper-mover';
 import { FlipperState } from './flipper-state';
+import { FireEvent, FireEvents } from '../../physics/fire-events';
 
 /**
  * VPinball's flippers
@@ -47,6 +48,7 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	private readonly mesh: FlipperMesh;
 	private readonly state: FlipperState;
 	private hit?: FlipperHit;
+	private fireEvents?: FireEvents;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Flipper> {
 		const data = await FlipperData.fromStorage(storage, itemName);
@@ -60,7 +62,8 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		this.hit = FlipperHit.getInstance(this.data, this.state, player, table);
+		this.fireEvents = new FireEvents(this);
+		this.hit = FlipperHit.getInstance(this.data, this.state, this.fireEvents, player, table);
 	}
 
 	public isVisible(): boolean {

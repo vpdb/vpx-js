@@ -17,7 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { radToDeg } from '../../math/float';
 import { PHYS_FACTOR } from '../../physics/constants';
+import { FireEvent, FireEvents } from '../../physics/fire-events';
 import { MoverObject } from '../../physics/mover-object';
 import { SpinnerData } from './spinner-data';
 import { SpinnerState } from './spinner-state';
@@ -26,59 +28,56 @@ export class SpinnerMover implements MoverObject {
 
 	private readonly data: SpinnerData;
 	private readonly state: SpinnerState;
+	private readonly fireEvents: FireEvents;
 
-	public anglespeed: number = 0;
+	public angleSpeed: number = 0;
 	public angleMax: number = 0;
 	public angleMin: number = 0;
 	public elasticity: number = 0;
 	public damping: number = 0;
 	public isVisible: boolean = false;
 
-	constructor(data: SpinnerData, state: SpinnerState) {
+	constructor(data: SpinnerData, state: SpinnerState, fireEvents: FireEvents) {
 		this.data = data;
 		this.state = state;
+		this.fireEvents = fireEvents;
 	}
 
-	public updateDisplacements(dtime: number): void {
+	public updateDisplacements(dTime: number): void {
 		if (this.data.angleMin !== this.data.angleMax) { // blocked spinner, limited motion spinner
 
-			this.state.angle += this.anglespeed * dtime;
+			this.state.angle += this.angleSpeed * dTime;
 
 			if (this.state.angle > this.angleMax) {
 				this.state.angle = this.angleMax;
-				// FIXME event
-				//m_pspinner->FireVoidEventParm(DISPID_LimitEvents_EOS, fabsf(RADTOANG(this.anglespeed)));	// send EOS event
+				this.fireEvents.fireVoidEventParm(FireEvent.LimitEventsEOS, Math.abs(radToDeg(this.angleSpeed))); // send EOS event
 
-				if (this.anglespeed > 0) {
-					this.anglespeed *= -0.005 - this.elasticity;
+				if (this.angleSpeed > 0) {
+					this.angleSpeed *= -0.005 - this.elasticity;
 				}
 			}
 			if (this.state.angle < this.angleMin) {
 				this.state.angle = this.angleMin;
+				this.fireEvents.fireVoidEventParm(FireEvent.LimitEventsBOS, Math.abs(radToDeg(this.angleSpeed))); // send Park event
 
-				// FIXME event
-				//m_pspinner->FireVoidEventParm(DISPID_LimitEvents_BOS, fabsf(RADTOANG(this.anglespeed)));	// send Park event
-
-				if (this.anglespeed < 0) {
-					this.anglespeed *= -0.005 - this.elasticity;
+				if (this.angleSpeed < 0) {
+					this.angleSpeed *= -0.005 - this.elasticity;
 				}
 			}
 		} else {
-			const target = (this.anglespeed > 0)
+			const target = (this.angleSpeed > 0)
 				? (this.state.angle < Math.PI ? Math.PI : 3.0 * Math.PI)
 				: (this.state.angle < Math.PI ? -Math.PI : Math.PI);
 
-			this.state.angle += this.anglespeed * dtime;
+			this.state.angle += this.angleSpeed * dTime;
 
-			if (this.anglespeed > 0) {
+			if (this.angleSpeed > 0) {
 				if (this.state.angle > target) {
-					// FIXME event
-					//m_pspinner->FireGroupEvent(DISPID_SpinnerEvents_Spin);
+					this.fireEvents.fireGroupEvent(FireEvent.SpinnerEventsSpin);
 				}
 			} else {
 				if (this.state.angle < target) {
-					// FIXME event
-					//m_pspinner->FireGroupEvent(DISPID_SpinnerEvents_Spin);
+					this.fireEvents.fireGroupEvent(FireEvent.SpinnerEventsSpin);
 				}
 			}
 
@@ -92,7 +91,7 @@ export class SpinnerMover implements MoverObject {
 	}
 
 	public updateVelocities(): void {
-		this.anglespeed -= Math.sin(this.state.angle) * (0.0025 * PHYS_FACTOR); // Center of gravity towards bottom of object, makes it stop vertical
-		this.anglespeed *= this.damping;
+		this.angleSpeed -= Math.sin(this.state.angle) * (0.0025 * PHYS_FACTOR); // Center of gravity towards bottom of object, makes it stop vertical
+		this.angleSpeed *= this.damping;
 	}
 }

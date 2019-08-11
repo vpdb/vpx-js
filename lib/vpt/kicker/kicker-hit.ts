@@ -27,13 +27,12 @@ import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { STATICTIME } from '../../physics/constants';
-import { IFireEvents } from '../../physics/events';
+import { FireEvent, FireEvents } from '../../physics/fire-events';
 import { HitCircle } from '../../physics/hit-circle';
 import { HitTestResult } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
 import { FLT_MAX } from '../mesh';
 import { KickerData } from './kicker-data';
-import { KickerEvents } from './kicker-events';
 
 export class KickerHit extends HitCircle {
 
@@ -41,9 +40,9 @@ export class KickerHit extends HitCircle {
 	private ball?: Ball;  // The ball inside this kicker
 	private lastCapturedBall?: Ball;
 	private hitMesh: Vertex3D[] = [];
-	public obj: IFireEvents;
+	public obj: FireEvents;
 
-	constructor(data: KickerData, table: Table, center: Vertex2D, radius: number, zLow: number, zHigh: number) {
+	constructor(data: KickerData, fireEvents: FireEvents, table: Table, center: Vertex2D, radius: number, zLow: number, zHigh: number) {
 		super(center, radius, zLow, zHigh);
 		this.data = data;
 
@@ -51,50 +50,51 @@ export class KickerHit extends HitCircle {
 			const rad = this.radius * 0.8;
 			for (let t = 0; t < kickerHitVertices.length; t++) {
 				// find the right normal by calculating the distance from current ball position to vertex of the kicker mesh
-				const vpos = new Vertex3D(kickerHitVertices[t].x, kickerHitVertices[t].y, kickerHitVertices[t].z);
-				vpos.x = vpos.x * rad + this.data.vCenter.x;
-				vpos.y = vpos.y * rad + this.data.vCenter.y;
-				vpos.z = vpos.z * rad * table.getScaleZ() + table.getTableHeight();
-				this.hitMesh[t] = vpos;
+				const vPos = new Vertex3D(kickerHitVertices[t].x, kickerHitVertices[t].y, kickerHitVertices[t].z);
+				vPos.x = vPos.x * rad + this.data.vCenter.x;
+				vPos.y = vPos.y * rad + this.data.vCenter.y;
+				vPos.z = vPos.z * rad * table.getScaleZ() + table.getTableHeight();
+				this.hitMesh[t] = vPos;
 			}
 		}
 
-		this.isEnabled = this.data.fEnabled;
+		this.isEnabled = this.data.isEnabled;
 		this.objType = CollisionType.Kicker;
-		this.obj = new KickerEvents();
+		this.obj = fireEvents;
 	}
 
-	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): HitTestResult {
-		//any face, not-lateral, non-rigid
-		return this.hitTestBasicRadius(pball, dtime, coll, false, false, false);
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): HitTestResult {
+		// any face, not-lateral, non-rigid
+		return this.hitTestBasicRadius(ball, dTime, coll, false, false, false);
 	}
 
-	public doCollide(player: Player, pball: Ball, hitnormal: Vertex3D, hitbit: boolean, newBall: boolean) {
+	public doCollide(player: Player, ball: Ball, hitNormal: Vertex3D, hitBit: boolean, newBall: boolean) {
 
 		if (this.ball) {
 			// a previous ball already in kicker
 			return;
 		}
 
-		const i = pball.hit.vpVolObjs.indexOf(this.obj); // check if kicker in ball's volume set
+		const i = ball.hit.vpVolObjs.indexOf(this.obj);    // check if kicker in ball's volume set
 
-		if (newBall || (!hitbit === i < 0)) {            // New or (Hit && !Vol || UnHit && Vol)
+		if (newBall || (!hitBit === i < 0)) {              // New or (Hit && !Vol || UnHit && Vol)
 
 			if (this.data.legacyMode || newBall) {
 				// move ball slightly forward
-				pball.state.pos.add(pball.hit.vel.clone().multiplyScalar(STATICTIME));
+				ball.state.pos.add(ball.hit.vel.clone().multiplyScalar(STATICTIME));
 			}
 
 			if (i < 0) { // entering Kickers volume
 				let hitEvent: boolean;
-				const grabHeight = (this.hitBBox.zlow + pball.data.radius) * this.data.hitAccuracy;
+				const grabHeight = (this.hitBBox.zlow + ball.data.radius) * this.data.hitAccuracy;
 
-				if (pball.state.pos.z < grabHeight || this.data.legacyMode || newBall) {
+				if (ball.state.pos.z < grabHeight || this.data.legacyMode || newBall) {
 					// early out here if the ball is slow and we are near the kicker center
 					hitEvent = true;
+
 				} else {
 					hitEvent = false;
-					this.doChangeBallVelocity(pball, hitnormal);
+					this.doChangeBallVelocity(ball, hitNormal);
 
 					// this is an ugly hack to prevent the ball stopping rapidly at the kicker bevel
 					// something with the friction calculation is wrong in the physics engine
@@ -102,51 +102,50 @@ export class KickerHit extends HitCircle {
 					// if so we take the last "good" velocity to help the ball moving over the critical spot at the kicker bevel
 					// this hack seems to work only if the kicker is on the playfield, a kicker attached to a wall has still problems
 					// because the friction calculation for a wall is also different
-					const length = pball.hit.vel.length();
+					const length = ball.hit.vel.length();
 					if (length < 0.2) {
-						pball.hit.vel.set(pball.oldVel!.x, pball.oldVel!.y, pball.oldVel!.z);
+						ball.hit.vel.set(ball.oldVel!.x, ball.oldVel!.y, ball.oldVel!.z);
 					}
-					pball.oldVel = pball.hit.vel.clone();
+					ball.oldVel = ball.hit.vel.clone();
 				}
 
 				if (hitEvent) {
 					if (this.data.fallThrough) {
-						pball.hit.isFrozen = false;
+						ball.hit.isFrozen = false;
 
 					} else {
-						pball.hit.isFrozen = true;
-						pball.hit.vpVolObjs.push(this.obj!);		// add kicker to ball's volume set
-						this.ball = pball;
-						this.lastCapturedBall = pball;
-						if (pball === player.pactiveballBC) {
+						ball.hit.isFrozen = true;
+						ball.hit.vpVolObjs.push(this.obj!); // add kicker to ball's volume set
+						this.ball = ball;
+						this.lastCapturedBall = ball;
+						if (ball === player.pactiveballBC) {
 							player.pactiveballBC = undefined;
 						}
 					}
 
 					// Don't fire the hit event if the ball was just created
 					// Fire the event before changing ball attributes, so scripters can get a useful ball state
-					// fixme event
-					// if (!newBall) {
-					// 	m_pkicker->FireGroupEvent(DISPID_HitEvents_Hit);
-					// }
+					if (!newBall) {
+						this.obj.fireGroupEvent(FireEvent.HitEventsHit);
+					}
 
-					if (pball.hit.isFrozen || this.data.fallThrough) {	// script may have unfrozen the ball
+					if (ball.hit.isFrozen || this.data.fallThrough) {	// script may have unfrozen the ball
 
 						// if ball falls through hole, we fake the collision algo by changing the ball height
 						// in HitTestBasicRadius() the z-position of the ball is checked if it is >= to the hit cylinder
 						// if we don't change the height of the ball we get a lot of hit events while the ball is falling!!
 
 						// Only mess with variables if ball was not kicked during event
-						pball.hit.vel.setZero();
-						pball.hit.angularMomentum.setZero();
-						pball.hit.angularVelocity.setZero();
-						pball.state.pos.x = this.center.x;
-						pball.state.pos.y = this.center.y;
+						ball.hit.vel.setZero();
+						ball.hit.angularMomentum.setZero();
+						ball.hit.angularVelocity.setZero();
+						ball.state.pos.x = this.center.x;
+						ball.state.pos.y = this.center.y;
 						if (this.data.fallThrough) {
-							pball.state.pos.z = this.hitBBox.zlow - pball.data.radius - 5.0;
+							ball.state.pos.z = this.hitBBox.zlow - ball.data.radius - 5.0;
 
 						} else {
-							pball.state.pos.z = this.hitBBox.zlow + pball.data.radius;
+							ball.state.pos.z = this.hitBBox.zlow + ball.data.radius;
 						}
 					} else {
 						// make sure
@@ -155,20 +154,19 @@ export class KickerHit extends HitCircle {
 				}
 
 			} else { // exiting kickers volume
-				pball.hit.vpVolObjs.splice(i, 1); // remove kicker to ball's volume set
-				// FIXME event
-				// m_pkicker->FireGroupEvent(DISPID_HitEvents_Unhit);
+				ball.hit.vpVolObjs.splice(i, 1); // remove kicker to ball's volume set
+				this.obj.fireGroupEvent(FireEvent.HitEventsUnhit);
 			}
 		}
 	}
 
-	private doChangeBallVelocity(pball: Ball, hitnormal: Vertex3D): void {
+	private doChangeBallVelocity(ball: Ball, hitNormal: Vertex3D): void {
 		let minDistSqr = FLT_MAX;
 		let idx = ~0;
 		for (let t = 0; t < this.hitMesh.length; t++) {
 
 			// find the right normal by calculating the distance from current ball position to vertex of the kicker mesh
-			const lengthSqr = pball.state.pos.clone().sub(this.hitMesh[t]).lengthSq();
+			const lengthSqr = ball.state.pos.clone().sub(this.hitMesh[t]).lengthSq();
 			if (lengthSqr < minDistSqr) {
 				minDistSqr = lengthSqr;
 				idx = t;
@@ -178,35 +176,36 @@ export class KickerHit extends HitCircle {
 
 		if (idx !== ~0) {
 			// we have the nearest vertex now use the normal and damp it so it doesn't speed up the ball velocity too much
-			const hitnorm = new Vertex3D(kickerHitVertices[idx].nx, kickerHitVertices[idx].ny, kickerHitVertices[idx].nz);
+			const hitNorm = new Vertex3D(kickerHitVertices[idx].nx, kickerHitVertices[idx].ny, kickerHitVertices[idx].nz);
 			let surfVel: Vertex3D;
 			let tangent: Vertex3D;
 			let surfP: Vertex3D;
-			const dot = -pball.hit.vel.dot(hitnorm);
-			const reactionImpulse = pball.data.mass * Math.abs(dot);
+			const dot = -ball.hit.vel.dot(hitNorm);
+			const reactionImpulse = ball.data.mass * Math.abs(dot);
 
-			surfP = hitnormal.clone().multiplyScalar(-pball.data.radius);    // surface contact point relative to center of mass
-			surfVel = pball.hit.surfaceVelocity(surfP);         // velocity at impact point
-			tangent = surfVel.clone().sub(hitnorm.clone().multiplyScalar(surfVel.dot(hitnormal))); // calc the tangential velocity
+			surfP = hitNormal.clone().multiplyScalar(-ball.data.radius);       // surface contact point relative to center of mass
+			surfVel = ball.hit.surfaceVelocity(surfP);                         // velocity at impact point
+			tangent = surfVel.clone().sub(                                     // calc the tangential velocity
+				hitNorm.clone().multiplyScalar(surfVel.dot(hitNormal)));
 
-			pball.hit.vel.add(hitnorm.clone().multiplyScalar(dot)); // apply collision impulse (along normal, so no torque)
+			ball.hit.vel.add(hitNorm.clone().multiplyScalar(dot));             // apply collision impulse (along normal, so no torque)
 
 			const friction = 0.3;
 			const tangentSpSq = tangent.lengthSq();
 
 			if (tangentSpSq > 1e-6) {
-				tangent.divideScalar(Math.sqrt(tangentSpSq));           // normalize to get tangent direction
-				const vt = surfVel.dot(tangent);   // get speed in tangential direction
+				tangent.divideScalar(Math.sqrt(tangentSpSq));                  // normalize to get tangent direction
+				const vt = surfVel.dot(tangent);                               // get speed in tangential direction
 
 				// compute friction impulse
 				const cross = Vertex3D.crossProduct(surfP, tangent);
-				const kt = pball.hit.invMass + tangent.dot(Vertex3D.crossProduct(cross.clone().divideScalar(pball.hit.inertia), surfP));
+				const kt = ball.hit.invMass + tangent.dot(Vertex3D.crossProduct(cross.clone().divideScalar(ball.hit.inertia), surfP));
 
 				// friction impulse can't be greater than coefficient of friction times collision impulse (Coulomb friction cone)
-				const maxFric = friction * reactionImpulse;
-				const jt = clamp(-vt / kt, -maxFric, maxFric);
+				const maxFriction = friction * reactionImpulse;
+				const jt = clamp(-vt / kt, -maxFriction, maxFriction);
 
-				pball.hit.applySurfaceImpulse(cross.clone().multiplyScalar(jt), tangent.clone().multiplyScalar(jt));
+				ball.hit.applySurfaceImpulse(cross.clone().multiplyScalar(jt), tangent.clone().multiplyScalar(jt));
 			}
 		}
 	}

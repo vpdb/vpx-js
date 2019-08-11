@@ -30,11 +30,11 @@ import {
 } from '../../math/progressive-mesh';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionType } from '../../physics/collision-type';
+import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { HitPoint } from '../../physics/hit-point';
 import { HitTriangle } from '../../physics/hit-triangle';
 import { PrimitiveData } from './primitive-data';
-import { PrimitiveEvents } from './primitive-events';
 
 export class PrimitiveHitGenerator {
 
@@ -44,12 +44,12 @@ export class PrimitiveHitGenerator {
 		this.data = data;
 	}
 
-	public generateHitObjects(table: Table, events: PrimitiveEvents): HitObject[] {
+	public generateHitObjects(fireEvents: FireEvents, table: Table): HitObject[] {
 
 		const hitObjects: HitObject[] = [];
 
 		if (this.data.getName() === 'playfield_mesh') {
-			this.data.fVisible = false;
+			this.data.isVisible = false;
 			this.data.useAsPlayfield = true;
 		}
 
@@ -149,10 +149,10 @@ export class PrimitiveHitGenerator {
 				hitObjects.push(new HitPoint(vertex.getVertex()));
 			}
 		}
-		return this.updateCommonParameters(hitObjects, events, table);
+		return this.updateCommonParameters(hitObjects, fireEvents, table);
 	}
 
-	private updateCommonParameters(hitObjects: HitObject[], events: PrimitiveEvents, table: Table): HitObject[] {
+	private updateCommonParameters(hitObjects: HitObject[], fireEvents: FireEvents, table: Table): HitObject[] {
 		const mat = table.getMaterial(this.data.szPhysicsMaterial);
 		for (const obj of hitObjects) {
 			if (!this.data.useAsPlayfield) {
@@ -167,7 +167,7 @@ export class PrimitiveHitGenerator {
 					obj.setScatter(degToRad(this.data.scatter));
 				}
 
-				obj.setEnabled(this.data.fCollidable);
+				obj.setEnabled(this.data.isCollidable);
 
 			} else {
 				obj.setElasticity(table.data!.elasticity, table.data!.elasticityFalloff);
@@ -177,7 +177,7 @@ export class PrimitiveHitGenerator {
 			}
 			obj.threshold = this.data.threshold;
 			obj.setType(CollisionType.Primitive);
-			obj.obj = events;
+			obj.obj = fireEvents;
 			obj.e = true;
 			obj.fe = this.data.fHitEvent;
 		}

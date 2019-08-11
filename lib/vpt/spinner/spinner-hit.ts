@@ -24,6 +24,7 @@ import { Vertex2D } from '../../math/vertex2d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { PHYS_FACTOR, PHYS_SKIN } from '../../physics/constants';
+import { FireEvents } from '../../physics/fire-events';
 import { HitObject, HitTestResult } from '../../physics/hit-object';
 import { LineSeg } from '../../physics/line-seg';
 import { Ball } from '../ball/ball';
@@ -38,7 +39,7 @@ export class SpinnerHit extends HitObject {
 	private readonly mover: SpinnerMover;
 	private readonly lineSegs: LineSeg[] = [];
 
-	constructor(data: SpinnerData, state: SpinnerState, height: number) {
+	constructor(data: SpinnerData, state: SpinnerState, fireEvents: FireEvents, height: number) {
 		super();
 
 		this.data = data;
@@ -60,12 +61,12 @@ export class SpinnerHit extends HitObject {
 		this.lineSegs.push(new LineSeg(v1, v2, height, height + (2.0 * PHYS_SKIN), CollisionType.Spinner));
 		this.lineSegs.push(new LineSeg(v2.clone(), v1.clone(), height, height + (2.0 * PHYS_SKIN), CollisionType.Spinner));
 
-		this.mover = new SpinnerMover(data, state);
+		this.mover = new SpinnerMover(data, state, fireEvents);
 		this.mover.angleMax = degToRad(data.angleMax!);
 		this.mover.angleMin = degToRad(data.angleMin!);
 
 		this.state.angle = clamp(0.0, this.mover.angleMin, this.mover.angleMax);
-		this.mover.anglespeed = 0;
+		this.mover.angleSpeed = 0;
 		// compute proper damping factor for physics framerate
 		this.mover.damping = Math.pow(data.damping!, PHYS_FACTOR);
 
@@ -119,15 +120,15 @@ export class SpinnerHit extends HitObject {
 		// h -coll.m_radius will be moving a at linear rate of
 		// 'speed'.  We can calculate the angular speed from that.
 
-		this.mover.anglespeed = Math.abs(dot); // use this until a better value comes along
+		this.mover.angleSpeed = Math.abs(dot); // use this until a better value comes along
 		if (Math.abs(h) > 1.0) {			// avoid divide by zero
-			this.mover.anglespeed /= h;
+			this.mover.angleSpeed /= h;
 		}
-		this.mover.anglespeed *= this.mover.damping;
+		this.mover.angleSpeed *= this.mover.damping;
 
 		// We encoded which side of the spinner the ball hit
 		if (coll.hitFlag) {
-			this.mover.anglespeed = -this.mover.anglespeed;
+			this.mover.angleSpeed = -this.mover.angleSpeed;
 		}
 	}
 }
