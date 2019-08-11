@@ -103,4 +103,20 @@ describe('The VPinball flipper physics', () => {
 		expect(flipperState.angle).to.equal(endAngleRad);
 	});
 
+	it('should return the proper state', () => {
+		const flipper = table.flippers.FlipperR;
+
+		// move up
+		flipper.rotateToEnd();
+		simulateCycles(player, 25); // hit at 17.012061224193429107ms (at 1000fps)
+
+		const flipperState = flipper.getState();
+		const states = player.popState();
+
+		const poppedState = states.find(s => s.getName() === 'FlipperR');
+
+		expect(flipperState).to.equal(poppedState);
+		expect(flipperState.equals(undefined as unknown as FlipperState)).to.equal(false);
+	});
+
 });
