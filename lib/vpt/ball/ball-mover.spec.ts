@@ -63,6 +63,29 @@ describe('The VPinball ball physics', () => {
 		expect(ball.getState().pos.z).to.be.below(50);  // ball nearly reached the playfield
 	});
 
+	it('should let the ball roll down on the playfield', async () => {
+
+		const ball = createBall(player, 500, 500, 0);
+
+		// assert initial orientation
+		expect(ball.getState().orientation.matrix[1][1]).to.equal(1);
+		expect(ball.getState().orientation.matrix[1][2]).to.equal(0);
+		expect(ball.getState().orientation.matrix[2][1]).to.equal(0);
+		expect(ball.getState().orientation.matrix[2][2]).to.equal(1);
+
+		player.updatePhysics(0);
+		player.updatePhysics(1000);
+
+		// ball has rolled now
+		expect(ball.getState().orientation.matrix[1][1]).to.not.equal(1);
+		expect(ball.getState().orientation.matrix[1][2]).to.not.equal(0);
+		expect(ball.getState().orientation.matrix[2][1]).to.not.equal(0);
+		expect(ball.getState().orientation.matrix[2][2]).to.not.equal(1);
+
+		// and moved downwards
+		expect(ball.getState().pos.y).to.be.above(550);
+	});
+
 	it('should let the ball move to the right direction with velocity', async () => {
 
 		const ball = createBall(player, 500, 500, 500, 10);
