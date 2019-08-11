@@ -18,8 +18,8 @@
  */
 
 import { IPlayable } from '../game/iplayable';
+import { logger } from '../util/logger';
 
-/* tslint:disable:no-console */
 export class FireEvents {
 
 	/**
@@ -34,11 +34,11 @@ export class FireEvents {
 	}
 
 	public fireGroupEvent(e: FireEvent): void {
-		console.log('[%s] fireGroupEvent(%s)', this.playable.getName(), e);
+		logger().info('[%s] fireGroupEvent(%s)', this.playable.getName(), e);
 	}
 
 	public fireVoidEventParm(e: FireEvent, data: number): void {
-		console.log('[%s] fireGroupEvent(%s, %s)', this.playable.getName(), e, data);
+		logger().info('[%s] fireGroupEvent(%s, %s)', this.playable.getName(), e, data);
 	}
 }
 

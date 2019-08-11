@@ -19,6 +19,7 @@
 
 import { Object3D } from 'three';
 import { Storage } from '../..';
+import { Table } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
@@ -27,15 +28,14 @@ import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex2D } from '../../math/vertex2d';
+import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
-import { Table } from '../table/table';
 import { FlipperData } from './flipper-data';
 import { FlipperHit } from './flipper-hit';
 import { FlipperMesh } from './flipper-mesh';
 import { FlipperMover } from './flipper-mover';
 import { FlipperState } from './flipper-state';
-import { FireEvent, FireEvents } from '../../physics/fire-events';
 
 /**
  * VPinball's flippers

@@ -82,20 +82,6 @@ export class FlipperData extends ItemData {
 		return flipperItem;
 	}
 
-	public static fromSerialized(itemName: string, blob: { [key: string]: any }): FlipperData {
-		const data = new FlipperData(itemName);
-
-		// primitives
-		for (const key of Object.keys(blob)) {
-			(data as any)[key] = blob[key];
-		}
-
-		// objects
-		data.center = new Vertex2D(blob.center._x, blob.center._y);
-
-		return data;
-	}
-
 	public getName(): string {
 		return this.wzName;
 	}
