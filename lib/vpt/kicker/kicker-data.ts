@@ -33,9 +33,7 @@ export class KickerData extends ItemData {
 	public hitHeight: number = 40;
 	public orientation: number = 0;
 	public szMaterial?: string;
-	private fTimerEnabled: boolean = false;
-	public fEnabled: boolean = true;
-	private TimerInterval?: number;
+	public isEnabled: boolean = true;
 	public szSurface?: string;
 	private wzName!: string;
 	public fallThrough: boolean = false;
@@ -64,7 +62,7 @@ export class KickerData extends ItemData {
 			case 'KHHI': this.hitHeight = this.getFloat(buffer); break;
 			case 'KORI': this.orientation = this.getFloat(buffer); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
-			case 'EBLD': this.fEnabled = this.getBool(buffer); break;
+			case 'EBLD': this.isEnabled = this.getBool(buffer); break;
 			case 'TYPE':
 				this.kickerType = this.getInt(buffer);
 				/* istanbul ignore if: legacy handling */

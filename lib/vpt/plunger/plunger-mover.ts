@@ -19,6 +19,7 @@
 
 import { Player } from '../../game/player';
 import { Vertex2D } from '../../math/vertex2d';
+import { FireEvent, FireEvents } from '../../physics/fire-events';
 import { HitLineZ } from '../../physics/hit-line-z';
 import { LineSeg } from '../../physics/line-seg';
 import { MoverObject } from '../../physics/mover-object';
@@ -32,6 +33,7 @@ export class PlungerMover implements MoverObject {
 
 	private readonly data: PlungerData;
 	private readonly state: PlungerState;
+	private readonly fireEvents: FireEvents;
 	private readonly player: Player;
 	private readonly tableData: TableData;
 
@@ -73,6 +75,7 @@ export class PlungerMover implements MoverObject {
 	 */
 	// tslint:disable-next-line:variable-name
 	private _pos: number = 0;
+
 	get pos() { return this._pos; }
 	set pos(pos) {
 		this._pos = pos;
@@ -307,10 +310,11 @@ export class PlungerMover implements MoverObject {
 	 */
 	public scatterVelocity: number = 0;
 
-	constructor(config: PlungerConfig, data: PlungerData, state: PlungerState, player: Player, tableData: TableData) {
+	constructor(config: PlungerConfig, data: PlungerData, state: PlungerState, fireEvents: FireEvents, player: Player, tableData: TableData) {
 
 		this.data = data;
 		this.state = state;
+		this.fireEvents = fireEvents;
 		this.player = player;
 		this.tableData = tableData;
 
@@ -400,14 +404,12 @@ export class PlungerMover implements MoverObject {
 		const strokeEventHysteresis = strokeEventLimit * 2.0;
 		if (this.fStrokeEventsArmed && this.pos + dx > this.frameStart - strokeEventLimit) {
 			logger().info('[%s] Pulled back.', this.data.getName());
-			// fixme event
-			//this.plunger->FireVoidEventParm(DISPID_LimitEvents_BOS, fabsf(this.speed));
+			this.fireEvents.fireVoidEventParm(FireEvent.LimitEventsBOS, Math.abs(this.speed));
 			this.fStrokeEventsArmed = false;
 
 		} else if (this.fStrokeEventsArmed && this.pos + dx < this.frameEnd + strokeEventLimit) {
 			logger().info('[%s] Fired.', this.data.getName());
-			// fixme event
-			//this.plunger->FireVoidEventParm(DISPID_LimitEvents_EOS, fabsf(this.speed));
+			this.fireEvents.fireVoidEventParm(FireEvent.LimitEventsEOS, Math.abs(this.speed));
 			this.fStrokeEventsArmed = false;
 
 		} else if (this.pos > this.frameEnd + strokeEventHysteresis && this.pos < this.frameStart - strokeEventHysteresis) {

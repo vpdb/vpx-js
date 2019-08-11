@@ -149,21 +149,35 @@ export class Player extends EventEmitter {
 	private addCabinetBoundingHitShapes(): void {
 
 		// simple outer borders:
-		let lineSeg: LineSeg;
+		this.hitObjects.push(new LineSeg(
+			new Vertex2D(this.table.data!.right, this.table.data!.top),
+			new Vertex2D(this.table.data!.right, this.table.data!.bottom),
+			this.table.getTableHeight(),
+			this.table.data!.glassheight,
+		));
 
-		lineSeg = new LineSeg(new Vertex2D(this.table.data!.right, this.table.data!.top), new Vertex2D(this.table.data!.right, this.table.data!.bottom), this.table.getTableHeight(), this.table.data!.glassheight);
-		this.hitObjects.push(lineSeg);
+		this.hitObjects.push(new LineSeg(
+			new Vertex2D(this.table.data!.left, this.table.data!.bottom),
+			new Vertex2D(this.table.data!.left, this.table.data!.top),
+			this.table.getTableHeight(),
+			this.table.data!.glassheight,
+		));
 
-		lineSeg = new LineSeg(new Vertex2D(this.table.data!.left, this.table.data!.bottom), new Vertex2D(this.table.data!.left, this.table.data!.top), this.table.getTableHeight(), this.table.data!.glassheight);
-		this.hitObjects.push(lineSeg);
+		this.hitObjects.push(new LineSeg(
+			new Vertex2D(this.table.data!.right, this.table.data!.bottom),
+			new Vertex2D(this.table.data!.left, this.table.data!.bottom),
+			this.table.getTableHeight(),
+			this.table.data!.glassheight,
+		));
 
-		lineSeg = new LineSeg(new Vertex2D(this.table.data!.right, this.table.data!.bottom), new Vertex2D(this.table.data!.left, this.table.data!.bottom), this.table.getTableHeight(), this.table.data!.glassheight);
-		this.hitObjects.push(lineSeg);
+		this.hitObjects.push(new LineSeg(
+			new Vertex2D(this.table.data!.left, this.table.data!.top),
+			new Vertex2D(this.table.data!.right, this.table.data!.top),
+			this.table.getTableHeight(),
+			this.table.data!.glassheight,
+		));
 
-		lineSeg = new LineSeg(new Vertex2D(this.table.data!.left, this.table.data!.top), new Vertex2D(this.table.data!.right, this.table.data!.top), this.table.getTableHeight(), this.table.data!.glassheight);
-		this.hitObjects.push(lineSeg);
-
-		// glass:
+		// glass
 		const rgv3D: Vertex3D[] = [
 			new Vertex3D(this.table.data!.left, this.table.data!.top, this.table.data!.glassheight),
 			new Vertex3D(this.table.data!.right, this.table.data!.top, this.table.data!.glassheight),

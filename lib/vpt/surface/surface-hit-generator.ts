@@ -23,6 +23,7 @@ import { DragPoint } from '../../math/dragpoint';
 import { degToRad } from '../../math/float';
 import { RenderVertex } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
+import { FireEvents } from '../../physics/fire-events';
 import { Hit3DPoly } from '../../physics/hit-3dpoly';
 import { HitLine3D } from '../../physics/hit-line-3d';
 import { HitLineZ } from '../../physics/hit-line-z';
@@ -31,7 +32,6 @@ import { HitPoint } from '../../physics/hit-point';
 import { LineSeg } from '../../physics/line-seg';
 import { LineSegSlingshot } from '../../physics/line-seg-slingshot';
 import { SurfaceData } from './surface-data';
-import { SurfaceEvents } from './surface-events';
 
 export class SurfaceHitGenerator {
 
@@ -42,17 +42,17 @@ export class SurfaceHitGenerator {
 		this.data = data;
 	}
 
-	public generateHitObjects(events: SurfaceEvents, table: Table): HitObject[] {
-		const polys = this.generate3DPolys(events, table);
-		return this.updateCommonParameters(polys, events, table);
+	public generateHitObjects(fireEvents: FireEvents, table: Table): HitObject[] {
+		const polys = this.generate3DPolys(fireEvents, table);
+		return this.updateCommonParameters(polys, fireEvents, table);
 	}
 
-	private generate3DPolys(events: SurfaceEvents, table: Table): HitObject[] {
+	private generate3DPolys(fireEvents: FireEvents, table: Table): HitObject[] {
 
 		const hitObjects: HitObject[] = [];
-		const vvertex: RenderVertex[] = DragPoint.getRgVertex<RenderVertex>(this.data.dragPoints, () => new RenderVertex(), CatmullCurve2D.fromVertex2D as any);
+		const vVertex: RenderVertex[] = DragPoint.getRgVertex<RenderVertex>(this.data.dragPoints, () => new RenderVertex(), CatmullCurve2D.fromVertex2D as any);
 
-		const count = vvertex.length;
+		const count = vVertex.length;
 		const rgv3Dt: Vertex3D[] = [];
 		const rgv3Db: Vertex3D[] | null = this.data.fIsBottomSolid ? [] : null;
 
@@ -60,19 +60,16 @@ export class SurfaceHitGenerator {
 		const top = this.data.heighttop + table.getTableHeight();
 
 		for (let i = 0; i < count; ++i) {
-
-			const pv1 = vvertex[i];
-
+			const pv1 = vVertex[i];
 			rgv3Dt[i] = new Vertex3D(pv1.x, pv1.y, top);
 
 			if (rgv3Db) {
 				rgv3Db[count - 1 - i] = new Vertex3D(pv1.x, pv1.y, bottom);
 			}
 
-			const pv2 = vvertex[(i + 1) % count];
-			const pv3 = vvertex[(i + 2) % count];
-
-			hitObjects.push(...this.generateLinePolys(pv2, pv3, events, table));
+			const pv2 = vVertex[(i + 1) % count];
+			const pv3 = vVertex[(i + 2) % count];
+			hitObjects.push(...this.generateLinePolys(pv2, pv3, fireEvents, table));
 		}
 
 		hitObjects.push(new Hit3DPoly(rgv3Dt));
@@ -84,7 +81,7 @@ export class SurfaceHitGenerator {
 		return hitObjects;
 	}
 
-	private generateLinePolys(pv1: RenderVertex, pv2: RenderVertex, events: SurfaceEvents, table: Table): HitObject[] {
+	private generateLinePolys(pv1: RenderVertex, pv2: RenderVertex, events: FireEvents, table: Table): HitObject[] {
 
 		const linePolys: HitObject[] = [];
 		const bottom = this.data.heightbottom + table.getTableHeight();
@@ -126,7 +123,7 @@ export class SurfaceHitGenerator {
 		return linePolys;
 	}
 
-	private updateCommonParameters(hitObjects: HitObject[], events: SurfaceEvents, table: Table): HitObject[] {
+	private updateCommonParameters(hitObjects: HitObject[], events: FireEvents, table: Table): HitObject[] {
 		const mat = table.getMaterial(this.data.szPhysicsMaterial);
 		for (const obj of hitObjects) {
 

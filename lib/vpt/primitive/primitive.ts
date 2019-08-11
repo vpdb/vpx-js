@@ -23,11 +23,10 @@ import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
-import { IFireEvents } from '../../physics/events';
+import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { PrimitiveData } from './primitive-data';
-import { PrimitiveEvents } from './primitive-events';
 import { PrimitiveHitGenerator } from './primitive-hit-generator';
 import { PrimitiveMeshGenerator } from './primitive-mesh-generator';
 
@@ -36,15 +35,13 @@ import { PrimitiveMeshGenerator } from './primitive-mesh-generator';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/primitive.cpp
  */
-export class Primitive implements IRenderable, IHittable, IFireEvents {
-
-	public currentHitThreshold: number = 0;
+export class Primitive implements IRenderable, IHittable {
 
 	private readonly data: PrimitiveData;
 	private readonly meshGenerator: PrimitiveMeshGenerator;
 	private readonly hitGenerator: PrimitiveHitGenerator;
-	private hits: HitObject[] = [];
-	private events?: PrimitiveEvents;
+	private hits?: HitObject[];
+	private fireEvents?: FireEvents;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Primitive> {
 		const data = await PrimitiveData.fromStorage(storage, itemName);
@@ -62,11 +59,11 @@ export class Primitive implements IRenderable, IHittable, IFireEvents {
 	}
 
 	public isVisible(): boolean {
-		return this.data.fVisible;
+		return this.data.isVisible;
 	}
 
 	public isCollidable(): boolean {
-		return this.data.fCollidable;
+		return this.data.isCollidable;
 	}
 
 	public getMeshes(table: Table): Meshes {
@@ -81,11 +78,11 @@ export class Primitive implements IRenderable, IHittable, IFireEvents {
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		this.events = new PrimitiveEvents(this.getName());
-		this.hits = this.hitGenerator.generateHitObjects(table, this.events);
+		this.fireEvents = new FireEvents(this);
+		this.hits = this.hitGenerator.generateHitObjects(this.fireEvents, table);
 	}
 
 	public getHitShapes(): HitObject[] {
-		return this.hits;
+		return this.hits!;
 	}
 }

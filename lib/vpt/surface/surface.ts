@@ -18,16 +18,16 @@
  */
 
 import { Storage } from '../..';
+import { Table } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
+import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
-import { Table } from '../table/table';
 import { VpTableExporterOptions } from '../table/table-exporter';
 import { SurfaceData } from './surface-data';
-import { SurfaceEvents } from './surface-events';
 import { SurfaceHitGenerator } from './surface-hit-generator';
 import { SurfaceMesh } from './surface-mesh';
 
@@ -43,7 +43,7 @@ export class Surface implements IRenderable, IHittable {
 	private readonly mesh: SurfaceMesh;
 	private readonly hitGenerator: SurfaceHitGenerator;
 	private hits: HitObject[] = [];
-	private events?: SurfaceEvents;
+	private fireEvents?: FireEvents;
 
 	// public getters
 	get heightTop() { return this.data.heighttop; }
@@ -91,13 +91,12 @@ export class Surface implements IRenderable, IHittable {
 				material: table.getMaterial(this.data.szSideMaterial),
 			};
 		}
-
 		return meshes;
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		this.events = new SurfaceEvents();
-		this.hits = this.hitGenerator.generateHitObjects(this.events, table);
+		this.fireEvents = new FireEvents(this);
+		this.hits = this.hitGenerator.generateHitObjects(this.fireEvents, table);
 	}
 
 	public getHitShapes(): HitObject[] {

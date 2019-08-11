@@ -38,6 +38,7 @@ import {
 	C_TOL_ENDPNTS,
 	PHYS_TOUCH,
 } from '../../physics/constants';
+import { FireEvent, FireEvents } from '../../physics/fire-events';
 import { elasticityWithFalloff } from '../../physics/functions';
 import { HitObject, HitTestResult } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
@@ -53,9 +54,10 @@ export class FlipperHit extends HitObject {
 	private readonly data: FlipperData;
 	private readonly state: FlipperState;
 	private readonly tableData: TableData;
+	private readonly fireEvents: FireEvents;
 	private lastHitTime: number = 0;
 
-	public static getInstance(data: FlipperData, state: FlipperState, player: Player, table: Table): FlipperHit {
+	public static getInstance(data: FlipperData, state: FlipperState, fireEvents: FireEvents, player: Player, table: Table): FlipperHit {
 		const height = table.getSurfaceHeight(data.szSurface, data.center.x, data.center.y);
 		if (data.flipperRadiusMin > 0 && data.flipperRadiusMax > data.flipperRadiusMin) {
 			data.flipperRadius = data.flipperRadiusMax - (data.flipperRadiusMax - data.flipperRadiusMin) /* m_ptable->m_globalDifficulty*/;
@@ -75,14 +77,16 @@ export class FlipperHit extends HitObject {
 			},
 			data,
 			state,
+			fireEvents,
 			player,
 			table.data!,
 		);
 	}
 
-	constructor(config: FlipperConfig, data: FlipperData, state: FlipperState, player: Player, tableData: TableData) {
+	constructor(config: FlipperConfig, data: FlipperData, state: FlipperState, fireEvents: FireEvents, player: Player, tableData: TableData) {
 		super();
-		this.mover = new FlipperMover(config, data, state, player, tableData);
+		this.fireEvents = fireEvents;
+		this.mover = new FlipperMover(config, data, state, fireEvents, player, tableData);
 		this.mover.isEnabled = data.fEnabled;
 		this.data = data;
 		this.state = state;
@@ -96,16 +100,17 @@ export class FlipperHit extends HitObject {
 
 	public calcHitBBox(): void {
 		// Allow roundoff
-		this.hitBBox = new FRect3D();
-		this.hitBBox.left = this.mover.hitCircleBase.center.x - this.mover.flipperRadius - this.mover.endRadius - 0.1;
-		this.hitBBox.right = this.mover.hitCircleBase.center.x + this.mover.flipperRadius + this.mover.endRadius + 0.1;
-		this.hitBBox.top = this.mover.hitCircleBase.center.y - this.mover.flipperRadius - this.mover.endRadius - 0.1;
-		this.hitBBox.bottom = this.mover.hitCircleBase.center.y + this.mover.flipperRadius + this.mover.endRadius + 0.1;
-		this.hitBBox.zlow = this.mover.hitCircleBase.hitBBox.zlow;
-		this.hitBBox.zhigh = this.mover.hitCircleBase.hitBBox.zhigh;
+		this.hitBBox = new FRect3D(
+			this.mover.hitCircleBase.center.x - this.mover.flipperRadius - this.mover.endRadius - 0.1,
+			this.mover.hitCircleBase.center.x + this.mover.flipperRadius + this.mover.endRadius + 0.1,
+			this.mover.hitCircleBase.center.y - this.mover.flipperRadius - this.mover.endRadius - 0.1,
+			this.mover.hitCircleBase.center.y + this.mover.flipperRadius + this.mover.endRadius + 0.1,
+			this.mover.hitCircleBase.hitBBox.zlow,
+			this.mover.hitCircleBase.hitBBox.zhigh,
+		);
 	}
 
-	public hitTest(pball: Ball, dtime: number, coll: CollisionEvent): HitTestResult {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): HitTestResult {
 		if (!this.mover.isEnabled) {
 			return { hitTime: -1.0, coll };
 		}
@@ -117,31 +122,30 @@ export class FlipperHit extends HitObject {
 		// so only check these if a face is not hit
 		// endRadius is more likely than baseRadius ... so check it first
 
-		let hitTime = this.hitTestFlipperFace(pball, dtime, coll, lastFace); // first face
+		let hitTime = this.hitTestFlipperFace(ball, dTime, coll, lastFace); // first face
 		if (hitTime >= 0) {
 			return { hitTime, coll };
 		}
 
-		hitTime = this.hitTestFlipperFace(pball, dtime, coll, !lastFace); //second face
+		hitTime = this.hitTestFlipperFace(ball, dTime, coll, !lastFace); //second face
 		if (hitTime >= 0) {
 			this.mover.lastHitFace = !lastFace; // change this face to check first // HACK
 			return { hitTime, coll };
 		}
 
-		hitTime = this.hitTestFlipperEnd(pball, dtime, coll); // end radius
+		hitTime = this.hitTestFlipperEnd(ball, dTime, coll); // end radius
 		if (hitTime >= 0) {
 			return { hitTime, coll };
 		}
 
-		({ hitTime, coll } = this.mover.hitCircleBase.hitTest(pball, dtime, coll));
+		({ hitTime, coll } = this.mover.hitCircleBase.hitTest(ball, dTime, coll));
 		if (hitTime >= 0) {
-
 			coll.hitVel = new Vertex2D();
 			coll.hitVel.x = 0;		//Tangent velocity of contact point (rotate Normal right)
 			coll.hitVel.y = 0;		//units: rad*d/t (Radians*diameter/time
 			coll.hitMomentBit = true;
-
 			return { hitTime, coll };
+
 		} else {
 			return { hitTime: -1.0, coll }; // no hits
 		}
@@ -209,7 +213,7 @@ export class FlipperHit extends HitObject {
 
 			// first check for slippage
 			const slip = vRel.sub(normal.clone().multiplyScalar(normVel));       // calc the tangential slip velocity
-			const maxFric = j * this.friction;
+			const maxFriction = j * this.friction;
 			const slipSpeed = slip.length();
 			let slipDir: Vertex3D;
 			let crossF: Vertex3D;
@@ -243,10 +247,10 @@ export class FlipperHit extends HitObject {
 
 			const crossB = Vertex3D.crossProduct(rB, slipDir);
 			const denomB = ball.hit.invMass + slipDir.dot(Vertex3D.crossProduct(crossB.clone().divideScalar(ball.hit.inertia), rB));
-			const fric = clamp(numer / (denomB + denomF), -maxFric, maxFric);
+			const friction = clamp(numer / (denomB + denomF), -maxFriction, maxFriction);
 
-			ball.hit.applySurfaceImpulse(crossB.clone().multiplyScalar(dTime * fric), slipDir.clone().multiplyScalar(dTime * fric));
-			this.mover.applyImpulse(crossF.clone().multiplyScalar(-dTime * fric));
+			ball.hit.applySurfaceImpulse(crossB.clone().multiplyScalar(dTime * friction), slipDir.clone().multiplyScalar(dTime * friction));
+			this.mover.applyImpulse(crossF.clone().multiplyScalar(-dTime * friction));
 		}
 	}
 
@@ -260,14 +264,15 @@ export class FlipperHit extends HitObject {
 		const cF = new Vertex3D(
 			this.mover.hitCircleBase.center.x,
 			this.mover.hitCircleBase.center.y,
-			ball.state.pos.z);     // make sure collision happens in same z plane where ball is
+			ball.state.pos.z,                              // make sure collision happens in same z plane where ball is
+		);
 
-		const rF = hitPos.clone().sub(cF);       // displacement relative to flipper center
+		const rF = hitPos.clone().sub(cF);                 // displacement relative to flipper center
 
 		const vB = ball.hit.surfaceVelocity(rB);
 		const vF = this.mover.surfaceVelocity(rF);
-		const vrel = vB.clone().sub(vF);
-		let bnv = normal.dot(vrel);       // relative normal velocity
+		const vRel = vB.clone().sub(vF);
+		let bnv = normal.dot(vRel);                        // relative normal velocity
 
 		if (bnv >= -C_LOWNORMVEL) {                        // nearly receding ... make sure of conditions
 			if (bnv > C_LOWNORMVEL) {                      // otherwise if clearly approaching .. process the collision
@@ -281,16 +286,17 @@ export class FlipperHit extends HitObject {
 			}
 //#endif
 		}
-		player.pactiveballBC = ball; // Ball control most recently collided with flipper
+		player.pactiveballBC = ball;                       // Ball control most recently collided with flipper
 
 //#ifdef C_DISP_GAIN
 		// correct displacements, mostly from low velocity blindness, an alternative to true acceleration processing
-		let hdist = -C_DISP_GAIN * coll.hitDistance;		// distance found in hit detection
+		let hdist = -C_DISP_GAIN * coll.hitDistance;       // distance found in hit detection
 		if (hdist > 1.0e-4) {
 			if (hdist > C_DISP_LIMIT) {
-				hdist = C_DISP_LIMIT; // crossing ramps, delta noise
+				hdist = C_DISP_LIMIT;                      // crossing ramps, delta noise
 			}
-			ball.state.pos.add(coll.hitNormal!.clone().multiplyScalar(hdist));	// push along norm, back to free area; use the norm, but is not correct
+			// push along norm, back to free area; use the norm, but is not correct
+			ball.state.pos.add(coll.hitNormal!.clone().multiplyScalar(hdist));
 		}
 //#endif
 
@@ -303,7 +309,7 @@ export class FlipperHit extends HitObject {
 		 * of kinetic energy from ball to flipper. This avoids overly dead bounces
 		 * in that case.
 		 */
-		const angImp = -angResp.z;     // minus because impulse will apply in -normal direction
+		const angImp = -angResp.z;                         // minus because impulse will apply in -normal direction
 		let flipperResponseScaling = 1.0;
 		if (this.mover.isInContact && this.mover.contactTorque! * angImp >= 0.) {
 			// if impulse pushes against stopper, allow no loss of kinetic energy to flipper
@@ -324,7 +330,7 @@ export class FlipperHit extends HitObject {
 
 		const rotI = Vertex3D.crossProduct(rF, flipperImp);
 		if (this.mover.isInContact) {
-			if (rotI.z * this.mover.contactTorque < 0) {    // pushing against the solenoid?
+			if (rotI.z * this.mover.contactTorque < 0) {   // pushing against the solenoid?
 
 				// Get a bound on the time the flipper needs to return to static conditions.
 				// If it's too short, we treat the flipper as static during the whole collision.
@@ -349,38 +355,38 @@ export class FlipperHit extends HitObject {
 		this.mover.applyImpulse(rotI);
 
 		// apply friction
-		const tangent = vrel.clone().sub(normal.clone().multiplyScalar(vrel.dot(normal)));       // calc the tangential velocity
+		const tangent = vRel.clone().sub(normal.clone().multiplyScalar(vRel.dot(normal)));       // calc the tangential velocity
 
 		const tangentSpSq = tangent.lengthSq();
 		if (tangentSpSq > 1e-6) {
-			tangent.divideScalar(Math.sqrt(tangentSpSq));            // normalize to get tangent direction
-			const vt = vrel.dot(tangent);   // get speed in tangential direction
+			tangent.divideScalar(Math.sqrt(tangentSpSq));                      // normalize to get tangent direction
+			const vt = vRel.dot(tangent);                                      // get speed in tangential direction
 
 			// compute friction impulse
 			const crossB = Vertex3D.crossProduct(rB, tangent);
 			let kt = ball.hit.invMass + tangent.dot(Vertex3D.crossProduct(crossB.clone().divideScalar(ball.hit.inertia), rB));
 
 			const crossF = Vertex3D.crossProduct(rF, tangent);
-			kt += tangent.dot(Vertex3D.crossProduct(crossF.clone().divideScalar(this.mover.inertia), rF));    // flipper only has angular response
+			kt += tangent.dot(Vertex3D.crossProduct(crossF.clone().divideScalar(this.mover.inertia), rF));   // flipper only has angular response
 
 			// friction impulse can't be greater than coefficient of friction times collision impulse (Coulomb friction cone)
-			const maxFric = this.friction * impulse;
-			const jt = clamp(-vt / kt, -maxFric, maxFric);
+			const maxFriction = this.friction * impulse;
+			const jt = clamp(-vt / kt, -maxFriction, maxFriction);
 
 			ball.hit.applySurfaceImpulse(crossB.clone().multiplyScalar(jt), tangent.clone().multiplyScalar(jt));
 			this.mover.applyImpulse(crossF.clone().multiplyScalar(-jt));
 		}
 
-		// fixme event
-		// if ((bnv < -0.25) && (g_pplayer->m_time_msec - m_last_hittime) > 250) // limit rate to 250 milliseconds per event
-		// {
-		// 	//!! unused const float distance = coll.m_hitmoment;                     // moment .... and the flipper response
-		// 	const flipperHit = /*(distance == 0.0f)*/ coll.m_hitmoment_bit ? -1.0f : -bnv; // move event processing to end of collision handler...
-		// 	if (flipperHit < 0.f)
-		// 	this.flipperMover.pflipper->FireGroupEvent(DISPID_HitEvents_Hit);        // simple hit event
-		// else
-		// 	this.flipperMover.pflipper->FireVoidEventParm(DISPID_FlipperEvents_Collide, flipperHit); // collision velocity (normal to face)
-		// }
+		if (bnv < -0.25 && (player.timeMsec - this.lastHitTime) > 250) {       // limit rate to 250 milliseconds per event
+			const flipperHit = coll.hitMomentBit ? -1.0 : -bnv;                // move event processing to end of collision handler...
+			if (flipperHit < 0) {
+				this.fireEvents.fireGroupEvent(FireEvent.HitEventsHit);        // simple hit event
+
+			} else {
+				// collision velocity (normal to face)
+				this.fireEvents.fireVoidEventParm(FireEvent.FlipperEventsCollide, flipperHit);
+			}
+		}
 
 		this.lastHitTime = player.timeMsec; // keep resetting until idle for 250 milliseconds
 	}

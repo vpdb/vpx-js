@@ -26,6 +26,7 @@ import { IRenderable } from '../../game/irenderable';
 import { IBallCreationPosition, Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
+import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
 import { Meshes } from '../item-data';
@@ -49,6 +50,7 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 	private readonly mesh: PlungerMesh;
 	private readonly state: PlungerState;
 	private hit?: PlungerHit;
+	private fireEvents?: FireEvents;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Plunger> {
 		const data = await PlungerData.fromStorage(storage, itemName);
@@ -102,7 +104,8 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		this.hit = new PlungerHit(this.data, this.state, this.mesh.cFrames, player, table);
+		this.fireEvents = new FireEvents(this);
+		this.hit = new PlungerHit(this.data, this.state, this.fireEvents, this.mesh.cFrames, player, table);
 	}
 
 	public getMover(): PlungerMover {

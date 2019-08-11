@@ -18,15 +18,15 @@
  */
 
 import { Storage } from '../..';
+import { Table } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
+import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
-import { Table } from '../table/table';
 import { RubberData } from './rubber-data';
-import { RubberEvents } from './rubber-events';
 import { RubberHitGenerator } from './rubber-hit-generator';
 import { RubberMeshGenerator } from './rubber-mesh-generator';
 
@@ -41,7 +41,7 @@ export class Rubber implements IRenderable, IHittable {
 	private readonly meshGenerator: RubberMeshGenerator;
 	private hitGenerator: RubberHitGenerator;
 	private hits: HitObject[] = [];
-	private events?: RubberEvents;
+	private fireEvents?: FireEvents;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Rubber> {
 		const data = await RubberData.fromStorage(storage, itemName);
@@ -79,8 +79,8 @@ export class Rubber implements IRenderable, IHittable {
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		this.events = new RubberEvents();
-		this.hits = this.hitGenerator.generateHitObjects(this.events, table);
+		this.fireEvents = new FireEvents(this);
+		this.hits = this.hitGenerator.generateHitObjects(this.fireEvents, table);
 	}
 
 	public getHitShapes(): HitObject[] {

@@ -25,13 +25,15 @@ import { CollisionType } from '../../physics/collision-type';
 import {
 	C_CONTACTVEL,
 	C_DISP_GAIN,
-	C_DISP_LIMIT, C_EMBEDDED, C_EMBEDSHOT,
+	C_DISP_LIMIT,
+	C_EMBEDDED,
+	C_EMBEDSHOT,
 	C_EMBEDVELLIMIT,
 	C_LOWNORMVEL,
 	C_PRECISION,
 	PHYS_TOUCH,
 } from '../../physics/constants';
-import { IFireEvents } from '../../physics/events';
+import { FireEvents } from '../../physics/fire-events';
 import { elasticityWithFalloff, hardScatter } from '../../physics/functions';
 import { HitObject, HitTestResult } from '../../physics/hit-object';
 import { FLT_MIN } from '../mesh';
@@ -50,7 +52,7 @@ export class BallHit extends HitObject {
 	public isFrozen: boolean;
 	public coll: CollisionEvent;
 	public rcHitRadiusSqr: number = 0;
-	public vpVolObjs: IFireEvents[] = [];
+	public vpVolObjs: FireEvents[] = [];
 
 	private readonly id: number; // same as ball id
 	private readonly data: BallData;
@@ -62,6 +64,8 @@ export class BallHit extends HitObject {
 	public readonly invMass: number;
 	public readonly inertia: number;
 	public readonly angularMomentum = new Vertex3D();
+	public readonly eventPos = new Vertex3D(-1, -1, -1);
+
 	public angularVelocity = new Vertex3D();
 
 	private playfieldReflectionStrength: number;
