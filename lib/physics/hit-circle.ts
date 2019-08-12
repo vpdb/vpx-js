@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Player } from '../game/player';
 import { solveQuadraticEq } from '../math/functions';
 import { Vertex2D } from '../math/vertex2d';
 import { Vertex3D } from '../math/vertex3d';
@@ -43,7 +44,7 @@ export class HitCircle extends HitObject {
 		return CollisionType.Circle;
 	}
 
-	public collide(coll: CollisionEvent): void {
+	public collide(coll: CollisionEvent, player: Player): void {
 		coll.ball.hit.collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 	}
 
