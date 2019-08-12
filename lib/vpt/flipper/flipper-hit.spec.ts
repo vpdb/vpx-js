@@ -89,7 +89,7 @@ describe('The VPinball flipper collision', () => {
 
 		// assert it's on flipper's bottom
 		expect(ball.getState().pos.x).to.be.above(395);
-		expect(ball.getState().pos.x).to.be.below(398);
+		expect(ball.getState().pos.x).to.be.below(400);
 		expect(ball.getState().pos.y).to.be.above(1648);
 		expect(ball.getState().pos.y).to.be.below(1650);
 	});
