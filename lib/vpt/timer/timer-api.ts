@@ -17,35 +17,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Storage } from '../../io/ole-doc';
-import { Item } from '../item';
-import { ItemData } from '../item-data';
-import { CollectionData } from './collection-data';
-import { logger } from '../../util/logger';
+import { Player } from '../../game/player';
+import { ItemApi } from '../item-api';
+import { Table } from '../table/table';
+import { TimerData } from './timer-data';
 
-export class Collection {
+export class TimerApi extends ItemApi {
 
-	public readonly data: CollectionData;
-	public readonly items: Array<Item<ItemData>> = [];
+	private readonly data: TimerData;
 
-	public static async fromStorage(storage: Storage, itemName: string): Promise<Collection> {
-		const data = await CollectionData.fromStorage(storage, itemName);
-		return new Collection(data);
-	}
-
-	public getName(): string {
-		return this.data.getName();
-	}
-
-	private constructor(data: CollectionData) {
+	constructor(player: Player, table: Table, data: TimerData) {
+		super(player, table);
 		this.data = data;
-	}
-
-	public getItemNames() {
-		return this.data.itemNames;
-	}
-
-	public addItem(item: Item<ItemData>) {
-		this.items.push(item);
 	}
 }

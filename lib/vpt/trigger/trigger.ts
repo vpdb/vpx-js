@@ -27,6 +27,7 @@ import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
 import { IRenderApi } from '../../render/irender-api';
+import { Item } from '../item';
 import { Table } from '../table/table';
 import { TriggerAnimation } from './trigger-animation';
 import { TriggerApi } from './trigger-api';
@@ -41,7 +42,7 @@ import { TriggerState } from './trigger-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/trigger.cpp
  */
-export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState>, IScriptable<TriggerApi> {
+export class Trigger extends Item<TriggerData> implements IRenderable, IHittable, IAnimatable<TriggerState>, IScriptable<TriggerApi> {
 
 	public static ShapeTriggerNone = 0;
 	public static ShapeTriggerWireA = 1;
@@ -51,14 +52,12 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 	public static ShapeTriggerWireC = 5;
 	public static ShapeTriggerWireD = 6;
 
-	private readonly data: TriggerData;
 	private readonly state: TriggerState;
 	private readonly meshGenerator: TriggerMeshGenerator;
 	private readonly hitGenerator: TriggerHitGenerator;
 
 	private api?: TriggerApi;
 	private hits?: HitObject[];
-	private events?: EventProxy;
 	private animation?: TriggerAnimation;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Trigger> {
@@ -67,14 +66,10 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 	}
 
 	private constructor(data: TriggerData) {
-		this.data = data;
+		super(data);
 		this.state = TriggerState.claim(data.getName(), 0);
 		this.meshGenerator = new TriggerMeshGenerator(data);
 		this.hitGenerator = new TriggerHitGenerator(data);
-	}
-
-	public getName() {
-		return this.data.getName();
 	}
 
 	public getState(): TriggerState {
@@ -87,10 +82,6 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 
 	public isCollidable(): boolean {
 		return true;
-	}
-
-	public getEventProxy(): EventProxy {
-		return this.events!;
 	}
 
 	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {

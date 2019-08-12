@@ -64,7 +64,7 @@ describe('The VPinball plunger physics', () => {
 	it('should move to the end when pulled back', async () => {
 		const plunger = table.plungers.CustomPlunger;
 		const plungerMover = plunger.getMover() as PlungerMover;
-		const endPosition = plunger.getData().center.y;
+		const endPosition = plunger.getApi().Y;
 
 		plunger.pullBack();
 		simulateCycles(player, 50);

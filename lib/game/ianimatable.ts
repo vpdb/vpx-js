@@ -18,6 +18,7 @@
  */
 
 import { IRenderApi } from '../render/irender-api';
+import { ItemState } from '../vpt/item-state';
 import { Table } from '../vpt/table/table';
 import { IPlayable } from './iplayable';
 import { Player } from './player';
@@ -45,4 +46,8 @@ export interface IAnimation {
 	init(physics: PlayerPhysics): void;
 
 	updateAnimation(physics: PlayerPhysics, table: Table): void;
+}
+
+export function isAnimatable(arg: any): arg is IAnimatable<ItemState> {
+	return arg.getAnimation !== undefined;
 }

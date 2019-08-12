@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { EventEmitter } from 'events';
 import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable, Meshes } from '../../game/irenderable';
@@ -29,6 +28,7 @@ import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
+import { Item } from '../item';
 import { FLT_MAX } from '../mesh';
 import { Table } from '../table/table';
 import { Texture } from '../texture';
@@ -42,7 +42,7 @@ import { KickerMeshGenerator } from './kicker-mesh-generator';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/kicker.cpp
  */
-export class Kicker extends EventEmitter implements IRenderable, IHittable, IBallCreationPosition, IScriptable<KickerApi> {
+export class Kicker extends Item<KickerData> implements IRenderable, IHittable, IBallCreationPosition, IScriptable<KickerApi> {
 
 	public static TypeKickerInvisible = 0;
 	public static TypeKickerHole = 1;
@@ -52,9 +52,7 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 	public static TypeKickerGottlieb = 5;
 	public static TypeKickerCup2 = 6;
 
-	private readonly data: KickerData;
 	private readonly meshGenerator: KickerMeshGenerator;
-	private events?: EventProxy;
 	private hit?: KickerHit;
 	private api?: KickerApi;
 
@@ -64,13 +62,8 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 	}
 
 	private constructor(data: KickerData) {
-		super();
-		this.data = data;
+		super(data);
 		this.meshGenerator = new KickerMeshGenerator(data);
-	}
-
-	public getName() {
-		return this.data.getName();
 	}
 
 	public isVisible(): boolean {
@@ -79,10 +72,6 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 
 	public isCollidable(): boolean {
 		return true;
-	}
-
-	public getEventProxy(): EventProxy {
-		return this.events!;
 	}
 
 	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {

@@ -26,6 +26,7 @@ import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
+import { Item } from '../item';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { PrimitiveApi } from './primitive-api';
@@ -38,15 +39,13 @@ import { PrimitiveMeshGenerator } from './primitive-mesh-generator';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/primitive.cpp
  */
-export class Primitive implements IRenderable, IHittable, IScriptable<PrimitiveApi> {
+export class Primitive extends Item<PrimitiveData> implements IRenderable, IHittable, IScriptable<PrimitiveApi> {
 
-	private readonly data: PrimitiveData;
 	private readonly meshGenerator: PrimitiveMeshGenerator;
 	private readonly hitGenerator: PrimitiveHitGenerator;
 	private mesh?: Mesh;
 	private api?: PrimitiveApi;
 	private hits?: HitObject[];
-	private events?: EventProxy;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Primitive> {
 		const data = await PrimitiveData.fromStorage(storage, itemName);
@@ -54,13 +53,9 @@ export class Primitive implements IRenderable, IHittable, IScriptable<PrimitiveA
 	}
 
 	private constructor(data: PrimitiveData) {
-		this.data = data;
+		super(data);
 		this.meshGenerator = new PrimitiveMeshGenerator(data);
 		this.hitGenerator = new PrimitiveHitGenerator(data);
-	}
-
-	public getName() {
-		return this.data.getName();
 	}
 
 	public isVisible(): boolean {
@@ -84,10 +79,6 @@ export class Primitive implements IRenderable, IHittable, IScriptable<PrimitiveA
 
 	public clearMesh() {
 		this.data.mesh = new Mesh();
-	}
-
-	public getEventProxy(): EventProxy {
-		return this.events!;
 	}
 
 	private getMesh(table: Table): Mesh {

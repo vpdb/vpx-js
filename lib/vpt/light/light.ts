@@ -21,6 +21,7 @@ import { IRenderable, Meshes } from '../../game/irenderable';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { IRenderApi } from '../../render/irender-api';
+import { Item } from '../item';
 import { Material } from '../material';
 import { Table } from '../table/table';
 import { LightData } from './light-data';
@@ -31,7 +32,7 @@ import { LightMeshGenerator } from './light-mesh-generator';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/light.cpp
  */
-export class Light implements IRenderable {
+export class Light extends Item<LightData> implements IRenderable {
 
 	public static readonly StateOff = 0;
 	public static readonly StateOn = 1;
@@ -53,12 +54,9 @@ export class Light implements IRenderable {
 	}
 
 	private constructor(data: LightData) {
+		super(data);
 		this.data = data;
 		this.meshGenerator = new LightMeshGenerator(data);
-	}
-
-	public getName() {
-		return this.data.getName();
 	}
 
 	public isVisible(table: Table): boolean {

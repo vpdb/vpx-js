@@ -25,6 +25,7 @@ import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
+import { Item } from '../item';
 import { Table } from '../table/table';
 import { SurfaceApi } from './surface-api';
 import { SurfaceData } from './surface-data';
@@ -36,15 +37,13 @@ import { SurfaceMeshGenerator } from './surface-mesh-generator';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/surface.cpp
  */
-export class Surface implements IRenderable, IHittable, IScriptable<SurfaceApi> {
+export class Surface extends Item<SurfaceData> implements IRenderable, IHittable, IScriptable<SurfaceApi> {
 
 	private readonly itemName: string;
-	private readonly data: SurfaceData;
 	private readonly meshGenerator: SurfaceMeshGenerator;
 	private readonly hitGenerator: SurfaceHitGenerator;
 	private hits: HitObject[] = [];
 	private drops: HitObject[] = [];
-	private events?: EventProxy;
 	private api?: SurfaceApi;
 
 	public isDropped: boolean = false;
@@ -60,14 +59,10 @@ export class Surface implements IRenderable, IHittable, IScriptable<SurfaceApi> 
 	}
 
 	public constructor(itemName: string, data: SurfaceData) {
+		super(data);
 		this.itemName = itemName;
-		this.data = data;
 		this.meshGenerator = new SurfaceMeshGenerator();
 		this.hitGenerator = new SurfaceHitGenerator(this, data);
-	}
-
-	public getName(): string {
-		return this.data.wzName;
 	}
 
 	public isVisible(): boolean {

@@ -26,13 +26,15 @@ const MAX_TIMER_MSEC_INTERVAL = 1;
 /**
  * This is the base class of all table items.
  */
-export abstract class Item {
+export abstract class Item<DATA extends ItemData> {
 
+	protected readonly data: DATA;
+	protected events?: EventProxy;
 	private hitTimer?: TimerHit;
 
-	protected abstract getData(): ItemData;
-
-	protected abstract getEventProxy(): EventProxy;
+	protected constructor(data: DATA) {
+		this.data = data;
+	}
 
 	public getTimers(): TimerHit[] {
 
@@ -47,5 +49,17 @@ export abstract class Item {
 		);
 
 		return data.timer.enabled ? [this.hitTimer] : [];
+	}
+
+	public getName(): string {
+		return this.data.getName();
+	}
+
+	protected getData(): DATA {
+		return this.data;
+	}
+
+	public getEventProxy(): EventProxy {
+		return this.events!;
 	}
 }

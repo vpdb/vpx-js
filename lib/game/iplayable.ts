@@ -18,8 +18,8 @@
  */
 
 import { Table } from '../vpt/table/table';
-import { IItem } from './iitem';
 import { Player } from './player';
+import { IItem } from './iitem';
 
 /**
  * A table element that can interact with the game. This corresponds roughly
@@ -28,4 +28,8 @@ import { Player } from './player';
 export interface IPlayable extends IItem {
 
 	setupPlayer(player: Player, table: Table): void;
+}
+
+export function isPlayable(arg: any): arg is IPlayable {
+	return arg.setupPlayer !== undefined;
 }

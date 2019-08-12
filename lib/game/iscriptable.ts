@@ -25,3 +25,7 @@ export interface IScriptable<T> extends IPlayable {
 
 	getEventNames(): string[];
 }
+
+export function isScriptable<T = any>(arg: any): arg is IScriptable<T> {
+	return arg.getApi !== undefined;
+}

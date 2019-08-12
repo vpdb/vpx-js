@@ -17,19 +17,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Storage } from '../../io/ole-doc';
-import { TimerData } from './timer-data';
-import { Item } from '../item';
-import { ItemData } from '../item-data';
 import { EventProxy } from '../../game/event-proxy';
 import { IPlayable } from '../../game/iplayable';
+import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
+import { Storage } from '../../io/ole-doc';
+import { Item } from '../item';
 import { Table } from '../table/table';
+import { TimerApi } from './timer-api';
+import { TimerData } from './timer-data';
 
-export class Timer extends Item implements IPlayable {
+export class Timer extends Item<TimerData> implements IPlayable, IScriptable<TimerApi> {
 
-	public readonly data: TimerData;
-	private events?: EventProxy;
+	private api?: TimerApi;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Timer> {
 		const data = await TimerData.fromStorage(storage, itemName);
@@ -37,23 +37,19 @@ export class Timer extends Item implements IPlayable {
 	}
 
 	private constructor(data: TimerData) {
-		super();
-		this.data = data;
-	}
-
-	public getName(): string {
-		return this.data.getName();
+		super(data);
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
+		this.api = new TimerApi(player, table, this.data);
 	}
 
-	protected getData(): ItemData {
-		return this.data;
+	public getApi(): TimerApi {
+		return this.api!;
 	}
 
-	protected getEventProxy(): EventProxy {
-		return this.events!;
+	public getEventNames(): string[] {
+		return [];
 	}
 }

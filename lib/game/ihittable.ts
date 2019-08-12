@@ -26,3 +26,7 @@ export interface IHittable extends IPlayable {
 	getHitShapes(): HitObject[];
 	getEventProxy(): EventProxy;
 }
+
+export function isHittable(arg: any): arg is IHittable {
+	return arg.getHitShapes !== undefined;
+}

@@ -26,6 +26,7 @@ import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
 import { IRenderApi } from '../../render/irender-api';
+import { Item } from '../item';
 import { Table } from '../table/table';
 import { Texture } from '../texture';
 import { BumperAnimation } from './bumper-animation';
@@ -40,14 +41,12 @@ import { BumperState } from './bumper-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/bumper.cpp
  */
-export class Bumper implements IRenderable, IHittable, IAnimatable<BumperState> {
+export class Bumper extends Item<BumperData> implements IRenderable, IHittable, IAnimatable<BumperState> {
 
-	private readonly data: BumperData;
 	private readonly meshGenerator: BumperMeshGenerator;
 	private readonly meshUpdater: BumperMeshUpdater;
 	private readonly state: BumperState;
 	private hit?: BumperHit;
-	private events?: EventProxy;
 	private animation?: BumperAnimation;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Bumper> {
@@ -56,14 +55,10 @@ export class Bumper implements IRenderable, IHittable, IAnimatable<BumperState> 
 	}
 
 	private constructor(data: BumperData) {
-		this.data = data;
+		super(data);
 		this.state = BumperState.claim(this.getName(), 0, 0, 0);
 		this.meshGenerator = new BumperMeshGenerator(data);
 		this.meshUpdater = new BumperMeshUpdater(this.data, this.state, this.meshGenerator);
-	}
-
-	public getName() {
-		return this.data.getName();
 	}
 
 	public getState(): BumperState {
@@ -95,10 +90,6 @@ export class Bumper implements IRenderable, IHittable, IAnimatable<BumperState> 
 
 	public getAnimation(): BumperAnimation {
 		return this.animation!;
-	}
-
-	public getEventProxy(): EventProxy {
-		return this.events!;
 	}
 
 	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
