@@ -68,6 +68,10 @@ export class KickerHit extends HitCircle {
 		return this.hitTestBasicRadius(ball, dTime, coll, false, false, false);
 	}
 
+	public collide(coll: CollisionEvent, player: Player): void {
+		this.doCollide(player, coll.ball, coll.hitNormal!, coll.hitFlag, false);
+	}
+
 	public doCollide(player: Player, ball: Ball, hitNormal: Vertex3D, hitBit: boolean, newBall: boolean) {
 
 		if (this.ball) {
@@ -129,7 +133,7 @@ export class KickerHit extends HitCircle {
 						this.obj.fireGroupEvent(FireEvent.HitEventsHit);
 					}
 
-					if (ball.hit.isFrozen || this.data.fallThrough) {	// script may have unfrozen the ball
+					if (ball.hit.isFrozen || this.data.fallThrough) {  // script may have unfrozen the ball
 
 						// if ball falls through hole, we fake the collision algo by changing the ball height
 						// in HitTestBasicRadius() the z-position of the ball is checked if it is >= to the hit cylinder

@@ -88,10 +88,6 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 		};
 	}
 
-	public getHitShapes(): HitObject[] {
-		return [ this.hit! ];
-	}
-
 	public setupPlayer(player: Player, table: Table): void {
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
 
@@ -100,6 +96,10 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 
 		this.fireEvents = new FireEvents(this);
 		this.hit = new KickerHit(this.data, this.fireEvents, table, this.data.vCenter, radius, height, height + this.data.hitHeight); // height of kicker hit cylinder
+	}
+
+	public getHitShapes(): HitObject[] {
+		return [ this.hit! ];
 	}
 
 	public getBallCreationPosition(table: Table): Vertex3D {
