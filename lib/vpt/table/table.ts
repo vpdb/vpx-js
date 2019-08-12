@@ -18,13 +18,12 @@
  */
 
 import { Event } from '../../game/event';
-import { IAnimatable } from '../../game/ianimatable';
-import { IHittable } from '../../game/ihittable';
-import { IItem } from '../../game/iitem';
-import { IMovable } from '../../game/imovable';
-import { IPlayable } from '../../game/iplayable';
-import { IRenderable, Meshes } from '../../game/irenderable';
-import { IScriptable } from '../../game/iscriptable';
+import { IAnimatable, isAnimatable } from '../../game/ianimatable';
+import { IHittable, isHittable } from '../../game/ihittable';
+import { IMovable, isMovable } from '../../game/imovable';
+import { IPlayable, isPlayable } from '../../game/iplayable';
+import { Meshes } from '../../game/irenderable';
+import { IScriptable, isScriptable } from '../../game/iscriptable';
 import { IImage } from '../../gltf/image';
 import { IBinaryReader, Storage } from '../../io/ole-doc';
 import { degToRad, f4 } from '../../math/float';
@@ -40,6 +39,9 @@ import { Collection } from '../collection/collection';
 import { Flipper } from '../flipper/flipper';
 import { Gate } from '../gate/gate';
 import { HitTarget } from '../hit-target/hit-target';
+import { Item } from '../item';
+import { ItemData } from '../item-data';
+import { ItemState } from '../item-state';
 import { Kicker } from '../kicker/kicker';
 import { Light } from '../light/light';
 import { Material } from '../material';
@@ -65,11 +67,11 @@ import { TableMeshGenerator } from './table-mesh-generator';
  * This holds together all table elements of a .vpt/.vpx file. It's also
  * the entry point for parsing the file.
  */
-export class Table implements IRenderable {
+export class Table {
 
 	public readonly data?: TableData;
 	public readonly info?: { [key: string]: string };
-	public readonly items: IItem[];
+	public readonly items: { [key: string]: Item<ItemData> };
 	public readonly tableScript?: string;
 
 	private readonly imageCache: Map<string, IImage> = new Map();
@@ -120,7 +122,7 @@ export class Table implements IRenderable {
 		if (loadedTable.tableScript) {
 			this.tableScript = loadedTable.tableScript;
 		}
-		const items: Array<[any, any]> = [
+		const mapping: Array<[any, any]> = [
 			[loadedTable.textures, this.textures],
 			[loadedTable.collections, this.collections],
 			[loadedTable.bumpers, this.bumpers],
@@ -139,10 +141,10 @@ export class Table implements IRenderable {
 			[loadedTable.timers, this.timers],
 			[loadedTable.triggers, this.triggers],
 		];
-		for (const i of items) {
-			if (isLoaded(i[0])) {
-				for (const item of i[0]) {
-					i[1][item.getName()] = item;
+		for (const m of mapping) {
+			if (isLoaded(m[0])) {
+				for (const item of m[0]) {
+					m[1][item.getName()] = item;
 				}
 			}
 		}
@@ -175,19 +177,23 @@ export class Table implements IRenderable {
 	}
 
 	public getPlayables(): IPlayable[] {
-		return this.items.filter(item => !!(item as any).setupPlayer) as IPlayable[];
+		return Object.values(this.items).filter(isPlayable) as unknown as IPlayable[];
 	}
 
-	public getMovables(): Array<IMovable<any>> {
-		return this.items.filter(item => !!(item as any).getMover) as Array<IMovable<any>>;
+	public getMovables(): Array<IMovable<ItemState>> {
+		return Object.values(this.items).filter(isMovable) as unknown as Array<IMovable<ItemState>>;
 	}
 
-	public getAnimatables(): Array<IAnimatable<any>> {
-		return this.items.filter(item => !!(item as any).getAnimation) as Array<IAnimatable<any>>;
+	public getAnimatables(): Array<IAnimatable<ItemState>> {
+		return Object.values(this.items).filter(isAnimatable) as unknown as  Array<IAnimatable<ItemState>>;
+	}
+
+	public getScriptables(): Array<IScriptable<any>> {
+		return Object.values(this.items).filter(isScriptable) as unknown as Array<IScriptable<any>>;
 	}
 
 	public getHittables(): IHittable[] {
-		return this.items.filter(item => !!(item as any).getHitShapes) as IHittable[];
+		return Object.values(this.items).filter(isHittable) as unknown as IHittable[];
 	}
 
 	public getHitShapes(): HitObject[] {
@@ -208,7 +214,7 @@ export class Table implements IRenderable {
 
 	public getElementApis(): { [key: string]: any } {
 		const apis: { [key: string]: any } = {};
-		const elements = this.items.filter(item => !!(item as any).getApi) as Array<IScriptable<any>>;
+		const elements = this.getScriptables();
 		for (const element of elements) {
 			apis[element.getName()] = element.getApi();
 		}
@@ -217,7 +223,7 @@ export class Table implements IRenderable {
 
 	public getElements(): { [key: string]: IScriptable<any> } {
 		const elements: { [key: string]: any } = {};
-		const elementList = this.items.filter(item => !!(item as any).getApi) as Array<IScriptable<any>>;
+		const elementList = this.getScriptables();
 		for (const element of elementList) {
 			elements[element.getName()] = element;
 		}
@@ -372,6 +378,18 @@ export class Table implements IRenderable {
 
 	public clearImageCache() {
 		this.imageCache.clear();
+	}
+
+	public setupCollections() {
+		for (const collection of Object.values(this.collections)) {
+			for (const itemName of collection.getItemNames()) {
+				if (!this.items[itemName]) {
+					logger().warn('Non-existant item "%s" in collection "%s", skipping.', itemName, collection.getName());
+				} else {
+					collection.addItem(this.items[itemName]);
+				}
+			}
+		}
 	}
 }
 

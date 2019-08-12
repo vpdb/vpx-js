@@ -30,6 +30,7 @@ import { Matrix3D } from '../../math/matrix3d';
 import { Vertex2D } from '../../math/vertex2d';
 import { HitObject } from '../../physics/hit-object';
 import { IRenderApi } from '../../render/irender-api';
+import { Item } from '../item';
 import { Table } from '../table/table';
 import { FlipperApi } from './flipper-api';
 import { FlipperData } from './flipper-data';
@@ -43,14 +44,12 @@ import { FlipperState } from './flipper-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/flipper.cpp
  */
-export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, IHittable, IScriptable<FlipperApi> {
+export class Flipper extends Item<FlipperData> implements IRenderable, IPlayable, IMovable<FlipperState>, IHittable, IScriptable<FlipperApi> {
 
-	private readonly data: FlipperData;
 	private readonly mesh: FlipperMesh;
 	private readonly state: FlipperState;
 	private hit?: FlipperHit;
 	private api!: FlipperApi;
-	private events?: EventProxy;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Flipper> {
 		const data = await FlipperData.fromStorage(storage, itemName);
@@ -58,7 +57,7 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	}
 
 	public constructor(itemName: string, data: FlipperData) {
-		this.data = data;
+		super(data);
 		this.mesh = new FlipperMesh();
 		this.state = FlipperState.claim(this.getName(), this.data.startAngle);
 	}
@@ -91,14 +90,6 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 
 	public getHitShapes(): HitObject[] {
 		return [ this.hit! ];
-	}
-
-	public getName(): string {
-		return this.data.wzName;
-	}
-
-	public getEventProxy(): EventProxy {
-		return this.events!;
 	}
 
 	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {

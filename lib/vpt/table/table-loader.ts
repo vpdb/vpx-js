@@ -20,6 +20,7 @@
 import { IBinaryReader, OleCompoundDoc, Storage } from '../../io/ole-doc';
 import { logger } from '../../util/logger';
 import { Bumper } from '../bumper/bumper';
+import { Collection } from '../collection/collection';
 import { Flipper } from '../flipper/flipper';
 import { Gate } from '../gate/gate';
 import { HitTarget } from '../hit-target/hit-target';
@@ -38,7 +39,8 @@ import { Timer } from '../timer/timer';
 import { Trigger } from '../trigger/trigger';
 import { TableLoadOptions } from './table';
 import { TableData } from './table-data';
-import { Collection } from '../collection/collection';
+import { IItem } from '../../game/iitem';
+import { Item } from '../item';
 
 export class TableLoader {
 
@@ -49,7 +51,7 @@ export class TableLoader {
 		this.doc = await OleCompoundDoc.load(reader);
 		try {
 
-			const loadedTable: LoadedTable = { items: [] };
+			const loadedTable: LoadedTable = { items: {} };
 			if (opts.loadTableScript || (opts.tableDataOnly || !opts.tableInfoOnly)) {
 
 				// open game storage
@@ -123,112 +125,12 @@ export class TableLoader {
 
 		// go through all game items
 		for (let i = 0; i < numItems; i++) {
-			let item: any;
 			const itemName = `GameItem${i}`;
 			const itemData = await storage.read(itemName, 0, 4);
 			const itemType = itemData.readInt32LE(0);
-			switch (itemType) {
-
-				case ItemData.TypeSurface: {
-					item = await Surface.fromStorage(storage, itemName);
-					loadedTable.surfaces.push(item);
-					break;
-				}
-
-				case ItemData.TypePrimitive: {
-					item = await Primitive.fromStorage(storage, itemName);
-					loadedTable.primitives.push(item);
-					break;
-				}
-
-				case ItemData.TypeLight: {
-					item = await Light.fromStorage(storage, itemName);
-					loadedTable.lights.push(item);
-					break;
-				}
-
-				case ItemData.TypeRubber: {
-					item = await Rubber.fromStorage(storage, itemName);
-					loadedTable.rubbers.push(item);
-					break;
-				}
-
-				case ItemData.TypeFlipper: {
-					item = await Flipper.fromStorage(storage, itemName);
-					loadedTable.flippers.push(item);
-					break;
-				}
-
-				case ItemData.TypeBumper: {
-					item = await Bumper.fromStorage(storage, itemName);
-					loadedTable.bumpers.push(item);
-					break;
-				}
-
-				case ItemData.TypeRamp: {
-					item = await Ramp.fromStorage(storage, itemName);
-					loadedTable.ramps.push(item);
-					break;
-				}
-
-				case ItemData.TypeHitTarget: {
-					item = await HitTarget.fromStorage(storage, itemName);
-					loadedTable.hitTargets.push(item);
-					break;
-				}
-
-				case ItemData.TypeGate: {
-					item = await Gate.fromStorage(storage, itemName);
-					loadedTable.gates.push(item);
-					break;
-				}
-
-				case ItemData.TypeKicker: {
-					item = await Kicker.fromStorage(storage, itemName);
-					loadedTable.kickers.push(item);
-					break;
-				}
-
-				case ItemData.TypeTrigger: {
-					item = await Trigger.fromStorage(storage, itemName);
-					loadedTable.triggers.push(item);
-					break;
-				}
-
-				case ItemData.TypeSpinner: {
-					item = await Spinner.fromStorage(storage, itemName);
-					loadedTable.spinners.push(item);
-					break;
-				}
-
-				case ItemData.TypeTimer: {
-					item = await Timer.fromStorage(storage, itemName);
-					if (opts.loadInvisibleItems) {
-						loadedTable.timers.push(item);
-					}
-					break;
-				}
-
-				case ItemData.TypePlunger: {
-					item = await Plunger.fromStorage(storage, itemName);
-					loadedTable.plungers.push(item);
-					break;
-				}
-
-				case ItemData.TypeTextbox: {
-					item = await TextBoxItem.fromStorage(storage, itemName);
-					if (opts.loadInvisibleItems) {
-						loadedTable.textBoxes.push(item);
-					}
-					break;
-				}
-
-				default:
-					// ignore the rest for now
-					break;
-			}
+			const item = await this.loadItem(loadedTable, storage, itemName, itemType, opts);
 			if (item) {
-				loadedTable.items.push(item);
+				loadedTable.items[item.getName()] = item;
 			}
 			if (!stats[ItemData.getType(itemType)]) {
 				stats[ItemData.getType(itemType)] = 1;
@@ -237,6 +139,110 @@ export class TableLoader {
 			}
 		}
 		return stats;
+	}
+
+	private async loadItem(loadedTable: LoadedTable, storage: Storage, itemName: string, itemType: number, opts: TableLoadOptions): Promise<Item<ItemData> | null> {
+		switch (itemType) {
+
+			case ItemData.TypeSurface: {
+				const item = await Surface.fromStorage(storage, itemName);
+				loadedTable.surfaces!.push(item);
+				return item;
+			}
+
+			case ItemData.TypePrimitive: {
+				const item = await Primitive.fromStorage(storage, itemName);
+				loadedTable.primitives!.push(item);
+				return item;
+			}
+
+			case ItemData.TypeLight: {
+				const item = await Light.fromStorage(storage, itemName);
+				loadedTable.lights!.push(item);
+				return item;
+			}
+
+			case ItemData.TypeRubber: {
+				const item = await Rubber.fromStorage(storage, itemName);
+				loadedTable.rubbers!.push(item);
+				return item;
+			}
+
+			case ItemData.TypeFlipper: {
+				const item = await Flipper.fromStorage(storage, itemName);
+				loadedTable.flippers!.push(item);
+				return item;
+			}
+
+			case ItemData.TypeBumper: {
+				const item = await Bumper.fromStorage(storage, itemName);
+				loadedTable.bumpers!.push(item);
+				return item;
+			}
+
+			case ItemData.TypeRamp: {
+				const item = await Ramp.fromStorage(storage, itemName);
+				loadedTable.ramps!.push(item);
+				return item;
+			}
+
+			case ItemData.TypeHitTarget: {
+				const item = await HitTarget.fromStorage(storage, itemName);
+				loadedTable.hitTargets!.push(item);
+				return item;
+			}
+
+			case ItemData.TypeGate: {
+				const item = await Gate.fromStorage(storage, itemName);
+				loadedTable.gates!.push(item);
+				return item;
+			}
+
+			case ItemData.TypeKicker: {
+				const item = await Kicker.fromStorage(storage, itemName);
+				loadedTable.kickers!.push(item);
+				return item;
+			}
+
+			case ItemData.TypeTrigger: {
+				const item = await Trigger.fromStorage(storage, itemName);
+				loadedTable.triggers!.push(item);
+				return item;
+			}
+
+			case ItemData.TypeSpinner: {
+				const item = await Spinner.fromStorage(storage, itemName);
+				loadedTable.spinners!.push(item);
+				return item;
+			}
+
+			case ItemData.TypeTimer: {
+				const item = await Timer.fromStorage(storage, itemName);
+				if (opts.loadInvisibleItems) {
+					loadedTable.timers!.push(item);
+				}
+				return item;
+			}
+
+			case ItemData.TypePlunger: {
+				const item = await Plunger.fromStorage(storage, itemName);
+				loadedTable.plungers!.push(item);
+				return item;
+			}
+
+			case ItemData.TypeTextbox: {
+				const item = await TextBoxItem.fromStorage(storage, itemName);
+				if (opts.loadInvisibleItems) {
+					loadedTable.textBoxes!.push(item);
+				}
+				// fixme!
+				return null;
+			}
+
+			default:
+				// ignore the rest for now
+				return null;
+		}
 	}
 
 	private async loadTextures(loadedTable: LoadedTable, storage: Storage, numItems: number): Promise<void> {
@@ -272,7 +278,7 @@ export class TableLoader {
 export interface LoadedTable {
 	data?: TableData;
 	info?: { [key: string]: string };
-	items: any[];
+	items: { [key: string]: Item<ItemData> };
 
 	tableScript?: string;
 	textures?: Texture[];

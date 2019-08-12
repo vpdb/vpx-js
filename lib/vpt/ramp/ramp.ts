@@ -26,6 +26,7 @@ import { f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex2D } from '../../math/vertex2d';
 import { HitObject } from '../../physics/hit-object';
+import { Item } from '../item';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { RampData } from './ramp-data';
@@ -37,7 +38,7 @@ import { RampMeshGenerator } from './ramp-mesh-generator';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/ramp.cpp
  */
-export class Ramp implements IRenderable, IHittable {
+export class Ramp extends Item<RampData> implements IRenderable, IHittable {
 
 	public static RampTypeFlat = 0;
 	public static RampType4Wire = 1;
@@ -49,12 +50,10 @@ export class Ramp implements IRenderable, IHittable {
 	public static RampImageAlignmentWorld = 0;
 	public static RampImageAlignmentWrap = 1;
 
-	private readonly data: RampData;
 	private readonly meshGenerator: RampMeshGenerator;
 	private readonly hitGenerator: RampHitGenerator;
 
 	private hits?: HitObject[];
-	private events?: EventProxy;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Ramp> {
 		const data = await RampData.fromStorage(storage, itemName);
@@ -62,13 +61,9 @@ export class Ramp implements IRenderable, IHittable {
 	}
 
 	private constructor(data: RampData) {
-		this.data = data;
+		super(data);
 		this.meshGenerator = new RampMeshGenerator(data);
 		this.hitGenerator = new RampHitGenerator(data, this.meshGenerator);
-	}
-
-	public getName() {
-		return this.data.getName();
 	}
 
 	public isVisible(): boolean {
@@ -86,10 +81,6 @@ export class Ramp implements IRenderable, IHittable {
 
 	public getHitShapes(): HitObject[] {
 		return this.hits!;
-	}
-
-	public getEventProxy(): EventProxy {
-		return this.events!;
 	}
 
 	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {

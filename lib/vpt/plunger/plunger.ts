@@ -30,6 +30,7 @@ import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
 import { IRenderApi } from '../../render/irender-api';
 import { Ball } from '../ball/ball';
+import { Item } from '../item';
 import { Table } from '../table/table';
 import { PlungerApi } from './plunger-api';
 import { PlungerData } from './plunger-data';
@@ -43,15 +44,14 @@ import { PlungerState } from './plunger-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/plunger.cpp
  */
-export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, IHittable, IBallCreationPosition, IScriptable<PlungerApi> {
+export class Plunger extends Item<PlungerData> implements IRenderable, IPlayable, IMovable<PlungerState>, IHittable, IBallCreationPosition, IScriptable<PlungerApi> {
+
 	public static PLUNGER_HEIGHT = 50.0;
 
-	private readonly data: PlungerData;
 	private readonly meshGenerator: PlungerMeshGenerator;
 	private readonly state: PlungerState;
 	private api?: PlungerApi;
 	private hit?: PlungerHit;
-	private events?: EventProxy;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Plunger> {
 		const data = await PlungerData.fromStorage(storage, itemName);
@@ -59,17 +59,9 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 	}
 
 	public constructor(itemName: string, data: PlungerData) {
-		this.data = data;
+		super(data);
 		this.meshGenerator = new PlungerMeshGenerator(data);
 		this.state = PlungerState.claim(this.getName(), 0);
-	}
-
-	public getName(): string {
-		return this.data.getName();
-	}
-
-	public getData(): PlungerData {
-		return this.data;
 	}
 
 	public getState(): PlungerState {

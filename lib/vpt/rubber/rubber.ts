@@ -24,6 +24,7 @@ import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
+import { Item } from '../item';
 import { Table } from '../table/table';
 import { RubberData } from './rubber-data';
 import { RubberHitGenerator } from './rubber-hit-generator';
@@ -34,13 +35,11 @@ import { RubberMeshGenerator } from './rubber-mesh-generator';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/rubber.cpp
  */
-export class Rubber implements IRenderable, IHittable {
+export class Rubber extends Item<RubberData> implements IRenderable, IHittable {
 
-	private readonly data: RubberData;
 	private readonly meshGenerator: RubberMeshGenerator;
 	private hitGenerator: RubberHitGenerator;
 	private hits: HitObject[] = [];
-	private events?: EventProxy;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Rubber> {
 		const data = await RubberData.fromStorage(storage, itemName);
@@ -48,13 +47,9 @@ export class Rubber implements IRenderable, IHittable {
 	}
 
 	private constructor(data: RubberData) {
-		this.data = data;
+		super(data);
 		this.meshGenerator = new RubberMeshGenerator(data);
 		this.hitGenerator = new RubberHitGenerator(data, this.meshGenerator);
-	}
-
-	public getName() {
-		return this.data.getName();
 	}
 
 	public isVisible(): boolean {
@@ -83,9 +78,5 @@ export class Rubber implements IRenderable, IHittable {
 
 	public getHitShapes(): HitObject[] {
 		return this.hits;
-	}
-
-	public getEventProxy(): EventProxy {
-		return this.events!;
 	}
 }

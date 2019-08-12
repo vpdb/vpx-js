@@ -30,6 +30,7 @@ import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
 import { IRenderApi } from '../../render/irender-api';
 import { Ball } from '../ball/ball';
+import { Item } from '../item';
 import { Table } from '../table/table';
 import { HitTargetAnimation } from './hit-target-animation';
 import { HitTargetApi } from './hit-target-api';
@@ -43,7 +44,7 @@ import { HitTargetState } from './hit-target-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/hittarget.cpp
  */
-export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetState>, IScriptable<HitTargetApi> {
+export class HitTarget extends Item<HitTargetData> implements IRenderable, IHittable, IAnimatable<HitTargetState>, IScriptable<HitTargetApi> {
 
 	public static TypeDropTargetBeveled = 1;
 	public static TypeDropTargetSimple = 2;
@@ -57,11 +58,9 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 
 	public static DROP_TARGET_LIMIT = f4(52.0);
 
-	private readonly data: HitTargetData;
 	private readonly state: HitTargetState;
 	private readonly meshGenerator: HitTargetMeshGenerator;
 	private readonly hitGenerator: HitTargetHitGenerator;
-	private events?: EventProxy;
 	private animation?: HitTargetAnimation;
 	private hits?: HitObject[];
 	private api?: HitTargetApi;
@@ -72,14 +71,10 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 	}
 
 	private constructor(data: HitTargetData) {
-		this.data = data;
+		super(data);
 		this.state = HitTargetState.claim(this.data.getName());
 		this.meshGenerator = new HitTargetMeshGenerator(data);
 		this.hitGenerator = new HitTargetHitGenerator(data, this.meshGenerator);
-	}
-
-	public getName() {
-		return this.data.getName();
 	}
 
 	public isVisible(): boolean {
@@ -131,10 +126,6 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 
 	public getAnimation(): IAnimation {
 		return this.animation!;
-	}
-
-	public getEventProxy(): EventProxy {
-		return this.events!;
 	}
 
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, player: Player): void {

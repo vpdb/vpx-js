@@ -31,6 +31,7 @@ import { HitObject } from '../../physics/hit-object';
 import { MoverObject } from '../../physics/mover-object';
 import { IRenderApi } from '../../render/irender-api';
 import { FlipperState } from '../flipper/flipper-state';
+import { Item } from '../item';
 import { Table } from '../table/table';
 import { SpinnerData } from './spinner-data';
 import { SpinnerHit } from './spinner-hit';
@@ -43,14 +44,12 @@ import { SpinnerState } from './spinner-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/spinner.cpp
  */
-export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, IHittable {
+export class Spinner extends Item<SpinnerData> implements IRenderable, IPlayable, IMovable<FlipperState>, IHittable {
 
-	private readonly data: SpinnerData;
 	private readonly meshGenerator: SpinnerMeshGenerator;
 	private readonly state: SpinnerState;
 	private readonly hitGenerator: SpinnerHitGenerator;
 	private hit?: SpinnerHit;
-	private events?: EventProxy;
 	private hitCircles: HitCircle[] = [];
 
 	// public props
@@ -63,14 +62,10 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	}
 
 	constructor(data: SpinnerData) {
-		this.data = data;
+		super(data);
 		this.state = SpinnerState.claim(this.data.getName(), 0);
 		this.meshGenerator = new SpinnerMeshGenerator(data);
 		this.hitGenerator = new SpinnerHitGenerator(data);
-	}
-
-	public getName(): string {
-		return this.data.getName();
 	}
 
 	public isVisible(): boolean {
@@ -117,10 +112,6 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 
 	public getState(): FlipperState {
 		return this.state;
-	}
-
-	public getEventProxy(): EventProxy {
-		return this.events!;
 	}
 
 	/* istanbul ignore next */
