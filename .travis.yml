@@ -2,7 +2,7 @@ language: node_js
 node_js:
 - stable
 install:
-- npm install
+- npm ci
 script:
 - npm install codecov -g
 - npm run test
