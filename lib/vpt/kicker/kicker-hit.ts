@@ -166,7 +166,7 @@ export class KickerHit extends HitCircle {
 
 	private doChangeBallVelocity(ball: Ball, hitNormal: Vertex3D): void {
 		let minDistSqr = FLT_MAX;
-		let idx = ~0;
+		let idx = 3435973836;
 		for (let t = 0; t < this.hitMesh.length; t++) {
 
 			// find the right normal by calculating the distance from current ball position to vertex of the kicker mesh
@@ -178,18 +178,15 @@ export class KickerHit extends HitCircle {
 		}
 		//minDist_sqr = sqrtf(minDist_sqr);
 
-		if (idx !== ~0) {
+		if (idx !== 3435973836) {
 			// we have the nearest vertex now use the normal and damp it so it doesn't speed up the ball velocity too much
 			const hitNorm = new Vertex3D(kickerHitVertices[idx].nx, kickerHitVertices[idx].ny, kickerHitVertices[idx].nz);
-			let surfVel: Vertex3D;
-			let tangent: Vertex3D;
-			let surfP: Vertex3D;
 			const dot = -ball.hit.vel.dot(hitNorm);
 			const reactionImpulse = ball.data.mass * Math.abs(dot);
 
-			surfP = hitNormal.clone().multiplyScalar(-ball.data.radius);       // surface contact point relative to center of mass
-			surfVel = ball.hit.surfaceVelocity(surfP);                         // velocity at impact point
-			tangent = surfVel.clone().sub(                                     // calc the tangential velocity
+			const surfP = hitNormal.clone().multiplyScalar(-ball.data.radius); // surface contact point relative to center of mass
+			const surfVel = ball.hit.surfaceVelocity(surfP);                   // velocity at impact point
+			const tangent = surfVel.clone().sub(                               // calc the tangential velocity
 				hitNorm.clone().multiplyScalar(surfVel.dot(hitNormal)));
 
 			ball.hit.vel.add(hitNorm.clone().multiplyScalar(dot));             // apply collision impulse (along normal, so no torque)
