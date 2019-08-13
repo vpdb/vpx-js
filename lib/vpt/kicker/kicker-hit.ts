@@ -42,8 +42,8 @@ export class KickerHit extends HitCircle {
 	private hitMesh: Vertex3D[] = [];
 	public obj: FireEvents;
 
-	constructor(data: KickerData, fireEvents: FireEvents, table: Table, center: Vertex2D, radius: number, zLow: number, zHigh: number) {
-		super(center, radius, zLow, zHigh);
+	constructor(data: KickerData, fireEvents: FireEvents, table: Table, radius: number, height: number) {
+		super(data.vCenter.clone(), radius, height, height + data.hitHeight);
 		this.data = data;
 
 		if (!this.data.legacyMode) {
@@ -53,7 +53,7 @@ export class KickerHit extends HitCircle {
 				const vPos = new Vertex3D(kickerHitVertices[t].x, kickerHitVertices[t].y, kickerHitVertices[t].z);
 				vPos.x = vPos.x * rad + this.data.vCenter.x;
 				vPos.y = vPos.y * rad + this.data.vCenter.y;
-				vPos.z = vPos.z * rad * table.getScaleZ() + table.getTableHeight();
+				vPos.z = vPos.z * rad * table.getScaleZ() + height;
 				this.hitMesh[t] = vPos;
 			}
 		}
