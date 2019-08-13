@@ -95,7 +95,7 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 		const radius = this.data.radius * (this.data.legacyMode ? (this.data.fallThrough ? 0.75 : 0.6) : 1);
 
 		this.fireEvents = new FireEvents(this);
-		this.hit = new KickerHit(this.data, this.fireEvents, table, this.data.vCenter, radius, height, height + this.data.hitHeight); // height of kicker hit cylinder
+		this.hit = new KickerHit(this.data, this.fireEvents, table, radius, height); // height of kicker hit cylinder
 	}
 
 	public getHitShapes(): HitObject[] {
