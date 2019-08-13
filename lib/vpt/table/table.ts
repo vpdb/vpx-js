@@ -176,6 +176,10 @@ export class Table implements IRenderable {
 		return 10; // todo check if true
 	}
 
+	public getGlobalDifficulty(): number {
+		return this.data!.globalDifficulty!;
+	}
+
 	public getTableHeight() {
 		/* istanbul ignore if */
 		if (!this.data) {

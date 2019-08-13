@@ -28,16 +28,17 @@ export class KickerData extends ItemData {
 	public kickerType: number = Kicker.TypeKickerHole;
 	public vCenter!: Vertex2D;
 	public radius: number = 25;
-	private scatter?: number;
+	public scatter: number = 0.0;
 	public hitAccuracy: number = 0.7;
-	public hitHeight: number = 40;
-	public orientation: number = 0;
+	public hitHeight: number = 40.0;
+	public orientation: number = 0.0;
 	public szMaterial?: string;
-	public isEnabled: boolean = true;
 	public szSurface?: string;
-	private wzName!: string;
 	public fallThrough: boolean = false;
+	public isEnabled: boolean = true;
 	public legacyMode: boolean = false;
+
+	private wzName!: string;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<KickerData> {
 		const kickerData = new KickerData(itemName);
