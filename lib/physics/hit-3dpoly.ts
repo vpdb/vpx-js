@@ -162,7 +162,7 @@ export class Hit3DPoly extends HitObject {
 			}
 		} else { // non-rigid polygon
 			if (bnv * bnd >= 0) {                                              // outside-receding || inside-approaching
-				if (!ball.hit.vpVolObjs.length                                 // temporary ball
+				if (ball.hit.vpVolObjs.length === 0                            // temporary ball
 					|| Math.abs(bnd) >= ball.data.radius * 0.5                 // not too close ... nor too far away
 					|| inside !== ball.hit.vpVolObjs.indexOf(this.obj!) < 0) { // ...ball outside and hit set or ball inside and no hit set
 					return { hitTime: -1.0, coll };

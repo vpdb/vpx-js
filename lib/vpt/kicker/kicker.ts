@@ -66,6 +66,14 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 		this.meshGenerator = new KickerMeshGenerator(data);
 	}
 
+	//region Public API
+
+	public kick(table: Table, player: Player, angle: number, speed: number, inclination: number = 0): void {
+		this.hit!.kickXyz(table, player, angle, speed, inclination);
+	}
+
+	//endregion
+
 	public getName() {
 		return this.data.getName();
 	}

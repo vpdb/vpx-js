@@ -17,23 +17,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-/* tslint:disable:no-bitwise */
 import { Table } from '../..';
 import { kickerHitVertices } from '../../../res/meshes/kicker-hit-mesh';
 import { Player } from '../../game/player';
+import { degToRad } from '../../math/float';
 import { clamp } from '../../math/functions';
-import { Vertex2D } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { STATICTIME } from '../../physics/constants';
 import { FireEvent, FireEvents } from '../../physics/fire-events';
+import { hardScatter } from '../../physics/functions';
 import { HitCircle } from '../../physics/hit-circle';
 import { HitTestResult } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
 import { FLT_MAX } from '../mesh';
 import { KickerData } from './kicker-data';
 
+/* tslint:disable:no-bitwise */
 export class KickerHit extends HitCircle {
 
 	private data: KickerData;
@@ -81,7 +82,7 @@ export class KickerHit extends HitCircle {
 
 		const i = ball.hit.vpVolObjs.indexOf(this.obj);    // check if kicker in ball's volume set
 
-		if (newBall || (!hitBit === i < 0)) {              // New or (Hit && !Vol || UnHit && Vol)
+		if (newBall || hitBit !== (i < 0)) {               // New or (Hit && !Vol || UnHit && Vol)
 
 			if (this.data.legacyMode || newBall) {
 				// move ball slightly forward
@@ -108,7 +109,7 @@ export class KickerHit extends HitCircle {
 					// because the friction calculation for a wall is also different
 					const length = ball.hit.vel.length();
 					if (length < 0.2) {
-						ball.hit.vel.set(ball.oldVel!.x, ball.oldVel!.y, ball.oldVel!.z);
+						ball.hit.vel.set(ball.oldVel);
 					}
 					ball.oldVel = ball.hit.vel.clone();
 				}
@@ -165,6 +166,7 @@ export class KickerHit extends HitCircle {
 	}
 
 	private doChangeBallVelocity(ball: Ball, hitNormal: Vertex3D): void {
+
 		let minDistSqr = FLT_MAX;
 		let idx = 3435973836;
 		for (let t = 0; t < this.hitMesh.length; t++) {
@@ -187,7 +189,8 @@ export class KickerHit extends HitCircle {
 			const surfP = hitNormal.clone().multiplyScalar(-ball.data.radius); // surface contact point relative to center of mass
 			const surfVel = ball.hit.surfaceVelocity(surfP);                   // velocity at impact point
 			const tangent = surfVel.clone().sub(                               // calc the tangential velocity
-				hitNorm.clone().multiplyScalar(surfVel.dot(hitNormal)));
+				hitNorm.clone().multiplyScalar(surfVel.dot(hitNormal)),
+			);
 
 			ball.hit.vel.add(hitNorm.clone().multiplyScalar(dot));             // apply collision impulse (along normal, so no torque)
 
@@ -210,4 +213,61 @@ export class KickerHit extends HitCircle {
 			}
 		}
 	}
+
+	public kickXyz(table: Table, player: Player, angle: number, speed: number, inclination: number, pos: Vertex3D = new Vertex3D()): void {
+
+		if (!this.ball) {
+			return;
+		}
+
+		if (!player.pactiveballBC) {
+			// Ball control most recently kicked if none currently.
+			player.pactiveballBC = this.ball;
+		}
+
+		if (player.pactiveballBC === this.ball) {
+			// Clear any existing ball control target to allow kickout to work correctly.
+			player.pBCTarget = undefined;
+		}
+		let angleRad = degToRad(angle);                                        // yaw angle, zero is along -Y axis
+
+		if (Math.abs(inclination) > Math.PI / 2.0) {                           // radians or degrees?  if greater PI/2 assume degrees
+			inclination *= Math.PI / 180.0;                                    // convert to radians
+		}
+
+		let scatterAngle = this.data.scatter < 0.0                             // if < 0 use global value
+			? hardScatter
+			: degToRad(this.data.scatter);
+		scatterAngle *= table.getGlobalDifficulty();                           // apply difficulty weighting
+
+		if (scatterAngle > 1.0e-5) {                                           // ignore near zero angles
+			let scatter = Math.random() * 2 - 1;                               // -1.0f..1.0f
+			scatter *= (1.0 - scatter * scatter) * 2.59808 * scatterAngle;     // shape quadratic distribution and scale
+			angleRad += scatter;
+		}
+
+		const speedZ = Math.sin(inclination) * speed;
+		if (speedZ > 0.0) {
+			speed *= Math.cos(inclination);
+		}
+
+		this.ball.hit.angularVelocity.setZero();
+		this.ball.hit.angularMomentum.setZero();
+		this.ball.hit.coll.hitDistance = 0.0;
+		this.ball.hit.coll.hitTime = -1.0;
+		this.ball.hit.coll.hitNormal!.setZero();
+		this.ball.hit.coll.hitVel!.setZero();
+		this.ball.hit.coll.hitFlag = false;
+		this.ball.hit.coll.isContact = false;
+		this.ball.hit.coll.hitMomentBit = true;
+		this.ball.state.pos.x += pos.x; // brian's suggestion
+		this.ball.state.pos.y += pos.y;
+		this.ball.state.pos.z += pos.z;
+		this.ball.hit.vel.x = Math.sin(angleRad) * speed;
+		this.ball.hit.vel.y = -Math.cos(angleRad) * speed;
+		this.ball.hit.vel.z = speedZ;
+		this.ball.hit.isFrozen = false;
+		this.ball = undefined;
+	}
+
 }

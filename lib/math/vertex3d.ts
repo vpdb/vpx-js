@@ -88,10 +88,19 @@ export class Vertex3D implements Vertex {
 		this.z = z || 0;
 	}
 
-	public set(x: number, y: number, z?: number): this {
-		this.x = x;
-		this.y = y;
-		this.z = z || 0;
+	public set(v: Vertex3D): this;
+	public set(x: number, y: number, z?: number): this;
+	public set(xOrV: number | Vertex3D, y?: number, z?: number): this {
+		if (typeof xOrV === 'number') {
+			this.x = xOrV;
+			this.y = y!;
+			this.z = z || 0;
+
+		} else {
+			this.x = xOrV.x;
+			this.y = xOrV.y;
+			this.z = xOrV.z;
+		}
 		return this;
 	}
 

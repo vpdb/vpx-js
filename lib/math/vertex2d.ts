@@ -53,6 +53,10 @@ export class Vertex2D implements Vertex {
 		return this;
 	}
 
+	public setZero(): this {
+		return this.set(0, 0);
+	}
+
 	public clone(): Vertex2D {
 		return new Vertex2D(this._x, this._y);
 	}

@@ -50,7 +50,7 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRendera
 	public static idCounter = 0;
 
 	// ugly hacks
-	public oldVel?: Vertex3D;
+	public oldVel: Vertex3D = new Vertex3D();
 
 	constructor(data: BallData, state: BallState, initialVelocity: Vertex3D, tableData: TableData) {
 		this.id = Ball.idCounter++;

@@ -57,9 +57,9 @@ export class HitCircle extends HitObject {
 		// zlow & zhigh already set in ctor
 	}
 
-	public hitTest(ball: Ball, dtime: number, coll: CollisionEvent): HitTestResult {
-		//normal face, lateral, rigid
-		return this.hitTestBasicRadius(ball, dtime, coll, true, true, true);
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): HitTestResult {
+		// normal face, lateral, rigid
+		return this.hitTestBasicRadius(ball, dTime, coll, true, true, true);
 	}
 
 	protected hitTestBasicRadius(ball: Ball, dTime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean): HitTestResult {
@@ -115,11 +115,16 @@ export class HitCircle extends HitObject {
 			}
 		}
 
-		if (rigid && bnd < PHYS_TOUCH) {        // positive: contact possible in future ... Negative: objects in contact now
+		const isKickerOrTrigger = this.objType === CollisionType.Trigger || this.objType === CollisionType.Kicker;
+
+		// positive: contact possible in future ... Negative: objects in contact now
+		if (rigid && bnd < PHYS_TOUCH) {
 			if (bnd < -ball.data.radius) {
 				return { hitTime: -1.0, coll };
+
 			} else if (Math.abs(bnv) <= C_CONTACTVEL) {
 				isContact = true;
+
 			} else {
 				// estimate based on distance and speed along distance
 				// the ball can be that fast that in the next hit cycle the ball will be inside the hit shape of a bumper or other element.
@@ -128,12 +133,12 @@ export class HitCircle extends HitObject {
 				hitTime = Math.max(0.0, -bnd / bnv);
 			}
 
-		} else if ((this.objType === CollisionType.Trigger || this.objType === CollisionType.Kicker)
-			&& ball.hit.vpVolObjs && ((bnd < 0) === ball.hit.vpVolObjs.indexOf(this.obj!) < 0)) { // triggers & kickers
+		} else if (isKickerOrTrigger && ball.hit.vpVolObjs.length > 0 && (bnd < 0 === ball.hit.vpVolObjs.indexOf(this.obj!) < 0)) { // triggers & kickers
 
 			// here if ... ball inside and no hit set .... or ... ball outside and hit set
 			if (Math.abs(bnd - this.radius) < 0.05) {   // if ball appears in center of trigger, then assumed it was gen'ed there
 				ball.hit.vpVolObjs.push(this.obj!);        // special case for trigger overlaying a kicker
+
 			} else {                                       // this will add the ball to the trigger space without a Hit
 				isUnhit = (bnd > 0);                       // ball on outside is UnHit, otherwise it's a Hit
 			}
