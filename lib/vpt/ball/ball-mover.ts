@@ -33,8 +33,6 @@ export class BallMover implements MoverObject {
 	private readonly state: BallState;
 	private readonly hit: BallHit;
 
-	private isFrozen: boolean = false;
-
 	constructor(id: number, data: BallData, state: BallState, hit: BallHit) {
 		this.id = id;
 		this.data = data;
@@ -43,7 +41,8 @@ export class BallMover implements MoverObject {
 	}
 
 	public updateDisplacements(dtime: number): void {
-		if (!this.isFrozen) {
+		if (!this.hit.isFrozen) {
+
 			const ds = this.hit.vel.clone().multiplyScalar(dtime);
 			this.state.pos.add(ds);
 
@@ -64,7 +63,7 @@ export class BallMover implements MoverObject {
 	}
 
 	public updateVelocities(player: Player): void {
-		if (!this.isFrozen) {
+		if (!this.hit.isFrozen) {
 
 			if (player.ballControl && this.id === player.pactiveballBC!.id && player.pBCTarget) {
 				this.hit.vel.x *= 0.5;  // Null out most of the X/Y velocity, want a little bit so the ball can sort of find its way out of obstacles.

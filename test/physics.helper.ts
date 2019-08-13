@@ -62,3 +62,18 @@ export function createBall(player: Player, x: number, y: number, z: number, vx =
 		},
 	});
 }
+
+/**
+ * Let time pass while logging the ball position.
+ * @param player
+ * @param ball
+ * @param numCycles How many cycles to run
+ * @param cycleLength Duration of each cycle
+ */
+export function debugBall(player: Player, ball: Ball, numCycles = 300, cycleLength = 5) {
+
+	for (let i = 0; i <= numCycles; i++) {
+		player.updatePhysics(i * cycleLength);
+		console.log('[%sms] (%s, %s, %s)', i * cycleLength, ball.getState().pos.x, ball.getState().pos.y, ball.getState().pos.z);
+	}
+}
