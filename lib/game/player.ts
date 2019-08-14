@@ -449,6 +449,8 @@ export class Player extends EventEmitter {
 
 		const ball = new Ball(data, state, ballCreator.getBallCreationVelocity(this.table), this.table.data!);
 
+		ballCreator.onBallCreated(this, ball);
+
 		this.balls.push(ball);
 		this.movers.push(ball.getMover()); // balls are always added separately to this list!
 		this.currentStates[ball.getName()] = state;

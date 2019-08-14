@@ -69,9 +69,11 @@ export class HitCircle extends HitObject {
 
 		const c = new Vertex3D(this.center.x, this.center.y, 0.0);
 		const dist = ball.state.pos.clone().sub(c);    // relative ball position
-		const dv = ball.hit.vel;
+		const dv = ball.hit.vel.clone();
 
-		const capsule3D = (!lateral && ball.state.pos.z > this.hitBBox.zhigh);
+		const capsule3D = !lateral && ball.state.pos.z > this.hitBBox.zhigh;
+		const isKicker = this.objType === CollisionType.Trigger;
+		const isKickerOrTrigger = this.objType === CollisionType.Trigger || this.objType === CollisionType.Kicker;
 
 		let targetRadius: number;
 		if (capsule3D) {
@@ -84,7 +86,8 @@ export class HitCircle extends HitObject {
 			if (lateral) {
 				targetRadius += ball.data.radius;
 			}
-			dist.z = dv.z = 0.0;
+			dist.z = 0.0;
+			dv.z = 0.0;
 		}
 
 		const bcddsq = dist.lengthSq();             // ball center to circle center distance ... squared
@@ -109,13 +112,11 @@ export class HitCircle extends HitObject {
 		let isContact = false;
 
 		// Kicker is special.. handle ball stalled on kicker, commonly hit while receding, knocking back into kicker pocket
-		if (this.objType === CollisionType.Kicker && bnd <= 0 && bnd >= -this.radius && a < C_CONTACTVEL * C_CONTACTVEL && ball.hit.vpVolObjs.length) {
+		if (isKicker && bnd <= 0 && bnd >= -this.radius && a < C_CONTACTVEL * C_CONTACTVEL && ball.hit.isRealBall()) {
 			if (ball.hit.vpVolObjs.indexOf(this.obj!) > -1) {
 				ball.hit.vpVolObjs.splice(ball.hit.vpVolObjs.indexOf(this.obj!), 1); // cause capture
 			}
 		}
-
-		const isKickerOrTrigger = this.objType === CollisionType.Trigger || this.objType === CollisionType.Kicker;
 
 		// positive: contact possible in future ... Negative: objects in contact now
 		if (rigid && bnd < PHYS_TOUCH) {

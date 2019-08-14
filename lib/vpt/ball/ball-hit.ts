@@ -113,6 +113,10 @@ export class BallHit extends HitObject {
 		this.defaultZ = this.state.pos.z;
 	}
 
+	public isRealBall() {
+		return !!this.vpVolObjs;
+	}
+
 	public calcHitBBox(): void {
 
 		const vl = this.vel.length() + this.data.radius + 0.05; //!! 0.05f = paranoia

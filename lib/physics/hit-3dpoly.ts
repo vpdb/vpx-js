@@ -100,7 +100,7 @@ export class Hit3DPoly extends HitObject {
 			}
 
 		} else { // trigger
-			if (ball.hit.vpVolObjs.length === 0) {
+			if (!ball.hit.isRealBall()) {
 				return;
 			}
 			const i = ball.hit.vpVolObjs.indexOf(this.obj!);                             // if -1 then not in objects volume set (i.e not already hit)
@@ -160,9 +160,9 @@ export class Hit3DPoly extends HitObject {
 			} else {
 				return { hitTime: -1.0, coll };                                // wait for touching
 			}
-		} else { // non-rigid polygon
+		} else {                                                               // non-rigid polygon
 			if (bnv * bnd >= 0) {                                              // outside-receding || inside-approaching
-				if (ball.hit.vpVolObjs.length === 0                            // temporary ball
+				if (!ball.hit.isRealBall()                                     // temporary ball
 					|| Math.abs(bnd) >= ball.data.radius * 0.5                 // not too close ... nor too far away
 					|| inside !== ball.hit.vpVolObjs.indexOf(this.obj!) < 0) { // ...ball outside and hit set or ball inside and no hit set
 					return { hitTime: -1.0, coll };

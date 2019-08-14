@@ -64,7 +64,10 @@ export class CollisionEvent {
 	 */
 	public hitOrgNormalVelocity: number = 0;
 
-	public hitMomentBit: boolean = false;
+	/**
+	 * Currently only one bit is used (hitmoment == 0 or not)
+	 */
+	public hitMomentBit: boolean = true;
 
 	/**
 	 * UnHit signal/direction of hit/side of hit (spinner/gate)
