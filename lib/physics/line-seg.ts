@@ -132,7 +132,7 @@ export class LineSeg extends HitObject {
 		} else { //non-rigid ... target hits
 			if (bnv * bnd >= 0) {                                                 // outside-receding || inside-approaching
 				if (this.objType !== CollisionType.Trigger                        // not a trigger
-					|| !ball.hit.vpVolObjs.length                                 // is a trigger, so test:
+					|| !ball.hit.isRealBall()                                     // is a trigger, so test:
 					|| Math.abs(bnd) >= ball.data.radius * 0.5                    // not too close ... nor too far away
 					|| inside !== (ball.hit.vpVolObjs.indexOf(this.obj!) < 0)) {  // ...ball outside and hit set or ball inside and no hit set
 					return { hitTime: -1.0, coll };
