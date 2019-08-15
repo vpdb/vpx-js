@@ -5,6 +5,7 @@ install:
 - npm ci
 script:
 - npm install codecov -g
+- npm run compile
 - npm run test
 after_success:
 - codecov
