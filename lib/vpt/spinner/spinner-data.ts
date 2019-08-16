@@ -25,18 +25,16 @@ import { ItemData } from '../item-data';
 export class SpinnerData extends ItemData {
 
 	public vCenter!: Vertex2D;
-	public rotation!: number;
+	public rotation: number = 0;
 	public szMaterial?: string;
-	private fTimerEnabled: boolean = false;
-	private TimerInterval?: number;
-	public showBracket: boolean = false;
-	public height!: number;
-	public length!: number;
+	public showBracket: boolean = true;
+	public height: number = 60;
+	public length: number = 80;
 	public damping?: number;
-	public angleMax!: number;
-	public angleMin!: number;
+	public angleMax: number = 0;
+	public angleMin: number = 0;
 	public elasticity?: number;
-	public fVisible: boolean = false;
+	public isVisible: boolean = true;
 	public szImage?: string;
 	public szSurface?: string;
 	private wzName!: string;
@@ -67,7 +65,7 @@ export class SpinnerData extends ItemData {
 			case 'SMAX': this.angleMax = this.getFloat(buffer); break;
 			case 'SMIN': this.angleMin = this.getFloat(buffer); break;
 			case 'SELA': this.elasticity = this.getFloat(buffer); break;
-			case 'SVIS': this.fVisible = this.getBool(buffer); break;
+			case 'SVIS': this.isVisible = this.getBool(buffer); break;
 			case 'IMGF': this.szImage = this.getString(buffer, len); break;
 			case 'SURF': this.szSurface = this.getString(buffer, len); break;
 			case 'NAME': this.wzName = this.getWideString(buffer, len); break;

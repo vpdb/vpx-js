@@ -71,7 +71,7 @@ export class SpinnerHit extends HitObject {
 		this.mover.damping = Math.pow(data.damping!, PHYS_FACTOR);
 
 		this.mover.elasticity = data.elasticity!;
-		this.mover.isVisible = data.fVisible;
+		this.mover.isVisible = data.isVisible;
 	}
 
 	public getMoverObject(): SpinnerMover {
