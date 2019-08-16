@@ -17,13 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Table } from '../..';
 import { spinnerBracketMesh } from '../../../res/meshes/spinner-bracket-mesh';
 import { spinnerPlateMesh } from '../../../res/meshes/spinner-plate-mesh';
 import { degToRad, f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { Mesh } from '../mesh';
-import { Table } from '../table/table';
 import { SpinnerData } from './spinner-data';
 
 export class SpinnerMeshGenerator {
@@ -53,40 +53,30 @@ export class SpinnerMeshGenerator {
 		const fullMatrix = new Matrix3D();
 		fullMatrix.rotateZMatrix(degToRad(this.data.rotation));
 		const mesh = spinnerPlateMesh.clone(`spinner.plate-${this.data.getName()}`);
-
-		for (const vertex of mesh.vertices) {
-			let vert = new Vertex3D(vertex.x, vertex.y, vertex.z);
-			vert = fullMatrix.multiplyVector(vert);
-			vertex.x = f4(vert.x * this.data.length) + this.data.vCenter.x;
-			vertex.y = f4(vert.y * this.data.length) + this.data.vCenter.y;
-			vertex.z = f4(f4(vert.z * this.data.length) * table.getScaleZ()) + posZ;
-
-			let norm = new Vertex3D(vertex.nx, vertex.ny, vertex.nz);
-			norm = fullMatrix.multiplyVectorNoTranslate(norm);
-			vertex.nx = vert.x;
-			vertex.ny = vert.y;
-			vertex.nz = vert.z;
-		}
-		return mesh;
+		return this.updateVertices(table, posZ, mesh, fullMatrix);
 	}
 
 	private getBracketMesh(table: Table, posZ: number): Mesh {
 		const fullMatrix = new Matrix3D();
 		fullMatrix.rotateZMatrix(degToRad(this.data.rotation));
 		const bracketMesh = spinnerBracketMesh.clone(`spinner.bracket-${this.data.getName()}`);
-		for (const vertex of bracketMesh.vertices) {
+		return this.updateVertices(table, posZ, bracketMesh, fullMatrix);
+	}
+
+	private updateVertices(table: Table, posZ: number, mesh: Mesh, matrix: Matrix3D): Mesh {
+		for (const vertex of mesh.vertices) {
 			let vert = new Vertex3D(vertex.x, vertex.y, vertex.z);
-			vert = fullMatrix.multiplyVector(vert);
+			vert = matrix.multiplyVector(vert);
 			vertex.x = f4(vert.x * this.data.length) + this.data.vCenter.x;
 			vertex.y = f4(vert.y * this.data.length) + this.data.vCenter.y;
 			vertex.z = f4(f4(vert.z * this.data.length) * table.getScaleZ()) + posZ;
 
 			let norm = new Vertex3D(vertex.nx, vertex.ny, vertex.nz);
-			norm = fullMatrix.multiplyVectorNoTranslate(vert);
+			norm = matrix.multiplyVectorNoTranslate(norm);
 			vertex.nx = norm.x;
 			vertex.ny = norm.y;
 			vertex.nz = norm.z;
 		}
-		return bracketMesh;
+		return mesh;
 	}
 }

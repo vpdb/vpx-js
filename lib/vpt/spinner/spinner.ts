@@ -38,6 +38,8 @@ import { SpinnerData } from './spinner-data';
 import { SpinnerHit } from './spinner-hit';
 import { SpinnerMeshGenerator } from './spinner-mesh-generator';
 import { SpinnerState } from './spinner-state';
+import { SpinnerMover } from './spinner-mover';
+import { SpinnerHitGenerator } from './spinner-hit-generator';
 
 /**
  * VPinball's spinners.
@@ -49,6 +51,7 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	private readonly data: SpinnerData;
 	private readonly meshGenerator: SpinnerMeshGenerator;
 	private readonly state: SpinnerState;
+	private readonly hitGenerator: SpinnerHitGenerator;
 	private hit?: SpinnerHit;
 	private fireEvents?: FireEvents;
 	private hitCircles: HitCircle[] = [];
@@ -62,6 +65,7 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		this.data = data;
 		this.state = new SpinnerState(this.data.getName(), 0);
 		this.meshGenerator = new SpinnerMeshGenerator(data);
+		this.hitGenerator = new SpinnerHitGenerator(data);
 	}
 
 	public getName(): string {
@@ -69,7 +73,7 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	}
 
 	public isVisible(): boolean {
-		return this.data.fVisible;
+		return this.data.isVisible;
 	}
 
 	public isCollidable(): boolean {
@@ -95,6 +99,13 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		return meshes;
 	}
 
+	public setupPlayer(player: Player, table: Table): void {
+		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
+		this.fireEvents = new FireEvents(this);
+		this.hit = new SpinnerHit(this.data, this.state, this.fireEvents, height);
+		this.hitCircles = this.hitGenerator.getHitShapes(this.state, height);
+	}
+
 	public getHitShapes(): HitObject[] {
 		return [ this.hit!, ...this.hitCircles ];
 	}
@@ -108,43 +119,7 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	}
 
 	public applyState(obj: Object3D, table: Table, player: Player): void {
-		// todo
+		console.log('new spinner state: ', this.state);
 	}
 
-	public setupPlayer(player: Player, table: Table): void {
-		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
-		const h = this.data.height + 30.0;
-
-		const angleMin = Math.min(this.data.angleMin, this.data.angleMax); // correct angle inversions
-		const angleMax = Math.max(this.data.angleMin, this.data.angleMax);
-
-		this.data.angleMin = angleMin;
-		this.data.angleMax = angleMax;
-
-		this.fireEvents = new FireEvents(this);
-		this.hit = new SpinnerHit(this.data, this.state, this.fireEvents, height);
-
-		if (this.data.showBracket) {
-			/*add a hit shape for the bracket if shown, just in case if the bracket spinner height is low enough so the ball can hit it*/
-			const halfLength = this.data.length * 0.5 + (this.data.length * 0.1875);
-			const radAngle = degToRad(this.data.rotation);
-			const sn = Math.sin(radAngle);
-			const cs = Math.cos(radAngle);
-
-			this.hitCircles = [
-				new HitCircle(
-					new Vertex2D(this.data.vCenter.x + cs * halfLength, this.data.vCenter.y + sn * halfLength),
-					this.data.length * 0.075,
-					height + this.data.height,
-					height + h,
-				),
-				new HitCircle(
-					new Vertex2D(this.data.vCenter.x - cs * halfLength, this.data.vCenter.y - sn * halfLength),
-					this.data.length * 0.075,
-					height + this.data.height,
-					height + h,
-				),
-			];
-		}
-	}
 }
