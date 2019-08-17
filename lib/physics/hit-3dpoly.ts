@@ -23,8 +23,8 @@ import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { C_CONTACTVEL, C_LOWNORMVEL, PHYS_TOUCH, STATICTIME } from './constants';
-import { HitObject, HitTestResult } from './hit-object';
 import { FireEvent } from './fire-events';
+import { HitObject, HitTestResult } from './hit-object';
 
 export class Hit3DPoly extends HitObject {
 

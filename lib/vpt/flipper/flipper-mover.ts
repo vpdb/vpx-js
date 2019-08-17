@@ -22,6 +22,7 @@ import { degToRad, radToDeg } from '../../math/float';
 import { Vertex2D } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
 import { PHYS_FACTOR } from '../../physics/constants';
+import { FireEvent, FireEvents } from '../../physics/fire-events';
 import { HitCircle } from '../../physics/hit-circle';
 import { MoverObject } from '../../physics/mover-object';
 import { logger } from '../../util/logger';
@@ -29,7 +30,6 @@ import { TableData } from '../table/table-data';
 import { FlipperConfig } from './flipper';
 import { FlipperData } from './flipper-data';
 import { FlipperState } from './flipper-state';
-import { FireEvent, FireEvents } from '../../physics/fire-events';
 
 export class FlipperMover implements MoverObject {
 

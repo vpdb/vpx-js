@@ -22,6 +22,7 @@ import { kickerHitVertices } from '../../../res/meshes/kicker-hit-mesh';
 import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
 import { clamp } from '../../math/functions';
+import { Vertex2D } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
@@ -33,7 +34,6 @@ import { HitTestResult } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
 import { FLT_MAX } from '../mesh';
 import { KickerData } from './kicker-data';
-import { Vertex2D } from '../../math/vertex2d';
 
 /* tslint:disable:no-bitwise */
 export class KickerHit extends HitCircle {
