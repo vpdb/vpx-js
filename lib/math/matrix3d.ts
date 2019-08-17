@@ -73,18 +73,20 @@ export class Matrix3D {
 		return this;
 	}
 
-	public rotateXMatrix(x: number) {
+	public rotateXMatrix(x: number): this {
 		this.setIdentity();
 		this._22 = this._33 = Math.cos(f4(x));
 		this._23 = Math.sin(f4(x));
 		this._32 = -this._23;
+		return this;
 	}
 
-	public rotateYMatrix(y: number) {
+	public rotateYMatrix(y: number): this {
 		this.setIdentity();
 		this._11 = this._33 = Math.cos(f4(y));
 		this._31 = Math.sin(f4(y));
 		this._13 = -this._31;
+		return this;
 	}
 
 	public rotateZMatrix(z: number): this {

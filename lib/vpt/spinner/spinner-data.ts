@@ -30,10 +30,10 @@ export class SpinnerData extends ItemData {
 	public showBracket: boolean = true;
 	public height: number = 60;
 	public length: number = 80;
-	public damping?: number;
+	public damping!: number;
 	public angleMax: number = 0;
 	public angleMin: number = 0;
-	public elasticity?: number;
+	public elasticity!: number;
 	public isVisible: boolean = true;
 	public szImage?: string;
 	public szSurface?: string;
@@ -42,7 +42,7 @@ export class SpinnerData extends ItemData {
 	public static async fromStorage(storage: Storage, itemName: string): Promise<SpinnerData> {
 		const spinnerData = new SpinnerData(itemName);
 		await storage.streamFiltered(itemName, 4, BiffParser.stream(spinnerData.fromTag.bind(spinnerData), {}));
-		return spinnerData;
+		return spinnerData.correctAngles();
 	}
 
 	private constructor(itemName: string) {
@@ -51,6 +51,15 @@ export class SpinnerData extends ItemData {
 
 	public getName(): string {
 		return this.wzName;
+	}
+
+	private correctAngles(): this {
+		// correct angle inversions
+		const angleMin = Math.min(this.angleMin, this.angleMax);
+		const angleMax = Math.max(this.angleMin, this.angleMax);
+		this.angleMin = angleMin;
+		this.angleMax = angleMax;
+		return this;
 	}
 
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {

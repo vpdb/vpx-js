@@ -111,7 +111,7 @@ describe('The VPinball flipper physics', () => {
 		simulateCycles(player, 25); // hit at 17.012061224193429107ms (at 1000fps)
 
 		const flipperState = flipper.getState();
-		const states = player.popState();
+		const states = player.popStates();
 
 		const poppedState = states.find(s => s.getName() === 'FlipperR');
 

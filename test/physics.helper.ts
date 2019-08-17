@@ -21,6 +21,8 @@ import { Player } from '../lib/game/player';
 import { Ball } from '../lib/vpt/ball/ball';
 import { Table } from '../lib';
 import { Vertex3D } from '../lib/math/vertex3d';
+import { Spinner } from '../lib/vpt/spinner/spinner';
+import { radToDeg } from '../lib/math/float';
 
 /**
  * Simulates a given number of milliseconds.
@@ -71,7 +73,6 @@ export function createBall(player: Player, x: number, y: number, z: number, vx =
  * @param cycleLength Duration of each cycle
  */
 export function debugBall(player: Player, ball: Ball, numCycles = 300, cycleLength = 5) {
-
 	for (let i = 0; i <= numCycles; i++) {
 		player.updatePhysics(i * cycleLength);
 		console.log('[%sms] (%s, %s, %s)', i * cycleLength, ball.getState().pos.x, ball.getState().pos.y, ball.getState().pos.z);

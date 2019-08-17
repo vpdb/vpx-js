@@ -35,12 +35,6 @@ export class SpinnerHitGenerator {
 
 		const h = this.data.height + 30.0;
 
-		// correct angle inversions
-		const angleMin = Math.min(this.data.angleMin, this.data.angleMax);
-		const angleMax = Math.max(this.data.angleMin, this.data.angleMax);
-		this.data.angleMin = angleMin;
-		this.data.angleMax = angleMax;
-
 		if (this.data.showBracket) {
 			/*add a hit shape for the bracket if shown, just in case if the bracket spinner height is low enough so the ball can hit it*/
 			const halfLength = this.data.length * 0.5 + (this.data.length * 0.1875);
