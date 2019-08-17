@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { radToDeg } from '../../math/float';
+import { degToRad, radToDeg } from '../../math/float';
 import { PHYS_FACTOR } from '../../physics/constants';
 import { FireEvent, FireEvents } from '../../physics/fire-events';
 import { MoverObject } from '../../physics/mover-object';
@@ -31,20 +31,29 @@ export class SpinnerMover implements MoverObject {
 	private readonly fireEvents: FireEvents;
 
 	public angleSpeed: number = 0;
-	public angleMax: number = 0;
-	public angleMin: number = 0;
-	public elasticity: number = 0;
-	public damping: number = 0;
-	public isVisible: boolean = false;
+	public angleMax: number;
+	public angleMin: number;
+	public elasticity: number;
+	public damping: number;
+	public isVisible: boolean;
 
 	constructor(data: SpinnerData, state: SpinnerState, fireEvents: FireEvents) {
 		this.data = data;
 		this.state = state;
 		this.fireEvents = fireEvents;
+
+		this.angleMax = degToRad(data.angleMax);
+		this.angleMin = degToRad(data.angleMin);
+
+		// compute proper damping factor for physics framerate
+		this.damping = Math.pow(data.damping, PHYS_FACTOR);
+
+		this.elasticity = data.elasticity;
+		this.isVisible = data.isVisible;
 	}
 
 	public updateDisplacements(dTime: number): void {
-		if (this.data.angleMin !== this.data.angleMax) { // blocked spinner, limited motion spinner
+		if (this.data.angleMin !== this.data.angleMax) {   // blocked spinner, limited motion spinner
 
 			this.state.angle += this.angleSpeed * dTime;
 
@@ -64,8 +73,9 @@ export class SpinnerMover implements MoverObject {
 					this.angleSpeed *= -0.005 - this.elasticity;
 				}
 			}
-		} else {
-			const target = (this.angleSpeed > 0)
+
+		} else {                                           // "normal" 360° spinner
+			const target = this.angleSpeed > 0
 				? (this.state.angle < Math.PI ? Math.PI : 3.0 * Math.PI)
 				: (this.state.angle < Math.PI ? -Math.PI : Math.PI);
 
@@ -81,11 +91,12 @@ export class SpinnerMover implements MoverObject {
 				}
 			}
 
-			while (this.state.angle > (2.0 * Math.PI)) {
-				this.state.angle -= (2.0 * Math.PI);
+			// clamp angle between 0 and 2π
+			while (this.state.angle > 2.0 * Math.PI) {
+				this.state.angle -= 2.0 * Math.PI;
 			}
 			while (this.state.angle < 0.0) {
-				this.state.angle += (2.0 * Math.PI);
+				this.state.angle += 2.0 * Math.PI;
 			}
 		}
 	}

@@ -35,9 +35,7 @@ export class SpinnerMeshGenerator {
 	}
 
 	public generateMeshes(table: Table): { plate: Mesh, bracket?: Mesh } {
-		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
-		const posZ = f4(height + this.data.height);
-
+		const posZ = this.getZ(table);
 		if (this.data.showBracket) {
 			return {
 				plate: this.getPlateMesh(table, posZ),
@@ -49,21 +47,23 @@ export class SpinnerMeshGenerator {
 		};
 	}
 
+	public getZ(table: Table): number {
+		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
+		return f4(height + this.data.height);
+	}
+
 	private getPlateMesh(table: Table, posZ: number): Mesh {
-		const fullMatrix = new Matrix3D();
-		fullMatrix.rotateZMatrix(degToRad(this.data.rotation));
 		const mesh = spinnerPlateMesh.clone(`spinner.plate-${this.data.getName()}`);
-		return this.updateVertices(table, posZ, mesh, fullMatrix);
+		return this.updateVertices(table, posZ, mesh);
 	}
 
 	private getBracketMesh(table: Table, posZ: number): Mesh {
-		const fullMatrix = new Matrix3D();
-		fullMatrix.rotateZMatrix(degToRad(this.data.rotation));
 		const bracketMesh = spinnerBracketMesh.clone(`spinner.bracket-${this.data.getName()}`);
-		return this.updateVertices(table, posZ, bracketMesh, fullMatrix);
+		return this.updateVertices(table, posZ, bracketMesh);
 	}
 
-	private updateVertices(table: Table, posZ: number, mesh: Mesh, matrix: Matrix3D): Mesh {
+	private updateVertices(table: Table, posZ: number, mesh: Mesh): Mesh {
+		const matrix = new Matrix3D().rotateZMatrix(degToRad(this.data.rotation));
 		for (const vertex of mesh.vertices) {
 			let vert = new Vertex3D(vertex.x, vertex.y, vertex.z);
 			vert = matrix.multiplyVector(vert);

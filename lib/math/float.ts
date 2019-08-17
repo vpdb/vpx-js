@@ -62,9 +62,9 @@ export function f4(f8: number): number {
  * @return Radian angle
  */
 export function degToRad(deg: number): number {
-	return f4(f4((deg + 360) % 360) * f4(Math.PI / 180.0));
+	return f4(f4(deg) * f4(Math.PI / 180.0));
 }
 
 export function radToDeg(deg: number): number {
-	return (f4(f4(deg) * f4(180.0 / Math.PI)) + 360) % 360;
+	return (f4(f4(deg) * f4(180.0 / Math.PI)));
 }

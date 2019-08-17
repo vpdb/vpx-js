@@ -104,7 +104,10 @@ export class Player extends EventEmitter {
 		this.initPhysics(table);
 	}
 
-	public popState(): ItemState[] {
+	/**
+	 * Returns the changed states and clears them.
+	 */
+	public popStates(): ItemState[] {
 		const changedStates: ItemState[] = [];
 		for (const name of Object.keys(this.currentStates)) {
 			const currentState = this.currentStates[name];

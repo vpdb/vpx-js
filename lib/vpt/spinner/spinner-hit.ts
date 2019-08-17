@@ -23,7 +23,7 @@ import { clamp } from '../../math/functions';
 import { Vertex2D } from '../../math/vertex2d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
-import { PHYS_FACTOR, PHYS_SKIN } from '../../physics/constants';
+import { PHYS_SKIN } from '../../physics/constants';
 import { FireEvents } from '../../physics/fire-events';
 import { HitObject, HitTestResult } from '../../physics/hit-object';
 import { LineSeg } from '../../physics/line-seg';
@@ -62,16 +62,7 @@ export class SpinnerHit extends HitObject {
 		this.lineSegs.push(new LineSeg(v2.clone(), v1.clone(), height, height + (2.0 * PHYS_SKIN), CollisionType.Spinner));
 
 		this.mover = new SpinnerMover(data, state, fireEvents);
-		this.mover.angleMax = degToRad(data.angleMax!);
-		this.mover.angleMin = degToRad(data.angleMin!);
-
 		this.state.angle = clamp(0.0, this.mover.angleMin, this.mover.angleMax);
-		this.mover.angleSpeed = 0;
-		// compute proper damping factor for physics framerate
-		this.mover.damping = Math.pow(data.damping!, PHYS_FACTOR);
-
-		this.mover.elasticity = data.elasticity!;
-		this.mover.isVisible = data.isVisible;
 	}
 
 	public getMoverObject(): SpinnerMover {
@@ -107,21 +98,19 @@ export class SpinnerHit extends HitObject {
 	public collide(coll: CollisionEvent, player: Player): void {
 
 		const dot = coll.hitNormal!.dot(coll.ball.hit.vel);
-		if (dot < 0) { //hit from back doesn't count
+		if (dot < 0) {                                     // hit from back doesn't count
 			return;
 		}
 
 		const h = this.data.height * 0.5;
-		//linear speed = ball speed
-		//angular speed = linear/radius (height of hit)
 
 		// h is the height of the spinner axis;
 		// Since the spinner has no mass in our equation, the spot
 		// h -coll.m_radius will be moving a at linear rate of
 		// 'speed'.  We can calculate the angular speed from that.
 
-		this.mover.angleSpeed = Math.abs(dot); // use this until a better value comes along
-		if (Math.abs(h) > 1.0) {			// avoid divide by zero
+		this.mover.angleSpeed = Math.abs(dot);             // use this until a better value comes along
+		if (Math.abs(h) > 1.0) {                           // avoid divide by zero
 			this.mover.angleSpeed /= h;
 		}
 		this.mover.angleSpeed *= this.mover.damping;

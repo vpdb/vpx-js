@@ -18,8 +18,7 @@
  */
 
 import { Object3D } from 'three';
-import { Storage } from '../..';
-import { Table } from '../..';
+import { Storage, Table } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
@@ -27,7 +26,6 @@ import { IRenderable } from '../../game/irenderable';
 import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
-import { Vertex2D } from '../../math/vertex2d';
 import { FireEvents } from '../../physics/fire-events';
 import { HitCircle } from '../../physics/hit-circle';
 import { HitObject } from '../../physics/hit-object';
@@ -36,10 +34,9 @@ import { FlipperState } from '../flipper/flipper-state';
 import { Meshes } from '../item-data';
 import { SpinnerData } from './spinner-data';
 import { SpinnerHit } from './spinner-hit';
+import { SpinnerHitGenerator } from './spinner-hit-generator';
 import { SpinnerMeshGenerator } from './spinner-mesh-generator';
 import { SpinnerState } from './spinner-state';
-import { SpinnerMover } from './spinner-mover';
-import { SpinnerHitGenerator } from './spinner-hit-generator';
 
 /**
  * VPinball's spinners.
@@ -55,6 +52,10 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	private hit?: SpinnerHit;
 	private fireEvents?: FireEvents;
 	private hitCircles: HitCircle[] = [];
+
+	// public props
+	get angleMin() { return this.data.angleMin; }
+	get angleMax() { return this.data.angleMax; }
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Spinner> {
 		const data = await SpinnerData.fromStorage(storage, itemName);
@@ -118,8 +119,27 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		return this.state;
 	}
 
+	/* istanbul ignore next */
 	public applyState(obj: Object3D, table: Table, player: Player): void {
-		console.log('new spinner state: ', this.state);
+
+		const posZ = this.meshGenerator.getZ(table);
+		const matTransToOrigin = new Matrix3D().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, posZ);
+		const matRotateToOrigin = new Matrix3D().rotateZMatrix(degToRad(-this.data.rotation));
+		const matTransFromOrigin = new Matrix3D().setTranslation(this.data.vCenter.x, this.data.vCenter.y, -posZ);
+		const matRotateFromOrigin = new Matrix3D().rotateZMatrix(degToRad(this.data.rotation));
+		const matRotateX = new Matrix3D().rotateXMatrix(this.state.angle - degToRad(this.data.angleMin));
+
+		const matrix = matTransToOrigin
+			.multiply(matRotateToOrigin)
+			.multiply(matRotateX)
+			.multiply(matRotateFromOrigin)
+			.multiply(matTransFromOrigin);
+
+		const plateObj = obj.children.find(c => c.name === `spinner.plate-${this.getName()}`)!;
+		plateObj.matrix = matrix.toThreeMatrix4();
+		plateObj.matrixWorldNeedsUpdate = true;
+
+		//console.log('new spinner state: ', degToRad(this.state.angle));
 	}
 
 }
