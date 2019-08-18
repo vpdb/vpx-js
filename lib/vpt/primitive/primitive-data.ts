@@ -175,6 +175,7 @@ export class PrimitiveData extends ItemData {
 
 	private getVertices(decompressedBuffer: Buffer, num: number): Vertex3DNoTex2[] {
 		const vertices: Vertex3DNoTex2[] = [];
+		/* istanbul ignore next */
 		if (decompressedBuffer.length < num * Vertex3DNoTex2.size) {
 			throw new Error(`Tried to read ${num} vertices for primitive item "${this.getName()}" (${this.itemName}), but only ${decompressedBuffer.length} bytes available.`);
 		}
