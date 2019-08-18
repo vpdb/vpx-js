@@ -1,4 +1,3 @@
-/* tslint:disable:no-bitwise */
 /*
  * VPDB - Virtual Pinball Database
  * Copyright (C) 2019 freezy <freezy@vpdb.io>
@@ -18,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+/* tslint:disable:no-bitwise */
 import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';

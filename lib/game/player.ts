@@ -266,7 +266,7 @@ export class Player extends EventEmitter {
 				if (!ballHit.isFrozen) {                   // don't play with frozen balls
 
 					ballHit.coll.hitTime = hitTime;        // search upto current hit time
-					ballHit.coll.obj = undefined;
+					ballHit.coll.clear();
 
 					// always check for playfield and top glass
 					if (!this.meshAsPlayfield) {
@@ -331,7 +331,7 @@ export class Player extends EventEmitter {
 
 					this.pactiveball = ball;                         // For script that wants the ball doing the collision
 					pho.collide(ball.getCollision(), this);          // !!!!! 3) collision on active ball
-					ball.getCollision().obj = undefined;             // remove trial hit object pointer
+					ball.getCollision().clear();                     // remove trial hit object pointer
 
 					// Collide may have changed the velocity of the ball,
 					// and therefore the bounding box for the next hit cycle

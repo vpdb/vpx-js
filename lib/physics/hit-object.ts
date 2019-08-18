@@ -60,6 +60,7 @@ export abstract class HitObject {
 
 	public abstract collide(coll: CollisionEvent, player: Player): void;
 
+	/* istanbul ignore next: overwritten where used */
 	public getMoverObject(): MoverObject | undefined {
 		return undefined;
 	}
