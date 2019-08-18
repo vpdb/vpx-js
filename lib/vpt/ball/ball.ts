@@ -27,6 +27,7 @@ import { Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
+import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { TableData } from '../table/table-data';
@@ -102,7 +103,7 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRendera
 		// there is no ball yet on player setup
 	}
 
-	public getHitShapes(): HitObject[] {
+	public getHitShapes(): Array<HitObject<FireEvents>> {
 		return [ this.hit ];
 	}
 

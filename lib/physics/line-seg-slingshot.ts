@@ -20,9 +20,10 @@
 import { Vertex2D } from '../math/vertex2d';
 import { SurfaceData } from '../vpt/surface/surface-data';
 import { CollisionEvent } from './collision-event';
+import { FireEvents } from './fire-events';
 import { LineSeg } from './line-seg';
 
-export class LineSegSlingshot extends LineSeg {
+export class LineSegSlingshot extends LineSeg<FireEvents> {
 
 	private readonly surfaceData: SurfaceData;
 	//private slingshotAnim: SlingshotAnimObject;

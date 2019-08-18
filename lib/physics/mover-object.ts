@@ -4,6 +4,8 @@
 import { Player } from '../game/player';
 
 export interface MoverObject {
-	updateDisplacements(dtime: number): void;
+
+	updateDisplacements(dTime: number): void;
+
 	updateVelocities(player: Player): void;
 }

@@ -42,7 +42,7 @@ export class Surface implements IRenderable, IHittable {
 	private readonly data: SurfaceData;
 	private readonly mesh: SurfaceMesh;
 	private readonly hitGenerator: SurfaceHitGenerator;
-	private hits: HitObject[] = [];
+	private hits: Array<HitObject<FireEvents>> = [];
 	private fireEvents?: FireEvents;
 
 	// public getters
@@ -99,7 +99,7 @@ export class Surface implements IRenderable, IHittable {
 		this.hits = this.hitGenerator.generateHitObjects(this.fireEvents, table);
 	}
 
-	public getHitShapes(): HitObject[] {
+	public getHitShapes(): Array<HitObject<FireEvents>> {
 		return this.hits;
 	}
 }

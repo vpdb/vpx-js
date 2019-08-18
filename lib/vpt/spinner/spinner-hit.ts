@@ -32,12 +32,12 @@ import { SpinnerData } from './spinner-data';
 import { SpinnerMover } from './spinner-mover';
 import { SpinnerState } from './spinner-state';
 
-export class SpinnerHit extends HitObject {
+export class SpinnerHit extends HitObject<FireEvents> {
 
 	private readonly data: SpinnerData;
 	private readonly state: SpinnerState;
 	private readonly mover: SpinnerMover;
-	private readonly lineSegs: LineSeg[] = [];
+	private readonly lineSegs: Array<LineSeg<FireEvents>> = [];
 
 	constructor(data: SpinnerData, state: SpinnerState, fireEvents: FireEvents, height: number) {
 		super();

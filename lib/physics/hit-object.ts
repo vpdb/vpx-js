@@ -23,11 +23,15 @@ import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { FireEvent, FireEvents } from './fire-events';
-import { MoverObject } from './mover-object';
 
-export abstract class HitObject {
+export abstract class HitObject<T extends FireEvents> {
 
-	public obj?: FireEvents; // base object pointer (mainly used as IFireEvents, but also as HitTarget or Primitive or Trigger or Kicker or Gate, see below)
+	/**
+	 * Base object pointer.
+	 *
+	 * Mainly used as IFireEvents, but also as HitTarget or Primitive or Trigger or Kicker or Gate.
+	 */
+	public obj?: T;
 
 	public threshold: number = 0;  // threshold for firing an event (usually (always??) normal dot ball-velocity)
 	public hitBBox: FRect3D = new FRect3D();
@@ -59,11 +63,6 @@ export abstract class HitObject {
 	public abstract hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: Player): HitTestResult;
 
 	public abstract collide(coll: CollisionEvent, player: Player): void;
-
-	/* istanbul ignore next: overwritten where used */
-	public getMoverObject(): MoverObject | undefined {
-		return undefined;
-	}
 
 	/**
 	 * apply contact forces for the given time interval. Ball, Spinner and Gate do nothing here, Flipper has a specialized handling

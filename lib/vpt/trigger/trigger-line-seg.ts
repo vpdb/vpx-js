@@ -21,12 +21,13 @@ import { Vertex2D } from '../../math/vertex2d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { STATICTIME } from '../../physics/constants';
+import { FireEvents } from '../../physics/fire-events';
 import { HitTestResult } from '../../physics/hit-object';
 import { LineSeg } from '../../physics/line-seg';
 import { Ball } from '../ball/ball';
 import { TriggerData } from './trigger-data';
 
-export class TriggerLineSeg extends LineSeg {
+export class TriggerLineSeg extends LineSeg<FireEvents> {
 
 	private readonly data: TriggerData;
 

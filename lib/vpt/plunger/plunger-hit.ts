@@ -31,7 +31,7 @@ import { PlungerData } from './plunger-data';
 import { PlungerMover } from './plunger-mover';
 import { PlungerState } from './plunger-state';
 
-export class PlungerHit extends HitObject {
+export class PlungerHit extends HitObject<FireEvents> {
 
 	private readonly mover: PlungerMover;
 	private readonly data: PlungerData;

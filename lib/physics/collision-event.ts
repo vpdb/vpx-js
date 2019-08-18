@@ -20,6 +20,7 @@
 import { Vertex2D } from '../math/vertex2d';
 import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
+import { FireEvents } from './fire-events';
 import { HitObject } from './hit-object';
 
 export class CollisionEvent {
@@ -32,7 +33,7 @@ export class CollisionEvent {
 	/**
 	 * What the ball collided with
 	 */
-	public obj?: HitObject;
+	public obj?: HitObject<FireEvents>;
 
 	/**
 	 * Set to true if impact velocity is ~0

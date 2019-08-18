@@ -25,9 +25,10 @@ import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { C_CONTACTVEL, C_LOWNORMVEL, PHYS_TOUCH } from './constants';
+import { FireEvents } from './fire-events';
 import { HitObject, HitTestResult } from './hit-object';
 
-export class HitCircle extends HitObject {
+export class HitCircle<T extends FireEvents> extends HitObject<T> {
 
 	public center: Vertex2D;
 	public readonly radius: number;

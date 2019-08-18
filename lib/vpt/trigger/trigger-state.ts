@@ -16,11 +16,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-import { FireEvents } from '../physics/fire-events';
-import { HitObject } from '../physics/hit-object';
-import { IPlayable } from './iplayable';
 
-export interface IHittable extends IPlayable {
-	isCollidable(): boolean;
-	getHitShapes(): Array<HitObject<FireEvents>>;
+import { ItemState } from '../item-state';
+
+export class TriggerState extends ItemState {
+
+	public heightOffset: number;
+
+	constructor(name: string, heightOffset: number = 0) {
+		super(name);
+		this.heightOffset = heightOffset;
+	}
+
+	public equals(state: TriggerState): boolean {
+		if (!state) {
+			return false;
+		}
+		return state.heightOffset === this.heightOffset;
+	}
+
+	public clone(): TriggerState {
+		return new TriggerState(this.name, this.heightOffset);
+	}
 }

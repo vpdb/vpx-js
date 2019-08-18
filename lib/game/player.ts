@@ -33,6 +33,7 @@ import {
 	STATICCNTS,
 	STATICTIME,
 } from '../physics/constants';
+import { FireEvents } from '../physics/fire-events';
 import { Hit3DPoly } from '../physics/hit-3dpoly';
 import { HitKD } from '../physics/hit-kd';
 import { HitObject } from '../physics/hit-object';
@@ -55,8 +56,8 @@ export class Player extends EventEmitter {
 	public readonly balls: Ball[] = [];
 	private readonly movers: MoverObject[] = [];
 	private readonly flipperMovers: FlipperMover[] = [];
-	private readonly hitObjects: HitObject[] = [];
-	private readonly hitObjectsDynamic: HitObject[] = [];
+	private readonly hitObjects: Array<HitObject<FireEvents>> = [];
+	private readonly hitObjectsDynamic: Array<HitObject<FireEvents>> = [];
 
 	private minPhysLoopTime: number = 0;
 	private lastFlipTime: number = 0;
@@ -74,8 +75,8 @@ export class Player extends EventEmitter {
 	private startTimeUsec: number = 0;
 	private physPeriod: number = 0;
 
-	private hitPlayfield!: HitPlane; // HitPlanes cannot be part of octree (infinite size)
-	private hitTopGlass!: HitPlane;
+	private hitPlayfield!: HitPlane<FireEvents>; // HitPlanes cannot be part of octree (infinite size)
+	private hitTopGlass!: HitPlane<FireEvents>;
 	public recordContacts: boolean = false;
 	public contacts: CollisionEvent[] = [];
 
@@ -433,6 +434,11 @@ export class Player extends EventEmitter {
 
 			firstCycle = false;
 		} // end while (m_curPhysicsFrameTime < initial_time_usec)
+
+		// [vpx-js added]
+		for (const animatable of this.table.getAnimatables()) {
+			animatable.getAnimation().updateAnimation(this, this.table);
+		}
 
 		this.physPeriod = Math.floor(now() * 1000) - initialTimeUsec;
 		return initialTimeUsec;

@@ -48,7 +48,7 @@ import { FlipperData } from './flipper-data';
 import { FlipperMover } from './flipper-mover';
 import { FlipperState } from './flipper-state';
 
-export class FlipperHit extends HitObject {
+export class FlipperHit extends HitObject<FireEvents> {
 
 	private readonly mover: FlipperMover;
 	private readonly data: FlipperData;
