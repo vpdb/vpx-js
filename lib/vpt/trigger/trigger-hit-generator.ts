@@ -39,9 +39,9 @@ export class TriggerHitGenerator {
 		this.data = data;
 	}
 
-	public generateHitObjects(fireEvents: FireEvents, table: Table): HitObject[] {
+	public generateHitObjects(fireEvents: FireEvents, table: Table): Array<HitObject<FireEvents>> {
 
-		const hitObjects: HitObject[] = [];
+		const hitObjects: Array<HitObject<FireEvents>> = [];
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
 		const vVertex: RenderVertex[] = DragPoint.getRgVertex<RenderVertex>(this.data.dragPoints, () => new RenderVertex(), CatmullCurve2D.fromVertex2D as any);
 

@@ -21,6 +21,7 @@ import { Player } from '../game/player';
 import { FRect3D } from '../math/frect3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
+import { FireEvents } from './fire-events';
 import { HitKDNode } from './hit-kd-node';
 import { HitObject } from './hit-object';
 
@@ -33,7 +34,7 @@ export class HitKD {
 	private numItems: number = 0;
 	private maxItems: number = 0;
 
-	private orgVho: HitObject[] = [];
+	private orgVho: Array<HitObject<FireEvents>> = [];
 
 	public tmp: number[] = [];
 
@@ -44,7 +45,7 @@ export class HitKD {
 		this.rootNode = new HitKDNode(this);
 	}
 
-	public init(vho: HitObject[]) {
+	public init(vho: Array<HitObject<FireEvents>>) {
 		this.orgVho = vho;
 		this.numItems = vho.length;
 
@@ -64,7 +65,7 @@ export class HitKD {
 		this.orgIdx.push(i);
 	}
 
-	public fillFromVector(vho: HitObject[]): void {
+	public fillFromVector(vho: Array<HitObject<FireEvents>>): void {
 		this.init(vho);
 
 		this.rootNode.rectBounds.Clear();
@@ -123,11 +124,11 @@ export class HitKD {
 		return this.rootNode.hitTestBall(pball, collision, player);
 	}
 
-	// public hitTestXRay(pball: Ball, pvhoHit: HitObject[], coll: CollisionEvent, player: Player) {
+	// public hitTestXRay(pball: Ball, pvhoHit: Array<HitObject<FireEvents>>, coll: CollisionEvent, player: Player) {
 	// 	this.rootNode.hitTestXRay(pball, pvhoHit, coll, player);
 	// }
 
-	public getItemAt(i: number): HitObject {
+	public getItemAt(i: number): HitObject<FireEvents> {
 		return this.orgVho[ this.orgIdx[ i ] ];
 	}
 

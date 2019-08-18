@@ -29,12 +29,12 @@ export class HitQuadtree {
 
 	private unique?: FireEvents; // everything below/including this node shares the same original primitive object (just for early outs if not collidable)
 
-	private vho: HitObject[] = [];
+	private vho: Array<HitObject<FireEvents>> = [];
 	private children: HitQuadtree[] = [];
 	private vCenter: Vertex3D = new Vertex3D();
 	private isLeaf: boolean = true;
 
-	public addElement(pho: HitObject): void {
+	public addElement(pho: HitObject<FireEvents>): void {
 		this.vho.push(pho);
 	}
 
@@ -83,7 +83,7 @@ export class HitQuadtree {
 		return coll;
 	}
 
-	// public hitTestXRay(ball: Ball, pvhoHit: HitObject[], coll: CollisionEvent, player: Player): void {
+	// public hitTestXRay(ball: Ball, pvhoHit: Array<HitObject<FireEvents>>, coll: CollisionEvent, player: Player): void {
 	// 	for (const pho of this.vho) {
 	// 		if (ball.hit !== pho
 	// 			&& ball.hit.hitBBox.intersectRect(pho.hitBBox)
@@ -133,7 +133,7 @@ export class HitQuadtree {
 			this.children[i] = new HitQuadtree();
 		}
 
-		const vRemain: HitObject[] = []; // hit objects which did not go to a quadrant
+		const vRemain: Array<HitObject<FireEvents>> = []; // hit objects which did not go to a quadrant
 
 		// TODO check if casting in C++ results in null if not the cast type
 		this.unique = this.vho[0].e ? this.vho[0].obj : undefined;

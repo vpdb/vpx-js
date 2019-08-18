@@ -42,7 +42,7 @@ export class Primitive implements IRenderable, IHittable {
 	private readonly meshGenerator: PrimitiveMeshGenerator;
 	private readonly hitGenerator: PrimitiveHitGenerator;
 	private mesh?: Mesh;
-	private hits?: HitObject[];
+	private hits?: Array<HitObject<FireEvents>>;
 	private fireEvents?: FireEvents;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Primitive> {
@@ -91,7 +91,7 @@ export class Primitive implements IRenderable, IHittable {
 		this.hits = this.hitGenerator.generateHitObjects(this.getMesh(table), this.fireEvents, table);
 	}
 
-	public getHitShapes(): HitObject[] {
+	public getHitShapes(): Array<HitObject<FireEvents>> {
 		return this.hits!;
 	}
 }

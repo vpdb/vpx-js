@@ -38,10 +38,10 @@ export class TriggerData extends ItemData {
 	public isEnabled: boolean = true;
 	public hitHeight: number = 50;
 	public shape: number = Trigger.ShapeTriggerWireA;
+	public animSpeed: number = 1;
 
 	private wireThickness: number = 0;
 	private isReflectionEnabled: boolean = true;
-	private animSpeed: number = 1;
 	private wzName!: string;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<TriggerData> {

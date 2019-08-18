@@ -34,8 +34,8 @@ import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { HitPoint } from '../../physics/hit-point';
 import { HitTriangle } from '../../physics/hit-triangle';
-import { PrimitiveData } from './primitive-data';
 import { Mesh } from '../mesh';
+import { PrimitiveData } from './primitive-data';
 
 export class PrimitiveHitGenerator {
 
@@ -45,9 +45,9 @@ export class PrimitiveHitGenerator {
 		this.data = data;
 	}
 
-	public generateHitObjects(mesh: Mesh, fireEvents: FireEvents, table: Table): HitObject[] {
+	public generateHitObjects(mesh: Mesh, fireEvents: FireEvents, table: Table): Array<HitObject<FireEvents>> {
 
-		const hitObjects: HitObject[] = [];
+		const hitObjects: Array<HitObject<FireEvents>> = [];
 
 		if (this.data.getName() === 'playfield_mesh') {
 			this.data.isVisible = false;
@@ -153,7 +153,7 @@ export class PrimitiveHitGenerator {
 		return this.updateCommonParameters(hitObjects, fireEvents, table);
 	}
 
-	private updateCommonParameters(hitObjects: HitObject[], fireEvents: FireEvents, table: Table): HitObject[] {
+	private updateCommonParameters(hitObjects: Array<HitObject<FireEvents>>, fireEvents: FireEvents, table: Table): Array<HitObject<FireEvents>> {
 		const mat = table.getMaterial(this.data.szPhysicsMaterial);
 		for (const obj of hitObjects) {
 			if (!this.data.useAsPlayfield) {

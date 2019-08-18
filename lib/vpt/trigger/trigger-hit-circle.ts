@@ -27,10 +27,11 @@ import { HitCircle } from '../../physics/hit-circle';
 import { HitTestResult } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
 import { TriggerData } from './trigger-data';
+import { TriggerEvents } from './trigger-events';
 
-export class TriggerHitCircle extends HitCircle {
+export class TriggerHitCircle extends HitCircle<TriggerEvents> {
 
-	constructor(data: TriggerData, fireEvents: FireEvents, table: Table) {
+	constructor(data: TriggerData, fireEvents: TriggerEvents, table: Table) {
 		super(data.vCenter, data.radius, table.getSurfaceHeight(data.szSurface, data.vCenter.x, data.vCenter.y), table.getSurfaceHeight(data.szSurface, data.vCenter.x, data.vCenter.y) + data.hitHeight);
 		this.isEnabled = data.isEnabled;
 		this.objType = CollisionType.Trigger;
@@ -57,14 +58,14 @@ export class TriggerHitCircle extends HitCircle {
 				ball.hit.vpVolObjs.push(this.obj!);
 
 				// fixme event
-				// ((Trigger*)m_obj)->TriggerAnimationHit();
+				this.obj!.triggerAnimationHit();
 				// ((Trigger*)m_obj)->FireGroupEvent(DISPID_HitEvents_Hit);
 
 			} else {
 				ball.hit.vpVolObjs.splice(i, 1);
 
 				// fixme event
-				// ((Trigger*)m_obj)->TriggerAnimationUnhit();
+				this.obj!.triggerAnimationUnhit();
 				// ((Trigger*)m_obj)->FireGroupEvent(DISPID_HitEvents_Unhit);
 			}
 		}

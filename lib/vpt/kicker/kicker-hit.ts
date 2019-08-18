@@ -36,7 +36,7 @@ import { FLT_MAX } from '../mesh';
 import { KickerData } from './kicker-data';
 
 /* tslint:disable:no-bitwise */
-export class KickerHit extends HitCircle {
+export class KickerHit extends HitCircle<FireEvents> {
 
 	private data: KickerData;
 	private ball?: Ball;  // The ball inside this kicker

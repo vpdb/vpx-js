@@ -22,9 +22,10 @@ import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { C_CONTACTVEL, PHYS_TOUCH } from './constants';
+import { FireEvents } from './fire-events';
 import { HitObject, HitTestResult } from './hit-object';
 
-export class HitPlane extends HitObject {
+export class HitPlane<T extends FireEvents> extends HitObject<T> {
 
 	private readonly normal: Vertex3D;
 	private readonly d: number;

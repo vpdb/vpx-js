@@ -23,9 +23,10 @@ import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { C_CONTACTVEL, C_LOWNORMVEL, C_TOL_ENDPNTS, C_TOL_RADIUS, PHYS_TOUCH } from './constants';
+import { FireEvents } from './fire-events';
 import { HitObject, HitTestResult } from './hit-object';
 
-export class LineSeg extends HitObject {
+export class LineSeg<T extends FireEvents> extends HitObject<T> {
 
 	protected readonly v1: Vertex2D;
 	protected readonly v2: Vertex2D;

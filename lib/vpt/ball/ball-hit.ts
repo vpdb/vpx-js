@@ -47,7 +47,7 @@ import { BallState } from './ball-state';
  * In the VP source code this is all part of ball.cpp. We'll try
  * to separate this more and see how far we get.
  */
-export class BallHit extends HitObject {
+export class BallHit extends HitObject<FireEvents> {
 
 	public isFrozen: boolean;
 	public coll: CollisionEvent;

@@ -18,6 +18,7 @@
  */
 
 import { Group, Scene } from 'three';
+import { IAnimatable } from '../../game/ianimatable';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
@@ -158,6 +159,10 @@ export class Table implements IRenderable {
 
 	public getMovables(): Array<IMovable<any>> {
 		return this.items.filter(item => !!item.getMover);
+	}
+
+	public getAnimatables(): Array<IAnimatable<any>> {
+		return this.items.filter(item => !!item.getAnimation);
 	}
 
 	public getHittables(): IHittable[] {

@@ -42,14 +42,14 @@ export class SurfaceHitGenerator {
 		this.data = data;
 	}
 
-	public generateHitObjects(fireEvents: FireEvents, table: Table): HitObject[] {
+	public generateHitObjects(fireEvents: FireEvents, table: Table): Array<HitObject<FireEvents>> {
 		const polys = this.generate3DPolys(fireEvents, table);
 		return this.updateCommonParameters(polys, fireEvents, table);
 	}
 
-	private generate3DPolys(fireEvents: FireEvents, table: Table): HitObject[] {
+	private generate3DPolys(fireEvents: FireEvents, table: Table): Array<HitObject<FireEvents>> {
 
-		const hitObjects: HitObject[] = [];
+		const hitObjects: Array<HitObject<FireEvents>> = [];
 		const vVertex: RenderVertex[] = DragPoint.getRgVertex<RenderVertex>(this.data.dragPoints, () => new RenderVertex(), CatmullCurve2D.fromVertex2D as any);
 
 		const count = vVertex.length;
@@ -81,9 +81,9 @@ export class SurfaceHitGenerator {
 		return hitObjects;
 	}
 
-	private generateLinePolys(pv1: RenderVertex, pv2: RenderVertex, events: FireEvents, table: Table): HitObject[] {
+	private generateLinePolys(pv1: RenderVertex, pv2: RenderVertex, events: FireEvents, table: Table): Array<HitObject<FireEvents>> {
 
-		const linePolys: HitObject[] = [];
+		const linePolys: Array<HitObject<FireEvents>> = [];
 		const bottom = this.data.heightbottom + table.getTableHeight();
 		const top = this.data.heighttop + table.getTableHeight();
 
@@ -123,7 +123,7 @@ export class SurfaceHitGenerator {
 		return linePolys;
 	}
 
-	private updateCommonParameters(hitObjects: HitObject[], events: FireEvents, table: Table): HitObject[] {
+	private updateCommonParameters(hitObjects: Array<HitObject<FireEvents>>, events: FireEvents, table: Table): Array<HitObject<FireEvents>> {
 		const mat = table.getMaterial(this.data.szPhysicsMaterial);
 		for (const obj of hitObjects) {
 
