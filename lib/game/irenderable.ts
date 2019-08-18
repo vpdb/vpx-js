@@ -24,10 +24,9 @@ import { Material } from '../vpt/material';
 import { Mesh } from '../vpt/mesh';
 import { VpTableExporterOptions } from '../vpt/table/table-exporter';
 import { Texture } from '../vpt/texture';
+import { IItem } from './iitem';
 
-export interface IRenderable {
-
-	getName(): string;
+export interface IRenderable extends IItem {
 
 	getMeshes(table: Table, opts: VpTableExporterOptions): Meshes;
 

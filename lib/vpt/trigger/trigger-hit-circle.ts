@@ -22,7 +22,7 @@ import { Player } from '../../game/player';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { STATICTIME } from '../../physics/constants';
-import { FireEvents } from '../../physics/fire-events';
+import { FireEvent } from '../../physics/fire-events';
 import { HitCircle } from '../../physics/hit-circle';
 import { HitTestResult } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
@@ -56,17 +56,13 @@ export class TriggerHitCircle extends HitCircle<TriggerEvents> {
 
 			if (i < 0) {
 				ball.hit.vpVolObjs.push(this.obj!);
-
-				// fixme event
 				this.obj!.triggerAnimationHit();
-				// ((Trigger*)m_obj)->FireGroupEvent(DISPID_HitEvents_Hit);
+				this.obj!.fireGroupEvent(FireEvent.HitEventsHit);
 
 			} else {
 				ball.hit.vpVolObjs.splice(i, 1);
-
-				// fixme event
 				this.obj!.triggerAnimationUnhit();
-				// ((Trigger*)m_obj)->FireGroupEvent(DISPID_HitEvents_Unhit);
+				this.obj!.fireGroupEvent(FireEvent.HitEventsUnhit);
 			}
 		}
 	}

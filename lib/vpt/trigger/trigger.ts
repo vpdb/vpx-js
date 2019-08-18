@@ -55,7 +55,7 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 	private readonly hitGenerator: TriggerHitGenerator;
 
 	private events?: TriggerEvents;
-	private hits!: Array<HitObject<FireEvents>>;
+	private hits!: Array<HitObject<TriggerEvents>>;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Trigger> {
 		const data = await TriggerData.fromStorage(storage, itemName);

@@ -21,13 +21,14 @@ import { Vertex2D } from '../../math/vertex2d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { STATICTIME } from '../../physics/constants';
-import { FireEvents } from '../../physics/fire-events';
+import { FireEvent } from '../../physics/fire-events';
 import { HitTestResult } from '../../physics/hit-object';
 import { LineSeg } from '../../physics/line-seg';
 import { Ball } from '../ball/ball';
 import { TriggerData } from './trigger-data';
+import { TriggerEvents } from './trigger-events';
 
-export class TriggerLineSeg extends LineSeg<FireEvents> {
+export class TriggerLineSeg extends LineSeg<TriggerEvents> {
 
 	private readonly data: TriggerData;
 
@@ -52,24 +53,21 @@ export class TriggerLineSeg extends LineSeg<FireEvents> {
 			return;
 		}
 
-		const i = ball.hit.vpVolObjs.indexOf(this.obj!); // if -1 then not in objects volume set (i.e not already hit)
+		const i = ball.hit.vpVolObjs.indexOf(this.obj!);
 
-		if (!coll.hitFlag !== i < 0) {                 // Hit == NotAlreadyHit
-			ball.state.pos.add(ball.hit.vel.clone().multiplyScalar(STATICTIME));     // move ball slightly forward
+		// if -1 then not in objects volume set (i.e not already hit)
+		if (!coll.hitFlag !== i < 0) {                                            // Hit == NotAlreadyHit
+			ball.state.pos.add(ball.hit.vel.clone().multiplyScalar(STATICTIME));  // move ball slightly forward
 
 			if (i < 0) {
 				ball.hit.vpVolObjs.push(this.obj!);
-
-				// fixme events
-				// ((Trigger*)m_obj)->TriggerAnimationHit();
-				// ((Trigger*)m_obj)->FireGroupEvent(DISPID_HitEvents_Hit);
+				this.obj!.triggerAnimationHit();
+				this.obj!.fireGroupEvent(FireEvent.HitEventsHit);
 
 			} else {
 				ball.hit.vpVolObjs.splice(i, 1);
-
-				// fixme events
-				// ((Trigger*)m_obj)->TriggerAnimationUnhit();
-				// ((Trigger*)m_obj)->FireGroupEvent(DISPID_HitEvents_Unhit);
+				this.obj!.triggerAnimationUnhit();
+				this.obj!.fireGroupEvent(FireEvent.HitEventsUnhit);
 			}
 		}
 	}

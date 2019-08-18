@@ -17,15 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '..';
-import { IItem } from './iitem';
-import { Player } from './player';
+export interface IItem {
 
-/**
- * A table element that can interact with the game. This corresponds roughly
- * to IEditable in VPinball.
- */
-export interface IPlayable extends IItem {
-
-	setupPlayer(player: Player, table: Table): void;
+	getName(): string;
 }

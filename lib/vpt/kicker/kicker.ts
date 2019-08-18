@@ -18,10 +18,11 @@
  */
 
 import { EventEmitter } from 'events';
-import { Table } from '../..';
 import { Storage } from '../..';
+import { Table } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
+import { IScriptable } from '../../game/iscriptable';
 import { IBallCreationPosition, Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
@@ -31,6 +32,7 @@ import { Ball } from '../ball/ball';
 import { Meshes } from '../item-data';
 import { FLT_MAX } from '../mesh';
 import { Texture } from '../texture';
+import { KickerApi } from './kicker-api';
 import { KickerData } from './kicker-data';
 import { KickerHit } from './kicker-hit';
 import { KickerMeshGenerator } from './kicker-mesh-generator';
@@ -40,7 +42,7 @@ import { KickerMeshGenerator } from './kicker-mesh-generator';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/kicker.cpp
  */
-export class Kicker extends EventEmitter implements IRenderable, IHittable, IBallCreationPosition {
+export class Kicker extends EventEmitter implements IRenderable, IHittable, IBallCreationPosition, IScriptable<KickerApi> {
 
 	public static TypeKickerInvisible = 0;
 	public static TypeKickerHole = 1;
@@ -54,6 +56,7 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 	private readonly meshGenerator: KickerMeshGenerator;
 	private fireEvents?: FireEvents;
 	private hit?: KickerHit;
+	private api?: KickerApi;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Kicker> {
 		const data = await KickerData.fromStorage(storage, itemName);
@@ -65,14 +68,6 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 		this.data = data;
 		this.meshGenerator = new KickerMeshGenerator(data);
 	}
-
-	//region Public API
-
-	public kick(table: Table, player: Player, angle: number, speed: number, inclination: number = 0): void {
-		this.hit!.kickXyz(table, player, angle, speed, inclination);
-	}
-
-	//endregion
 
 	public getName() {
 		return this.data.getName();
@@ -104,6 +99,11 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 
 		this.fireEvents = new FireEvents(this);
 		this.hit = new KickerHit(this.data, this.fireEvents, table, radius, height); // height of kicker hit cylinder
+		this.api = new KickerApi(this.data, this.hit, this.fireEvents, this, player, table);
+	}
+
+	public getApi(): KickerApi {
+		return this.api!;
 	}
 
 	public getHitShapes(): Array<HitObject<FireEvents>> {

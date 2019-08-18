@@ -83,7 +83,7 @@ export class Player extends EventEmitter {
 	private meshAsPlayfield: boolean = false;
 	private hitOcTreeDynamic: HitKD = new HitKD();
 	private hitOcTree: HitQuadtree = new HitQuadtree();
-	private pactiveball?: Ball;
+	public pactiveball?: Ball;
 	public pactiveballBC?: Ball;
 	private pactiveballDebug?: Ball;
 	public swapBallCcollisionHandling: boolean = false;
@@ -471,46 +471,46 @@ export class Player extends EventEmitter {
 		return ball;
 	}
 
-	public destroyBall(pball: Ball) {
-		if (!pball) {
+	public destroyBall(ball: Ball) {
+		if (!ball) {
 			return;
 		}
 
-		let activeball: boolean;
-		if (this.pactiveballBC === pball) {
-			activeball = true;
+		let activeBall: boolean;
+		if (this.pactiveballBC === ball) {
+			activeBall = true;
 			this.pactiveball = undefined;
 		} else {
-			activeball = false;
+			activeBall = false;
 		}
 
-		let debugball: boolean;
-		if (this.pactiveballDebug === pball) {
-			debugball = true;
+		let debugBall: boolean;
+		if (this.pactiveballDebug === ball) {
+			debugBall = true;
 			this.pactiveballDebug = undefined;
 		} else {
-			debugball = false;
+			debugBall = false;
 		}
 
-		if (this.pactiveballBC === pball) {
+		if (this.pactiveballBC === ball) {
 			this.pactiveballBC = undefined;
 		}
 
-		this.balls.splice(this.balls.indexOf(pball), 1);
-		this.movers.splice(this.movers.indexOf(pball.getMover()), 1);
-		this.hitObjectsDynamic.splice(this.hitObjectsDynamic.indexOf(pball.hit), 1);
+		this.balls.splice(this.balls.indexOf(ball), 1);
+		this.movers.splice(this.movers.indexOf(ball.getMover()), 1);
+		this.hitObjectsDynamic.splice(this.hitObjectsDynamic.indexOf(ball.hit), 1);
 		this.hitOcTreeDynamic.fillFromVector(this.hitObjectsDynamic);
 
 		//m_vballDelete.push_back(pball);
 
-		if (debugball && this.balls.length > 0) {
+		if (debugBall && this.balls.length > 0) {
 			this.pactiveballDebug = this.balls[0];
 		}
-		if (activeball && this.balls.length > 0) {
+		if (activeBall && this.balls.length > 0) {
 			this.pactiveball = this.balls[0];
 		}
 
-		this.emit('ballDestroyed', pball.getName());
+		this.emit('ballDestroyed', ball.getName());
 	}
 
 	// public setGravity(slopeDeg: number, strength: number): void {
