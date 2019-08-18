@@ -18,11 +18,17 @@
  */
 
 import { Storage } from '../..';
+import { Table } from '../..';
+import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
+import { Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
+import { FireEvents } from '../../physics/fire-events';
+import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
-import { Table } from '../table/table';
 import { TriggerData } from './trigger-data';
+import { TriggerHitCircle } from './trigger-hit-circle';
+import { TriggerHitGenerator } from './trigger-hit-generator';
 import { TriggerMeshGenerator } from './trigger-mesh-generator';
 
 /**
@@ -30,7 +36,7 @@ import { TriggerMeshGenerator } from './trigger-mesh-generator';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/trigger.cpp
  */
-export class Trigger implements IRenderable {
+export class Trigger implements IRenderable, IHittable {
 
 	public static ShapeTriggerNone = 0;
 	public static ShapeTriggerWireA = 1;
@@ -42,6 +48,10 @@ export class Trigger implements IRenderable {
 
 	private readonly data: TriggerData;
 	private readonly meshGenerator: TriggerMeshGenerator;
+	private readonly hitGenerator: TriggerHitGenerator;
+
+	private fireEvents?: FireEvents;
+	private hits!: HitObject[];
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Trigger> {
 		const data = await TriggerData.fromStorage(storage, itemName);
@@ -51,6 +61,7 @@ export class Trigger implements IRenderable {
 	private constructor(data: TriggerData) {
 		this.data = data;
 		this.meshGenerator = new TriggerMeshGenerator(data);
+		this.hitGenerator = new TriggerHitGenerator(data);
 	}
 
 	public getName() {
@@ -58,7 +69,11 @@ export class Trigger implements IRenderable {
 	}
 
 	public isVisible(): boolean {
-		return this.data.fVisible && this.data.shape !== Trigger.ShapeTriggerNone;
+		return this.data.isVisible && this.data.shape !== Trigger.ShapeTriggerNone;
+	}
+
+	public isCollidable(): boolean {
+		return true;
 	}
 
 	public getMeshes(table: Table): Meshes {
@@ -68,5 +83,19 @@ export class Trigger implements IRenderable {
 				material: table.getMaterial(this.data.szMaterial),
 			},
 		};
+	}
+
+	public setupPlayer(player: Player, table: Table): void {
+		this.fireEvents = new FireEvents(this);
+		if (this.data.shape === Trigger.ShapeTriggerStar || this.data.shape === Trigger.ShapeTriggerButton) {
+			this.hits = [ new TriggerHitCircle(this.data, this.fireEvents, table) ];
+
+		} else {
+			this.hits = this.hitGenerator.generateHitObjects(this.fireEvents, table);
+		}
+	}
+
+	public getHitShapes(): HitObject[] {
+		return this.hits;
 	}
 }
