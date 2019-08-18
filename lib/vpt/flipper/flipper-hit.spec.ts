@@ -88,10 +88,10 @@ describe('The VPinball flipper collision', () => {
 		player.updatePhysics(2000);
 
 		// assert it's on flipper's bottom
-		expect(ball.getState().pos.x).to.be.above(394);
-		expect(ball.getState().pos.x).to.be.below(400);
-		expect(ball.getState().pos.y).to.be.above(1648);
-		expect(ball.getState().pos.y).to.be.below(1650);
+		expect(ball.getState().pos.x).to.be.above(393);
+		expect(ball.getState().pos.x).to.be.below(401);
+		expect(ball.getState().pos.y).to.be.above(1647);
+		expect(ball.getState().pos.y).to.be.below(1651);
 	});
 
 	it('should move the ball up', () => {
