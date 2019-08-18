@@ -253,7 +253,7 @@ export function permuteVertices<T>(permutation: number[], vert: T[], tri: ProgMe
 	}
 }
 
-export function reMapIndices(numVertices: number, triDatas: ProgMeshTriData[], newTri: ProgMeshTriData[], map: number[]) {
+export function remapIndices(numVertices: number, triDatas: ProgMeshTriData[], newTri: ProgMeshTriData[], map: number[]) {
 	for (const tri of triDatas) {
 		const t = new ProgMeshTriData([
 			mapVertex(tri.v[0], numVertices, map),
