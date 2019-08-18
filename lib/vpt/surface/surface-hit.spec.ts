@@ -48,7 +48,7 @@ describe('The VPinball surface collision', () => {
 
 		// create ball
 		const ball = player.createBall(kicker);
-		kicker.kick(table, player, 90, 10);
+		kicker.getApi().Kick(90, 10);
 
 		// let it roll right some
 		player.updatePhysics(0);
