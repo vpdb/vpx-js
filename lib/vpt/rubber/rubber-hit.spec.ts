@@ -48,7 +48,7 @@ describe('The VPinball rubber collision', () => {
 
 		// create ball
 		const ball = player.createBall(kicker);
-		kicker.kick(table, player, -45, -5);
+		kicker.getApi().Kick(-45, -5);
 
 		// let it roll down some
 		player.updatePhysics(0);

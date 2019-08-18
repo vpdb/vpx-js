@@ -69,7 +69,7 @@ describe('The VPinball primitive collision', () => {
 
 		// create ball
 		const ball = player.createBall(kicker);
-		kicker.kick(table, player, -45, 4.5);
+		kicker.getApi().Kick(-45, 4.5);
 
 		// assert initial position
 		expect(ball.getState().pos.x).to.equal(600);

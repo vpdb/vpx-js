@@ -108,11 +108,11 @@ export class KickerApi {
 		return this.player.createBall(this.ballCreator, radius, mass);
 	}
 
-	public CreateSizedBall(radius: number, mass: number): Ball {
-		return this.player.createBall(this.ballCreator, radius, mass);
+	public CreateSizedBall(radius: number): Ball {
+		return this.player.createBall(this.ballCreator, radius);
 	}
 
-	public CreateBall(radius: number): Ball {
+	public CreateBall(): Ball {
 		return this.player.createBall(this.ballCreator);
 	}
 
@@ -136,7 +136,7 @@ export class KickerApi {
 		this.hit.kickXyz(this.table, this.player, angle, speed, inclination, new Vertex3D(0, 0, heightZ));
 	}
 
-	public Kick(angle: number, speed: number, inclination: number): void {
+	public Kick(angle: number, speed: number, inclination: number = 0): void {
 		this.hit.kickXyz(this.table, this.player, angle, speed, inclination, new Vertex3D(0, 0, 0));
 	}
 
