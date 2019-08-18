@@ -63,10 +63,10 @@ export class PrimitiveHitGenerator {
 		// RecalculateMatrices();
 		// TransformVertices(); //!! could also only do this for the optional reduced variant!
 
-		const reducedVertices = Math.max(
+		const reducedVertices = Math.floor(Math.max(
 			Math.pow(mesh.vertices.length, clamp(1 - this.data.collisionReductionFactor, 0, 1) * 0.25 + 0.75),
 			420, // 420 = magic
-		);
+		));
 
 		if (reducedVertices < mesh.vertices.length) {
 			const progVertices: ProgMeshFloat3[] = [];
