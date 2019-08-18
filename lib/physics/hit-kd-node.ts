@@ -24,7 +24,6 @@ import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { HitKD } from './hit-kd';
-import { HitObject } from './hit-object';
 
 export class HitKDNode {
 
@@ -90,51 +89,6 @@ export class HitKDNode {
 		}
 		return coll;
 	}
-
-	// public hitTestXRay(ball: Ball, vhoHit: HitObject[], coll: CollisionEvent, player: Player): void {
-	// 	const orgItems = this.items & 0x3FFFFFFF;
-	// 	const axis = this.items >> 30;
-	//
-	// 	for (let i = this.start; i < this.start + orgItems; i++) {
-	// 		const pho = this.hitOct.getItemAt(i);
-	// 		if ((ball.hit !== pho) && pho.hitBBox.intersectSphere(ball.state.pos, ball.hit.rcHitRadiusSqr)) {
-	// 			const newTime = pho.hitTest(ball, coll.hitTime, coll, player);
-	// 			if (newTime >= 0) {
-	// 				vhoHit.push(pho);
-	// 			}
-	// 		}
-	// 	}
-	//
-	// 	if (this.children && this.children.length) {// not a leaf
-	// 		if (axis === 0) {
-	// 			const vCenter = (this.rectBounds.left + this.rectBounds.right) * 0.5;
-	// 			if (ball.hit.hitBBox.left <= vCenter) {
-	// 				this.children[0].hitTestXRay(ball, vhoHit, coll, player);
-	// 			}
-	// 			if (ball.hit.hitBBox.right >= vCenter) {
-	// 				this.children[1].hitTestXRay(ball, vhoHit, coll, player);
-	// 			}
-	//
-	// 		} else if (axis === 1) {
-	// 			const vCenter = (this.rectBounds.top + this.rectBounds.bottom) * 0.5;
-	// 			if (ball.hit.hitBBox.top <= vCenter) {
-	// 				this.children[0].hitTestXRay(ball, vhoHit, coll, player);
-	// 			}
-	// 			if (ball.hit.hitBBox.bottom >= vCenter) {
-	// 				this.children[1].hitTestXRay(ball, vhoHit, coll, player);
-	// 			}
-	//
-	// 		} else {
-	// 			const vCenter = (this.rectBounds.zlow + this.rectBounds.zhigh) * 0.5;
-	// 			if (ball.hit.hitBBox.zlow <= vCenter) {
-	// 				this.children[0].hitTestXRay(ball, vhoHit, coll, player);
-	// 			}
-	// 			if (ball.hit.hitBBox.zhigh >= vCenter) {
-	// 				this.children[1].hitTestXRay(ball, vhoHit, coll, player);
-	// 			}
-	// 		}
-	// 	}
-	// }
 
 	public createNextLevel(level: number, levelEmpty: number): void {
 		const orgItems = (this.items & 0x3FFFFFFF);
@@ -336,4 +290,50 @@ export class HitKDNode {
 		this.children[0].createNextLevel(level + 1, levelEmpty);
 		this.children[1].createNextLevel(level + 1, levelEmpty);
 	}
+
+	// public hitTestXRay(ball: Ball, vhoHit: HitObject[], coll: CollisionEvent, player: Player): void {
+	// 	const orgItems = this.items & 0x3FFFFFFF;
+	// 	const axis = this.items >> 30;
+	//
+	// 	for (let i = this.start; i < this.start + orgItems; i++) {
+	// 		const pho = this.hitOct.getItemAt(i);
+	// 		if ((ball.hit !== pho) && pho.hitBBox.intersectSphere(ball.state.pos, ball.hit.rcHitRadiusSqr)) {
+	// 			const newTime = pho.hitTest(ball, coll.hitTime, coll, player);
+	// 			if (newTime >= 0) {
+	// 				vhoHit.push(pho);
+	// 			}
+	// 		}
+	// 	}
+	//
+	// 	if (this.children && this.children.length) {// not a leaf
+	// 		if (axis === 0) {
+	// 			const vCenter = (this.rectBounds.left + this.rectBounds.right) * 0.5;
+	// 			if (ball.hit.hitBBox.left <= vCenter) {
+	// 				this.children[0].hitTestXRay(ball, vhoHit, coll, player);
+	// 			}
+	// 			if (ball.hit.hitBBox.right >= vCenter) {
+	// 				this.children[1].hitTestXRay(ball, vhoHit, coll, player);
+	// 			}
+	//
+	// 		} else if (axis === 1) {
+	// 			const vCenter = (this.rectBounds.top + this.rectBounds.bottom) * 0.5;
+	// 			if (ball.hit.hitBBox.top <= vCenter) {
+	// 				this.children[0].hitTestXRay(ball, vhoHit, coll, player);
+	// 			}
+	// 			if (ball.hit.hitBBox.bottom >= vCenter) {
+	// 				this.children[1].hitTestXRay(ball, vhoHit, coll, player);
+	// 			}
+	//
+	// 		} else {
+	// 			const vCenter = (this.rectBounds.zlow + this.rectBounds.zhigh) * 0.5;
+	// 			if (ball.hit.hitBBox.zlow <= vCenter) {
+	// 				this.children[0].hitTestXRay(ball, vhoHit, coll, player);
+	// 			}
+	// 			if (ball.hit.hitBBox.zhigh >= vCenter) {
+	// 				this.children[1].hitTestXRay(ball, vhoHit, coll, player);
+	// 			}
+	// 		}
+	// 	}
+	// }
+
 }

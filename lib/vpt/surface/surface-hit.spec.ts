@@ -29,40 +29,59 @@ import sinonChai = require('sinon-chai');
 chai.use(sinonChai);
 const three = new ThreeHelper();
 
-describe('The VPinball rubber collision', () => {
+describe('The VPinball surface collision', () => {
 
 	let table: Table;
 	let player: Player;
 
 	before(async () => {
-		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-rubber.vpx')));
+		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-surface.vpx')));
 	});
 
 	beforeEach(() => {
 		player = new Player(table);
 	});
 
-	it('should make the ball bounce off', () => {
+	it('should make the ball bounce off the sides', () => {
 
 		const kicker = table.kickers.BallRelease;
 
 		// create ball
 		const ball = player.createBall(kicker);
-		kicker.kick(table, player, -45, -5);
+		kicker.kick(table, player, 90, 10);
 
-		// let it roll down some
+		// let it roll right some
 		player.updatePhysics(0);
-		player.updatePhysics(700);
+		player.updatePhysics(170);
 
 		// assert it's moving down right
-		expect(ball.getState().pos.x).to.be.above(400);
-		expect(ball.getState().pos.y).to.be.above(400);
+		expect(ball.getState().pos.x).to.be.above(300);
 
 		// let it hit and bounce back
-		player.updatePhysics(1200);
+		player.updatePhysics(200);
 
 		// assert it bounced back
-		expect(ball.getState().pos.x).to.be.below(400);
-		expect(ball.getState().pos.y).to.be.below(400);
+		expect(ball.getState().pos.x).to.be.below(300);
+	});
+
+	it('should make the ball collide on top', () => {
+
+		const kicker = table.kickers.BallRelease;
+
+		// create ball
+		const ball = createBall(player, 500, 500, 200, 0, 5);
+
+		// let it roll right some
+		player.updatePhysics(0);
+		player.updatePhysics(300);
+
+		// assert the ball is still on top of the surface
+		expect(ball.getState().pos.z).to.be.above(75);
+
+		// let the ball fall down
+		player.updatePhysics(750);
+
+		// assert it bounced back
+		expect(ball.getState().pos.z).to.be.below(26);
 	});
 });
