@@ -46,9 +46,9 @@ export class PrimitiveMeshGenerator {
 		const mesh = new Mesh(`primitive-${this.data.getName()}`);
 
 		// this recalculates the Original Vertices -> should be only called, when sides are altered.
-		const outerRadius = -0.5 / (Math.cos(Math.PI / this.data.Sides));
-		const addAngle = 2.0 * Math.PI / this.data.Sides;
-		const offsAngle = Math.PI / this.data.Sides;
+		const outerRadius = -0.5 / (Math.cos(Math.PI / this.data.sides));
+		const addAngle = 2.0 * Math.PI / this.data.sides;
+		const offsAngle = Math.PI / this.data.sides;
 		let minX = FLT_MAX;
 		let minY = FLT_MAX;
 		let maxX = -FLT_MAX;
@@ -63,11 +63,11 @@ export class PrimitiveMeshGenerator {
 		middle.z = 0.5;
 
 		middle = new Vertex3DNoTex2();
-		mesh.vertices[this.data.Sides + 1] = middle;
+		mesh.vertices[this.data.sides + 1] = middle;
 		middle.x = 0.0;
 		middle.y = 0.0;
 		middle.z = -0.5;
-		for (let i = 0; i < this.data.Sides; ++i) {
+		for (let i = 0; i < this.data.sides; ++i) {
 
 			// calculate Top
 			const topVert = new Vertex3DNoTex2(); // top point at side
@@ -80,14 +80,14 @@ export class PrimitiveMeshGenerator {
 
 			// calculate bottom
 			const bottomVert = new Vertex3DNoTex2(); // bottompoint at side
-			mesh.vertices[i + 1 + this.data.Sides + 1] = bottomVert;
+			mesh.vertices[i + 1 + this.data.sides + 1] = bottomVert;
 			bottomVert.x = topVert.x;
 			bottomVert.y = topVert.y;
 			bottomVert.z = -0.5;
 
 			// calculate sides
-			mesh.vertices[this.data.Sides * 2 + 2 + i] = topVert.clone(); // sideTopVert
-			mesh.vertices[this.data.Sides * 3 + 2 + i] = bottomVert.clone(); // sideBottomVert
+			mesh.vertices[this.data.sides * 2 + 2 + i] = topVert.clone(); // sideTopVert
+			mesh.vertices[this.data.sides * 3 + 2 + i] = bottomVert.clone(); // sideBottomVert
 
 			// calculate bounds for X and Y
 			if (topVert.x < minX) {
@@ -108,24 +108,24 @@ export class PrimitiveMeshGenerator {
 		middle = mesh.vertices[0]; // middle point top
 		middle.tu = 0.25;   // /4
 		middle.tv = 0.25;   // /4
-		middle = mesh.vertices[this.data.Sides + 1]; // middle point bottom
+		middle = mesh.vertices[this.data.sides + 1]; // middle point bottom
 		middle.tu = 0.25 * 3.0; // /4*3
 		middle.tv = 0.25;   // /4
 		const invx = 0.5 / (maxX - minX);
 		const invy = 0.5 / (maxY - minY);
-		const invs = 1.0 / this.data.Sides;
+		const invs = 1.0 / this.data.sides;
 
-		for (let i = 0; i < this.data.Sides; i++) {
+		for (let i = 0; i < this.data.sides; i++) {
 			const topVert = mesh.vertices[i + 1]; // top point at side
 			topVert.tu = (topVert.x - minX) * invx;
 			topVert.tv = (topVert.y - minY) * invy;
 
-			const bottomVert = mesh.vertices[i + 1 + this.data.Sides + 1]; // bottompoint at side
+			const bottomVert = mesh.vertices[i + 1 + this.data.sides + 1]; // bottompoint at side
 			bottomVert.tu = topVert.tu + 0.5;
 			bottomVert.tv = topVert.tv;
 
-			const sideTopVert = mesh.vertices[this.data.Sides * 2 + 2 + i];
-			const sideBottomVert = mesh.vertices[this.data.Sides * 3 + 2 + i];
+			const sideTopVert = mesh.vertices[this.data.sides * 2 + 2 + i];
+			const sideBottomVert = mesh.vertices[this.data.sides * 3 + 2 + i];
 
 			sideTopVert.tu = i * invs;
 			sideTopVert.tv = 0.5;
@@ -144,13 +144,13 @@ export class PrimitiveMeshGenerator {
 
 		// 2 restore indices
 		//   check if anti culling is enabled:
-		if (this.data.DrawTexturesInside) {
+		if (this.data.drawTexturesInside) {
 			mesh.indices = [];
 			// yes: draw everything twice
 			// restore indices
-			for (let i = 0; i < this.data.Sides; i++) {
+			for (let i = 0; i < this.data.sides; i++) {
 
-				const tmp = (i === this.data.Sides - 1) ? 1 : (i + 2); // wrapping around
+				const tmp = (i === this.data.sides - 1) ? 1 : (i + 2); // wrapping around
 				// top
 				mesh.indices[i * 6] = 0;
 				mesh.indices[i * 6 + 1] = i + 1;
@@ -161,35 +161,35 @@ export class PrimitiveMeshGenerator {
 
 				const tmp2 = tmp + 1;
 				// bottom
-				mesh.indices[6 * (i + this.data.Sides)] = this.data.Sides + 1;
-				mesh.indices[6 * (i + this.data.Sides) + 1] = this.data.Sides + tmp2;
-				mesh.indices[6 * (i + this.data.Sides) + 2] = this.data.Sides + 2 + i;
-				mesh.indices[6 * (i + this.data.Sides) + 3] = this.data.Sides + 1;
-				mesh.indices[6 * (i + this.data.Sides) + 4] = this.data.Sides + 2 + i;
-				mesh.indices[6 * (i + this.data.Sides) + 5] = this.data.Sides + tmp2;
+				mesh.indices[6 * (i + this.data.sides)] = this.data.sides + 1;
+				mesh.indices[6 * (i + this.data.sides) + 1] = this.data.sides + tmp2;
+				mesh.indices[6 * (i + this.data.sides) + 2] = this.data.sides + 2 + i;
+				mesh.indices[6 * (i + this.data.sides) + 3] = this.data.sides + 1;
+				mesh.indices[6 * (i + this.data.sides) + 4] = this.data.sides + 2 + i;
+				mesh.indices[6 * (i + this.data.sides) + 5] = this.data.sides + tmp2;
 
 				// sides
-				mesh.indices[12 * (i + this.data.Sides)] = this.data.Sides * 2 + tmp2;
-				mesh.indices[12 * (i + this.data.Sides) + 1] = this.data.Sides * 2 + 2 + i;
-				mesh.indices[12 * (i + this.data.Sides) + 2] = this.data.Sides * 3 + 2 + i;
-				mesh.indices[12 * (i + this.data.Sides) + 3] = this.data.Sides * 2 + tmp2;
-				mesh.indices[12 * (i + this.data.Sides) + 4] = this.data.Sides * 3 + 2 + i;
-				mesh.indices[12 * (i + this.data.Sides) + 5] = this.data.Sides * 3 + tmp2;
-				mesh.indices[12 * (i + this.data.Sides) + 6] = this.data.Sides * 2 + tmp2;
-				mesh.indices[12 * (i + this.data.Sides) + 7] = this.data.Sides * 3 + 2 + i;
-				mesh.indices[12 * (i + this.data.Sides) + 8] = this.data.Sides * 2 + 2 + i;
-				mesh.indices[12 * (i + this.data.Sides) + 9] = this.data.Sides * 2 + tmp2;
-				mesh.indices[12 * (i + this.data.Sides) + 10] = this.data.Sides * 3 + tmp2;
-				mesh.indices[12 * (i + this.data.Sides) + 11] = this.data.Sides * 3 + 2 + i;
+				mesh.indices[12 * (i + this.data.sides)] = this.data.sides * 2 + tmp2;
+				mesh.indices[12 * (i + this.data.sides) + 1] = this.data.sides * 2 + 2 + i;
+				mesh.indices[12 * (i + this.data.sides) + 2] = this.data.sides * 3 + 2 + i;
+				mesh.indices[12 * (i + this.data.sides) + 3] = this.data.sides * 2 + tmp2;
+				mesh.indices[12 * (i + this.data.sides) + 4] = this.data.sides * 3 + 2 + i;
+				mesh.indices[12 * (i + this.data.sides) + 5] = this.data.sides * 3 + tmp2;
+				mesh.indices[12 * (i + this.data.sides) + 6] = this.data.sides * 2 + tmp2;
+				mesh.indices[12 * (i + this.data.sides) + 7] = this.data.sides * 3 + 2 + i;
+				mesh.indices[12 * (i + this.data.sides) + 8] = this.data.sides * 2 + 2 + i;
+				mesh.indices[12 * (i + this.data.sides) + 9] = this.data.sides * 2 + tmp2;
+				mesh.indices[12 * (i + this.data.sides) + 10] = this.data.sides * 3 + tmp2;
+				mesh.indices[12 * (i + this.data.sides) + 11] = this.data.sides * 3 + 2 + i;
 			}
 
 		} else {
 			// no: only out-facing polygons
 			// restore indices
 			mesh.indices = [];
-			for (let i = 0; i < this.data.Sides; i++) {
+			for (let i = 0; i < this.data.sides; i++) {
 
-				const tmp = (i === this.data.Sides - 1) ? 1 : (i + 2); // wrapping around
+				const tmp = (i === this.data.sides - 1) ? 1 : (i + 2); // wrapping around
 				// top
 				mesh.indices[i * 3] = 0;
 				mesh.indices[i * 3 + 2] = i + 1;
@@ -199,19 +199,19 @@ export class PrimitiveMeshGenerator {
 
 				const tmp2 = tmp + 1;
 				// bottom
-				mesh.indices[3 * (i + this.data.Sides)] = this.data.Sides + 1;
-				mesh.indices[3 * (i + this.data.Sides) + 1] = this.data.Sides + 2 + i;
-				mesh.indices[3 * (i + this.data.Sides) + 2] = this.data.Sides + tmp2;
+				mesh.indices[3 * (i + this.data.sides)] = this.data.sides + 1;
+				mesh.indices[3 * (i + this.data.sides) + 1] = this.data.sides + 2 + i;
+				mesh.indices[3 * (i + this.data.sides) + 2] = this.data.sides + tmp2;
 
 				//SetNormal(mesh.vertices[0], &mesh.indices[3*(i+this.data.Sides)], 3); // see below
 
 				// sides
-				mesh.indices[6 * (i + this.data.Sides)] = this.data.Sides * 2 + tmp2;
-				mesh.indices[6 * (i + this.data.Sides) + 1] = this.data.Sides * 3 + 2 + i;
-				mesh.indices[6 * (i + this.data.Sides) + 2] = this.data.Sides * 2 + 2 + i;
-				mesh.indices[6 * (i + this.data.Sides) + 3] = this.data.Sides * 2 + tmp2;
-				mesh.indices[6 * (i + this.data.Sides) + 4] = this.data.Sides * 3 + tmp2;
-				mesh.indices[6 * (i + this.data.Sides) + 5] = this.data.Sides * 3 + 2 + i;
+				mesh.indices[6 * (i + this.data.sides)] = this.data.sides * 2 + tmp2;
+				mesh.indices[6 * (i + this.data.sides) + 1] = this.data.sides * 3 + 2 + i;
+				mesh.indices[6 * (i + this.data.sides) + 2] = this.data.sides * 2 + 2 + i;
+				mesh.indices[6 * (i + this.data.sides) + 3] = this.data.sides * 2 + tmp2;
+				mesh.indices[6 * (i + this.data.sides) + 4] = this.data.sides * 3 + tmp2;
+				mesh.indices[6 * (i + this.data.sides) + 5] = this.data.sides * 3 + 2 + i;
 			}
 		}
 
@@ -225,29 +225,29 @@ export class PrimitiveMeshGenerator {
 
 		// scale matrix
 		const scaleMatrix = new Matrix3D();
-		scaleMatrix.setScaling(this.data.vSize.x, this.data.vSize.y, this.data.vSize.z);
+		scaleMatrix.setScaling(this.data.size.x, this.data.size.y, this.data.size.z);
 
 		// translation matrix
 		const transMatrix = new Matrix3D();
-		transMatrix.setTranslation(this.data.vPosition.x, this.data.vPosition.y, this.data.vPosition.z);
+		transMatrix.setTranslation(this.data.position.x, this.data.position.y, this.data.position.z);
 
 		// translation + rotation matrix
 		const rotTransMatrix = new Matrix3D();
-		rotTransMatrix.setTranslation(this.data.aRotAndTra[3], this.data.aRotAndTra[4], this.data.aRotAndTra[5]);
+		rotTransMatrix.setTranslation(this.data.rotAndTra[3], this.data.rotAndTra[4], this.data.rotAndTra[5]);
 
 		const tempMatrix = new Matrix3D();
-		tempMatrix.rotateZMatrix(degToRad(this.data.aRotAndTra[2]));
+		tempMatrix.rotateZMatrix(degToRad(this.data.rotAndTra[2]));
 		rotTransMatrix.multiply(tempMatrix);
-		tempMatrix.rotateYMatrix(degToRad(this.data.aRotAndTra[1]));
+		tempMatrix.rotateYMatrix(degToRad(this.data.rotAndTra[1]));
 		rotTransMatrix.multiply(tempMatrix);
-		tempMatrix.rotateXMatrix(degToRad(this.data.aRotAndTra[0]));
+		tempMatrix.rotateXMatrix(degToRad(this.data.rotAndTra[0]));
 		rotTransMatrix.multiply(tempMatrix);
 
-		tempMatrix.rotateZMatrix(degToRad(this.data.aRotAndTra[8]));
+		tempMatrix.rotateZMatrix(degToRad(this.data.rotAndTra[8]));
 		rotTransMatrix.multiply(tempMatrix);
-		tempMatrix.rotateYMatrix(degToRad(this.data.aRotAndTra[7]));
+		tempMatrix.rotateYMatrix(degToRad(this.data.rotAndTra[7]));
 		rotTransMatrix.multiply(tempMatrix);
-		tempMatrix.rotateXMatrix(degToRad(this.data.aRotAndTra[6]));
+		tempMatrix.rotateXMatrix(degToRad(this.data.rotAndTra[6]));
 		rotTransMatrix.multiply(tempMatrix);
 
 		const fullMatrix = scaleMatrix.clone();

@@ -26,7 +26,7 @@ import {
 	ProgMeshFloat3,
 	ProgMeshTriData,
 	progressiveMesh,
-	reMapIndices,
+	remapIndices,
 } from '../../math/progressive-mesh';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionType } from '../../physics/collision-type';
@@ -35,6 +35,7 @@ import { HitObject } from '../../physics/hit-object';
 import { HitPoint } from '../../physics/hit-point';
 import { HitTriangle } from '../../physics/hit-triangle';
 import { PrimitiveData } from './primitive-data';
+import { Mesh } from '../mesh';
 
 export class PrimitiveHitGenerator {
 
@@ -44,7 +45,7 @@ export class PrimitiveHitGenerator {
 		this.data = data;
 	}
 
-	public generateHitObjects(fireEvents: FireEvents, table: Table): HitObject[] {
+	public generateHitObjects(mesh: Mesh, fireEvents: FireEvents, table: Table): HitObject[] {
 
 		const hitObjects: HitObject[] = [];
 
@@ -63,26 +64,26 @@ export class PrimitiveHitGenerator {
 		// TransformVertices(); //!! could also only do this for the optional reduced variant!
 
 		const reducedVertices = Math.max(
-			Math.pow(this.data.mesh.vertices.length, clamp(1 - this.data.collisionReductionFactor, 0, 1) * 0.25 + 0.75),
-			420, //!! 420 = magic
+			Math.pow(mesh.vertices.length, clamp(1 - this.data.collisionReductionFactor, 0, 1) * 0.25 + 0.75),
+			420, // 420 = magic
 		);
 
-		if (reducedVertices < this.data.mesh.vertices.length) {
+		if (reducedVertices < mesh.vertices.length) {
 			const progVertices: ProgMeshFloat3[] = [];
-			for (let i = 0; i < this.data.mesh.vertices.length; ++i) { //!! opt. use original data directly!
+			for (let i = 0; i < mesh.vertices.length; ++i) { //!! opt. use original data directly!
 				progVertices[i] = new ProgMeshFloat3(
-					this.data.mesh.vertices[i].x,
-					this.data.mesh.vertices[i].y,
-					this.data.mesh.vertices[i].z,
+					mesh.vertices[i].x,
+					mesh.vertices[i].y,
+					mesh.vertices[i].z,
 				);
 			}
 			const progIndices: ProgMeshTriData[] = [];
 			let i2 = 0;
-			for (let i = 0; i < this.data.mesh.indices.length; i += 3) {
+			for (let i = 0; i < mesh.indices.length; i += 3) {
 				const t = new ProgMeshTriData([
-					this.data.mesh.indices[i],
-					this.data.mesh.indices[i + 1],
-					this.data.mesh.indices[i + 2],
+					mesh.indices[i],
+					mesh.indices[i + 1],
+					mesh.indices[i + 2],
 				]);
 				if (t.v[0] !== t.v[1] && t.v[1] !== t.v[2] && t.v[2] !== t.v[0]) {
 					progIndices[i2++] = t;
@@ -92,7 +93,7 @@ export class PrimitiveHitGenerator {
 			permuteVertices(progPerm, progVertices, progIndices);
 
 			const progNewIndices: ProgMeshTriData[] = [];
-			reMapIndices(reducedVertices, progIndices, progNewIndices, progMap);
+			remapIndices(reducedVertices, progIndices, progNewIndices, progMap);
 
 			const addedEdges = new EdgeSet();
 
@@ -125,16 +126,16 @@ export class PrimitiveHitGenerator {
 			const addedEdges = new EdgeSet();
 
 			// add collision triangles and edges
-			for (let i = 0; i < this.data.mesh.indices.length; i += 3) {
-				const i0 = this.data.mesh.indices[i];
-				const i1 = this.data.mesh.indices[i + 1];
-				const i2 = this.data.mesh.indices[i + 2];
+			for (let i = 0; i < mesh.indices.length; i += 3) {
+				const i0 = mesh.indices[i];
+				const i1 = mesh.indices[i + 1];
+				const i2 = mesh.indices[i + 2];
 
 				// NB: HitTriangle wants CCW vertices, but for rendering we have them in CW order
 				const rgv3D: Vertex3D[] = [
-					this.data.mesh.vertices[i0].getVertex(),
-					this.data.mesh.vertices[i2].getVertex(),
-					this.data.mesh.vertices[i1].getVertex(),
+					mesh.vertices[i0].getVertex(),
+					mesh.vertices[i2].getVertex(),
+					mesh.vertices[i1].getVertex(),
 				];
 
 				hitObjects.push(new HitTriangle(rgv3D));
@@ -145,7 +146,7 @@ export class PrimitiveHitGenerator {
 			}
 
 			// add collision vertices
-			for (const vertex of this.data.mesh.vertices) {
+			for (const vertex of mesh.vertices) {
 				hitObjects.push(new HitPoint(vertex.getVertex()));
 			}
 		}
@@ -156,7 +157,7 @@ export class PrimitiveHitGenerator {
 		const mat = table.getMaterial(this.data.szPhysicsMaterial);
 		for (const obj of hitObjects) {
 			if (!this.data.useAsPlayfield) {
-				if (mat && !this.data.fOverwritePhysics) {
+				if (mat && !this.data.overwritePhysics) {
 					obj.setElasticity(mat.fElasticity, mat.fElasticityFalloff);
 					obj.setFriction(mat.fFriction);
 					obj.setScatter(degToRad(mat.fScatterAngle));
@@ -179,7 +180,7 @@ export class PrimitiveHitGenerator {
 			obj.setType(CollisionType.Primitive);
 			obj.obj = fireEvents;
 			obj.e = true;
-			obj.fe = this.data.fHitEvent;
+			obj.fe = this.data.hitEvent;
 		}
 		return hitObjects;
 	}

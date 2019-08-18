@@ -26,6 +26,7 @@ import { Matrix3D } from '../../math/matrix3d';
 import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
+import { Mesh } from '../mesh';
 import { PrimitiveData } from './primitive-data';
 import { PrimitiveHitGenerator } from './primitive-hit-generator';
 import { PrimitiveMeshGenerator } from './primitive-mesh-generator';
@@ -40,6 +41,7 @@ export class Primitive implements IRenderable, IHittable {
 	private readonly data: PrimitiveData;
 	private readonly meshGenerator: PrimitiveMeshGenerator;
 	private readonly hitGenerator: PrimitiveHitGenerator;
+	private mesh?: Mesh;
 	private hits?: HitObject[];
 	private fireEvents?: FireEvents;
 
@@ -69,7 +71,7 @@ export class Primitive implements IRenderable, IHittable {
 	public getMeshes(table: Table): Meshes {
 		return {
 			primitive: {
-				mesh: this.meshGenerator.getMesh(table).transform(new Matrix3D().toRightHanded()),
+				mesh: this.getMesh(table).clone().transform(new Matrix3D().toRightHanded()),
 				map: table.getTexture(this.data.szImage),
 				normalMap: table.getTexture(this.data.szNormalMap),
 				material: table.getMaterial(this.data.szMaterial),
@@ -77,9 +79,16 @@ export class Primitive implements IRenderable, IHittable {
 		};
 	}
 
+	private getMesh(table: Table): Mesh {
+		if (!this.mesh) {
+			this.mesh = this.meshGenerator.getMesh(table);
+		}
+		return this.mesh;
+	}
+
 	public setupPlayer(player: Player, table: Table): void {
 		this.fireEvents = new FireEvents(this);
-		this.hits = this.hitGenerator.generateHitObjects(this.fireEvents, table);
+		this.hits = this.hitGenerator.generateHitObjects(this.getMesh(table), this.fireEvents, table);
 	}
 
 	public getHitShapes(): HitObject[] {

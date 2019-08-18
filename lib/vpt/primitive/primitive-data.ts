@@ -30,43 +30,59 @@ export class PrimitiveData extends ItemData {
 	public numVertices!: number;
 	public compressedAnimationVertices?: number;
 	public compressedVertices?: number;
-	private wzName!: string;
-	private numIndices!: number;
 	public compressedIndices?: number;
+
+	/**
+	 * The primitive mesh. This is empty if {@link PrimitiveData.use3DMesh}
+	 * is `false`.
+	 *
+	 * Note that contrarily to VP, we don't overwrite this member when
+	 * generating the mesh, so pay attention when accessing this variable, you
+	 * might need to retrieve it from {@link PrimitiveMeshGenerator.calculateBuiltinOriginal}.
+	 */
 	public mesh: Mesh = new Mesh();
 
-	public vPosition!: Vertex3D;
-	public vSize: Vertex3D = new Vertex3D(100, 100, 100);
-	public aRotAndTra: number[] = [ 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	public position!: Vertex3D;
+	public size: Vertex3D = new Vertex3D(100, 100, 100);
+	public rotAndTra: number[] = [ 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
 	public szImage?: string;
 	public szNormalMap?: string;
-	public Sides!: number;
 	public szMaterial?: string;
-	private SideColor: number = 0x969696;
+	public szPhysicsMaterial?: string;
+
+	public sides!: number;
 	public isVisible: boolean = false;
-	private isReflectionEnabled: boolean = true;
-	public DrawTexturesInside: boolean = false;
-	public fHitEvent: boolean = false;
+	public drawTexturesInside: boolean = false;
+	public hitEvent: boolean = false;
 	public threshold!: number;
 	public elasticity!: number;
 	public elasticityFalloff!: number;
 	public friction!: number;
 	public scatter!: number;
-	private edgeFactorUI: number = 0.25;
-	public collisionReductionFactor!: number;
+	public collisionReductionFactor: number = 0;
 	public isCollidable: boolean = true;
 	public isToy: boolean = false;
-	public szPhysicsMaterial?: string;
-	public fOverwritePhysics: boolean = false;
-	private staticRendering: boolean = true;
-	private fDisableLightingTop?: number;
-	private fDisableLightingBelow?: number;
+	public overwritePhysics: boolean = false;
+	/**
+	 * If false, generate the mesh based on {@link PrimitiveData.sides} and ignore whatever
+	 * vertices are stored in the object (there shouldn't be any).
+	 */
 	public use3DMesh: boolean = false;
 	public useAsPlayfield: boolean = false;
-	private fBackfacesEnabled: boolean = false;
-	private fDisplayTexture: boolean = false;
+
+	private wzName!: string;
+	private sideColor: number = 0x969696;
+	private numIndices!: number;
+	private isReflectionEnabled: boolean = true;
+	private edgeFactorUI: number = 0.25;
+	private staticRendering: boolean = true;
+	private disableLightingTop?: number;
+	private disableLightingBelow?: number;
+	private backfacesEnabled: boolean = false;
+	private displayTexture: boolean = false;
 	private meshFileName?: string;
-	private depthBias?: number;
+	private depthBias: number = 0;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<PrimitiveData> {
 		const primitiveItem = new PrimitiveData(itemName);
@@ -85,27 +101,27 @@ export class PrimitiveData extends ItemData {
 
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number, storage: Storage, itemName: string): Promise<number> {
 		switch (tag) {
-			case 'VPOS': this.vPosition = Vertex3D.get(buffer); break;
-			case 'VSIZ': this.vSize = Vertex3D.get(buffer); break;
-			case 'RTV0': this.aRotAndTra[0] = this.getFloat(buffer); break;
-			case 'RTV1': this.aRotAndTra[1] = this.getFloat(buffer); break;
-			case 'RTV2': this.aRotAndTra[2] = this.getFloat(buffer); break;
-			case 'RTV3': this.aRotAndTra[3] = this.getFloat(buffer); break;
-			case 'RTV4': this.aRotAndTra[4] = this.getFloat(buffer); break;
-			case 'RTV5': this.aRotAndTra[5] = this.getFloat(buffer); break;
-			case 'RTV6': this.aRotAndTra[6] = this.getFloat(buffer); break;
-			case 'RTV7': this.aRotAndTra[7] = this.getFloat(buffer); break;
-			case 'RTV8': this.aRotAndTra[8] = this.getFloat(buffer); break;
+			case 'VPOS': this.position = Vertex3D.get(buffer); break;
+			case 'VSIZ': this.size = Vertex3D.get(buffer); break;
+			case 'RTV0': this.rotAndTra[0] = this.getFloat(buffer); break;
+			case 'RTV1': this.rotAndTra[1] = this.getFloat(buffer); break;
+			case 'RTV2': this.rotAndTra[2] = this.getFloat(buffer); break;
+			case 'RTV3': this.rotAndTra[3] = this.getFloat(buffer); break;
+			case 'RTV4': this.rotAndTra[4] = this.getFloat(buffer); break;
+			case 'RTV5': this.rotAndTra[5] = this.getFloat(buffer); break;
+			case 'RTV6': this.rotAndTra[6] = this.getFloat(buffer); break;
+			case 'RTV7': this.rotAndTra[7] = this.getFloat(buffer); break;
+			case 'RTV8': this.rotAndTra[8] = this.getFloat(buffer); break;
 			case 'IMAG': this.szImage = this.getString(buffer, len); break;
 			case 'NRMA': this.szNormalMap = this.getString(buffer, len); break;
-			case 'SIDS': this.Sides = this.getInt(buffer); break;
+			case 'SIDS': this.sides = this.getInt(buffer); break;
 			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
-			case 'SCOL': this.SideColor = this.getInt(buffer); break;
+			case 'SCOL': this.sideColor = this.getInt(buffer); break;
 			case 'TVIS': this.isVisible = this.getBool(buffer); break;
 			case 'REEN': this.isReflectionEnabled = this.getBool(buffer); break;
-			case 'DTXI': this.DrawTexturesInside = this.getBool(buffer); break;
-			case 'HTEV': this.fHitEvent = this.getBool(buffer); break;
+			case 'DTXI': this.drawTexturesInside = this.getBool(buffer); break;
+			case 'HTEV': this.hitEvent = this.getBool(buffer); break;
 			case 'THRS': this.threshold = this.getFloat(buffer); break;
 			case 'ELAS': this.elasticity = this.getFloat(buffer); break;
 			case 'ELFO': this.elasticityFalloff = this.getFloat(buffer); break;
@@ -116,13 +132,13 @@ export class PrimitiveData extends ItemData {
 			case 'CLDR': this.isCollidable = this.getBool(buffer); break; // originally "CLDRP"
 			case 'ISTO': this.isToy = this.getBool(buffer); break;
 			case 'MAPH': this.szPhysicsMaterial = this.getString(buffer, len); break;
-			case 'OVPH': this.fOverwritePhysics = this.getBool(buffer); break;
+			case 'OVPH': this.overwritePhysics = this.getBool(buffer); break;
 			case 'STRE': this.staticRendering = this.getBool(buffer); break;
-			case 'DILI': this.fDisableLightingTop = this.getFloat(buffer); break; // m_d.m_fDisableLightingTop = (tmp == 1) ? 1.f : dequantizeUnsigned<8>(tmp); // backwards compatible hacky loading!
-			case 'DILB': this.fDisableLightingBelow = this.getFloat(buffer); break;
+			case 'DILI': this.disableLightingTop = this.getFloat(buffer); break; // m_d.m_fDisableLightingTop = (tmp == 1) ? 1.f : dequantizeUnsigned<8>(tmp); // backwards compatible hacky loading!
+			case 'DILB': this.disableLightingBelow = this.getFloat(buffer); break;
 			case 'U3DM': this.use3DMesh = this.getBool(buffer); break;
-			case 'EBFC': this.fBackfacesEnabled = this.getBool(buffer); break;
-			case 'DIPT': this.fDisplayTexture = this.getBool(buffer); break;
+			case 'EBFC': this.backfacesEnabled = this.getBool(buffer); break;
+			case 'DIPT': this.displayTexture = this.getBool(buffer); break;
 			case 'M3DN': this.meshFileName = this.getWideString(buffer, len); break;
 			case 'M3VN':
 				this.numVertices = this.getInt(buffer);
