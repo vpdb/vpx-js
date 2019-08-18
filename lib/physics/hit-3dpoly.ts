@@ -31,11 +31,14 @@ export class Hit3DPoly extends HitObject {
 	private readonly rgv: Vertex3D[];
 	private readonly normal: Vertex3D;
 
-	constructor(rgv: Vertex3D[]) {
+	constructor(rgv: Vertex3D[], objType?: CollisionType) {
 		super();
 
 		this.rgv = rgv;
 		this.normal = new Vertex3D();
+		if (objType) {
+			this.objType = objType;
+		}
 
 		// Newell's method for normal computation
 		for (let i = 0; i < this.rgv.length; ++i) {

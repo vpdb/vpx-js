@@ -30,18 +30,17 @@ export class TriggerData extends ItemData {
 	public vCenter!: Vertex2D;
 	public radius: number = 25;
 	public rotation: number = 0;
-	private wireThickness: number = 0;
 	public scaleX: number = 1;
 	public scaleY: number = 1;
 	public szMaterial?: string;
-	private fTimerEnabled: boolean = false;
-	private TimerInterval?: number;
 	public szSurface?: string;
-	private fEnabled: boolean = true;
-	private hitHeight: number = 50;
-	public fVisible: boolean = true;
-	private fReflectionEnabled: boolean = true;
+	public isVisible: boolean = true;
+	public isEnabled: boolean = true;
+	public hitHeight: number = 50;
 	public shape: number = Trigger.ShapeTriggerWireA;
+
+	private wireThickness: number = 0;
+	private isReflectionEnabled: boolean = true;
 	private animSpeed: number = 1;
 	private wzName!: string;
 
@@ -82,10 +81,10 @@ export class TriggerData extends ItemData {
 			case 'SCAY': this.scaleY = this.getFloat(buffer); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
 			case 'SURF': this.szSurface = this.getString(buffer, len); break;
-			case 'EBLD': this.fEnabled = this.getBool(buffer); break;
+			case 'EBLD': this.isEnabled = this.getBool(buffer); break;
 			case 'THOT': this.hitHeight = this.getFloat(buffer); break;
-			case 'VSBL': this.fVisible = this.getBool(buffer); break;
-			case 'REEN': this.fReflectionEnabled = this.getBool(buffer); break;
+			case 'VSBL': this.isVisible = this.getBool(buffer); break;
+			case 'REEN': this.isReflectionEnabled = this.getBool(buffer); break;
 			case 'SHAP': this.shape = this.getInt(buffer); break;
 			case 'ANSP': this.animSpeed = this.getFloat(buffer); break;
 			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
