@@ -22,6 +22,11 @@ import { Table } from '..';
 import { IPlayable } from './iplayable';
 import { Player } from './player';
 
+/**
+ * Animatables are like movables but their position is only updated
+ * once per frame, whereas movables get updated every tick (usually
+ * app 1000fps).
+ */
 export interface IAnimatable<STATE> extends IPlayable {
 
 	getAnimation(): IAnimation;

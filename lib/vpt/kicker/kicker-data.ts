@@ -38,7 +38,7 @@ export class KickerData extends ItemData {
 	public isEnabled: boolean = true;
 	public legacyMode: boolean = false;
 
-	private wzName!: string;
+	public wzName!: string;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<KickerData> {
 		const kickerData = new KickerData(itemName);

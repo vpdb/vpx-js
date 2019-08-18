@@ -24,11 +24,10 @@ import { RenderVertex, Vertex2D } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionType } from '../../physics/collision-type';
 import { PHYS_SKIN } from '../../physics/constants';
-import { FireEvents } from '../../physics/fire-events';
 import { Hit3DPoly } from '../../physics/hit-3dpoly';
 import { HitObject } from '../../physics/hit-object';
-import { Mesh } from '../mesh';
 import { TriggerData } from './trigger-data';
+import { TriggerEvents } from './trigger-events';
 import { TriggerLineSeg } from './trigger-line-seg';
 
 export class TriggerHitGenerator {
@@ -39,9 +38,9 @@ export class TriggerHitGenerator {
 		this.data = data;
 	}
 
-	public generateHitObjects(fireEvents: FireEvents, table: Table): Array<HitObject<FireEvents>> {
+	public generateHitObjects(events: TriggerEvents, table: Table): Array<HitObject<TriggerEvents>> {
 
-		const hitObjects: Array<HitObject<FireEvents>> = [];
+		const hitObjects: Array<HitObject<TriggerEvents>> = [];
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
 		const vVertex: RenderVertex[] = DragPoint.getRgVertex<RenderVertex>(this.data.dragPoints, () => new RenderVertex(), CatmullCurve2D.fromVertex2D as any);
 
@@ -60,8 +59,8 @@ export class TriggerHitGenerator {
 			hitObjects.push(this.getLineSeg(pv2, pv3, height));
 		}
 
-		const ph3dpoly = new Hit3DPoly(rgv3D, CollisionType.Trigger);
-		ph3dpoly.obj = fireEvents;
+		const ph3dpoly = new Hit3DPoly<TriggerEvents>(rgv3D, CollisionType.Trigger);
+		ph3dpoly.obj = events;
 		hitObjects.push(ph3dpoly);
 
 		return hitObjects;

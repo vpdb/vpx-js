@@ -20,6 +20,7 @@
 import { Group, Scene } from 'three';
 import { IAnimatable } from '../../game/ianimatable';
 import { IHittable } from '../../game/ihittable';
+import { IItem } from '../../game/iitem';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
@@ -49,6 +50,7 @@ import { TableData } from './table-data';
 import { TableExporter, VpTableExporterOptions } from './table-exporter';
 import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
+import { IScriptable } from '../../game/iscriptable';
 
 /**
  * A Visual Pinball table.
@@ -60,7 +62,7 @@ export class Table implements IRenderable {
 
 	public readonly data?: TableData;
 	public readonly info?: { [key: string]: string };
-	public readonly items: any[];
+	public readonly items: IItem[];
 
 	public readonly textures: { [key: string]: Texture } = {};
 
@@ -154,19 +156,28 @@ export class Table implements IRenderable {
 	}
 
 	public getPlayables(): IPlayable[] {
-		return this.items.filter(item => !!item.setupPlayer);
+		return this.items.filter(item => !!(item as any).setupPlayer) as IPlayable[];
 	}
 
 	public getMovables(): Array<IMovable<any>> {
-		return this.items.filter(item => !!item.getMover);
+		return this.items.filter(item => !!(item as any).getMover) as Array<IMovable<any>>;
 	}
 
 	public getAnimatables(): Array<IAnimatable<any>> {
-		return this.items.filter(item => !!item.getAnimation);
+		return this.items.filter(item => !!(item as any).getAnimation) as Array<IAnimatable<any>>;
 	}
 
 	public getHittables(): IHittable[] {
-		return this.items.filter(item => !!item.getHitShapes && item.isCollidable());
+		return this.items.filter(item => !!(item as any).getHitShapes && (item as IHittable).isCollidable()) as IHittable[];
+	}
+
+	public getElementApis(): { [key: string]: any } {
+		const apis: { [key: string]: any } = {};
+		const elements = this.items.filter(item => !!(item as any).getApi) as Array<IScriptable<any>>;
+		for (const element of elements) {
+			apis[element.getName()] = element.getApi();
+		}
+		return apis;
 	}
 
 	public getScaleZ(): number {

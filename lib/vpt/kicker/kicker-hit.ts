@@ -39,8 +39,8 @@ import { KickerData } from './kicker-data';
 export class KickerHit extends HitCircle<FireEvents> {
 
 	private data: KickerData;
-	private ball?: Ball;  // The ball inside this kicker
-	private lastCapturedBall?: Ball;
+	public ball?: Ball;  // The ball inside this kicker
+	public lastCapturedBall?: Ball;
 	private hitMesh: Vertex3D[] = [];
 	public obj: FireEvents;
 
