@@ -44,11 +44,11 @@ describe('The VPinball surface collision', () => {
 
 	it('should make the ball bounce off the sides', () => {
 
-		const kicker = table.kickers.BallRelease;
+		const kicker = table.kickers.BallRelease.getApi();
 
 		// create ball
-		const ball = player.createBall(kicker);
-		kicker.getApi().Kick(90, 10);
+		const ball = kicker.CreateBall();
+		kicker.Kick(90, 10);
 
 		// let it roll right some
 		player.updatePhysics(0);
