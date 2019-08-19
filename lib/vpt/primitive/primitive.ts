@@ -30,6 +30,10 @@ import { Mesh } from '../mesh';
 import { PrimitiveData } from './primitive-data';
 import { PrimitiveHitGenerator } from './primitive-hit-generator';
 import { PrimitiveMeshGenerator } from './primitive-mesh-generator';
+import { clamp } from '../../math/functions';
+import { MeshConverter, MeshExporter } from '../../gltf/mesh-converter';
+import { MeshBasicMaterial, Mesh as ThreeMesh } from 'three';
+import { SimplifyModifier } from 'three/examples/jsm/modifiers/SimplifyModifier';
 
 /**
  * VPinball's primitive.
