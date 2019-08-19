@@ -70,7 +70,7 @@ export class PrimitiveHitGenerator {
 
 		if (reducedVertices < mesh.vertices.length) {
 			const progVertices: ProgMeshFloat3[] = [];
-			for (let i = 0; i < mesh.vertices.length; ++i) { //!! opt. use original data directly!
+			for (let i = 0; i < mesh.vertices.length; ++i) { // opt. use original data directly!
 				progVertices[i] = new ProgMeshFloat3(
 					mesh.vertices[i].x,
 					mesh.vertices[i].y,
