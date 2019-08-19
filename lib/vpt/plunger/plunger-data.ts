@@ -44,8 +44,8 @@ export class PlungerData extends ItemData {
 	public animFrames?: number;
 	public szMaterial?: string;
 	public szImage?: string;
-	public fVisible: boolean = true;
-	public fReflectionEnabled: boolean = true;
+	public isVisible: boolean = true;
+	public isReflectionEnabled: boolean = true;
 	public szSurface?: string;
 	public szTipShape: string = '0 .34; 2 .6; 3 .64; 5 .7; 7 .84; 8 .88; 9 .9; 11 .92; 14 .92; 39 .84';
 	public rodDiam: number = 0.6;
@@ -71,10 +71,6 @@ export class PlungerData extends ItemData {
 		return this.wzName;
 	}
 
-	public isVisible(): boolean {
-		return this.fVisible;
-	}
-
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
 		switch (tag) {
 			case 'VCEN': this.center = Vertex2D.get(buffer); break;
@@ -95,8 +91,8 @@ export class PlungerData extends ItemData {
 			case 'ANFR': this.animFrames = this.getInt(buffer); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
 			case 'IMAG': this.szImage = this.getString(buffer, len); break;
-			case 'VSBL': this.fVisible = this.getBool(buffer); break;
-			case 'REEN': this.fReflectionEnabled = this.getBool(buffer); break;
+			case 'VSBL': this.isVisible = this.getBool(buffer); break;
+			case 'REEN': this.isReflectionEnabled = this.getBool(buffer); break;
 			case 'SURF': this.szSurface = this.getString(buffer, len); break;
 			case 'TIPS': this.szTipShape = this.getString(buffer, len); break;
 			case 'RODD': this.rodDiam = this.getFloat(buffer); break;

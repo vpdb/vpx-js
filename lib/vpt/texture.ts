@@ -26,6 +26,7 @@ import { getRawImage, loadImage, streamImage } from '../refs.node';
 import { logger } from '../util/logger';
 import { Binary } from './binary';
 import { Table } from './table/table';
+import Base = Mocha.reporters.Base;
 
 /**
  * VPinball's texture.
@@ -105,6 +106,10 @@ export class Texture extends BiffParser {
 		return this.pdsBuffer !== undefined;
 	}
 
+	public isHdr() {
+		return this.pdsBuffer && this.pdsBuffer.format === BaseTexture.RGB_FP;
+	}
+
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number, storage: Storage, itemName: string): Promise<number> {
 		switch (tag) {
 			case 'NAME': this.szName = this.getString(buffer, len); break;
@@ -133,12 +138,12 @@ export class Texture extends BiffParser {
 
 class BaseTexture {
 
-	private static readonly RGBA = 0;
-	private static readonly RGB_FP = 1;
+	public static readonly RGBA = 0;
+	public static readonly RGB_FP = 1;
 
 	private width: number;
 	private height: number;
-	private format: number = BaseTexture.RGBA;
+	public format: number = BaseTexture.RGBA;
 	private data!: Buffer;
 
 	constructor(width: number, height: number) {
