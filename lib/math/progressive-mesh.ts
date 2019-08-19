@@ -20,96 +20,8 @@
 /* tslint:disable:no-bitwise */
 import { FLT_MAX, FLT_MIN } from '../vpt/mesh';
 
-export class ProgMeshFloat3 {
-	public x: number;
-	public y: number;
-	public z: number;
-
-	constructor(x: number, y: number, z: number) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
-
-	public sub(b: ProgMeshFloat3): ProgMeshFloat3 {
-		return new ProgMeshFloat3(this.x - b.x, this.y - b.y, this.z - b.z);
-	}
-
-	public multiplyScalar(s: number) {
-		return new ProgMeshFloat3(this.x * s, this.y * s, this.z * s);
-	}
-
-	public divideScalar(s: number) {
-		return this.multiplyScalar(1 / s);
-	}
-}
-
-export class ProgMeshTriData {
-	public readonly v: number[];
-
-	constructor(v: number[]) {
-		this.v = v;
-	}
-}
-
-/**
- *  For the polygon reduction algorithm we use data structures
- *  that contain a little bit more information than the usual
- *  indexed face set type of data structure.
- *  From a vertex we wish to be able to quickly get the
- *  neighboring faces and vertices.
- */
-export class ProgMeshVertex {
-
-	/** location of point in euclidean space */
-	public position: ProgMeshFloat3;
-	/** place of vertex in original Array */
-	public id: number;
-	/** adjacent vertices */
-	public neighbor: ProgMeshVertex[] = [];
-	/** adjacent triangles */
-	public face: ProgMeshTriangle[] = [];
-	/** cached cost of collapsing edge */
-	public objdist?: number;
-	/** candidate vertex for collapse */
-	public collapse?: ProgMeshVertex;
-
-	constructor(v: ProgMeshFloat3, id: number) {
-		this.position = v;
-		this.id = id;
-		vertices.push(this);
-	}
-
-	public destroy(): void {
-		while (this.neighbor.length > 0) {
-			removeFillWithBack(this.neighbor[0].neighbor, this);
-			removeFillWithBack(this.neighbor, this.neighbor[0]);
-		}
-		removeFillWithBack(vertices, this);
-	}
-
-	public removeIfNonNeighbor(n: ProgMeshVertex): void {
-		// removes n from neighbor Array if n isn't a neighbor.
-		if (!this.neighbor.includes(n)) {
-			return;
-		}
-		for (const face of this.face) {
-			if (face.hasVertex(n)) {
-				return;
-			}
-		}
-		removeFillWithBack(this.neighbor, n);
-	}
-}
-
-function removeFillWithBack<T>(c: T[], t: T) {
-	const idxOf = c.indexOf(t);
-	const val = c.pop();
-	if (idxOf === c.length) {
-		return;
-	}
-	c[idxOf] = val!;
-}
+const vertices: ProgMeshVertex[] = [];
+const triangles: ProgMeshTriangle[] = [];
 
 export class ProgMeshTriangle {
 	/** the 3 points that make this tri */
@@ -118,6 +30,9 @@ export class ProgMeshTriangle {
 	public normal!: ProgMeshFloat3;
 
 	constructor(v0: ProgMeshVertex, v1: ProgMeshVertex, v2: ProgMeshVertex) {
+
+		assert(v0 !== v1 && v1 !== v2 && v2 !== v0, '[ProgMeshTriangle] Vertices must be different.');
+
 		this.vertex[0] = v0;
 		this.vertex[1] = v1;
 		this.vertex[2] = v2;
@@ -167,6 +82,11 @@ export class ProgMeshTriangle {
 	}
 
 	public replaceVertex(vold: ProgMeshVertex, vnew: ProgMeshVertex): void {
+
+		assert(!!vold && !!vnew, '[ProgMeshTriangle.replaceVertex] Arguments must not be null.');
+		assert(vold === this.vertex[0] || vold === this.vertex[1] || vold === this.vertex[2], '[ProgMeshTriangle.replaceVertex] vold must not be included in this.vertex.');
+		assert(vnew !== this.vertex[0] && vnew !== this.vertex[1] && vnew !== this.vertex[2], '[ProgMeshTriangle.replaceVertex] vnew must not be included in this.vertex.');
+
 		if (vold === this.vertex[0]) {
 			this.vertex[0] = vnew;
 
@@ -174,10 +94,12 @@ export class ProgMeshTriangle {
 			this.vertex[1] = vnew;
 
 		} else {
+			assert(vold === this.vertex[2], '[ProgMeshTriangle.replaceVertex] vold == vertex[2]');
 			this.vertex[2] = vnew;
 		}
 		removeFillWithBack(vold.face, this);
 
+		assert(!vnew.face.includes(this), '[ProgMeshTriangle.replaceVertex] !Contains(vnew->face, this)');
 		vnew.face.push(this);
 
 		for (let i = 0; i < 3; i++) {
@@ -186,6 +108,7 @@ export class ProgMeshTriangle {
 		}
 
 		for (let i = 0; i < 3; i++) {
+			assert(this.vertex[i].face.filter(f => f === this).length  === 1, '[ProgMeshTriangle.replaceVertex] Contains(vertex[i]->face, this) == 1');
 			for (let j = 0; j < 3; j++) {
 				if (i !== j) {
 					addUnique(this.vertex[i].neighbor, this.vertex[j]);
@@ -196,8 +119,97 @@ export class ProgMeshTriangle {
 	}
 }
 
-const vertices: ProgMeshVertex[] = [];
-const triangles: ProgMeshTriangle[] = [];
+/**
+ *  For the polygon reduction algorithm we use data structures
+ *  that contain a little bit more information than the usual
+ *  indexed face set type of data structure.
+ *  From a vertex we wish to be able to quickly get the
+ *  neighboring faces and vertices.
+ */
+export class ProgMeshVertex {
+
+	/** location of point in euclidean space */
+	public position: ProgMeshFloat3;
+	/** place of vertex in original Array */
+	public id: number;
+	/** adjacent vertices */
+	public neighbor: ProgMeshVertex[] = [];
+	/** adjacent triangles */
+	public face: ProgMeshTriangle[] = [];
+	/** cached cost of collapsing edge */
+	public objdist?: number;
+	/** candidate vertex for collapse */
+	public collapse?: ProgMeshVertex;
+
+	constructor(v: ProgMeshFloat3, id: number) {
+		this.position = v;
+		this.id = id;
+		vertices.push(this);
+	}
+
+	public destroy(): void {
+		assert(this.face.length === 0, '[ProgMeshVertex.destroy] face.size() == 0');
+		while (this.neighbor.length > 0) {
+			removeFillWithBack(this.neighbor[0].neighbor, this);
+			removeFillWithBack(this.neighbor, this.neighbor[0]);
+		}
+		removeFillWithBack(vertices, this);
+	}
+
+	public removeIfNonNeighbor(n: ProgMeshVertex): void {
+		// removes n from neighbor Array if n isn't a neighbor.
+		if (!this.neighbor.includes(n)) {
+			return;
+		}
+		for (const face of this.face) {
+			if (face.hasVertex(n)) {
+				return;
+			}
+		}
+		removeFillWithBack(this.neighbor, n);
+	}
+}
+
+export class ProgMeshFloat3 {
+	public x: number;
+	public y: number;
+	public z: number;
+
+	constructor(x: number, y: number, z: number) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
+
+	public sub(b: ProgMeshFloat3): ProgMeshFloat3 {
+		return new ProgMeshFloat3(this.x - b.x, this.y - b.y, this.z - b.z);
+	}
+
+	public multiplyScalar(s: number) {
+		return new ProgMeshFloat3(this.x * s, this.y * s, this.z * s);
+	}
+
+	public divideScalar(s: number) {
+		return this.multiplyScalar(1 / s);
+	}
+}
+
+export class ProgMeshTriData {
+	public readonly v: number[];
+
+	constructor(v: number[]) {
+		this.v = v;
+	}
+}
+function removeFillWithBack<T>(c: T[], t: T) {
+	const idxOf = c.indexOf(t);
+	const val = c.pop();
+	if (idxOf === c.length) {
+		return;
+	}
+	c[idxOf] = val!;
+	assert(!c.includes(t), '[removeFillWithBack] List must not include value anymore.');
+}
 
 export function progressiveMesh(vert: ProgMeshFloat3[], tri: ProgMeshTriData[]): [number[], number[]] {
 	const map: number[] = [];
@@ -231,6 +243,9 @@ export function progressiveMesh(vert: ProgMeshFloat3[], tri: ProgMeshTriData[]):
 	// The caller of this function should reorder their vertices
 	// according to the returned "permutation".
 
+	assert(vertices.length === 0, '[progressiveMesh] vertices.size() == 0');
+	assert(triangles.length === 0, '[progressiveMesh] triangles.size() == 0');
+
 	return [map, permutation];
 }
 
@@ -254,6 +269,11 @@ export function permuteVertices<T>(permutation: number[], vert: T[], tri: ProgMe
 }
 
 export function remapIndices(numVertices: number, triDatas: ProgMeshTriData[], newTri: ProgMeshTriData[], map: number[]) {
+
+	assert(newTri.length === 0, '[remapIndices] new_tri.size() == 0');
+	assert(map.length !== 0, '[remapIndices] map.size() != 0');
+	assert(numVertices !== 0, '[remapIndices] num_vertices != 0');
+
 	for (const tri of triDatas) {
 		const t = new ProgMeshTriData([
 			mapVertex(tri.v[0], numVertices, map),
@@ -441,4 +461,10 @@ function mapVertex(a: number, mx: number, map: number[]): number {
 		a = map[a];
 	}
 	return a;
+}
+
+function assert(success: boolean, message: string) {
+	if (!success) {
+		throw new Error(message);
+	}
 }
