@@ -28,4 +28,10 @@ describe('The VBScript transpiler', () => {
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('let test1, test2, test3;\n');
 	});
+
+	it('should transpile a const declaration', () => {
+		const vbs = `Const pi = 3.14\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('const pi = 3.14;\n');
+	});
 });

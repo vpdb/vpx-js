@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Program, VariableDeclaration, VariableDeclarator } from 'estree';
+import { Literal, Program, VariableDeclaration, VariableDeclarator  } from 'estree';
 
 /**
  * Returns the root node.
@@ -47,5 +47,29 @@ export function variableDeclarator(name: string): VariableDeclarator {
 	return {
 		type: 'VariableDeclarator',
 		id: { type: 'Identifier', name },
+	};
+}
+
+/**
+ * Returns a constant declaration.
+ */
+export function constDecl(data: any): VariableDeclaration {
+	const name: string = data[2][0];
+
+	return {
+		type: 'VariableDeclaration',
+		kind: 'const',
+		declarations: [ {
+			type: 'VariableDeclarator',
+			id: { type: 'Identifier', name },
+			init: literal(data[2][4]),
+		}],
+	};
+}
+
+export function literal(data: any): Literal {
+	return {
+		type: 'Literal',
+		value: data,
 	};
 }
