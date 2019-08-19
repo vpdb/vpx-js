@@ -33,7 +33,6 @@ import { TriggerHitCircle } from './trigger-hit-circle';
 import { TriggerHitGenerator } from './trigger-hit-generator';
 import { TriggerMeshGenerator } from './trigger-mesh-generator';
 import { TriggerState } from './trigger-state';
-import { degToRad } from '../../math/float';
 
 /**
  * VPinball's triggers.

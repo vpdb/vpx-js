@@ -73,7 +73,7 @@ export class HitCircle<T extends FireEvents> extends HitObject<T> {
 		const dv = ball.hit.vel.clone();
 
 		const capsule3D = !lateral && ball.state.pos.z > this.hitBBox.zhigh;
-		const isKicker = this.objType === CollisionType.Trigger;
+		const isKicker = this.objType === CollisionType.Kicker;
 		const isKickerOrTrigger = this.objType === CollisionType.Trigger || this.objType === CollisionType.Kicker;
 
 		let targetRadius: number;
@@ -135,7 +135,7 @@ export class HitCircle<T extends FireEvents> extends HitObject<T> {
 				hitTime = Math.max(0.0, -bnd / bnv);
 			}
 
-		} else if (isKickerOrTrigger && ball.hit.vpVolObjs.length > 0 && (bnd < 0 === ball.hit.vpVolObjs.indexOf(this.obj!) < 0)) { // triggers & kickers
+		} else if (isKickerOrTrigger && ball.hit.isRealBall() && (bnd < 0 === ball.hit.vpVolObjs.indexOf(this.obj!) < 0)) { // triggers & kickers
 
 			// here if ... ball inside and no hit set .... or ... ball outside and hit set
 			if (Math.abs(bnd - this.radius) < 0.05) {   // if ball appears in center of trigger, then assumed it was gen'ed there

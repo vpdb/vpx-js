@@ -114,29 +114,24 @@ describe('The VPinball kicker collision', () => {
 
 	it('should collide with the ball and keep the ball',  () => {
 
-		// above kicker
-		const ball = createBall(player, 874, 1200, 0, 0, 2);
-
-		debugBall(player, ball);
+		const ballRelease = table.kickers.BallRelease.getApi();
+		const ball = ballRelease.CreateBall();
+		ballRelease.Kick(0, -2);
 
 		// let it roll down
-		// player.updatePhysics(0);
-		// player.updatePhysics(700);
-		//
-		// // make sure it's fixed
-		// expect(ball.getState().pos.x).to.be.above(127);
-		// expect(ball.getState().pos.x).to.be.below(128);
-		// expect(ball.getState().pos.y).to.be.above(1325);
-		// expect(ball.getState().pos.y).to.be.below(1326);
-		// expect(ball.getState().pos.z).to.be.above(0);
-		//
-		// // make sure it's still there
-		// player.updatePhysics(1000);
-		// expect(ball.getState().pos.x).to.be.above(127);
-		// expect(ball.getState().pos.x).to.be.below(128);
-		// expect(ball.getState().pos.y).to.be.above(1325);
-		// expect(ball.getState().pos.y).to.be.below(1326);
-		// expect(ball.getState().pos.z).to.be.above(0);
+		player.updatePhysics(0);
+		player.updatePhysics(635);
+
+		// make sure it's fixed
+		expect(ball.getState().pos.x).to.be.within(874, 875);
+		expect(ball.getState().pos.y).to.be.within(1326, 1327);
+		expect(ball.getState().pos.z).to.be.equal(25);
+
+		// make sure it's still there
+		player.updatePhysics(800);
+		expect(ball.getState().pos.x).to.be.within(874, 875);
+		expect(ball.getState().pos.y).to.be.within(1326, 1327);
+		expect(ball.getState().pos.z).to.be.equal(25);
 	});
 
 	// add second ball
