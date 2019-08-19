@@ -33,6 +33,7 @@ import { TriggerHitCircle } from './trigger-hit-circle';
 import { TriggerHitGenerator } from './trigger-hit-generator';
 import { TriggerMeshGenerator } from './trigger-mesh-generator';
 import { TriggerState } from './trigger-state';
+import { degToRad } from '../../math/float';
 
 /**
  * VPinball's triggers.
@@ -113,6 +114,8 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 	}
 
 	public applyState(obj: Object3D, table: Table, player: Player): void {
-		// TODO
+		const matrix = new Matrix3D().setTranslation(0, 0, -this.state.heightOffset);
+		obj.matrix = matrix.toThreeMatrix4();
+		obj.matrixWorldNeedsUpdate = true;
 	}
 }

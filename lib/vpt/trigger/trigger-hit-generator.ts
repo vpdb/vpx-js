@@ -56,7 +56,7 @@ export class TriggerHitGenerator {
 		for (let i = 0; i < count; i++) {
 			const pv2 = rgv[(i < count - 1) ? (i + 1) : 0];
 			const pv3 = rgv[(i < count - 2) ? (i + 2) : (i + 2 - count)];
-			hitObjects.push(this.getLineSeg(pv2, pv3, height));
+			hitObjects.push(this.getLineSeg(pv2, pv3, events, height));
 		}
 
 		const ph3dpoly = new Hit3DPoly<TriggerEvents>(rgv3D, CollisionType.Trigger);
@@ -66,13 +66,15 @@ export class TriggerHitGenerator {
 		return hitObjects;
 	}
 
-	private getLineSeg(pv1: RenderVertex, pv2: RenderVertex, height: number): TriggerLineSeg {
-		return new TriggerLineSeg(
+	private getLineSeg(pv1: RenderVertex, pv2: RenderVertex, events: TriggerEvents, height: number): TriggerLineSeg {
+		const lineSeg = new TriggerLineSeg(
 			new Vertex2D(pv1.x, pv1.y),
 			new Vertex2D(pv2.x, pv2.y),
 			height,
 			height + Math.max(this.data.hitHeight - 8.0, 0), //adjust for same hit height as circular
 			this.data,
 		);
+		lineSeg.obj = events;
+		return lineSeg;
 	}
 }

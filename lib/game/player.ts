@@ -136,6 +136,13 @@ export class Player extends EventEmitter {
 			this.previousStates[state.getName()] = state.clone();
 		}
 
+		// link animatables to player
+		for (const movable of table.getAnimatables()) {
+			const state = movable.getState();
+			this.currentStates[state.getName()] = state;
+			this.previousStates[state.getName()] = state.clone();
+		}
+
 		// link hittables to player
 		for (const hittable of table.getHittables()) {
 			for (const hitObject of hittable.getHitShapes()) {
