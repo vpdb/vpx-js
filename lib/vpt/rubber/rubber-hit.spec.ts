@@ -19,12 +19,12 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import sinonChai = require('sinon-chai');
 import { Table } from '../..';
-import { createBall, debugBall } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
+
+import sinonChai = require('sinon-chai');
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
@@ -44,11 +44,11 @@ describe('The VPinball rubber collision', () => {
 
 	it('should make the ball bounce off', () => {
 
-		const kicker = table.kickers.BallRelease;
+		const kicker = table.kickers.BallRelease.getApi();
 
 		// create ball
-		const ball = player.createBall(kicker);
-		kicker.getApi().Kick(-45, -5);
+		const ball = kicker.CreateBall();
+		kicker.Kick(-45, -5);
 
 		// let it roll down some
 		player.updatePhysics(0);

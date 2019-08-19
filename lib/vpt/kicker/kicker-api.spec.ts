@@ -23,6 +23,7 @@ import { Table } from '../..';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
+
 import sinonChai = require('sinon-chai');
 
 chai.use(sinonChai);
@@ -152,7 +153,7 @@ describe('The VPinball kicker API', () => {
 
 		expect(ball.getState().pos.x).to.equal(kicker.X);
 		expect(ball.getState().pos.y).to.be.above(kicker.Y);
-		expect(ball.getState().pos.y).to.be.above(100);
+		expect(ball.getState().pos.z).to.be.above(100);
 	});
 
 	it('should kick a created ball with an offset', () => {
@@ -165,7 +166,7 @@ describe('The VPinball kicker API', () => {
 
 		expect(ball.getState().pos.x).to.equal(kicker.X + 25);
 		expect(ball.getState().pos.y).to.be.above(kicker.Y + 300);
-		expect(ball.getState().pos.y).to.be.above(200);
+		expect(ball.getState().pos.z).to.be.above(200);
 	});
 
 	it('should retrieve last captured ball', () => {

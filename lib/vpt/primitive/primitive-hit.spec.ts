@@ -65,11 +65,11 @@ describe('The VPinball primitive collision', () => {
 
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-sink.vpx')));
 		player = new Player(table);
-		const kicker = table.kickers.BallRelease;
+		const kicker = table.kickers.BallRelease.getApi();
 
 		// create ball
-		const ball = player.createBall(kicker);
-		kicker.getApi().Kick(-45, 4.5);
+		const ball = kicker.CreateBall();
+		kicker.Kick(-45, 4.5);
 
 		// assert initial position
 		expect(ball.getState().pos.x).to.equal(600);
