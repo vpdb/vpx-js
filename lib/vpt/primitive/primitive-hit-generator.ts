@@ -28,6 +28,7 @@ import {
 	progressiveMesh,
 	remapIndices,
 } from '../../math/progressive-mesh';
+import { Vertex3DNoTex2 } from '../../math/vertex';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionType } from '../../physics/collision-type';
 import { FireEvents } from '../../physics/fire-events';
@@ -69,88 +70,75 @@ export class PrimitiveHitGenerator {
 		));
 
 		if (reducedVertices < mesh.vertices.length) {
-			const progVertices: ProgMeshFloat3[] = [];
-			for (let i = 0; i < mesh.vertices.length; ++i) { // opt. use original data directly!
-				progVertices[i] = new ProgMeshFloat3(
-					mesh.vertices[i].x,
-					mesh.vertices[i].y,
-					mesh.vertices[i].z,
-				);
-			}
-			const progIndices: ProgMeshTriData[] = [];
-			let i2 = 0;
-			for (let i = 0; i < mesh.indices.length; i += 3) {
-				const t = new ProgMeshTriData([
-					mesh.indices[i],
-					mesh.indices[i + 1],
-					mesh.indices[i + 2],
-				]);
-				if (t.v[0] !== t.v[1] && t.v[1] !== t.v[2] && t.v[2] !== t.v[0]) {
-					progIndices[i2++] = t;
-				}
-			}
-			const [ progMap, progPerm ] = progressiveMesh(progVertices, progIndices);
-			permuteVertices(progPerm, progVertices, progIndices);
+			mesh = this.getReducedMesh(mesh, reducedVertices);
+		}
+		const addedEdges = new EdgeSet();
 
-			const progNewIndices: ProgMeshTriData[] = [];
-			remapIndices(reducedVertices, progIndices, progNewIndices, progMap);
+		// add collision triangles and edges
+		for (let i = 0; i < mesh.indices.length; i += 3) {
+			const i0 = mesh.indices[i];
+			const i1 = mesh.indices[i + 1];
+			const i2 = mesh.indices[i + 2];
 
-			const addedEdges = new EdgeSet();
+			// NB: HitTriangle wants CCW vertices, but for rendering we have them in CW order
+			const rgv3D: Vertex3D[] = [
+				mesh.vertices[i0].getVertex(),
+				mesh.vertices[i2].getVertex(),
+				mesh.vertices[i1].getVertex(),
+			];
 
-			// add collision triangles and edges
-			for (const index of progNewIndices) {
-				const i0 = index.v[0];
-				const i1 = index.v[1];
-				i2 = index.v[2];
+			hitObjects.push(new HitTriangle(rgv3D));
 
-				// NB: HitTriangle wants CCW vertices, but for rendering we have them in CW order
-				const rgv3D: Vertex3D[] = [
-					new Vertex3D(progVertices[i0].x, progVertices[i0].y, progVertices[i0].z),
-					new Vertex3D(progVertices[i2].x, progVertices[i2].y, progVertices[i2].z),
-					new Vertex3D(progVertices[i1].x, progVertices[i1].y, progVertices[i1].z),
-				];
+			hitObjects.push(...addedEdges.addHitEdge(i0, i1, rgv3D[0], rgv3D[2]));
+			hitObjects.push(...addedEdges.addHitEdge(i1, i2, rgv3D[2], rgv3D[1]));
+			hitObjects.push(...addedEdges.addHitEdge(i2, i0, rgv3D[1], rgv3D[0]));
+		}
 
-				hitObjects.push(new HitTriangle(rgv3D));
+		// add collision vertices
+		for (const vertex of mesh.vertices) {
+			hitObjects.push(new HitPoint(vertex.getVertex()));
+		}
+		//}
+		return this.updateCommonParameters(hitObjects, fireEvents, table);
+	}
 
-				hitObjects.push(...addedEdges.addHitEdge(i0, i1, rgv3D[0], rgv3D[2]));
-				hitObjects.push(...addedEdges.addHitEdge(i1, i2, rgv3D[2], rgv3D[1]));
-				hitObjects.push(...addedEdges.addHitEdge(i2, i0, rgv3D[1], rgv3D[0]));
-			}
-
-			// add collision vertices
-			for (const vertex of progVertices) {
-				hitObjects.push(new HitPoint(new Vertex3D(vertex.x, vertex.y, vertex.z)));
-			}
-
-		} else {
-			const addedEdges = new EdgeSet();
-
-			// add collision triangles and edges
-			for (let i = 0; i < mesh.indices.length; i += 3) {
-				const i0 = mesh.indices[i];
-				const i1 = mesh.indices[i + 1];
-				const i2 = mesh.indices[i + 2];
-
-				// NB: HitTriangle wants CCW vertices, but for rendering we have them in CW order
-				const rgv3D: Vertex3D[] = [
-					mesh.vertices[i0].getVertex(),
-					mesh.vertices[i2].getVertex(),
-					mesh.vertices[i1].getVertex(),
-				];
-
-				hitObjects.push(new HitTriangle(rgv3D));
-
-				hitObjects.push(...addedEdges.addHitEdge(i0, i1, rgv3D[0], rgv3D[2]));
-				hitObjects.push(...addedEdges.addHitEdge(i1, i2, rgv3D[2], rgv3D[1]));
-				hitObjects.push(...addedEdges.addHitEdge(i2, i0, rgv3D[1], rgv3D[0]));
-			}
-
-			// add collision vertices
-			for (const vertex of mesh.vertices) {
-				hitObjects.push(new HitPoint(vertex.getVertex()));
+	public getReducedMesh(mesh: Mesh, reducedVertices: number): Mesh {
+		const progVertices: ProgMeshFloat3[] = [];
+		for (let i = 0; i < mesh.vertices.length; ++i) { // opt. use original data directly!
+			progVertices[i] = new ProgMeshFloat3(
+				mesh.vertices[i].x,
+				mesh.vertices[i].y,
+				mesh.vertices[i].z,
+			);
+		}
+		const progIndices: ProgMeshTriData[] = [];
+		let i2 = 0;
+		for (let i = 0; i < mesh.indices.length; i += 3) {
+			const t = new ProgMeshTriData([
+				mesh.indices[i],
+				mesh.indices[i + 1],
+				mesh.indices[i + 2],
+			]);
+			if (t.v[0] !== t.v[1] && t.v[1] !== t.v[2] && t.v[2] !== t.v[0]) {
+				progIndices[i2++] = t;
 			}
 		}
-		return this.updateCommonParameters(hitObjects, fireEvents, table);
+		const [ progMap, progPerm ] = progressiveMesh(progVertices, progIndices);
+		permuteVertices(progPerm, progVertices, progIndices);
+
+		const progNewIndices: ProgMeshTriData[] = [];
+		remapIndices(reducedVertices, progIndices, progNewIndices, progMap);
+
+		const reducedIndices: number[] = [];
+		for (const index of progNewIndices) {
+			reducedIndices.push(index.v[0]);
+			reducedIndices.push(index.v[1]);
+			reducedIndices.push(index.v[2]);
+		}
+		return new Mesh(
+			progVertices.map(pv => Vertex3DNoTex2.fromArray([pv.x, pv.y, pv.z, 0, 0, 0, 0, 0])),
+			reducedIndices,
+		);
 	}
 
 	private updateCommonParameters(hitObjects: Array<HitObject<FireEvents>>, fireEvents: FireEvents, table: Table): Array<HitObject<FireEvents>> {

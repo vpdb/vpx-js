@@ -17,7 +17,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BufferGeometry, Float32BufferAttribute } from 'three';
+import {
+	BufferGeometry,
+	Float32BufferAttribute,
+	Geometry, Line,
+	Matrix3,
+	Mesh as ThreeMesh,
+	Object3D,
+	Vector2,
+	Vector3,
+} from 'three';
+import { Vertex3DNoTex2 } from '../math/vertex';
+import { logger } from '../util/logger';
 import { Mesh } from '../vpt/mesh';
 
 /**
@@ -191,4 +202,130 @@ interface ParserObject {
 		uvs: number[];
 	};
 	smooth: boolean;
+}
+
+/* istanbul ignore next: used for debugging */
+export class MeshExporter {
+
+	private output = new Mesh();
+
+	private indexVertex = 0;
+	private indexVertexUvs = 0;
+	private indexNormals = 0;
+
+	private vertex = new Vector3();
+	private normal = new Vector3();
+	private uv = new Vector2();
+
+	public parse(object: Object3D): Mesh {
+		object.traverse(child => {
+			if (child instanceof ThreeMesh) {
+				this.parseMesh(child as any);
+			}
+
+			if (child instanceof Line) {
+				//this.parseLine(child);
+			}
+		});
+		return this.output;
+	}
+
+	private parseMesh(mesh: ThreeMesh) {
+
+		let i: number;
+		let l: number;
+		let m: number;
+		const face: string[] = [];
+
+		let nbVertex = 0;
+		let nbNormals = 0;
+		let nbVertexUvs = 0;
+		let geometry = mesh.geometry;
+
+		const normalMatrixWorld = new Matrix3();
+
+		if (geometry instanceof Geometry) {
+			geometry = new BufferGeometry().setFromObject(mesh);
+		}
+
+		if (geometry instanceof BufferGeometry) {
+
+			// shortcuts
+			const vertices = geometry.getAttribute('position');
+			const normals = geometry.getAttribute('normal');
+			const uvs = geometry.getAttribute('uv');
+			const indices = geometry.getIndex();
+
+			// name of the mesh object
+			this.output.name = mesh.name;
+
+			// vertices
+			if (vertices !== undefined) {
+				for (i = 0, l = vertices.count; i < l; i++, nbVertex++) {
+					this.vertex.x = vertices.getX(i);
+					this.vertex.y = vertices.getY(i);
+					this.vertex.z = vertices.getZ(i);
+
+					// transfrom the vertex to world space
+					this.vertex.applyMatrix4(mesh.matrixWorld);
+
+					// transform the vertex to export format
+					this.output.vertices.push(Vertex3DNoTex2.fromArray([this.vertex.x, this.vertex.y, this.vertex.z, 0, 0, 0, 0, 0]));
+				}
+			}
+
+			// uvs
+			if (uvs !== undefined) {
+				for (i = 0, l = uvs.count; i < l; i++, nbVertexUvs++) {
+					this.uv.x = uvs.getX(i);
+					this.uv.y = uvs.getY(i);
+
+					// transform the uv to export format
+					this.output.vertices[i].tu = this.uv.x;
+					this.output.vertices[i].tv = this.uv.y;
+				}
+			}
+
+			// normals
+			if (normals !== undefined) {
+				normalMatrixWorld.getNormalMatrix(mesh.matrixWorld);
+				for (i = 0, l = normals.count; i < l; i++, nbNormals++) {
+					this.normal.x = normals.getX(i);
+					this.normal.y = normals.getY(i);
+					this.normal.z = normals.getZ(i);
+
+					// transfrom the normal to world space
+					this.normal.applyMatrix3(normalMatrixWorld);
+
+					// transform the normal to export format
+					this.output.vertices[i].nx = this.normal.x;
+					this.output.vertices[i].ny = this.normal.y;
+					this.output.vertices[i].nz = this.normal.z;
+				}
+			}
+
+			// faces
+			if (indices !== null) {
+				for (i = 0, l = indices.count; i < l; i += 3) {
+					for (m = 0; m < 3; m++) {
+						this.output.indices.push(indices.getX(i));
+					}
+				}
+
+			} else {
+				for (i = 0, l = vertices.count; i < l; i += 3) {
+					for (m = 0; m < 3; m++) {
+						this.output.indices.push(i + m);
+					}
+				}
+			}
+		} else {
+			logger().warn('MeshExporter.parseMesh(): geometry type unsupported', geometry);
+		}
+
+		// update index
+		this.indexVertex += nbVertex;
+		this.indexVertexUvs += nbVertexUvs;
+		this.indexNormals += nbNormals;
+	}
 }

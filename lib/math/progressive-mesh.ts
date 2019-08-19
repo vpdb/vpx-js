@@ -19,6 +19,7 @@
 
 /* tslint:disable:no-bitwise */
 import { FLT_MAX, FLT_MIN } from '../vpt/mesh';
+import { f4 } from './float';
 
 const vertices: ProgMeshVertex[] = [];
 const triangles: ProgMeshTriangle[] = [];
@@ -182,15 +183,15 @@ export class ProgMeshFloat3 {
 	}
 
 	public sub(b: ProgMeshFloat3): ProgMeshFloat3 {
-		return new ProgMeshFloat3(this.x - b.x, this.y - b.y, this.z - b.z);
+		return new ProgMeshFloat3(f4(this.x - b.x), f4(this.y - b.y), f4(this.z - b.z));
 	}
 
 	public multiplyScalar(s: number) {
-		return new ProgMeshFloat3(this.x * s, this.y * s, this.z * s);
+		return new ProgMeshFloat3(f4(this.x * s), f4(this.y * s), f4(this.z * s));
 	}
 
 	public divideScalar(s: number) {
-		return this.multiplyScalar(1 / s);
+		return this.multiplyScalar(f4(1 / s));
 	}
 }
 
@@ -212,8 +213,6 @@ function removeFillWithBack<T>(c: T[], t: T) {
 }
 
 export function progressiveMesh(vert: ProgMeshFloat3[], tri: ProgMeshTriData[]): [number[], number[]] {
-	const map: number[] = [];
-	const permutation: number[] = [];
 
 	if (vert.length === 0 || tri.length === 0) {
 		return [[], []];
@@ -223,6 +222,9 @@ export function progressiveMesh(vert: ProgMeshFloat3[], tri: ProgMeshTriData[]):
 	addFaces(tri);
 	computeAllEdgeCollapseCosts(); // cache all edge collapse costs
 
+	const permutation: number[] = [];
+	const map: number[] = [];
+
 	// reduce the object down to nothing:
 	while (vertices.length > 0) {
 		// get the next vertex to collapse
@@ -230,14 +232,14 @@ export function progressiveMesh(vert: ProgMeshFloat3[], tri: ProgMeshTriData[]):
 		// keep track of this vertex, i.e. the collapse ordering
 		permutation[mn.id] = vertices.length - 1;
 		// keep track of vertex to which we collapse to
-		map[vertices.length - 1] = mn.collapse ? mn.collapse.id : ~0;
+		map[vertices.length - 1] = mn.collapse ? mn.collapse.id : 4294967295;
 		// Collapse this edge
 		collapse(mn, mn.collapse);
 	}
 
 	// reorder the map Array based on the collapse ordering
 	for (let i = 0; i < map.length; i++) {
-		map[i] = map[i] === ~0 ? 0 : permutation[map[i]];
+		map[i] = map[i] === 4294967295 ? 0 : permutation[map[i]];
 	}
 
 	// The caller of this function should reorder their vertices
@@ -309,7 +311,7 @@ function computeEdgeCostAtVertex(v: ProgMeshVertex): void {
 	if (v.neighbor.length === 0) {
 		// v doesn't have neighbors so it costs nothing to collapse
 		v.collapse = undefined;
-		v.objdist = -0.01;
+		v.objdist = f4(-0.01);
 		return;
 	}
 	v.objdist = FLT_MAX;
@@ -319,8 +321,8 @@ function computeEdgeCostAtVertex(v: ProgMeshVertex): void {
 	for (const neighbor of v.neighbor) {
 		const dist = computeEdgeCollapseCost(v, neighbor);
 		if (dist < v.objdist) {
-			v.collapse = neighbor;  // candidate for edge collapse
-			v.objdist = dist;             // cost of the collapse
+			v.collapse = neighbor;     // candidate for edge collapse
+			v.objdist = dist;          // cost of the collapse
 		}
 	}
 }
@@ -352,15 +354,15 @@ function computeEdgeCollapseCost(u: ProgMeshVertex, v: ProgMeshVertex): number {
 	for (const face of u.face) {
 		let minCurve = 1; // curve for face i and closer side to it
 		for (const side of sides) {
-			const dotProd = dot(face.normal, side.normal);	  // use dot product of face normals.
-			minCurve = Math.min(minCurve, (1 - dotProd) * 0.5);
+			const dotProd = dot(face.normal, side.normal); // use dot product of face normals.
+			minCurve = Math.min(f4(minCurve), f4(f4(1 - dotProd) * 0.5));
 		}
 		curvature = Math.max(curvature, minCurve);
 	}
 
 	// the more coplanar the lower the curvature term
 	const edgeLength = magnitude(v.position.sub(u.position));
-	return edgeLength * curvature;
+	return f4(edgeLength * curvature);
 }
 
 function minimumCostEdge() {
@@ -435,25 +437,29 @@ function addFaces(tri: ProgMeshTriData[]): void {
 }
 
 function addUnique<T>(c: T[], t: T) {
-	if (c.indexOf(t) === -1) {
+	if (!contains(c, t)) {
 		c.push(t);
 	}
 }
 
+function contains<T>(c: T[], t: T): number {
+	return c.filter(i => i === t).length;
+}
+
 function cross(a: ProgMeshFloat3, b: ProgMeshFloat3): ProgMeshFloat3 {
 	return new ProgMeshFloat3(
-		a.y * b.z - a.z * b.y,
-		a.z * b.x - a.x * b.z,
-		a.x * b.y - a.y * b.x,
+		f4(f4(a.y * b.z) - f4(a.z * b.y)),
+		f4(f4(a.z * b.x) - f4(a.x * b.z)),
+		f4(f4(a.x * b.y) - f4(a.y * b.x)),
 	);
 }
 
 function magnitude(v: ProgMeshFloat3): number {
-	return Math.sqrt(dot(v, v));
+	return f4(Math.sqrt(dot(v, v)));
 }
 
 function dot(a: ProgMeshFloat3, b: ProgMeshFloat3): number {
-	return a.x * b.x + a.y * b.y + a.z * b.z;
+	return f4(f4(a.x * b.x) + f4(a.y * b.y) + f4(a.z * b.z));
 }
 
 function mapVertex(a: number, mx: number, map: number[]): number {
