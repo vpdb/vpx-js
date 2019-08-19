@@ -35,6 +35,11 @@ export class TriggerLineSeg extends LineSeg<TriggerEvents> {
 	constructor(p1: Vertex2D, p2: Vertex2D, zLow: number, zHigh: number, data: TriggerData) {
 		super(p1, p2, zLow, zHigh, undefined);
 		this.data = data;
+		this.objType = CollisionType.Trigger;
+	}
+
+	public getType(): CollisionType {
+		return CollisionType.Trigger;
 	}
 
 	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): HitTestResult {
@@ -56,7 +61,7 @@ export class TriggerLineSeg extends LineSeg<TriggerEvents> {
 		const i = ball.hit.vpVolObjs.indexOf(this.obj!);
 
 		// if -1 then not in objects volume set (i.e not already hit)
-		if (!coll.hitFlag !== i < 0) {                                            // Hit == NotAlreadyHit
+		if (coll.hitFlag !== i < 0) {                                             // Hit == NotAlreadyHit
 			ball.state.pos.add(ball.hit.vel.clone().multiplyScalar(STATICTIME));  // move ball slightly forward
 
 			if (i < 0) {
