@@ -45,7 +45,9 @@ describe('The VPinball primitive collision', () => {
 	it('with a simple primitive make the ball bounce back on collision', () => {
 
 		// create ball
-		const ball = createBall(player, 500, 1100, 0, 0, 10);
+		const kicker = table.kickers.BallRelease.getApi();
+		const ball = kicker.CreateBall();
+		kicker.Kick(0, -10);
 
 		// let it roll down some
 		player.updatePhysics(0);

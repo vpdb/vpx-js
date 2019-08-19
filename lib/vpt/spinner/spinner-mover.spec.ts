@@ -68,7 +68,9 @@ describe('The VPinball spinner collision', () => {
 		const spinner = table.spinners.Spinner;
 
 		// create ball
-		createBall(player, 200, 1000, 0, 0, 10);
+		const kicker = table.kickers.BallRelease.getApi();
+		const ball = kicker.CreateBall();
+		kicker.Kick(0, -10);
 
 		// assert initial position
 		expect(spinner.getState().angle).to.equal(0);

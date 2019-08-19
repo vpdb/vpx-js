@@ -85,22 +85,5 @@ describe('The VPinball trigger collision', () => {
 		player.updatePhysics(800);
 
 		expect(trigger.getState().heightOffset).to.equal(0);
-
-		// // let it roll down some
-		// player.updatePhysics(0);
-		// player.updatePhysics(700);
-		//
-		// expect(trigger.getState().heightOffset).to.equal(0);
-		//
-		// // let it collide
-		// player.updatePhysics(800);
-		//
-		// expect(trigger.getState().heightOffset).to.equal(-32);
-
-		// const cycleLength = 10;
-		// for (let i = 0; i <= 300; i++) {
-		// 	player.updatePhysics(i * cycleLength);
-		// 	console.log('[%sms] %s (%s, %s, %s)', i * cycleLength, trigger.getState().heightOffset, ball.getState().pos.x, ball.getState().pos.y, ball.getState().pos.z);
-		// }
 	});
 });

@@ -85,6 +85,7 @@ export class Hit3DPoly<T extends FireEvents> extends HitObject<T> {
 		const ball = coll.ball;
 		const hitNormal = coll.hitNormal!;
 
+		/* istanbul ignore else: This seems dead code to me. The actual trigger logic is handled in TriggerHitCircle and TriggerHitLine. */
 		if (this.objType !== CollisionType.Trigger) {
 			const dot = -hitNormal.dot(ball.hit.vel);
 			ball.hit.collide3DWall(this.normal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
