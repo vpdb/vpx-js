@@ -252,7 +252,7 @@ export class PlungerMover implements MoverObject {
 	/**
 	 * maximum retracted position, in absolute table coordinates
 	 */
-	private readonly frameStart: number;
+	public readonly frameStart: number;
 
 	/**
 	 * maximum forward position, in absolute table coordinates

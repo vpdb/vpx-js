@@ -23,6 +23,7 @@ import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
+import { IScriptable } from '../../game/iscriptable';
 import { IBallCreationPosition, Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
@@ -31,6 +32,7 @@ import { HitObject } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
 import { Meshes } from '../item-data';
 import { VpTableExporterOptions } from '../table/table-exporter';
+import { PlungerApi } from './plunger-api';
 import { PlungerData } from './plunger-data';
 import { PlungerHit } from './plunger-hit';
 import { PlungerMesh } from './plunger-mesh';
@@ -42,13 +44,13 @@ import { PlungerState } from './plunger-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/plunger.cpp
  */
-export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, IHittable, IBallCreationPosition {
-
+export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, IHittable, IBallCreationPosition, IScriptable<PlungerApi> {
 	public static PLUNGER_HEIGHT = 50.0;
 
 	private readonly data: PlungerData;
 	private readonly mesh: PlungerMesh;
 	private readonly state: PlungerState;
+	private api?: PlungerApi;
 	private hit?: PlungerHit;
 	private fireEvents?: FireEvents;
 
@@ -96,7 +98,7 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 	}
 
 	public isVisible(table: Table): boolean {
-		return this.data.isVisible();
+		return this.data.isVisible;
 	}
 
 	public isCollidable(): boolean {
@@ -106,6 +108,11 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 	public setupPlayer(player: Player, table: Table): void {
 		this.fireEvents = new FireEvents(this);
 		this.hit = new PlungerHit(this.data, this.state, this.fireEvents, this.mesh.cFrames, player, table);
+		this.api = new PlungerApi(this.data, this.hit, this.fireEvents, this, player, table);
+	}
+
+	public getApi(): PlungerApi {
+		return this.api!;
 	}
 
 	public getMover(): PlungerMover {
