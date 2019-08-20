@@ -58,6 +58,7 @@ export class HitKDNode {
 			}
 		}
 
+		/* istanbul ignore if: never executed (https://www.vpforums.org/index.php?showtopic=42690) */
 		if (this.children && this.children.length) { // not a leaf
 			if (axis === 0) {
 				const vCenter = (this.rectBounds.left + this.rectBounds.right) * 0.5;
@@ -90,6 +91,7 @@ export class HitKDNode {
 		return coll;
 	}
 
+	/* istanbul ignore next: never executed below the "magic" check (https://www.vpforums.org/index.php?showtopic=42690) */
 	public createNextLevel(level: number, levelEmpty: number): void {
 		const orgItems = (this.items & 0x3FFFFFFF);
 
