@@ -37,22 +37,24 @@ ID                   -> Letter IDTail                                {% data => 
 ArrayRankList        -> IntLiteral _ "," _ ArrayRankList
                       | IntLiteral
 
-ConstDecl            -> AccessModifierOpt __ "Const" __ ConstList NL
-                      | "Const" __ ConstList NL                      {% estree.constDecl %}
+ConstDecl            -> AccessModifierOpt __ "Const" __ ConstNameValue OtherConstantsOpt:* NL
+                      | "Const" __ ConstNameValue OtherConstantsOpt:* NL                      {% estree.constDecl %}
 
-ConstList            -> ExtendedID _ "=" _ ConstExprDef _ "," _ ConstList
-                      | ExtendedID _ "=" _ ConstExprDef
+ConstNameValue       -> ExtendedID _ "=" _ ConstExprDef
+
+OtherConstantsOpt    -> "," _ ConstNameValue                         {% data => data[2] %}
 
 ConstExprDef         -> "(" _ ConstExprDef _ ")"
-                      | "-" _ ConstExprDef
-                      | "+" _ ConstExprDef
-                      | ConstExpr                                    {% data => data[0] %}
+                      | "-" __ ConstExprDef
+                      | "+" __ ConstExprDef
+                      | ConstExpr                                    {% id %}
 
 AccessModifierOpt    -> "Public"
                       | "Private"
 
-ConstExpr            -> FloatLiteral                                 {% data => data[0] %}
-                      | Nothing                                      {% data => data[0] %}
+ConstExpr            -> FloatLiteral                                 {% id %}
+                      | StringLiteral                                {% id %}
+                      | Nothing                                      {% id %}
 
 Nothing              -> "Nothing"
                       | "Null"
@@ -72,7 +74,9 @@ IntLiteral           -> DecDigit:+
                       | HexLiteral
                       | OctLiteral
 
-FloatLiteral         -> decimal                                    {% data => data[0] %}  # DecDigit:* "." DecDigit:+ ( "E" [+-]:? DecDigit:+ ):?
+StringLiteral        -> "\"" ( StringChar | "\"\"" ):* "\""          {% data => data[1].join('') %}
+
+FloatLiteral         -> decimal                                      {% id %}  # DecDigit:* "." DecDigit:+ ( "E" [+-]:? DecDigit:+ ):?
 
 HexLiteral           -> "&H" HexDigit:+ "&":?
 OctLiteral           -> "&" OctDigit:+ "&":?
@@ -88,5 +92,7 @@ Letter               -> [a-zA-Z]
 LF                   -> [\n]
 
 CR                   -> [\r]
+
+StringChar           -> [\x01-\x21|\x23-\xD7FF|\xE000-\xFFEF]        {% id %}
 
 IDTail               -> [a-zA-Z0-9_]:*                               {% data => data[0].join('') %}
