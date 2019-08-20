@@ -59,6 +59,8 @@ export class Player extends EventEmitter {
 	private readonly hitObjects: Array<HitObject<FireEvents>> = [];
 	private readonly hitObjectsDynamic: Array<HitObject<FireEvents>> = [];
 
+	public static SLOW_MO = 1; // the lower, the slower
+
 	private minPhysLoopTime: number = 0;
 	private lastFlipTime: number = 0;
 	private lastTimeUsec: number = 0;
@@ -393,7 +395,7 @@ export class Player extends EventEmitter {
 	 */
 	public updatePhysics(time?: number): number {
 
-		const initialTimeUsec = time !== undefined ? time * 1000 : Math.floor(now() * 1000);
+		const initialTimeUsec = time !== undefined ? time * 1000 : Math.floor(this.now() * 1000);
 
 //#ifdef FPS
 		this.lastFrameDuration = initialTimeUsec - this.lastTimeUsec;
@@ -447,7 +449,7 @@ export class Player extends EventEmitter {
 			animatable.getAnimation().updateAnimation(this, this.table);
 		}
 
-		this.physPeriod = Math.floor(now() * 1000) - initialTimeUsec;
+		this.physPeriod = Math.floor(this.now() * 1000) - initialTimeUsec;
 		return initialTimeUsec;
 	}
 
@@ -534,6 +536,10 @@ export class Player extends EventEmitter {
 		this.gravity.x = 0;
 		this.gravity.y = Math.sin(degToRad(slope)) * (table.data!.overridePhysics ? DEFAULT_TABLE_GRAVITY : table.data!.Gravity);
 		this.gravity.z = -Math.cos(degToRad(slope)) * (table.data!.overridePhysics ? DEFAULT_TABLE_GRAVITY : table.data!.Gravity);
+	}
+
+	private now(): number {
+		return now() * Player.SLOW_MO;
 	}
 }
 

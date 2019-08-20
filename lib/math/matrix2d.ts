@@ -112,4 +112,11 @@ export class Matrix2D {
 		this.matrix[2][1] = vY.z;
 		this.matrix[2][2] = vZ.z;
 	}
+
+	/* istanbul ignore next: debugging only */
+	public toString() {
+		return `[${Math.round(this.matrix[0][0] * 1000) / 1000}, ${Math.round(this.matrix[0][1] * 1000) / 1000}, ${Math.round(this.matrix[0][2] * 1000) / 1000}]\n` +
+			`[${Math.round(this.matrix[1][0] * 1000) / 1000}, ${Math.round(this.matrix[1][1] * 1000) / 1000}, ${Math.round(this.matrix[1][2] * 1000) / 1000}]\n` +
+			`[${Math.round(this.matrix[2][0] * 1000) / 1000}, ${Math.round(this.matrix[2][1] * 1000) / 1000}, ${Math.round(this.matrix[2][2] * 1000) / 1000}]\n`;
+	}
 }
