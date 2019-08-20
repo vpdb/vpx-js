@@ -61,10 +61,6 @@ export class HitKD {
 		this.rootNode.reset(this);
 	}
 
-	public addElementByIndex(i: number): void {
-		this.orgIdx.push(i);
-	}
-
 	public fillFromVector(vho: Array<HitObject<FireEvents>>): void {
 		this.init(vho);
 
@@ -81,33 +77,6 @@ export class HitKD {
 		}
 
 		this.rootNode.createNextLevel(0, 0);
-	}
-
-	public fillFromIndices(initialBounds?: FRect3D): void {
-		if (initialBounds) {
-			this.rootNode.rectBounds = initialBounds;
-
-			this.rootNode.start = 0;
-			this.rootNode.items = this.numItems;
-
-			// assume that CalcHitBBox() was already called on the hit objects
-
-			this.rootNode.createNextLevel(0, 0);
-		} else {
-
-			this.rootNode.rectBounds.Clear();
-
-			this.rootNode.start = 0;
-			this.rootNode.items = this.numItems;
-
-			for (let i = 0; i < this.numItems; ++i) {
-				const pho = this.getItemAt(i);
-				pho.calcHitBBox(); //!! omit, as already calced?!
-				this.rootNode.rectBounds.extend(pho.hitBBox);
-			}
-
-			this.rootNode.createNextLevel(0, 0);
-		}
 	}
 
 	// call when the bounding boxes of the HitObjects have changed to update the tree
@@ -132,6 +101,7 @@ export class HitKD {
 		return this.orgVho[ this.orgIdx[ i ] ];
 	}
 
+	/* istanbul ignore next: never executed below the "magic" check (https://www.vpforums.org/index.php?showtopic=42690) */
 	public allocTwoNodes(): HitKDNode[] {
 		if (this.numNodes + 1 >= this.nodes.length) {       // space for two more nodes?
 			return [];
