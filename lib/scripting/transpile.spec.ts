@@ -22,16 +22,27 @@ import { vbsToJs } from './transpile';
 
 describe('The VBScript transpiler', () => {
 
-	it('should transpile a variable declaration', () => {
+	it('should transpile a single variable declaration', () => {
+		const vbs = `Dim test1\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('let test1;\n');
+	});
 
+	it('should transpile a multiple variable declaration', () => {
 		const vbs = `Dim test1, test2, test3\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('let test1, test2, test3;\n');
 	});
 
-	it('should transpile a const declaration', () => {
+	it('should transpile a single Const declaration', () => {
 		const vbs = `Const pi = 3.14\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('const pi = 3.14;\n');
+	});
+
+	it('should transpile a multiple Const declaration', () => {
+		const vbs = `Const test1 = 3.14, test2 = 4, test3 = "TEST", test4 = -5.2\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('const test1 = 3.14, test2 = 4, test3 = "TEST", test4 = -5.2;\n');
 	});
 });

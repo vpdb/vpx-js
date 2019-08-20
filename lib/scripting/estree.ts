@@ -39,14 +39,17 @@ export function varDecl(data: [string, null, string, string[]]): VariableDeclara
 	return {
 		type: 'VariableDeclaration',
 		kind: 'let',
-		declarations: [ data[2], ...data[3] ].map(variableDeclarator),
+		declarations: [ data[2], ...data[3] ].map((item) => {
+			return variableDeclarator(item);
+		}),
 	};
 }
 
-export function variableDeclarator(name: string): VariableDeclarator {
+export function variableDeclarator(name: string, value: any = null): VariableDeclarator {
 	return {
 		type: 'VariableDeclarator',
 		id: { type: 'Identifier', name },
+		init: value ? literal(value) : null,
 	};
 }
 
@@ -54,16 +57,12 @@ export function variableDeclarator(name: string): VariableDeclarator {
  * Returns a constant declaration.
  */
 export function constDecl(data: any): VariableDeclaration {
-	const name: string = data[2][0];
-
 	return {
 		type: 'VariableDeclaration',
 		kind: 'const',
-		declarations: [ {
-			type: 'VariableDeclarator',
-			id: { type: 'Identifier', name },
-			init: literal(data[2][4]),
-		}],
+		declarations: [ data[2], ...data[3] ].map((item: any[]) => {
+			return variableDeclarator(item[0], item[4]);
+		}),
 	};
 }
 
