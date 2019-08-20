@@ -129,11 +129,11 @@ export class FlipperHit extends HitObject<FireEvents> {
 
 		hitTime = this.hitTestFlipperFace(ball, dTime, coll, !lastFace); //second face
 		if (hitTime >= 0) {
-			this.mover.lastHitFace = !lastFace; // change this face to check first // HACK
+			this.mover.lastHitFace = !lastFace;                      // change this face to check first // HACK
 			return { hitTime, coll };
 		}
 
-		hitTime = this.hitTestFlipperEnd(ball, dTime, coll); // end radius
+		hitTime = this.hitTestFlipperEnd(ball, dTime, coll);         // end radius
 		if (hitTime >= 0) {
 			return { hitTime, coll };
 		}
@@ -141,8 +141,8 @@ export class FlipperHit extends HitObject<FireEvents> {
 		({ hitTime, coll } = this.mover.hitCircleBase.hitTest(ball, dTime, coll));
 		if (hitTime >= 0) {
 			coll.hitVel = new Vertex2D();
-			coll.hitVel.x = 0;		//Tangent velocity of contact point (rotate Normal right)
-			coll.hitVel.y = 0;		//units: rad*d/t (Radians*diameter/time
+			coll.hitVel.x = 0;                                       // Tangent velocity of contact point (rotate Normal right)
+			coll.hitVel.y = 0;                                       // units: rad*d/t (Radians*diameter/time)
 			coll.hitMomentBit = true;
 			return { hitTime, coll };
 
@@ -176,7 +176,7 @@ export class FlipperHit extends HitObject<FireEvents> {
 		const vF = this.mover.surfaceVelocity(rF);
 		const vRel = vB.clone().sub(vF);
 
-		const normVel = vRel.dot(normal);   // this should be zero, but only up to +/- C_CONTACTVEL
+		const normVel = vRel.dot(normal);                  // this should be zero, but only up to +/- C_CONTACTVEL
 
 		// If some collision has changed the ball's velocity, we may not have to do anything.
 		if (normVel <= C_CONTACTVEL) {
