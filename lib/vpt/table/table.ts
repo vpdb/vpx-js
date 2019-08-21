@@ -24,6 +24,7 @@ import { IItem } from '../../game/iitem';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
+import { IScriptable } from '../../game/iscriptable';
 import { IBinaryReader, Storage } from '../../io/ole-doc';
 import { f4 } from '../../math/float';
 import { FRect3D } from '../../math/frect3d';
@@ -50,7 +51,6 @@ import { TableData } from './table-data';
 import { TableExporter, VpTableExporterOptions } from './table-exporter';
 import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
-import { IScriptable } from '../../game/iscriptable';
 
 /**
  * A Visual Pinball table.
