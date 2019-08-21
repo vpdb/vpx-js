@@ -17,37 +17,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Storage } from '../..';
-import { Table } from '../..';
+import { Storage, Table } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
+import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
 import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { Mesh } from '../mesh';
+import { PrimitiveApi } from './primitive-api';
 import { PrimitiveData } from './primitive-data';
 import { PrimitiveHitGenerator } from './primitive-hit-generator';
 import { PrimitiveMeshGenerator } from './primitive-mesh-generator';
-import { clamp } from '../../math/functions';
-import { MeshConverter, MeshExporter } from '../../gltf/mesh-converter';
-import { MeshBasicMaterial, Mesh as ThreeMesh } from 'three';
-import { SimplifyModifier } from 'three/examples/jsm/modifiers/SimplifyModifier';
 
 /**
  * VPinball's primitive.
  *
  * @see https://github.com/vpinball/vpinball/blob/master/primitive.cpp
  */
-export class Primitive implements IRenderable, IHittable {
+export class Primitive implements IRenderable, IHittable, IScriptable<PrimitiveApi> {
 
 	private readonly data: PrimitiveData;
 	private readonly meshGenerator: PrimitiveMeshGenerator;
 	private readonly hitGenerator: PrimitiveHitGenerator;
 	private mesh?: Mesh;
+	private api?: PrimitiveApi;
 	private hits?: Array<HitObject<FireEvents>>;
-	private fireEvents?: FireEvents;
+	private events?: FireEvents;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Primitive> {
 		const data = await PrimitiveData.fromStorage(storage, itemName);
@@ -91,11 +89,36 @@ export class Primitive implements IRenderable, IHittable {
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		this.fireEvents = new FireEvents(this);
-		this.hits = this.hitGenerator.generateHitObjects(this.getMesh(table), this.fireEvents, table);
+		this.events = new FireEvents(this);
+		this.hits = this.hitGenerator.generateHitObjects(this.getMesh(table), this.events, table);
+		this.api = new PrimitiveApi(this, this.data, this.hits!, this.events, player, table);
 	}
+
+	public getApi(): PrimitiveApi {
+		return this.api!;
+	}
+
 
 	public getHitShapes(): Array<HitObject<FireEvents>> {
 		return this.hits!;
+	}
+
+	public setSides(num: number): void {
+		this.data.sides = num;
+		if (!this.data.use3DMesh) {
+			// TODO
+			// vertexBufferRegenerate = true;
+			// CalculateBuiltinOriginal();
+			// RecalculateMatrices();
+			// TransformVertices();
+		}
+	}
+
+	public setCollidable(isCollidable: boolean) {
+		if (this.hits!.length > 0 && this.hits![0].isEnabled !== isCollidable) {
+			for (const hit of this.hits!) { // !! costly
+				hit.isEnabled = isCollidable; //copy to hit-testing on entities composing the object
+			}
+		}
 	}
 }
