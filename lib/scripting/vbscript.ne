@@ -5,34 +5,21 @@
 const estree = require('./estree');
 %}
 
+#===============================
+# Rules 
+#===============================
+
 Program              -> NLOpt GlobalStmt:*                           {% data => estree.program(data[1]) %}
 
-GlobalStmt           -> OptionExplicit
-                      | ConstDecl                                    {% data => data[0] %}
-                      | BlockStmt                                    {% data => data[0] %}
-
-OptionExplicit       -> "Option" __ "Explicit" NL
-
-BlockStmt            -> VarDecl                                      {% data => data[0] %}
+#===============================
+# Rules : Declarations
+#===============================
 
 VarDecl              -> "Dim" __ VarName OtherVarsOpt:* NL           {% estree.varDecl %}
 
 VarName              -> ExtendedID ("(" ArrayRankList ")"):?         {% data => data[0] %}
 
 OtherVarsOpt         -> "," __ VarName                               {% data => data[2] %}
-
-ExtendedID           -> SafeKeywordID
-                      | ID                                           {% data => data[0] %}
-
-SafeKeywordID        -> "Default"
-                      | "Erase"
-                      | "Error"
-                      | "Explicit"
-                      | "Property"
-                      | "Step"
-
-ID                   -> Letter IDTail                                {% data => data[0] + data[1] %}
-                      | "[" IDNameChar:* "]"
 
 ArrayRankList        -> IntLiteral _ "," _ ArrayRankList
                       | IntLiteral
@@ -52,6 +39,46 @@ ConstExprDef         -> "(" _ ConstExprDef _ ")"
 AccessModifierOpt    -> "Public"
                       | "Private"
 
+#===============================
+# Rules : Statements
+#===============================
+
+GlobalStmt           -> OptionExplicit
+                      | ConstDecl                                    {% data => data[0] %}
+                      | BlockStmt                                    {% data => data[0] %}
+
+BlockStmt            -> VarDecl                                      {% data => data[0] %}
+                      | InlineStmt NL                                {% data => data[0] %}
+
+InlineStmt           -> SubCallStmt                                  {% data => data[0] %}
+
+OptionExplicit       -> "Option" __ "Explicit" NL
+
+SubCallStmt          -> QualifiedID "(" ")"                          {% data => estree.expressionStatement(data) %}
+                      | QualifiedID                                  {% data => estree.expressionStatement(data[0]) %}
+
+QualifiedID          -> IDDot QualifiedIDTail                                      
+                      | ID                                            
+                       
+QualifiedIDTail      -> IDDot QualifiedIDTail                        
+                      | ID                                           
+
+SafeKeywordID        -> "Default"
+                      | "Erase"
+                      | "Error"
+                      | "Explicit"
+                      | "Property"
+                      | "Step"
+
+ExtendedID           -> SafeKeywordID
+                      | ID                                           {% data => data[0] %}
+
+NLOpt                -> NL:*
+
+#===============================
+# Rules : Expressions
+#===============================
+
 ConstExpr            -> FloatLiteral                                 {% id %}
                       | StringLiteral                                {% id %}
                       | Nothing                                      {% id %}
@@ -60,7 +87,14 @@ Nothing              -> "Nothing"
                       | "Null"
                       | "Empty"
 
-NLOpt                -> NL:*
+#===============================
+# Terminals
+#===============================
+
+ID                   -> Letter IDTail                                {% data => data[0] + data[1] %}
+                      | "[" IDNameChar:* "]"
+
+IDDot                -> Letter IDTail "."                            {% data => [ data[0] + data[1],  "." ] %}
 
 NL                   -> NewLine NL
                       | NewLine
