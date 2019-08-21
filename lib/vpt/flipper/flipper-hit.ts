@@ -94,10 +94,6 @@ export class FlipperHit extends HitObject<FireEvents> {
 		this.updatePhysicsFromFlipper();
 	}
 
-	public getType(): CollisionType {
-		return CollisionType.Flipper;
-	}
-
 	public calcHitBBox(): void {
 		// Allow roundoff
 		this.hitBBox = new FRect3D(
@@ -140,9 +136,9 @@ export class FlipperHit extends HitObject<FireEvents> {
 
 		({ hitTime, coll } = this.mover.hitCircleBase.hitTest(ball, dTime, coll));
 		if (hitTime >= 0) {
-			coll.hitVel = new Vertex2D();
-			coll.hitVel.x = 0;                                       // Tangent velocity of contact point (rotate Normal right)
-			coll.hitVel.y = 0;                                       // units: rad*d/t (Radians*diameter/time)
+			// Tangent velocity of contact point (rotate Normal right)
+			// units: rad*d/t (Radians*diameter/time)
+			coll.hitVel = new Vertex2D(0, 0);
 			coll.hitMomentBit = true;
 			return { hitTime, coll };
 
@@ -162,19 +158,7 @@ export class FlipperHit extends HitObject<FireEvents> {
 		}
 //#endif
 
-		const rB = normal.clone().multiplyScalar(-ball.data.radius);
-		const hitPos = ball.state.pos.clone().add(rB);
-
-		const cF = new Vertex3D(
-			this.mover.hitCircleBase.center.x,
-			this.mover.hitCircleBase.center.y,
-			ball.state.pos.z,                              // make sure collision happens in same z plane where ball is
-		);
-
-		const rF = hitPos.clone().sub(cF);                 // displacement relative to flipper center
-		const vB = ball.hit.surfaceVelocity(rB);
-		const vF = this.mover.surfaceVelocity(rF);
-		const vRel = vB.clone().sub(vF);
+		const [ vRel, rB, rF ] = this.getRelativeVelocity(normal, ball);
 
 		const normVel = vRel.dot(normal);                  // this should be zero, but only up to +/- C_CONTACTVEL
 
@@ -257,21 +241,8 @@ export class FlipperHit extends HitObject<FireEvents> {
 	public collide(coll: CollisionEvent, player: Player): void {
 		const ball = coll.ball;
 		const normal = coll.hitNormal!;
+		const [ vRel, rB, rF ] = this.getRelativeVelocity(normal, ball);
 
-		const rB = normal.clone().multiplyScalar(-ball.data.radius);
-		const hitPos = ball.state.pos.clone().add(rB);
-
-		const cF = new Vertex3D(
-			this.mover.hitCircleBase.center.x,
-			this.mover.hitCircleBase.center.y,
-			ball.state.pos.z,                              // make sure collision happens in same z plane where ball is
-		);
-
-		const rF = hitPos.clone().sub(cF);                 // displacement relative to flipper center
-
-		const vB = ball.hit.surfaceVelocity(rB);
-		const vF = this.mover.surfaceVelocity(rF);
-		const vRel = vB.clone().sub(vF);
 		let bnv = normal.dot(vRel);                        // relative normal velocity
 
 		if (bnv >= -C_LOWNORMVEL) {                        // nearly receding ... make sure of conditions
@@ -602,6 +573,22 @@ export class FlipperHit extends HitObject<FireEvents> {
 		//coll.m_hitRigid = true;				// collision type
 
 		return t;
+	}
+
+	private getRelativeVelocity(normal: Vertex3D, ball: Ball): [ Vertex3D, Vertex3D, Vertex3D] {
+		const rB = normal.clone().multiplyScalar(-ball.data.radius);
+		const hitPos = ball.state.pos.clone().add(rB);
+
+		const cF = new Vertex3D(
+			this.mover.hitCircleBase.center.x,
+			this.mover.hitCircleBase.center.y,
+			ball.state.pos.z,                              // make sure collision happens in same z plane where ball is
+		);
+
+		const rF = hitPos.clone().sub(cF);                 // displacement relative to flipper center
+		const vB = ball.hit.surfaceVelocity(rB);
+		const vF = this.mover.surfaceVelocity(rF);
+		return [ vB.sub(vF), rB, rF ];
 	}
 
 	private hitTestFlipperEnd(ball: Ball, dTime: number, coll: CollisionEvent): number {

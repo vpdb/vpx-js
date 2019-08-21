@@ -60,10 +60,6 @@ export class PlungerHit extends HitObject<FireEvents> {
 		return this.mover;
 	}
 
-	public getType(): CollisionType {
-		return CollisionType.Plunger;
-	}
-
 	public calcHitBBox(): void {
 		// Allow roundoff
 		this.hitBBox.left = this.mover.x - 0.1;

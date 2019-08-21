@@ -37,10 +37,6 @@ export class HitPoint<T extends FireEvents> extends HitObject<T> {
 		this.p = p;
 	}
 
-	public getType(): CollisionType {
-		return CollisionType.Point;
-	}
-
 	public calcHitBBox(): void {
 		this.hitBBox = new FRect3D(this.p.x, this.p.x, this.p.y, this.p.y, this.p.z, this.p.z);
 	}

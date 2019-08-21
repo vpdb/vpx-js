@@ -142,10 +142,6 @@ export class BallHit extends HitObject<FireEvents> {
 		return this.mover;
 	}
 
-	public getType(): CollisionType {
-		return CollisionType.Flipper;
-	}
-
 	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): HitTestResult {
 		const d = this.state.pos.clone().sub(ball.state.pos!);  // delta position
 		const dv = this.vel.clone().sub(ball.hit.vel);           // delta velocity

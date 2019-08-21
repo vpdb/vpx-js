@@ -38,10 +38,6 @@ export class TriggerLineSeg extends LineSeg<TriggerEvents> {
 		this.objType = CollisionType.Trigger;
 	}
 
-	public getType(): CollisionType {
-		return CollisionType.Trigger;
-	}
-
 	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): HitTestResult {
 		if (!this.data.isEnabled) {
 			return { hitTime: -1.0, coll };
