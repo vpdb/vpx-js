@@ -17,36 +17,42 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Storage } from '../..';
-import { Table } from '../..';
+import { Storage, Table } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
+import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
 import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { VpTableExporterOptions } from '../table/table-exporter';
+import { SurfaceApi } from './surface-api';
 import { SurfaceData } from './surface-data';
 import { SurfaceHitGenerator } from './surface-hit-generator';
-import { SurfaceMesh } from './surface-mesh';
+import { SurfaceMeshGenerator } from './surface-mesh-generator';
 
 /**
  * VPinball's surfaces, a.k.a as "walls".
  *
  * @see https://github.com/vpinball/vpinball/blob/master/surface.cpp
  */
-export class Surface implements IRenderable, IHittable {
+export class Surface implements IRenderable, IHittable, IScriptable<SurfaceApi> {
 
 	private readonly itemName: string;
 	private readonly data: SurfaceData;
-	private readonly mesh: SurfaceMesh;
+	private readonly meshGenerator: SurfaceMeshGenerator;
 	private readonly hitGenerator: SurfaceHitGenerator;
 	private hits: Array<HitObject<FireEvents>> = [];
+	private drops: Array<HitObject<FireEvents>> = [];
 	private fireEvents?: FireEvents;
+	private api?: SurfaceApi;
+
+	public isDropped: boolean = false;
+	public isDisabled: boolean = false;
 
 	// public getters
-	get heightTop() { return this.data.heighttop; }
+	get heightTop() { return this.data.heightTop; }
 	get image() { return this.data.szImage; }
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Surface> {
@@ -57,8 +63,8 @@ export class Surface implements IRenderable, IHittable {
 	public constructor(itemName: string, data: SurfaceData) {
 		this.itemName = itemName;
 		this.data = data;
-		this.mesh = new SurfaceMesh();
-		this.hitGenerator = new SurfaceHitGenerator(data);
+		this.meshGenerator = new SurfaceMeshGenerator();
+		this.hitGenerator = new SurfaceHitGenerator(this, data);
 	}
 
 	public getName(): string {
@@ -66,16 +72,40 @@ export class Surface implements IRenderable, IHittable {
 	}
 
 	public isVisible(): boolean {
-		return this.data.fSideVisible || this.data.fTopBottomVisible;
+		return this.data.isSideVisible || this.data.isTopBottomVisible;
 	}
 
 	public isCollidable(): boolean {
-		return this.data.fCollidable;
+		return this.data.isCollidable;
+	}
+
+	public setDropped(isDropped: boolean): void {
+		if (!this.data.isDroppable) {
+			throw new Error(`Surface "${this.getName()}" is not droppable.`);
+		}
+		if (this.isDropped !== isDropped) {
+			this.isDropped = isDropped;
+			const b = !this.isDropped && this.data.isCollidable;
+			if (this.drops.length > 0 && this.drops[0].isEnabled !== b) {
+				for (const drop of this.drops) { // !! costly
+					drop.setEnabled(b); // disable hit on entities composing the object
+				}
+			}
+		}
+	}
+
+	public setCollidable(isCollidable: boolean) {
+		const b = this.data.isDroppable ? (isCollidable && !this.isDropped) : isCollidable;
+		if (this.hits.length > 0 && this.hits[0].isEnabled !== b) {
+			for (const hit of this.hits) { // !! costly
+				hit.isEnabled = b; // copy to hit checking on enities composing the object
+			}
+		}
 	}
 
 	public getMeshes(table: Table, opts: VpTableExporterOptions): Meshes {
 		const meshes: Meshes = {};
-		const surface = this.mesh.generateMeshes(this.data, table);
+		const surface = this.meshGenerator.generateMeshes(this.data, table);
 		if (surface.top) {
 			meshes.top = {
 				mesh: surface.top.transform(new Matrix3D().toRightHanded()),
@@ -96,7 +126,13 @@ export class Surface implements IRenderable, IHittable {
 
 	public setupPlayer(player: Player, table: Table): void {
 		this.fireEvents = new FireEvents(this);
-		this.hits = this.hitGenerator.generateHitObjects(this.fireEvents, table);
+		this.hits = this.hitGenerator.generateHitObjects(this.fireEvents, player, table);
+		this.drops = this.data.isCollidable ? this.hits : [];
+		this.api = new SurfaceApi(this, this.data, this.hitGenerator, this.fireEvents, player, table);
+	}
+
+	public getApi(): SurfaceApi {
+		return this.api!;
 	}
 
 	public getHitShapes(): Array<HitObject<FireEvents>> {

@@ -42,7 +42,7 @@ export abstract class HitObject<T extends FireEvents> {
 	protected scatter: number = 0; // in radians
 
 	protected objType: CollisionType = CollisionType.Null;
-	protected isEnabled: boolean = true;
+	public isEnabled: boolean = true;
 
 	/**
 	 * FireEvents for m_obj?

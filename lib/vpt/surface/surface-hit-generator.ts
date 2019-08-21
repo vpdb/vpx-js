@@ -18,6 +18,7 @@
  */
 
 import { Table } from '../..';
+import { Player } from '../../game/player';
 import { CatmullCurve2D } from '../../math/catmull-curve';
 import { DragPoint } from '../../math/dragpoint';
 import { degToRad } from '../../math/float';
@@ -31,33 +32,39 @@ import { HitObject } from '../../physics/hit-object';
 import { HitPoint } from '../../physics/hit-point';
 import { LineSeg } from '../../physics/line-seg';
 import { LineSegSlingshot } from '../../physics/line-seg-slingshot';
+import { Surface } from './surface';
 import { SurfaceData } from './surface-data';
 
 export class SurfaceHitGenerator {
 
+	private readonly surface: Surface;
 	private readonly data: SurfaceData;
-	private lineSling: LineSegSlingshot[] = [];
+	public lineSling: LineSegSlingshot[] = [];
 
-	constructor(data: SurfaceData) {
+	constructor(surface: Surface, data: SurfaceData) {
+		this.surface = surface;
 		this.data = data;
 	}
 
-	public generateHitObjects(fireEvents: FireEvents, table: Table): Array<HitObject<FireEvents>> {
-		const polys = this.generate3DPolys(fireEvents, table);
-		return this.updateCommonParameters(polys, fireEvents, table);
+	public generateHitObjects(fireEvents: FireEvents, player: Player, table: Table): Array<HitObject<FireEvents>> {
+		return this.updateCommonParameters(this.generate3DPolys(fireEvents, player, table), fireEvents, table);
 	}
 
-	private generate3DPolys(fireEvents: FireEvents, table: Table): Array<HitObject<FireEvents>> {
+	/**
+	 * Returns all hit objects for the surface.
+	 * @see Surface::CurvesToShapes
+	 */
+	private generate3DPolys(fireEvents: FireEvents, player: Player, table: Table): Array<HitObject<FireEvents>> {
 
 		const hitObjects: Array<HitObject<FireEvents>> = [];
 		const vVertex: RenderVertex[] = DragPoint.getRgVertex<RenderVertex>(this.data.dragPoints, () => new RenderVertex(), CatmullCurve2D.fromVertex2D as any);
 
 		const count = vVertex.length;
 		const rgv3Dt: Vertex3D[] = [];
-		const rgv3Db: Vertex3D[] | null = this.data.fIsBottomSolid ? [] : null;
+		const rgv3Db: Vertex3D[] | null = this.data.isBottomSolid ? [] : null;
 
-		const bottom = this.data.heightbottom + table.getTableHeight();
-		const top = this.data.heighttop + table.getTableHeight();
+		const bottom = this.data.heightBottom + table.getTableHeight();
+		const top = this.data.heightTop + table.getTableHeight();
 
 		for (let i = 0; i < count; ++i) {
 			const pv1 = vVertex[i];
@@ -69,7 +76,7 @@ export class SurfaceHitGenerator {
 
 			const pv2 = vVertex[(i + 1) % count];
 			const pv3 = vVertex[(i + 2) % count];
-			hitObjects.push(...this.generateLinePolys(pv2, pv3, fireEvents, table));
+			hitObjects.push(...this.generateLinePolys(pv2, pv3, fireEvents, player, table));
 		}
 
 		hitObjects.push(new Hit3DPoly(rgv3Dt));
@@ -81,29 +88,33 @@ export class SurfaceHitGenerator {
 		return hitObjects;
 	}
 
-	private generateLinePolys(pv1: RenderVertex, pv2: RenderVertex, events: FireEvents, table: Table): Array<HitObject<FireEvents>> {
+	/**
+	 * Returns the hit line polygons for the surface.
+	 * @see Surface::AddLine
+	 */
+	private generateLinePolys(pv1: RenderVertex, pv2: RenderVertex, events: FireEvents, player: Player, table: Table): Array<HitObject<FireEvents>>  {
 
 		const linePolys: Array<HitObject<FireEvents>> = [];
-		const bottom = this.data.heightbottom + table.getTableHeight();
-		const top = this.data.heighttop + table.getTableHeight();
+		const bottom = this.data.heightBottom + table.getTableHeight();
+		const top = this.data.heightTop + table.getTableHeight();
 
 		if (!pv1.fSlingshot) {
 			linePolys.push(new LineSeg(pv1, pv2, bottom, top));
 
 		} else {
-			const plinesling = new LineSegSlingshot(this.data, pv1, pv2, bottom, top);
-			plinesling.force = this.data.slingshotforce;
+			const slingLine = new LineSegSlingshot(this.surface, this.data, pv1, pv2, bottom, top, player);
+			slingLine.force = this.data.slingshotForce;
 
 			// slingshots always have hit events
-			plinesling.obj = events;
-			plinesling.fe = true;
-			plinesling.threshold = this.data.threshold!;
+			slingLine.obj = events;
+			slingLine.fe = true;
+			slingLine.threshold = this.data.threshold!;
 
-			linePolys.push(plinesling);
-			this.lineSling.push(plinesling);
+			linePolys.push(slingLine);
+			this.lineSling.push(slingLine);
 		}
 
-		if (this.data.heightbottom !== 0) {
+		if (this.data.heightBottom !== 0) {
 			// add lower edge as a line
 			linePolys.push(new HitLine3D(new Vertex3D(pv1.x, pv1.y, bottom), new Vertex3D(pv2.x, pv2.y, bottom)));
 		}
@@ -115,7 +126,7 @@ export class SurfaceHitGenerator {
 		linePolys.push(new HitLineZ(pv1, bottom, top));
 
 		// add upper and lower end points of line
-		if (this.data.heightbottom !== 0) {
+		if (this.data.heightBottom !== 0) {
 			linePolys.push(new HitPoint(new Vertex3D(pv1.x, pv1.y, bottom)));
 		}
 		linePolys.push(new HitPoint(new Vertex3D(pv1.x, pv1.y, top)));
@@ -123,11 +134,15 @@ export class SurfaceHitGenerator {
 		return linePolys;
 	}
 
+	/**
+	 * Updates the hit object with parameters common to the surface.
+	 * @see Surface::SetupHitObject
+	 */
 	private updateCommonParameters(hitObjects: Array<HitObject<FireEvents>>, events: FireEvents, table: Table): Array<HitObject<FireEvents>> {
 		const mat = table.getMaterial(this.data.szPhysicsMaterial);
 		for (const obj of hitObjects) {
 
-			if (mat && !this.data.fOverwritePhysics) {
+			if (mat && !this.data.overwritePhysics) {
 				obj.setElasticity(mat.fElasticity);
 				obj.setFriction(mat.fFriction);
 				obj.setScatter(degToRad(mat.fScatterAngle));
@@ -136,10 +151,10 @@ export class SurfaceHitGenerator {
 				obj.setElasticity(this.data.elasticity!);
 				obj.setFriction(this.data.friction!);
 				obj.setScatter(degToRad(this.data.scatter!));
-				obj.setEnabled(this.data.fCollidable);
+				obj.setEnabled(this.data.isCollidable);
 			}
 
-			if (this.data.fHitEvent) {
+			if (this.data.hitEvent) {
 				obj.obj = events;
 				obj.fe = true;
 				obj.threshold = this.data.threshold!;

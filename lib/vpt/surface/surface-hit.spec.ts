@@ -34,11 +34,8 @@ describe('The VPinball surface collision', () => {
 	let table: Table;
 	let player: Player;
 
-	before(async () => {
+	beforeEach(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-surface.vpx')));
-	});
-
-	beforeEach(() => {
 		player = new Player(table);
 	});
 
@@ -66,8 +63,6 @@ describe('The VPinball surface collision', () => {
 
 	it('should make the ball collide on top', () => {
 
-		const kicker = table.kickers.BallRelease;
-
 		// create ball
 		const ball = createBall(player, 500, 500, 200, 0, 5);
 
@@ -84,4 +79,95 @@ describe('The VPinball surface collision', () => {
 		// assert it bounced back
 		expect(ball.getState().pos.z).to.be.below(26);
 	});
+
+	it('should bounce off a slingshot', async () => {
+
+		const slingshotTable = await Table.load(new NodeBinaryReader(three.fixturePath('table-slingshot.vpx')));
+		player = new Player(slingshotTable);
+
+		const slingshotKicker = slingshotTable.kickers.SlingShotKicker.getApi();
+		const wallKicker = slingshotTable.kickers.WallKicker.getApi();
+
+		const ball1 = slingshotKicker.CreateBall();
+		const ball2 = wallKicker.CreateBall();
+
+		slingshotKicker.Kick(0, -2);
+		wallKicker.Kick(0, -2);
+
+		expect(ball1.getState().pos.y).to.equal(1050);
+		expect(ball2.getState().pos.y).to.equal(1050);
+
+		// let them hit the walls and bounce back
+		player.updatePhysics(1470);
+
+		// ball 1 should be up top, while ball 2 hitting the wall should be on the wall
+		expect(ball1.getState().pos.y).to.be.below(500);
+		expect(ball2.getState().pos.y).to.be.within(1170, 1180);
+	});
+
+	it('should not collide with anything when dropped',  () => {
+
+		// create ball
+		const ball = createBall(player, 350, 230, 0, 0, 10);
+
+		// drop wall
+		const wall = table.surfaces.Wall.getApi();
+		wall.CanDrop = true;
+		wall.IsDropped = true;
+
+		player.updatePhysics(0);
+		player.updatePhysics(100);
+
+		// should go right through
+		expect(ball.getState().pos.y).to.be.above(240);
+	});
+
+	it('should not hit anything when disabled',  () => {
+
+		// create ball
+		const ball = createBall(player, 350, 230, 0, 0, 10);
+
+		// disable wall
+		const wall = table.surfaces.Wall.getApi();
+		wall.Disabled = true;
+
+		player.updatePhysics(0);
+		player.updatePhysics(100);
+
+		// should go right through
+		expect(ball.getState().pos.y).to.be.above(240);
+	});
+
+	it('should not collide with anything when collidable set to false', () => {
+		// create ball
+		const ball = createBall(player, 350, 230, 0, 0, 10);
+
+		// set colliable to false
+		const wall = table.surfaces.Wall.getApi();
+		wall.Collidable = false;
+
+		player.updatePhysics(0);
+		player.updatePhysics(100);
+
+		// should go right through
+		expect(ball.getState().pos.y).to.be.above(240);
+	});
+
+	it('should fire the ball up when slingshot is triggered manually', async () => {
+		const slingshotTable = await Table.load(new NodeBinaryReader(three.fixturePath('table-slingshot.vpx')));
+		player = new Player(slingshotTable);
+
+		const slingShot = table.surfaces.Wall.getApi();
+
+		// set threshold to 10 so it doesn't immediately fire
+		slingShot.SlingshotThreshold = 10;
+
+		// then lay ball onto it
+		createBall(player, 400, 1174, 0);
+
+		slingShot.PlaySlingshotHit();
+
+		// todo assert something, apparently it's not that the ball is supposed to be hit.
+	});
+
 });

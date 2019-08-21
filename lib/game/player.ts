@@ -139,8 +139,8 @@ export class Player extends EventEmitter {
 		}
 
 		// link animatables to player
-		for (const movable of table.getAnimatables()) {
-			const state = movable.getState();
+		for (const animatable of table.getAnimatables()) {
+			const state = animatable.getState();
 			this.currentStates[state.getName()] = state;
 			this.previousStates[state.getName()] = state.clone();
 		}
@@ -157,6 +157,8 @@ export class Player extends EventEmitter {
 		for (const flipper of Object.values(table.flippers)) {
 			this.flipperMovers.push(flipper.getMover());
 		}
+
+		// anim objects that need frame updates
 	}
 
 	private addCabinetBoundingHitShapes(): void {

@@ -163,11 +163,6 @@ describe('The VPinball flipper collision', () => {
 		// shoot ball from below onto flipper
 		createBall(player, 374, 1766, 0, 0, -10);
 
-		// for (let i = 0; i < 100; i++) {
-		// 	player.updatePhysics(i * 5);
-		// 	console.log(i * 5, radToDeg(flipper.getState().angle));
-		// }
-
 		player.updatePhysics(0);
 		expect(radToDeg(flipper.getState().angle)).to.equal(121);
 
