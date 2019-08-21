@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Literal, Program, VariableDeclaration, VariableDeclarator  } from 'estree';
+import { CallExpression, ExpressionStatement, Literal, Program, VariableDeclaration, VariableDeclarator } from 'estree';
 
 /**
  * Returns the root node.
@@ -70,5 +70,42 @@ export function literal(data: any): Literal {
 	return {
 		type: 'Literal',
 		value: data,
+	};
+}
+
+export function expressionStatement(data: any): ExpressionStatement {
+	let expression: CallExpression;
+
+	if (data.length > 1) {
+		expression = {
+			type: 'CallExpression',
+			callee: {
+				type: 'MemberExpression',
+				object: {
+					type: 'Identifier',
+					name: data[0][0],
+				},
+				property: {
+					type: 'Identifier',
+					name: data[1][0],
+				},
+				computed: false,
+			},
+			arguments: [],
+		};
+	} else {
+		expression = {
+			type: 'CallExpression',
+			callee: {
+				type: 'Identifier',
+				name: data[0][0],
+			},
+			arguments: [],
+		};
+	}
+
+	return {
+		type: 'ExpressionStatement',
+		expression,
 	};
 }
