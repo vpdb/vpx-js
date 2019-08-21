@@ -59,10 +59,6 @@ export class Hit3DPoly<T extends FireEvents> extends HitObject<T> {
 		this.scatter = 0.;
 	}
 
-	public getType(): CollisionType {
-		return CollisionType.Poly;
-	}
-
 	public calcHitBBox(): void {
 		this.hitBBox.left = this.rgv[0].x;
 		this.hitBBox.right = this.rgv[0].x;

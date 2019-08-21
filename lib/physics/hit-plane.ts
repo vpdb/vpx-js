@@ -36,10 +36,6 @@ export class HitPlane<T extends FireEvents> extends HitObject<T> {
 		this.d = d;
 	}
 
-	public getType(): CollisionType {
-		return CollisionType.Plane;
-	}
-
 	public calcHitBBox(): void {
 		// plane's not a box (i assume)
 	}

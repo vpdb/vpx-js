@@ -48,10 +48,6 @@ export class HitLineZ<T extends FireEvents> extends HitObject<T> {
 		return this;
 	}
 
-	public getType(): CollisionType {
-		return CollisionType.Joint;
-	}
-
 	public calcHitBBox(): void {
 		this.hitBBox.left = this.xy.x;
 		this.hitBBox.right = this.xy.x;

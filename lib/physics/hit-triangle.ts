@@ -48,10 +48,6 @@ export class HitTriangle<T extends FireEvents> extends HitObject<T> {
 		this.scatter = 0;
 	}
 
-	public getType(): CollisionType {
-		return CollisionType.Triangle;
-	}
-
 	public calcHitBBox(): void {
 		this.hitBBox.left = Math.min(this.rgv[0].x, Math.min(this.rgv[1].x, this.rgv[2].x));
 		this.hitBBox.right = Math.max(this.rgv[0].x, Math.max(this.rgv[1].x, this.rgv[2].x));

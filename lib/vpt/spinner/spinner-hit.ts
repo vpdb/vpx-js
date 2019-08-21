@@ -69,10 +69,6 @@ export class SpinnerHit extends HitObject<FireEvents> {
 		return this.mover;
 	}
 
-	public getType(): CollisionType {
-		return CollisionType.Spinner;
-	}
-
 	public calcHitBBox(): void {
 		// Bounding rect for both lines will be the same
 		this.lineSegs[0].calcHitBBox();

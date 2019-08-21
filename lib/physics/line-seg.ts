@@ -47,10 +47,6 @@ export class LineSeg<T extends FireEvents> extends HitObject<T> {
 		}
 	}
 
-	public getType(): CollisionType {
-		return CollisionType.LineSeg;
-	}
-
 	public setSeg(x1: number, y1: number, x2: number, y2: number): this {
 		this.v1.x = x1;
 		this.v1.y = y1;

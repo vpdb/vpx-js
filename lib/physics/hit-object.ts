@@ -56,8 +56,6 @@ export abstract class HitObject<T extends FireEvents> {
 	 */
 	public e: boolean = false;
 
-	public abstract getType(): CollisionType;
-
 	public abstract calcHitBBox(): void;
 
 	public abstract hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: Player): HitTestResult;

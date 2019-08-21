@@ -41,10 +41,6 @@ export class HitCircle<T extends FireEvents> extends HitObject<T> {
 		this.hitBBox.zhigh = zHigh;
 	}
 
-	public getType(): CollisionType {
-		return CollisionType.Circle;
-	}
-
 	public collide(coll: CollisionEvent, player: Player): void {
 		coll.ball.hit.collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 	}
