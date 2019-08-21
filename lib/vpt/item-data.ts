@@ -55,6 +55,7 @@ export abstract class ItemData extends BiffParser {
 	public static TypeCount = 23;
 	public static TypeInvalid = 0xffffffff;
 
+	/* istanbul ignore next: this is mainly for debugging stuff. */
 	public static getType(type: number): string {
 		switch (type) {
 			case ItemData.TypeSurface: return 'Surface';

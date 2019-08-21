@@ -98,7 +98,6 @@ export class Primitive implements IRenderable, IHittable, IScriptable<PrimitiveA
 		return this.api!;
 	}
 
-
 	public getHitShapes(): Array<HitObject<FireEvents>> {
 		return this.hits!;
 	}

@@ -26,7 +26,6 @@ import { getRawImage, loadImage, streamImage } from '../refs.node';
 import { logger } from '../util/logger';
 import { Binary } from './binary';
 import { Table } from './table/table';
-import Base = Mocha.reporters.Base;
 
 /**
  * VPinball's texture.
