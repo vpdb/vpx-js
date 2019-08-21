@@ -20,26 +20,26 @@
 import { Table } from '../..';
 import { Player } from '../../game/player';
 import { FireEvents } from '../../physics/fire-events';
+import { ItemApi } from '../item-api';
 import { Surface } from './surface';
 import { SurfaceData } from './surface-data';
 import { SurfaceHitGenerator } from './surface-hit-generator';
 
-export class SurfaceApi {
+export class SurfaceApi extends ItemApi {
 
 	private readonly surface: Surface;
 	private readonly data: SurfaceData;
 	private readonly hitGenerator: SurfaceHitGenerator;
 	private readonly events: FireEvents;
 	private readonly player: Player;
-	private readonly table: Table;
 
 	constructor(surface: Surface, data: SurfaceData, hitGenerator: SurfaceHitGenerator, events: FireEvents, player: Player, table: Table) {
+		super(table);
 		this.surface = surface;
 		this.data = data;
 		this.hitGenerator = hitGenerator;
 		this.events = events;
 		this.player = player;
-		this.table = table;
 	}
 
 	// from IEditable
@@ -95,16 +95,7 @@ export class SurfaceApi {
 	get Visible() { return this.data.isTopBottomVisible; }
 	set Visible(v) { this.data.isTopBottomVisible = v; }
 	get SideImage() { return this.data.szSideImage; }
-	set SideImage(v) {
-		const tex = this.table.getTexture(v);
-		if (!tex) {
-			throw new Error(`Texture "${v}" not found.`);
-		}
-		if (tex.isHdr()) {
-			throw new Error(`Cannot use a HDR image (.exr/.hdr) here`);
-		}
-		this.data.szSideImage = v;
-	}
+	set SideImage(v) { this.assertNonHdrImage(v); this.data.szSideImage = v; }
 	get Disabled() { return this.surface.isDisabled; }
 	set Disabled(v) { this.surface.isDisabled = v; }
 	get SideVisible() { return this.data.isSideVisible; }

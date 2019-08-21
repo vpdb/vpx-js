@@ -21,25 +21,25 @@ import { Table } from '../..';
 import { IBallCreationPosition, Player } from '../../game/player';
 import { FireEvents } from '../../physics/fire-events';
 import { Ball } from '../ball/ball';
+import { ItemApi } from '../item-api';
 import { PlungerData } from './plunger-data';
 import { PlungerHit } from './plunger-hit';
 
-export class PlungerApi {
+export class PlungerApi extends ItemApi {
 
 	private readonly data: PlungerData;
 	private readonly hit: PlungerHit;
 	private readonly events: FireEvents;
 	private readonly player: Player;
 	private readonly ballCreator: IBallCreationPosition;
-	private readonly table: Table;
 
 	constructor(data: PlungerData, hit: PlungerHit, events: FireEvents, ballCreator: IBallCreationPosition, player: Player, table: Table) {
+		super(table);
 		this.data = data;
 		this.hit = hit;
 		this.events = events;
 		this.ballCreator = ballCreator;
 		this.player = player;
-		this.table = table;
 	}
 
 	// from IEditable
@@ -89,16 +89,7 @@ export class PlungerApi {
 	get Material() { return this.data.szMaterial; }
 	set Material(v) { this.data.szMaterial = v; }
 	get Image() { return this.data.szImage; }
-	set Image(v) {
-		const tex = this.table.getTexture(v);
-		if (!tex) {
-			throw new Error(`Texture "${v}" not found.`);
-		}
-		if (tex.isHdr()) {
-			throw new Error(`Cannot use a HDR image (.exr/.hdr) here`);
-		}
-		this.data.szImage = v;
-	}
+	set Image(v) { this.assertNonHdrImage(v); this.data.szImage = v; }
 	get AnimFrames() { return this.data.animFrames; }
 	set AnimFrames(v) { this.data.animFrames = v; }
 	get TipShape() { return this.data.szTipShape; }

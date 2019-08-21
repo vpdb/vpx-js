@@ -71,18 +71,18 @@ export class PrimitiveData extends ItemData {
 	public use3DMesh: boolean = false;
 	public useAsPlayfield: boolean = false;
 
-	private wzName!: string;
-	private sideColor: number = 0x969696;
+	public wzName!: string;
+	public sideColor: number = 0x969696;
 	private numIndices!: number;
-	private isReflectionEnabled: boolean = true;
-	private edgeFactorUI: number = 0.25;
-	private staticRendering: boolean = true;
-	private disableLightingTop?: number;
-	private disableLightingBelow?: number;
-	private backfacesEnabled: boolean = false;
-	private displayTexture: boolean = false;
-	private meshFileName?: string;
-	private depthBias: number = 0;
+	public isReflectionEnabled: boolean = true;
+	public edgeFactorUI: number = 0.25;
+	public staticRendering: boolean = true;
+	public disableLightingTop?: number;
+	public disableLightingBelow?: number;
+	public backfacesEnabled: boolean = false;
+	public displayTexture: boolean = false;
+	public meshFileName?: string;
+	public depthBias: number = 0;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<PrimitiveData> {
 		const primitiveItem = new PrimitiveData(itemName);
