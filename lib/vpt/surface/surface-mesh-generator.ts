@@ -17,74 +17,78 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Table } from '../..';
 import { CatmullCurve2D } from '../../math/catmull-curve';
 import { DragPoint } from '../../math/dragpoint';
 import { Vertex3DNoTex2 } from '../../math/vertex';
 import { RenderVertex, Vertex2D } from '../../math/vertex2d';
 import { Mesh } from '../mesh';
-import { Table } from '../table/table';
 import { SurfaceData } from './surface-data';
 
-export class SurfaceMesh {
+export class SurfaceMeshGenerator {
 
+	/**
+	 * Returns the mesh of the surface.
+	 * @see Surface::GenerateMesh
+	 */
 	public generateMeshes(data: SurfaceData, table: Table): { top?: Mesh, side?: Mesh } {
 
 		const topMesh = new Mesh(`surface.top-${data.getName()}`);
 		const sideMesh = new Mesh(`surface.side-${data.getName()}`);
 
-		const vvertex: RenderVertex[] = DragPoint.getRgVertex<RenderVertex>(data.dragPoints, () => new RenderVertex(), CatmullCurve2D.fromVertex2D as any);
-		const rgtexcoord = DragPoint.getTextureCoords(data.dragPoints, vvertex);
+		const vVertex: RenderVertex[] = DragPoint.getRgVertex<RenderVertex>(data.dragPoints, () => new RenderVertex(), CatmullCurve2D.fromVertex2D as any);
+		const rgTexCoord = DragPoint.getTextureCoords(data.dragPoints, vVertex);
 
-		const numVertices = vvertex.length;
-		const rgnormal: Vertex2D[] = [];
+		const numVertices = vVertex.length;
+		const rgNormal: Vertex2D[] = [];
 
 		for (let i = 0; i < numVertices; i++) {
 
-			const pv1 = vvertex[i];
-			const pv2 = vvertex[(i < numVertices - 1) ? (i + 1) : 0];
+			const pv1 = vVertex[i];
+			const pv2 = vVertex[(i < numVertices - 1) ? (i + 1) : 0];
 			const dx = pv1.x - pv2.x;
 			const dy = pv1.y - pv2.y;
 
 			const invLen = 1.0 / Math.sqrt(dx * dx + dy * dy);
 
-			rgnormal[i] = new Vertex2D();
-			rgnormal[i].x = dy * invLen;
-			rgnormal[i].y = dx * invLen;
+			rgNormal[i] = new Vertex2D();
+			rgNormal[i].x = dy * invLen;
+			rgNormal[i].y = dx * invLen;
 		}
 
-		const bottom = data.heightbottom * table.getScaleZ() + table.getTableHeight();
-		const top = data.heighttop * table.getScaleZ() + table.getTableHeight();
+		const bottom = data.heightBottom * table.getScaleZ() + table.getTableHeight();
+		const top = data.heightTop * table.getScaleZ() + table.getTableHeight();
 
 		let offset = 0;
 
 		// Render side
 		for (let i = 0; i < numVertices; i++) {
 
-			const pv1 = vvertex[i];
-			const pv2 = vvertex[(i < numVertices - 1) ? (i + 1) : 0];
+			const pv1 = vVertex[i];
+			const pv2 = vVertex[(i < numVertices - 1) ? (i + 1) : 0];
 
 			const a = (i === 0) ? (numVertices - 1) : (i - 1);
 			const c = (i < numVertices - 1) ? (i + 1) : 0;
 
-			const vnormal = [new Vertex2D(), new Vertex2D()];
+			const vNormal = [new Vertex2D(), new Vertex2D()];
 			if (pv1.fSmooth) {
-				vnormal[0].x = (rgnormal[a].x + rgnormal[i].x) * 0.5;
-				vnormal[0].y = (rgnormal[a].y + rgnormal[i].y) * 0.5;
+				vNormal[0].x = (rgNormal[a].x + rgNormal[i].x) * 0.5;
+				vNormal[0].y = (rgNormal[a].y + rgNormal[i].y) * 0.5;
 			} else {
-				vnormal[0].x = rgnormal[i].x;
-				vnormal[0].y = rgnormal[i].y;
+				vNormal[0].x = rgNormal[i].x;
+				vNormal[0].y = rgNormal[i].y;
 			}
 
 			if (pv2.fSmooth) {
-				vnormal[1].x = (rgnormal[i].x + rgnormal[c].x) * 0.5;
-				vnormal[1].y = (rgnormal[i].y + rgnormal[c].y) * 0.5;
+				vNormal[1].x = (rgNormal[i].x + rgNormal[c].x) * 0.5;
+				vNormal[1].y = (rgNormal[i].y + rgNormal[c].y) * 0.5;
 			} else {
-				vnormal[1].x = rgnormal[i].x;
-				vnormal[1].y = rgnormal[i].y;
+				vNormal[1].x = rgNormal[i].x;
+				vNormal[1].y = rgNormal[i].y;
 			}
 
-			vnormal[0].normalize();
-			vnormal[1].normalize();
+			vNormal[0].normalize();
+			vNormal[1].normalize();
 
 			sideMesh.vertices[offset] = new Vertex3DNoTex2();
 			sideMesh.vertices[offset + 1] = new Vertex3DNoTex2();
@@ -105,33 +109,33 @@ export class SurfaceMesh {
 			sideMesh.vertices[offset + 3].z = bottom;
 
 			if (data.szSideImage) {
-				sideMesh.vertices[offset].tu = rgtexcoord[i];
+				sideMesh.vertices[offset].tu = rgTexCoord[i];
 				sideMesh.vertices[offset].tv = 1.0;
 
-				sideMesh.vertices[offset + 1].tu = rgtexcoord[i];
+				sideMesh.vertices[offset + 1].tu = rgTexCoord[i];
 				sideMesh.vertices[offset + 1].tv = 0;
 
-				sideMesh.vertices[offset + 2].tu = rgtexcoord[c];
+				sideMesh.vertices[offset + 2].tu = rgTexCoord[c];
 				sideMesh.vertices[offset + 2].tv = 0;
 
-				sideMesh.vertices[offset + 3].tu = rgtexcoord[c];
+				sideMesh.vertices[offset + 3].tu = rgTexCoord[c];
 				sideMesh.vertices[offset + 3].tv = 1.0;
 			}
 
-			sideMesh.vertices[offset].nx = vnormal[0].x;
-			sideMesh.vertices[offset].ny = -vnormal[0].y;
+			sideMesh.vertices[offset].nx = vNormal[0].x;
+			sideMesh.vertices[offset].ny = -vNormal[0].y;
 			sideMesh.vertices[offset].nz = 0;
 
-			sideMesh.vertices[offset + 1].nx = vnormal[0].x;
-			sideMesh.vertices[offset + 1].ny = -vnormal[0].y;
+			sideMesh.vertices[offset + 1].nx = vNormal[0].x;
+			sideMesh.vertices[offset + 1].ny = -vNormal[0].y;
 			sideMesh.vertices[offset + 1].nz = 0;
 
-			sideMesh.vertices[offset + 2].nx = vnormal[1].x;
-			sideMesh.vertices[offset + 2].ny = -vnormal[1].y;
+			sideMesh.vertices[offset + 2].nx = vNormal[1].x;
+			sideMesh.vertices[offset + 2].ny = -vNormal[1].y;
 			sideMesh.vertices[offset + 2].nz = 0;
 
-			sideMesh.vertices[offset + 3].nx = vnormal[1].x;
-			sideMesh.vertices[offset + 3].ny = -vnormal[1].y;
+			sideMesh.vertices[offset + 3].nx = vNormal[1].x;
+			sideMesh.vertices[offset + 3].ny = -vNormal[1].y;
 			sideMesh.vertices[offset + 3].nz = 0;
 
 			offset += 4;
@@ -151,12 +155,12 @@ export class SurfaceMesh {
 		}
 
 		// draw top
-		const vpoly: number[] = [];
+		const vPoly: number[] = [];
 		for (let i = 0; i < numVertices; i++) {
-			vpoly[i] = i;
+			vPoly[i] = i;
 		}
 
-		topMesh.indices = Mesh.polygonToTriangles(vvertex, vpoly);
+		topMesh.indices = Mesh.polygonToTriangles(vVertex, vPoly);
 
 		const numPolys = topMesh.indices.length / 3;
 		if (numPolys === 0) {
@@ -164,24 +168,24 @@ export class SurfaceMesh {
 			return {};
 		}
 
-		const heightNotDropped = data.heighttop * table.getScaleZ();
-		const heightDropped = data.heightbottom * table.getScaleZ() + 0.1;
+		const heightNotDropped = data.heightTop * table.getScaleZ();
+		const heightDropped = data.heightBottom * table.getScaleZ() + 0.1;
 
 		const dim = table.getDimensions();
-		const invTablewidth = 1.0 / dim.width;
-		const invTableheight = 1.0 / dim.height;
+		const invTableWidth = 1.0 / dim.width;
+		const invTableHeight = 1.0 / dim.height;
 
 		const vertsTop: Vertex3DNoTex2[][] = [[], [], []];
 		for (let i = 0; i < numVertices; i++) {
 
-			const pv0 = vvertex[i];
+			const pv0 = vVertex[i];
 
 			vertsTop[0][i] = new Vertex3DNoTex2();
 			vertsTop[0][i].x = pv0.x;
 			vertsTop[0][i].y = pv0.y;
 			vertsTop[0][i].z = heightNotDropped + table.getTableHeight();
-			vertsTop[0][i].tu = pv0.x * invTablewidth;
-			vertsTop[0][i].tv = pv0.y * invTableheight;
+			vertsTop[0][i].tu = pv0.x * invTableWidth;
+			vertsTop[0][i].tv = pv0.y * invTableHeight;
 			vertsTop[0][i].nx = 0;
 			vertsTop[0][i].ny = 0;
 			vertsTop[0][i].nz = 1.0;
@@ -190,8 +194,8 @@ export class SurfaceMesh {
 			vertsTop[1][i].x = pv0.x;
 			vertsTop[1][i].y = pv0.y;
 			vertsTop[1][i].z = heightDropped;
-			vertsTop[1][i].tu = pv0.x * invTablewidth;
-			vertsTop[1][i].tv = pv0.y * invTableheight;
+			vertsTop[1][i].tu = pv0.x * invTableWidth;
+			vertsTop[1][i].tv = pv0.y * invTableHeight;
 			vertsTop[1][i].nx = 0;
 			vertsTop[1][i].ny = 0;
 			vertsTop[1][i].nz = 1.0;
@@ -199,9 +203,9 @@ export class SurfaceMesh {
 			vertsTop[2][i] = new Vertex3DNoTex2();
 			vertsTop[2][i].x = pv0.x;
 			vertsTop[2][i].y = pv0.y;
-			vertsTop[2][i].z = data.heightbottom;
-			vertsTop[2][i].tu = pv0.x * invTablewidth;
-			vertsTop[2][i].tv = pv0.y * invTableheight;
+			vertsTop[2][i].z = data.heightBottom;
+			vertsTop[2][i].tu = pv0.x * invTableWidth;
+			vertsTop[2][i].tv = pv0.y * invTableHeight;
 			vertsTop[2][i].nx = 0;
 			vertsTop[2][i].ny = 0;
 			vertsTop[2][i].nz = -1.0;
@@ -209,10 +213,10 @@ export class SurfaceMesh {
 		topMesh.vertices = vertsTop[0];
 
 		const meshes: { top?: Mesh, side?: Mesh } = {};
-		if (topMesh.vertices.length > 0 && data.fTopBottomVisible) {
+		if (topMesh.vertices.length > 0 && data.isTopBottomVisible) {
 			meshes.top = topMesh;
 		}
-		if (top !== bottom && data.fSideVisible) {
+		if (top !== bottom && data.isSideVisible) {
 			meshes.side = sideMesh;
 		}
 		return meshes;

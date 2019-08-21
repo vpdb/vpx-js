@@ -64,7 +64,7 @@ export class BallHit extends HitObject<FireEvents> {
 	public readonly invMass: number;
 	public readonly inertia: number;
 	public readonly angularMomentum = new Vertex3D();
-	public readonly eventPos = new Vertex3D(-1, -1, -1);
+	public eventPos = new Vertex3D(-1, -1, -1);
 
 	public angularVelocity = new Vertex3D();
 
