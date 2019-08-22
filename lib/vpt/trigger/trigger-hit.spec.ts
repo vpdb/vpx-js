@@ -20,13 +20,13 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import { Table } from '../..';
-import { createBall, debugBall } from '../../../test/physics.helper';
+import { createBall } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
-
+import { TriggerState } from './trigger-state';
 import sinonChai = require('sinon-chai');
-import { radToDeg } from '../../math/float';
+
 chai.use(sinonChai);
 const three = new ThreeHelper();
 
@@ -68,7 +68,7 @@ describe('The VPinball trigger collision', () => {
 
 	it('should collide with the ball and animate when a button trigger is hit',  () => {
 		const trigger = table.triggers.Button;
-		const ball = createBall(player, 174, 1300, 0, 0, 2);
+		createBall(player, 174, 1300, 0, 0, 2);
 
 		// let it roll down some
 		player.updatePhysics(0);
@@ -86,4 +86,32 @@ describe('The VPinball trigger collision', () => {
 
 		expect(trigger.getState().heightOffset).to.equal(0);
 	});
+
+	it('should pop the correct state', () => {
+		const trigger = table.triggers.WireB;
+		const kicker = table.kickers.BallRelease.getApi();
+		kicker.CreateBall();
+		kicker.Kick(0, -1);
+
+		// let it roll onto trigger
+		player.updatePhysics(0);
+		player.updatePhysics(800);
+		const state = player.popStates().find(s => s.getName() === 'WireB') as TriggerState;
+		expect(state.heightOffset).to.equal(trigger.getState().heightOffset);
+	});
+
+	it('should not collide neither animate when disabled',  () => {
+		const trigger = table.triggers.WireB;
+		const kicker = table.kickers.BallRelease.getApi();
+		kicker.CreateBall();
+		kicker.Kick(0, -1);
+		trigger.data.isEnabled = false;
+
+		// let it collide
+		player.updatePhysics(800);
+
+		// still same pos!
+		expect(trigger.getState().heightOffset).to.equal(0);
+	});
+
 });
