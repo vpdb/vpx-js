@@ -49,7 +49,7 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 	public static ShapeTriggerWireC = 5;
 	public static ShapeTriggerWireD = 6;
 
-	private readonly data: TriggerData;
+	public readonly data: TriggerData; // FIXME make private again when API implemented
 	private readonly state: TriggerState;
 	private readonly meshGenerator: TriggerMeshGenerator;
 	private readonly hitGenerator: TriggerHitGenerator;
