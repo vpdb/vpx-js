@@ -128,6 +128,11 @@ export class TableExporter {
 			}
 		}
 
+		// ball group
+		const ballGroup = new Group();
+		ballGroup.name = 'balls';
+		this.playfield.add(ballGroup);
+
 		// playfield lights
 		// if (this.opts.exportPlayfieldLights) {
 		// 	for (const lightInfo of this.table.lights.filter(l => l.isSurfaceLight(this.table)).slice(0, 10)) {

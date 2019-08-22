@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Object3D } from 'three';
+import { Group, Object3D, Scene } from 'three';
 import { Table } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
@@ -66,14 +66,14 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRendera
 	}
 
 	public applyState(obj: Object3D, table: Table, player: Player): void {
-		const zheight = !this.hit.isFrozen ? this.state.pos.z : this.state.pos.z - this.data.radius;
+		const zHeight = !this.hit.isFrozen ? this.state.pos.z : this.state.pos.z - this.data.radius;
 		const orientation = new Matrix3D().set([
 			[this.state.orientation.matrix[0][0], this.state.orientation.matrix[1][0], this.state.orientation.matrix[2][0], 0.0],
 			[this.state.orientation.matrix[0][1], this.state.orientation.matrix[1][1], this.state.orientation.matrix[2][1], 0.0],
 			[this.state.orientation.matrix[0][2], this.state.orientation.matrix[1][2], this.state.orientation.matrix[2][2], 0.0],
 			[0, 0, 0, 1],
 		]);
-		const trans = new Matrix3D().setTranslation(this.state.pos.x, this.state.pos.y, zheight);
+		const trans = new Matrix3D().setTranslation(this.state.pos.x, this.state.pos.y, zHeight);
 		const matrix = new Matrix3D()
 			.setScaling(this.data.radius, this.data.radius, this.data.radius)
 			.preMultiply(orientation)
@@ -81,6 +81,22 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRendera
 
 		obj.matrix = matrix.toRightHanded().toThreeMatrix4();
 		obj.matrixWorldNeedsUpdate = true;
+	}
+
+	public async addToScene(scene: Scene, table: Table): Promise<Group> {
+		const mesh = await table.exportElement(this);
+		const playfield = scene.children.find(c => c.name === 'playfield')!;
+		const ballGroup = playfield.children.find(c => c.name === 'balls')!;
+		mesh.matrixAutoUpdate = false;
+		ballGroup.add(mesh);
+		return mesh;
+	}
+
+	public removeFromScene(scene: Scene): void {
+		const playfield = scene.children.find(c => c.name === 'playfield')!;
+		const ballGroup = playfield.children.find(c => c.name === 'balls')!;
+		const ball = ballGroup.children.find(c => c.name === this.getName())!;
+		ballGroup.remove(ball);
 	}
 
 	public getState(): BallState {
@@ -99,10 +115,12 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRendera
 		return this.hit.coll = coll;
 	}
 
+	/* istanbul ignore next: never called since there is no ball at player setup */
 	public setupPlayer(player: Player, table: Table): void {
 		// there is no ball yet on player setup
 	}
 
+	/* istanbul ignore next: never called since balls have their own hit collection */
 	public getHitShapes(): Array<HitObject<FireEvents>> {
 		return [ this.hit ];
 	}
@@ -111,10 +129,12 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRendera
 		return { ball: { mesh: this.meshGenerator.getMesh().transform(new Matrix3D().toRightHanded()) } };
 	}
 
+	/* istanbul ignore next: balls have their own visibility treatment */
 	public isVisible(table: Table): boolean {
 		return true;
 	}
 
+	/* istanbul ignore next: balls have their own collidable treatment */
 	public isCollidable(): boolean {
 		return true;
 	}

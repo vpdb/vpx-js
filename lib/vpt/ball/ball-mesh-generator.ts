@@ -33,6 +33,6 @@ export class BallMeshGenerator {
 	}
 
 	public getMesh(): Mesh {
-		return ballMesh;
+		return ballMesh.clone();
 	}
 }
