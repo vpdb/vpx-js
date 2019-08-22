@@ -20,6 +20,7 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import sinonChai = require('sinon-chai');
+import { Mesh, Vector3 } from 'three';
 import { Table } from '../..';
 import { createBall } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
@@ -101,6 +102,53 @@ describe('The VPinball ball physics', () => {
 		expect(ball.getState().pos.x).to.be.above(700); // moves this time
 		expect(ball.getState().pos.y).to.be.above(500);
 		expect(ball.getState().pos.z).to.be.below(50);
+	});
+
+	it('should apply the mesh transformation', async () => {
+
+		// create scene
+		const gltf = await three.loadGlb(await table.exportGlb());
+
+		// add ball
+		const ball = createBall(player, 500, 500, 0, 0, 10);
+		await ball.addToScene(gltf.scene, table);
+		const ballObj = three.find<Mesh>(gltf, 'balls', ball.getName());
+
+		// init vectors
+		const startPos = new Vector3();
+		const endPos = new Vector3();
+
+		// position ball
+		player.updatePhysics(0);
+		ball.applyState(ballObj, table, player);
+		ballObj.getWorldPosition(startPos);
+
+		// let ball roll some
+		player.updatePhysics(100);
+		ball.applyState(ballObj, table, player);
+		ballObj.getWorldPosition(endPos);
+
+		expect(startPos.y).to.be.below(endPos.y);
+	});
+
+	it('should remove a ball from the scene', async () => {
+
+		// create scene
+		const gltf = await three.loadGlb(await table.exportGlb());
+
+		// add ball
+		const ball = createBall(player, 500, 500, 0, 0, 10);
+		await ball.addToScene(gltf.scene, table);
+
+		// assert it's in the scene
+		three.expectObject(gltf, 'balls', ball.getName());
+
+		// destroy ball
+		player.destroyBall(ball);
+		ball.removeFromScene(gltf.scene);
+
+		// assert it's gone
+		three.expectNoObject(gltf, 'balls', ball.getName());
 	});
 
 });

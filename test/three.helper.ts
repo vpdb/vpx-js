@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Mesh, Object3D } from 'three';
+import { Box3, Mesh, Object3D } from 'three';
 import { resolve } from 'path';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
@@ -104,7 +104,7 @@ export class ThreeHelper {
 		if (!objects) {
 			throw new Error('GLTF table has no "' + groupName + '" group! (available: [' + table.children.map(c => c.name).join(', ') + '])');
 		}
-		if (!objects.children || !objects.children.length) {
+		if (!objects.children) {
 			throw new Error('The "' + groupName + '" group of the GLTF table has no children.');
 		}
 		const item = objects.children.find(c => c.name === itemName);
@@ -125,7 +125,7 @@ export class ThreeHelper {
 
 	}
 
-	public expectObject(gltf: GLTF, groupName: string, itemName: string, objectName: string) {
+	public expectObject(gltf: GLTF, groupName: string, itemName: string, objectName?: string) {
 		const table = this.getTable(gltf);
 		if (!table.children || !table.children.length) {
 			throw new Error('GLTF table has no children!');
@@ -141,9 +141,11 @@ export class ThreeHelper {
 		if (!item) {
 			throw new Error('The "' + groupName + '" group of the GLTF table has no child named "' + objectName + '". (available: [' + objects.children.map(c => c.name).join(', ') + '])');
 		}
-		const object = item.children.find(c => c.name === objectName);
-		if (!object) {
-			throw new Error('The "' + itemName + '" item in the "' + groupName + '" group of the GLTF table has no child named "' + objectName + '". (available: [' + item.children.map(c => c.name).join(', ') + '])');
+		if (objectName) {
+			const object = item.children.find(c => c.name === objectName);
+			if (!object) {
+				throw new Error('The "' + itemName + '" item in the "' + groupName + '" group of the GLTF table has no child named "' + objectName + '". (available: [' + item.children.map(c => c.name).join(', ') + '])');
+			}
 		}
 	}
 
@@ -179,6 +181,23 @@ export class ThreeHelper {
 
 	public fixturePath(filename: string): string {
 		return resolve(__dirname, 'fixtures', filename);
+	}
+
+	public getBoundingBox(object3D: Object3D): Box3 {
+		let box: Box3 | null = null;
+		object3D.traverse(obj3D => {
+			let geometry = (obj3D as Mesh).geometry;
+			if (geometry === undefined) {
+				return;
+			}
+			geometry.computeBoundingBox();
+			if (box === null) {
+				box = geometry.boundingBox;
+			} else {
+				box.union(geometry.boundingBox);
+			}
+		});
+		return box || new Box3();
 	}
 }
 

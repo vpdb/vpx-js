@@ -18,11 +18,11 @@
  */
 
 import { Storage } from '../..';
+import { Table } from '../..';
 import { IRenderable } from '../../game/irenderable';
 import { f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Meshes } from '../item-data';
-import { Table } from '../table/table';
 import { HitTargetData } from './hit-target-data';
 import { HitTargetMeshGenerator } from './hit-target-mesh-generator';
 

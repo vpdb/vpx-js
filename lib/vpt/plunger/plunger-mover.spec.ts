@@ -142,16 +142,6 @@ describe('The VPinball plunger physics', () => {
 		expect(springObj.geometry.boundingBox.min.y).to.be.above(springY);
 	});
 
-	// it('should deal correctly with state', () => {
-	// 	const state1 = new PlungerState(2);
-	// 	const state2 = new PlungerState(3);
-	// 	const state3 = new PlungerState(2);
-	//
-	// 	expect(state1.equals(state2)).to.equal(false);
-	// 	expect(state1.equals(state3)).to.equal(true);
-	// 	expect(state1.equals(null as any)).to.equal(false);
-	// });
-
 });
 
 function popState(player: Player, name: string): PlungerState {
