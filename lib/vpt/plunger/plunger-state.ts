@@ -33,6 +33,7 @@ export class PlungerState extends ItemState {
 	}
 
 	public equals(state: PlungerState): boolean {
+		/* istanbul ignore if: we don't actually pass empty states. */
 		if (!state) {
 			return false;
 		}

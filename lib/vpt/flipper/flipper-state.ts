@@ -34,6 +34,7 @@ export class FlipperState extends ItemState {
 	}
 
 	public equals(state: FlipperState): boolean {
+		/* istanbul ignore if: we don't actually pass empty states. */
 		if (!state) {
 			return false;
 		}

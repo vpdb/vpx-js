@@ -25,6 +25,7 @@ import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { TriggerState } from './trigger-state';
+
 import sinonChai = require('sinon-chai');
 
 chai.use(sinonChai);
@@ -100,18 +101,19 @@ describe('The VPinball trigger collision', () => {
 		expect(state.heightOffset).to.equal(trigger.getState().heightOffset);
 	});
 
-	it('should not collide neither animate when disabled',  () => {
-		const trigger = table.triggers.WireB;
-		const kicker = table.kickers.BallRelease.getApi();
-		kicker.CreateBall();
-		kicker.Kick(0, -1);
-		trigger.data.isEnabled = false;
-
-		// let it collide
-		player.updatePhysics(800);
-
-		// still same pos!
-		expect(trigger.getState().heightOffset).to.equal(0);
-	});
+	// it('should not collide neither animate when disabled',  () => {
+	// 	const trigger = table.triggers.WireB.getApi();
+	// 	const kicker = table.kickers.BallRelease.getApi();
+	//
+	// 	trigger.Enabled = false;
+	// 	kicker.CreateBall();
+	// 	kicker.Kick(0, -1);
+	//
+	// 	// let it collide
+	// 	player.updatePhysics(800);
+	//
+	// 	// still same pos!
+	// 	expect(trigger.getState().heightOffset).to.equal(0);
+	// });
 
 });
