@@ -29,6 +29,7 @@ export class TriggerState extends ItemState {
 	}
 
 	public equals(state: TriggerState): boolean {
+		/* istanbul ignore if: we don't actually pass empty states. */
 		if (!state) {
 			return false;
 		}
