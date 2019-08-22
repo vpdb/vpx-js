@@ -18,12 +18,13 @@
  */
 
 import { Object3D } from 'three';
-import { Storage } from '../..';
 import { Table } from '../..';
+import { Storage } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
+import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
@@ -31,6 +32,7 @@ import { Vertex2D } from '../../math/vertex2d';
 import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
+import { FlipperApi } from './flipper-api';
 import { FlipperData } from './flipper-data';
 import { FlipperHit } from './flipper-hit';
 import { FlipperMesh } from './flipper-mesh';
@@ -42,13 +44,14 @@ import { FlipperState } from './flipper-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/flipper.cpp
  */
-export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, IHittable {
+export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, IHittable, IScriptable<FlipperApi> {
 
 	private readonly data: FlipperData;
 	private readonly mesh: FlipperMesh;
 	private readonly state: FlipperState;
 	private hit?: FlipperHit;
-	private fireEvents?: FireEvents;
+	private api!: FlipperApi;
+	private events?: FireEvents;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Flipper> {
 		const data = await FlipperData.fromStorage(storage, itemName);
@@ -61,13 +64,8 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		this.state = new FlipperState(this.getName(), this.data.startAngle);
 	}
 
-	public setupPlayer(player: Player, table: Table): void {
-		this.fireEvents = new FireEvents(this);
-		this.hit = FlipperHit.getInstance(this.data, this.state, this.fireEvents, player, table);
-	}
-
 	public isVisible(): boolean {
-		return this.data.fVisible;
+		return this.data.isVisible;
 	}
 
 	public isCollidable(): boolean {
@@ -80,6 +78,16 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 
 	public getState(): FlipperState {
 		return this.state;
+	}
+
+	public setupPlayer(player: Player, table: Table): void {
+		this.events = new FireEvents(this);
+		this.hit = FlipperHit.getInstance(this.data, this.state, this.events, player, table);
+		this.api = new FlipperApi(this.data, this.state, this.hit, this.getMover(), this.events, player, table);
+	}
+
+	public getApi(): FlipperApi {
+		return this.api!;
 	}
 
 	public getHitShapes(): Array<HitObject<FireEvents>> {
@@ -111,16 +119,6 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 			};
 		}
 		return meshes;
-	}
-
-	public rotateToEnd(): void { // power stroke to hit ball, key/button down/pressed
-		this.getMover().enableRotateEvent = 1;
-		this.getMover().setSolenoidState(true);
-	}
-
-	public rotateToStart() { // return to park, key/button up/released
-		this.getMover().enableRotateEvent = -1;
-		this.getMover().setSolenoidState(false);
 	}
 
 	public applyState(obj: Object3D): void {

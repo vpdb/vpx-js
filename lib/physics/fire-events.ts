@@ -18,7 +18,9 @@
  */
 
 import { IPlayable } from '../game/iplayable';
+import { IScriptable } from '../game/iscriptable';
 import { logger } from '../util/logger';
+import { ItemApi } from '../vpt/item-api';
 
 export class FireEvents {
 
@@ -34,11 +36,25 @@ export class FireEvents {
 	}
 
 	public fireGroupEvent(e: FireEvent): void {
+		const scriptable = this.playable as IScriptable<ItemApi>;
+		if (scriptable.getApi) {
+			scriptable.getApi().emit(getEventName(e));
+		}
 		logger().info('[%s] fireGroupEvent(%s)', this.playable.getName(), e);
 	}
 
 	public fireVoidEventParm(e: FireEvent, data: number): void {
 		logger().info('[%s] fireGroupEvent(%s, %s)', this.playable.getName(), e, data);
+	}
+}
+
+function getEventName(event: FireEvent): string {
+	switch (event) {
+		case FireEvent.HitEventsHit: return 'Hit';
+		case FireEvent.HitEventsUnhit: return 'Unhit';
+		// case FireEvent.TimerEventsTimer: return 'Timer';
+		// case FireEvent.GameEventsInit: return 'Init';
+		default: return 'UnknownEvent';
 	}
 }
 

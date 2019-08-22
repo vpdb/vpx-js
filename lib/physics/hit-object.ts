@@ -36,10 +36,10 @@ export abstract class HitObject<T extends FireEvents> {
 	public threshold: number = 0;  // threshold for firing an event (usually (always??) normal dot ball-velocity)
 	public hitBBox: FRect3D = new FRect3D();
 
-	protected elasticity: number = 0.3;
-	protected elasticityFalloff: number = 0;
-	protected friction: number = 0.3;
-	protected scatter: number = 0; // in radians
+	public elasticity: number = 0.3;
+	public elasticityFalloff: number = 0;
+	public friction: number = 0.3;
+	public scatter: number = 0; // in radians
 
 	protected objType: CollisionType = CollisionType.Null;
 	public isEnabled: boolean = true;

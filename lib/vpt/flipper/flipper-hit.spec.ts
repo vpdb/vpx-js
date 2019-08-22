@@ -82,7 +82,7 @@ describe('The VPinball flipper collision', () => {
 
 	it('should move the ball up', () => {
 
-		const flipper = table.flippers.DefaultFlipper;
+		const flipper = table.flippers.DefaultFlipper.getApi();
 
 		// put ball on top of flipper
 		const ball = createBall(player, 310, 1590, 0);
@@ -117,7 +117,7 @@ describe('The VPinball flipper collision', () => {
 
 	it('should move when hit at the same time', () => {
 
-		const flipper = table.flippers.DefaultFlipper;
+		const flipper = table.flippers.DefaultFlipper.getApi();
 
 		// shoot ball onto flipper and flip at the same time
 		const ball = createBall(player, 420, 1550, 0, 0, 5);

@@ -19,16 +19,15 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import { spy } from 'sinon';
-import sinonChai = require('sinon-chai');
 import { Table } from '../..';
 import { simulateCycles } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { degToRad } from '../../math/float';
-import { FlipperMover } from './flipper-mover';
 import { FlipperState } from './flipper-state';
+
+import sinonChai = require('sinon-chai');
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
@@ -52,7 +51,7 @@ describe('The VPinball flipper physics', () => {
 		const flipperState = flipper.getState();
 		const endAngleRad = degToRad(flipper.getFlipperData().endAngle);
 
-		flipper.rotateToEnd();
+		flipper.getApi().rotateToEnd();
 		simulateCycles(player, 25);
 
 		expect(flipperState.angle).to.equal(endAngleRad);
@@ -65,11 +64,11 @@ describe('The VPinball flipper physics', () => {
 		const startAngleRad = degToRad(flipper.getFlipperData().startAngle);
 
 		// move up
-		flipper.rotateToEnd();
+		flipper.getApi().rotateToEnd();
 		simulateCycles(player, 25); // hit at 17.012061224193429107ms (at 1000fps)
 
 		// move down again
-		flipper.rotateToStart();
+		flipper.getApi().rotateToStart();
 		simulateCycles(player, 80);
 
 		expect(flipperState.angle).to.equal(startAngleRad);
@@ -83,11 +82,11 @@ describe('The VPinball flipper physics', () => {
 		const endAngleRad = degToRad(flipper.getFlipperData().endAngle);
 
 		// move up
-		flipper.rotateToEnd();
+		flipper.getApi().rotateToEnd();
 		simulateCycles(player, 25); // hit at 17.012061224193429107ms (at 1000fps)
 
 		// move down
-		flipper.rotateToStart();
+		flipper.getApi().rotateToStart();
 		simulateCycles(player, 25);
 
 		// assert it's in the middle
@@ -96,7 +95,7 @@ describe('The VPinball flipper physics', () => {
 		expect(turningAngle).to.be.below(endAngleRad);
 
 		// move up again
-		flipper.rotateToEnd();
+		flipper.getApi().rotateToEnd();
 		simulateCycles(player, 10);
 
 		// assert it's back up in less than half the time
@@ -107,7 +106,7 @@ describe('The VPinball flipper physics', () => {
 		const flipper = table.flippers.FlipperR;
 
 		// move up
-		flipper.rotateToEnd();
+		flipper.getApi().rotateToEnd();
 		simulateCycles(player, 25); // hit at 17.012061224193429107ms (at 1000fps)
 
 		const flipperState = flipper.getState();

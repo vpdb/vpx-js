@@ -17,10 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Storage } from '../..';
+import { Storage, Table } from '../..';
 import { BiffParser } from '../../io/biff-parser';
 import { Vertex2D } from '../../math/vertex2d';
 import { ItemData } from '../item-data';
+import { registry } from '../../game/global-registry';
 
 export class FlipperData extends ItemData {
 
@@ -72,9 +73,9 @@ export class FlipperData extends ItemData {
 	public overrideScatterAngle?: number;
 	public overridePhysics?: number;
 
-	public fVisible: boolean = true;
-	public fEnabled: boolean = true;
-	public fReflectionEnabled: boolean = true;
+	public isVisible: boolean = true;
+	public isEnabled: boolean = true;
+	public isReflectionEnabled: boolean = true;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<FlipperData> {
 		const flipperItem = new FlipperData(itemName);
@@ -84,6 +85,77 @@ export class FlipperData extends ItemData {
 
 	public getName(): string {
 		return this.wzName;
+	}
+
+	public updatePhysicsSettings(table: Table) {
+		if (this.doOverridePhysics(table)) {
+
+			const idx = this.overridePhysics ? this.overridePhysics - 1 : table.data!.overridePhysics! - 1;
+
+			this.overrideMass = registry.getRegStringAsFloat('Player', `FlipperPhysicsMass${idx}`, 1);
+			/* istanbul ignore if: return values are currently hardcoded to fallback */
+			if (this.overrideMass < 0.0) {
+				this.overrideMass = this.mass;
+			}
+
+			this.overrideStrength = registry.getRegStringAsFloat('Player', `FlipperPhysicsStrength${idx}`, 2200);
+			/* istanbul ignore if: return values are currently hardcoded to fallback */
+			if (this.overrideStrength < 0.0) {
+				this.overrideStrength = this.strength;
+			}
+
+			this.overrideElasticity = registry.getRegStringAsFloat('Player', `FlipperPhysicsElasticity${idx}`, 0.8);
+			/* istanbul ignore if: return values are currently hardcoded to fallback */
+			if (this.overrideElasticity < 0.0) {
+				this.overrideElasticity = this.elasticity;
+			}
+
+			this.overrideScatterAngle = registry.getRegStringAsFloat('Player', `FlipperPhysicsScatter${idx}`, 0);
+			/* istanbul ignore if: return values are currently hardcoded to fallback */
+			if (this.overrideScatterAngle < 0.0) {
+				this.overrideScatterAngle = this.scatter;
+			}
+
+			this.overrideReturnStrength = registry.getRegStringAsFloat('Player', `FlipperPhysicsReturnStrength${idx}`, 0.058);
+			/* istanbul ignore if: return values are currently hardcoded to fallback */
+			if (this.overrideReturnStrength < 0.0) {
+				this.overrideReturnStrength = this.return;
+			}
+
+			this.overrideElasticityFalloff = registry.getRegStringAsFloat('Player', `FlipperPhysicsElasticityFalloff${idx}`, 0.43);
+			/* istanbul ignore if: return values are currently hardcoded to fallback */
+			if (this.overrideElasticityFalloff < 0.0) {
+				this.overrideElasticityFalloff = this.elasticityFalloff;
+			}
+
+			this.overrideFriction = registry.getRegStringAsFloat('Player', `FlipperPhysicsFriction${idx}`, 0.6);
+			/* istanbul ignore if: return values are currently hardcoded to fallback */
+			if (this.overrideFriction < 0.0) {
+				this.overrideFriction = this.friction;
+			}
+
+			this.overrideCoilRampUp = registry.getRegStringAsFloat('Player', `FlipperPhysicsCoilRampUp${idx}`, 3.0);
+			/* istanbul ignore if: return values are currently hardcoded to fallback */
+			if (this.overrideCoilRampUp < 0.0) {
+				this.overrideCoilRampUp = this.rampUp;
+			}
+
+			this.overrideTorqueDamping = registry.getRegStringAsFloat('Player', `FlipperPhysicsEOSTorque${idx}`, 0.75);
+			/* istanbul ignore if: return values are currently hardcoded to fallback */
+			if (this.overrideTorqueDamping < 0.0) {
+				this.overrideTorqueDamping = this.torqueDamping;
+			}
+
+			this.overrideTorqueDampingAngle = registry.getRegStringAsFloat('Player', `FlipperPhysicsEOSTorqueAngle${idx}`, 6.0);
+			/* istanbul ignore if: return values are currently hardcoded to fallback */
+			if (this.overrideTorqueDampingAngle < 0.0) {
+				this.overrideTorqueDampingAngle = this.torqueDampingAngle;
+			}
+		}
+	}
+
+	public doOverridePhysics(table: Table) {
+		return this.overridePhysics || (table.data!.overridePhysicsFlipper && table.data!.overridePhysics);
 	}
 
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
@@ -120,9 +192,9 @@ export class FlipperData extends ItemData {
 			case 'TODA': this.torqueDamping = this.getFloat(buffer); break;
 			case 'TDAA': this.torqueDampingAngle = this.getFloat(buffer); break;
 			case 'FRMN': this.flipperRadiusMin = this.getFloat(buffer); break;
-			case 'VSBL': this.fVisible = this.getBool(buffer); break;
-			case 'ENBL': this.fEnabled = this.getBool(buffer); break;
-			case 'REEN': this.fReflectionEnabled = this.getBool(buffer); break;
+			case 'VSBL': this.isVisible = this.getBool(buffer); break;
+			case 'ENBL': this.isEnabled = this.getBool(buffer); break;
+			case 'REEN': this.isReflectionEnabled = this.getBool(buffer); break;
 			case 'IMAG': this.szImage = this.getString(buffer, len); break;
 			default:
 				this.getUnknownBlock(buffer, tag);

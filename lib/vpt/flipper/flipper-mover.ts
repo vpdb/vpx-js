@@ -65,7 +65,6 @@ export class FlipperMover implements MoverObject {
 	private solState: boolean; // is solenoid enabled?
 	public isInContact: boolean;
 
-	public isEnabled: boolean = false;
 	public lastHitFace: boolean;
 
 	constructor(config: FlipperConfig, flipperData: FlipperData, state: FlipperState, fireEvents: FireEvents, player: Player, tableData: TableData) {
@@ -342,5 +341,37 @@ export class FlipperMover implements MoverObject {
 		const centrAcc = new Vertex3D(-av2 * surfP.x, -av2 * surfP.y, 0);
 
 		return tangAcc.add(centrAcc);
+	}
+
+	public setStartAngle(r: number): void {
+		this.angleStart = r;
+		const angleMin = Math.min(this.angleStart, this.angleEnd);
+		const angleMax = Math.max(this.angleStart, this.angleEnd);
+		if (this.state.angle > angleMax) {
+			this.state.angle = angleMax;
+		}
+		if (this.state.angle < angleMin) {
+			this.state.angle = angleMin;
+		}
+	}
+
+	public setEndAngle(r: number): void {
+		this.angleEnd = r;
+		const angleMin = Math.min(this.angleStart, this.angleEnd);
+		const angleMax = Math.max(this.angleStart, this.angleEnd);
+		if (this.state.angle > angleMax) {
+			this.state.angle = angleMax;
+		}
+		if (this.state.angle < angleMin) {
+			this.state.angle = angleMin;
+		}
+	}
+
+	public getMass() {
+		return 3.0 * this.inertia / (this.flipperRadius * this.flipperRadius); //!! also change if wiring of moment of inertia happens (see ctor)
+	}
+
+	public setMass(m: number) {
+		this.inertia = (1.0 / 3.0) * m * (this.flipperRadius * this.flipperRadius); //!! also change if wiring of moment of inertia happens (see ctor)
 	}
 }

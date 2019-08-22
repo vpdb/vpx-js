@@ -24,8 +24,10 @@ import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 
+import sinon = require('sinon');
 import sinonChai = require('sinon-chai');
 
+/* tslint:disable:no-unused-expression */
 chai.use(sinonChai);
 const three = new ThreeHelper();
 
@@ -115,6 +117,40 @@ describe('The VPinball trigger API', () => {
 
 		// still same pos!
 		expect(table.triggers.WireB.getState().heightOffset).to.equal(0);
+	});
+
+	it('should trigger a hit event',  () => {
+		const trigger = table.triggers.WireB.getApi();
+		const kicker = table.kickers.BallRelease.getApi();
+
+		const eventSpy = sinon.spy();
+		trigger.on('Hit', eventSpy);
+
+		kicker.CreateBall();
+		kicker.Kick(0, -1);
+
+		player.updatePhysics(0);
+		expect(eventSpy).to.have.been.not.called;
+
+		player.updatePhysics(800);
+		expect(eventSpy).to.have.been.calledOnce;
+	});
+
+	it('should trigger an unhit event',  () => {
+		const trigger = table.triggers.WireB.getApi();
+		const kicker = table.kickers.BallRelease.getApi();
+
+		const eventSpy = sinon.spy();
+		trigger.on('Unhit', eventSpy);
+
+		kicker.CreateBall();
+		kicker.Kick(0, -1);
+
+		player.updatePhysics(800);
+		expect(eventSpy).to.have.been.not.called;
+
+		player.updatePhysics(1110);
+		expect(eventSpy).to.have.been.calledOnce;
 	});
 
 	it('should not crash when executing unused APIs', () => {

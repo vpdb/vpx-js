@@ -25,7 +25,6 @@ import { clamp } from '../../math/functions';
 import { Vertex2D } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
-import { CollisionType } from '../../physics/collision-type';
 import {
 	C_CONTACTVEL,
 	C_DISP_GAIN,
@@ -58,6 +57,7 @@ export class FlipperHit extends HitObject<FireEvents> {
 	private lastHitTime: number = 0;
 
 	public static getInstance(data: FlipperData, state: FlipperState, fireEvents: FireEvents, player: Player, table: Table): FlipperHit {
+		data.updatePhysicsSettings(table);
 		const height = table.getSurfaceHeight(data.szSurface, data.center.x, data.center.y);
 		if (data.flipperRadiusMin > 0 && data.flipperRadiusMax > data.flipperRadiusMin) {
 			data.flipperRadius = data.flipperRadiusMax - (data.flipperRadiusMax - data.flipperRadiusMin) /* m_ptable->m_globalDifficulty*/;
@@ -87,7 +87,6 @@ export class FlipperHit extends HitObject<FireEvents> {
 		super();
 		this.fireEvents = fireEvents;
 		this.mover = new FlipperMover(config, data, state, fireEvents, player, tableData);
-		this.mover.isEnabled = data.fEnabled;
 		this.data = data;
 		this.state = state;
 		this.tableData = tableData;
@@ -107,7 +106,7 @@ export class FlipperHit extends HitObject<FireEvents> {
 	}
 
 	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): HitTestResult {
-		if (!this.mover.isEnabled) {
+		if (!this.data.isEnabled) {
 			return { hitTime: -1.0, coll };
 		}
 		const lastFace = this.mover.lastHitFace;
