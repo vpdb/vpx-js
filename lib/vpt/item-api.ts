@@ -18,14 +18,18 @@
  */
 
 import { EventEmitter } from 'events';
+import { Player } from '../game/player';
+import { FireEvents } from '../physics/fire-events';
 import { Table } from './table/table';
 
 export abstract class ItemApi extends EventEmitter {
 
+	protected readonly player: Player;
 	protected readonly table: Table;
 
-	protected constructor(table: Table) {
+	protected constructor(player: Player, table: Table) {
 		super();
+		this.player = player;
 		this.table = table;
 	}
 
@@ -37,5 +41,16 @@ export abstract class ItemApi extends EventEmitter {
 		if (tex.isHdr()) {
 			throw new Error(`Cannot use a HDR image (.exr/.hdr) here`);
 		}
+	}
+
+	protected BallCntOver(events: FireEvents): number {
+		let cnt = 0;
+		for (const ball of this.player.balls) {
+			if (ball.hit.isRealBall() && ball.hit.vpVolObjs.indexOf(events) >= 0) {
+				++cnt;
+				this.player.pactiveball = ball; // set active ball for scriptor
+			}
+		}
+		return cnt;
 	}
 }

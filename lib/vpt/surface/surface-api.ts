@@ -31,15 +31,13 @@ export class SurfaceApi extends ItemApi {
 	private readonly data: SurfaceData;
 	private readonly hitGenerator: SurfaceHitGenerator;
 	private readonly events: FireEvents;
-	private readonly player: Player;
 
 	constructor(surface: Surface, data: SurfaceData, hitGenerator: SurfaceHitGenerator, events: FireEvents, player: Player, table: Table) {
-		super(table);
+		super(player, table);
 		this.surface = surface;
 		this.data = data;
 		this.hitGenerator = hitGenerator;
 		this.events = events;
-		this.player = player;
 	}
 
 	// from IEditable

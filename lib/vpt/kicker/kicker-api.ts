@@ -23,25 +23,23 @@ import { Vertex3D } from '../../math/vertex3d';
 import { FireEvents } from '../../physics/fire-events';
 import { logger } from '../../util/logger';
 import { Ball } from '../ball/ball';
+import { ItemApi } from '../item-api';
 import { KickerData } from './kicker-data';
 import { KickerHit } from './kicker-hit';
 
-export class KickerApi {
+export class KickerApi extends ItemApi {
 
 	private readonly data: KickerData;
 	private readonly hit: KickerHit;
 	private readonly events: FireEvents;
-	private readonly player: Player;
 	private readonly ballCreator: IBallCreationPosition;
-	private readonly table: Table;
 
 	constructor(data: KickerData, hit: KickerHit, events: FireEvents, ballCreator: IBallCreationPosition, player: Player, table: Table) {
+		super(player, table);
 		this.data = data;
 		this.hit = hit;
 		this.events = events;
 		this.ballCreator = ballCreator;
-		this.player = player;
-		this.table = table;
 	}
 
 	// from IEditable
@@ -141,13 +139,6 @@ export class KickerApi {
 	}
 
 	public BallCntOver(): number {
-		let cnt = 0;
-		for (const ball of this.player.balls) {
-			if (ball.hit.isRealBall() && ball.hit.vpVolObjs.indexOf(this.events) >= 0) {
-				++cnt;
-				this.player.pactiveball = ball; // set active ball for scriptor
-			}
-		}
-		return cnt;
+		return super.BallCntOver(this.events);
 	}
 }

@@ -31,15 +31,13 @@ export class PrimitiveApi extends ItemApi {
 	private readonly data: PrimitiveData;
 	private readonly hits: Array<HitObject<any>>;
 	private readonly events: FireEvents;
-	private readonly player: Player;
 
 	constructor(primitive: Primitive, data: PrimitiveData, hits: Array<HitObject<any>>, events: FireEvents, player: Player, table: Table) {
-		super(table);
+		super(player, table);
 		this.primitive = primitive;
 		this.data = data;
 		this.hits = hits;
 		this.events = events;
-		this.player = player;
 	}
 
 	// from IEditable

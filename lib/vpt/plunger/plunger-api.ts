@@ -30,16 +30,14 @@ export class PlungerApi extends ItemApi {
 	private readonly data: PlungerData;
 	private readonly hit: PlungerHit;
 	private readonly events: FireEvents;
-	private readonly player: Player;
 	private readonly ballCreator: IBallCreationPosition;
 
 	constructor(data: PlungerData, hit: PlungerHit, events: FireEvents, ballCreator: IBallCreationPosition, player: Player, table: Table) {
-		super(table);
+		super(player, table);
 		this.data = data;
 		this.hit = hit;
 		this.events = events;
 		this.ballCreator = ballCreator;
-		this.player = player;
 	}
 
 	// from IEditable

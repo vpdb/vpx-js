@@ -22,11 +22,13 @@ import { Storage, Table } from '../..';
 import { IAnimatable, IAnimation } from '../../game/ianimatable';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
+import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
 import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
+import { TriggerApi } from './trigger-api';
 import { TriggerData } from './trigger-data';
 import { TriggerEvents } from './trigger-events';
 import { TriggerHitCircle } from './trigger-hit-circle';
@@ -39,7 +41,7 @@ import { TriggerState } from './trigger-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/trigger.cpp
  */
-export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState> {
+export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState>, IScriptable<TriggerApi> {
 
 	public static ShapeTriggerNone = 0;
 	public static ShapeTriggerWireA = 1;
@@ -54,6 +56,7 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 	private readonly meshGenerator: TriggerMeshGenerator;
 	private readonly hitGenerator: TriggerHitGenerator;
 
+	private api?: TriggerApi;
 	private events?: TriggerEvents;
 	private hits!: Array<HitObject<TriggerEvents>>;
 
@@ -102,6 +105,11 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 		} else {
 			this.hits = this.hitGenerator.generateHitObjects(this.events, table);
 		}
+		this.api = new TriggerApi(this.data, this.events, player, table);
+	}
+
+	public getApi(): TriggerApi {
+		return this.api!;
 	}
 
 	public getHitShapes(): Array<HitObject<FireEvents>> {

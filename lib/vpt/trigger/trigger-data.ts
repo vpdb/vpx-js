@@ -40,9 +40,9 @@ export class TriggerData extends ItemData {
 	public shape: number = Trigger.ShapeTriggerWireA;
 	public animSpeed: number = 1;
 
-	private wireThickness: number = 0;
-	private isReflectionEnabled: boolean = true;
-	private wzName!: string;
+	public wireThickness: number = 0;
+	public isReflectionEnabled: boolean = true;
+	public wzName!: string;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<TriggerData> {
 		const triggerData = new TriggerData(itemName);
