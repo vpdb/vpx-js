@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Group, Scene } from 'three';
+import { Group, MeshLambertMaterial, MeshPhongMaterial, Scene } from 'three';
 import { IAnimatable } from '../../game/ianimatable';
 import { IHittable } from '../../game/ihittable';
 import { IItem } from '../../game/iitem';
