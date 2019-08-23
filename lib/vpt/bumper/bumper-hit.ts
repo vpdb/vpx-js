@@ -23,18 +23,20 @@ import { CollisionEvent } from '../../physics/collision-event';
 import { FireEvent, FireEvents } from '../../physics/fire-events';
 import { HitCircle } from '../../physics/hit-circle';
 import { BumperData } from './bumper-data';
+import { BumperState } from './bumper-state';
 
 /* tslint:disable:variable-name */
 export class BumperHit extends HitCircle<FireEvents> {
 
 	private readonly data: BumperData;
+	private readonly state: BumperState;
 	private readonly events: FireEvents;
-	private animHitBallPosition: Vertex3D = new Vertex3D();
 	public animHitEvent: boolean;
 
-	constructor(data: BumperData, events: FireEvents, height: number) {
+	constructor(data: BumperData, state: BumperState, events: FireEvents, height: number) {
 		super(data.vCenter, data.radius, height, height + data.heightScale);
 		this.data = data;
+		this.state = state;
 		this.events = events;
 
 		this.isEnabled = this.data.isCollidable;
@@ -60,7 +62,7 @@ export class BumperHit extends HitCircle<FireEvents> {
 			coll.ball.hit.vel.add(coll.hitNormal!.clone().multiplyScalar(this.data.force));
 
 			this.animHitEvent = true;
-			this.animHitBallPosition = coll.ball.state.pos.clone();
+			this.state.ballHitPosition = coll.ball.state.pos.clone();
 			this.events.fireGroupEvent(FireEvent.HitEventsHit);
 		}
 	}

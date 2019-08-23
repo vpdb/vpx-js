@@ -197,6 +197,10 @@ export class Vertex3D implements Vertex {
 		return Math.abs(this.x) < FLT_MIN && Math.abs(this.y) < FLT_MIN && Math.abs(this.z) < FLT_MIN;
 	}
 
+	public equals(v: Vertex3D) {
+		return v.x === this.x && v.y === this.y && v.z === this.z;
+	}
+
 	public static crossProduct(pv1: Vertex3D, pv2: Vertex3D): Vertex3D {
 		return new Vertex3D(
 			pv1.y * pv2.z - pv1.z * pv2.y,

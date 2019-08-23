@@ -33,6 +33,10 @@ export class BumperAnimation implements IAnimation {
 	private timeMsec: number = 0;
 	private ringAnimate: boolean = false;
 	private ringDown: boolean = false;
+	private doSkirtAnimation: boolean = false;
+	private skirtCounter: number = 0;
+
+	public enableSkirtAnimation: boolean = true;
 
 	constructor(data: BumperData, state: BumperState, hit: BumperHit) {
 		this.data = data;
@@ -77,6 +81,23 @@ export class BumperAnimation implements IAnimation {
 					if (this.state.ringOffset >= 0.0) {
 						this.state.ringOffset = 0.0;
 						this.ringAnimate = false;
+					}
+				}
+			}
+
+			if (this.data.isSkirtVisible) {
+				if (this.enableSkirtAnimation) {
+					if (state === 1) {
+						this.doSkirtAnimation = true;
+						//UpdateSkirt(true);
+						this.skirtCounter = 0.0;
+					}
+					if (this.doSkirtAnimation) {
+						this.skirtCounter += diffTimeMsec;
+						if (this.skirtCounter > 160.0) {
+							this.doSkirtAnimation = false;
+							//UpdateSkirt(false);
+						}
 					}
 				}
 			}

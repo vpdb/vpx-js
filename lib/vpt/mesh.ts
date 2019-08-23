@@ -38,7 +38,6 @@ export const FLT_MAX = 340282346638528859811704183484516925440;
  * @see https://github.com/vpinball/vpinball/blob/master/mesh.h
  */
 export class Mesh {
-
 	private static exportPrecision = 6;
 
 	public name!: string;
@@ -106,6 +105,15 @@ export class Mesh {
 			vertex.x += f4(x);
 			vertex.y += f4(y);
 			vertex.z += f4(z);
+		}
+		return this;
+	}
+
+	public makeScale(x: number, y: number, z: number): Mesh {
+		for (const vertex of this.vertices) {
+			vertex.x *= f4(x);
+			vertex.y *= f4(y);
+			vertex.z *= f4(z);
 		}
 		return this;
 	}
