@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-/* tslint:disable:variable-name */
 import { ItemState } from '../item-state';
 
 export class PlungerState extends ItemState {

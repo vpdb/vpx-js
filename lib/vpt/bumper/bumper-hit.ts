@@ -18,7 +18,6 @@
  */
 
 import { Player } from '../../game/player';
-import { Vertex2D } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { FireEvent, FireEvents } from '../../physics/fire-events';
@@ -31,8 +30,7 @@ export class BumperHit extends HitCircle<FireEvents> {
 	private readonly data: BumperData;
 	private readonly events: FireEvents;
 	private animHitBallPosition: Vertex3D = new Vertex3D();
-	private animRingAnimOffset: number;
-	private animHitEvent: boolean;
+	public animHitEvent: boolean;
 
 	constructor(data: BumperData, events: FireEvents, height: number) {
 		super(data.vCenter, data.radius, height, height + data.heightScale);
@@ -43,7 +41,6 @@ export class BumperHit extends HitCircle<FireEvents> {
 		this.scatter = this.data.scatter!;
 
 		this.animHitEvent = this.data.hitEvent;
-		this.animRingAnimOffset = 0.0;
 	}
 
 	public collide(coll: CollisionEvent, player: Player): void {

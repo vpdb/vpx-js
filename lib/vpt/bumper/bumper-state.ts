@@ -17,31 +17,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Object3D } from 'three';
-import { Table } from '..';
-import { IPlayable } from './iplayable';
-import { Player } from './player';
+import { ItemState } from '../item-state';
 
-/**
- * Animatables are like movables but their position is only updated
- * once per frame, whereas movables get updated every tick (usually
- * at 1000fps).
- *
- * Classes that implement this interface usually take their code from
- * Visual Pinball's `RenderDynamic()` method.
- */
-export interface IAnimatable<STATE> extends IPlayable {
+export class BumperState extends ItemState {
 
-	getAnimation(): IAnimation;
+	/**
+	 * Z-offset of the bumper ring
+	 */
+	public ringOffset: number;
 
-	getState(): STATE;
+	constructor(name: string, ringOffset: number) {
+		super(name);
+		this.ringOffset = ringOffset;
+	}
 
-	applyState(obj: Object3D, table: Table, player: Player): void;
-}
+	public equals(state: BumperState): boolean {
+		/* istanbul ignore if: we don't actually pass empty states. */
+		if (!state) {
+			return false;
+		}
+		return state.ringOffset === this.ringOffset;
+	}
 
-export interface IAnimation {
-
-	init(player: Player): void;
-
-	updateAnimation(player: Player, table: Table): void;
+	public clone(): BumperState {
+		return new BumperState(this.name, this.ringOffset);
+	}
 }
