@@ -33,7 +33,9 @@ import { BumperAnimation } from './bumper-animation';
 import { BumperData } from './bumper-data';
 import { BumperHit } from './bumper-hit';
 import { BumperMeshGenerator } from './bumper-mesh-generator';
+import { BumperMeshUpdater } from './bumper-mesh-updater';
 import { BumperState } from './bumper-state';
+import { Vertex3D } from '../../math/vertex3d';
 
 /**
  * VPinball's bumper item.
@@ -44,6 +46,7 @@ export class Bumper implements IRenderable, IHittable, IAnimatable<BumperState> 
 
 	private readonly data: BumperData;
 	private readonly meshGenerator: BumperMeshGenerator;
+	private readonly meshUpdater: BumperMeshUpdater;
 	private readonly state: BumperState;
 	private hit?: BumperHit;
 	private events?: FireEvents;
@@ -56,8 +59,9 @@ export class Bumper implements IRenderable, IHittable, IAnimatable<BumperState> 
 
 	private constructor(data: BumperData) {
 		this.data = data;
-		this.state = new BumperState(this.getName(), 0);
+		this.state = new BumperState(this.getName(), 0, new Vertex3D());
 		this.meshGenerator = new BumperMeshGenerator(data);
+		this.meshUpdater = new BumperMeshUpdater(this.data, this.state, this.meshGenerator);
 	}
 
 	public getName() {
@@ -79,22 +83,12 @@ export class Bumper implements IRenderable, IHittable, IAnimatable<BumperState> 
 	public setupPlayer(player: Player, table: Table): void {
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
 		this.events = new FireEvents(this);
-		this.hit = new BumperHit(this.data, this.events, height);
+		this.hit = new BumperHit(this.data, this.state, this.events, height);
 		this.animation = new BumperAnimation(this.data, this.state, this.hit);
 	}
 
 	public applyState(obj: Object3D, table: Table, player: Player, oldState: BumperState): void {
-		const matrix = new Matrix3D().toRightHanded();
-		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
-
-		if (this.data.isRingVisible && this.state.ringOffset !== oldState.ringOffset) {
-			const ringMesh = this.meshGenerator.generateRingMesh(table, height + this.state.ringOffset);
-			const ringObj = obj.children.find(o => o.name === `bumper-ring-${this.data.getName()}`) as any;
-			if (ringObj) {
-				ringMesh.transform(matrix).applyToObject(ringObj);
-			}
-		}
-
+		this.meshUpdater.applyState(obj, table, player, oldState);
 	}
 
 	public getHitShapes(): Array<HitObject<FireEvents>> {

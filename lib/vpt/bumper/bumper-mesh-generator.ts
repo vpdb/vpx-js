@@ -32,8 +32,17 @@ export class BumperMeshGenerator {
 
 	private readonly data: BumperData;
 
+	private readonly scaledBashMesh: Mesh;
+	private readonly scaledCapMesh: Mesh;
+	private readonly scaledRingMesh: Mesh;
+	private readonly scaledSocketMesh: Mesh;
+
 	constructor(data: BumperData) {
 		this.data = data;
+		this.scaledBashMesh = bumperBaseMesh.clone().makeScale(this.data.radius, this.data.radius, this.data.heightScale);
+		this.scaledCapMesh = bumperCapMesh.clone().makeScale(this.data.radius * 2, this.data.radius * 2, this.data.heightScale);
+		this.scaledRingMesh = bumperRingMesh.clone().makeScale(this.data.radius, this.data.radius, this.data.heightScale);
+		this.scaledSocketMesh = bumperSocketMesh.clone().makeScale(this.data.radius, this.data.radius, this.data.heightScale);
 	}
 
 	public getMeshes(table: Table): BumperMesh {
@@ -42,15 +51,14 @@ export class BumperMeshGenerator {
 			throw new Error(`Cannot export bumper ${this.data.getName()} without vCenter.`);
 		}
 		const meshes: BumperMesh = {};
-		const matrix = new Matrix3D();
-		matrix.rotateZMatrix(degToRad(this.data.orientation));
+		const matrix = new Matrix3D().rotateZMatrix(degToRad(this.data.orientation));
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
 		if (this.data.isBaseVisible) {
 			meshes.base = this.generateMesh(
 				`bumper-base-${this.data.getName()}`,
-				bumperBaseMesh.clone(),
+				this.scaledBashMesh,
 				matrix,
-				z => f4(f4(z * this.data.heightScale) * table.getScaleZ()) + height,
+				z => f4(z * table.getScaleZ()) + height,
 			);
 		}
 		if (this.data.isRingVisible) {
@@ -59,17 +67,17 @@ export class BumperMeshGenerator {
 		if (this.data.isSkirtVisible) {
 			meshes.skirt = this.generateMesh(
 				`bumper-socket-${this.data.getName()}`,
-				bumperSocketMesh.clone(),
+				this.scaledSocketMesh,
 				matrix,
-				z => f4(z * f4(this.data.heightScale * table.getScaleZ())) + (height + 5.0),
+				z => f4(z * table.getScaleZ()) + (height + 5.0),
 			);
 		}
 		if (this.data.isCapVisible) {
 			meshes.cap = this.generateMesh(
 				`bumper-cap-${this.data.getName()}`,
-				bumperCapMesh.clone(),
+				this.scaledCapMesh,
 				matrix,
-				z => f4(f4(f4(z * this.data.heightScale) + this.data.heightScale) * table.getScaleZ()) + height,
+				z => f4(f4(z + this.data.heightScale) * table.getScaleZ()) + height,
 			);
 		}
 		return meshes;
@@ -79,20 +87,19 @@ export class BumperMeshGenerator {
 		const matrix = new Matrix3D().rotateZMatrix(degToRad(this.data.orientation));
 		return this.generateMesh(
 			`bumper-ring-${this.data.getName()}`,
-			bumperRingMesh,
+			this.scaledRingMesh,
 			matrix,
-			z => f4(z * f4(this.data.heightScale * table.getScaleZ())) + offset,
+			z => f4(z * table.getScaleZ()) + offset,
 		);
 	}
 
 	private generateMesh(name: string, mesh: Mesh, matrix: Matrix3D, zPos: (z: number) => number): Mesh {
-		const scalexy = this.data.radius;
 		const generatedMesh = mesh.clone(name);
 		for (const vertex of generatedMesh.vertices) {
 			let vert = new Vertex3D(vertex.x, vertex.y, vertex.z);
 			vert = matrix.multiplyVector(vert);
-			vertex.x = f4(vert.x * scalexy) + this.data.vCenter.x;
-			vertex.y = f4(vert.y * scalexy) + this.data.vCenter.y;
+			vertex.x = vert.x + this.data.vCenter.x;
+			vertex.y = vert.y + this.data.vCenter.y;
 			vertex.z = zPos(vert.z);
 
 			let normal = new Vertex3D(vertex.nx, vertex.ny, vertex.nz);

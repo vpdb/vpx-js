@@ -18,6 +18,7 @@
  */
 
 import { ItemState } from '../item-state';
+import { Vertex3D } from '../../math/vertex3d';
 
 export class BumperState extends ItemState {
 
@@ -26,9 +27,15 @@ export class BumperState extends ItemState {
 	 */
 	public ringOffset: number;
 
-	constructor(name: string, ringOffset: number) {
+	/**
+	 * Position where the ball hit the bumper
+ 	 */
+	public ballHitPosition: Vertex3D;
+
+	constructor(name: string, ringOffset: number, ballHitPosition: Vertex3D) {
 		super(name);
 		this.ringOffset = ringOffset;
+		this.ballHitPosition = ballHitPosition;
 	}
 
 	public equals(state: BumperState): boolean {
@@ -36,10 +43,10 @@ export class BumperState extends ItemState {
 		if (!state) {
 			return false;
 		}
-		return state.ringOffset === this.ringOffset;
+		return state.ringOffset === this.ringOffset && state.ballHitPosition.equals(this.ballHitPosition);
 	}
 
 	public clone(): BumperState {
-		return new BumperState(this.name, this.ringOffset);
+		return new BumperState(this.name, this.ringOffset, this.ballHitPosition.clone());
 	}
 }

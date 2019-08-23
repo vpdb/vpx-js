@@ -121,9 +121,11 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		return meshes;
 	}
 
-	public applyState(obj: Object3D): void {
-		const matToOrigin = new Matrix3D().setTranslation(-this.data.center.x, -this.data.center.y, 0);
-		const matFromOrigin = new Matrix3D().setTranslation(this.data.center.x, this.data.center.y, 0);
+	public applyState(obj: Object3D, table: Table): void {
+		const height = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y) * table.getScaleZ();;
+
+		const matToOrigin = new Matrix3D().setTranslation(-this.data.center.x, -this.data.center.y, -height);
+		const matFromOrigin = new Matrix3D().setTranslation(this.data.center.x, this.data.center.y, height);
 		const matRotate = new Matrix3D().rotateZMatrix(this.state.angle - degToRad(this.data.startAngle));
 		const matrix = matToOrigin.multiply(matRotate).multiply(matFromOrigin);
 
