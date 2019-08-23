@@ -110,14 +110,14 @@ export class Player extends EventEmitter {
 	/**
 	 * Returns the changed states and clears them.
 	 */
-	public popStates(): ItemState[] {
-		const changedStates: ItemState[] = [];
+	public popStates(): ChangedStates {
+		const changedStates: ChangedStates = {};
 		for (const name of Object.keys(this.currentStates)) {
-			const currentState = this.currentStates[name];
-			const previousState = this.previousStates[name];
-			if (!currentState.equals(previousState)) {
-				changedStates.push(currentState);
-				this.previousStates[name] = currentState.clone();
+			const newState = this.currentStates[name];
+			const oldState = this.previousStates[name];
+			if (!newState.equals(oldState)) {
+				changedStates[name] = { oldState, newState };
+				this.previousStates[name] = newState.clone();
 			}
 		}
 		return changedStates;
@@ -549,4 +549,13 @@ export interface IBallCreationPosition {
 	getBallCreationPosition(table: Table): Vertex3D;
 	getBallCreationVelocity(table: Table): Vertex3D;
 	onBallCreated(player: Player, ball: Ball): void;
+}
+
+export interface ChangedStates {
+	[key: string]: ChangedState;
+}
+
+export interface ChangedState {
+	oldState: ItemState;
+	newState: ItemState;
 }

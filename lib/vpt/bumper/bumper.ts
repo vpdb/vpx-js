@@ -83,14 +83,18 @@ export class Bumper implements IRenderable, IHittable, IAnimatable<BumperState> 
 		this.animation = new BumperAnimation(this.data, this.state, this.hit);
 	}
 
-	public applyState(obj: Object3D, table: Table, player: Player): void {
+	public applyState(obj: Object3D, table: Table, player: Player, oldState: BumperState): void {
 		const matrix = new Matrix3D().toRightHanded();
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
-		const ringMesh = this.meshGenerator.generateRingMesh(table, height + this.state.ringOffset);
-		const ringObj = obj.children.find(o => o.name === `bumper-ring-${this.data.getName()}`) as any;
-		if (ringObj) {
-			ringMesh.transform(matrix).applyToObject(ringObj);
+
+		if (this.data.isRingVisible && this.state.ringOffset !== oldState.ringOffset) {
+			const ringMesh = this.meshGenerator.generateRingMesh(table, height + this.state.ringOffset);
+			const ringObj = obj.children.find(o => o.name === `bumper-ring-${this.data.getName()}`) as any;
+			if (ringObj) {
+				ringMesh.transform(matrix).applyToObject(ringObj);
+			}
 		}
+
 	}
 
 	public getHitShapes(): Array<HitObject<FireEvents>> {

@@ -112,7 +112,7 @@ describe('The VPinball flipper physics', () => {
 		const flipperState = flipper.getState();
 		const states = player.popStates();
 
-		const poppedState = states.find(s => s.getName() === 'FlipperR');
+		const poppedState = states.FlipperR.newState;
 
 		expect(flipperState).to.equal(poppedState);
 		expect(flipperState.equals(undefined as unknown as FlipperState)).to.equal(false);

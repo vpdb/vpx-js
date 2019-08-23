@@ -30,5 +30,5 @@ export interface IMovable<STATE extends ItemState> extends IPlayable {
 
 	getState(): STATE;
 
-	applyState(obj: Object3D, table: Table, player: Player): void;
+	applyState(obj: Object3D, table: Table, player: Player, oldState: STATE): void;
 }
