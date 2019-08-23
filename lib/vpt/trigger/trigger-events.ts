@@ -44,6 +44,10 @@ export class TriggerEvents extends FireEvents implements IAnimation {
 		this.state = state;
 	}
 
+	public init(player: Player): void {
+		// nothing to init.
+	}
+
 	public triggerAnimationHit(): void {
 		this.hitEvent = true;
 	}
