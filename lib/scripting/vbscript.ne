@@ -9,17 +9,17 @@ const estree = require('./estree');
 # Rules 
 #===============================
 
-Program              -> NLOpt GlobalStmt:*                           {% data => estree.program(data[1]) %}
+Program              -> NLOpt GlobalStmt:*                            {% data => estree.program(data[1]) %}
 
 #===============================
 # Rules : Declarations
 #===============================
 
-VarDecl              -> "Dim" __ VarName OtherVarsOpt:* NL           {% estree.varDecl %}
+VarDecl              -> "Dim" __ VarName OtherVarsOpt:* NL            {% estree.varDecl %}
 
-VarName              -> ExtendedID ("(" ArrayRankList ")"):?         {% data => data[0] %}
+VarName              -> ExtendedID ("(" ArrayRankList ")"):?          {% id %}
 
-OtherVarsOpt         -> "," __ VarName                               {% data => data[2] %}
+OtherVarsOpt         -> "," __ VarName                                {% data => data[2] %}
 
 ArrayRankList        -> IntLiteral _ "," _ ArrayRankList
                       | IntLiteral
@@ -29,39 +29,44 @@ ConstDecl            -> AccessModifierOpt __ "Const" __ ConstNameValue OtherCons
 
 ConstNameValue       -> ExtendedID _ "=" _ ConstExprDef
 
-OtherConstantsOpt    -> "," _ ConstNameValue                         {% data => data[2] %}
+OtherConstantsOpt    -> "," _ ConstNameValue                          {% data => data[2] %}
 
 ConstExprDef         -> "(" _ ConstExprDef _ ")"
                       | "-" __ ConstExprDef
                       | "+" __ ConstExprDef
-                      | ConstExpr                                    {% id %}
+                      | ConstExpr                                     {% id %}
 
-AccessModifierOpt    -> "Public"
-                      | "Private"
+AccessModifierOpt    -> "Public"                                      {% id %}
+                      | "Private"                                     {% id %}
 
 #===============================
 # Rules : Statements
 #===============================
 
 GlobalStmt           -> OptionExplicit
-                      | ConstDecl                                    {% data => data[0] %}
-                      | BlockStmt                                    {% data => data[0] %}
+                      | ConstDecl                                     {% id %}
+                      | BlockStmt                                     {% id %}
 
-BlockStmt            -> VarDecl                                      {% data => data[0] %}
-                      | InlineStmt NL                                {% data => data[0] %}
+BlockStmt            -> VarDecl                                       {% id %}
+                      | InlineStmt NL                                 {% id %}
 
-InlineStmt           -> SubCallStmt                                  {% data => data[0] %}
+InlineStmt           -> SubCallStmt                                   {% id %}
 
 OptionExplicit       -> "Option" __ "Explicit" NL
 
-SubCallStmt          -> QualifiedID "(" ")"                          {% data => estree.expressionStatement(data) %}
-                      | QualifiedID                                  {% data => estree.expressionStatement(data[0]) %}
+SubCallStmt          -> QualifiedID __ SubSafeExprOpt _ OtherSubCallStmtOpt:*     {% estree.subCallStmt %}
+                      | QualifiedID "(" ")"                                       {% estree.subCallStmt %}
+                      | QualifiedID                                               {% estree.subCallStmt %}
+
+OtherSubCallStmtOpt  -> "," _ Expr                                    {% data => data[2] %}
+
+SubSafeExprOpt       -> SubSafeExpr                                   {% id %}
 
 QualifiedID          -> IDDot QualifiedIDTail                                      
-                      | ID                                            
+                      | ID                                            {% id %}
                        
 QualifiedIDTail      -> IDDot QualifiedIDTail                        
-                      | ID                                           
+                      | ID                                            {% id %}
 
 SafeKeywordID        -> "Default"
                       | "Erase"
@@ -70,8 +75,8 @@ SafeKeywordID        -> "Default"
                       | "Property"
                       | "Step"
 
-ExtendedID           -> SafeKeywordID
-                      | ID                                           {% data => data[0] %}
+ExtendedID           -> SafeKeywordID                                 {% id %}
+                      | ID                                            {% id %}
 
 NLOpt                -> NL:*
 
@@ -79,22 +84,42 @@ NLOpt                -> NL:*
 # Rules : Expressions
 #===============================
 
-ConstExpr            -> FloatLiteral                                 {% id %}
-                      | StringLiteral                                {% id %}
-                      | Nothing                                      {% id %}
+SubSafeExpr          -> SubSafeValue                                  {% id %}
 
-Nothing              -> "Nothing"
-                      | "Null"
-                      | "Empty"
+SubSafeValue         -> ConstExpr                                     {% id %}
+                      | LeftExpr                                      {% id %}
+                      | "(" _ Expr _ ")"
+
+Expr                 -> UnaryExpr                                     {% id %} 
+
+UnaryExpr            -> "-" UnaryExpr                                 {% estree.unaryExpression %}
+                      | "+" UnaryExpr                                 {% estree.unaryExpression %}
+                      | ExpExpr                                       {% id %}
+
+ExpExpr              -> Value "^" ExpExpr
+                      | Value                                         {% id %}
+
+Value                -> ConstExpr                                     {% id %}
+                      | LeftExpr                                      {% id %}
+                      | "(" _ Expr _ ")"
+
+ConstExpr            -> IntLiteral                                    {% data => estree.literal(data[0]) %}
+                      | FloatLiteral                                  {% data => estree.literal(data[0]) %}
+                      | StringLiteral                                 {% data => estree.literal(data[0]) %}
+                      | Nothing                                       {% id %}
+
+Nothing              -> "Nothing"                                     {% id %}
+                      | "Null"                                        {% id %}
+                      | "Empty"                                       {% id %}
 
 #===============================
 # Terminals
 #===============================
 
-ID                   -> Letter IDTail                                {% data => data[0] + data[1] %}
+ID                   -> Letter IDTail                                 {% data => data[0] + data[1] %}
                       | "[" IDNameChar:* "]"
 
-IDDot                -> Letter IDTail "."                            {% data => [ data[0] + data[1],  "." ] %}
+IDDot                -> Letter IDTail "."                             {% data => data[0] + data[1] %}
 
 NL                   -> NewLine NL
                       | NewLine
@@ -104,13 +129,13 @@ NewLine              -> CR LF
                       | LF
                       | ":"
 
-IntLiteral           -> DecDigit:+
+IntLiteral           -> unsigned_int                                  {% id %}
                       | HexLiteral
                       | OctLiteral
 
-StringLiteral        -> "\"" ( StringChar | "\"\"" ):* "\""          {% data => data[1].join('') %}
+StringLiteral        -> "\"" ( StringChar | "\"\"" ):* "\""           {% data => data[1].join('') %}
 
-FloatLiteral         -> decimal                                      {% id %}  # DecDigit:* "." DecDigit:+ ( "E" [+-]:? DecDigit:+ ):?
+FloatLiteral         -> decimal                                       {% id %}  # DecDigit:* "." DecDigit:+ ( "E" [+-]:? DecDigit:+ ):?
 
 HexLiteral           -> "&H" HexDigit:+ "&":?
 OctLiteral           -> "&" OctDigit:+ "&":?
@@ -127,6 +152,6 @@ LF                   -> [\n]
 
 CR                   -> [\r]
 
-StringChar           -> [\x01-\x21|\x23-\xD7FF|\xE000-\xFFEF]        {% id %}
+StringChar           -> [\x01-\x21|\x23-\xD7FF|\xE000-\xFFEF]         {% id %}
 
-IDTail               -> [a-zA-Z0-9_]:*                               {% data => data[0].join('') %}
+IDTail               -> [a-zA-Z0-9_]:*                                {% data => data[0].join('') %}

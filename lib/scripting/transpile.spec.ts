@@ -21,7 +21,6 @@ import { expect } from 'chai';
 import { vbsToJs } from './transpile';
 
 describe('The VBScript transpiler', () => {
-
 	it('should transpile a single variable declaration', () => {
 		const vbs = `Dim test1\n`;
 		const js = vbsToJs(vbs);
@@ -46,9 +45,15 @@ describe('The VBScript transpiler', () => {
 		expect(js).to.equal('const test1 = 3.14, test2 = 4, test3 = "TEST", test4 = -5.2;\n');
 	});
 
-	it('should transpile a simple function call', () => {
+	it('should transpile a subcall statement without params', () => {
 		const vbs = `BallRelease.CreateBall\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('BallRelease.CreateBall();\n');
+	});
+
+	it('should transpile a subcall statement with params', () => {
+		const vbs = `BallRelease.KickBall 0, -2\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('BallRelease.KickBall(0, -2);\n');
 	});
 });
