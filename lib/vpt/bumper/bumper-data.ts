@@ -25,29 +25,27 @@ import { ItemData } from '../item-data';
 export class BumperData extends ItemData {
 
 	public vCenter!: Vertex2D;
-	public radius: number = 1.0;
+	public radius: number = 45;
 	public szCapMaterial?: string;
 	public szRingMaterial?: string;
 	public szBaseMaterial?: string;
 	public szSkirtMaterial?: string;
-	public TimerInterval?: number;
-	public fTimerEnabled: boolean = false;
 	public threshold: number = 1.0;
-	public force?: number;
+	public force!: number;
 	public scatter?: number;
-	public heightScale: number = 1.0;
+	public heightScale: number = 90.0;
 	public ringSpeed: number = 0.5;
 	public orientation: number = 0.0;
 	public ringDropOffset: number = 0.0;
 	public szSurface?: string;
 	public wzName!: string;
-	public fCapVisible: boolean = true;
-	public fBaseVisible: boolean = true;
-	public fRingVisible: boolean = true;
-	public fSkirtVisible: boolean = true;
-	public fHitEvent: boolean = true;
-	public fCollidable: boolean = true;
-	public fReflectionEnabled: boolean = true;
+	public isCapVisible: boolean = true;
+	public isBaseVisible: boolean = true;
+	public isRingVisible: boolean = true;
+	public isSkirtVisible: boolean = true;
+	public hitEvent: boolean = true;
+	public isCollidable: boolean = true;
+	public isReflectionEnabled: boolean = true;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<BumperData> {
 		const bumperData = new BumperData(itemName);
@@ -83,22 +81,22 @@ export class BumperData extends ItemData {
 			/* istanbul ignore next: legacy */
 			case 'BVIS':
 				const isVisible = this.getBool(buffer);
-				this.fCapVisible = isVisible;
-				this.fBaseVisible = isVisible;
-				this.fRingVisible = isVisible;
-				this.fSkirtVisible = isVisible;
+				this.isCapVisible = isVisible;
+				this.isBaseVisible = isVisible;
+				this.isRingVisible = isVisible;
+				this.isSkirtVisible = isVisible;
 				break;
-			case 'CAVI': this.fCapVisible = this.getBool(buffer); break;
-			case 'HAHE': this.fHitEvent = this.getBool(buffer); break;
-			case 'COLI': this.fCollidable = this.getBool(buffer); break;
+			case 'CAVI': this.isCapVisible = this.getBool(buffer); break;
+			case 'HAHE': this.hitEvent = this.getBool(buffer); break;
+			case 'COLI': this.isCollidable = this.getBool(buffer); break;
 			case 'BSVS':
-				this.fBaseVisible = this.getBool(buffer);
-				this.fRingVisible = this.fBaseVisible;
-				this.fSkirtVisible = this.fBaseVisible;
+				this.isBaseVisible = this.getBool(buffer);
+				this.isRingVisible = this.isBaseVisible;
+				this.isSkirtVisible = this.isBaseVisible;
 				break;
-			case 'RIVS': this.fRingVisible = this.getBool(buffer); break;
-			case 'SKVS': this.fSkirtVisible = this.getBool(buffer); break;
-			case 'REEN': this.fReflectionEnabled = this.getBool(buffer); break;
+			case 'RIVS': this.isRingVisible = this.getBool(buffer); break;
+			case 'SKVS': this.isSkirtVisible = this.getBool(buffer); break;
+			case 'REEN': this.isReflectionEnabled = this.getBool(buffer); break;
 			default:
 				this.getUnknownBlock(buffer, tag);
 				break;
