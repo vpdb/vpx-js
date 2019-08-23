@@ -28,6 +28,7 @@ const vbsGrammar = require('./vbscript.js');
 export function vbsToJs(vbs: string): string {
 	const parser = new Parser(Grammar.fromCompiled(vbsGrammar));
 	parser.feed(vbs);
+	/* istanbul ignore if */
 	if (parser.results.length === 0) {
 		throw new Error('Parser returned no results.');
 	}
