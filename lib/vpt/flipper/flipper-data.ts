@@ -18,10 +18,10 @@
  */
 
 import { Storage, Table } from '../..';
+import { registry } from '../../game/global-registry';
 import { BiffParser } from '../../io/biff-parser';
 import { Vertex2D } from '../../math/vertex2d';
 import { ItemData } from '../item-data';
-import { registry } from '../../game/global-registry';
 
 export class FlipperData extends ItemData {
 
