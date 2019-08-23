@@ -122,7 +122,7 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	}
 
 	public applyState(obj: Object3D, table: Table): void {
-		const height = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y) * table.getScaleZ();;
+		const height = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y) * table.getScaleZ();
 
 		const matToOrigin = new Matrix3D().setTranslation(-this.data.center.x, -this.data.center.y, -height);
 		const matFromOrigin = new Matrix3D().setTranslation(this.data.center.x, this.data.center.y, height);

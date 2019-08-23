@@ -17,14 +17,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BumperState } from './bumper-state';
 import { Object3D } from 'three';
 import { Table } from '../..';
 import { Player } from '../../game/player';
+import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { BumperData } from './bumper-data';
 import { BumperMeshGenerator } from './bumper-mesh-generator';
-import { degToRad } from '../../math/float';
+import { BumperState } from './bumper-state';
 
 export class BumperMeshUpdater {
 

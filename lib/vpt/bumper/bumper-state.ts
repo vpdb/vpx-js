@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ItemState } from '../item-state';
 import { Vertex3D } from '../../math/vertex3d';
+import { ItemState } from '../item-state';
 
 export class BumperState extends ItemState {
 

@@ -25,6 +25,7 @@ import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
+import { Vertex3D } from '../../math/vertex3d';
 import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
@@ -35,7 +36,6 @@ import { BumperHit } from './bumper-hit';
 import { BumperMeshGenerator } from './bumper-mesh-generator';
 import { BumperMeshUpdater } from './bumper-mesh-updater';
 import { BumperState } from './bumper-state';
-import { Vertex3D } from '../../math/vertex3d';
 
 /**
  * VPinball's bumper item.
