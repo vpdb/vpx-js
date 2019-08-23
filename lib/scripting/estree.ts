@@ -17,7 +17,37 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { CallExpression, ExpressionStatement, Literal, Program, VariableDeclaration, VariableDeclarator } from 'estree';
+import {
+	EmptyStatement,
+	Literal,
+	Program,
+	Statement,
+	UnaryExpression,
+	VariableDeclaration,
+	VariableDeclarator,
+} from 'estree';
+
+export function emptyStatement(): EmptyStatement {
+	return {
+		type: 'EmptyStatement',
+	};
+}
+
+export function literal(data: any): Literal {
+	return {
+		type: 'Literal',
+		value: data,
+	};
+}
+
+export function unaryExpression(data: any): UnaryExpression {
+	return {
+		type: 'UnaryExpression',
+		operator: data[0],
+		prefix: true,
+		argument: data[1],
+	};
+}
 
 /**
  * Returns the root node.
@@ -39,7 +69,7 @@ export function varDecl(data: [string, null, string, string[]]): VariableDeclara
 	return {
 		type: 'VariableDeclaration',
 		kind: 'let',
-		declarations: [ data[2], ...data[3] ].map((item) => {
+		declarations: [data[2], ...data[3]].map(item => {
 			return variableDeclarator(item);
 		}),
 	};
@@ -49,7 +79,7 @@ export function variableDeclarator(name: string, value: any = null): VariableDec
 	return {
 		type: 'VariableDeclarator',
 		id: { type: 'Identifier', name },
-		init: value ? literal(value) : null,
+		init: value ? value : null,
 	};
 }
 
@@ -60,24 +90,20 @@ export function constDecl(data: any): VariableDeclaration {
 	return {
 		type: 'VariableDeclaration',
 		kind: 'const',
-		declarations: [ data[2], ...data[3] ].map((item: any[]) => {
+		declarations: [data[2], ...data[3]].map((item: any[]) => {
 			return variableDeclarator(item[0], item[4]);
 		}),
 	};
 }
 
-export function literal(data: any): Literal {
+/**
+ * Returns a subCall Statement.
+ */
+
+export function subCallStmt(data: any): Statement {
 	return {
-		type: 'Literal',
-		value: data,
-	};
-}
-
-export function expressionStatement(data: any): ExpressionStatement {
-	let expression: CallExpression;
-
-	if (data.length > 1) {
-		expression = {
+		type: 'ExpressionStatement',
+		expression: {
 			type: 'CallExpression',
 			callee: {
 				type: 'MemberExpression',
@@ -87,25 +113,11 @@ export function expressionStatement(data: any): ExpressionStatement {
 				},
 				property: {
 					type: 'Identifier',
-					name: data[1][0],
+					name: data[0][1],
 				},
 				computed: false,
 			},
-			arguments: [],
-		};
-	} else {
-		expression = {
-			type: 'CallExpression',
-			callee: {
-				type: 'Identifier',
-				name: data[0][0],
-			},
-			arguments: [],
-		};
-	}
-
-	return {
-		type: 'ExpressionStatement',
-		expression,
+			arguments: data.length > 1 ? [data[2], ...data[4]] : [],
+		},
 	};
 }
