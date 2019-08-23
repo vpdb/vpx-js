@@ -18,23 +18,30 @@
  */
 
 import { Storage } from '../..';
+import { Table } from '../..';
+import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
+import { Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
+import { FireEvents } from '../../physics/fire-events';
+import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
-import { Table } from '../table/table';
 import { Texture } from '../texture';
 import { BumperData } from './bumper-data';
 import { BumperMeshGenerator } from './bumper-mesh-generator';
+import { BumperHit } from './bumper-hit';
 
 /**
  * VPinball's bumper item.
  *
  * @see https://github.com/vpinball/vpinball/blob/master/bumper.cpp
  */
-export class Bumper implements IRenderable {
+export class Bumper implements IRenderable, IHittable {
 
 	private readonly data: BumperData;
 	private readonly meshGenerator: BumperMeshGenerator;
+	private hit?: BumperHit;
+	private events?: FireEvents;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Bumper> {
 		const data = await BumperData.fromStorage(storage, itemName);
@@ -51,7 +58,21 @@ export class Bumper implements IRenderable {
 	}
 
 	public isVisible(): boolean {
-		return this.data.fBaseVisible || this.data.fRingVisible || this.data.fSkirtVisible || this.data.fCapVisible;
+		return this.data.isBaseVisible || this.data.isRingVisible || this.data.isSkirtVisible || this.data.isCapVisible;
+	}
+
+	public isCollidable(): boolean {
+		throw new Error('Method not implemented.');
+	}
+
+	public setupPlayer(player: Player, table: Table): void {
+		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
+		this.events = new FireEvents(this);
+		this.hit = new BumperHit(this.data, this.events, height);
+	}
+
+	public getHitShapes(): Array<HitObject<FireEvents>> {
+		return [ this.hit! ];
 	}
 
 	public getMeshes(table: Table): Meshes {
