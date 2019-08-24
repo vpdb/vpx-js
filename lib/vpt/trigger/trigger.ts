@@ -31,7 +31,6 @@ import { Meshes } from '../item-data';
 import { TriggerAnimation } from './trigger-animation';
 import { TriggerApi } from './trigger-api';
 import { TriggerData } from './trigger-data';
-import { TriggerEvents } from './trigger-events';
 import { TriggerHitCircle } from './trigger-hit-circle';
 import { TriggerHitGenerator } from './trigger-hit-generator';
 import { TriggerMeshGenerator } from './trigger-mesh-generator';
@@ -58,8 +57,8 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 	private readonly hitGenerator: TriggerHitGenerator;
 
 	private api?: TriggerApi;
-	private hits?: Array<HitObject<TriggerEvents>>;
-	private events?: TriggerEvents;
+	private hits?: Array<HitObject<FireEvents>>;
+	private events?: FireEvents;
 	private animation?: TriggerAnimation;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Trigger> {
@@ -100,15 +99,15 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		this.events = new TriggerEvents(this.data, this.state, this);
+		this.events = new FireEvents(this);
+		this.animation = new TriggerAnimation(this.data, this.state);
 		if (this.data.shape === Trigger.ShapeTriggerStar || this.data.shape === Trigger.ShapeTriggerButton) {
-			this.hits = [ new TriggerHitCircle(this.data, this.events, table) ];
+			this.hits = [ new TriggerHitCircle(this.data, this.animation, this.events, table) ];
 
 		} else {
-			this.hits = this.hitGenerator.generateHitObjects(this.events, table);
+			this.hits = this.hitGenerator.generateHitObjects(this.animation, this.events, table);
 		}
 		this.api = new TriggerApi(this.data, this.events, player, table);
-		this.animation = new TriggerAnimation(this.data, this.state, this.events);
 	}
 
 	public getApi(): TriggerApi {

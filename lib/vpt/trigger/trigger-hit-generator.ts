@@ -24,10 +24,11 @@ import { RenderVertex, Vertex2D } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionType } from '../../physics/collision-type';
 import { PHYS_SKIN } from '../../physics/constants';
+import { FireEvents } from '../../physics/fire-events';
 import { Hit3DPoly } from '../../physics/hit-3dpoly';
 import { HitObject } from '../../physics/hit-object';
+import { TriggerAnimation } from './trigger-animation';
 import { TriggerData } from './trigger-data';
-import { TriggerEvents } from './trigger-events';
 import { TriggerLineSeg } from './trigger-line-seg';
 
 export class TriggerHitGenerator {
@@ -38,9 +39,9 @@ export class TriggerHitGenerator {
 		this.data = data;
 	}
 
-	public generateHitObjects(events: TriggerEvents, table: Table): Array<HitObject<TriggerEvents>> {
+	public generateHitObjects(animation: TriggerAnimation, events: FireEvents, table: Table): Array<HitObject<FireEvents>> {
 
-		const hitObjects: Array<HitObject<TriggerEvents>> = [];
+		const hitObjects: Array<HitObject<FireEvents>> = [];
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
 		const vVertex: RenderVertex[] = DragPoint.getRgVertex<RenderVertex>(this.data.dragPoints, () => new RenderVertex(), CatmullCurve2D.fromVertex2D as any);
 
@@ -56,23 +57,24 @@ export class TriggerHitGenerator {
 		for (let i = 0; i < count; i++) {
 			const pv2 = rgv[(i < count - 1) ? (i + 1) : 0];
 			const pv3 = rgv[(i < count - 2) ? (i + 2) : (i + 2 - count)];
-			hitObjects.push(this.getLineSeg(pv2, pv3, events, height));
+			hitObjects.push(this.getLineSeg(pv2, pv3, animation, events, height));
 		}
 
-		const ph3dpoly = new Hit3DPoly<TriggerEvents>(rgv3D, CollisionType.Trigger);
+		const ph3dpoly = new Hit3DPoly<FireEvents>(rgv3D, CollisionType.Trigger);
 		ph3dpoly.obj = events;
 		hitObjects.push(ph3dpoly);
 
 		return hitObjects;
 	}
 
-	private getLineSeg(pv1: RenderVertex, pv2: RenderVertex, events: TriggerEvents, height: number): TriggerLineSeg {
+	private getLineSeg(pv1: RenderVertex, pv2: RenderVertex, animation: TriggerAnimation, events: FireEvents, height: number): TriggerLineSeg {
 		const lineSeg = new TriggerLineSeg(
 			new Vertex2D(pv1.x, pv1.y),
 			new Vertex2D(pv2.x, pv2.y),
 			height,
 			height + Math.max(this.data.hitHeight - 8.0, 0), //adjust for same hit height as circular
 			this.data,
+			animation,
 		);
 		lineSeg.obj = events;
 		return lineSeg;

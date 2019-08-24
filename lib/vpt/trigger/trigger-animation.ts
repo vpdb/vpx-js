@@ -22,27 +22,35 @@ import { IAnimation } from '../../game/ianimatable';
 import { Player } from '../../game/player';
 import { Trigger } from './trigger';
 import { TriggerData } from './trigger-data';
-import { TriggerEvents } from './trigger-events';
 import { TriggerState } from './trigger-state';
 
 export class TriggerAnimation implements IAnimation {
 
 	private readonly data: TriggerData;
 	private readonly state: TriggerState;
-	private readonly events: TriggerEvents;
+
+	public hitEvent = false;
+	public unhitEvent = false;
 
 	private timeMsec = 0;
 	private doAnimation: boolean = false;
 	private moveDown: boolean = false;
 
-	constructor(data: TriggerData, state: TriggerState, events: TriggerEvents) {
+	constructor(data: TriggerData, state: TriggerState) {
 		this.data = data;
 		this.state = state;
-		this.events = events;
 	}
 
 	public init(player: Player): void {
 		// nothing to init.
+	}
+
+	public triggerAnimationHit(): void {
+		this.hitEvent = true;
+	}
+
+	public triggerAnimationUnhit(): void {
+		this.unhitEvent = true;
 	}
 
 	public updateAnimation(player: Player, table: Table) {
@@ -63,17 +71,17 @@ export class TriggerAnimation implements IAnimation {
 
 		const limit = animLimit * table.getScaleZ();
 
-		if (this.events.hitEvent) {
+		if (this.hitEvent) {
 			this.doAnimation = true;
-			this.events.hitEvent = false;
+			this.hitEvent = false;
 			// unhitEvent = false;   // Bugfix: If HitEvent and unhitEvent happen at the same time, you want to favor the unhit, otherwise the switch gets stuck down.
 			this.state.heightOffset = 0.0;
 			this.moveDown = true;
 		}
-		if (this.events.unhitEvent) {
+		if (this.unhitEvent) {
 			this.doAnimation = true;
-			this.events.unhitEvent = false;
-			this.events.hitEvent = false;
+			this.unhitEvent = false;
+			this.hitEvent = false;
 			this.state.heightOffset = limit;
 			this.moveDown = false;
 		}
