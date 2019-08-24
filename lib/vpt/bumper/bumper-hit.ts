@@ -37,7 +37,6 @@ export class BumperHit extends HitCircle<FireEvents> {
 		this.data = data;
 		this.state = state;
 		this.animation = animation;
-		this.animation.hitEvent = this.data.hitEvent;
 
 		this.events = events;
 		this.isEnabled = this.data.isCollidable;

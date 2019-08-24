@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Object3D } from 'three';
+import { Matrix4, Object3D } from 'three';
 import { Table } from '../..';
 import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
@@ -49,19 +49,17 @@ export class BumperMeshUpdater {
 	}
 
 	private applyRingState(obj: Object3D) {
-
-		const ringObj = obj.children.find(o => o.name === `bumper-ring-${this.data.getName()}`) as any;
+		const ringObj = obj.children.find(o => o.name === `bumper-ring-${this.data.getName()}`) as Object3D;
 		if (ringObj) {
 			const matrix = new Matrix3D().setTranslation(0, 0, -this.state.ringOffset);
-			ringObj.matrix = matrix.toThreeMatrix4();
-			ringObj.matrixWorldNeedsUpdate = true;
+			ringObj.matrix = new Matrix4();
+			ringObj.applyMatrix(matrix.toThreeMatrix4());
 		}
 	}
 
+	/* istanbul ignore next: this looks weird. test when sure it's the correct "animation" */
 	private applySkirtState(obj: Object3D, table: Table) {
-
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
-
 		const matToOrigin = new Matrix3D().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, -height);
 		const matFromOrigin = new Matrix3D().setTranslation(this.data.vCenter.x, this.data.vCenter.y, height);
 		const matRotX = new Matrix3D().rotateXMatrix(degToRad(this.state.skirtRotX));
@@ -71,8 +69,8 @@ export class BumperMeshUpdater {
 
 		const skirtObj = obj.children.find(o => o.name === `bumper-socket-${this.data.getName()}`) as any;
 		if (skirtObj) {
-			skirtObj.matrix = matrix.toThreeMatrix4();
-			skirtObj.matrixWorldNeedsUpdate = true;
+			skirtObj.matrix = new Matrix4();
+			skirtObj.applyMatrix(matrix.toThreeMatrix4());
 		}
 	}
 }
