@@ -4,6 +4,7 @@
 
 @{%
 const estree = require('./estree');
+const pp = require('./post-process');
 %}
 
 #===============================
@@ -16,7 +17,7 @@ Program              -> NLOpt GlobalStmt:*                            {% data =>
 # Rules : Declarations
 #===============================
 
-VarDecl              -> "Dim" __ VarName OtherVarsOpt:* NL            {% estree.varDecl %}
+VarDecl              -> "Dim" __ VarName OtherVarsOpt:* NL            {% pp.varDecl %}
 
 VarName              -> ExtendedID ("(" ArrayRankList ")"):?          {% id %}
 
@@ -26,7 +27,7 @@ ArrayRankList        -> IntLiteral _ "," _ ArrayRankList
                       | IntLiteral
 
 ConstDecl            -> AccessModifierOpt __ "Const" __ ConstNameValue OtherConstantsOpt:* NL
-                      | "Const" __ ConstNameValue OtherConstantsOpt:* NL                      {% estree.constDecl %}
+                      | "Const" __ ConstNameValue OtherConstantsOpt:* NL    {% pp.constDecl %}
 
 ConstNameValue       -> ExtendedID _ "=" _ ConstExprDef
 
@@ -55,15 +56,15 @@ InlineStmt           -> SubCallStmt                                   {% id %}
 
 OptionExplicit       -> "Option" __ "Explicit" NL
 
-SubCallStmt          -> QualifiedID __ SubSafeExprOpt _ OtherSubCallStmtOpt:*     {% estree.subCallStmt %}
-                      | QualifiedID "(" ")"                                       {% estree.subCallStmt %}
-                      | QualifiedID                                               {% estree.subCallStmt %}
+SubCallStmt          -> QualifiedID __ SubSafeExprOpt _ CommaExprList:*     {% pp.subCallStmt %}
+#                      | QualifiedID "(" ")"
+                     | QualifiedID                                          {% pp.subCallStmt %}
 
-OtherSubCallStmtOpt  -> "," _ Expr                                    {% data => data[2] %}
+CommaExprList        -> "," _ Expr                                    {% data => data[2] %}
 
 SubSafeExprOpt       -> SubSafeExpr                                   {% id %}
 
-QualifiedID          -> IDDot QualifiedIDTail
+QualifiedID          -> IDDot QualifiedIDTail                         {% data => estree.memberExpression(data[0], data[1]) %}
                       | ID                                            {% id %}
 
 QualifiedIDTail      -> IDDot QualifiedIDTail
@@ -88,20 +89,20 @@ NLOpt                -> NL:*
 SubSafeExpr          -> SubSafeValue                                  {% id %}
 
 SubSafeValue         -> ConstExpr                                     {% id %}
-                      | LeftExpr                                      {% id %}
-                      | "(" _ Expr _ ")"
+#                      | LeftExpr                                      {% id %}
+#                      | "(" _ Expr _ ")"
 
 Expr                 -> UnaryExpr                                     {% id %}
 
-UnaryExpr            -> "-" UnaryExpr                                 {% estree.unaryExpression %}
-                      | "+" UnaryExpr                                 {% estree.unaryExpression %}
+UnaryExpr            -> "-" UnaryExpr                                 {% data => estree.unaryExpression(data[0], data[1]) %}
+                      | "+" UnaryExpr                                 {% data => estree.unaryExpression(data[0], data[1]) %}
                       | ExpExpr                                       {% id %}
 
 ExpExpr              -> Value "^" ExpExpr
                       | Value                                         {% id %}
 
 Value                -> ConstExpr                                     {% id %}
-                      | LeftExpr                                      {% id %}
+#                      | LeftExpr                                      {% id %}
                       | "(" _ Expr _ ")"
 
 ConstExpr            -> IntLiteral                                    {% data => estree.literal(data[0]) %}
