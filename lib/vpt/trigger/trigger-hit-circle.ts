@@ -22,20 +22,23 @@ import { Player } from '../../game/player';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { STATICTIME } from '../../physics/constants';
-import { FireEvent } from '../../physics/fire-events';
+import { FireEvent, FireEvents } from '../../physics/fire-events';
 import { HitCircle } from '../../physics/hit-circle';
 import { HitTestResult } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
+import { TriggerAnimation } from './trigger-animation';
 import { TriggerData } from './trigger-data';
-import { TriggerEvents } from './trigger-events';
 
-export class TriggerHitCircle extends HitCircle<TriggerEvents> {
+export class TriggerHitCircle extends HitCircle<FireEvents> {
 
-	constructor(data: TriggerData, fireEvents: TriggerEvents, table: Table) {
+	private readonly animation: TriggerAnimation;
+
+	constructor(data: TriggerData, animation: TriggerAnimation, events: FireEvents, table: Table) {
 		super(data.vCenter, data.radius, table.getSurfaceHeight(data.szSurface, data.vCenter.x, data.vCenter.y), table.getSurfaceHeight(data.szSurface, data.vCenter.x, data.vCenter.y) + data.hitHeight);
+		this.animation = animation;
 		this.isEnabled = data.isEnabled;
 		this.objType = CollisionType.Trigger;
-		this.obj = fireEvents;
+		this.obj = events;
 	}
 
 	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): HitTestResult {
@@ -56,12 +59,12 @@ export class TriggerHitCircle extends HitCircle<TriggerEvents> {
 
 			if (i < 0) {
 				ball.hit.vpVolObjs.push(this.obj!);
-				this.obj!.triggerAnimationHit();
+				this.animation.triggerAnimationHit();
 				this.obj!.fireGroupEvent(FireEvent.HitEventsHit);
 
 			} else {
 				ball.hit.vpVolObjs.splice(i, 1);
-				this.obj!.triggerAnimationUnhit();
+				this.animation.triggerAnimationUnhit();
 				this.obj!.fireGroupEvent(FireEvent.HitEventsUnhit);
 			}
 		}
