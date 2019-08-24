@@ -20,15 +20,14 @@
 import { Table } from '../..';
 import { IAnimation } from '../../game/ianimatable';
 import { Player } from '../../game/player';
+import { Vertex3D } from '../../math/vertex3d';
 import { BumperData } from './bumper-data';
-import { BumperHit } from './bumper-hit';
 import { BumperState } from './bumper-state';
 
 export class BumperAnimation implements IAnimation {
 
 	private readonly data: BumperData;
 	private readonly state: BumperState;
-	private readonly hit: BumperHit;
 
 	private timeMsec: number = 0;
 	private ringAnimate: boolean = false;
@@ -37,11 +36,12 @@ export class BumperAnimation implements IAnimation {
 	private skirtCounter: number = 0;
 
 	public enableSkirtAnimation: boolean = true;
+	public hitEvent: boolean = false;
+	public ballHitPosition: Vertex3D = new Vertex3D();
 
-	constructor(data: BumperData, state: BumperState, hit: BumperHit) {
+	constructor(data: BumperData, state: BumperState) {
 		this.data = data;
 		this.state = state;
-		this.hit = hit;
 	}
 
 	public init(player: Player): void {
@@ -53,18 +53,20 @@ export class BumperAnimation implements IAnimation {
 		const oldTimeMsec = this.timeMsec < player.timeMsec ? this.timeMsec : player.timeMsec;
 		this.timeMsec = player.timeMsec;
 		const diffTimeMsec = (player.timeMsec - oldTimeMsec);
+		const state = this.hitEvent ? 1 : 0;    // 0 = not hit, 1 = hit
 
-		const state = this.hit.animHitEvent ? 1 : 0;    // 0 = not hit, 1 = hit
+		this.updateRingAnimation(state, diffTimeMsec, table);
+		this.updateSkirtAnimation(state, diffTimeMsec);
+	}
 
+	private updateRingAnimation(state: number, diffTimeMsec: number, table: Table) {
 		if (this.data.isRingVisible) {
 			const limit = this.data.ringDropOffset + (this.data.heightScale * 0.5) * table.getScaleZ();
-
 			if (state === 1) {
 				this.ringAnimate = true;
 				this.ringDown = true;
-				this.hit.animHitEvent = false;
+				this.hitEvent = false;
 			}
-
 			if (this.ringAnimate) {
 				let step = this.data.ringSpeed * table.getScaleZ();
 				if (this.ringDown) {
@@ -76,7 +78,6 @@ export class BumperAnimation implements IAnimation {
 						this.state.ringOffset = -limit;
 						this.ringDown = false;
 					}
-
 				} else {
 					if (this.state.ringOffset >= 0.0) {
 						this.state.ringOffset = 0.0;
@@ -84,23 +85,54 @@ export class BumperAnimation implements IAnimation {
 					}
 				}
 			}
+		}
+	}
 
-			if (this.data.isSkirtVisible) {
-				if (this.enableSkirtAnimation) {
-					if (state === 1) {
-						this.doSkirtAnimation = true;
-						//UpdateSkirt(true);
-						this.skirtCounter = 0.0;
-					}
-					if (this.doSkirtAnimation) {
-						this.skirtCounter += diffTimeMsec;
-						if (this.skirtCounter > 160.0) {
-							this.doSkirtAnimation = false;
-							//UpdateSkirt(false);
-						}
+	private updateSkirtAnimation(state: number, diffTimeMsec: number) {
+		if (this.data.isSkirtVisible) {
+			if (this.enableSkirtAnimation) {
+				if (state === 1) {
+					this.doSkirtAnimation = true;
+					this.updateSkirtState();
+					this.skirtCounter = 0.0;
+				}
+				if (this.doSkirtAnimation) {
+					this.skirtCounter += diffTimeMsec;
+					if (this.skirtCounter > 160.0) {
+						this.doSkirtAnimation = false;
+						this.resetSkirtState();
 					}
 				}
 			}
+		} else {
+			this.resetSkirtState();
 		}
+	}
+
+	private resetSkirtState() {
+		this.state.skirtRotX = 0;
+		this.state.skirtRotY = 0;
+	}
+
+	private updateSkirtState(): void {
+		const SKIRT_TILT = 5.0;
+		const hitX = this.ballHitPosition.x;
+		const hitY = this.ballHitPosition.y;
+		let dy = Math.abs(hitY - this.data.vCenter.y);
+		if (dy === 0.0) {
+			dy = 0.000001;
+		}
+		const dx = Math.abs(hitX - this.data.vCenter.x);
+		const skirtA = Math.tan(dx / dy);
+		let rotX = Math.cos(skirtA) * SKIRT_TILT;
+		let rotY = Math.sin(skirtA) * SKIRT_TILT;
+		if (this.data.vCenter.y < hitY) {
+			rotX = -rotX;
+		}
+		if (this.data.vCenter.x > hitX) {
+			rotY = -rotY;
+		}
+		this.state.skirtRotX = rotX;
+		this.state.skirtRotY = rotY;
 	}
 }

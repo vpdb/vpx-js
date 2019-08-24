@@ -41,65 +41,38 @@ export class BumperMeshUpdater {
 	public applyState(obj: Object3D, table: Table, player: Player, oldState: BumperState): void {
 
 		if (this.data.isRingVisible && this.state.ringOffset !== oldState.ringOffset) {
-			this.applyRingState(obj, table);
+			this.applyRingState(obj);
+		}
+		if (this.data.isSkirtVisible && (this.state.skirtRotX !== oldState.skirtRotX || this.state.skirtRotY !== oldState.skirtRotY)) {
+			this.applySkirtState(obj, table);
 		}
 	}
 
-	private applyRingState(obj: Object3D, table: Table) {
-		const matrix = new Matrix3D().toRightHanded();
-		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
+	private applyRingState(obj: Object3D) {
 
-		const ringMesh = this.meshGenerator.generateRingMesh(table, height + this.state.ringOffset);
 		const ringObj = obj.children.find(o => o.name === `bumper-ring-${this.data.getName()}`) as any;
 		if (ringObj) {
-			ringMesh.transform(matrix).applyToObject(ringObj);
+			const matrix = new Matrix3D().setTranslation(0, 0, -this.state.ringOffset);
+			ringObj.matrix = matrix.toThreeMatrix4();
+			ringObj.matrixWorldNeedsUpdate = true;
 		}
 	}
 
-	private applySkirtState(obj: Object3D, table: Table, player: Player) {
-
-		const doCalculation = true;
-		const SKIRT_TILT = 5.0;
-		const scalexy = this.data.radius;
-		let rotx = 0.0;
-		let roty = 0.0;
-
-		if (doCalculation) {
-			const hitx = this.state.ballHitPosition.x;
-			const hity = this.state.ballHitPosition.y;
-			let dy = Math.abs(hity - this.data.vCenter.y);
-			if (dy === 0.0) {
-				dy = 0.000001;
-			}
-			const dx = Math.abs(hitx - this.data.vCenter.x);
-			const skirtA = Math.tan(dx / dy);
-			rotx = Math.cos(skirtA) * SKIRT_TILT;
-			roty = Math.sin(skirtA) * SKIRT_TILT;
-			if (this.data.vCenter.y < hity) {
-				rotx = -rotx;
-			}
-			if (this.data.vCenter.x > hitx) {
-				roty = -roty;
-			}
-		}
+	private applySkirtState(obj: Object3D, table: Table) {
 
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
 
-		// const matToOrigin = new Matrix3D().setTranslation(-this.data.center.x, -this.data.center.y, -height);
-		// const matFromOrigin = new Matrix3D().setTranslation(this.data.center.x, this.data.center.y, height);
+		const matToOrigin = new Matrix3D().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, -height);
+		const matFromOrigin = new Matrix3D().setTranslation(this.data.vCenter.x, this.data.vCenter.y, height);
+		const matRotX = new Matrix3D().rotateXMatrix(degToRad(this.state.skirtRotX));
+		const matRotY = new Matrix3D().rotateYMatrix(degToRad(this.state.skirtRotY));
 
-		const tempMatrix = new Matrix3D();
-		const rMatrix = new Matrix3D();
+		const matrix = matToOrigin.multiply(matRotY).multiply(matRotX).multiply(matFromOrigin);
 
-		// tempMatrix.rotateZMatrix(degToRad(this.data.orientation));
-		// rMatrix.multiply(tempMatrix);
-
-		tempMatrix.rotateYMatrix(degToRad(roty));
-		rMatrix.multiply(tempMatrix);
-		tempMatrix.rotateXMatrix(degToRad(rotx));
-		rMatrix.multiply(tempMatrix);
-
-		obj.matrix = rMatrix.toThreeMatrix4();
-		obj.matrixWorldNeedsUpdate = true;
+		const skirtObj = obj.children.find(o => o.name === `bumper-socket-${this.data.getName()}`) as any;
+		if (skirtObj) {
+			skirtObj.matrix = matrix.toThreeMatrix4();
+			skirtObj.matrixWorldNeedsUpdate = true;
+		}
 	}
 }
