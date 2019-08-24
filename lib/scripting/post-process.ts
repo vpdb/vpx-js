@@ -20,7 +20,7 @@
 import { Literal, MemberExpression, UnaryExpression } from 'estree';
 import { inspect } from 'util';
 
-import * as estree from './estree';
+import * as estree from './estree'; // use the namespace to avoid clashes
 
 /**
  * Grammar:
@@ -83,7 +83,7 @@ type ConstDeclResult = [ string, null, string, null, Literal ];
  * null,
  * [ { type: 'UnaryExpression', operator: '-', prefix: true, argument: { type: 'Literal', value: 2 } } ]
  * ```
- * @todo UnaryExpression will be more than that in the future!
+ * @todo Literal and UnaryExpression will be more generic in the future!
  */
 export function subCallStmt(result: [ MemberExpression, null, Literal?, null?, UnaryExpression[]? ]) {
 	const callee = result[0];
