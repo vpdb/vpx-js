@@ -1,3 +1,4 @@
+@preprocessor typescript
 @builtin "whitespace.ne"
 @builtin "number.ne"
 
@@ -6,7 +7,7 @@ const estree = require('./estree');
 %}
 
 #===============================
-# Rules 
+# Rules
 #===============================
 
 Program              -> NLOpt GlobalStmt:*                            {% data => estree.program(data[1]) %}
@@ -62,10 +63,10 @@ OtherSubCallStmtOpt  -> "," _ Expr                                    {% data =>
 
 SubSafeExprOpt       -> SubSafeExpr                                   {% id %}
 
-QualifiedID          -> IDDot QualifiedIDTail                                      
+QualifiedID          -> IDDot QualifiedIDTail
                       | ID                                            {% id %}
-                       
-QualifiedIDTail      -> IDDot QualifiedIDTail                        
+
+QualifiedIDTail      -> IDDot QualifiedIDTail
                       | ID                                            {% id %}
 
 SafeKeywordID        -> "Default"
@@ -90,7 +91,7 @@ SubSafeValue         -> ConstExpr                                     {% id %}
                       | LeftExpr                                      {% id %}
                       | "(" _ Expr _ ")"
 
-Expr                 -> UnaryExpr                                     {% id %} 
+Expr                 -> UnaryExpr                                     {% id %}
 
 UnaryExpr            -> "-" UnaryExpr                                 {% estree.unaryExpression %}
                       | "+" UnaryExpr                                 {% estree.unaryExpression %}
