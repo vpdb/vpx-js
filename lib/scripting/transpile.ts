@@ -19,8 +19,7 @@
 
 import { generate } from 'astring';
 import { Grammar, Parser } from 'nearley';
-
-const vbsGrammar = require('./vbscript.js');
+import * as vbsGrammar from './vbscript';
 
 /**
  * A function that transpiles VBScript to JavaScript.
