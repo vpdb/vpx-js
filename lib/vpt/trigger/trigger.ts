@@ -28,6 +28,7 @@ import { Matrix3D } from '../../math/matrix3d';
 import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
+import { TriggerAnimation } from './trigger-animation';
 import { TriggerApi } from './trigger-api';
 import { TriggerData } from './trigger-data';
 import { TriggerEvents } from './trigger-events';
@@ -51,14 +52,15 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 	public static ShapeTriggerWireC = 5;
 	public static ShapeTriggerWireD = 6;
 
-	public readonly data: TriggerData; // FIXME make private again when API implemented
+	private readonly data: TriggerData;
 	private readonly state: TriggerState;
 	private readonly meshGenerator: TriggerMeshGenerator;
 	private readonly hitGenerator: TriggerHitGenerator;
 
 	private api?: TriggerApi;
+	private hits?: Array<HitObject<TriggerEvents>>;
 	private events?: TriggerEvents;
-	private hits!: Array<HitObject<TriggerEvents>>;
+	private animation?: TriggerAnimation;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Trigger> {
 		const data = await TriggerData.fromStorage(storage, itemName);
@@ -106,6 +108,7 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 			this.hits = this.hitGenerator.generateHitObjects(this.events, table);
 		}
 		this.api = new TriggerApi(this.data, this.events, player, table);
+		this.animation = new TriggerAnimation(this.data, this.state, this.events);
 	}
 
 	public getApi(): TriggerApi {
@@ -113,11 +116,11 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 	}
 
 	public getHitShapes(): Array<HitObject<FireEvents>> {
-		return this.hits;
+		return this.hits!;
 	}
 
 	public getAnimation(): IAnimation {
-		return this.events!;
+		return this.animation!;
 	}
 
 	public applyState(obj: Object3D, table: Table, player: Player): void {
