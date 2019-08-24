@@ -18,31 +18,30 @@
  */
 
 import { Player } from '../../game/player';
-import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { FireEvent, FireEvents } from '../../physics/fire-events';
 import { HitCircle } from '../../physics/hit-circle';
+import { BumperAnimation } from './bumper-animation';
 import { BumperData } from './bumper-data';
 import { BumperState } from './bumper-state';
 
-/* tslint:disable:variable-name */
 export class BumperHit extends HitCircle<FireEvents> {
 
 	private readonly data: BumperData;
 	private readonly state: BumperState;
+	private readonly animation: BumperAnimation;
 	private readonly events: FireEvents;
-	public animHitEvent: boolean;
 
-	constructor(data: BumperData, state: BumperState, events: FireEvents, height: number) {
+	constructor(data: BumperData, state: BumperState, animation: BumperAnimation, events: FireEvents, height: number) {
 		super(data.vCenter, data.radius, height, height + data.heightScale);
 		this.data = data;
 		this.state = state;
-		this.events = events;
+		this.animation = animation;
+		this.animation.hitEvent = this.data.hitEvent;
 
+		this.events = events;
 		this.isEnabled = this.data.isCollidable;
 		this.scatter = this.data.scatter!;
-
-		this.animHitEvent = this.data.hitEvent;
 	}
 
 	public collide(coll: CollisionEvent, player: Player): void {
@@ -61,8 +60,8 @@ export class BumperHit extends HitCircle<FireEvents> {
 			// add a chunk of velocity to drive ball away
 			coll.ball.hit.vel.add(coll.hitNormal!.clone().multiplyScalar(this.data.force));
 
-			this.animHitEvent = true;
-			this.state.ballHitPosition = coll.ball.state.pos.clone();
+			this.animation.hitEvent = true;
+			this.animation.ballHitPosition = coll.ball.state.pos.clone();
 			this.events.fireGroupEvent(FireEvent.HitEventsHit);
 		}
 	}

@@ -27,15 +27,14 @@ export class BumperState extends ItemState {
 	 */
 	public ringOffset: number;
 
-	/**
-	 * Position where the ball hit the bumper
- 	 */
-	public ballHitPosition: Vertex3D;
+	public skirtRotX: number;
+	public skirtRotY: number;
 
-	constructor(name: string, ringOffset: number, ballHitPosition: Vertex3D) {
+	constructor(name: string, ringOffset: number, skirtRotX: number, skirtRotY: number) {
 		super(name);
 		this.ringOffset = ringOffset;
-		this.ballHitPosition = ballHitPosition;
+		this.skirtRotX = skirtRotX;
+		this.skirtRotY = skirtRotY;
 	}
 
 	public equals(state: BumperState): boolean {
@@ -43,10 +42,12 @@ export class BumperState extends ItemState {
 		if (!state) {
 			return false;
 		}
-		return state.ringOffset === this.ringOffset && state.ballHitPosition.equals(this.ballHitPosition);
+		return state.ringOffset === this.ringOffset
+			&& state.skirtRotX === this.skirtRotX
+			&& state.skirtRotY === this.skirtRotY;
 	}
 
 	public clone(): BumperState {
-		return new BumperState(this.name, this.ringOffset, this.ballHitPosition.clone());
+		return new BumperState(this.name, this.ringOffset, this.skirtRotX, this.skirtRotY);
 	}
 }

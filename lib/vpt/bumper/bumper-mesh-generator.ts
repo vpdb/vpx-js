@@ -62,7 +62,12 @@ export class BumperMeshGenerator {
 			);
 		}
 		if (this.data.isRingVisible) {
-			meshes.ring = this.generateRingMesh(table, height);
+			meshes.ring = this.generateMesh(
+				`bumper-ring-${this.data.getName()}`,
+				this.scaledRingMesh,
+				matrix,
+				z => f4(z * table.getScaleZ()) + height,
+			);
 		}
 		if (this.data.isSkirtVisible) {
 			meshes.skirt = this.generateMesh(
@@ -81,16 +86,6 @@ export class BumperMeshGenerator {
 			);
 		}
 		return meshes;
-	}
-
-	public generateRingMesh(table: Table, offset: number): Mesh {
-		const matrix = new Matrix3D().rotateZMatrix(degToRad(this.data.orientation));
-		return this.generateMesh(
-			`bumper-ring-${this.data.getName()}`,
-			this.scaledRingMesh,
-			matrix,
-			z => f4(z * table.getScaleZ()) + offset,
-		);
 	}
 
 	private generateMesh(name: string, mesh: Mesh, matrix: Matrix3D, zPos: (z: number) => number): Mesh {
