@@ -110,8 +110,8 @@ export class Player extends EventEmitter {
 	/**
 	 * Returns the changed states and clears them.
 	 */
-	public popStates(): ChangedStates {
-		const changedStates: ChangedStates = {};
+	public popStates(): ChangedStates<ItemState> {
+		const changedStates: ChangedStates<ItemState> = {};
 		for (const name of Object.keys(this.currentStates)) {
 			const newState = this.currentStates[name];
 			const oldState = this.previousStates[name];
@@ -157,8 +157,6 @@ export class Player extends EventEmitter {
 		for (const flipper of Object.values(table.flippers)) {
 			this.flipperMovers.push(flipper.getMover());
 		}
-
-		// anim objects that need frame updates
 	}
 
 	private addCabinetBoundingHitShapes(): void {
@@ -538,6 +536,11 @@ export class Player extends EventEmitter {
 		this.gravity.x = 0;
 		this.gravity.y = Math.sin(degToRad(slope)) * (table.data!.overridePhysics ? DEFAULT_TABLE_GRAVITY : table.data!.Gravity);
 		this.gravity.z = -Math.cos(degToRad(slope)) * (table.data!.overridePhysics ? DEFAULT_TABLE_GRAVITY : table.data!.Gravity);
+
+		// [vpx-js added] init animation timers
+		for (const animatable of this.table.getAnimatables()) {
+			animatable.getAnimation().init(this);
+		}
 	}
 
 	private now(): number {
@@ -551,11 +554,11 @@ export interface IBallCreationPosition {
 	onBallCreated(player: Player, ball: Ball): void;
 }
 
-export interface ChangedStates {
-	[key: string]: ChangedState;
+export interface ChangedStates<STATE> {
+	[key: string]: ChangedState<STATE>;
 }
 
-export interface ChangedState {
-	oldState: ItemState;
-	newState: ItemState;
+export interface ChangedState<STATE> {
+	oldState: STATE;
+	newState: STATE;
 }
