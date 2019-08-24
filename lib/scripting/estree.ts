@@ -18,11 +18,17 @@
  */
 
 import {
+	CallExpression,
 	EmptyStatement,
+	Expression,
+	ExpressionStatement,
+	Identifier,
 	Literal,
 	Program,
+	SpreadElement,
 	Statement,
 	UnaryExpression,
+	UnaryOperator,
 	VariableDeclaration,
 	VariableDeclarator,
 } from 'estree';
@@ -33,27 +39,23 @@ export function emptyStatement(): EmptyStatement {
 	};
 }
 
-export function literal(data: any): Literal {
+export function literal(value: string | boolean | number | null): Literal {
 	return {
 		type: 'Literal',
-		value: data,
+		value,
 	};
 }
 
-export function unaryExpression(data: any): UnaryExpression {
+export function unaryExpression(operator: UnaryOperator, argument: Expression): UnaryExpression {
 	return {
 		type: 'UnaryExpression',
-		operator: data[0],
+		operator,
 		prefix: true,
-		argument: data[1],
+		argument,
 	};
 }
 
-/**
- * Returns the root node.
- * @param data List of `GlobalStmt` nodes
- */
-export function program(data: any): Program {
+export function program(data: Statement[]): Program {
 	return {
 		type: 'Program',
 		sourceType: 'script',
@@ -61,63 +63,48 @@ export function program(data: any): Program {
 	};
 }
 
-/**
- * Returns a variable declaration.
- * @param data Result of the `"Dim" __ VarName OtherVarsOpt:* NL` rule.
- */
-export function varDecl(data: [string, null, string, string[]]): VariableDeclaration {
+export function memberExpression(obj: string, property: string) {
 	return {
-		type: 'VariableDeclaration',
-		kind: 'let',
-		declarations: [data[2], ...data[3]].map(item => {
-			return variableDeclarator(item);
-		}),
+		type: 'MemberExpression',
+		object: {
+			type: 'Identifier',
+			name: obj,
+		},
+		property: {
+			type: 'Identifier',
+			name: property,
+		},
+		computed: false,
 	};
 }
 
-export function variableDeclarator(name: string, value: any = null): VariableDeclarator {
+export function variableDeclaration(kind: 'var' | 'let' | 'const', nameValues: Array<[ string, Expression | null ]>): VariableDeclaration {
+	return {
+		type: 'VariableDeclaration',
+		kind,
+		declarations: nameValues.map(nameValue => variableDeclarator(nameValue[0], nameValue[1])),
+	};
+}
+
+export function variableDeclarator(name: string, init: Expression | null): VariableDeclarator {
 	return {
 		type: 'VariableDeclarator',
 		id: { type: 'Identifier', name },
-		init: value ? value : null,
+		init,
 	};
 }
 
-/**
- * Returns a constant declaration.
- */
-export function constDecl(data: any): VariableDeclaration {
-	return {
-		type: 'VariableDeclaration',
-		kind: 'const',
-		declarations: [data[2], ...data[3]].map((item: any[]) => {
-			return variableDeclarator(item[0], item[4]);
-		}),
-	};
-}
-
-/**
- * Returns a subCall Statement.
- */
-
-export function subCallStmt(data: any): Statement {
+export function callExpressionStatement(callee: Expression, args: Array<Expression | SpreadElement>): ExpressionStatement {
 	return {
 		type: 'ExpressionStatement',
-		expression: {
-			type: 'CallExpression',
-			callee: {
-				type: 'MemberExpression',
-				object: {
-					type: 'Identifier',
-					name: data[0][0],
-				},
-				property: {
-					type: 'Identifier',
-					name: data[0][1],
-				},
-				computed: false,
-			},
-			arguments: data.length > 1 ? [data[2], ...data[4]] : [],
-		},
+		expression: callExpression(callee, args),
+	};
+}
+
+export function callExpression(callee: Expression, args: Array<Expression | SpreadElement>): CallExpression {
+	return {
+		type: 'CallExpression',
+		callee,
+		arguments: args,
 	};
 }
