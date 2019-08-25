@@ -79,6 +79,7 @@ export class RampHitGenerator {
 				wallHeightRight = (6 + 12.5);
 				wallHeightLeft = 62.0;
 				break;
+				/* istanbul ignore next: let's assume this doesn't happen! */
 			default:
 				throw new Error(`Unknown ramp type "${this.data.rampType}".`);
 		}
