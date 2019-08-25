@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
 import { EdgeSet } from '../../math/edge-set';
 import { degToRad } from '../../math/float';
 import { clamp } from '../../math/functions';
@@ -30,7 +31,6 @@ import {
 import { Vertex3DNoTex2 } from '../../math/vertex';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionType } from '../../physics/collision-type';
-import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { HitPoint } from '../../physics/hit-point';
 import { HitTriangle } from '../../physics/hit-triangle';
@@ -46,7 +46,7 @@ export class PrimitiveHitGenerator {
 		this.data = data;
 	}
 
-	public generateHitObjects(mesh: Mesh, fireEvents: FireEvents, table: Table): HitObject[] {
+	public generateHitObjects(mesh: Mesh, events: EventProxy, table: Table): HitObject[] {
 
 		const hitObjects: HitObject[] = [];
 
@@ -98,7 +98,7 @@ export class PrimitiveHitGenerator {
 		for (const vertex of mesh.vertices) {
 			hitObjects.push(new HitPoint(vertex.getVertex()));
 		}
-		return hitObjects.map(obj => this.setupHitObject(obj, fireEvents, table));
+		return hitObjects.map(obj => this.setupHitObject(obj, events, table));
 	}
 
 	public getReducedMesh(mesh: Mesh, reducedVertices: number): Mesh {
@@ -140,7 +140,7 @@ export class PrimitiveHitGenerator {
 		);
 	}
 
-	private setupHitObject(obj: HitObject, fireEvents: FireEvents, table: Table): HitObject {
+	private setupHitObject(obj: HitObject, events: EventProxy, table: Table): HitObject {
 		if (!this.data.useAsPlayfield) {
 			obj.applyPhysics(this.data, table);
 
@@ -152,7 +152,7 @@ export class PrimitiveHitGenerator {
 		}
 		obj.threshold = this.data.threshold;
 		obj.setType(CollisionType.Primitive);
-		obj.obj = fireEvents;
+		obj.obj = events;
 		obj.e = true;
 		obj.fe = this.data.hitEvent;
 		return obj;

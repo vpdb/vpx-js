@@ -17,13 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
-import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { Table } from '../table/table';
@@ -46,7 +46,7 @@ export class Surface implements IRenderable, IHittable, IScriptable<SurfaceApi> 
 	private readonly hitGenerator: SurfaceHitGenerator;
 	private hits: HitObject[] = [];
 	private drops: HitObject[] = [];
-	private fireEvents?: FireEvents;
+	private events?: EventProxy;
 	private api?: SurfaceApi;
 
 	public isDropped: boolean = false;
@@ -126,10 +126,10 @@ export class Surface implements IRenderable, IHittable, IScriptable<SurfaceApi> 
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		this.fireEvents = new FireEvents(this);
-		this.hits = this.hitGenerator.generateHitObjects(this.fireEvents, player, table);
+		this.events = new EventProxy(this);
+		this.hits = this.hitGenerator.generateHitObjects(this.events, player, table);
 		this.drops = this.data.isCollidable ? this.hits : [];
-		this.api = new SurfaceApi(this, this.data, this.hitGenerator, this.fireEvents, player, table);
+		this.api = new SurfaceApi(this, this.data, this.hitGenerator, this.events, player, table);
 	}
 
 	public getApi(): SurfaceApi {

@@ -17,11 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Event } from '../../game/event';
+import { EventProxy } from '../../game/event-proxy';
 import { Player } from '../../game/player';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { STATICTIME } from '../../physics/constants';
-import { FireEvent, FireEvents } from '../../physics/fire-events';
 import { HitCircle } from '../../physics/hit-circle';
 import { HitTestResult } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
@@ -33,7 +34,7 @@ export class TriggerHitCircle extends HitCircle {
 
 	private readonly animation: TriggerAnimation;
 
-	constructor(data: TriggerData, animation: TriggerAnimation, events: FireEvents, table: Table) {
+	constructor(data: TriggerData, animation: TriggerAnimation, events: EventProxy, table: Table) {
 		super(data.vCenter, data.radius, table.getSurfaceHeight(data.szSurface, data.vCenter.x, data.vCenter.y), table.getSurfaceHeight(data.szSurface, data.vCenter.x, data.vCenter.y) + data.hitHeight);
 		this.animation = animation;
 		this.isEnabled = data.isEnabled;
@@ -60,12 +61,12 @@ export class TriggerHitCircle extends HitCircle {
 			if (i < 0) {
 				ball.hit.vpVolObjs.push(this.obj!);
 				this.animation.triggerAnimationHit();
-				this.obj!.fireGroupEvent(FireEvent.HitEventsHit);
+				this.obj!.fireGroupEvent(Event.HitEventsHit);
 
 			} else {
 				ball.hit.vpVolObjs.splice(i, 1);
 				this.animation.triggerAnimationUnhit();
-				this.obj!.fireGroupEvent(FireEvent.HitEventsUnhit);
+				this.obj!.fireGroupEvent(Event.HitEventsUnhit);
 			}
 		}
 	}

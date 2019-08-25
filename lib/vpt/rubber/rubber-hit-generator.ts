@@ -17,11 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
 import { EdgeSet } from '../../math/edge-set';
 import { degToRad } from '../../math/float';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionType } from '../../physics/collision-type';
-import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { HitPoint } from '../../physics/hit-point';
 import { HitTriangle } from '../../physics/hit-triangle';
@@ -40,7 +40,7 @@ export class RubberHitGenerator {
 		this.meshGenerator = meshGenerator;
 	}
 
-	public generateHitObjects(fireEvents: FireEvents, table: Table): HitObject[] {
+	public generateHitObjects(events: EventProxy, table: Table): HitObject[] {
 
 		const hitObjects: HitObject[] = [];
 		const addedEdges: EdgeSet = new EdgeSet();
@@ -68,17 +68,17 @@ export class RubberHitGenerator {
 			const v = new Vertex3D(mv.x, mv.y, mv.z);
 			hitObjects.push(new HitPoint(v));
 		}
-		return hitObjects.map(obj => this.setupHitObject(obj, fireEvents, table));
+		return hitObjects.map(obj => this.setupHitObject(obj, events, table));
 	}
 
-	private setupHitObject(obj: HitObject, fireEvents: FireEvents, table: Table): HitObject {
+	private setupHitObject(obj: HitObject, events: EventProxy, table: Table): HitObject {
 		obj.applyPhysics(this.data, table);
 
 		// the rubber is of type ePrimitive for triggering the event in HitTriangle::Collide()
 		obj.setType(CollisionType.Primitive);
 		// hard coded threshold for now
 		obj.threshold = 2.0;
-		obj.obj = fireEvents;
+		obj.obj = events;
 		obj.fe = this.data.hitEvent;
 		return obj;
 	}

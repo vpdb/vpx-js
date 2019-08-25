@@ -17,11 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Event } from '../../game/event';
 import { Vertex2D } from '../../math/vertex2d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { STATICTIME } from '../../physics/constants';
-import { FireEvent } from '../../physics/fire-events';
 import { HitTestResult } from '../../physics/hit-object';
 import { LineSeg } from '../../physics/line-seg';
 import { Ball } from '../ball/ball';
@@ -65,12 +65,12 @@ export class TriggerLineSeg extends LineSeg {
 			if (i < 0) {
 				ball.hit.vpVolObjs.push(this.obj!);
 				this.animation.triggerAnimationHit();
-				this.obj!.fireGroupEvent(FireEvent.HitEventsHit);
+				this.obj!.fireGroupEvent(Event.HitEventsHit);
 
 			} else {
 				ball.hit.vpVolObjs.splice(i, 1);
 				this.animation.triggerAnimationUnhit();
-				this.obj!.fireGroupEvent(FireEvent.HitEventsUnhit);
+				this.obj!.fireGroupEvent(Event.HitEventsUnhit);
 			}
 		}
 	}

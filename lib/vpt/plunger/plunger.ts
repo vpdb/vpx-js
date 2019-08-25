@@ -19,6 +19,7 @@
 
 import { Object3D } from 'three';
 import { Storage, Table } from '../..';
+import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
@@ -27,7 +28,6 @@ import { IScriptable } from '../../game/iscriptable';
 import { IBallCreationPosition, Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
-import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
 import { Meshes } from '../item-data';
@@ -52,7 +52,7 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 	private readonly state: PlungerState;
 	private api?: PlungerApi;
 	private hit?: PlungerHit;
-	private fireEvents?: FireEvents;
+	private events?: EventProxy;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Plunger> {
 		const data = await PlungerData.fromStorage(storage, itemName);
@@ -106,9 +106,9 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		this.fireEvents = new FireEvents(this);
-		this.hit = new PlungerHit(this.data, this.state, this.fireEvents, this.mesh.cFrames, player, table);
-		this.api = new PlungerApi(this.data, this.hit, this.fireEvents, this, player, table);
+		this.events = new EventProxy(this);
+		this.hit = new PlungerHit(this.data, this.state, this.events, this.mesh.cFrames, player, table);
+		this.api = new PlungerApi(this.data, this.hit, this.events, this, player, table);
 	}
 
 	public getApi(): PlungerApi {

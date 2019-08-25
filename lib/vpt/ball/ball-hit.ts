@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
 import { Player } from '../../game/player';
 import { clamp, solveQuadraticEq } from '../../math/functions';
 import { Vertex3D } from '../../math/vertex3d';
@@ -32,7 +33,6 @@ import {
 	C_PRECISION,
 	PHYS_TOUCH,
 } from '../../physics/constants';
-import { FireEvents } from '../../physics/fire-events';
 import { elasticityWithFalloff, hardScatter } from '../../physics/functions';
 import { HitObject, HitTestResult } from '../../physics/hit-object';
 import { FLT_MIN } from '../mesh';
@@ -51,7 +51,7 @@ export class BallHit extends HitObject {
 	public isFrozen: boolean;
 	public coll: CollisionEvent;
 	public rcHitRadiusSqr: number = 0;
-	public vpVolObjs: FireEvents[] = [];
+	public vpVolObjs: EventProxy[] = [];
 
 	private readonly id: number; // same as ball id
 	private readonly data: BallData;

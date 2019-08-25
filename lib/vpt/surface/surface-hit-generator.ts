@@ -17,13 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
 import { Player } from '../../game/player';
 import { CatmullCurve2D } from '../../math/catmull-curve';
 import { DragPoint } from '../../math/dragpoint';
 import { degToRad } from '../../math/float';
 import { RenderVertex } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
-import { FireEvents } from '../../physics/fire-events';
 import { Hit3DPoly } from '../../physics/hit-3dpoly';
 import { HitLine3D } from '../../physics/hit-line-3d';
 import { HitLineZ } from '../../physics/hit-line-z';
@@ -46,15 +46,15 @@ export class SurfaceHitGenerator {
 		this.data = data;
 	}
 
-	public generateHitObjects(fireEvents: FireEvents, player: Player, table: Table): HitObject[] {
-		return this.updateCommonParameters(this.generate3DPolys(fireEvents, player, table), fireEvents, table);
+	public generateHitObjects(events: EventProxy, player: Player, table: Table): HitObject[] {
+		return this.updateCommonParameters(this.generate3DPolys(events, player, table), events, table);
 	}
 
 	/**
 	 * Returns all hit objects for the surface.
 	 * @see Surface::CurvesToShapes
 	 */
-	private generate3DPolys(fireEvents: FireEvents, player: Player, table: Table): HitObject[] {
+	private generate3DPolys(events: EventProxy, player: Player, table: Table): HitObject[] {
 
 		const hitObjects: HitObject[] = [];
 		const vVertex: RenderVertex[] = DragPoint.getRgVertex<RenderVertex>(this.data.dragPoints, () => new RenderVertex(), CatmullCurve2D.fromVertex2D as any);
@@ -76,7 +76,7 @@ export class SurfaceHitGenerator {
 
 			const pv2 = vVertex[(i + 1) % count];
 			const pv3 = vVertex[(i + 2) % count];
-			hitObjects.push(...this.generateLinePolys(pv2, pv3, fireEvents, player, table));
+			hitObjects.push(...this.generateLinePolys(pv2, pv3, events, player, table));
 		}
 
 		hitObjects.push(new Hit3DPoly(rgv3Dt));
@@ -92,7 +92,7 @@ export class SurfaceHitGenerator {
 	 * Returns the hit line polygons for the surface.
 	 * @see Surface::AddLine
 	 */
-	private generateLinePolys(pv1: RenderVertex, pv2: RenderVertex, events: FireEvents, player: Player, table: Table): HitObject[]  {
+	private generateLinePolys(pv1: RenderVertex, pv2: RenderVertex, events: EventProxy, player: Player, table: Table): HitObject[]  {
 
 		const linePolys: HitObject[] = [];
 		const bottom = this.data.heightBottom + table.getTableHeight();
@@ -138,7 +138,7 @@ export class SurfaceHitGenerator {
 	 * Updates the hit object with parameters common to the surface.
 	 * @see Surface::SetupHitObject
 	 */
-	private updateCommonParameters(hitObjects: HitObject[], events: FireEvents, table: Table): HitObject[] {
+	private updateCommonParameters(hitObjects: HitObject[], events: EventProxy, table: Table): HitObject[] {
 		for (const obj of hitObjects) {
 
 			obj.applyPhysics(this.data, table);

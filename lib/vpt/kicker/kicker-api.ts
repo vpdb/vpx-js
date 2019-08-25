@@ -17,9 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
 import { IBallCreationPosition, Player } from '../../game/player';
 import { Vertex3D } from '../../math/vertex3d';
-import { FireEvents } from '../../physics/fire-events';
 import { logger } from '../../util/logger';
 import { Ball } from '../ball/ball';
 import { ItemApi } from '../item-api';
@@ -31,10 +31,10 @@ export class KickerApi extends ItemApi {
 
 	private readonly data: KickerData;
 	private readonly hit: KickerHit;
-	private readonly events: FireEvents;
+	private readonly events: EventProxy;
 	private readonly ballCreator: IBallCreationPosition;
 
-	constructor(data: KickerData, hit: KickerHit, events: FireEvents, ballCreator: IBallCreationPosition, player: Player, table: Table) {
+	constructor(data: KickerData, hit: KickerHit, events: EventProxy, ballCreator: IBallCreationPosition, player: Player, table: Table) {
 		super(player, table);
 		this.data = data;
 		this.hit = hit;

@@ -18,8 +18,8 @@
  */
 
 import { EventEmitter } from 'events';
+import { EventProxy } from '../game/event-proxy';
 import { Player } from '../game/player';
-import { FireEvents } from '../physics/fire-events';
 import { Table } from './table/table';
 
 export abstract class ItemApi extends EventEmitter {
@@ -43,7 +43,7 @@ export abstract class ItemApi extends EventEmitter {
 		}
 	}
 
-	protected BallCntOver(events: FireEvents): number {
+	protected BallCntOver(events: EventProxy): number {
 		let cnt = 0;
 		for (const ball of this.player.balls) {
 			if (ball.hit.isRealBall() && ball.hit.vpVolObjs.indexOf(events) >= 0) {

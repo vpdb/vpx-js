@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
 import { IBallCreationPosition, Player } from '../../game/player';
-import { FireEvents } from '../../physics/fire-events';
 import { Ball } from '../ball/ball';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
@@ -29,10 +29,10 @@ export class PlungerApi extends ItemApi {
 
 	private readonly data: PlungerData;
 	private readonly hit: PlungerHit;
-	private readonly events: FireEvents;
+	private readonly events: EventProxy;
 	private readonly ballCreator: IBallCreationPosition;
 
-	constructor(data: PlungerData, hit: PlungerHit, events: FireEvents, ballCreator: IBallCreationPosition, player: Player, table: Table) {
+	constructor(data: PlungerData, hit: PlungerHit, events: EventProxy, ballCreator: IBallCreationPosition, player: Player, table: Table) {
 		super(player, table);
 		this.data = data;
 		this.hit = hit;

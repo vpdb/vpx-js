@@ -19,12 +19,12 @@
 
 import { Object3D } from 'three';
 import { Storage, Table } from '../..';
+import { EventProxy } from '../../game/event-proxy';
 import { IAnimatable } from '../../game/ianimatable';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
-import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { Texture } from '../texture';
@@ -47,7 +47,7 @@ export class Bumper implements IRenderable, IHittable, IAnimatable<BumperState> 
 	private readonly meshUpdater: BumperMeshUpdater;
 	private readonly state: BumperState;
 	private hit?: BumperHit;
-	private events?: FireEvents;
+	private events?: EventProxy;
 	private animation?: BumperAnimation;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Bumper> {
@@ -80,7 +80,7 @@ export class Bumper implements IRenderable, IHittable, IAnimatable<BumperState> 
 
 	public setupPlayer(player: Player, table: Table): void {
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
-		this.events = new FireEvents(this);
+		this.events = new EventProxy(this);
 		this.animation = new BumperAnimation(this.data, this.state);
 		this.hit = new BumperHit(this.data, this.state, this.animation, this.events, height);
 	}

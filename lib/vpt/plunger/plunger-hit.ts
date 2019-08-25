@@ -17,11 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
 import { Player } from '../../game/player';
 import { Vertex2D } from '../../math/vertex2d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { C_DISP_GAIN, C_DISP_LIMIT, C_EMBEDDED, C_EMBEDSHOT, C_LOWNORMVEL } from '../../physics/constants';
-import { FireEvents } from '../../physics/fire-events';
 import { HitObject, HitTestResult } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
 import { Table } from '../table/table';
@@ -35,7 +35,7 @@ export class PlungerHit extends HitObject {
 	private readonly mover: PlungerMover;
 	private readonly data: PlungerData;
 
-	constructor(data: PlungerData, state: PlungerState, fireEvents: FireEvents, cFrames: number, player: Player, table: Table) {
+	constructor(data: PlungerData, state: PlungerState, events: EventProxy, cFrames: number, player: Player, table: Table) {
 		super();
 		const zHeight = table.getSurfaceHeight(data.szSurface, data.center.x, data.center.y);
 		const config: PlungerConfig = {
@@ -52,7 +52,7 @@ export class PlungerHit extends HitObject {
 		this.hitBBox.zhigh = config.zHeight + Plunger.PLUNGER_HEIGHT;
 
 		this.data = data;
-		this.mover = new PlungerMover(config, data, state, fireEvents, player, table.data!);
+		this.mover = new PlungerMover(config, data, state, events, player, table.data!);
 	}
 
 	public getMoverObject(): PlungerMover {

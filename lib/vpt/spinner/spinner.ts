@@ -18,6 +18,7 @@
  */
 
 import { Object3D } from 'three';
+import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
@@ -26,7 +27,6 @@ import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
-import { FireEvents } from '../../physics/fire-events';
 import { HitCircle } from '../../physics/hit-circle';
 import { HitObject } from '../../physics/hit-object';
 import { MoverObject } from '../../physics/mover-object';
@@ -51,7 +51,7 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	private readonly state: SpinnerState;
 	private readonly hitGenerator: SpinnerHitGenerator;
 	private hit?: SpinnerHit;
-	private fireEvents?: FireEvents;
+	private events?: EventProxy;
 	private hitCircles: HitCircle[] = [];
 
 	// public props
@@ -103,8 +103,8 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 
 	public setupPlayer(player: Player, table: Table): void {
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
-		this.fireEvents = new FireEvents(this);
-		this.hit = new SpinnerHit(this.data, this.state, this.fireEvents, height);
+		this.events = new EventProxy(this);
+		this.hit = new SpinnerHit(this.data, this.state, this.events, height);
 		this.hitCircles = this.hitGenerator.getHitShapes(this.state, height);
 	}
 

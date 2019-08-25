@@ -17,12 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Event } from '../../game/event';
+import { EventProxy } from '../../game/event-proxy';
 import { Player } from '../../game/player';
 import { degToRad, radToDeg } from '../../math/float';
 import { Vertex2D } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
 import { PHYS_FACTOR } from '../../physics/constants';
-import { FireEvent, FireEvents } from '../../physics/fire-events';
 import { HitCircle } from '../../physics/hit-circle';
 import { MoverObject } from '../../physics/mover-object';
 import { logger } from '../../util/logger';
@@ -35,7 +36,7 @@ export class FlipperMover implements MoverObject {
 
 	private readonly data: FlipperData;
 	private readonly state: FlipperState;
-	private readonly fireEvents: FireEvents;
+	private readonly events: EventProxy;
 	private readonly player: Player;
 	private readonly tableData: TableData;
 
@@ -67,9 +68,9 @@ export class FlipperMover implements MoverObject {
 
 	public lastHitFace: boolean;
 
-	constructor(config: FlipperConfig, flipperData: FlipperData, state: FlipperState, fireEvents: FireEvents, player: Player, tableData: TableData) {
+	constructor(config: FlipperConfig, flipperData: FlipperData, state: FlipperState, events: EventProxy, player: Player, tableData: TableData) {
 
-		this.fireEvents = fireEvents;
+		this.events = events;
 		this.hitCircleBase = new HitCircle(config.center, config.baseRadius, config.zLow, config.zHigh);
 		this.data = flipperData;
 		this.state = state;
@@ -146,14 +147,14 @@ export class FlipperMover implements MoverObject {
 
 			if (this.enableRotateEvent > 0) {
 				logger().info('[%s] Flipper is up', this.data.getName());
-				this.fireEvents.fireVoidEventParm(FireEvent.LimitEventsEOS, anglespd); // send EOS event
+				this.events.fireVoidEventParm(Event.LimitEventsEOS, anglespd); // send EOS event
 
 				// g_pplayer->this.m_pininput.this.m_leftkey_down_usec_EOS = usec(); // debug only
 				// g_pplayer->this.m_pininput.this.m_leftkey_down_frame_EOS = g_pplayer->this.m_overall_frames;
 
 			} else if (this.enableRotateEvent < 0) {
 				logger().info('[%s] Flipper is down', this.data.getName());
-				this.fireEvents.fireVoidEventParm(FireEvent.LimitEventsBOS, anglespd); // send Beginning of Stroke/Park event
+				this.events.fireVoidEventParm(Event.LimitEventsBOS, anglespd); // send Beginning of Stroke/Park event
 			}
 			this.enableRotateEvent = 0;
 		}

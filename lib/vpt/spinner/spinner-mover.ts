@@ -17,9 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Event } from '../../game/event';
+import { EventProxy } from '../../game/event-proxy';
 import { degToRad, radToDeg } from '../../math/float';
 import { PHYS_FACTOR } from '../../physics/constants';
-import { FireEvent, FireEvents } from '../../physics/fire-events';
 import { MoverObject } from '../../physics/mover-object';
 import { SpinnerData } from './spinner-data';
 import { SpinnerState } from './spinner-state';
@@ -28,7 +29,7 @@ export class SpinnerMover implements MoverObject {
 
 	private readonly data: SpinnerData;
 	private readonly state: SpinnerState;
-	private readonly fireEvents: FireEvents;
+	private readonly events: EventProxy;
 
 	public angleSpeed: number = 0;
 	public angleMax: number;
@@ -37,10 +38,10 @@ export class SpinnerMover implements MoverObject {
 	public damping: number;
 	public isVisible: boolean;
 
-	constructor(data: SpinnerData, state: SpinnerState, fireEvents: FireEvents) {
+	constructor(data: SpinnerData, state: SpinnerState, events: EventProxy) {
 		this.data = data;
 		this.state = state;
-		this.fireEvents = fireEvents;
+		this.events = events;
 
 		this.angleMax = degToRad(data.angleMax);
 		this.angleMin = degToRad(data.angleMin);
@@ -59,7 +60,7 @@ export class SpinnerMover implements MoverObject {
 
 			if (this.state.angle > this.angleMax) {
 				this.state.angle = this.angleMax;
-				this.fireEvents.fireVoidEventParm(FireEvent.LimitEventsEOS, Math.abs(radToDeg(this.angleSpeed))); // send EOS event
+				this.events.fireVoidEventParm(Event.LimitEventsEOS, Math.abs(radToDeg(this.angleSpeed))); // send EOS event
 
 				if (this.angleSpeed > 0) {
 					this.angleSpeed *= -0.005 - this.elasticity;
@@ -67,7 +68,7 @@ export class SpinnerMover implements MoverObject {
 			}
 			if (this.state.angle < this.angleMin) {
 				this.state.angle = this.angleMin;
-				this.fireEvents.fireVoidEventParm(FireEvent.LimitEventsBOS, Math.abs(radToDeg(this.angleSpeed))); // send Park event
+				this.events.fireVoidEventParm(Event.LimitEventsBOS, Math.abs(radToDeg(this.angleSpeed))); // send Park event
 
 				if (this.angleSpeed < 0) {
 					this.angleSpeed *= -0.005 - this.elasticity;
@@ -83,11 +84,11 @@ export class SpinnerMover implements MoverObject {
 
 			if (this.angleSpeed > 0) {
 				if (this.state.angle > target) {
-					this.fireEvents.fireGroupEvent(FireEvent.SpinnerEventsSpin);
+					this.events.fireGroupEvent(Event.SpinnerEventsSpin);
 				}
 			} else {
 				if (this.state.angle < target) {
-					this.fireEvents.fireGroupEvent(FireEvent.SpinnerEventsSpin);
+					this.events.fireGroupEvent(Event.SpinnerEventsSpin);
 				}
 			}
 

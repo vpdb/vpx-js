@@ -17,13 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
 import { CatmullCurve2D } from '../../math/catmull-curve';
 import { DragPoint } from '../../math/dragpoint';
 import { RenderVertex, Vertex2D } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionType } from '../../physics/collision-type';
 import { PHYS_SKIN } from '../../physics/constants';
-import { FireEvents } from '../../physics/fire-events';
 import { Hit3DPoly } from '../../physics/hit-3dpoly';
 import { HitObject } from '../../physics/hit-object';
 import { Table } from '../table/table';
@@ -39,7 +39,7 @@ export class TriggerHitGenerator {
 		this.data = data;
 	}
 
-	public generateHitObjects(animation: TriggerAnimation, events: FireEvents, table: Table): HitObject[] {
+	public generateHitObjects(animation: TriggerAnimation, events: EventProxy, table: Table): HitObject[] {
 
 		const hitObjects: HitObject[] = [];
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
@@ -67,7 +67,7 @@ export class TriggerHitGenerator {
 		return hitObjects;
 	}
 
-	private getLineSeg(pv1: RenderVertex, pv2: RenderVertex, animation: TriggerAnimation, events: FireEvents, height: number): TriggerLineSeg {
+	private getLineSeg(pv1: RenderVertex, pv2: RenderVertex, animation: TriggerAnimation, events: EventProxy, height: number): TriggerLineSeg {
 		const lineSeg = new TriggerLineSeg(
 			new Vertex2D(pv1.x, pv1.y),
 			new Vertex2D(pv2.x, pv2.y),

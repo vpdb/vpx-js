@@ -18,6 +18,8 @@
  */
 
 import { Table } from '..';
+import { Event } from '../game/event';
+import { EventProxy } from '../game/event-proxy';
 import { Player } from '../game/player';
 import { degToRad } from '../math/float';
 import { FRect3D } from '../math/frect3d';
@@ -25,7 +27,6 @@ import { Ball } from '../vpt/ball/ball';
 import { IPhysicalData } from '../vpt/item-data';
 import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
-import { FireEvent, FireEvents } from './fire-events';
 
 export abstract class HitObject {
 
@@ -34,7 +35,7 @@ export abstract class HitObject {
 	 *
 	 * Mainly used as IFireEvents, but also as HitTarget or Primitive or Trigger or Kicker or Gate.
 	 */
-	public obj?: FireEvents;
+	public obj?: EventProxy;
 
 	public threshold: number = 0;  // threshold for firing an event (usually (always??) normal dot ball-velocity)
 	public hitBBox: FRect3D = new FRect3D();
@@ -99,7 +100,7 @@ export abstract class HitObject {
 			const normalDist = (this.objType === CollisionType.HitTarget) ? 0.0 : 0.25; // magic distance
 
 			if (distLs > normalDist) { // must be a new place if only by a little
-				this.obj!.fireGroupEvent(FireEvent.HitEventsHit);
+				this.obj!.fireGroupEvent(Event.HitEventsHit);
 			}
 		}
 	}

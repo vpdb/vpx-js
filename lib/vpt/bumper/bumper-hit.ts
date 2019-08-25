@@ -17,9 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Event } from '../../game/event';
+import { EventProxy } from '../../game/event-proxy';
 import { Player } from '../../game/player';
 import { CollisionEvent } from '../../physics/collision-event';
-import { FireEvent, FireEvents } from '../../physics/fire-events';
 import { HitCircle } from '../../physics/hit-circle';
 import { BumperAnimation } from './bumper-animation';
 import { BumperData } from './bumper-data';
@@ -30,9 +31,9 @@ export class BumperHit extends HitCircle {
 	private readonly data: BumperData;
 	private readonly state: BumperState;
 	private readonly animation: BumperAnimation;
-	private readonly events: FireEvents;
+	private readonly events: EventProxy;
 
-	constructor(data: BumperData, state: BumperState, animation: BumperAnimation, events: FireEvents, height: number) {
+	constructor(data: BumperData, state: BumperState, animation: BumperAnimation, events: EventProxy, height: number) {
 		super(data.vCenter, data.radius, height, height + data.heightScale);
 		this.data = data;
 		this.state = state;
@@ -61,7 +62,7 @@ export class BumperHit extends HitCircle {
 
 			this.animation.hitEvent = true;
 			this.animation.ballHitPosition = coll.ball.state.pos.clone();
-			this.events.fireGroupEvent(FireEvent.HitEventsHit);
+			this.events.fireGroupEvent(Event.HitEventsHit);
 		}
 	}
 }

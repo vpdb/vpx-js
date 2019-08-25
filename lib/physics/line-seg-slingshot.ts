@@ -17,13 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Event } from '../game/event';
 import { Player } from '../game/player';
 import { Vertex2D } from '../math/vertex2d';
 import { Surface } from '../vpt/surface/surface';
 import { SurfaceData } from '../vpt/surface/surface-data';
 import { SlingshotAnimObject } from './anim-slingshot';
 import { CollisionEvent } from './collision-event';
-import { FireEvent } from './fire-events';
 import { LineSeg } from './line-seg';
 
 export class LineSegSlingshot extends LineSeg {
@@ -78,7 +78,7 @@ export class LineSegSlingshot extends LineSeg {
 			ball.hit.eventPos = ball.state.pos.clone(); //remember last collide position
 
 			if (distLs > 0.25) { // must be a new place if only by a little
-				this.obj.fireGroupEvent(FireEvent.SurfaceEventsSlingshot);
+				this.obj.fireGroupEvent(Event.SurfaceEventsSlingshot);
 				this.slingshotAnim.timeReset = this.player.timeMsec + 100;
 			}
 		}

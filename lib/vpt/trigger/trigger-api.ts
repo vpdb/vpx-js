@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
 import { Player } from '../../game/player';
-import { FireEvents } from '../../physics/fire-events';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { TriggerData } from './trigger-data';
@@ -26,9 +26,9 @@ import { TriggerData } from './trigger-data';
 export class TriggerApi extends ItemApi {
 
 	private readonly data: TriggerData;
-	private readonly events: FireEvents;
+	private readonly events: EventProxy;
 
-	constructor(data: TriggerData, events: FireEvents, player: Player, table: Table) {
+	constructor(data: TriggerData, events: EventProxy, player: Player, table: Table) {
 		super(player, table);
 		this.data = data;
 		this.events = events;

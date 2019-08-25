@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Event } from '../../game/event';
+import { EventProxy } from '../../game/event-proxy';
 import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
 import { FRect3D } from '../../math/frect3d';
@@ -36,7 +38,6 @@ import {
 	C_TOL_ENDPNTS,
 	PHYS_TOUCH,
 } from '../../physics/constants';
-import { FireEvent, FireEvents } from '../../physics/fire-events';
 import { elasticityWithFalloff } from '../../physics/functions';
 import { HitObject, HitTestResult } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
@@ -53,10 +54,10 @@ export class FlipperHit extends HitObject {
 	private readonly data: FlipperData;
 	private readonly state: FlipperState;
 	private readonly tableData: TableData;
-	private readonly fireEvents: FireEvents;
+	private readonly events: EventProxy;
 	private lastHitTime: number = 0;
 
-	public static getInstance(data: FlipperData, state: FlipperState, fireEvents: FireEvents, player: Player, table: Table): FlipperHit {
+	public static getInstance(data: FlipperData, state: FlipperState, events: EventProxy, player: Player, table: Table): FlipperHit {
 		data.updatePhysicsSettings(table);
 		const height = table.getSurfaceHeight(data.szSurface, data.center.x, data.center.y);
 		if (data.flipperRadiusMin > 0 && data.flipperRadiusMax > data.flipperRadiusMin) {
@@ -77,16 +78,16 @@ export class FlipperHit extends HitObject {
 			},
 			data,
 			state,
-			fireEvents,
+			events,
 			player,
 			table.data!,
 		);
 	}
 
-	constructor(config: FlipperConfig, data: FlipperData, state: FlipperState, fireEvents: FireEvents, player: Player, tableData: TableData) {
+	constructor(config: FlipperConfig, data: FlipperData, state: FlipperState, events: EventProxy, player: Player, tableData: TableData) {
 		super();
-		this.fireEvents = fireEvents;
-		this.mover = new FlipperMover(config, data, state, fireEvents, player, tableData);
+		this.events = events;
+		this.mover = new FlipperMover(config, data, state, events, player, tableData);
 		this.data = data;
 		this.state = state;
 		this.tableData = tableData;
@@ -350,11 +351,11 @@ export class FlipperHit extends HitObject {
 		if (bnv < -0.25 && (player.timeMsec - this.lastHitTime) > 250) {       // limit rate to 250 milliseconds per event
 			const flipperHit = coll.hitMomentBit ? -1.0 : -bnv;                // move event processing to end of collision handler...
 			if (flipperHit < 0) {
-				this.fireEvents.fireGroupEvent(FireEvent.HitEventsHit);        // simple hit event
+				this.events.fireGroupEvent(Event.HitEventsHit);        // simple hit event
 
 			} else {
 				// collision velocity (normal to face)
-				this.fireEvents.fireVoidEventParm(FireEvent.FlipperEventsCollide, flipperHit);
+				this.events.fireVoidEventParm(Event.FlipperEventsCollide, flipperHit);
 			}
 		}
 

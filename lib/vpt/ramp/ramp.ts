@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { Player } from '../../game/player';
@@ -31,7 +32,6 @@ import { Table } from '../table/table';
 import { RampData } from './ramp-data';
 import { RampHitGenerator } from './ramp-hit-generator';
 import { RampMeshGenerator } from './ramp-mesh-generator';
-import { FireEvents } from '../../physics/fire-events';
 
 /**
  * VPinball's ramps.
@@ -55,7 +55,7 @@ export class Ramp implements IRenderable, IHittable {
 	private readonly hitGenerator: RampHitGenerator;
 
 	private hits?: HitObject[];
-	private events?: FireEvents;
+	private events?: EventProxy;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Ramp> {
 		const data = await RampData.fromStorage(storage, itemName);
@@ -81,7 +81,7 @@ export class Ramp implements IRenderable, IHittable {
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		this.events = new FireEvents(this);
+		this.events = new EventProxy(this);
 		this.hits = this.hitGenerator.generateHitObjects(table, this.events);
 	}
 

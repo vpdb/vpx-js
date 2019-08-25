@@ -17,17 +17,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+import { EventProxy } from '../game/event-proxy';
 import { Player } from '../game/player';
 import { FRect3D } from '../math/frect3d';
 import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
-import { FireEvents } from './fire-events';
 import { HitObject } from './hit-object';
 
 export class HitQuadtree {
 
-	private unique?: FireEvents; // everything below/including this node shares the same original primitive object (just for early outs if not collidable)
+	private unique?: EventProxy; // everything below/including this node shares the same original primitive object (just for early outs if not collidable)
 
 	private vho: HitObject[] = [];
 	private children: HitQuadtree[] = [];

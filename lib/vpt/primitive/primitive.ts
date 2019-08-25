@@ -17,13 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
-import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { Mesh } from '../mesh';
@@ -46,7 +46,7 @@ export class Primitive implements IRenderable, IHittable, IScriptable<PrimitiveA
 	private mesh?: Mesh;
 	private api?: PrimitiveApi;
 	private hits?: HitObject[];
-	private events?: FireEvents;
+	private events?: EventProxy;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Primitive> {
 		const data = await PrimitiveData.fromStorage(storage, itemName);
@@ -90,7 +90,7 @@ export class Primitive implements IRenderable, IHittable, IScriptable<PrimitiveA
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		this.events = new FireEvents(this);
+		this.events = new EventProxy(this);
 		this.hits = this.hitGenerator.generateHitObjects(this.getMesh(table), this.events, table);
 		this.api = new PrimitiveApi(this, this.data, this.hits!, this.events, player, table);
 	}

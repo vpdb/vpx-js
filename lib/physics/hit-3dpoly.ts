@@ -18,12 +18,12 @@
  */
 
 /* tslint:disable:no-bitwise */
+import { Event } from '../game/event';
 import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { C_CONTACTVEL, C_LOWNORMVEL, PHYS_TOUCH, STATICTIME } from './constants';
-import { FireEvent } from './fire-events';
 import { HitObject, HitTestResult } from './hit-object';
 
 export class Hit3DPoly extends HitObject {
@@ -108,11 +108,11 @@ export class Hit3DPoly extends HitObject {
 				ball.state.pos.add(ball.hit.vel.clone().multiplyScalar(STATICTIME));     // move ball slightly forward
 				if (i < 0) {
 					ball.hit.vpVolObjs.push(this.obj!);
-					this.obj!.fireGroupEvent(FireEvent.HitEventsHit);
+					this.obj!.fireGroupEvent(Event.HitEventsHit);
 
 				} else {
 					ball.hit.vpVolObjs.splice(i, 1);
-					this.obj!.fireGroupEvent(FireEvent.HitEventsUnhit);
+					this.obj!.fireGroupEvent(Event.HitEventsUnhit);
 				}
 			}
 		}

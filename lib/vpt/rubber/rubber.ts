@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
-import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { Table } from '../table/table';
@@ -41,7 +41,7 @@ export class Rubber implements IRenderable, IHittable {
 	private readonly meshGenerator: RubberMeshGenerator;
 	private hitGenerator: RubberHitGenerator;
 	private hits: HitObject[] = [];
-	private fireEvents?: FireEvents;
+	private events?: EventProxy;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Rubber> {
 		const data = await RubberData.fromStorage(storage, itemName);
@@ -79,8 +79,8 @@ export class Rubber implements IRenderable, IHittable {
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		this.fireEvents = new FireEvents(this);
-		this.hits = this.hitGenerator.generateHitObjects(this.fireEvents, table);
+		this.events = new EventProxy(this);
+		this.hits = this.hitGenerator.generateHitObjects(this.events, table);
 	}
 
 	public getHitShapes(): HitObject[] {

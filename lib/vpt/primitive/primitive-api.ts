@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
 import { Player } from '../../game/player';
-import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
@@ -30,9 +30,9 @@ export class PrimitiveApi extends ItemApi {
 	private readonly primitive: Primitive;
 	private readonly data: PrimitiveData;
 	private readonly hits: HitObject[];
-	private readonly events: FireEvents;
+	private readonly events: EventProxy;
 
-	constructor(primitive: Primitive, data: PrimitiveData, hits: HitObject[], events: FireEvents, player: Player, table: Table) {
+	constructor(primitive: Primitive, data: PrimitiveData, hits: HitObject[], events: EventProxy, player: Player, table: Table) {
 		super(player, table);
 		this.primitive = primitive;
 		this.data = data;

@@ -18,6 +18,8 @@
  */
 
 import { kickerHitVertices } from '../../../res/meshes/kicker-hit-mesh';
+import { Event } from '../../game/event';
+import { EventProxy } from '../../game/event-proxy';
 import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
 import { clamp } from '../../math/functions';
@@ -26,7 +28,6 @@ import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { STATICTIME } from '../../physics/constants';
-import { FireEvent, FireEvents } from '../../physics/fire-events';
 import { hardScatter } from '../../physics/functions';
 import { HitCircle } from '../../physics/hit-circle';
 import { HitTestResult } from '../../physics/hit-object';
@@ -42,9 +43,9 @@ export class KickerHit extends HitCircle {
 	public ball?: Ball;  // The ball inside this kicker
 	public lastCapturedBall?: Ball;
 	private hitMesh: Vertex3D[] = [];
-	public obj: FireEvents;
+	public obj: EventProxy;
 
-	constructor(data: KickerData, fireEvents: FireEvents, table: Table, radius: number, height: number) {
+	constructor(data: KickerData, events: EventProxy, table: Table, radius: number, height: number) {
 		super(data.vCenter.clone(), radius, height, height + data.hitHeight);
 		this.data = data;
 
@@ -62,7 +63,7 @@ export class KickerHit extends HitCircle {
 
 		this.isEnabled = this.data.isEnabled;
 		this.objType = CollisionType.Kicker;
-		this.obj = fireEvents;
+		this.obj = events;
 	}
 
 	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): HitTestResult {
@@ -132,7 +133,7 @@ export class KickerHit extends HitCircle {
 					// Don't fire the hit event if the ball was just created
 					// Fire the event before changing ball attributes, so scripters can get a useful ball state
 					if (!newBall) {
-						this.obj.fireGroupEvent(FireEvent.HitEventsHit);
+						this.obj.fireGroupEvent(Event.HitEventsHit);
 					}
 
 					if (ball.hit.isFrozen || this.data.fallThrough) {  // script may have unfrozen the ball
@@ -161,7 +162,7 @@ export class KickerHit extends HitCircle {
 
 			} else { // exiting kickers volume
 				ball.hit.vpVolObjs.splice(i, 1); // remove kicker to ball's volume set
-				this.obj.fireGroupEvent(FireEvent.HitEventsUnhit);
+				this.obj.fireGroupEvent(Event.HitEventsUnhit);
 			}
 		}
 	}

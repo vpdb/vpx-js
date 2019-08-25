@@ -18,6 +18,7 @@
  */
 
 import { Object3D } from 'three';
+import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
@@ -28,7 +29,6 @@ import { Storage } from '../../io/ole-doc';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex2D } from '../../math/vertex2d';
-import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { Table } from '../table/table';
@@ -51,7 +51,7 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	private readonly state: FlipperState;
 	private hit?: FlipperHit;
 	private api!: FlipperApi;
-	private events?: FireEvents;
+	private events?: EventProxy;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Flipper> {
 		const data = await FlipperData.fromStorage(storage, itemName);
@@ -81,7 +81,7 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		this.events = new FireEvents(this);
+		this.events = new EventProxy(this);
 		this.hit = FlipperHit.getInstance(this.data, this.state, this.events, player, table);
 		this.api = new FlipperApi(this.data, this.state, this.hit, this.getMover(), this.events, player, table);
 	}

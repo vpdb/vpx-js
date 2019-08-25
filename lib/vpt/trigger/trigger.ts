@@ -18,6 +18,7 @@
  */
 
 import { Object3D } from 'three';
+import { EventProxy } from '../../game/event-proxy';
 import { IAnimatable, IAnimation } from '../../game/ianimatable';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
@@ -25,7 +26,6 @@ import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
-import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { Table } from '../table/table';
@@ -59,7 +59,7 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 
 	private api?: TriggerApi;
 	private hits?: HitObject[];
-	private events?: FireEvents;
+	private events?: EventProxy;
 	private animation?: TriggerAnimation;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Trigger> {
@@ -100,7 +100,7 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		this.events = new FireEvents(this);
+		this.events = new EventProxy(this);
 		this.animation = new TriggerAnimation(this.data, this.state);
 		if (this.data.shape === Trigger.ShapeTriggerStar || this.data.shape === Trigger.ShapeTriggerButton) {
 			this.hits = [ new TriggerHitCircle(this.data, this.animation, this.events, table) ];

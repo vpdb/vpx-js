@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
 import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
 import { clamp } from '../../math/functions';
@@ -24,7 +25,6 @@ import { Vertex2D } from '../../math/vertex2d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { PHYS_SKIN } from '../../physics/constants';
-import { FireEvents } from '../../physics/fire-events';
 import { HitObject, HitTestResult } from '../../physics/hit-object';
 import { LineSeg } from '../../physics/line-seg';
 import { Ball } from '../ball/ball';
@@ -39,7 +39,7 @@ export class SpinnerHit extends HitObject {
 	private readonly mover: SpinnerMover;
 	private readonly lineSegs: LineSeg[] = [];
 
-	constructor(data: SpinnerData, state: SpinnerState, fireEvents: FireEvents, height: number) {
+	constructor(data: SpinnerData, state: SpinnerState, events: EventProxy, height: number) {
 		super();
 
 		this.data = data;
@@ -61,7 +61,7 @@ export class SpinnerHit extends HitObject {
 		this.lineSegs.push(new LineSeg(v1, v2, height, height + (2.0 * PHYS_SKIN), CollisionType.Spinner));
 		this.lineSegs.push(new LineSeg(v2.clone(), v1.clone(), height, height + (2.0 * PHYS_SKIN), CollisionType.Spinner));
 
-		this.mover = new SpinnerMover(data, state, fireEvents);
+		this.mover = new SpinnerMover(data, state, events);
 		this.state.angle = clamp(0.0, this.mover.angleMin, this.mover.angleMax);
 	}
 

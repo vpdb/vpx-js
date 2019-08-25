@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
 import { Player } from '../../game/player';
-import { FireEvents } from '../../physics/fire-events';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { Surface } from './surface';
@@ -30,9 +30,9 @@ export class SurfaceApi extends ItemApi {
 	private readonly surface: Surface;
 	private readonly data: SurfaceData;
 	private readonly hitGenerator: SurfaceHitGenerator;
-	private readonly events: FireEvents;
+	private readonly events: EventProxy;
 
-	constructor(surface: Surface, data: SurfaceData, hitGenerator: SurfaceHitGenerator, events: FireEvents, player: Player, table: Table) {
+	constructor(surface: Surface, data: SurfaceData, hitGenerator: SurfaceHitGenerator, events: EventProxy, player: Player, table: Table) {
 		super(player, table);
 		this.surface = surface;
 		this.data = data;

@@ -18,6 +18,7 @@
  */
 
 import { EventEmitter } from 'events';
+import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
@@ -25,7 +26,6 @@ import { IBallCreationPosition, Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
-import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
 import { Meshes } from '../item-data';
@@ -54,7 +54,7 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 
 	private readonly data: KickerData;
 	private readonly meshGenerator: KickerMeshGenerator;
-	private fireEvents?: FireEvents;
+	private events?: EventProxy;
 	private hit?: KickerHit;
 	private api?: KickerApi;
 
@@ -97,9 +97,9 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 		// reduce the hit circle radius because only the inner circle of the kicker should start a hit event
 		const radius = this.data.radius * (this.data.legacyMode ? (this.data.fallThrough ? 0.75 : 0.6) : 1);
 
-		this.fireEvents = new FireEvents(this);
-		this.hit = new KickerHit(this.data, this.fireEvents, table, radius, height); // height of kicker hit cylinder
-		this.api = new KickerApi(this.data, this.hit, this.fireEvents, this, player, table);
+		this.events = new EventProxy(this);
+		this.hit = new KickerHit(this.data, this.events, table, radius, height); // height of kicker hit cylinder
+		this.api = new KickerApi(this.data, this.hit, this.events, this, player, table);
 	}
 
 	public getApi(): KickerApi {
