@@ -22,10 +22,10 @@ import { Storage } from '../../io/ole-doc';
 import { Vertex3DNoTex2 } from '../../math/vertex';
 import { Vertex3D } from '../../math/vertex3d';
 import { FrameData } from '../animation';
-import { ItemData } from '../item-data';
+import { IPhysicalData, ItemData } from '../item-data';
 import { Mesh } from '../mesh';
 
-export class PrimitiveData extends ItemData {
+export class PrimitiveData extends ItemData implements IPhysicalData {
 
 	public numVertices!: number;
 	public compressedAnimationVertices?: number;

@@ -139,20 +139,9 @@ export class SurfaceHitGenerator {
 	 * @see Surface::SetupHitObject
 	 */
 	private updateCommonParameters(hitObjects: HitObject[], events: FireEvents, table: Table): HitObject[] {
-		const mat = table.getMaterial(this.data.szPhysicsMaterial);
 		for (const obj of hitObjects) {
 
-			if (mat && !this.data.overwritePhysics) {
-				obj.setElasticity(mat.fElasticity);
-				obj.setFriction(mat.fFriction);
-				obj.setScatter(degToRad(mat.fScatterAngle));
-
-			} else {
-				obj.setElasticity(this.data.elasticity!);
-				obj.setFriction(this.data.friction!);
-				obj.setScatter(degToRad(this.data.scatter!));
-				obj.setEnabled(this.data.isCollidable);
-			}
+			obj.applyPhysics(this.data, table);
 
 			if (this.data.hitEvent) {
 				obj.obj = events;

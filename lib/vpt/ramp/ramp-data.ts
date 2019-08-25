@@ -21,16 +21,16 @@ import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
 import { DragPoint } from '../../math/dragpoint';
 import { f4 } from '../../math/float';
-import { ItemData } from '../item-data';
+import { IPhysicalData, ItemData } from '../item-data';
 import { Ramp } from './ramp';
 
-export class RampData extends ItemData {
+export class RampData extends ItemData implements IPhysicalData {
 
 	public depthBias: number = 0;
 	public dragPoints: DragPoint[] = [];
-	public elasticity?: number;
-	public friction?: number;
-	public hasHitEvent: boolean = false;
+	public elasticity!: number;
+	public friction!: number;
+	public hitEvent: boolean = false;
 	public heightBottom: number = 0;
 	public heightTop: number = f4(50);
 	public imageAlignment: number = Ramp.RampImageAlignmentWorld;
@@ -44,7 +44,7 @@ export class RampData extends ItemData {
 	public rampType: number = Ramp.RampTypeFlat;
 	public rightWallHeight: number = f4(62);
 	public rightWallHeightVisible: number = f4(30);
-	public scatter?: number;
+	public scatter!: number;
 	public szImage?: string;
 	public szMaterial?: string;
 	public szPhysicsMaterial?: string;
@@ -105,7 +105,7 @@ export class RampData extends ItemData {
 			case 'WLHR': this.rightWallHeight = this.getFloat(buffer); break;
 			case 'WVHL': this.leftWallHeightVisible = this.getFloat(buffer); break;
 			case 'WVHR': this.rightWallHeightVisible = this.getFloat(buffer); break;
-			case 'HTEV': this.hasHitEvent = this.getBool(buffer); break;
+			case 'HTEV': this.hitEvent = this.getBool(buffer); break;
 			case 'THRS': this.threshold = this.getFloat(buffer); break;
 			case 'ELAS': this.elasticity = this.getFloat(buffer); break;
 			case 'RFCT': this.friction = this.getFloat(buffer); break;

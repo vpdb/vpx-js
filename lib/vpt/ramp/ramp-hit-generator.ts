@@ -19,7 +19,9 @@
 
 import { Vertex2D } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
+import { CollisionType } from '../../physics/collision-type';
 import { HIT_SHAPE_DETAIL_LEVEL, PHYS_SKIN } from '../../physics/constants';
+import { FireEvents } from '../../physics/fire-events';
 import { HitLine3D } from '../../physics/hit-line-3d';
 import { HitLineZ } from '../../physics/hit-line-z';
 import { HitObject } from '../../physics/hit-object';
@@ -40,7 +42,7 @@ export class RampHitGenerator {
 		this.meshGenerator = meshGenerator;
 	}
 
-	public generateHitObjects(table: Table): HitObject[] {
+	public generateHitObjects(table: Table, events: FireEvents): HitObject[] {
 
 		const hitObjects: HitObject[] = [];
 		const rv = this.meshGenerator.getRampVertex(table, HIT_SHAPE_DETAIL_LEVEL, true);
@@ -231,7 +233,7 @@ export class RampHitGenerator {
 			}
 		}
 
-		return hitObjects;
+		return hitObjects.map(obj => this.setupHitObject(obj, events, table));
 	}
 
 	private generateWallLineSeg(pv1: Vertex2D, pv2: Vertex2D, pv3Exists: boolean, height1: number, height2: number, wallHeight: number): HitObject[] {
@@ -270,5 +272,16 @@ export class RampHitGenerator {
 		// By convention of the calling function, points 1 [0] and 2 [1] of the second polygon will
 		// be the common-edge points
 		return [this.generateJoint(ph3d2.rgv[0], ph3d2.rgv[1])];
+	}
+
+	private setupHitObject(obj: HitObject, fireEvents: FireEvents, table: Table): HitObject {
+		obj.applyPhysics(this.data, table);
+
+		obj.threshold = this.data.threshold!;
+		// the ramp is of type ePrimitive for triggering the event in HitTriangle::Collide()
+		obj.setType(CollisionType.Primitive);
+		obj.obj = fireEvents;
+		obj.fe = this.data.hitEvent;
+		return obj;
 	}
 }

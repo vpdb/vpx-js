@@ -68,33 +68,19 @@ export class RubberHitGenerator {
 			const v = new Vertex3D(mv.x, mv.y, mv.z);
 			hitObjects.push(new HitPoint(v));
 		}
-		return this.updateCommonParameters(hitObjects, fireEvents, table);
+		return hitObjects.map(obj => this.setupHitObject(obj, fireEvents, table));
 	}
 
-	private updateCommonParameters(hitObjects: HitObject[], fireEvents: FireEvents, table: Table): HitObject[] {
-		const mat = table.getMaterial(this.data.szPhysicsMaterial);
-		for (const obj of hitObjects) {
-			if (mat && !this.data.fOverwritePhysics) {
-				obj.setElasticity(mat.fElasticity, mat.fElasticityFalloff);
-				obj.setFriction(mat.fFriction);
-				obj.setScatter(degToRad(mat.fScatterAngle));
+	private setupHitObject(obj: HitObject, fireEvents: FireEvents, table: Table): HitObject {
+		obj.applyPhysics(this.data, table);
 
-			} else {
-				obj.setElasticity(this.data.elasticity, this.data.elasticityFalloff);
-				obj.setFriction(this.data.friction);
-				obj.setScatter(degToRad(this.data.scatter));
-			}
-
-			obj.setEnabled(this.data.fCollidable);
-
-			// the rubber is of type ePrimitive for triggering the event in HitTriangle::Collide()
-			obj.setType(CollisionType.Primitive);
-			// hard coded threshold for now
-			obj.threshold = 2.0;
-			obj.obj = fireEvents;
-			obj.fe = this.data.fHitEvent;
-		}
-		return hitObjects;
+		// the rubber is of type ePrimitive for triggering the event in HitTriangle::Collide()
+		obj.setType(CollisionType.Primitive);
+		// hard coded threshold for now
+		obj.threshold = 2.0;
+		obj.obj = fireEvents;
+		obj.fe = this.data.hitEvent;
+		return obj;
 	}
 
 	private static generateHitEdge(mesh: Mesh, addedEdges: EdgeSet, i: number, j: number): HitObject[] {

@@ -17,9 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Table } from '..';
 import { Player } from '../game/player';
+import { degToRad } from '../math/float';
 import { FRect3D } from '../math/frect3d';
 import { Ball } from '../vpt/ball/ball';
+import { IPhysicalData } from '../vpt/item-data';
 import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { FireEvent, FireEvents } from './fire-events';
@@ -164,6 +167,22 @@ export abstract class HitObject {
 			}
 		}
 		return coll;
+	}
+
+	public applyPhysics(data: IPhysicalData, table: Table) {
+		const mat = table.getMaterial(data.szPhysicsMaterial);
+		if (mat && !data.overwritePhysics) {
+			this.setElasticity(mat.fElasticity, mat.fElasticityFalloff);
+			this.setFriction(mat.fFriction);
+			this.setScatter(degToRad(mat.fScatterAngle));
+
+		} else {
+			this.setElasticity(data.elasticity, data.elasticityFalloff);
+			this.setFriction(data.friction);
+			this.setScatter(degToRad(data.scatter));
+		}
+
+		this.setEnabled(data.isCollidable);
 	}
 }
 

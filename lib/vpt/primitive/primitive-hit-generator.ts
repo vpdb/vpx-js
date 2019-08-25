@@ -98,8 +98,7 @@ export class PrimitiveHitGenerator {
 		for (const vertex of mesh.vertices) {
 			hitObjects.push(new HitPoint(vertex.getVertex()));
 		}
-		//}
-		return this.updateCommonParameters(hitObjects, fireEvents, table);
+		return hitObjects.map(obj => this.setupHitObject(obj, fireEvents, table));
 	}
 
 	public getReducedMesh(mesh: Mesh, reducedVertices: number): Mesh {
@@ -141,35 +140,21 @@ export class PrimitiveHitGenerator {
 		);
 	}
 
-	private updateCommonParameters(hitObjects: HitObject[], fireEvents: FireEvents, table: Table): HitObject[] {
-		const mat = table.getMaterial(this.data.szPhysicsMaterial);
-		for (const obj of hitObjects) {
-			if (!this.data.useAsPlayfield) {
-				if (mat && !this.data.overwritePhysics) {
-					obj.setElasticity(mat.fElasticity, mat.fElasticityFalloff);
-					obj.setFriction(mat.fFriction);
-					obj.setScatter(degToRad(mat.fScatterAngle));
+	private setupHitObject(obj: HitObject, fireEvents: FireEvents, table: Table): HitObject {
+		if (!this.data.useAsPlayfield) {
+			obj.applyPhysics(this.data, table);
 
-				} else {
-					obj.setElasticity(this.data.elasticity, this.data.elasticityFalloff);
-					obj.setFriction(this.data.friction);
-					obj.setScatter(degToRad(this.data.scatter));
-				}
-
-				obj.setEnabled(this.data.isCollidable);
-
-			} else {
-				obj.setElasticity(table.data!.elasticity, table.data!.elasticityFalloff);
-				obj.setFriction(table.data!.friction);
-				obj.setScatter(degToRad(table.data!.scatter));
-				obj.setEnabled(true);
-			}
-			obj.threshold = this.data.threshold;
-			obj.setType(CollisionType.Primitive);
-			obj.obj = fireEvents;
-			obj.e = true;
-			obj.fe = this.data.hitEvent;
+		} else {
+			obj.setElasticity(table.data!.elasticity, table.data!.elasticityFalloff);
+			obj.setFriction(table.data!.friction);
+			obj.setScatter(degToRad(table.data!.scatter));
+			obj.setEnabled(true);
 		}
-		return hitObjects;
+		obj.threshold = this.data.threshold;
+		obj.setType(CollisionType.Primitive);
+		obj.obj = fireEvents;
+		obj.e = true;
+		obj.fe = this.data.hitEvent;
+		return obj;
 	}
 }

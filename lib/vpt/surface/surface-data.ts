@@ -20,9 +20,9 @@
 import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
 import { DragPoint } from '../../math/dragpoint';
-import { ItemData } from '../item-data';
+import { IPhysicalData, ItemData } from '../item-data';
 
-export class SurfaceData extends ItemData {
+export class SurfaceData extends ItemData implements IPhysicalData {
 
 	public hitEvent: boolean = false;
 	public isDroppable: boolean = false;

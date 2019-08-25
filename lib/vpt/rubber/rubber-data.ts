@@ -21,23 +21,23 @@ import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
 import { DragPoint } from '../../math/dragpoint';
 import { f4 } from '../../math/float';
-import { ItemData } from '../item-data';
+import { IPhysicalData, ItemData } from '../item-data';
 
-export class RubberData extends ItemData {
+export class RubberData extends ItemData implements IPhysicalData {
 
 	public wzName!: string;
 	public height: number = f4(25);
 	public hitHeight: number = f4(-1.0);
 	public thickness: number = f4(8);
-	public fHitEvent: boolean = false;
+	public hitEvent: boolean = false;
 	public szMaterial?: string;
 	public szImage?: string;
 	public elasticity!: number;
 	public elasticityFalloff!: number;
 	public friction!: number;
 	public scatter!: number;
-	public fCollidable: boolean = true;
-	public fVisible: boolean = true;
+	public isCollidable: boolean = true;
+	public isVisible: boolean = true;
 	public fReflectionEnabled: boolean = true;
 	public staticRendering: boolean = true;
 	public showInEditor: boolean = true;
@@ -45,7 +45,7 @@ export class RubberData extends ItemData {
 	public rotY: number = 0;
 	public rotZ: number = 0;
 	public szPhysicsMaterial?: string;
-	public fOverwritePhysics: boolean = false;
+	public overwritePhysics: boolean = false;
 	public dragPoints: DragPoint[] = [];
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<RubberData> {
@@ -76,7 +76,7 @@ export class RubberData extends ItemData {
 			case 'HTTP': this.height = this.getFloat(buffer); break;
 			case 'HTHI': this.hitHeight = this.getFloat(buffer); break;
 			case 'WDTP': this.thickness = this.getInt(buffer); break;
-			case 'HTEV': this.fHitEvent = this.getBool(buffer); break;
+			case 'HTEV': this.hitEvent = this.getBool(buffer); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
 			case 'IMAG': this.szImage = this.getString(buffer, len); break;
 			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
@@ -84,8 +84,8 @@ export class RubberData extends ItemData {
 			case 'ELFO': this.elasticityFalloff = this.getFloat(buffer); break;
 			case 'RFCT': this.friction = this.getFloat(buffer); break;
 			case 'RSCT': this.scatter = this.getFloat(buffer); break;
-			case 'CLDR': this.fCollidable = this.getBool(buffer); break;
-			case 'RVIS': this.fVisible = this.getBool(buffer); break;
+			case 'CLDR': this.isCollidable = this.getBool(buffer); break;
+			case 'RVIS': this.isVisible = this.getBool(buffer); break;
 			case 'REEN': this.fReflectionEnabled = this.getBool(buffer); break;
 			case 'ESTR': this.staticRendering = this.getBool(buffer); break;
 			case 'ESIE': this.showInEditor = this.getBool(buffer); break;
@@ -93,7 +93,7 @@ export class RubberData extends ItemData {
 			case 'ROTY': this.rotY = this.getFloat(buffer); break;
 			case 'ROTZ': this.rotZ = this.getFloat(buffer); break;
 			case 'MAPH': this.szPhysicsMaterial = this.getString(buffer, len); break;
-			case 'OVPH': this.fOverwritePhysics = this.getBool(buffer); break;
+			case 'OVPH': this.overwritePhysics = this.getBool(buffer); break;
 			case 'PNTS': break; // never read in vpinball
 			default:
 				this.getUnknownBlock(buffer, tag);

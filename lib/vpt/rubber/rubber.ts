@@ -59,11 +59,11 @@ export class Rubber implements IRenderable, IHittable {
 	}
 
 	public isVisible(): boolean {
-		return this.data.fVisible;
+		return this.data.isVisible;
 	}
 
 	public isCollidable(): boolean {
-		return this.data.fCollidable;
+		return this.data.isCollidable;
 	}
 
 	public getMeshes(table: Table): Meshes {

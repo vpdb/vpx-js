@@ -119,6 +119,16 @@ export abstract class ItemData extends BiffParser {
 	}
 }
 
+export interface IPhysicalData {
+	elasticity: number;
+	elasticityFalloff?: number;
+	friction: number;
+	scatter: number;
+	overwritePhysics: boolean;
+	isCollidable: boolean;
+	szPhysicsMaterial?: string;
+}
+
 export class TimerDataRoot {
 	public interval: number = 0;
 	public enabled: boolean = false;
