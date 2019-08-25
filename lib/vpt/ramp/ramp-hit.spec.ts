@@ -25,7 +25,7 @@ import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 
 import sinonChai = require('sinon-chai');
-import { debugBall } from '../../../test/physics.helper';
+import { createBall, debugBall } from '../../../test/physics.helper';
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
@@ -43,7 +43,7 @@ describe('The VPinball ramp collision', () => {
 		player = new Player(table);
 	});
 
-	it('should make the ball roll down again', () => {
+	it('should make the ball roll up and down a flat ramp', () => {
 
 		const kicker = table.kickers.BallRelease.getApi();
 
@@ -59,5 +59,35 @@ describe('The VPinball ramp collision', () => {
 		// let it roll down again
 		player.updatePhysics(1000);
 		expect(ball.getState().pos.y).to.be.above(1030);
+	});
+
+	it('should make the ball roll down a two-wire ramp', () => {
+
+		// create ball
+		const ball = createBall(player, 595, 571, 105);
+
+		expect(ball.getState().pos.x).to.be.within(594, 596);
+		expect(ball.getState().pos.y).to.be.within(570, 571);
+		expect(ball.getState().pos.z).to.be.within(129, 130);
+
+		player.updatePhysics(200);
+		expect(ball.getState().pos.x).to.be.within(581, 583);
+		expect(ball.getState().pos.y).to.be.within(599, 601);
+		expect(ball.getState().pos.z).to.be.within(96, 98);
+
+		player.updatePhysics(400);
+		expect(ball.getState().pos.x).to.be.within(536, 538);
+		expect(ball.getState().pos.y).to.be.within(694, 696);
+		expect(ball.getState().pos.z).to.be.within(82, 84);
+
+		player.updatePhysics(600);
+		expect(ball.getState().pos.x).to.be.within(509, 511);
+		expect(ball.getState().pos.y).to.be.within(844, 846);
+		expect(ball.getState().pos.z).to.be.within(62, 64);
+
+		player.updatePhysics(800);
+		expect(ball.getState().pos.x).to.be.within(572, 574);
+		expect(ball.getState().pos.y).to.be.within(1032, 1034);
+		expect(ball.getState().pos.z).to.be.within(32, 35);
 	});
 });
