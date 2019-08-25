@@ -18,14 +18,19 @@
  */
 
 import { Storage } from '../..';
+import { Table } from '../..';
+import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
+import { Player } from '../../game/player';
 import { f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex2D } from '../../math/vertex2d';
+import { FireEvents } from '../../physics/fire-events';
+import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { Mesh } from '../mesh';
-import { Table } from '../table/table';
 import { RampData } from './ramp-data';
+import { RampHitGenerator } from './ramp-hit-generator';
 import { RampMeshGenerator } from './ramp-mesh-generator';
 
 /**
@@ -33,7 +38,7 @@ import { RampMeshGenerator } from './ramp-mesh-generator';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/ramp.cpp
  */
-export class Ramp implements IRenderable {
+export class Ramp implements IRenderable, IHittable {
 
 	public static RampTypeFlat = 0;
 	public static RampType4Wire = 1;
@@ -47,6 +52,9 @@ export class Ramp implements IRenderable {
 
 	private readonly data: RampData;
 	private readonly meshGenerator: RampMeshGenerator;
+	private readonly hitGenerator: RampHitGenerator;
+
+	private hits?: Array<HitObject<FireEvents>>;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Ramp> {
 		const data = await RampData.fromStorage(storage, itemName);
@@ -56,6 +64,7 @@ export class Ramp implements IRenderable {
 	private constructor(data: RampData) {
 		this.data = data;
 		this.meshGenerator = new RampMeshGenerator(data);
+		this.hitGenerator = new RampHitGenerator(data, this.meshGenerator);
 	}
 
 	public getName() {
@@ -63,7 +72,19 @@ export class Ramp implements IRenderable {
 	}
 
 	public isVisible(): boolean {
-		return this.data.fVisible && this.data.widthTop > 0 && this.data.widthBottom > 0;
+		return this.data.isVisible && this.data.widthTop > 0 && this.data.widthBottom > 0;
+	}
+
+	public isCollidable(): boolean {
+		return this.data.isCollidable;
+	}
+
+	public setupPlayer(player: Player, table: Table): void {
+		this.hits = this.hitGenerator.generateHitObjects(table);
+	}
+
+	public getHitShapes(): Array<HitObject<FireEvents>> {
+		return this.hits!;
 	}
 
 	public getMeshes(table: Table): Meshes {

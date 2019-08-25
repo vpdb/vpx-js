@@ -26,37 +26,35 @@ import { Ramp } from './ramp';
 
 export class RampData extends ItemData {
 
-	public wzName!: string;
+	public depthBias: number = 0;
 	public dragPoints: DragPoint[] = [];
-	public heightBottom: number = 0;
-	public heightTop: number = f4(50);
-	public widthBottom: number = f4(75);
-	public widthTop: number = f4(60);
-	public szMaterial?: string;
-	public isTimerEnabled?: number;
-	public timerInterval?: number;
-	public rampType: number = Ramp.RampTypeFlat;
-	public szImage?: string;
-	public imageAlignment: number = Ramp.RampImageAlignmentWorld;
-	public imageWalls: boolean = true;
-	public leftWallHeight: number = f4(62);
-	public rightWallHeight: number = f4(62);
-	public leftWallHeightVisible: number = f4(30);
-	public rightWallHeightVisible: number = f4(30);
-	public hasHitEvent: boolean = false;
-	public threshold?: number;
 	public elasticity?: number;
 	public friction?: number;
-	public scatter?: number;
+	public hasHitEvent: boolean = false;
+	public heightBottom: number = 0;
+	public heightTop: number = f4(50);
+	public imageAlignment: number = Ramp.RampImageAlignmentWorld;
+	public imageWalls: boolean = true;
 	public isCollidable: boolean = true;
-	public fVisible: boolean = true;
-	public fReflectionEnabled: boolean = true;
-	public depthBias?: number;
+	public isReflectionEnabled: boolean = true;
+	public isVisible: boolean = true;
+	public leftWallHeight: number = f4(62);
+	public leftWallHeightVisible: number = f4(30);
+	public overwritePhysics: boolean = true;
+	public rampType: number = Ramp.RampTypeFlat;
+	public rightWallHeight: number = f4(62);
+	public rightWallHeightVisible: number = f4(30);
+	public scatter?: number;
+	public szImage?: string;
+	public szMaterial?: string;
+	public szPhysicsMaterial?: string;
+	public threshold?: number;
+	public widthBottom: number = f4(75);
+	public widthTop: number = f4(60);
 	public wireDiameter: number = f4(8);
 	public wireDistanceX: number = f4(38);
 	public wireDistanceY: number = f4(88);
-	public szPhysicsMaterial?: string;
-	public fOverwritePhysics: boolean = false;
+	public wzName!: string;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<RampData> {
 		const rampData = new RampData(itemName);
@@ -113,14 +111,14 @@ export class RampData extends ItemData {
 			case 'RFCT': this.friction = this.getFloat(buffer); break;
 			case 'RSCT': this.scatter = this.getFloat(buffer); break;
 			case 'CLDR': this.isCollidable = this.getBool(buffer); break;
-			case 'RVIS': this.fVisible = this.getBool(buffer); break;
-			case 'REEN': this.fReflectionEnabled = this.getBool(buffer); break;
+			case 'RVIS': this.isVisible = this.getBool(buffer); break;
+			case 'REEN': this.isReflectionEnabled = this.getBool(buffer); break;
 			case 'RADB': this.depthBias = this.getFloat(buffer); break;
 			case 'RADI': this.wireDiameter = this.getFloat(buffer); break;
 			case 'RADX': this.wireDistanceX = this.getFloat(buffer); break;
 			case 'RADY': this.wireDistanceY = this.getFloat(buffer); break;
 			case 'MAPH': this.szPhysicsMaterial = this.getString(buffer, len); break;
-			case 'OVPH': this.fOverwritePhysics = this.getBool(buffer); break;
+			case 'OVPH': this.overwritePhysics = this.getBool(buffer); break;
 			case 'PNTS': break;
 			default:
 				this.getUnknownBlock(buffer, tag);

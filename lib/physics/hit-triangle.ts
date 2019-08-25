@@ -28,8 +28,8 @@ import { HitObject, HitTestResult } from './hit-object';
 
 export class HitTriangle<T extends FireEvents> extends HitObject<T> {
 
-	private readonly rgv: Vertex3D[];
-	private readonly normal: Vertex3D;
+	public readonly rgv: Vertex3D[];
+	public readonly normal: Vertex3D;
 
 	constructor(rgv: Vertex3D[]) {
 		super();

@@ -426,7 +426,7 @@ export class RampMeshGenerator {
 		return rgvbuf;
 	}
 
-	private getRampVertex(table: Table, accuracy: number, incWidth: boolean): RampVertexResult {
+	public getRampVertex(table: Table, accuracy: number, incWidth: boolean): RampVertexResult {
 
 		const ppheight: number[] = [];
 		const ppfCross: boolean[] = [];
