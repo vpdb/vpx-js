@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '../..';
 import { Player } from '../../game/player';
 import { degToRad, radToDeg } from '../../math/float';
 import { clamp } from '../../math/functions';
 import { FireEvents } from '../../physics/fire-events';
 import { ItemApi } from '../item-api';
+import { Table } from '../table/table';
 import { FlipperData } from './flipper-data';
 import { FlipperHit } from './flipper-hit';
 import { FlipperMover } from './flipper-mover';

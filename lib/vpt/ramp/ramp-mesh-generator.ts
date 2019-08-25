@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '../..';
 import { CatmullCurve3D } from '../../math/catmull-curve';
 import { DragPoint } from '../../math/dragpoint';
 import { f4 } from '../../math/float';
@@ -25,6 +24,7 @@ import { Vertex3DNoTex2 } from '../../math/vertex';
 import { Vertex2D } from '../../math/vertex2d';
 import { RenderVertex3D, Vertex3D } from '../../math/vertex3d';
 import { Mesh } from '../mesh';
+import { Table } from '../table/table';
 import { Ramp } from './ramp';
 import { RampData } from './ramp-data';
 

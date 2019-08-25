@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '../..';
 import { Player } from '../../game/player';
 import { Vertex2D } from '../../math/vertex2d';
 import { CollisionEvent } from '../../physics/collision-event';
@@ -26,6 +25,7 @@ import { C_DISP_GAIN, C_DISP_LIMIT, C_EMBEDDED, C_EMBEDSHOT, C_LOWNORMVEL } from
 import { FireEvents } from '../../physics/fire-events';
 import { HitObject, HitTestResult } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
+import { Table } from '../table/table';
 import { Plunger, PlungerConfig } from './plunger';
 import { PlungerData } from './plunger-data';
 import { PlungerMover } from './plunger-mover';

@@ -18,12 +18,11 @@
  */
 
 import { EventEmitter } from 'events';
-import { Storage } from '../..';
-import { Table } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
 import { IBallCreationPosition, Player } from '../../game/player';
+import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { FireEvents } from '../../physics/fire-events';
@@ -31,6 +30,7 @@ import { HitObject } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
 import { Meshes } from '../item-data';
 import { FLT_MAX } from '../mesh';
+import { Table } from '../table/table';
 import { Texture } from '../texture';
 import { KickerApi } from './kicker-api';
 import { KickerData } from './kicker-data';

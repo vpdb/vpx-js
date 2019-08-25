@@ -18,8 +18,8 @@
  */
 
 import { BufferGeometry, MeshStandardMaterial } from 'three';
-import { Storage } from '../..';
 import { IRenderable } from '../../game/irenderable';
+import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { Meshes } from '../item-data';
 import { Material } from '../material';

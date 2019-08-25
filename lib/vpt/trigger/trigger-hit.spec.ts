@@ -19,11 +19,11 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import { Table } from '../..';
 import { createBall } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { Table } from '../table/table';
 import { TriggerState } from './trigger-state';
 
 import sinonChai = require('sinon-chai');

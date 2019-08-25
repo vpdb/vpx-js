@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '../..';
 import { bumperBaseMesh } from '../../../res/meshes/bumper-base-mesh';
 import { bumperCapMesh } from '../../../res/meshes/bumper-cap-mesh';
 import { bumperRingMesh } from '../../../res/meshes/bumper-ring-mesh';
@@ -26,6 +25,7 @@ import { degToRad, f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { Mesh } from '../mesh';
+import { Table } from '../table/table';
 import { BumperData } from './bumper-data';
 
 export class BumperMeshGenerator {

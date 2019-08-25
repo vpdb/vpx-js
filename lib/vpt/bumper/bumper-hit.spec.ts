@@ -20,11 +20,11 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import { Mesh, Vector3 } from 'three';
-import { Table } from '../..';
 import { createBall } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { ChangedState, Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { Table } from '../table/table';
 import { BumperState } from './bumper-state';
 
 import sinonChai = require('sinon-chai');

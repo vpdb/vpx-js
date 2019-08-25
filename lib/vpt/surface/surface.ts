@@ -17,15 +17,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Storage, Table } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
+import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
+import { Table } from '../table/table';
 import { VpTableExporterOptions } from '../table/table-exporter';
 import { SurfaceApi } from './surface-api';
 import { SurfaceData } from './surface-data';

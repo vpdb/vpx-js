@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Storage } from '../..';
 import { IRenderable } from '../../game/irenderable';
+import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { Meshes } from '../item-data';
 import { Table } from '../table/table';

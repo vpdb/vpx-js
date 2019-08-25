@@ -18,16 +18,17 @@
  */
 
 import { Object3D } from 'three';
-import { Storage, Table } from '../..';
 import { IAnimatable, IAnimation } from '../../game/ianimatable';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
+import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
+import { Table } from '../table/table';
 import { TriggerAnimation } from './trigger-animation';
 import { TriggerApi } from './trigger-api';
 import { TriggerData } from './trigger-data';

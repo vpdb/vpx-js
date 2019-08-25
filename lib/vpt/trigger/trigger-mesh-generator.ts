@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '../..';
 import { triggerButtonMesh } from '../../../res/meshes/trigger-button-mesh';
 import { triggerSimpleMesh } from '../../../res/meshes/trigger-simple-mesh';
 import { triggerStarMesh } from '../../../res/meshes/trigger-star-mesh';
@@ -27,6 +26,7 @@ import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { logger } from '../../util/logger';
 import { Mesh } from '../mesh';
+import { Table } from '../table/table';
 import { Trigger } from './trigger';
 import { TriggerData } from './trigger-data';
 

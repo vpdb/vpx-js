@@ -18,20 +18,20 @@
  */
 
 import { Object3D } from 'three';
-import { Table } from '../..';
-import { Storage } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
+import { Storage } from '../../io/ole-doc';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex2D } from '../../math/vertex2d';
 import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
+import { Table } from '../table/table';
 import { FlipperApi } from './flipper-api';
 import { FlipperData } from './flipper-data';
 import { FlipperHit } from './flipper-hit';

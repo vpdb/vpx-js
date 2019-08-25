@@ -17,13 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '../..';
 import { IBallCreationPosition, Player } from '../../game/player';
 import { Vertex3D } from '../../math/vertex3d';
 import { FireEvents } from '../../physics/fire-events';
 import { logger } from '../../util/logger';
 import { Ball } from '../ball/ball';
 import { ItemApi } from '../item-api';
+import { Table } from '../table/table';
 import { KickerData } from './kicker-data';
 import { KickerHit } from './kicker-hit';
 

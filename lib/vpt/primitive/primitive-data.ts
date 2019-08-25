@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Storage } from '../..';
 import { BiffParser } from '../../io/biff-parser';
+import { Storage } from '../../io/ole-doc';
 import { Vertex3DNoTex2 } from '../../math/vertex';
 import { Vertex3D } from '../../math/vertex3d';
 import { FrameData } from '../animation';

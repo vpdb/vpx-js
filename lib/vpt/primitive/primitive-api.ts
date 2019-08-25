@@ -17,11 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '../..';
 import { Player } from '../../game/player';
 import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { ItemApi } from '../item-api';
+import { Table } from '../table/table';
 import { Primitive } from './primitive';
 import { PrimitiveData } from './primitive-data';
 

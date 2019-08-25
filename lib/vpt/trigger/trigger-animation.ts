@@ -17,9 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '../..';
 import { IAnimation } from '../../game/ianimatable';
 import { Player } from '../../game/player';
+import { Table } from '../table/table';
 import { Trigger } from './trigger';
 import { TriggerData } from './trigger-data';
 import { TriggerState } from './trigger-state';

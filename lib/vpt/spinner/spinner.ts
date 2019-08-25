@@ -18,12 +18,12 @@
  */
 
 import { Object3D } from 'three';
-import { Storage, Table } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
 import { Player } from '../../game/player';
+import { Storage } from '../../io/ole-doc';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { FireEvents } from '../../physics/fire-events';
@@ -32,6 +32,7 @@ import { HitObject } from '../../physics/hit-object';
 import { MoverObject } from '../../physics/mover-object';
 import { FlipperState } from '../flipper/flipper-state';
 import { Meshes } from '../item-data';
+import { Table } from '../table/table';
 import { SpinnerData } from './spinner-data';
 import { SpinnerHit } from './spinner-hit';
 import { SpinnerHitGenerator } from './spinner-hit-generator';

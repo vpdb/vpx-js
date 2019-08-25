@@ -17,9 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '../..';
 import { Vertex3DNoTex2 } from '../../math/vertex';
 import { Mesh } from '../mesh';
+import { Table } from '../table/table';
 import { PlungerType } from './plunger';
 import { PlungerData } from './plunger-data';
 import { PlungerDesc } from './plunger-desc';

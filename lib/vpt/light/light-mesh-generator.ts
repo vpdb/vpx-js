@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BufferGeometry, ExtrudeBufferGeometry, MeshStandardMaterial, Path, Shape, Vector2 } from 'three';
-import { Table } from '../..';
+import { ExtrudeBufferGeometry, Path, Shape, Vector2 } from 'three';
 import { bulbLightMesh } from '../../../res/meshes/bulb-light-mesh';
 import { bulbSocketMesh } from '../../../res/meshes/bulb-socket-mesh';
 import { SplineVertex } from '../../math/spline-vertex';
 import { Mesh } from '../mesh';
+import { Table } from '../table/table';
 import { LightData } from './light-data';
 
 export class LightMeshGenerator {

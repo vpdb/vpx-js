@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '../..';
 import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
 import { FRect3D } from '../../math/frect3d';
@@ -41,6 +40,7 @@ import { FireEvent, FireEvents } from '../../physics/fire-events';
 import { elasticityWithFalloff } from '../../physics/functions';
 import { HitObject, HitTestResult } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
+import { Table } from '../table/table';
 import { TableData } from '../table/table-data';
 import { FlipperConfig } from './flipper';
 import { FlipperData } from './flipper-data';

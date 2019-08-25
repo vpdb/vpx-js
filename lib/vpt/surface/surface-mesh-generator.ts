@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '../..';
 import { CatmullCurve2D } from '../../math/catmull-curve';
 import { DragPoint } from '../../math/dragpoint';
 import { Vertex3DNoTex2 } from '../../math/vertex';
 import { RenderVertex, Vertex2D } from '../../math/vertex2d';
 import { Mesh } from '../mesh';
+import { Table } from '../table/table';
 import { SurfaceData } from './surface-data';
 
 export class SurfaceMeshGenerator {

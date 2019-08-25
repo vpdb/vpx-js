@@ -19,12 +19,13 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import sinonChai = require('sinon-chai');
-import { Table } from '../..';
-import { createBall, debugBall } from '../../../test/physics.helper';
+import { createBall } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { Table } from '../table/table';
+
+import sinonChai = require('sinon-chai');
 
 chai.use(sinonChai);
 const three = new ThreeHelper();

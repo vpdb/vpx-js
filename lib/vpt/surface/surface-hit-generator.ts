@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '../..';
 import { Player } from '../../game/player';
 import { CatmullCurve2D } from '../../math/catmull-curve';
 import { DragPoint } from '../../math/dragpoint';
@@ -32,6 +31,7 @@ import { HitObject } from '../../physics/hit-object';
 import { HitPoint } from '../../physics/hit-point';
 import { LineSeg } from '../../physics/line-seg';
 import { LineSegSlingshot } from '../../physics/line-seg-slingshot';
+import { Table } from '../table/table';
 import { Surface } from './surface';
 import { SurfaceData } from './surface-data';
 

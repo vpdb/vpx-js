@@ -17,11 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Storage } from '../..';
-import { Table } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { Player } from '../../game/player';
+import { Storage } from '../../io/ole-doc';
 import { f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex2D } from '../../math/vertex2d';
@@ -29,6 +28,7 @@ import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { Mesh } from '../mesh';
+import { Table } from '../table/table';
 import { RampData } from './ramp-data';
 import { RampHitGenerator } from './ramp-hit-generator';
 import { RampMeshGenerator } from './ramp-mesh-generator';

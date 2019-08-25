@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '../..';
 import { Player } from '../../game/player';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
@@ -26,6 +25,7 @@ import { FireEvent, FireEvents } from '../../physics/fire-events';
 import { HitCircle } from '../../physics/hit-circle';
 import { HitTestResult } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
+import { Table } from '../table/table';
 import { TriggerAnimation } from './trigger-animation';
 import { TriggerData } from './trigger-data';
 

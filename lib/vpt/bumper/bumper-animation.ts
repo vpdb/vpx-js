@@ -17,10 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '../..';
 import { IAnimation } from '../../game/ianimatable';
 import { Player } from '../../game/player';
 import { Vertex3D } from '../../math/vertex3d';
+import { Table } from '../table/table';
 import { BumperData } from './bumper-data';
 import { BumperState } from './bumper-state';
 

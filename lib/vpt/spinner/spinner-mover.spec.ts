@@ -19,11 +19,11 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import { Table } from '../..';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { degToRad, radToDeg } from '../../math/float';
+import { Table } from '../table/table';
 import { Spinner } from './spinner';
 
 import sinonChai = require('sinon-chai');

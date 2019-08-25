@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '../..';
 import { kickerHitVertices } from '../../../res/meshes/kicker-hit-mesh';
 import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
@@ -33,6 +32,7 @@ import { HitCircle } from '../../physics/hit-circle';
 import { HitTestResult } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
 import { FLT_MAX } from '../mesh';
+import { Table } from '../table/table';
 import { KickerData } from './kicker-data';
 
 /* tslint:disable:no-bitwise */

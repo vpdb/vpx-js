@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Storage } from '../..';
 import { BiffParser } from '../../io/biff-parser';
+import { Storage } from '../../io/ole-doc';
 import { DragPoint } from '../../math/dragpoint';
 import { f4 } from '../../math/float';
 import { ItemData } from '../item-data';

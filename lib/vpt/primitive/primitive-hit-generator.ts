@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '../..';
 import { EdgeSet } from '../../math/edge-set';
 import { degToRad } from '../../math/float';
 import { clamp } from '../../math/functions';
@@ -36,6 +35,7 @@ import { HitObject } from '../../physics/hit-object';
 import { HitPoint } from '../../physics/hit-point';
 import { HitTriangle } from '../../physics/hit-triangle';
 import { Mesh } from '../mesh';
+import { Table } from '../table/table';
 import { PrimitiveData } from './primitive-data';
 
 export class PrimitiveHitGenerator {

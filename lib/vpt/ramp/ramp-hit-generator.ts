@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '../..';
 import { Vertex2D } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
 import { HIT_SHAPE_DETAIL_LEVEL, PHYS_SKIN } from '../../physics/constants';
@@ -27,6 +26,7 @@ import { HitLineZ } from '../../physics/hit-line-z';
 import { HitObject } from '../../physics/hit-object';
 import { HitTriangle } from '../../physics/hit-triangle';
 import { LineSeg } from '../../physics/line-seg';
+import { Table } from '../table/table';
 import { Ramp } from './ramp';
 import { RampData } from './ramp-data';
 import { RampMeshGenerator } from './ramp-mesh-generator';

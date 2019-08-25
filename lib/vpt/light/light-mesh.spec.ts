@@ -20,9 +20,9 @@
 import { expect } from 'chai';
 import { SpotLight } from 'three';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
-import { Table } from '../..';
 import { ThreeHelper } from '../../../test/three.helper';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { Table } from '../table/table';
 
 const three = new ThreeHelper();
 const scale = 0.05;

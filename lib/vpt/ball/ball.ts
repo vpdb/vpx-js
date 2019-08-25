@@ -18,7 +18,6 @@
  */
 
 import { Group, Object3D, Scene } from 'three';
-import { Table } from '../..';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
@@ -30,6 +29,7 @@ import { CollisionEvent } from '../../physics/collision-event';
 import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
+import { Table } from '../table/table';
 import { TableData } from '../table/table-data';
 import { VpTableExporterOptions } from '../table/table-exporter';
 import { BallData } from './ball-data';
