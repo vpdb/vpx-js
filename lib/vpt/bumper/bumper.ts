@@ -89,7 +89,7 @@ export class Bumper implements IRenderable, IHittable, IAnimatable<BumperState> 
 		this.meshUpdater.applyState(obj, table, player, oldState);
 	}
 
-	public getHitShapes(): Array<HitObject<FireEvents>> {
+	public getHitShapes(): HitObject[] {
 		return [ this.hit! ];
 	}
 

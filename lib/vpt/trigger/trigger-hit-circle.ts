@@ -29,7 +29,7 @@ import { Table } from '../table/table';
 import { TriggerAnimation } from './trigger-animation';
 import { TriggerData } from './trigger-data';
 
-export class TriggerHitCircle extends HitCircle<FireEvents> {
+export class TriggerHitCircle extends HitCircle {
 
 	private readonly animation: TriggerAnimation;
 

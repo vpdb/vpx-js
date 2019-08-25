@@ -33,7 +33,6 @@ import {
 	STATICCNTS,
 	STATICTIME,
 } from '../physics/constants';
-import { FireEvents } from '../physics/fire-events';
 import { Hit3DPoly } from '../physics/hit-3dpoly';
 import { HitKD } from '../physics/hit-kd';
 import { HitObject } from '../physics/hit-object';
@@ -56,8 +55,8 @@ export class Player extends EventEmitter {
 	public readonly balls: Ball[] = [];
 	private readonly movers: MoverObject[] = [];
 	private readonly flipperMovers: FlipperMover[] = [];
-	private readonly hitObjects: Array<HitObject<FireEvents>> = [];
-	private readonly hitObjectsDynamic: Array<HitObject<FireEvents>> = [];
+	private readonly hitObjects: HitObject[] = [];
+	private readonly hitObjectsDynamic: HitObject[] = [];
 
 	public static SLOW_MO = 1; // the lower, the slower
 
@@ -77,8 +76,8 @@ export class Player extends EventEmitter {
 	private startTimeUsec: number = 0;
 	private physPeriod: number = 0;
 
-	private hitPlayfield!: HitPlane<FireEvents>; // HitPlanes cannot be part of octree (infinite size)
-	private hitTopGlass!: HitPlane<FireEvents>;
+	private hitPlayfield!: HitPlane; // HitPlanes cannot be part of octree (infinite size)
+	private hitTopGlass!: HitPlane;
 	public recordContacts: boolean = false;
 	public contacts: CollisionEvent[] = [];
 

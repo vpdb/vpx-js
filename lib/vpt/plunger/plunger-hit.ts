@@ -20,7 +20,6 @@
 import { Player } from '../../game/player';
 import { Vertex2D } from '../../math/vertex2d';
 import { CollisionEvent } from '../../physics/collision-event';
-import { CollisionType } from '../../physics/collision-type';
 import { C_DISP_GAIN, C_DISP_LIMIT, C_EMBEDDED, C_EMBEDSHOT, C_LOWNORMVEL } from '../../physics/constants';
 import { FireEvents } from '../../physics/fire-events';
 import { HitObject, HitTestResult } from '../../physics/hit-object';
@@ -31,7 +30,7 @@ import { PlungerData } from './plunger-data';
 import { PlungerMover } from './plunger-mover';
 import { PlungerState } from './plunger-state';
 
-export class PlungerHit extends HitObject<FireEvents> {
+export class PlungerHit extends HitObject {
 
 	private readonly mover: PlungerMover;
 	private readonly data: PlungerData;

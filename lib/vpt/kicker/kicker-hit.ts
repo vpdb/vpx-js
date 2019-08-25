@@ -36,7 +36,7 @@ import { Table } from '../table/table';
 import { KickerData } from './kicker-data';
 
 /* tslint:disable:no-bitwise */
-export class KickerHit extends HitCircle<FireEvents> {
+export class KickerHit extends HitCircle {
 
 	private data: KickerData;
 	public ball?: Ball;  // The ball inside this kicker

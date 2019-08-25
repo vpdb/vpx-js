@@ -58,7 +58,7 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 	private readonly hitGenerator: TriggerHitGenerator;
 
 	private api?: TriggerApi;
-	private hits?: Array<HitObject<FireEvents>>;
+	private hits?: HitObject[];
 	private events?: FireEvents;
 	private animation?: TriggerAnimation;
 
@@ -115,7 +115,7 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 		return this.api!;
 	}
 
-	public getHitShapes(): Array<HitObject<FireEvents>> {
+	public getHitShapes(): HitObject[] {
 		return this.hits!;
 	}
 

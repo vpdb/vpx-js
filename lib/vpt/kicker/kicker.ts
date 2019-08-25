@@ -106,7 +106,7 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 		return this.api!;
 	}
 
-	public getHitShapes(): Array<HitObject<FireEvents>> {
+	public getHitShapes(): HitObject[] {
 		return [ this.hit! ];
 	}
 

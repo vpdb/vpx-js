@@ -52,7 +52,7 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	private readonly hitGenerator: SpinnerHitGenerator;
 	private hit?: SpinnerHit;
 	private fireEvents?: FireEvents;
-	private hitCircles: Array<HitCircle<FireEvents>> = [];
+	private hitCircles: HitCircle[] = [];
 
 	// public props
 	get angleMin() { return this.data.angleMin; }
@@ -108,7 +108,7 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		this.hitCircles = this.hitGenerator.getHitShapes(this.state, height);
 	}
 
-	public getHitShapes(): Array<HitObject<FireEvents>> {
+	public getHitShapes(): HitObject[] {
 		return [ this.hit!, ...this.hitCircles ];
 	}
 

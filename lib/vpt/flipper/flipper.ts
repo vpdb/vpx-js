@@ -90,7 +90,7 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		return this.api!;
 	}
 
-	public getHitShapes(): Array<HitObject<FireEvents>> {
+	public getHitShapes(): HitObject[] {
 		return [ this.hit! ];
 	}
 

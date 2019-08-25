@@ -23,11 +23,10 @@ import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
-import { FireEvents } from './fire-events';
 import { HitLineZ } from './hit-line-z';
 import { HitTestResult } from './hit-object';
 
-export class HitLine3D extends HitLineZ<FireEvents> {
+export class HitLine3D extends HitLineZ {
 
 	private readonly matrix: Matrix2D = new Matrix2D();
 	private readonly zLow: number = 0;

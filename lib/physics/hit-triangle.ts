@@ -23,10 +23,9 @@ import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { C_CONTACTVEL, C_LOWNORMVEL, PHYS_TOUCH } from './constants';
-import { FireEvents } from './fire-events';
 import { HitObject, HitTestResult } from './hit-object';
 
-export class HitTriangle<T extends FireEvents> extends HitObject<T> {
+export class HitTriangle extends HitObject {
 
 	public readonly rgv: Vertex3D[];
 	public readonly normal: Vertex3D;

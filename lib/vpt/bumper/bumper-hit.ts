@@ -25,7 +25,7 @@ import { BumperAnimation } from './bumper-animation';
 import { BumperData } from './bumper-data';
 import { BumperState } from './bumper-state';
 
-export class BumperHit extends HitCircle<FireEvents> {
+export class BumperHit extends HitCircle {
 
 	private readonly data: BumperData;
 	private readonly state: BumperState;

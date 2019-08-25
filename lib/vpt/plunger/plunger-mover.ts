@@ -55,15 +55,15 @@ export class PlungerMover implements MoverObject {
 	// boundaries for detecting collisions
 	public readonly lineSegBase = new LineSeg(new Vertex2D(0, 0), new Vertex2D(0, 0), 0, 0);
 	public readonly lineSegEnd = new LineSeg(new Vertex2D(0, 0), new Vertex2D(0, 0), 0, 0);
-	public readonly lineSegSide: Array<LineSeg<FireEvents>> = [
+	public readonly lineSegSide: LineSeg[] = [
 		new LineSeg(new Vertex2D(0, 0), new Vertex2D(0, 0), 0, 0),
 		new LineSeg(new Vertex2D(0, 0), new Vertex2D(0, 0), 0, 0),
 	];
-	public readonly jointBase: Array<HitLineZ<FireEvents>> = [
+	public readonly jointBase: HitLineZ[] = [
 		new HitLineZ(new Vertex2D(0, 0)),
 		new HitLineZ(new Vertex2D(0, 0)),
 	];
-	public readonly jointEnd: Array<HitLineZ<FireEvents>> = [
+	public readonly jointEnd: HitLineZ[] = [
 		new HitLineZ(new Vertex2D(0, 0)),
 		new HitLineZ(new Vertex2D(0, 0)),
 	];

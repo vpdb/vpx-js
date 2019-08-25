@@ -40,7 +40,7 @@ export class Rubber implements IRenderable, IHittable {
 	private readonly data: RubberData;
 	private readonly meshGenerator: RubberMeshGenerator;
 	private hitGenerator: RubberHitGenerator;
-	private hits: Array<HitObject<FireEvents>> = [];
+	private hits: HitObject[] = [];
 	private fireEvents?: FireEvents;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Rubber> {
@@ -83,7 +83,7 @@ export class Rubber implements IRenderable, IHittable {
 		this.hits = this.hitGenerator.generateHitObjects(this.fireEvents, table);
 	}
 
-	public getHitShapes(): Array<HitObject<FireEvents>> {
+	public getHitShapes(): HitObject[] {
 		return this.hits;
 	}
 }

@@ -44,8 +44,8 @@ export class Surface implements IRenderable, IHittable, IScriptable<SurfaceApi> 
 	private readonly data: SurfaceData;
 	private readonly meshGenerator: SurfaceMeshGenerator;
 	private readonly hitGenerator: SurfaceHitGenerator;
-	private hits: Array<HitObject<FireEvents>> = [];
-	private drops: Array<HitObject<FireEvents>> = [];
+	private hits: HitObject[] = [];
+	private drops: HitObject[] = [];
 	private fireEvents?: FireEvents;
 	private api?: SurfaceApi;
 
@@ -136,7 +136,7 @@ export class Surface implements IRenderable, IHittable, IScriptable<SurfaceApi> 
 		return this.api!;
 	}
 
-	public getHitShapes(): Array<HitObject<FireEvents>> {
+	public getHitShapes(): HitObject[] {
 		return this.hits;
 	}
 }

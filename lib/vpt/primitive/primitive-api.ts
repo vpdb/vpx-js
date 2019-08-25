@@ -29,10 +29,10 @@ export class PrimitiveApi extends ItemApi {
 
 	private readonly primitive: Primitive;
 	private readonly data: PrimitiveData;
-	private readonly hits: Array<HitObject<any>>;
+	private readonly hits: HitObject[];
 	private readonly events: FireEvents;
 
-	constructor(primitive: Primitive, data: PrimitiveData, hits: Array<HitObject<any>>, events: FireEvents, player: Player, table: Table) {
+	constructor(primitive: Primitive, data: PrimitiveData, hits: HitObject[], events: FireEvents, player: Player, table: Table) {
 		super(player, table);
 		this.primitive = primitive;
 		this.data = data;

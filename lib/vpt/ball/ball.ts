@@ -26,7 +26,6 @@ import { Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
-import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { Table } from '../table/table';
@@ -121,7 +120,7 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRendera
 	}
 
 	/* istanbul ignore next: never called since balls have their own hit collection */
-	public getHitShapes(): Array<HitObject<FireEvents>> {
+	public getHitShapes(): HitObject[] {
 		return [ this.hit ];
 	}
 

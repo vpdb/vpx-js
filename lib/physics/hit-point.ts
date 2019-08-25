@@ -23,12 +23,10 @@ import { solveQuadraticEq } from '../math/functions';
 import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
-import { CollisionType } from './collision-type';
 import { C_CONTACTVEL, PHYS_TOUCH } from './constants';
-import { FireEvents } from './fire-events';
 import { HitObject, HitTestResult } from './hit-object';
 
-export class HitPoint<T extends FireEvents> extends HitObject<T> {
+export class HitPoint extends HitObject {
 
 	private readonly p: Vertex3D;
 

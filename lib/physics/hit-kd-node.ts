@@ -293,7 +293,7 @@ export class HitKDNode {
 		this.children[1].createNextLevel(level + 1, levelEmpty);
 	}
 
-	// public hitTestXRay(ball: Ball, vhoHit: Array<HitObject<FireEvents>>, coll: CollisionEvent, player: Player): void {
+	// public hitTestXRay(ball: Ball, vhoHit: HitObject[], coll: CollisionEvent, player: Player): void {
 	// 	const orgItems = this.items & 0x3FFFFFFF;
 	// 	const axis = this.items >> 30;
 	//

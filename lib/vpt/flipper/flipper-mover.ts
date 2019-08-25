@@ -39,7 +39,7 @@ export class FlipperMover implements MoverObject {
 	private readonly player: Player;
 	private readonly tableData: TableData;
 
-	public hitCircleBase: HitCircle<FireEvents>;
+	public hitCircleBase: HitCircle;
 	public endRadius: number;
 	public readonly flipperRadius: number;
 

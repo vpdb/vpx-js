@@ -46,7 +46,7 @@ export class SurfaceHitGenerator {
 		this.data = data;
 	}
 
-	public generateHitObjects(fireEvents: FireEvents, player: Player, table: Table): Array<HitObject<FireEvents>> {
+	public generateHitObjects(fireEvents: FireEvents, player: Player, table: Table): HitObject[] {
 		return this.updateCommonParameters(this.generate3DPolys(fireEvents, player, table), fireEvents, table);
 	}
 
@@ -54,9 +54,9 @@ export class SurfaceHitGenerator {
 	 * Returns all hit objects for the surface.
 	 * @see Surface::CurvesToShapes
 	 */
-	private generate3DPolys(fireEvents: FireEvents, player: Player, table: Table): Array<HitObject<FireEvents>> {
+	private generate3DPolys(fireEvents: FireEvents, player: Player, table: Table): HitObject[] {
 
-		const hitObjects: Array<HitObject<FireEvents>> = [];
+		const hitObjects: HitObject[] = [];
 		const vVertex: RenderVertex[] = DragPoint.getRgVertex<RenderVertex>(this.data.dragPoints, () => new RenderVertex(), CatmullCurve2D.fromVertex2D as any);
 
 		const count = vVertex.length;
@@ -92,9 +92,9 @@ export class SurfaceHitGenerator {
 	 * Returns the hit line polygons for the surface.
 	 * @see Surface::AddLine
 	 */
-	private generateLinePolys(pv1: RenderVertex, pv2: RenderVertex, events: FireEvents, player: Player, table: Table): Array<HitObject<FireEvents>>  {
+	private generateLinePolys(pv1: RenderVertex, pv2: RenderVertex, events: FireEvents, player: Player, table: Table): HitObject[]  {
 
-		const linePolys: Array<HitObject<FireEvents>> = [];
+		const linePolys: HitObject[] = [];
 		const bottom = this.data.heightBottom + table.getTableHeight();
 		const top = this.data.heightTop + table.getTableHeight();
 
@@ -138,7 +138,7 @@ export class SurfaceHitGenerator {
 	 * Updates the hit object with parameters common to the surface.
 	 * @see Surface::SetupHitObject
 	 */
-	private updateCommonParameters(hitObjects: Array<HitObject<FireEvents>>, events: FireEvents, table: Table): Array<HitObject<FireEvents>> {
+	private updateCommonParameters(hitObjects: HitObject[], events: FireEvents, table: Table): HitObject[] {
 		const mat = table.getMaterial(this.data.szPhysicsMaterial);
 		for (const obj of hitObjects) {
 

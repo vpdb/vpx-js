@@ -40,9 +40,9 @@ export class RubberHitGenerator {
 		this.meshGenerator = meshGenerator;
 	}
 
-	public generateHitObjects(fireEvents: FireEvents, table: Table): Array<HitObject<FireEvents>> {
+	public generateHitObjects(fireEvents: FireEvents, table: Table): HitObject[] {
 
-		const hitObjects: Array<HitObject<FireEvents>> = [];
+		const hitObjects: HitObject[] = [];
 		const addedEdges: EdgeSet = new EdgeSet();
 		const mesh = this.meshGenerator.getMeshes(table, 6, true); //!! adapt hacky code in the function if changing the "6" here
 
@@ -71,7 +71,7 @@ export class RubberHitGenerator {
 		return this.updateCommonParameters(hitObjects, fireEvents, table);
 	}
 
-	private updateCommonParameters(hitObjects: Array<HitObject<FireEvents>>, fireEvents: FireEvents, table: Table): Array<HitObject<FireEvents>> {
+	private updateCommonParameters(hitObjects: HitObject[], fireEvents: FireEvents, table: Table): HitObject[] {
 		const mat = table.getMaterial(this.data.szPhysicsMaterial);
 		for (const obj of hitObjects) {
 			if (mat && !this.data.fOverwritePhysics) {
@@ -97,7 +97,7 @@ export class RubberHitGenerator {
 		return hitObjects;
 	}
 
-	private static generateHitEdge(mesh: Mesh, addedEdges: EdgeSet, i: number, j: number): Array<HitObject<FireEvents>> {
+	private static generateHitEdge(mesh: Mesh, addedEdges: EdgeSet, i: number, j: number): HitObject[] {
 		const v1 = new Vertex3D(mesh.vertices[i].x, mesh.vertices[i].y, mesh.vertices[i].z);
 		const v2 = new Vertex3D(mesh.vertices[j].x, mesh.vertices[j].y, mesh.vertices[j].z);
 		return addedEdges.addHitEdge(i, j, v1, v2);

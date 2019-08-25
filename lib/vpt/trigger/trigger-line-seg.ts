@@ -21,14 +21,14 @@ import { Vertex2D } from '../../math/vertex2d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { STATICTIME } from '../../physics/constants';
-import { FireEvent, FireEvents } from '../../physics/fire-events';
+import { FireEvent } from '../../physics/fire-events';
 import { HitTestResult } from '../../physics/hit-object';
 import { LineSeg } from '../../physics/line-seg';
 import { Ball } from '../ball/ball';
 import { TriggerAnimation } from './trigger-animation';
 import { TriggerData } from './trigger-data';
 
-export class TriggerLineSeg extends LineSeg<FireEvents> {
+export class TriggerLineSeg extends LineSeg {
 
 	private readonly data: TriggerData;
 	private readonly animation: TriggerAnimation;

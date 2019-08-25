@@ -45,7 +45,7 @@ export class Primitive implements IRenderable, IHittable, IScriptable<PrimitiveA
 	private readonly hitGenerator: PrimitiveHitGenerator;
 	private mesh?: Mesh;
 	private api?: PrimitiveApi;
-	private hits?: Array<HitObject<FireEvents>>;
+	private hits?: HitObject[];
 	private events?: FireEvents;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Primitive> {
@@ -99,7 +99,7 @@ export class Primitive implements IRenderable, IHittable, IScriptable<PrimitiveA
 		return this.api!;
 	}
 
-	public getHitShapes(): Array<HitObject<FireEvents>> {
+	public getHitShapes(): HitObject[] {
 		return this.hits!;
 	}
 

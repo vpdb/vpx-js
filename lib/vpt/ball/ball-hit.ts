@@ -21,7 +21,6 @@ import { Player } from '../../game/player';
 import { clamp, solveQuadraticEq } from '../../math/functions';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
-import { CollisionType } from '../../physics/collision-type';
 import {
 	C_CONTACTVEL,
 	C_DISP_GAIN,
@@ -47,7 +46,7 @@ import { BallState } from './ball-state';
  * In the VP source code this is all part of ball.cpp. We'll try
  * to separate this more and see how far we get.
  */
-export class BallHit extends HitObject<FireEvents> {
+export class BallHit extends HitObject {
 
 	public isFrozen: boolean;
 	public coll: CollisionEvent;

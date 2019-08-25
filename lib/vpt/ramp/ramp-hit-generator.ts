@@ -20,7 +20,6 @@
 import { Vertex2D } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
 import { HIT_SHAPE_DETAIL_LEVEL, PHYS_SKIN } from '../../physics/constants';
-import { FireEvents } from '../../physics/fire-events';
 import { HitLine3D } from '../../physics/hit-line-3d';
 import { HitLineZ } from '../../physics/hit-line-z';
 import { HitObject } from '../../physics/hit-object';
@@ -41,9 +40,9 @@ export class RampHitGenerator {
 		this.meshGenerator = meshGenerator;
 	}
 
-	public generateHitObjects(table: Table): Array<HitObject<FireEvents>> {
+	public generateHitObjects(table: Table): HitObject[] {
 
-		const hitObjects: Array<HitObject<FireEvents>> = [];
+		const hitObjects: HitObject[] = [];
 		const rv = this.meshGenerator.getRampVertex(table, HIT_SHAPE_DETAIL_LEVEL, true);
 		const rgvLocal = rv.rgvLocal;
 		const rgHeight1 = rv.ppheight;
@@ -89,7 +88,7 @@ export class RampHitGenerator {
 		let pv3: Vertex2D = new Vertex2D();
 		let pv4: Vertex2D = new Vertex2D();
 		let rgv3D: Vertex3D[];
-		let ph3dpoly: HitTriangle<FireEvents>;
+		let ph3dpoly: HitTriangle;
 
 		// Add line segments for right ramp wall.
 		if (wallHeightRight > 0) {
@@ -130,7 +129,7 @@ export class RampHitGenerator {
 		}
 
 		// Add hit triangles for the ramp floor.
-		let ph3dpolyOld!: HitTriangle<FireEvents>;
+		let ph3dpolyOld!: HitTriangle;
 
 		for (let i = 0; i < (cVertex - 1); i++) {
 			/*
@@ -235,8 +234,8 @@ export class RampHitGenerator {
 		return hitObjects;
 	}
 
-	private generateWallLineSeg(pv1: Vertex2D, pv2: Vertex2D, pv3Exists: boolean, height1: number, height2: number, wallHeight: number): Array<HitObject<FireEvents>> {
-		const hitObjects: Array<HitObject<FireEvents>> = [];
+	private generateWallLineSeg(pv1: Vertex2D, pv2: Vertex2D, pv3Exists: boolean, height1: number, height2: number, wallHeight: number): HitObject[] {
+		const hitObjects: HitObject[] = [];
 
 		//!! Hit-walls are still done via 2D line segments with only a single lower and upper border, so the wall will always reach below and above the actual ramp -between- two points of the ramp
 		// Thus, subdivide until at some point the approximation error is 'subtle' enough so that one will usually not notice (i.e. dependent on ball size)
@@ -253,7 +252,7 @@ export class RampHitGenerator {
 		return hitObjects;
 	}
 
-	private generateJoint2D(p: Vertex2D, zLow: number, zHigh: number): HitLineZ<FireEvents> {
+	private generateJoint2D(p: Vertex2D, zLow: number, zHigh: number): HitLineZ {
 		return new HitLineZ(p, zLow, zHigh);
 	}
 
@@ -261,7 +260,7 @@ export class RampHitGenerator {
 		return new HitLine3D(v1, v2);
 	}
 
-	private checkJoint(ph3d1: HitTriangle<FireEvents>, ph3d2: HitTriangle<FireEvents>): Array<HitObject<FireEvents>> {
+	private checkJoint(ph3d1: HitTriangle, ph3d2: HitTriangle): HitObject[] {
 		if (ph3d1) {   // may be null in case of degenerate triangles
 			const jointNormal = Vertex3D.crossProduct(ph3d1.normal, ph3d2.normal);
 			if (jointNormal.lengthSq() < 1e-8) { // coplanar triangles need no joints

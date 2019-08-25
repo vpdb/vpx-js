@@ -39,9 +39,9 @@ export class TriggerHitGenerator {
 		this.data = data;
 	}
 
-	public generateHitObjects(animation: TriggerAnimation, events: FireEvents, table: Table): Array<HitObject<FireEvents>> {
+	public generateHitObjects(animation: TriggerAnimation, events: FireEvents, table: Table): HitObject[] {
 
-		const hitObjects: Array<HitObject<FireEvents>> = [];
+		const hitObjects: HitObject[] = [];
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
 		const vVertex: RenderVertex[] = DragPoint.getRgVertex<RenderVertex>(this.data.dragPoints, () => new RenderVertex(), CatmullCurve2D.fromVertex2D as any);
 
@@ -60,7 +60,7 @@ export class TriggerHitGenerator {
 			hitObjects.push(this.getLineSeg(pv2, pv3, animation, events, height));
 		}
 
-		const ph3dpoly = new Hit3DPoly<FireEvents>(rgv3D, CollisionType.Trigger);
+		const ph3dpoly = new Hit3DPoly(rgv3D, CollisionType.Trigger);
 		ph3dpoly.obj = events;
 		hitObjects.push(ph3dpoly);
 

@@ -24,14 +24,14 @@ import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { FireEvent, FireEvents } from './fire-events';
 
-export abstract class HitObject<T extends FireEvents> {
+export abstract class HitObject {
 
 	/**
 	 * Base object pointer.
 	 *
 	 * Mainly used as IFireEvents, but also as HitTarget or Primitive or Trigger or Kicker or Gate.
 	 */
-	public obj?: T;
+	public obj?: FireEvents;
 
 	public threshold: number = 0;  // threshold for firing an event (usually (always??) normal dot ball-velocity)
 	public hitBBox: FRect3D = new FRect3D();

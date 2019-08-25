@@ -119,7 +119,7 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 		return this.hit!.getMoverObject();
 	}
 
-	public getHitShapes(): Array<HitObject<FireEvents>> {
+	public getHitShapes(): HitObject[] {
 		return [ this.hit! ];
 	}
 

@@ -19,7 +19,6 @@
 
 import { degToRad } from '../../math/float';
 import { Vertex2D } from '../../math/vertex2d';
-import { FireEvents } from '../../physics/fire-events';
 import { HitCircle } from '../../physics/hit-circle';
 import { SpinnerData } from './spinner-data';
 import { SpinnerState } from './spinner-state';
@@ -32,7 +31,7 @@ export class SpinnerHitGenerator {
 		this.data = data;
 	}
 
-	public getHitShapes(state: SpinnerState, height: number): Array<HitCircle<FireEvents>> {
+	public getHitShapes(state: SpinnerState, height: number): HitCircle[] {
 
 		const h = this.data.height + 30.0;
 

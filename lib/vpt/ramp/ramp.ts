@@ -24,7 +24,6 @@ import { Storage } from '../../io/ole-doc';
 import { f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex2D } from '../../math/vertex2d';
-import { FireEvents } from '../../physics/fire-events';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
 import { Mesh } from '../mesh';
@@ -54,7 +53,7 @@ export class Ramp implements IRenderable, IHittable {
 	private readonly meshGenerator: RampMeshGenerator;
 	private readonly hitGenerator: RampHitGenerator;
 
-	private hits?: Array<HitObject<FireEvents>>;
+	private hits?: HitObject[];
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Ramp> {
 		const data = await RampData.fromStorage(storage, itemName);
@@ -83,7 +82,7 @@ export class Ramp implements IRenderable, IHittable {
 		this.hits = this.hitGenerator.generateHitObjects(table);
 	}
 
-	public getHitShapes(): Array<HitObject<FireEvents>> {
+	public getHitShapes(): HitObject[] {
 		return this.hits!;
 	}
 

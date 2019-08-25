@@ -23,10 +23,10 @@ import { Surface } from '../vpt/surface/surface';
 import { SurfaceData } from '../vpt/surface/surface-data';
 import { SlingshotAnimObject } from './anim-slingshot';
 import { CollisionEvent } from './collision-event';
-import { FireEvent, FireEvents } from './fire-events';
+import { FireEvent } from './fire-events';
 import { LineSeg } from './line-seg';
 
-export class LineSegSlingshot extends LineSeg<FireEvents> {
+export class LineSegSlingshot extends LineSeg {
 
 	private readonly player: Player;
 	private readonly surface: Surface;
