@@ -34,8 +34,8 @@ ConstNameValue       -> ExtendedID _ "=" _ ConstExprDef
 OtherConstantsOpt    -> "," _ ConstNameValue                          {% data => data[2] %}
 
 ConstExprDef         -> "(" _ ConstExprDef _ ")"
-                      | "-" __ ConstExprDef
-                      | "+" __ ConstExprDef
+                      | "-" ConstExprDef                              {% data => estree.unaryExpression(data[0], data[1]) %}
+                      | "+" ConstExprDef                              {% data => estree.unaryExpression(data[0], data[1]) %}
                       | ConstExpr                                     {% id %}
 
 AccessModifierOpt    -> "Public"                                      {% id %}
@@ -45,7 +45,7 @@ AccessModifierOpt    -> "Public"                                      {% id %}
 # Rules : Statements
 #===============================
 
-GlobalStmt           -> OptionExplicit
+GlobalStmt           -> OptionExplicit                                {% id %}
                       | ConstDecl                                     {% id %}
                       | BlockStmt                                     {% id %}
 
@@ -54,7 +54,7 @@ BlockStmt            -> VarDecl                                       {% id %}
 
 InlineStmt           -> SubCallStmt                                   {% id %}
 
-OptionExplicit       -> "Option" __ "Explicit" NL
+OptionExplicit       -> "Option" __ "Explicit" NL                           {% pp.optionExplicit %}
 
 SubCallStmt          -> QualifiedID __ SubSafeExprOpt _ CommaExprList:*     {% pp.subCallStmt %}
 #                      | QualifiedID "(" ")"

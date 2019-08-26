@@ -25,6 +25,24 @@ import * as estree from './estree'; // use the namespace to avoid clashes
 /**
  * Grammar:
  * ```
+ * OptionExplicit -> "Option" __ "Explicit" NL
+ * ```
+ * Example: `Option Explicit\n`
+ * Result: `"Option",null,"Explicit",[[["\n"]]]`
+ */
+export function optionExplicit(result: [ string, null, string ]) {
+	const option = result[0];
+	const explicit = result[2];
+
+	return estree.emptyStatement(
+		[],
+		[ estree.comment('Block', ' ' + option + ' ' + explicit + ' ') ],
+	);
+}
+
+/**
+ * Grammar:
+ * ```
  * VarDecl -> "Dim" __ VarName OtherVarsOpt:* NL
  * ```
  * Example: `Dim test1, test2, test3\n`

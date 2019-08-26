@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { generate } from 'astring';
+import { generate } from 'escodegen';
 import { Grammar, Parser } from 'nearley';
 import * as vbsGrammar from './vbscript';
 
@@ -31,5 +31,8 @@ export function vbsToJs(vbs: string): string {
 	if (parser.results.length === 0) {
 		throw new Error('Parser returned no results.');
 	}
-	return generate(parser.results[0]);
+
+	return generate(parser.results[0], {
+		comment: true,
+	});
 }
