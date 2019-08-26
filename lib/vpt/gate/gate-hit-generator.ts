@@ -17,9 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '../..';
 import { EventProxy } from '../../game/event-proxy';
-import { degToRad } from '../../math/float';
 import { Vertex2D } from '../../math/vertex2d';
 import { PHYS_SKIN } from '../../physics/constants';
 import { HitCircle } from '../../physics/hit-circle';
