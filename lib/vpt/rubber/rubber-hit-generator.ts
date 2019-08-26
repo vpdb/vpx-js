@@ -19,7 +19,6 @@
 
 import { EventProxy } from '../../game/event-proxy';
 import { EdgeSet } from '../../math/edge-set';
-import { degToRad } from '../../math/float';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionType } from '../../physics/collision-type';
 import { HitObject } from '../../physics/hit-object';
