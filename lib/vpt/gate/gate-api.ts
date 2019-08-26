@@ -18,7 +18,7 @@
  */
 
 import { Player } from '../../game/player';
-import { degToRad } from '../../math/float';
+import { degToRad, radToDeg } from '../../math/float';
 import { clamp } from '../../math/functions';
 import { PHYS_FACTOR } from '../../physics/constants';
 import { LineSeg } from '../../physics/line-seg';
@@ -76,9 +76,9 @@ export class GateApi extends ItemApi {
 	set Elasticity(v) { this.data.elasticity = v; }
 	get ShowBracket() { return this.data.showBracket; }
 	set ShowBracket(v) { this.data.showBracket = v; }
-	get CloseAngle() { return this.mover.angleMin; }
+	get CloseAngle() { return radToDeg(this.mover.angleMin); }
 	set CloseAngle(v) { this.setCloseAngle(v); }
-	get OpenAngle() { return this.mover.angleMax; }
+	get OpenAngle() { return radToDeg(this.mover.angleMax); }
 	set OpenAngle(v) { this.setOpenAngle(v); }
 	get Collidable() { return this.hitGate.isEnabled; }
 	set Collidable(v) { this.setCollidable(v); }
@@ -146,33 +146,36 @@ export class GateApi extends ItemApi {
 		}
 	}
 
-	private setOpenAngle(newVal: number): void {
+	private setOpenAngle(angleDeg: number): void {
 		if (this.data.isCollidable) {
 			throw new Error("Gate is collidable! open angles other than 90 aren't possible!");
-		} else {
-			newVal = degToRad(newVal);
 		}
-		if (newVal > this.data.angleMax) {
-			newVal = this.data.angleMax;
-		} else if (newVal < this.data.angleMin) {
-			newVal = this.data.angleMin;
+		let angle = degToRad(angleDeg);
+
+		if (angle > this.data.angleMax) {
+			angle = this.data.angleMax;
+
+		} else if (angle < this.data.angleMin) {
+			angle = this.data.angleMin;
 		}
-		if (this.mover.angleMin < newVal) {      // min is smaller
-			this.mover.angleMax = newVal;
+
+		if (this.mover.angleMin < angle) {      // min is smaller
+			this.mover.angleMax = angle;
 		} else {
-			this.mover.angleMin = newVal;        // else set new min
+			this.mover.angleMin = angle;        // else set new min
 		}
 	}
 
-	private setCollidable(newVal: boolean): void {
-		this.hitGate.isEnabled = newVal;
+	private setCollidable(isCollidable: boolean): void {
+		this.data.isCollidable = isCollidable;
+		this.hitGate.isEnabled = isCollidable;
 		if (this.hitLine) {
-			this.hitLine.isEnabled = newVal;
+			this.hitLine.isEnabled = isCollidable;
 		}
 		this.mover.angleMax = this.data.angleMax;
 		this.mover.angleMin = this.data.angleMin;
 
-		if (newVal) {
+		if (isCollidable) {
 			this.mover.angleMin = 0;
 		}
 	}
