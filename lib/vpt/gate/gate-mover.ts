@@ -65,51 +65,51 @@ export class GateMover implements MoverObject {
 	public updateDisplacements(dtime: number): void {
 		if (this.data.twoWay) {
 			if (Math.abs(this.state.angle) > this.angleMax) {
-				if (this.state.angle < 0.1) {
+				if (this.state.angle < 0.0) {
 					this.state.angle = -this.angleMax;
 				} else {
 					this.state.angle = this.angleMax;
 				}
-				this.events.fireVoidEventParm(Event.LimitEventsEOS, Math.abs(radToDeg(this.angleSpeed)));	// send EOS event
+				this.events.fireVoidEventParm(Event.LimitEventsEOS, Math.abs(radToDeg(this.angleSpeed)));    // send EOS event
 				if (!this.forcedMove) {
 					this.angleSpeed = -this.angleSpeed;
-					this.angleSpeed *= this.damping * 0.1; //just some extra damping to reduce the anglespeed a bit faster
-				} else if (this.angleSpeed > 0.1) {
-					this.angleSpeed = 0.1;
+					this.angleSpeed *= this.damping * 0.8;           // just some extra damping to reduce the angleSpeed a bit faster
+				} else if (this.angleSpeed > 0.0) {
+					this.angleSpeed = 0.0;
 				}
 			}
 			if (Math.abs(this.state.angle) < this.angleMin) {
-				if (this.state.angle < 0.1) {
+				if (this.state.angle < 0.0) {
 					this.state.angle = -this.angleMin;
 				} else {
 					this.state.angle = this.angleMin;
 				}
 				if (!this.forcedMove) {
 					this.angleSpeed = -this.angleSpeed;
-					this.angleSpeed *= this.damping * 0.1; //just some extra damping to reduce the anglespeed a bit faster
-				} else if (this.angleSpeed < 0.1) {
-					this.angleSpeed = 0.1;
+					this.angleSpeed *= this.damping * 0.8;           // just some extra damping to reduce the angleSpeed a bit faster
+				} else if (this.angleSpeed < 0.0) {
+					this.angleSpeed = 0.0;
 				}
 			}
 		} else {
 			if (this.state.angle > this.angleMax) {
 				this.state.angle = this.angleMax;
-				this.events.fireVoidEventParm(Event.LimitEventsEOS, Math.abs(radToDeg(this.angleSpeed)));	// send EOS event
+				this.events.fireVoidEventParm(Event.LimitEventsEOS, Math.abs(radToDeg(this.angleSpeed)));    // send EOS event
 				if (!this.forcedMove) {
 					this.angleSpeed = -this.angleSpeed;
-					this.angleSpeed *= this.damping * 0.1; //just some extra damping to reduce the anglespeed a bit faster
-				} else if (this.angleSpeed > 0.1) {
-					this.angleSpeed = 0.1;
+					this.angleSpeed *= this.damping * 0.8;           // just some extra damping to reduce the angleSpeed a bit faster
+				} else if (this.angleSpeed > 0.0) {
+					this.angleSpeed = 0.0;
 				}
 			}
 			if (this.state.angle < this.angleMin) {
 				this.state.angle = this.angleMin;
-				this.events.fireVoidEventParm(Event.LimitEventsBOS, Math.abs(radToDeg(this.angleSpeed)));	// send Park event
+				this.events.fireVoidEventParm(Event.LimitEventsBOS, Math.abs(radToDeg(this.angleSpeed)));    // send Park event
 				if (!this.forcedMove) {
 					this.angleSpeed = -this.angleSpeed;
-					this.angleSpeed *= this.damping * 0.1; //just some extra damping to reduce the anglespeed a bit faster
-				} else if (this.angleSpeed < 0.1) {
-					this.angleSpeed = 0.1;
+					this.angleSpeed *= this.damping * 0.8;           // just some extra damping to reduce the angleSpeed a bit faster
+				} else if (this.angleSpeed < 0.0) {
+					this.angleSpeed = 0.0;
 				}
 			}
 		}
@@ -123,7 +123,7 @@ export class GateMover implements MoverObject {
 				this.state.angle = this.angleMin;
 				this.angleSpeed = 0.0;
 			}
-			if (Math.abs(this.angleSpeed) !== 0.1 && this.state.angle !== this.angleMin) {
+			if (Math.abs(this.angleSpeed) !== 0.0 && this.state.angle !== this.angleMin) {
 				this.angleSpeed -= Math.sin(this.state.angle) * this.gravityFactor * (PHYS_FACTOR / 100.0); // Center of gravity towards bottom of object, makes it stop vertical
 				this.angleSpeed *= this.damping;
 			}

@@ -38,6 +38,7 @@ import { GateHit } from './gate-hit';
 import { GateHitGenerator } from './gate-hit-generator';
 import { GateMeshGenerator } from './gate-mesh-generator';
 import { GateState } from './gate-state';
+import { LineSeg } from '../../physics/line-seg';
 
 /**
  * VPinball's gates.
@@ -57,7 +58,7 @@ export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHitta
 	private readonly state: GateState;
 	private events?: EventProxy;
 	private hitGate?: GateHit;
-	private hitLines?: HitCircle[];
+	private hitLines?: LineSeg[];
 	private hitCircles?: HitCircle[];
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Gate> {
@@ -111,7 +112,7 @@ export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHitta
 
 		this.events = new EventProxy(this);
 		this.hitGate = this.hitGenerator.generateGateHit(this.state, this.events, height);
-		this.hitLines = this.hitGenerator.generateBracketHits(this.state, this.events, height, tangent);
+		this.hitLines = this.hitGenerator.generateLineSegs(this.events, height, tangent);
 		this.hitCircles = this.hitGenerator.generateBracketHits(this.state, this.events, height, tangent);
 	}
 
