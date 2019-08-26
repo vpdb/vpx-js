@@ -36,7 +36,6 @@
 	"author": "freezy <freezy@vpdb.io>",
 	"license": "GPL-2.0",
 	"dependencies": {
-		"@types/escodegen": "0.0.6",
 		"buffer": "5.4.0",
 		"es6-promise-pool": "^2.5.0",
 		"escodegen": "^1.12.0",
@@ -49,6 +48,7 @@
 	},
 	"devDependencies": {
 		"@types/chai": "4.2.0",
+		"@types/escodegen": "0.0.6",
 		"@types/estree": "0.0.39",
 		"@types/gm": "1.18.4",
 		"@types/microtime": "2.1.0",
