@@ -89,7 +89,7 @@ describe('The VPinball gate mover', () => {
 		expect(gate.getState().angle).to.equal(0);
 	});
 
-	it('should make the gate bracket gate bracket move and stand still', () => {
+	it('should make the gate one-way gate bracket move and stand still', () => {
 
 		const gate = table.gates.WireRectangle;
 
