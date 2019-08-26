@@ -30,20 +30,20 @@ export class GateData extends ItemData {
 	public damping: number = 0.985;
 	public elasticity: number = 0.3;
 	public friction: number = 0.02;
-	public gravityFactor: number = 0.25;
-	public isCollidable: boolean = true;
-	private isReflectionEnabled: boolean = true;
-	public twoWay: boolean = false;
-	private wzName!: string;
 	public gateType: number = Gate.TypeGateWireW;
+	public gravityFactor: number = 0.25;
 	public height: number = 50;
+	public isCollidable: boolean = true;
+	public isReflectionEnabled: boolean = true;
 	public isVisible: boolean = true;
 	public length: number = 100;
 	public rotation: number = -90;
 	public showBracket: boolean = true;
 	public szMaterial?: string;
 	public szSurface?: string;
+	public twoWay: boolean = false;
 	public vCenter!: Vertex2D;
+	public wzName!: string;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<GateData> {
 		const gateData = new GateData(itemName);

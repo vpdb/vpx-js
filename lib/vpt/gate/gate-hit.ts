@@ -34,8 +34,8 @@ import { GateState } from './gate-state';
 export class GateHit extends HitObject {
 
 	public readonly mover: GateMover;
+	public readonly lineSeg: LineSeg[] = [];
 	private readonly data: GateData;
-	private readonly lineSeg: LineSeg[] = [];
 
 	public twoWay: boolean = false;
 
