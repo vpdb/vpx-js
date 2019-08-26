@@ -23,6 +23,8 @@ import {
 	EmptyStatement,
 	Expression,
 	ExpressionStatement,
+	FunctionDeclaration,
+	Identifier,
 	Literal,
 	Program,
 	SpreadElement,
@@ -45,6 +47,13 @@ export function emptyStatement(leadingComments: Comment[] = [], trailingComments
 		type: 'EmptyStatement',
 		leadingComments,
 		trailingComments,
+	};
+}
+
+export function identifier(name: string): Identifier {
+	return {
+		type: 'Identifier',
+		name,
 	};
 }
 
@@ -72,22 +81,16 @@ export function program(data: Statement[]): Program {
 	};
 }
 
-export function memberExpression(obj: string, property: string) {
+export function memberExpression(object: Identifier, property: Identifier) {
 	return {
 		type: 'MemberExpression',
-		object: {
-			type: 'Identifier',
-			name: obj,
-		},
-		property: {
-			type: 'Identifier',
-			name: property,
-		},
+		object,
+		property,
 		computed: false,
 	};
 }
 
-export function variableDeclaration(kind: 'var' | 'let' | 'const', nameValues: Array<[ string, Expression | null ]>): VariableDeclaration {
+export function variableDeclaration(kind: 'var' | 'let' | 'const', nameValues: Array<[ Identifier, Expression | null ]>): VariableDeclaration {
 	return {
 		type: 'VariableDeclaration',
 		kind,
@@ -95,10 +98,23 @@ export function variableDeclaration(kind: 'var' | 'let' | 'const', nameValues: A
 	};
 }
 
-export function variableDeclarator(name: string, init: Expression | null): VariableDeclarator {
+export function functionDeclaration(id: Identifier, params: Identifier[], statements: Statement[]): FunctionDeclaration {
+	return {
+		type: 'FunctionDeclaration',
+		id,
+		generator: false,
+		params,
+		body: {
+			type: 'BlockStatement',
+			body: statements,
+		},
+	};
+}
+
+export function variableDeclarator(id: Identifier, init: Expression | null): VariableDeclarator {
 	return {
 		type: 'VariableDeclarator',
-		id: { type: 'Identifier', name },
+		id,
 		init,
 	};
 }

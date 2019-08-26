@@ -21,7 +21,7 @@ VarDecl              -> "Dim" __ VarName OtherVarsOpt:* NL            {% pp.varD
 
 VarName              -> ExtendedID ("(" ArrayRankList ")"):?          {% id %}
 
-OtherVarsOpt         -> "," __ VarName                                {% data => data[2] %}
+OtherVarsOpt         -> "," _ VarName                                 {% data => data[2] %}
 
 ArrayRankList        -> IntLiteral _ "," _ ArrayRankList
                       | IntLiteral
@@ -38,8 +38,29 @@ ConstExprDef         -> "(" _ ConstExprDef _ ")"
                       | "+" ConstExprDef                              {% data => estree.unaryExpression(data[0], data[1]) %}
                       | ConstExpr                                     {% id %}
 
+SubDecl              -> "Sub" __ ExtendedID MethodArg:* NL MethodStmt:* _ "End" __ "Sub" NL                        {% pp.subDecl %}
+                      | "Sub" __ ExtendedID MethodArg:* InlineStmt "End" __ "Sub" NL                             
+                      | MethodAccessOpt __ "Sub" __ ExtendedID MethodArg:* NL MethodStmt:* "End" __ "Sub" NL     
+                      | MethodAccessOpt __ "Sub" __ ExtendedID MethodArg:* InlineStmt "End" __ "Sub" NL          
+
+MethodAccessOpt      -> "Public" __ "Default"
+                      | AccessModifierOpt
+
 AccessModifierOpt    -> "Public"                                      {% id %}
                       | "Private"                                     {% id %}
+
+MethodArg            -> "(" _ Arg OtherArgsOpt:* _ ")"                {% data => [data[2], data[3]] %}      
+                      | "(" ")"                                       {% data => [] %}
+
+OtherArgsOpt         -> "," _ Arg                                     {% data => data[2] %}
+
+Arg                  -> ArgModifierOpt __ ExtendedID "(" ")"
+                      | ArgModifierOpt __ ExtendedID
+                      | ExtendedID "(" ")"
+                      | ExtendedID                                    {% id %}
+
+ArgModifierOpt       -> "ByVal"
+                      | "ByRef"
 
 #===============================
 # Rules : Statements
@@ -47,10 +68,14 @@ AccessModifierOpt    -> "Public"                                      {% id %}
 
 GlobalStmt           -> OptionExplicit                                {% id %}
                       | ConstDecl                                     {% id %}
+                      | SubDecl                                       {% id %}
                       | BlockStmt                                     {% id %}
 
+MethodStmt           -> ConstDecl                                     {% id %}
+                      | _ BlockStmt                                   {% data => data[1] %} 
+
 BlockStmt            -> VarDecl                                       {% id %}
-                      | InlineStmt NL                                 {% id %}
+                      | _ InlineStmt NL                               {% data => data[1] %}
 
 InlineStmt           -> SubCallStmt                                   {% id %}
 
@@ -77,7 +102,7 @@ SafeKeywordID        -> "Default"
                       | "Property"
                       | "Step"
 
-ExtendedID           -> SafeKeywordID                                 {% id %}
+ExtendedID           -> SafeKeywordID
                       | ID                                            {% id %}
 
 NLOpt                -> NL:*
@@ -118,10 +143,10 @@ Nothing              -> "Nothing"                                     {% id %}
 # Terminals
 #===============================
 
-ID                   -> Letter IDTail                                 {% data => data[0] + data[1] %}
+ID                   -> Letter IDTail                                 {% data => estree.identifier(data[0] + data[1]) %}
                       | "[" IDNameChar:* "]"
 
-IDDot                -> Letter IDTail "."                             {% data => data[0] + data[1] %}
+IDDot                -> Letter IDTail "."                             {% data => estree.identifier(data[0] + data[1]) %}
 
 NL                   -> NewLine NL
                       | NewLine
