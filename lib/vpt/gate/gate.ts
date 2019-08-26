@@ -39,13 +39,16 @@ import { GateHitGenerator } from './gate-hit-generator';
 import { GateMeshGenerator } from './gate-mesh-generator';
 import { GateState } from './gate-state';
 import { LineSeg } from '../../physics/line-seg';
+import { IScriptable } from '../../game/iscriptable';
+import { GateApi } from './gate-api';
+import { GateMover } from './gate-mover';
 
 /**
  * VPinball's gates.
  *
  * @see https://github.com/vpinball/vpinball/blob/master/gate.cpp
  */
-export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHittable {
+export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHittable, IScriptable<GateApi> {
 
 	public static TypeGateWireW = 1;
 	public static TypeGateWireRectangle = 2;
@@ -57,6 +60,7 @@ export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHitta
 	private readonly hitGenerator: GateHitGenerator;
 	private readonly state: GateState;
 	private events?: EventProxy;
+	private api?: GateApi;
 	private hitGate?: GateHit;
 	private hitLines?: LineSeg[];
 	private hitCircles?: HitCircle[];
@@ -114,13 +118,14 @@ export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHitta
 		this.hitGate = this.hitGenerator.generateGateHit(this.state, this.events, height);
 		this.hitLines = this.hitGenerator.generateLineSegs(this.events, height, tangent);
 		this.hitCircles = this.hitGenerator.generateBracketHits(this.state, this.events, height, tangent);
+		this.api = new GateApi(this.data, this.state, this.getMover(), this.hitGate, this.hitLines.length ? this.hitLines[0] : null, player, table);
 	}
 
 	public getHitShapes(): HitObject[] {
 		return [this.hitGate!, ...this.hitLines!, ...this.hitCircles!];
 	}
 
-	public getMover(): MoverObject {
+	public getMover(): GateMover {
 		return this.hitGate!.getMoverObject();
 	}
 

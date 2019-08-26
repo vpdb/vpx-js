@@ -33,14 +33,14 @@ export class GateMover implements MoverObject {
 	private readonly events: EventProxy;
 
 	public angleSpeed: number;
-	private angleMin: number;
-	private angleMax: number;
-	private friction: number;
-	private damping: number;
-	private gravityFactor: number;
-	private visible: boolean;
-	private open: boolean;       // True if the table logic is opening the gate, not just the ball passing through
-	private forcedMove: boolean; // True if the table logic is opening/closing the gate
+	public angleMin: number;
+	public angleMax: number;
+	public friction: number;
+	public damping: number;
+	public gravityFactor: number;
+	public isVisible: boolean;
+	public open: boolean;       // True if the table logic is opening the gate, not just the ball passing through
+	public forcedMove: boolean; // True if the table logic is opening/closing the gate
 
 	constructor(data: GateData, state: GateState, events: EventProxy) {
 		this.data = data;
@@ -51,7 +51,7 @@ export class GateMover implements MoverObject {
 		this.angleMax = this.data.angleMax;
 
 		this.friction = this.data.friction;
-		this.visible = this.data.isVisible;
+		this.isVisible = this.data.isVisible;
 
 		this.state.angle = this.angleMin;
 		this.angleSpeed = 0.0;
