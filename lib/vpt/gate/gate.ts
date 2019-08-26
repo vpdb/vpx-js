@@ -23,6 +23,7 @@ import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
+import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { degToRad } from '../../math/float';
@@ -30,18 +31,16 @@ import { Matrix3D } from '../../math/matrix3d';
 import { Vertex2D } from '../../math/vertex2d';
 import { HitCircle } from '../../physics/hit-circle';
 import { HitObject } from '../../physics/hit-object';
-import { MoverObject } from '../../physics/mover-object';
+import { LineSeg } from '../../physics/line-seg';
 import { Meshes } from '../item-data';
 import { Table } from '../table/table';
+import { GateApi } from './gate-api';
 import { GateData } from './gate-data';
 import { GateHit } from './gate-hit';
 import { GateHitGenerator } from './gate-hit-generator';
 import { GateMeshGenerator } from './gate-mesh-generator';
-import { GateState } from './gate-state';
-import { LineSeg } from '../../physics/line-seg';
-import { IScriptable } from '../../game/iscriptable';
-import { GateApi } from './gate-api';
 import { GateMover } from './gate-mover';
+import { GateState } from './gate-state';
 
 /**
  * VPinball's gates.
@@ -131,6 +130,10 @@ export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHitta
 
 	public getState(): GateState {
 		return this.state;
+	}
+
+	public getApi(): GateApi {
+		return this.api!;
 	}
 
 	public applyState(obj: Object3D, table: Table, player: Player, oldState: GateState): void {
