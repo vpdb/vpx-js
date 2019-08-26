@@ -19,10 +19,10 @@
 
 import {
 	CallExpression,
+	Comment,
 	EmptyStatement,
 	Expression,
 	ExpressionStatement,
-	Identifier,
 	Literal,
 	Program,
 	SpreadElement,
@@ -33,9 +33,18 @@ import {
 	VariableDeclarator,
 } from 'estree';
 
-export function emptyStatement(): EmptyStatement {
+export function comment(type: 'Line' | 'Block', value: string): Comment {
+	return {
+		type,
+		value,
+	};
+}
+
+export function emptyStatement(leadingComments: Comment[] = [], trailingComments: Comment[] = []): EmptyStatement {
 	return {
 		type: 'EmptyStatement',
+		leadingComments,
+		trailingComments,
 	};
 }
 
