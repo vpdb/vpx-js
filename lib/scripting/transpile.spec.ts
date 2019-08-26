@@ -62,4 +62,16 @@ describe('The VBScript transpiler', () => {
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('BallRelease.KickBall(0, -2);');
 	});
+
+	it('should transpile a sub declaration without params', () => {
+		const vbs = `Sub BallRelease_Hit()\n    BallRelease.CreateBall\nEnd Sub\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('function BallRelease_Hit() {\n    BallRelease.CreateBall();\n}');
+	});
+
+	it('should transpile a sub declaration with params', () => {
+		const vbs = `Sub BallRelease_Hit(value1, value2, value3)\n    BallRelease.CreateBall\nEnd Sub\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('function BallRelease_Hit(value1, value2, value3) {\n    BallRelease.CreateBall();\n}');
+	});
 });
