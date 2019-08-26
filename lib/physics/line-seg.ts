@@ -27,8 +27,8 @@ import { HitObject, HitTestResult } from './hit-object';
 
 export class LineSeg extends HitObject {
 
-	protected readonly v1: Vertex2D;
-	protected readonly v2: Vertex2D;
+	public readonly v1: Vertex2D;
+	public readonly v2: Vertex2D;
 	protected normal!: Vertex2D;
 	protected length!: number;
 

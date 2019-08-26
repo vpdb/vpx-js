@@ -25,27 +25,25 @@ import { Gate } from './gate';
 
 export class GateData extends ItemData {
 
-	public gateType: number = Gate.TypeGateWireW;
-	public vCenter!: Vertex2D;
-	public length: number = 100;
-	public height: number = 50;
-	public rotation: number = -90;
-	public szMaterial?: string;
-	private fTimerEnabled?: boolean;
-	public fShowBracket: boolean = true;
-	private fCollidable: boolean = true;
-	private twoWay: boolean = false;
-	public fVisible: boolean = true;
-	private fReflectionEnabled: boolean = true;
-	private TimerInterval?: number;
-	public szSurface?: string;
+	public angleMax: number = Math.PI / 2.0;
+	public angleMin: number = 0;
+	public damping: number = 0.985;
+	public elasticity: number = 0.3;
+	public friction: number = 0.02;
+	public gravityFactor: number = 0.25;
+	public isCollidable: boolean = true;
+	private isReflectionEnabled: boolean = true;
+	public twoWay: boolean = false;
 	private wzName!: string;
-	private elasticity?: number;
-	private angleMax: number = Math.PI / 2.0;
-	private angleMin: number = 0;
-	private friction?: number;
-	private damping?: number;
-	private gravityfactor?: number;
+	public gateType: number = Gate.TypeGateWireW;
+	public height: number = 50;
+	public isVisible: boolean = true;
+	public length: number = 100;
+	public rotation: number = -90;
+	public showBracket: boolean = true;
+	public szMaterial?: string;
+	public szSurface?: string;
+	public vCenter!: Vertex2D;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<GateData> {
 		const gateData = new GateData(itemName);
@@ -75,11 +73,11 @@ export class GateData extends ItemData {
 			case 'HGTH': this.height = this.getFloat(buffer); break;
 			case 'ROTA': this.rotation = this.getFloat(buffer); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
-			case 'GSUP': this.fShowBracket = this.getBool(buffer); break;
-			case 'GCOL': this.fCollidable = this.getBool(buffer); break;
+			case 'GSUP': this.showBracket = this.getBool(buffer); break;
+			case 'GCOL': this.isCollidable = this.getBool(buffer); break;
 			case 'TWWA': this.twoWay = this.getBool(buffer); break;
-			case 'GVSB': this.fVisible = this.getBool(buffer); break;
-			case 'REEN': this.fReflectionEnabled = this.getBool(buffer); break;
+			case 'GVSB': this.isVisible = this.getBool(buffer); break;
+			case 'REEN': this.isReflectionEnabled = this.getBool(buffer); break;
 			case 'SURF': this.szSurface = this.getString(buffer, len); break;
 			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			case 'ELAS': this.elasticity = this.getFloat(buffer); break;
@@ -87,7 +85,7 @@ export class GateData extends ItemData {
 			case 'GAMI': this.angleMin = this.getFloat(buffer); break;
 			case 'GFRC': this.friction = this.getFloat(buffer); break;
 			case 'AFRC': this.damping = this.getFloat(buffer); break;
-			case 'GGFC': this.gravityfactor = this.getFloat(buffer); break;
+			case 'GGFC': this.gravityFactor = this.getFloat(buffer); break;
 			default:
 				this.getUnknownBlock(buffer, tag);
 				break;

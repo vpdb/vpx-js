@@ -43,7 +43,7 @@ export class GateMeshGenerator {
 	public getMeshes(table: Table): GateMesh {
 		const baseHeight = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
 
-		if (this.data.fShowBracket) {
+		if (this.data.showBracket) {
 			return {
 				wire: this.positionMesh(this.getBaseMesh(), table, baseHeight),
 				bracket: this.positionMesh(gateBracketMesh.clone(`gate.bracket-${this.data.getName()}`), table, baseHeight),
