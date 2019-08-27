@@ -25,13 +25,18 @@ import { Meshes } from '../item-data';
 import { Table } from '../table/table';
 import { HitTargetData } from './hit-target-data';
 import { HitTargetMeshGenerator } from './hit-target-mesh-generator';
+import { IHittable } from '../../game/ihittable';
+import { HitTargetHitGenerator } from './hit-target-hit-generator';
+import { Player } from '../../game/player';
+import { EventProxy } from '../../game/event-proxy';
+import { HitObject } from '../../physics/hit-object';
 
 /**
  * VPinball's hit- and drop targets.
  *
  * @see https://github.com/vpinball/vpinball/blob/master/hittarget.cpp
  */
-export class HitTarget implements IRenderable {
+export class HitTarget implements IRenderable, IHittable {
 
 	public static TypeDropTargetBeveled = 1;
 	public static TypeDropTargetSimple = 2;
@@ -47,6 +52,9 @@ export class HitTarget implements IRenderable {
 
 	private readonly data: HitTargetData;
 	private readonly meshGenerator: HitTargetMeshGenerator;
+	private readonly hitGenerator: HitTargetHitGenerator;
+	private events?: EventProxy;
+	private hits?: HitObject[];
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<HitTarget> {
 		const data = await HitTargetData.fromStorage(storage, itemName);
@@ -56,6 +64,7 @@ export class HitTarget implements IRenderable {
 	private constructor(data: HitTargetData) {
 		this.data = data;
 		this.meshGenerator = new HitTargetMeshGenerator(data);
+		this.hitGenerator = new HitTargetHitGenerator(data, this.meshGenerator);
 	}
 
 	public getName() {
@@ -63,7 +72,11 @@ export class HitTarget implements IRenderable {
 	}
 
 	public isVisible(): boolean {
-		return this.data.fVisible;
+		return this.data.isVisible;
+	}
+
+	public isCollidable(): boolean {
+		return this.data.isCollidable;
 	}
 
 	public getMeshes(table: Table): Meshes {
@@ -74,5 +87,14 @@ export class HitTarget implements IRenderable {
 				material: table.getMaterial(this.data.szMaterial),
 			},
 		};
+	}
+
+	public setupPlayer(player: Player, table: Table): void {
+		this.events = new EventProxy(this);
+		this.hits = this.hitGenerator.generateHitObjects(this.events, table);
+	}
+
+	public getHitShapes(): HitObject[] {
+		return this.hits!;
 	}
 }
