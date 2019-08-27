@@ -148,15 +148,9 @@ export class HitTriangle extends HitObject {
 
 		ball.hit.collide3DWall(this.normal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
-		if (this.obj && this.fe && dot >= this.threshold) {
-			if (this.objType === CollisionType.Primitive) {
-				this.obj.currentHitThreshold = dot;
-				this.fireHitEvent(ball);
-			}
-
-			if (this.obj.onCollision) {                          // manages (HitTarget*)m_obj)->m_d.m_isDropped == false
-				this.obj.onCollision(this, ball, dot);
-			}
+		// manage item-specific logic
+		if (this.obj && this.fe && dot >= this.threshold && this.obj.onCollision) {
+			this.obj.onCollision(this, ball, dot);
 		}
 	}
 

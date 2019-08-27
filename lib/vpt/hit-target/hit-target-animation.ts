@@ -34,9 +34,9 @@ export class HitTargetAnimation implements IAnimation {
 
 	public timeStamp = 0;
 	public hitEvent = false;
+	public moveDown = true;
+	public moveAnimation = false;
 	private timeMsec = 0;
-	private moveDown = true;
-	private moveAnimation = false;
 
 	constructor(data: HitTargetData, state: HitTargetState, events: EventProxy) {
 		this.data = data;
