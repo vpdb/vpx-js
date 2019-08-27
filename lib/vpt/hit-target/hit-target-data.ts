@@ -20,38 +20,36 @@
 import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
 import { Vertex3D } from '../../math/vertex3d';
-import { ItemData } from '../item-data';
+import { IPhysicalData, ItemData } from '../item-data';
 import { HitTarget } from './hit-target';
 
-export class HitTargetData extends ItemData {
+export class HitTargetData extends ItemData implements IPhysicalData {
 
-	public vPosition!: Vertex3D;
-	public vSize: Vertex3D = new Vertex3D(32, 32, 32);
-	public rotZ: number = 0;
-	public szImage?: string;
-	public targetType: number = HitTarget.TypeDropTargetSimple;
-	private wzName!: string;
-	public szMaterial?: string;
-	public fVisible: boolean = true;
-	private legacy: boolean = false;
-	public isDropped: boolean = false;
-	private dropSpeed: number =  0.5;
-	private fReflectionEnabled: boolean = true;
-	private fUseHitEvent: boolean = true;
-	private threshold?: number;
-	private elasticity?: number;
-	private elasticityFalloff?: number;
-	private friction?: number;
-	private scatter?: number;
-	private fCollidable?: boolean = true;
-	private fDisableLightingTop?: number;
-	private fDisableLightingBelow?: number;
 	private depthBias?: number;
-	private fTimerEnabled: boolean = false;
-	private TimerInterval?: number;
-	private RaiseDelay: number = 100;
-	private szPhysicsMaterial?: string;
-	private fOverwritePhysics: boolean = false;
+	private disableLightingBelow?: number;
+	private disableLightingTop?: number;
+	private dropSpeed: number =  0.5;
+	private isReflectionEnabled: boolean = true;
+	private raiseDelay: number = 100;
+	private wzName!: string;
+	public elasticity!: number;
+	public elasticityFalloff!: number;
+	public friction!: number;
+	public isCollidable: boolean = true;
+	public isDropped: boolean = false;
+	public isVisible: boolean = true;
+	public legacy: boolean = false;
+	public overwritePhysics: boolean = false;
+	public rotZ: number = 0;
+	public scatter!: number;
+	public szImage?: string;
+	public szMaterial?: string;
+	public szPhysicsMaterial?: string;
+	public targetType: number = HitTarget.TypeDropTargetSimple;
+	public threshold: number = 2.0;
+	public useHitEvent: boolean = true;
+	public vPosition: Vertex3D = new Vertex3D();
+	public vSize: Vertex3D = new Vertex3D(32, 32, 32);
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<HitTargetData> {
 		const hitTargetData = new HitTargetData(itemName);
@@ -76,24 +74,24 @@ export class HitTargetData extends ItemData {
 			case 'TRTY': this.targetType = this.getInt(buffer); break;
 			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
-			case 'TVIS': this.fVisible = this.getBool(buffer); break;
+			case 'TVIS': this.isVisible = this.getBool(buffer); break;
 			case 'LEMO': this.legacy = this.getBool(buffer); break;
 			case 'ISDR': this.isDropped = this.getBool(buffer); break;
 			case 'DRSP': this.dropSpeed = this.getInt(buffer); break;
-			case 'REEN': this.fReflectionEnabled = this.getBool(buffer); break;
-			case 'HTEV': this.fUseHitEvent = this.getBool(buffer); break;
+			case 'REEN': this.isReflectionEnabled = this.getBool(buffer); break;
+			case 'HTEV': this.useHitEvent = this.getBool(buffer); break;
 			case 'THRS': this.threshold = this.getFloat(buffer); break;
 			case 'ELAS': this.elasticity = this.getFloat(buffer); break;
 			case 'ELFO': this.elasticityFalloff = this.getFloat(buffer); break;
 			case 'RFCT': this.friction = this.getFloat(buffer); break;
 			case 'RSCT': this.scatter = this.getFloat(buffer); break;
-			case 'CLDR': this.fCollidable = this.getBool(buffer); break;
-			case 'DILI': this.fDisableLightingTop = this.getFloat(buffer); break;
-			case 'DILB': this.fDisableLightingBelow = this.getFloat(buffer); break;
+			case 'CLDR': this.isCollidable = this.getBool(buffer); break;
+			case 'DILI': this.disableLightingTop = this.getFloat(buffer); break;
+			case 'DILB': this.disableLightingBelow = this.getFloat(buffer); break;
 			case 'PIDB': this.depthBias = this.getFloat(buffer); break;
-			case 'RADE': this.RaiseDelay = this.getInt(buffer); break;
+			case 'RADE': this.raiseDelay = this.getInt(buffer); break;
 			case 'MAPH': this.szPhysicsMaterial = this.getString(buffer, len); break;
-			case 'OVPH': this.fOverwritePhysics = this.getBool(buffer); break;
+			case 'OVPH': this.overwritePhysics = this.getBool(buffer); break;
 			default:
 				this.getUnknownBlock(buffer, tag);
 				break;

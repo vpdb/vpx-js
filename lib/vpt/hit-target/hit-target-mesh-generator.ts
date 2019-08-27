@@ -43,6 +43,14 @@ export class HitTargetMeshGenerator {
 	}
 
 	public getMesh(table: Table): Mesh {
+		let dropOffset = 0;
+		if (this.data.isDropped && (this.data.targetType === HitTarget.TypeDropTargetBeveled || this.data.targetType === HitTarget.TypeDropTargetSimple || this.data.targetType === HitTarget.TypeDropTargetFlatSimple)) {
+			dropOffset = -f4(HitTarget.DROP_TARGET_LIMIT * table.getScaleZ());
+		}
+		return this.generateMesh(table, dropOffset);
+	}
+
+	public generateMesh(table: Table, dropOffset: number = 0): Mesh {
 		const hitTargetMesh = this.getBaseMesh();
 		hitTargetMesh.name = `hit.target-${this.data.getName()}`;
 
@@ -50,11 +58,6 @@ export class HitTargetMeshGenerator {
 		const tempMatrix = new Matrix3D();
 		tempMatrix.rotateZMatrix(degToRad(this.data.rotZ));
 		fullMatrix.multiply(tempMatrix);
-
-		let dropOffset = 0;
-		if (this.data.isDropped && (this.data.targetType === HitTarget.TypeDropTargetBeveled || this.data.targetType === HitTarget.TypeDropTargetSimple || this.data.targetType === HitTarget.TypeDropTargetFlatSimple)) {
-			dropOffset = -f4(HitTarget.DROP_TARGET_LIMIT * table.getScaleZ());
-		}
 
 		for (const vertex of hitTargetMesh.vertices) {
 			let vert = new Vertex3D(vertex.x, vertex.y, vertex.z);
@@ -65,7 +68,7 @@ export class HitTargetMeshGenerator {
 
 			vertex.x = vert.x + this.data.vPosition.x;
 			vertex.y = vert.y + this.data.vPosition.y;
-			vertex.z = f4(f4(f4(vert.z * table.getScaleZ()) + this.data.vPosition.z) + table.getTableHeight())  + dropOffset;
+			vertex.z = f4(f4(f4(vert.z * table.getScaleZ()) + this.data.vPosition.z) + table.getTableHeight()) + dropOffset;
 
 			vert = new Vertex3D(vertex.nx, vertex.ny, vertex.nz);
 			vert = fullMatrix.multiplyVectorNoTranslate(vert);
