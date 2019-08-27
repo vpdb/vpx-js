@@ -40,8 +40,8 @@ export class HitLine3D extends HitLineZ {
 		// Axis of rotation to make 3D cylinder a cylinder along the z-axis
 		const transAxis = new Vertex3D(vLine.y, -vLine.x, 0);
 		const l = transAxis.lengthSq();
-		if (l <= 1e-6) {     // line already points in z axis?
-			transAxis.set(1, 0, 0);            // choose arbitrary rotation vector
+		if (l <= 1e-6) {                                   // line already points in z axis?
+			transAxis.set(1, 0, 0);                        // choose arbitrary rotation vector
 		} else {
 			transAxis.divideScalar(Math.sqrt(l));
 		}
@@ -107,15 +107,9 @@ export class HitLine3D extends HitLineZ {
 		const dot = -hitNormal.dot(ball.hit.vel);
 		ball.hit.collide3DWall(hitNormal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
-		if (this.obj && this.fe && dot >= this.threshold) {
-			if (this.objType === CollisionType.Primitive) {
-				this.obj.currentHitThreshold = dot;
-				this.fireHitEvent(ball);
-
-			}
-			if (this.obj.onCollision) {                          // manages (HitTarget*)m_obj)->m_d.m_isDropped == false
-				this.obj.onCollision(this, ball, dot);
-			}
+		// manage item-specific logic
+		if (this.obj && this.fe && dot >= this.threshold && this.obj.onCollision) {
+			this.obj.onCollision(this, ball, dot);
 		}
 	}
 }

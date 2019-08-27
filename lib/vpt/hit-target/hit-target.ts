@@ -17,31 +17,33 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Matrix4, Object3D } from 'three';
+import { EventProxy } from '../../game/event-proxy';
+import { IAnimatable, IAnimation } from '../../game/ianimatable';
+import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
+import { IScriptable } from '../../game/iscriptable';
+import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { degToRad, f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
+import { HitObject } from '../../physics/hit-object';
+import { Ball } from '../ball/ball';
 import { Meshes } from '../item-data';
 import { Table } from '../table/table';
-import { HitTargetData } from './hit-target-data';
-import { HitTargetMeshGenerator } from './hit-target-mesh-generator';
-import { IHittable } from '../../game/ihittable';
-import { HitTargetHitGenerator } from './hit-target-hit-generator';
-import { Player } from '../../game/player';
-import { EventProxy } from '../../game/event-proxy';
-import { HitObject } from '../../physics/hit-object';
-import { IAnimatable, IAnimation } from '../../game/ianimatable';
-import { HitTargetState } from './hit-target-state';
-import { Matrix4, Object3D } from 'three';
 import { HitTargetAnimation } from './hit-target-animation';
-import { Ball } from '../ball/ball';
+import { HitTargetApi } from './hit-target-api';
+import { HitTargetData } from './hit-target-data';
+import { HitTargetHitGenerator } from './hit-target-hit-generator';
+import { HitTargetMeshGenerator } from './hit-target-mesh-generator';
+import { HitTargetState } from './hit-target-state';
 
 /**
  * VPinball's hit- and drop targets.
  *
  * @see https://github.com/vpinball/vpinball/blob/master/hittarget.cpp
  */
-export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetState> {
+export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetState>, IScriptable<HitTargetApi> {
 
 	public static TypeDropTargetBeveled = 1;
 	public static TypeDropTargetSimple = 2;
@@ -62,6 +64,7 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 	private events?: EventProxy;
 	private animation?: HitTargetAnimation;
 	private hits?: HitObject[];
+	private api?: HitTargetApi;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<HitTarget> {
 		const data = await HitTargetData.fromStorage(storage, itemName);
@@ -111,10 +114,15 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 		};
 		this.animation = new HitTargetAnimation(this.data, this.state, this.events);
 		this.hits = this.hitGenerator.generateHitObjects(this.events, table);
+		this.api = new HitTargetApi(this, this.data, this.animation, this.events, player, table);
 	}
 
 	public getState(): HitTargetState {
 		return this.state;
+	}
+
+	public getApi(): HitTargetApi {
+		return this.api!;
 	}
 
 	public getHitShapes(): HitObject[] {
@@ -140,5 +148,32 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 			.multiply(matTransFromOrigin);
 		obj.matrix = new Matrix4();
 		obj.applyMatrix(matrix.toThreeMatrix4());
+	}
+
+	public setCollidable(isCollidable: boolean) {
+		if (this.hits && this.hits.length > 0 && this.hits[0].isEnabled !== isCollidable) {
+			for (const hit of this.hits) {     // !! costly
+				hit.isEnabled = isCollidable;  // copy to hit checking on enities composing the object
+			}
+		}
+		this.data.isCollidable = isCollidable;
+	}
+
+	public setDropped(val: boolean, table: Table, player: Player) {
+		if (this.data.isDropped !== val && this.animation) {
+			if (val) {
+				this.animation.moveAnimation = true;
+				this.state.zOffset = 0.0;
+				this.animation.moveDown = true;
+
+			} else {
+				this.animation.moveAnimation = true;
+				this.state.zOffset = -HitTarget.DROP_TARGET_LIMIT * table.getScaleZ();
+				this.animation.moveDown = false;
+				this.animation.timeStamp = player.timeMsec;
+			}
+		} else {
+			this.data.isDropped = val;
+		}
 	}
 }

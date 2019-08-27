@@ -19,21 +19,21 @@
 
 import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
+import { f4 } from '../../math/float';
 import { Vertex3D } from '../../math/vertex3d';
 import { IPhysicalData, ItemData } from '../item-data';
+import { Table } from '../table/table';
 import { HitTarget } from './hit-target';
-import { f4 } from '../../math/float';
-import { Table } from '../..';
 
 export class HitTargetData extends ItemData implements IPhysicalData {
 
-	private depthBias?: number;
-	private disableLightingBelow?: number;
-	private disableLightingTop?: number;
+	public depthBias?: number;
+	public disableLightingBelow?: number;
+	public disableLightingTop?: number;
 	public dropSpeed: number =  0.5;
-	private isReflectionEnabled: boolean = true;
+	public isReflectionEnabled: boolean = true;
 	public raiseDelay: number = 100;
-	private wzName!: string;
+	public wzName!: string;
 	public elasticity!: number;
 	public elasticityFalloff!: number;
 	public friction!: number;

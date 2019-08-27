@@ -1,0 +1,69 @@
+/*
+ * VPDB - Virtual Pinball Database
+ * Copyright (C) 2019 freezy <freezy@vpdb.io>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+
+import * as chai from 'chai';
+import { expect } from 'chai';
+import { createBall, debugBall } from '../../../test/physics.helper';
+import { ThreeHelper } from '../../../test/three.helper';
+import { Player } from '../../game/player';
+import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { Table } from '../table/table';
+import { HitTargetState } from './hit-target-state';
+
+import sinonChai = require('sinon-chai');
+
+chai.use(sinonChai);
+const three = new ThreeHelper();
+
+describe('The VPinball hit target collision', () => {
+
+	let table: Table;
+	let player: Player;
+
+	beforeEach(async () => {
+		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-hit-target.vpx')));
+		player = new Player(table);
+	});
+
+	it('should pop the correct state', () => {
+		const dropTarget = table.hitTargets.DropTargetBeveled.getApi();
+		dropTarget.IsDropped = true;
+
+		player.updatePhysics(10);
+		const state = player.popStates().DropTargetBeveled.newState as HitTargetState;
+		expect(state.zOffset).to.equal(table.hitTargets.DropTargetBeveled.getState().zOffset);
+	});
+
+	it('should block the ball on a drop target on first hit', () => {
+		const dropTarget = table.hitTargets.DropTargetBeveled.getApi();
+		const ball = createBall(player, dropTarget.X, dropTarget.Y + 100, 0, 0, -10);
+
+		debugBall(player, ball);
+		// expect(ball.getState().pos.y).to.equal(1340);
+		//
+		// // gate hit!
+		// player.updatePhysics(370);
+		// expect(ball.getState().pos.y).to.be.within(1400, 1405);
+		//
+		// // still there?
+		// player.updatePhysics(600);
+		// expect(ball.getState().pos.y).to.be.within(1400, 1405);
+	});
+
+});

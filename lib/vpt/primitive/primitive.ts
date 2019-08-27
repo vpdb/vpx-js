@@ -25,6 +25,7 @@ import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
+import { Ball } from '../ball/ball';
 import { Meshes } from '../item-data';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
@@ -91,6 +92,10 @@ export class Primitive implements IRenderable, IHittable, IScriptable<PrimitiveA
 
 	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
+		this.events.onCollision = (obj: HitObject, ball: Ball, dot: number) => {
+			this.events!.currentHitThreshold = dot;
+			obj.fireHitEvent(ball);
+		};
 		this.hits = this.hitGenerator.generateHitObjects(this.getMesh(table), this.events, table);
 		this.api = new PrimitiveApi(this, this.data, this.hits!, this.events, player, table);
 	}
