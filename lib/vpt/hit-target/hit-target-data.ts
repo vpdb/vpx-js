@@ -22,15 +22,17 @@ import { Storage } from '../../io/ole-doc';
 import { Vertex3D } from '../../math/vertex3d';
 import { IPhysicalData, ItemData } from '../item-data';
 import { HitTarget } from './hit-target';
+import { f4 } from '../../math/float';
+import { Table } from '../..';
 
 export class HitTargetData extends ItemData implements IPhysicalData {
 
 	private depthBias?: number;
 	private disableLightingBelow?: number;
 	private disableLightingTop?: number;
-	private dropSpeed: number =  0.5;
+	public dropSpeed: number =  0.5;
 	private isReflectionEnabled: boolean = true;
-	private raiseDelay: number = 100;
+	public raiseDelay: number = 100;
 	private wzName!: string;
 	public elasticity!: number;
 	public elasticityFalloff!: number;
@@ -65,6 +67,12 @@ export class HitTargetData extends ItemData implements IPhysicalData {
 		return this.wzName;
 	}
 
+	public isDropTarget(): boolean {
+		return this.targetType === HitTarget.TypeDropTargetBeveled
+			|| this.targetType === HitTarget.TypeDropTargetFlatSimple
+			|| this.targetType === HitTarget.TypeDropTargetSimple;
+	}
+
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
 		switch (tag) {
 			case 'VPOS': this.vPosition = Vertex3D.get(buffer); break;
@@ -77,7 +85,7 @@ export class HitTargetData extends ItemData implements IPhysicalData {
 			case 'TVIS': this.isVisible = this.getBool(buffer); break;
 			case 'LEMO': this.legacy = this.getBool(buffer); break;
 			case 'ISDR': this.isDropped = this.getBool(buffer); break;
-			case 'DRSP': this.dropSpeed = this.getInt(buffer); break;
+			case 'DRSP': this.dropSpeed = this.getFloat(buffer); break;
 			case 'REEN': this.isReflectionEnabled = this.getBool(buffer); break;
 			case 'HTEV': this.useHitEvent = this.getBool(buffer); break;
 			case 'THRS': this.threshold = this.getFloat(buffer); break;
@@ -97,5 +105,9 @@ export class HitTargetData extends ItemData implements IPhysicalData {
 				break;
 		}
 		return 0;
+	}
+
+	public getPositionZ(z: number, table: Table) {
+		return f4(f4(f4(z * table.getScaleZ()) + this.vPosition.z) + table.getTableHeight());
 	}
 }

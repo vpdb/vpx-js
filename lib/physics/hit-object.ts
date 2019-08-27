@@ -132,10 +132,9 @@ export abstract class HitObject {
 			return coll;
 		}
 
-		// fixme hittarget
-		//if (this.objType === CollisionType.HitTarget && (((this as HitTarget).obj).data.isDropped)) {
-		//	return coll;
-		//}
+		if (this.obj && this.obj.abortHitTest && this.obj.abortHitTest()) {
+			return coll;
+		}
 
 		let newColl = new CollisionEvent(ball);
 		const hitResult = this.hitTest(ball, coll.hitTime, !player.recordContacts ? coll : newColl, player);
