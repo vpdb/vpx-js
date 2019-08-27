@@ -23,10 +23,11 @@ import { createBall } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { radToDeg } from '../../math/float';
 import { Table } from '../table/table';
+import { GateState } from './gate-state';
 
 import sinonChai = require('sinon-chai');
-import { radToDeg } from '../../math/float';
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
@@ -109,6 +110,26 @@ describe('The VPinball gate mover', () => {
 		expect(radToDeg(gate.getState().angle)).to.be.within(36, 38);
 		player.updatePhysics(1970);
 		expect(gate.getState().angle).to.equal(0);
+	});
+
+	it('should return the proper state', () => {
+		const gate = table.gates.WireRectangle;
+
+		// create ball
+		createBall(player, 530, 1500, 0, 0, -10);
+
+		// assert initial position
+		expect(gate.getState().angle).to.equal(0);
+
+		player.updatePhysics(150);
+
+		const gateState = gate.getState();
+		const states = player.popStates();
+
+		const poppedState = states.WireRectangle.newState;
+
+		expect(gateState).to.equal(poppedState);
+		expect(gateState.equals(undefined as unknown as GateState)).to.equal(false);
 	});
 
 });

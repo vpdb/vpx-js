@@ -136,6 +136,7 @@ export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHitta
 		return this.api!;
 	}
 
+	/* istanbul ignore next */
 	public applyState(obj: Object3D, table: Table, player: Player, oldState: GateState): void {
 		const posZ = this.data.height;
 		const matTransToOrigin = new Matrix3D().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, posZ);
