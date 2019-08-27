@@ -19,7 +19,7 @@
 
 import { IRenderable } from '../../game/irenderable';
 import { Storage } from '../../io/ole-doc';
-import { f4 } from '../../math/float';
+import { degToRad, f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Meshes } from '../item-data';
 import { Table } from '../table/table';
@@ -30,13 +30,18 @@ import { HitTargetHitGenerator } from './hit-target-hit-generator';
 import { Player } from '../../game/player';
 import { EventProxy } from '../../game/event-proxy';
 import { HitObject } from '../../physics/hit-object';
+import { IAnimatable, IAnimation } from '../../game/ianimatable';
+import { HitTargetState } from './hit-target-state';
+import { Matrix4, Object3D } from 'three';
+import { HitTargetAnimation } from './hit-target-animation';
+import { Ball } from '../ball/ball';
 
 /**
  * VPinball's hit- and drop targets.
  *
  * @see https://github.com/vpinball/vpinball/blob/master/hittarget.cpp
  */
-export class HitTarget implements IRenderable, IHittable {
+export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetState> {
 
 	public static TypeDropTargetBeveled = 1;
 	public static TypeDropTargetSimple = 2;
@@ -51,9 +56,11 @@ export class HitTarget implements IRenderable, IHittable {
 	public static DROP_TARGET_LIMIT = f4(52.0);
 
 	private readonly data: HitTargetData;
+	private readonly state: HitTargetState;
 	private readonly meshGenerator: HitTargetMeshGenerator;
 	private readonly hitGenerator: HitTargetHitGenerator;
 	private events?: EventProxy;
+	private animation?: HitTargetAnimation;
 	private hits?: HitObject[];
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<HitTarget> {
@@ -63,6 +70,7 @@ export class HitTarget implements IRenderable, IHittable {
 
 	private constructor(data: HitTargetData) {
 		this.data = data;
+		this.state = new HitTargetState(this.data.getName());
 		this.meshGenerator = new HitTargetMeshGenerator(data);
 		this.hitGenerator = new HitTargetHitGenerator(data, this.meshGenerator);
 	}
@@ -91,10 +99,46 @@ export class HitTarget implements IRenderable, IHittable {
 
 	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
+		this.events.onCollision = (obj: HitObject, ball: Ball, dot: number) => {
+			if (!this.data.isDropped) {
+				this.animation!.hitEvent = true;
+				this.events!.currentHitThreshold = dot;
+				obj.fireHitEvent(ball);
+			}
+		};
+		this.events.abortHitTest = () => {
+			return this.data.isDropped;
+		};
+		this.animation = new HitTargetAnimation(this.data, this.state, this.events);
 		this.hits = this.hitGenerator.generateHitObjects(this.events, table);
+	}
+
+	public getState(): HitTargetState {
+		return this.state;
 	}
 
 	public getHitShapes(): HitObject[] {
 		return this.hits!;
+	}
+
+	public getAnimation(): IAnimation {
+		return this.animation!;
+	}
+
+	public applyState(obj: Object3D, table: Table, player: Player, oldState: HitTargetState): void {
+		const matTransToOrigin = new Matrix3D().setTranslation(-this.data.vPosition.x, -this.data.vPosition.y, -this.data.vPosition.z);
+		const matRotateToOrigin = new Matrix3D().rotateZMatrix(degToRad(-this.data.rotZ));
+		const matTransFromOrigin = new Matrix3D().setTranslation(this.data.vPosition.x, this.data.vPosition.y, this.data.vPosition.z);
+		const matRotateFromOrigin = new Matrix3D().rotateZMatrix(degToRad(this.data.rotZ));
+		const matRotateX = new Matrix3D().rotateXMatrix(degToRad(this.state.xRotation));
+		const matTranslateZ = new Matrix3D().setTranslation(0, 0, -this.state.zOffset);
+		const matrix = matTransToOrigin
+			.multiply(matRotateToOrigin)
+			.multiply(matRotateX)
+			.multiply(matTranslateZ)
+			.multiply(matRotateFromOrigin)
+			.multiply(matTransFromOrigin);
+		obj.matrix = new Matrix4();
+		obj.applyMatrix(matrix.toThreeMatrix4());
 	}
 }

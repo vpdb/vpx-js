@@ -43,9 +43,7 @@ export class HitTargetHitGenerator {
 	}
 
 	public generateHitObjects(events: EventProxy, table: Table): HitObject[] {
-		if (this.data.targetType === HitTarget.TypeDropTargetBeveled ||
-			this.data.targetType === HitTarget.TypeDropTargetFlatSimple ||
-			this.data.targetType === HitTarget.TypeDropTargetSimple) {
+		if (this.data.isDropTarget()) {
 			return this.generateDropTargetHits(events, table);
 
 		} else {

@@ -44,7 +44,7 @@ export class HitTargetMeshGenerator {
 
 	public getMesh(table: Table): Mesh {
 		let dropOffset = 0;
-		if (this.data.isDropped && (this.data.targetType === HitTarget.TypeDropTargetBeveled || this.data.targetType === HitTarget.TypeDropTargetSimple || this.data.targetType === HitTarget.TypeDropTargetFlatSimple)) {
+		if (this.data.isDropTarget() && this.data.isDropped) {
 			dropOffset = -f4(HitTarget.DROP_TARGET_LIMIT * table.getScaleZ());
 		}
 		return this.generateMesh(table, dropOffset);
@@ -66,8 +66,8 @@ export class HitTargetMeshGenerator {
 			vert.z *= this.data.vSize.z;
 			vert = fullMatrix.multiplyVector(vert);
 
-			vertex.x = vert.x + this.data.vPosition.x;
-			vertex.y = vert.y + this.data.vPosition.y;
+			vertex.x = f4(vert.x + this.data.vPosition.x);
+			vertex.y = f4(vert.y + this.data.vPosition.y);
 			vertex.z = f4(f4(f4(vert.z * table.getScaleZ()) + this.data.vPosition.z) + table.getTableHeight()) + dropOffset;
 
 			vert = new Vertex3D(vertex.nx, vertex.ny, vertex.nz);

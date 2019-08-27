@@ -17,7 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { HitObject } from '../physics/hit-object';
 import { logger } from '../util/logger';
+import { Ball } from '../vpt/ball/ball';
 import { ItemApi } from '../vpt/item-api';
 import { Event } from './event';
 import { IPlayable } from './iplayable';
@@ -31,6 +33,19 @@ export class EventProxy {
 	public currentHitThreshold: number = 0;
 
 	private readonly playable: IPlayable;
+
+	/**
+	 * Logic executed on collision.
+	 *
+	 * This replaces the dreaded object casts in VP where the hit logic must
+	 * be aware of the underlying object.
+	 */
+	public onCollision?: (obj: HitObject, ball: Ball, dot: number) => void;
+
+	/**
+	 * If implemented and false is returned, the hit test is skipped.
+	 */
+	public abortHitTest?: () => boolean;
 
 	constructor(playable: IPlayable) {
 		this.playable = playable;

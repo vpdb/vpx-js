@@ -90,12 +90,9 @@ export class Hit3DPoly extends HitObject {
 				if (this.objType === CollisionType.Primitive) {
 					this.obj.currentHitThreshold = dot;
 					this.fireHitEvent(ball);
-
-				} else if (this.objType === CollisionType.HitTarget /*&& ((HitTarget*)m_obj)->m_d.m_isDropped == false*/) { // fixme hittarget
-					// fixme hittarget
-					// ((HitTarget*)m_obj)->m_hitEvent = true;
-					this.obj.currentHitThreshold = dot;
-					this.fireHitEvent(ball);
+				}
+				if (this.obj.onCollision) {                          // manages (HitTarget*)m_obj)->m_d.m_isDropped == false
+					this.obj.onCollision(this, ball, dot);
 				}
 			}
 
