@@ -40,6 +40,7 @@
 		"buffer": "^5.4.2",
 		"es6-promise-pool": "^2.5.0",
 		"escodegen": "^1.12.0",
+		"estraverse": "^4.3.0",
 		"gltf-pipeline": "github:freezy/gltf-pipeline#hotfix/dedupe",
 		"gm": "^1.23.1",
 		"nearley": "^2.18.0",
@@ -50,6 +51,7 @@
 	"devDependencies": {
 		"@types/chai": "4.2.0",
 		"@types/escodegen": "0.0.6",
+		"@types/estraverse": "0.0.6",
 		"@types/estree": "0.0.39",
 		"@types/gm": "1.18.4",
 		"@types/microtime": "2.1.0",

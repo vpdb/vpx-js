@@ -51,6 +51,7 @@ import { TableData } from './table-data';
 import { TableExporter, VpTableExporterOptions } from './table-exporter';
 import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
+import { Transpiler } from '../../scripting/transpiler';
 
 /**
  * A Visual Pinball table.
@@ -169,6 +170,11 @@ export class Table implements IRenderable {
 
 	public getHittables(): IHittable[] {
 		return this.items.filter(item => !!(item as any).getHitShapes && (item as IHittable).isCollidable()) as IHittable[];
+	}
+
+	public async play() {
+		const transpiler = new Transpiler();
+		transpiler.execute(await this.getTableScript());
 	}
 
 	public getElementApis(): { [key: string]: any } {
