@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Identifier, Literal, MemberExpression, Statement, UnaryExpression } from 'estree';
+import { Identifier, Literal, MemberExpression, Statement, UnaryExpression, VariableDeclarator } from 'estree';
 import { inspect } from 'util';
 
 import * as estree from './estree'; // use the namespace to avoid clashes
@@ -46,7 +46,7 @@ export function optionExplicit(result: [string, null, string]) {
 /**
  * Grammar:
  * ```
- * VarDecl -> "Dim" __ VarName OtherVarsOpt:* NL
+ * DimDecl -> "Dim" __ DimVarList NL
  * ```
  * Example: `Dim test1, test2, test3\n`
  * Result:
@@ -54,26 +54,52 @@ export function optionExplicit(result: [string, null, string]) {
  * [
  *   "Dim",
  *   null,
- *   { "type": "Identifier", "name": "test1" },
- *   [{ "type": "Identifier", "name": "test2" }, { "type": "Identifier", "name": "test3" }],
+ *   [
+ *     { "type": "VariableDeclarator", "id": { "type": "Identifier", "name": "test1" }, "init": null },
+ *     { "type": "VariableDeclarator", "id": { "type": "Identifier", "name": "test2" }, "init": null },
+ *     { "type": "VariableDeclarator", "id": { "type": "Identifier", "name": "test3" }, "init": null }
+ *   ],
  *   [[["\n"]]]
  * ]
  * ```
  */
 
-export function varDecl(result: [string, null, Identifier, Identifier[]]) {
-	const firstName = result[2];
-	const otherNames = result[3];
+export function dimDecl(result: [string, null, VariableDeclarator[]]) {
+	const declarations = result[2];
 	return estree.variableDeclaration(
 		'let',
-		[firstName, ...otherNames].map(name => [name, null]), // can't assign values with Dim
+		declarations,
 	);
 }
 
 /**
  * Grammar:
  * ```
- * ConstDecl -> "Const" __ ConstNameValue OtherConstantsOpt:* NL
+ * DimVarList -> DimVarName DimOtherVars:*
+ * ```
+ * Result:
+ * ```
+ * [
+ *   { "type": "Identifier", "name": "test1" },
+ *   [{ "type": "Identifier", "name": "test2" }, { "type": "Identifier", "name": "test3" }]
+ * ]
+ * ```
+ */
+
+export function dimVarList(result: [ DimVarListResult, DimVarListResult[] ]) {
+	const firstVar = result[0];
+	const otherVars = result[1] || [];
+
+	return [firstVar, ...otherVars].map(declaration => {
+		return estree.variableDeclarator(declaration, null);  // can't assign values with Dim
+	});
+}
+type DimVarListResult = Identifier;
+
+/**
+ * Grammar:
+ * ```
+ * ConstDecl -> "Const" __ ConstVarList:+ NL
  * ```
  * Example: `Const test1 = 3.14, test2 = 4, test3 = "TEST", test4 = -5.2\n`
  * Result:
@@ -81,27 +107,79 @@ export function varDecl(result: [string, null, Identifier, Identifier[]]) {
  * [
  *   "Const",
  *   null,
- *   [{ "type": "Identifier", "name": "test1" }, null, "=", null, { "type": "Literal", "value": 3.14 }],
  *   [
- *     [{ "type": "Identifier", "name": "test2" }, null, "=", null, { "type": "Literal", "value": 4 }],
- *     [{ "type": "Identifier", "name": "test3" }, null, "=", null, { "type": "Literal", "value": "TEST" }],
- *     [{ "type": "Identifier", "name": "test4" }, null, "=", null, { "type": "Literal", "value": -5.2 }]
+ *     {
+ *       "type": "VariableDeclarator",
+ *       "id": { "type": "Identifier", "name": "test1" },
+ *       "init": { "type": "Literal", "value": 3.14 }
+ *     },
+ *     {
+ *       "type": "VariableDeclarator",
+ *       "id": { "type": "Identifier", "name": "test2" },
+ *       "init": { "type": "Literal", "value": 4 }
+ *     },
+ *     {
+ *       "type": "VariableDeclarator",
+ *       "id": { "type": "Identifier", "name": "test3" },
+ *       "init": { "type": "Literal", "value": "TEST" }
+ *     },
+ *     {
+ *       "type": "VariableDeclarator",
+ *       "id": { "type": "Identifier", "name": "test4" },
+ *       "init": { "type": "Literal", "value": -5.2 }
+ *     }
  *   ],
  *   [[["\n"]]]
  * ]
  * ```
  */
 
-export function constDecl(result: [string, null, ConstDeclResult, ConstDeclResult[]]) {
-	const firstDecl = result[2];
-	const otherDecls = result[3];
-	const decls: ConstDeclResult[] = [firstDecl, ...otherDecls];
+export function constDecl(result: [string, null, VariableDeclarator[]]) {
+	const declarations = result[2];
 	return estree.variableDeclaration(
 		'const',
-		decls.map((decl: ConstDeclResult) => [decl[0], decl[4]]),
+		declarations,
 	);
 }
-type ConstDeclResult = [Identifier, null, string, null, Literal];
+
+/**
+ * Grammar:
+ * ```
+ * ConstVarList -> ConstVarNameValue ConstOtherVars:*
+ * ```
+ * Result:
+ * ```
+ * [
+ *   [{ "type": "Identifier", "name": "test1" }, null, "=", null, { "type": "Literal", "value": 3.14 }],
+ *   [
+ *     [{ "type": "Identifier", "name": "test2" }, null, "=", null, { "type": "Literal", "value": 4 }],
+ *     [{ "type": "Identifier", "name": "test3" }, null, "=", null, { "type": "Literal", "value": "TEST" }],
+ *     [
+ *       { "type": "Identifier", "name": "test4" },
+ *       null,
+ *       "=",
+ *       null,
+ *       {
+ *         "type": "UnaryExpression",
+ *         "operator": "-",
+ *         "prefix": true,
+ *         "argument": { "type": "Literal", "value": 5.2 }
+ *       }
+ *     ]
+ *   ]
+ * ]
+ * ```
+ */
+
+export function constVarList(result: [ ConstVarListResult, ConstVarListResult[] ]) {
+	const firstVar = result[0];
+	const otherVars = result[1] || [];
+
+	return [firstVar, ...otherVars].map((declaration) => {
+		return estree.variableDeclarator(declaration[0], declaration[4]);
+	});
+}
+type ConstVarListResult = [Identifier, null, string, null, Literal | UnaryExpression];
 
 /**
  * Grammar:
@@ -187,7 +265,7 @@ export function subDecl(result: [string, null, Identifier, MethodArgListResult[]
 	const name = result[2];
 	const params = result[3];
 	const statements = result[5] || [];
-	
+
 	return estree.functionDeclaration(name, params, statements);
 }
 type MethodArgListResult = Identifier;
@@ -235,7 +313,7 @@ export function methodArgList(result: [string, null | string, Identifier, Identi
  * ```
  */
 
-export function assignStmt(result: [Identifier, null, "=", null, Literal | UnaryExpression]) {
+export function assignStmt(result: [Identifier, null, '=', null, Literal | UnaryExpression]) {
 	const left = result[0];
 	const operator = result[2];
 	const right = result[4];
