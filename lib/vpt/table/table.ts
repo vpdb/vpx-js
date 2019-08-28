@@ -173,7 +173,7 @@ export class Table implements IRenderable {
 	}
 
 	public async play() {
-		const transpiler = new Transpiler();
+		const transpiler = new Transpiler(this);
 		transpiler.execute(await this.getTableScript());
 	}
 
