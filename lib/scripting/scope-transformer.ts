@@ -17,14 +17,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { replace, traverse, VisitorOption } from 'estraverse';
+import { replace } from 'estraverse';
 import { Program } from 'estree';
 import { Table } from '../vpt/table/table';
 
+/**
+ * This wraps the table script into a function where its globals are replaced
+ * by locals provided through the function parameters.
+ */
 export class ScopeTransformer {
 
 	private readonly table: Table;
-	private items: { [p: string]: any };
+	private readonly items: { [p: string]: any };
 
 	constructor(table: Table) {
 		this.table = table;
@@ -32,35 +36,52 @@ export class ScopeTransformer {
 	}
 
 	public transform(ast: Program, mainFunctionName: string, elementObjectName: string): Program {
-		traverse(ast, {
-			enter: node => {
-				if (node.type === 'Identifier' && this.items[node.name]) {
-					node.type = 'MemberExpression';
-					node.property = {
-						type: 'Identifier',
-						name: node.name,
-					};
-					node.name = elementObjectName;
-					node.computed = false;
-					return VisitorOption.Skip;
-				}
-			},
-		});
-
-		console.log(ast);
-		return ast;
-
-		//return this.wrap(ast, mainFunctionName, elementObjectName);
+		return this.wrap(this.replaceElementObjectNames(ast, elementObjectName), mainFunctionName, elementObjectName);
 	}
 
+	/**
+	 * Replaces global variables that refer to table elements by a member
+	 * expression given by an object name.
+	 *
+	 * @param ast Original AST
+	 * @param elementObjectName The name of the object that contains all table elements.
+	 */
+	public replaceElementObjectNames(ast: Program, elementObjectName: string): Program {
+		return replace(ast, {
+			enter: (node, parent: any) => {
+				const alreadyReplaced = parent.type === 'MemberExpression' && parent.object.name === elementObjectName;
+				if (!alreadyReplaced && node.type === 'Identifier' && this.items[node.name]) {
+					return {
+						type: 'MemberExpression',
+						object: {
+							type: 'Identifier',
+							name: elementObjectName,
+						},
+						property: {
+							type: 'Identifier',
+							name: node.name,
+						},
+						computed: false,
+					};
+				}
+				return node;
+			},
+		}) as Program;
+	}
+
+	/**
+	 * Wraps the table script into a function.
+	 *
+	 * @param ast Original AST
+	 * @param mainFunctionName Name of the function to wrap the code into
+	 * @param elementObjectName Name of the function parameter containing all table elements
+	 */
 	public wrap(ast: Program, mainFunctionName: string, elementObjectName: string): Program {
 		return replace(ast, {
 			enter: node => {
 				if (node.type === 'Program') {
 					return {
 						type: 'Program',
-						start: 0,
-						end: 55,
 						body: [
 							{
 								type: 'ExpressionStatement',
@@ -103,5 +124,4 @@ export class ScopeTransformer {
 			},
 		}) as Program;
 	}
-
 }
