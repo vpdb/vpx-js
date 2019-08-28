@@ -91,11 +91,11 @@ export function memberExpression(object: Identifier, property: Identifier) {
 	};
 }
 
-export function variableDeclaration(kind: 'var' | 'let' | 'const', nameValues: Array<[ Identifier, Expression | null ]>): VariableDeclaration {
+export function variableDeclaration(kind: 'var' | 'let' | 'const', declarations: VariableDeclarator[]): VariableDeclaration {
 	return {
 		type: 'VariableDeclaration',
 		kind,
-		declarations: nameValues.map(nameValue => variableDeclarator(nameValue[0], nameValue[1])),
+		declarations,
 	};
 }
 

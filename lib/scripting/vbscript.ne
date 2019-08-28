@@ -17,21 +17,25 @@ Program              -> NLOpt GlobalStmt:*                                      
 # Rules : Declarations
 #===============================
 
-VarDecl              -> "Dim" __ VarName OtherVarsOpt:* NL                                                         {% pp.varDecl %}
+DimDecl              -> "Dim" __ DimVarList NL                                                                     {% pp.dimDecl %}
 
-VarName              -> ExtendedID ("(" ArrayRankList ")"):?                                                       {% id %}
+DimVarList           -> DimVarName DimOtherVars:*                                                                  {% pp.dimVarList %} 
 
-OtherVarsOpt         -> "," _ VarName                                                                              {% data => data[2] %}
+DimVarName           -> ExtendedID ("(" ArrayRankList ")"):?                                                       {% id %}
+
+DimOtherVars         -> "," _ DimVarName                                                                           {% data => data[2] %}
 
 ArrayRankList        -> IntLiteral _ "," _ ArrayRankList
                       | IntLiteral
 
-ConstDecl            -> "Const" __ ConstNameValue OtherConstantsOpt:* NL                                           {% pp.constDecl %}
-#                      | AccessModifierOpt __ "Const" __ ConstNameValue OtherConstantsOpt:* NL
+ConstDecl            -> "Const" __ ConstVarList NL                                                                 {% pp.constDecl %}
+#                      | AccessModifierOpt __ "Const" __ ConstVarList NL
 
-ConstNameValue       -> ExtendedID _ "=" _ ConstExprDef
+ConstVarList         -> ConstVarNameValue ConstOtherVars:*                                                         {% pp.constVarList %} 
 
-OtherConstantsOpt    -> "," _ ConstNameValue                                                                       {% data => data[2] %}
+ConstOtherVars       -> "," _ ConstVarNameValue                                                                    {% data => data[2] %}
+
+ConstVarNameValue    -> ExtendedID _ "=" _ ConstExprDef
 
 ConstExprDef         -> "-" ConstExprDef                                                                           {% data => estree.unaryExpression(data[0], data[1]) %}
                       | "+" ConstExprDef                                                                           {% data => estree.unaryExpression(data[0], data[1]) %}
@@ -74,7 +78,7 @@ GlobalStmt           -> OptionExplicit                                          
 MethodStmt           -> ConstDecl                                                                                  {% id %}
                       | _ BlockStmt                                                                                {% data => data[1] %} 
 
-BlockStmt            -> VarDecl                                                                                    {% id %}
+BlockStmt            -> DimDecl                                                                                    {% id %}
                       | _ InlineStmt NL                                                                            {% data => data[1] %}
 
 InlineStmt           -> AssignStmt                                                                                 {% id %}
