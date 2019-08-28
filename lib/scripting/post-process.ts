@@ -30,18 +30,7 @@ import * as estree from './estree'; // use the namespace to avoid clashes
  * Example: `Option Explicit\n`
  * Result:
  * ```
- * [
- *    "Option",
- *    null,
- *    "Explicit",
- *    [
- *       [
- *          [
- *             "\n"
- *          ]
- *       ]
- *    ]
- * ]
+ * ["Option", null, "Explicit", [[["\n"]]]]
  * ```
  */
 
@@ -63,29 +52,11 @@ export function optionExplicit(result: [string, null, string]) {
  * Result:
  * ```
  * [
- *    "Dim",
- *    null,
- *    {
- *       "type":"Identifier",
- *       "name":"test1"
- *    },
- *    [
- *       {
- *          "type":"Identifier",
- *          "name":"test2"
- *       },
- *       {
- *          "type":"Identifier",
- *          "name":"test3"
- *       }
- *    ],
- *    [
- *       [
- *          [
- *             "\n"
- *          ]
- *       ]
- *    ]
+ *   "Dim",
+ *   null,
+ *   { "type": "Identifier", "name": "test1" },
+ *   [{ "type": "Identifier", "name": "test2" }, { "type": "Identifier", "name": "test3" }],
+ *   [[["\n"]]]
  * ]
  * ```
  */
@@ -108,69 +79,15 @@ export function varDecl(result: [string, null, Identifier, Identifier[]]) {
  * Result:
  * ```
  * [
- *    "Const",
- *    null,
- *    [
- *       {
- *          "type":"Identifier",
- *          "name":"test1"
- *       },
- *       null,
- *       "=",
- *       null,
- *       {
- *          "type":"Literal",
- *          "value":3.14
- *       }
- *    ],
- *    [
- *       [
- *          {
- *             "type":"Identifier",
- *             "name":"test2"
- *          },
- *          null,
- *          "=",
- *          null,
- *          {
- *             "type":"Literal",
- *             "value":4
- *          }
- *       ],
- *       [
- *          {
- *             "type":"Identifier",
- *             "name":"test3"
- *          },
- *          null,
- *          "=",
- *          null,
- *          {
- *             "type":"Literal",
- *             "value":"TEST"
- *          }
- *       ],
- *       [
- *          {
- *             "type":"Identifier",
- *             "name":"test4"
- *          },
- *          null,
- *          "=",
- *          null,
- *          {
- *             "type":"Literal",
- *             "value":-5.2
- *          }
- *       ]
- *    ],
- *    [
- *       [
- *          [
- *             "\n"
- *          ]
- *       ]
- *    ]
+ *   "Const",
+ *   null,
+ *   [{ "type": "Identifier", "name": "test1" }, null, "=", null, { "type": "Literal", "value": 3.14 }],
+ *   [
+ *     [{ "type": "Identifier", "name": "test2" }, null, "=", null, { "type": "Literal", "value": 4 }],
+ *     [{ "type": "Identifier", "name": "test3" }, null, "=", null, { "type": "Literal", "value": "TEST" }],
+ *     [{ "type": "Identifier", "name": "test4" }, null, "=", null, { "type": "Literal", "value": -5.2 }]
+ *   ],
+ *   [[["\n"]]]
  * ]
  * ```
  */
@@ -195,35 +112,23 @@ type ConstDeclResult = [Identifier, null, string, null, Literal];
  * Result:
  * ```
  * [
- *    {
- *       "type":"MemberExpression",
- *       "object":{
- *          "type":"Identifier",
- *          "name":"BallRelease"
- *       },
- *       "property":{
- *          "type":"Identifier",
- *          "name":"KickBall"
- *       },
- *       "computed":false
- *    },
- *    null,
- *    {
- *       "type":"Literal",
- *       "value":0
- *    },
- *    null,
- *    [
- *       {
- *          "type":"UnaryExpression",
- *          "operator":"-",
- *          "prefix":true,
- *          "argument":{
- *             "type":"Literal",
- *             "value":2
- *          }
- *       }
- *    ]
+ *   {
+ *     "type": "MemberExpression",
+ *     "object": { "type": "Identifier", "name": "BallRelease" },
+ *     "property": { "type": "Identifier", "name": "KickBall" },
+ *     "computed": false
+ *   },
+ *   null,
+ *   { "type": "Literal", "value": 0 },
+ *   null,
+ *   [
+ *     {
+ *       "type": "UnaryExpression",
+ *       "operator": "-",
+ *       "prefix": true,
+ *       "argument": { "type": "Literal", "value": 2 }
+ *     }
+ *   ]
  * ]
  * ```
  * @todo Literal and UnaryExpression will be more generic in the future!
@@ -245,82 +150,71 @@ export function subCallStmt(result: [MemberExpression, null, Literal?, null?, Un
  * Result:
  * ```
  * [
- *    "Sub",
- *    null,
- *    {
- *       "type":"Identifier",
- *       "name":"BallRelease_Hit"
- *    },
- *    [
- *       [
- *          {
- *             "type":"Identifier",
- *             "name":"value1"
- *          },
- *          [
- *             {
- *                "type":"Identifier",
- *                "name":"value2"
- *             },
- *             {
- *                "type":"Identifier",
- *                "name":"value3"
- *             }
- *          ]
- *       ]
- *    ],
- *    [
- *       [
- *          [
- *             "\n"
- *          ]
- *       ]
- *    ],
- *    [
- *       {
- *          "type":"ExpressionStatement",
- *          "expression":{
- *             "type":"CallExpression",
- *             "callee":{
- *                "type":"MemberExpression",
- *                "object":{
- *                   "type":"Identifier",
- *                   "name":"BallRelease"
- *                },
- *                "property":{
- *                   "type":"Identifier",
- *                   "name":"CreateBall"
- *                },
- *                "computed":false
- *             },
- *             "arguments":[
- *             ]
- *          }
+ *   "Sub",
+ *   null,
+ *   { "type": "Identifier", "name": "BallRelease_Hit" },
+ *   [
+ *     { "type": "Identifier", "name": "value1" },
+ *     { "type": "Identifier", "name": "value2" },
+ *     { "type": "Identifier", "name": "value3" }
+ *   ],
+ *   [[["\n"]]],
+ *   [
+ *     {
+ *       "type": "ExpressionStatement",
+ *       "expression": {
+ *         "type": "CallExpression",
+ *         "callee": {
+ *           "type": "MemberExpression",
+ *           "object": { "type": "Identifier", "name": "BallRelease" },
+ *           "property": { "type": "Identifier", "name": "CreateBall" },
+ *           "computed": false
+ *         },
+ *         "arguments": [ ]
  *       }
- *    ],
- *    null,
- *    "End",
- *    null,
- *    "Sub",
- *    [
- *       [
- *          [
- *             "\n"
- *          ]
- *       ]
- *    ]
+ *     }
+ *   ],
+ *   null,
+ *   "End",
+ *   null,
+ *   "Sub",
+ *   [[["\n"]]]
  * ]
  * ```
  */
 
-export function subDecl(result: [null, null, Identifier, [[Identifier, Identifier[]]], null, Statement[]?]) {
+export function subDecl(result: [string, null, Identifier, MethodArgListResult[], null, Statement[]?]) {
 	const name = result[2];
-	const params = result[3][0];
-	const firstParam = params[0] ? [params[0]] : [];
-	const otherParams = params[1] || [];
+	const params = result[3];
 	const statements = result[5] || [];
-	return estree.functionDeclaration(name,
-		[...firstParam, ...otherParams], statements);
+	
+	return estree.functionDeclaration(name, params, statements);
+}
+type MethodArgListResult = Identifier;
+
+/**
+ * Grammar:
+ * ```
+ * MethodArgList -> "(" _ Arg OtherArgsOpt:* _ ")
+ *                | "(" ")"  
+ * Result:
+ * ```
+ * [
+ *   "(",
+ *   null,
+ *   { "type": "Identifier", "name": "value1" },
+ *   [{ "type": "Identifier", "name": "value2" }, { "type": "Identifier", "name": "value3" }],
+ *   null,
+ *   ")"
+ * ]
+ * ```
+ */
+
+export function methodArgList(result: [string, null | string, Identifier, Identifier[], null, string]) {
+	const firstArg = result[2] ? [result[2]] : []; // array, so we can easily spread below
+	const otherArgs = result[3] || [];
+
+	return [...firstArg, ...otherArgs];
 }
 
 /**
