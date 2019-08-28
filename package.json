@@ -10,7 +10,7 @@
 	},
 	"scripts": {
 		"build": "rimraf dist && tsc && cp -r res/maps dist/res",
-		"build:watch": "tsc --watch",
+		"build:watch": "npm run compile && tsc --watch",
 		"compile": "nearleyc lib/scripting/vbscript.ne -o lib/scripting/vbscript.ts",
 		"lint": "tslint lib/**/*.ts --format stylish",
 		"test": "nyc mocha"

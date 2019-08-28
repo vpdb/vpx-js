@@ -36,19 +36,23 @@ export class Transpiler {
 	}
 
 	public execute(vbs: string) {
-		let ast = this.parse(vbs);
+		console.debug(vbs);
+		let ast = this.parse(vbs + '\n');
 		const scopeTransformer = new ScopeTransformer(this.table);
 
 		ast = scopeTransformer.transform(ast, 'play', 'items');
-		//const js = this.generate(ast);
-		console.log(ast);
-		console.log(this.generate(ast));
+		console.debug('AST:', ast);
+
+		const js = this.generate(ast);
+		console.debug(js);
+
 		// tslint:disable-next-line:no-eval
-		// eval(js);
-		// play(this.table.getElementApis());
+		eval(js);
+		play(this.table.getElementApis());
 	}
 
 	private parse(vbs: string): Program {
+
 		const parser = new Parser(Grammar.fromCompiled(vbsGrammar));
 		parser.feed(vbs);
 		/* istanbul ignore if */
