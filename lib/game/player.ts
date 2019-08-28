@@ -48,6 +48,10 @@ import { BallState } from '../vpt/ball/ball-state';
 import { FlipperMover } from '../vpt/flipper/flipper-mover';
 import { ItemState } from '../vpt/item-state';
 
+const ANIM_FPS = 60;
+const ANIM_FRAME_USEC = 1 / ANIM_FPS * 1000000;
+const ANIM_FRAME_MSEC = Math.floor(1 / ANIM_FPS * 1000);
+
 export class Player extends EventEmitter {
 
 	public gravity = new Vertex3D();
@@ -61,6 +65,7 @@ export class Player extends EventEmitter {
 	public static SLOW_MO = 1; // the lower, the slower
 
 	private minPhysLoopTime: number = 0;
+	private lastAnimTimeUsec: number = 0;
 	private lastFlipTime: number = 0;
 	private lastTimeUsec: number = 0;
 	private lastFrameDuration: number = 0;
@@ -429,24 +434,27 @@ export class Player extends EventEmitter {
 			// until the next frame is done
 			// If the frame is the next thing to happen, update physics to that
 			// point next update acceleration, and continue loop
-
 			const physicsDiffTime = (this.nextPhysicsFrameTime - this.curPhysicsFrameTime) * (1.0 / DEFAULT_STEPTIME);
 
 			this.updateVelocities();
 
-			//primary physics loop
+			// primary physics loop
 			this.physicsSimulateCycle(physicsDiffTime); // main simulator call
+
+			// animations
+			if (Math.round(this.curPhysicsFrameTime / 1000) % ANIM_FRAME_MSEC === 0 || this.curPhysicsFrameTime - this.lastAnimTimeUsec >= ANIM_FRAME_USEC) {
+				//console.log(this.lastAnimTimeUsec)
+				for (const animatable of this.table.getAnimatables()) {
+					animatable.getAnimation().updateAnimation(this, this.table);
+				}
+				this.lastAnimTimeUsec = this.curPhysicsFrameTime;
+			}
 
 			this.curPhysicsFrameTime = this.nextPhysicsFrameTime; // new cycle, on physics frame boundary
 			this.nextPhysicsFrameTime += PHYSICS_STEPTIME;     // advance physics position
 
 			firstCycle = false;
 		} // end while (m_curPhysicsFrameTime < initial_time_usec)
-
-		// [vpx-js added]
-		for (const animatable of this.table.getAnimatables()) {
-			animatable.getAnimation().updateAnimation(this, this.table);
-		}
 
 		this.physPeriod = Math.floor(this.now() * 1000) - initialTimeUsec;
 		return initialTimeUsec;

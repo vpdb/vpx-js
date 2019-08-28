@@ -75,21 +75,13 @@ describe('The VPinball bumper collision', () => {
 
 		player.updatePhysics(10);
 		expect(bumper.getState().ringOffset).to.equal(0);
-		player.updatePhysics(660);
-		player.updatePhysics(680);
 		player.updatePhysics(700);
-		expect(bumper.getState().ringOffset).to.equal(-10);
-		player.updatePhysics(720);
-		player.updatePhysics(740);
-		player.updatePhysics(760);
+		expect(bumper.getState().ringOffset).to.equal(-8);
 		player.updatePhysics(780);
 		expect(bumper.getState().ringOffset).to.equal(-45);
-		player.updatePhysics(800);
-		player.updatePhysics(820);
 		player.updatePhysics(840);
-		expect(bumper.getState().ringOffset).to.equal(-15);
-		player.updatePhysics(860);
-		player.updatePhysics(880);
+		expect(bumper.getState().ringOffset).to.equal(-13);
+		player.updatePhysics(900);
 		expect(bumper.getState().ringOffset).to.equal(0);
 	});
 
@@ -104,19 +96,19 @@ describe('The VPinball bumper collision', () => {
 		const bumperObj = three.find<Mesh>(gltf, 'bumpers', 'Bumper2');
 		const ringObj = bumperObj.children.find(o => o.name === `bumper-ring-Bumper2`)!;
 
-		player.updatePhysics(720);
+		player.updatePhysics(710);
 		let states = player.popStates();
 		let state = states.Bumper2 as ChangedState<BumperState>;
 		bumper.applyState(bumperObj, table, player, state.oldState as BumperState);
 		ringObj.getWorldPosition(ringPos);
-		expect(ringPos.z).to.equal(45);
+		expect(ringPos.z).to.equal(16);
 
 		player.updatePhysics(770);
 		states = player.popStates();
 		state = states.Bumper2 as ChangedState<BumperState>;
 		bumper.applyState(bumperObj, table, player, state.oldState as BumperState);
 		ringObj.getWorldPosition(ringPos);
-		expect(ringPos.z).to.equal(65);
+		expect(ringPos.z).to.equal(61);
 	});
 
 });
