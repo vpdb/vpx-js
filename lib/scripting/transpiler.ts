@@ -25,7 +25,7 @@ import { ScopeTransformer } from './scope-transformer';
 import * as vbsGrammar from './vbscript';
 
 // the table script function
-declare function play(table: Table): void;
+declare function play(table: { [key: string]: any }): void;
 
 export class Transpiler {
 
@@ -40,12 +40,12 @@ export class Transpiler {
 		const scopeTransformer = new ScopeTransformer(this.table);
 
 		ast = scopeTransformer.transform(ast, 'play', 'items');
-		const js = this.generate(ast);
+		//const js = this.generate(ast);
 		console.log(ast);
 		console.log(this.generate(ast));
 		// tslint:disable-next-line:no-eval
-		const fct = eval(js);
-		play(this.table);
+		// eval(js);
+		// play(this.table.getElementApis());
 	}
 
 	private parse(vbs: string): Program {

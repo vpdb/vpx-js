@@ -17,81 +17,83 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { replace } from 'estraverse';
+import { replace, traverse, VisitorOption } from 'estraverse';
 import { Program } from 'estree';
 import { Table } from '../vpt/table/table';
 
 export class ScopeTransformer {
 
 	private readonly table: Table;
+	private items: { [p: string]: any };
 
 	constructor(table: Table) {
 		this.table = table;
+		this.items = table.getElementApis();
 	}
 
 	public transform(ast: Program, mainFunctionName: string, elementObjectName: string): Program {
-		// return replace(ast, {
-		// 	enter: node => {
-		// 		if (node.type === 'Program') {
-		// 			return {
-		// 				type: 'Program',
-		// 				body: [
-		// 					{
-		// 						type: 'VariableDeclaration',
-		// 						declarations: [
-		// 							{
-		// 								type: 'VariableDeclarator',
-		// 								id: {
-		// 									type: 'Identifier',
-		// 									name: mainFunctionName,
-		// 								},
-		// 								init: {
-		// 									type: 'FunctionExpression',
-		// 									id: null,
-		// 									generator: false,
-		// 									params: [
-		// 										{
-		// 											type: 'Identifier',
-		// 											name: elementObjectName,
-		// 										},
-		// 									],
-		// 									body: {
-		// 										type: 'BlockStatement',
-		// 										body: node.body,
-		// 									},
-		// 								},
-		// 							},
-		// 						],
-		// 						kind: 'const',
-		// 					},
-		// 				],
-		// 				sourceType: 'module',
-		// 			} as Program;
-		// 		}
-		// 	},
-		// }) as Program;
+		traverse(ast, {
+			enter: node => {
+				if (node.type === 'Identifier' && this.items[node.name]) {
+					node.type = 'MemberExpression';
+					node.property = {
+						type: 'Identifier',
+						name: node.name,
+					};
+					node.name = elementObjectName;
+					node.computed = false;
+					return VisitorOption.Skip;
+				}
+			},
+		});
+
+		console.log(ast);
+		return ast;
+
+		//return this.wrap(ast, mainFunctionName, elementObjectName);
+	}
+
+	public wrap(ast: Program, mainFunctionName: string, elementObjectName: string): Program {
 		return replace(ast, {
 			enter: node => {
 				if (node.type === 'Program') {
 					return {
 						type: 'Program',
+						start: 0,
+						end: 55,
 						body: [
 							{
-								type: 'FunctionDeclaration',
-								id: {
-									type: 'Identifier',
-									name: mainFunctionName,
-								},
-								generator: false,
-								params: [
-									{
-										type: 'Identifier',
-										name: elementObjectName,
+								type: 'ExpressionStatement',
+								expression: {
+									type: 'AssignmentExpression',
+									operator: '=',
+									left: {
+										type: 'MemberExpression',
+										object: {
+											type: 'Identifier',
+											name: 'window',
+										},
+										property: {
+											type: 'Identifier',
+											name: mainFunctionName,
+										},
+										computed: false,
 									},
-								],
-								body: {
-									type: 'BlockStatement',
-									body: node.body,
+									right: {
+										type: 'ArrowFunctionExpression',
+										expression: false,
+										generator: false,
+										params: [
+											{
+												type: 'Identifier',
+												name: elementObjectName,
+											},
+										],
+										body: {
+											type: 'BlockStatement',
+											body: node.body,
+										},
+									},
 								},
 							},
 						],
