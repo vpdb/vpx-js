@@ -11,89 +11,89 @@ const pp = require('./post-process');
 # Rules
 #===============================
 
-Program              -> NLOpt GlobalStmt:*                            {% data => estree.program(data[1]) %}
+Program              -> NLOpt GlobalStmt:*                                                                         {% data => estree.program(data[1]) %}
 
 #===============================
 # Rules : Declarations
 #===============================
 
-VarDecl              -> "Dim" __ VarName OtherVarsOpt:* NL            {% pp.varDecl %}
+VarDecl              -> "Dim" __ VarName OtherVarsOpt:* NL                                                         {% pp.varDecl %}
 
-VarName              -> ExtendedID ("(" ArrayRankList ")"):?          {% id %}
+VarName              -> ExtendedID ("(" ArrayRankList ")"):?                                                       {% id %}
 
-OtherVarsOpt         -> "," _ VarName                                 {% data => data[2] %}
+OtherVarsOpt         -> "," _ VarName                                                                              {% data => data[2] %}
 
 ArrayRankList        -> IntLiteral _ "," _ ArrayRankList
                       | IntLiteral
 
-ConstDecl            -> AccessModifierOpt __ "Const" __ ConstNameValue OtherConstantsOpt:* NL
-                      | "Const" __ ConstNameValue OtherConstantsOpt:* NL    {% pp.constDecl %}
+ConstDecl            -> "Const" __ ConstNameValue OtherConstantsOpt:* NL                                           {% pp.constDecl %}
+#                      | AccessModifierOpt __ "Const" __ ConstNameValue OtherConstantsOpt:* NL
 
 ConstNameValue       -> ExtendedID _ "=" _ ConstExprDef
 
-OtherConstantsOpt    -> "," _ ConstNameValue                          {% data => data[2] %}
+OtherConstantsOpt    -> "," _ ConstNameValue                                                                       {% data => data[2] %}
 
-ConstExprDef         -> "(" _ ConstExprDef _ ")"
-                      | "-" ConstExprDef                              {% data => estree.unaryExpression(data[0], data[1]) %}
-                      | "+" ConstExprDef                              {% data => estree.unaryExpression(data[0], data[1]) %}
-                      | ConstExpr                                     {% id %}
+ConstExprDef         -> "-" ConstExprDef                                                                           {% data => estree.unaryExpression(data[0], data[1]) %}
+                      | "+" ConstExprDef                                                                           {% data => estree.unaryExpression(data[0], data[1]) %}
+                      | ConstExpr                                                                                  {% id %}
+#                      | "(" _ ConstExprDef _ ")"
 
-SubDecl              -> "Sub" __ ExtendedID MethodArg:* NL MethodStmt:* _ "End" __ "Sub" NL                        {% pp.subDecl %}
-                      | "Sub" __ ExtendedID MethodArg:* InlineStmt "End" __ "Sub" NL                             
-                      | MethodAccessOpt __ "Sub" __ ExtendedID MethodArg:* NL MethodStmt:* "End" __ "Sub" NL     
-                      | MethodAccessOpt __ "Sub" __ ExtendedID MethodArg:* InlineStmt "End" __ "Sub" NL          
+SubDecl              -> "Sub" __ ExtendedID MethodArgList:? NL MethodStmt:* _ "End" __ "Sub" NL                    {% pp.subDecl %}
+#                      | "Sub" __ ExtendedID MethodArgList:? InlineStmt "End" __ "Sub" NL                             
+#                      | MethodAccessOpt __ "Sub" __ ExtendedID MethodArgList:* NL MethodStmt:* "End" __ "Sub" NL     
+#                      | MethodAccessOpt __ "Sub" __ ExtendedID MethodArgList:* InlineStmt "End" __ "Sub" NL          
 
-MethodAccessOpt      -> "Public" __ "Default"
-                      | AccessModifierOpt
+#MethodAccessOpt      -> "Public" __ "Default"
+#                      | AccessModifierOpt
 
-AccessModifierOpt    -> "Public"                                      {% id %}
-                      | "Private"                                     {% id %}
+#AccessModifierOpt    -> "Public"                                                                                   {% id %}
+#                      | "Private"                                                                                  {% id %}
 
-MethodArg            -> "(" _ Arg OtherArgsOpt:* _ ")"                {% data => [data[2], data[3]] %}      
-                      | "(" ")"                                       {% data => [] %}
+MethodArgList        -> "(" _ Arg OtherArgsOpt:* _ ")"                                                             {% pp.methodArgList %}      
+                      | "(" ")"                                                                                    {% pp.methodArgList %}
 
-OtherArgsOpt         -> "," _ Arg                                     {% data => data[2] %}
+OtherArgsOpt         -> "," _ Arg                                                                                  {% data => data[2] %}
 
-Arg                  -> ArgModifierOpt __ ExtendedID "(" ")"
-                      | ArgModifierOpt __ ExtendedID
-                      | ExtendedID "(" ")"
-                      | ExtendedID                                    {% id %}
-
-ArgModifierOpt       -> "ByVal"
-                      | "ByRef"
+Arg                  -> ExtendedID                                                                                 {% id %}
+#                      | ArgModifierOpt __ ExtendedID "(" ")"
+#                      | ArgModifierOpt __ ExtendedID
+#                      | ExtendedID "(" ")"
+                      
+#ArgModifierOpt       -> "ByVal"
+#                      | "ByRef"
 
 #===============================
 # Rules : Statements
 #===============================
 
-GlobalStmt           -> OptionExplicit                                {% id %}
-                      | ConstDecl                                     {% id %}
-                      | SubDecl                                       {% id %}
-                      | BlockStmt                                     {% id %}
+GlobalStmt           -> OptionExplicit                                                                             {% id %}
+                      | ConstDecl                                                                                  {% id %}
+                      | SubDecl                                                                                    {% id %}
+                      | BlockStmt                                                                                  {% id %}
 
-MethodStmt           -> ConstDecl                                     {% id %}
-                      | _ BlockStmt                                   {% data => data[1] %} 
+MethodStmt           -> ConstDecl                                                                                  {% id %}
+                      | _ BlockStmt                                                                                {% data => data[1] %} 
 
-BlockStmt            -> VarDecl                                       {% id %}
-                      | _ InlineStmt NL                               {% data => data[1] %}
+BlockStmt            -> VarDecl                                                                                    {% id %}
+                      | _ InlineStmt NL                                                                            {% data => data[1] %}
 
-InlineStmt           -> SubCallStmt                                   {% id %}
+InlineStmt           -> SubCallStmt                                                                                {% id %}
 
-OptionExplicit       -> "Option" __ "Explicit" NL                           {% pp.optionExplicit %}
+OptionExplicit       -> "Option" __ "Explicit" NL                                                                  {% pp.optionExplicit %}
 
-SubCallStmt          -> QualifiedID __ SubSafeExprOpt _ CommaExprList:*     {% pp.subCallStmt %}
+SubCallStmt          -> QualifiedID __ SubSafeExprOpt _ CommaExprList:*                                            {% pp.subCallStmt %}
 #                      | QualifiedID "(" ")"
-                     | QualifiedID                                          {% pp.subCallStmt %}
+                     | QualifiedID                                                                                 {% pp.subCallStmt %}
 
-CommaExprList        -> "," _ Expr                                    {% data => data[2] %}
+CommaExprList        -> "," _ Expr                                                                                 {% data => data[2] %}
 
-SubSafeExprOpt       -> SubSafeExpr                                   {% id %}
+SubSafeExprOpt       -> SubSafeExpr                                                                                {% id %}
 
-QualifiedID          -> IDDot QualifiedIDTail                         {% data => estree.memberExpression(data[0], data[1]) %}
-                      | ID                                            {% id %}
+QualifiedID          -> IDDot QualifiedIDTail                                                                      {% data => estree.memberExpression(data[0], data[1]) %}
+                      | ID                                                                                         {% id %}
 
 QualifiedIDTail      -> IDDot QualifiedIDTail
-                      | ID                                            {% id %}
+                      | ID                                                                                         {% id %}
 
 SafeKeywordID        -> "Default"
                       | "Erase"
@@ -103,7 +103,7 @@ SafeKeywordID        -> "Default"
                       | "Step"
 
 ExtendedID           -> SafeKeywordID
-                      | ID                                            {% id %}
+                      | ID                                                                                         {% id %}
 
 NLOpt                -> NL:*
 
@@ -111,42 +111,42 @@ NLOpt                -> NL:*
 # Rules : Expressions
 #===============================
 
-SubSafeExpr          -> SubSafeValue                                  {% id %}
+SubSafeExpr          -> SubSafeValue                                                                               {% id %}
 
-SubSafeValue         -> ConstExpr                                     {% id %}
-#                      | LeftExpr                                      {% id %}
+SubSafeValue         -> ConstExpr                                                                                  {% id %}
+#                      | LeftExpr                                      
 #                      | "(" _ Expr _ ")"
 
-Expr                 -> UnaryExpr                                     {% id %}
+Expr                 -> UnaryExpr                                                                                  {% id %}
 
-UnaryExpr            -> "-" UnaryExpr                                 {% data => estree.unaryExpression(data[0], data[1]) %}
-                      | "+" UnaryExpr                                 {% data => estree.unaryExpression(data[0], data[1]) %}
-                      | ExpExpr                                       {% id %}
+UnaryExpr            -> "-" UnaryExpr                                                                              {% data => estree.unaryExpression(data[0], data[1]) %}
+                      | "+" UnaryExpr                                                                              {% data => estree.unaryExpression(data[0], data[1]) %}
+                      | ExpExpr                                                                                    {% id %}
 
-ExpExpr              -> Value "^" ExpExpr
-                      | Value                                         {% id %}
+ExpExpr              -> Value                                                                                      {% id %}
+#                      | Value "^" ExpExpr                                                                                      
 
-Value                -> ConstExpr                                     {% id %}
-#                      | LeftExpr                                      {% id %}
-                      | "(" _ Expr _ ")"
+Value                -> ConstExpr                                                                                  {% id %}
+#                      | LeftExpr                                     
+#                      | "(" _ Expr _ ")"
 
-ConstExpr            -> IntLiteral                                    {% data => estree.literal(data[0]) %}
-                      | FloatLiteral                                  {% data => estree.literal(data[0]) %}
-                      | StringLiteral                                 {% data => estree.literal(data[0]) %}
-                      | Nothing                                       {% id %}
+ConstExpr            -> IntLiteral                                                                                 {% data => estree.literal(data[0]) %}
+                      | FloatLiteral                                                                               {% data => estree.literal(data[0]) %}
+                      | StringLiteral                                                                              {% data => estree.literal(data[0]) %}
+                      | Nothing                                                                                    {% id %}
 
-Nothing              -> "Nothing"                                     {% id %}
-                      | "Null"                                        {% id %}
-                      | "Empty"                                       {% id %}
+Nothing              -> "Nothing"                                                                                  {% id %}
+                      | "Null"                                                                                     {% id %}
+                      | "Empty"                                                                                    {% id %}
 
 #===============================
 # Terminals
 #===============================
 
-ID                   -> Letter IDTail                                 {% data => estree.identifier(data[0] + data[1]) %}
-                      | "[" IDNameChar:* "]"
+ID                   -> Letter IDTail                                                                              {% data => estree.identifier(data[0] + data[1]) %}
+#                      | "[" IDNameChar:* "]"
 
-IDDot                -> Letter IDTail "."                             {% data => estree.identifier(data[0] + data[1]) %}
+IDDot                -> Letter IDTail "."                                                                          {% data => estree.identifier(data[0] + data[1]) %}
 
 NL                   -> NewLine NL
                       | NewLine
@@ -156,13 +156,13 @@ NewLine              -> CR LF
                       | LF
                       | ":"
 
-IntLiteral           -> unsigned_int                                  {% id %}
+IntLiteral           -> unsigned_int                                                                               {% id %}
                       | HexLiteral
                       | OctLiteral
 
-StringLiteral        -> "\"" ( StringChar | "\"\"" ):* "\""           {% data => data[1].join('') %}
+StringLiteral        -> "\"" ( StringChar | "\"\"" ):* "\""                                                        {% data => data[1].join('') %}
 
-FloatLiteral         -> decimal                                       {% id %}  # DecDigit:* "." DecDigit:+ ( "E" [+-]:? DecDigit:+ ):?
+FloatLiteral         -> decimal                                                                                    {% id %}  # DecDigit:* "." DecDigit:+ ( "E" [+-]:? DecDigit:+ ):?
 
 HexLiteral           -> "&H" HexDigit:+ "&":?
 OctLiteral           -> "&" OctDigit:+ "&":?
@@ -179,6 +179,6 @@ LF                   -> [\n]
 
 CR                   -> [\r]
 
-StringChar           -> [\x01-\x21|\x23-\xD7FF|\xE000-\xFFEF]         {% id %}
+StringChar           -> [\x01-\x21|\x23-\xD7FF|\xE000-\xFFEF]                                                      {% id %}
 
-IDTail               -> [a-zA-Z0-9_]:*                                {% data => data[0].join('') %}
+IDTail               -> [a-zA-Z0-9_]:*                                                                             {% data => data[0].join('') %}
