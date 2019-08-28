@@ -80,4 +80,16 @@ describe('The VBScript transpiler', () => {
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = 0;');
 	});
+
+	it ('should transpile an add expression +', () => {
+		const vbs = `EnableBallControl = EnableBallControl + 1\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('EnableBallControl = EnableBallControl + 1;');
+	});
+
+	it ('should transpile an add expression -', () => {
+		const vbs = `EnableBallControl = EnableBallControl - 1\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('EnableBallControl = EnableBallControl - 1;');
+	});
 });

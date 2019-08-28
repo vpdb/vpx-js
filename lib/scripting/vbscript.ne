@@ -133,7 +133,14 @@ SubSafeValue         -> ConstExpr                                               
 #                      | LeftExpr                                      
 #                      | "(" _ Expr _ ")"
 
-Expr                 -> UnaryExpr                                                                                  {% id %}
+Expr                 -> ImpExpr                                                                                    {% id %}
+
+ImpExpr              -> AddExpr                                                                                    {% id %}
+#                      | ImpExpr _ "Imp" _ AddExpr
+
+AddExpr              -> AddExpr _ "+" _ UnaryExpr                                                                  {% data => estree.binaryExpression('+', data[0], data[4]) %}
+                      | AddExpr _ "-" _ UnaryExpr                                                                  {% data => estree.binaryExpression('-', data[0], data[4]) %}
+                      | UnaryExpr                                                                                  {% id %}
 
 UnaryExpr            -> "-" UnaryExpr                                                                              {% data => estree.unaryExpression(data[0], data[1]) %}
                       | "+" UnaryExpr                                                                              {% data => estree.unaryExpression(data[0], data[1]) %}
@@ -143,7 +150,7 @@ ExpExpr              -> Value                                                   
 #                      | Value "^" ExpExpr                                                                                      
 
 Value                -> ConstExpr                                                                                  {% id %}
-#                      | LeftExpr                                     
+                      | LeftExpr                                                                                   {% id %}
 #                      | "(" _ Expr _ ")"
 
 ConstExpr            -> IntLiteral                                                                                 {% data => estree.literal(data[0]) %}

@@ -19,6 +19,8 @@
 
 import {
 	AssignmentExpression,
+	BinaryExpression,
+	BinaryOperator,
 	CallExpression,
 	Comment,
 	EmptyStatement,
@@ -62,6 +64,15 @@ export function literal(value: string | boolean | number | null): Literal {
 	return {
 		type: 'Literal',
 		value,
+	};
+}
+
+export function binaryExpression(operator: BinaryOperator, left: Expression, right: Expression): BinaryExpression {
+	return {
+		type: 'BinaryExpression',
+		operator,
+		left,
+		right,
 	};
 }
 
