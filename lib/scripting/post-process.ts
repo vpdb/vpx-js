@@ -196,7 +196,8 @@ type MethodArgListResult = Identifier;
  * Grammar:
  * ```
  * MethodArgList -> "(" _ Arg OtherArgsOpt:* _ ")
- *                | "(" ")"  
+ *                | "(" ")"
+ * ```
  * Result:
  * ```
  * [
@@ -215,6 +216,31 @@ export function methodArgList(result: [string, null | string, Identifier, Identi
 	const otherArgs = result[3] || [];
 
 	return [...firstArg, ...otherArgs];
+}
+
+/**
+ * Grammar:
+ * ```
+ * AssignStmt -> LeftExpr _ "=" _ Expr
+ * ```
+ * Result:
+ * ```
+ * [
+ *   { "type": "Identifier", "name": "EnableBallControl" },
+ *   null,
+ *   "=",
+ *   null,
+ *   { "type": "Literal", "value": 0 }
+ * ]
+ * ```
+ */
+
+export function assignStmt(result: [Identifier, null, "=", null, Literal | UnaryExpression]) {
+	const left = result[0];
+	const operator = result[2];
+	const right = result[4];
+
+	return estree.assignmentExpressionStatement(left, operator, right);
 }
 
 /**

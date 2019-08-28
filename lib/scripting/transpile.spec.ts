@@ -74,4 +74,10 @@ describe('The VBScript transpiler', () => {
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('function BallRelease_Hit(value1, value2, value3) {\n    BallRelease.CreateBall();\n}');
 	});
+
+	it ('should transpile an assignment statement', () => {
+		const vbs = `EnableBallControl = 0\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('EnableBallControl = 0;');
+	});
 });
