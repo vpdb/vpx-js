@@ -77,13 +77,25 @@ MethodStmt           -> ConstDecl                                               
 BlockStmt            -> VarDecl                                                                                    {% id %}
                       | _ InlineStmt NL                                                                            {% data => data[1] %}
 
-InlineStmt           -> SubCallStmt                                                                                {% id %}
+InlineStmt           -> AssignStmt                                                                                 {% id %}
+                      | SubCallStmt                                                                                {% id %}
 
 OptionExplicit       -> "Option" __ "Explicit" NL                                                                  {% pp.optionExplicit %}
 
+AssignStmt           -> LeftExpr _ "=" _ Expr                                                                      {% pp.assignStmt %}
+#                      | "Set" LeftExpr _ "=" _ Expr
+#                      | "Set" LeftExpr _ "=" _ "New" _ LeftExpr
+
+
 SubCallStmt          -> QualifiedID __ SubSafeExprOpt _ CommaExprList:*                                            {% pp.subCallStmt %}
 #                      | QualifiedID "(" ")"
-                     | QualifiedID                                                                                 {% pp.subCallStmt %}
+                      | QualifiedID                                                                                {% pp.subCallStmt %}
+
+LeftExpr             -> QualifiedID                                                                                {% id %}
+#                      | QualifiedID IndexOrParamsList "." LeftExprTail
+#                      | QualifiedID IndexOrParamsListDot LeftExprTail
+#                      | QualifiedID IndexOrParamsList
+#                      | SafeKeywordID
 
 CommaExprList        -> "," _ Expr                                                                                 {% data => data[2] %}
 

@@ -18,6 +18,7 @@
  */
 
 import {
+	AssignmentExpression,
 	CallExpression,
 	Comment,
 	EmptyStatement,
@@ -131,5 +132,21 @@ export function callExpression(callee: Expression, args: Array<Expression | Spre
 		type: 'CallExpression',
 		callee,
 		arguments: args,
+	};
+}
+
+export function assignmentExpressionStatement(left: Identifier, operator: '=',  right: Literal | UnaryExpression): ExpressionStatement {
+	return {
+		type: 'ExpressionStatement',
+		expression: assignmentExpression(left, operator, right),
+	};
+}
+
+export function assignmentExpression(left: Identifier, operator: '=',  right: Literal | UnaryExpression): AssignmentExpression {
+	return {
+		type: 'AssignmentExpression',
+		left,
+		operator,
+		right,
 	};
 }
