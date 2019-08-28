@@ -138,8 +138,18 @@ Expr                 -> ImpExpr                                                 
 ImpExpr              -> AddExpr                                                                                    {% id %}
 #                      | ImpExpr _ "Imp" _ AddExpr
 
-AddExpr              -> AddExpr _ "+" _ UnaryExpr                                                                  {% data => estree.binaryExpression('+', data[0], data[4]) %}
-                      | AddExpr _ "-" _ UnaryExpr                                                                  {% data => estree.binaryExpression('-', data[0], data[4]) %}
+AddExpr              -> AddExpr _ "+" _ ModExpr                                                                    {% data => estree.binaryExpression('+', data[0], data[4]) %}
+                      | AddExpr _ "-" _ ModExpr                                                                    {% data => estree.binaryExpression('-', data[0], data[4]) %}
+                      | ModExpr                                                                                    {% id %}
+
+ModExpr              -> ModExpr _ "Mod" _ IntDivExpr                                                               {% data => estree.binaryExpression('%', data[0], data[4]) %}
+                      | IntDivExpr                                                                                 {% id %}
+
+IntDivExpr           -> IntDivExpr _ "\\" _ MultExpr                                                               {% data => estree.binaryExpression('/', data[0], data[4]) %}
+                      | MultExpr                                                                                   {% id %}
+
+MultExpr             -> MultExpr _ "*" _ UnaryExpr                                                                 {% data => estree.binaryExpression('*', data[0], data[4]) %}
+                      | MultExpr _ "/" _ UnaryExpr                                                                 {% data => estree.binaryExpression('/', data[0], data[4]) %}
                       | UnaryExpr                                                                                  {% id %}
 
 UnaryExpr            -> "-" UnaryExpr                                                                              {% data => estree.unaryExpression(data[0], data[1]) %}
