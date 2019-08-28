@@ -17,10 +17,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Identifier, Literal, MemberExpression, Statement, UnaryExpression, VariableDeclarator } from 'estree';
+import {
+	EmptyStatement, ExpressionStatement, FunctionDeclaration,
+	Identifier,
+	Literal,
+	MemberExpression,
+	Statement,
+	UnaryExpression,
+	VariableDeclaration,
+	VariableDeclarator,
+} from 'estree';
 import { inspect } from 'util';
 
-import * as estree from './estree'; // use the namespace to avoid clashes
+import * as estree from './estree';
 
 /**
  * Grammar:
@@ -33,8 +42,7 @@ import * as estree from './estree'; // use the namespace to avoid clashes
  * ["Option", null, "Explicit", [[["\n"]]]]
  * ```
  */
-
-export function optionExplicit(result: [string, null, string]) {
+export function optionExplicit(result: [string, null, string]): EmptyStatement {
 	const option = result[0];
 	const explicit = result[2];
 	return estree.emptyStatement(
@@ -63,8 +71,7 @@ export function optionExplicit(result: [string, null, string]) {
  * ]
  * ```
  */
-
-export function dimDecl(result: [string, null, VariableDeclarator[]]) {
+export function dimDecl(result: [string, null, VariableDeclarator[]]): VariableDeclaration {
 	const declarations = result[2];
 	return estree.variableDeclaration(
 		'let',
@@ -85,8 +92,7 @@ export function dimDecl(result: [string, null, VariableDeclarator[]]) {
  * ]
  * ```
  */
-
-export function dimVarList(result: [ DimVarListResult, DimVarListResult[] ]) {
+export function dimVarList(result: [ DimVarListResult, DimVarListResult[] ]): VariableDeclarator[] {
 	const firstVar = result[0];
 	const otherVars = result[1] || [];
 
@@ -133,8 +139,7 @@ type DimVarListResult = Identifier;
  * ]
  * ```
  */
-
-export function constDecl(result: [string, null, VariableDeclarator[]]) {
+export function constDecl(result: [string, null, VariableDeclarator[]]): VariableDeclaration {
 	const declarations = result[2];
 	return estree.variableDeclaration(
 		'const',
@@ -170,8 +175,7 @@ export function constDecl(result: [string, null, VariableDeclarator[]]) {
  * ]
  * ```
  */
-
-export function constVarList(result: [ ConstVarListResult, ConstVarListResult[] ]) {
+export function constVarList(result: [ ConstVarListResult, ConstVarListResult[] ]): VariableDeclarator[] {
 	const firstVar = result[0];
 	const otherVars = result[1] || [];
 
@@ -211,8 +215,7 @@ type ConstVarListResult = [Identifier, null, string, null, Literal | UnaryExpres
  * ```
  * @todo Literal and UnaryExpression will be more generic in the future!
  */
-
-export function subCallStmt(result: [MemberExpression, null, Literal?, null?, UnaryExpression[]?]) {
+export function subCallStmt(result: [MemberExpression, null, Literal?, null?, UnaryExpression[]?]): ExpressionStatement {
 	const callee = result[0];
 	const firstArg = result[2] ? [result[2]] : []; // array, so we can easily spread below
 	const otherArgs = result[4] || [];
@@ -260,8 +263,7 @@ export function subCallStmt(result: [MemberExpression, null, Literal?, null?, Un
  * ]
  * ```
  */
-
-export function subDecl(result: [string, null, Identifier, MethodArgListResult[], null, Statement[]?]) {
+export function subDecl(result: [string, null, Identifier, MethodArgListResult[], null, Statement[]?]): FunctionDeclaration {
 	const name = result[2];
 	const params = result[3];
 	const statements = result[5] || [];
@@ -288,8 +290,7 @@ type MethodArgListResult = Identifier;
  * ]
  * ```
  */
-
-export function methodArgList(result: [string, null | string, Identifier, Identifier[], null, string]) {
+export function methodArgList(result: [string, null | string, Identifier, Identifier[], null, string]): Identifier[] {
 	const firstArg = result[2] ? [result[2]] : []; // array, so we can easily spread below
 	const otherArgs = result[3] || [];
 
@@ -312,8 +313,7 @@ export function methodArgList(result: [string, null | string, Identifier, Identi
  * ]
  * ```
  */
-
-export function assignStmt(result: [Identifier, null, '=', null, Literal | UnaryExpression]) {
+export function assignStmt(result: [Identifier, null, '=', null, Literal | UnaryExpression]): ExpressionStatement {
 	const left = result[0];
 	const operator = result[2];
 	const right = result[4];
