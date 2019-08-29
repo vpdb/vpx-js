@@ -28,7 +28,7 @@ describe('The VBScript transpiler', () => {
 	});
 
 	it('should transpile a single variable declaration', () => {
-		const vbs = `Option Explicit\n\nBallRelease.CreateBall\n\nBallRelease.Kick 90, 7\n`;
+		const vbs = `Dim test1\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('let test1;');
 	});
