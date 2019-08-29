@@ -44,8 +44,8 @@ export class ScopeTransformer {
 		this.items = table.getElementApis();
 	}
 
-	public transform(ast: Program, mainFunctionName: string, elementObjectName: string): Program {
-		return this.wrap(this.replaceElementObjectNames(ast, elementObjectName), mainFunctionName, elementObjectName);
+	public transform(ast: Program, mainFunctionName: string, elementObjectName: string, globalObjectName?: string): Program {
+		return this.wrap(this.replaceElementObjectNames(ast, elementObjectName), mainFunctionName, elementObjectName, globalObjectName);
 	}
 
 	/**
@@ -58,8 +58,8 @@ export class ScopeTransformer {
 	public replaceElementObjectNames(ast: Program, elementObjectName: string): Program {
 		return replace(ast, {
 			enter: (node, parent: any) => {
-				const alreadyReplaced = parent.type === 'MemberExpression' && parent.object.name === elementObjectName;
-				if (!alreadyReplaced && node.type === 'Identifier' && this.items[node.name]) {
+				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === elementObjectName;
+				if (!alreadyReplaced && node.type === 'Identifier' && node.name in this.items) {
 					return memberExpression(
 						identifier(elementObjectName),
 						identifier(node.name),
@@ -76,17 +76,20 @@ export class ScopeTransformer {
 	 * @param ast Original AST
 	 * @param mainFunctionName Name of the function to wrap the code into
 	 * @param elementObjectName Name of the function parameter containing all table elements
+	 * @param globalObjectName Name of the global object the function will be added too. If not specified it'll be a global function.
 	 */
-	public wrap(ast: Program, mainFunctionName: string, elementObjectName: string): Program {
+	public wrap(ast: Program, mainFunctionName: string, elementObjectName: string, globalObjectName?: string): Program {
 		return replace(ast, {
 			enter: node => {
 				if (node.type === 'Program') {
 					return program([
 						assignmentExpressionStatement(
-							memberExpression(
-								identifier('window'),
-								identifier(mainFunctionName),
-							),
+							globalObjectName
+								? memberExpression(
+										identifier(globalObjectName),
+										identifier(mainFunctionName),
+									)
+								: identifier(mainFunctionName),
 							'=',
 							arrowFunctionExpressionBlock(
 								node.body as Statement[],
