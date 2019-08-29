@@ -93,7 +93,7 @@ export function program(data: Statement[]): Program {
 	};
 }
 
-export function memberExpression(object: Identifier, property: Identifier) {
+export function memberExpression(object: Identifier, property: Identifier): Expression {
 	return {
 		type: 'MemberExpression',
 		object,

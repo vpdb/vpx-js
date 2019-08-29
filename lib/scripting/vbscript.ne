@@ -133,10 +133,22 @@ SubSafeValue         -> ConstExpr                                               
 #                      | LeftExpr                                      
 #                      | "(" _ Expr _ ")"
 
-Expr                 -> ImpExpr                                                                                    {% id %}
+Expr                 -> EqvExpr                                                                                    {% id %}
 
-ImpExpr              -> AddExpr                                                                                    {% id %}
-#                      | ImpExpr _ "Imp" _ AddExpr
+EqvExpr              -> EqvExpr _ "Eqv" _ XorExpr                                                                  {% pp.eqvExpr %}
+                      | XorExpr                                                                                    {% id %}
+
+XorExpr              -> XorExpr _ "Xor" _ OrExpr                                                                   {% data => estree.binaryExpression('^', data[0], data[4]) %}
+                      | OrExpr                                                                                     {% id %} 
+
+OrExpr               -> OrExpr _ "Or" _ AndExpr                                                                    {% data => estree.binaryExpression('|', data[0], data[4]) %}
+                      | AndExpr                                                                                    {% id %}
+
+AndExpr              -> AndExpr _ "And" _ NotExpr                                                                  {% data => estree.binaryExpression('&', data[0], data[4]) %}
+                      | NotExpr                                                                                    {% id %}
+
+NotExpr              -> "Not" _ NotExpr                                                                            {% data => estree.unaryExpression('~', data[2]) %}
+                      | AddExpr                                                                                    {% id %}
 
 AddExpr              -> AddExpr _ "+" _ ModExpr                                                                    {% data => estree.binaryExpression('+', data[0], data[4]) %}
                       | AddExpr _ "-" _ ModExpr                                                                    {% data => estree.binaryExpression('-', data[0], data[4]) %}
@@ -145,7 +157,7 @@ AddExpr              -> AddExpr _ "+" _ ModExpr                                 
 ModExpr              -> ModExpr _ "Mod" _ IntDivExpr                                                               {% data => estree.binaryExpression('%', data[0], data[4]) %}
                       | IntDivExpr                                                                                 {% id %}
 
-IntDivExpr           -> IntDivExpr _ "\\" _ MultExpr                                                               {% data => estree.binaryExpression('/', data[0], data[4]) %}
+IntDivExpr           -> IntDivExpr _ "\\" _ MultExpr                                                               {% pp.intDivExpr %}
                       | MultExpr                                                                                   {% id %}
 
 MultExpr             -> MultExpr _ "*" _ UnaryExpr                                                                 {% data => estree.binaryExpression('*', data[0], data[4]) %}
@@ -156,8 +168,8 @@ UnaryExpr            -> "-" UnaryExpr                                           
                       | "+" UnaryExpr                                                                              {% data => estree.unaryExpression(data[0], data[1]) %}
                       | ExpExpr                                                                                    {% id %}
 
-ExpExpr              -> Value                                                                                      {% id %}
-#                      | Value "^" ExpExpr                                                                                      
+ExpExpr              -> Value _ "^" _ ExpExpr                                                                      {% pp.expExpr %}
+                      | Value                                                                                      {% id %}
 
 Value                -> ConstExpr                                                                                  {% id %}
                       | LeftExpr                                                                                   {% id %}

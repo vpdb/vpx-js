@@ -18,7 +18,10 @@
  */
 
 import {
-	EmptyStatement, ExpressionStatement, FunctionDeclaration,
+	EmptyStatement,
+	Expression,
+	ExpressionStatement,
+	FunctionDeclaration,
 	Identifier,
 	Literal,
 	MemberExpression,
@@ -95,7 +98,6 @@ export function dimDecl(result: [string, null, VariableDeclarator[]]): VariableD
 export function dimVarList(result: [ DimVarListResult, DimVarListResult[] ]): VariableDeclarator[] {
 	const firstVar = result[0];
 	const otherVars = result[1] || [];
-
 	return [firstVar, ...otherVars].map(declaration => {
 		return estree.variableDeclarator(declaration, null);  // can't assign values with Dim
 	});
@@ -178,7 +180,6 @@ export function constDecl(result: [string, null, VariableDeclarator[]]): Variabl
 export function constVarList(result: [ ConstVarListResult, ConstVarListResult[] ]): VariableDeclarator[] {
 	const firstVar = result[0];
 	const otherVars = result[1] || [];
-
 	return [firstVar, ...otherVars].map((declaration) => {
 		return estree.variableDeclarator(declaration[0], declaration[4]);
 	});
@@ -267,7 +268,6 @@ export function subDecl(result: [string, null, Identifier, MethodArgListResult[]
 	const name = result[2];
 	const params = result[3];
 	const statements = result[5] || [];
-
 	return estree.functionDeclaration(name, params, statements);
 }
 type MethodArgListResult = Identifier;
@@ -293,7 +293,6 @@ type MethodArgListResult = Identifier;
 export function methodArgList(result: [string, null | string, Identifier, Identifier[], null, string]): Identifier[] {
 	const firstArg = result[2] ? [result[2]] : []; // array, so we can easily spread below
 	const otherArgs = result[3] || [];
-
 	return [...firstArg, ...otherArgs];
 }
 
@@ -317,8 +316,80 @@ export function assignStmt(result: [Identifier, null, '=', null, Literal | Unary
 	const left = result[0];
 	const operator = result[2];
 	const right = result[4];
-
 	return estree.assignmentExpressionStatement(left, operator, right);
+}
+
+/**
+ * Grammar:
+ * ```
+ * IntDivExpr -> IntDivExpr _ "\\" _ MultExpr
+ * ```
+ * Result:
+ * ```
+ * [
+ *   { "type": "Identifier", "name": "EnableBallControl" },
+ *   null,
+ *   "\\",
+ *   null,
+ *   { "type": "Literal", "value": 2 }
+ * ]
+ * ```
+ */
+
+export function intDivExpr(result: [Expression | Literal, null, '\\', null, Expression | Literal]): ExpressionStatement  {
+	const leftExpr = result[0] ? [result[0]] : [];
+	const rightExpr = result[4] ? [result[4]] : [];
+	const mathFloorExpression = estree.memberExpression(estree.identifier('Math'), estree.identifier('floor'));
+	return estree.callExpressionStatement(mathFloorExpression, [
+		estree.binaryExpression('/',
+			estree.callExpression(mathFloorExpression, leftExpr),
+			estree.callExpression(mathFloorExpression, rightExpr)),
+	]);
+}
+
+/**
+ * Grammar:
+ * ```
+ * EqvExpr -> EqvExpr _ "Eqv" _ XorExpr
+ * ```
+ * Result:
+ * ```
+ * [{ "type": "Literal", "value": 10 }, null, "Eqv", null, { "type": "Literal", "value": 8 }]
+ * ```
+ */
+
+export function eqvExpr(result: [Expression | Literal, null, 'Eqv', null, Expression | Literal]): UnaryExpression {
+	const leftExpr = result[0];
+	const rightExpr = result[4];
+	return estree.unaryExpression('~',
+		estree.binaryExpression('^', leftExpr, rightExpr));
+}
+
+/**
+ * Grammar:
+ * ```
+ * ExpExpr -> Value _ "^" _ ExpExpr
+ * ```
+ * Result:
+ * ```
+ * [
+ *   { "type": "Identifier", "name": "EnableBallControl" },
+ *   null,
+ *   "^",
+ *   null,
+ *   { "type": "Literal", "value": 2 }
+ * ]
+ * ```
+ */
+
+export function expExpr(result: [Expression | Literal, null, '^', null, Expression | Literal]): ExpressionStatement {
+	const leftExpr = result[0];
+	const rightExpr = result[4];
+	return estree.callExpressionStatement(
+		estree.memberExpression(estree.identifier('Math'), estree.identifier('pow')), [
+		leftExpr,
+		rightExpr,
+	]);
 }
 
 /**
