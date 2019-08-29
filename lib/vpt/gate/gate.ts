@@ -155,4 +155,8 @@ export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHitta
 		wireObj.matrix = new Matrix4();
 		wireObj.applyMatrix(matrix.toThreeMatrix4());
 	}
+
+	public getEventNames(): string[] {
+		return [ 'Hit', 'Init', 'LimitBOS', 'LimitEOS', 'Timer' ];
+	}
 }

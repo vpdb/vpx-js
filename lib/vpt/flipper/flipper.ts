@@ -145,6 +145,10 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		trafoMatrix.preMultiply(tempMatrix);
 		return trafoMatrix;
 	}
+
+	public getEventNames(): string[] {
+		return [ 'Init', 'Timer', 'LimitEOS', 'LimitBOS', 'Hit', 'Collide' ];
+	}
 }
 
 export interface FlipperConfig {

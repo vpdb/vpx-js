@@ -126,4 +126,8 @@ export class Primitive implements IRenderable, IHittable, IScriptable<PrimitiveA
 			}
 		}
 	}
+
+	public getEventNames(): string[] {
+		return [ 'Hit', 'Init' ];
+	}
 }
