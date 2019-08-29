@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { generate } from 'astring';
+import { generate } from 'escodegen';
 import { Program } from 'estree';
 import { Grammar, Parser } from 'nearley';
 import { Table } from '../vpt/table/table';

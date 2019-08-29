@@ -36,7 +36,6 @@
 	"author": "freezy <freezy@vpdb.io>",
 	"license": "GPL-2.0",
 	"dependencies": {
-		"astring": "^1.4.1",
 		"buffer": "^5.4.2",
 		"es6-promise-pool": "^2.5.0",
 		"escodegen": "^1.12.0",
