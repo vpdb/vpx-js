@@ -18,9 +18,10 @@
  */
 
 import {
-	AssignmentExpression,
+	ArrowFunctionExpression,
+	AssignmentExpression, AssignmentOperator,
 	BinaryExpression,
-	BinaryOperator,
+	BinaryOperator, BlockStatement,
 	CallExpression,
 	Comment,
 	EmptyStatement,
@@ -28,10 +29,10 @@ import {
 	ExpressionStatement,
 	FunctionDeclaration,
 	Identifier,
-	Literal,
+	Literal, MemberExpression, Pattern,
 	Program,
 	SpreadElement,
-	Statement,
+	Statement, Super,
 	UnaryExpression,
 	UnaryOperator,
 	VariableDeclaration,
@@ -93,7 +94,7 @@ export function program(data: Statement[]): Program {
 	};
 }
 
-export function memberExpression(object: Identifier, property: Identifier): Expression {
+export function memberExpression(object: Expression | Super, property: Expression): MemberExpression {
 	return {
 		type: 'MemberExpression',
 		object,
@@ -110,24 +111,28 @@ export function variableDeclaration(kind: 'var' | 'let' | 'const', declarations:
 	};
 }
 
-export function functionDeclaration(id: Identifier, params: Identifier[], statements: Statement[]): FunctionDeclaration {
+export function functionDeclaration(id: Identifier | null, params: Pattern[], statements: Statement[]): FunctionDeclaration {
 	return {
 		type: 'FunctionDeclaration',
 		id,
 		generator: false,
 		params,
-		body: {
-			type: 'BlockStatement',
-			body: statements,
-		},
+		body: blockStatement(statements),
 	};
 }
 
-export function variableDeclarator(id: Identifier, init: Expression | null): VariableDeclarator {
+export function variableDeclarator(id: Pattern, init: Expression | null): VariableDeclarator {
 	return {
 		type: 'VariableDeclarator',
 		id,
 		init,
+	};
+}
+
+export function assignmentExpressionStatement(left: Pattern | MemberExpression, operator: AssignmentOperator,  right: Expression): ExpressionStatement {
+	return {
+		type: 'ExpressionStatement',
+		expression: assignmentExpression(left, operator, right),
 	};
 }
 
@@ -146,18 +151,31 @@ export function callExpression(callee: Expression, args: Array<Expression | Spre
 	};
 }
 
-export function assignmentExpressionStatement(left: Identifier, operator: '=',  right: Literal | UnaryExpression): ExpressionStatement {
-	return {
-		type: 'ExpressionStatement',
-		expression: assignmentExpression(left, operator, right),
-	};
-}
-
-export function assignmentExpression(left: Identifier, operator: '=',  right: Literal | UnaryExpression): AssignmentExpression {
+export function assignmentExpression(left: Pattern | MemberExpression, operator: AssignmentOperator,  right: Expression): AssignmentExpression {
 	return {
 		type: 'AssignmentExpression',
 		left,
 		operator,
 		right,
+	};
+}
+
+export function arrowFunctionExpressionBlock(body: Statement[], params: Pattern[] = []): ArrowFunctionExpression {
+	return arrowFunctionExpression(blockStatement(body), params);
+}
+
+export function arrowFunctionExpression(body: BlockStatement | Expression, params: Pattern[] = []): ArrowFunctionExpression {
+	return {
+		type: 'ArrowFunctionExpression',
+		expression: false,
+		params,
+		body,
+	};
+}
+
+export function blockStatement(body: Statement[]): BlockStatement {
+	return {
+		type: 'BlockStatement',
+		body,
 	};
 }

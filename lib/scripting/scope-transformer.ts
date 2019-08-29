@@ -18,12 +18,21 @@
  */
 
 import { replace } from 'estraverse';
-import { Program } from 'estree';
+import { Program, Statement } from 'estree';
 import { Table } from '../vpt/table/table';
+import {
+	arrowFunctionExpressionBlock,
+	assignmentExpressionStatement,
+	identifier,
+	memberExpression,
+	program,
+} from './estree';
 
 /**
  * This wraps the table script into a function where its globals are replaced
  * by locals provided through the function parameters.
+ *
+ * Example: `BallRelease.CreateBall()` would become `function play(items) { items.BallRelease.CreateBall() }`.
  */
 export class ScopeTransformer {
 
@@ -51,18 +60,10 @@ export class ScopeTransformer {
 			enter: (node, parent: any) => {
 				const alreadyReplaced = parent.type === 'MemberExpression' && parent.object.name === elementObjectName;
 				if (!alreadyReplaced && node.type === 'Identifier' && this.items[node.name]) {
-					return {
-						type: 'MemberExpression',
-						object: {
-							type: 'Identifier',
-							name: elementObjectName,
-						},
-						property: {
-							type: 'Identifier',
-							name: node.name,
-						},
-						computed: false,
-					};
+					return memberExpression(
+						identifier(elementObjectName),
+						identifier(node.name),
+					);
 				}
 				return node;
 			},
@@ -80,46 +81,19 @@ export class ScopeTransformer {
 		return replace(ast, {
 			enter: node => {
 				if (node.type === 'Program') {
-					return {
-						type: 'Program',
-						body: [
-							{
-								type: 'ExpressionStatement',
-								expression: {
-									type: 'AssignmentExpression',
-									operator: '=',
-									left: {
-										type: 'MemberExpression',
-										object: {
-											type: 'Identifier',
-											name: 'window',
-										},
-										property: {
-											type: 'Identifier',
-											name: mainFunctionName,
-										},
-										computed: false,
-									},
-									right: {
-										type: 'ArrowFunctionExpression',
-										expression: false,
-										generator: false,
-										params: [
-											{
-												type: 'Identifier',
-												name: elementObjectName,
-											},
-										],
-										body: {
-											type: 'BlockStatement',
-											body: node.body,
-										},
-									},
-								},
-							},
-						],
-						sourceType: 'module',
-					} as Program;
+					return program([
+						assignmentExpressionStatement(
+							memberExpression(
+								identifier('window'),
+								identifier(mainFunctionName),
+							),
+							'=',
+							arrowFunctionExpressionBlock(
+								node.body as Statement[],
+								[ identifier(elementObjectName) ],
+							),
+						),
+					]);
 				}
 			},
 		}) as Program;
