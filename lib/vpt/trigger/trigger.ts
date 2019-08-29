@@ -128,4 +128,8 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 		obj.matrix = matrix.toThreeMatrix4();
 		obj.matrixWorldNeedsUpdate = true;
 	}
+
+	public getEventNames(): string[] {
+		return [ 'Init', 'Hit', 'Unhit', 'Timer' ];
+	}
 }

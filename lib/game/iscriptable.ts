@@ -22,4 +22,6 @@ import { IPlayable } from './iplayable';
 export interface IScriptable<T> extends IPlayable {
 
 	getApi(): T;
+
+	getEventNames(): string[];
 }

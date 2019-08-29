@@ -176,4 +176,8 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 			this.data.isDropped = val;
 		}
 	}
+
+	public getEventNames(): string[] {
+		return [ 'Dropped', 'Hit', 'Init', 'Raised', 'Timer' ];
+	}
 }

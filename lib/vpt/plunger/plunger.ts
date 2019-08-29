@@ -175,6 +175,10 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 	public onBallCreated(player: Player, ball: Ball): void {
 		// nothing to be done
 	}
+
+	public getEventNames(): string[] {
+		return [ 'Init', 'Timer', 'LimitEOS', 'LimitBOS' ];
+	}
 }
 
 export enum PlungerType {

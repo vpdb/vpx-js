@@ -21,8 +21,11 @@ import { generate } from 'escodegen';
 import { Program } from 'estree';
 import { Grammar, Parser } from 'nearley';
 import { Table } from '../vpt/table/table';
+import { EventTransformer } from './event-transformer';
 import { ScopeTransformer } from './scope-transformer';
 import * as vbsGrammar from './vbscript';
+
+/* tslint:disable:no-console */
 
 // the table script function
 declare function play(table: { [key: string]: any }): void;
@@ -39,7 +42,9 @@ export class Transpiler {
 		console.debug(vbs);
 		let ast = this.parse(vbs + '\n');
 		const scopeTransformer = new ScopeTransformer(this.table);
+		const eventTransformer = new EventTransformer(this.table);
 
+		ast = eventTransformer.transform(ast);
 		ast = scopeTransformer.transform(ast, 'play', 'items');
 		console.debug('AST:', ast);
 

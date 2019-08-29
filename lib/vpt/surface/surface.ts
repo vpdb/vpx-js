@@ -139,4 +139,8 @@ export class Surface implements IRenderable, IHittable, IScriptable<SurfaceApi> 
 	public getHitShapes(): HitObject[] {
 		return this.hits;
 	}
+
+	public getEventNames(): string[] {
+		return [ 'Init', 'Hit', 'Slingshot', 'Timer' ];
+	}
 }

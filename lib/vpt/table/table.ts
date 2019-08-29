@@ -28,6 +28,7 @@ import { IScriptable } from '../../game/iscriptable';
 import { IBinaryReader, Storage } from '../../io/ole-doc';
 import { f4 } from '../../math/float';
 import { FRect3D } from '../../math/frect3d';
+import { Transpiler } from '../../scripting/transpiler';
 import { logger } from '../../util/logger';
 import { Bumper } from '../bumper/bumper';
 import { Flipper } from '../flipper/flipper';
@@ -51,7 +52,6 @@ import { TableData } from './table-data';
 import { TableExporter, VpTableExporterOptions } from './table-exporter';
 import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
-import { Transpiler } from '../../scripting/transpiler';
 
 /**
  * A Visual Pinball table.
@@ -184,6 +184,15 @@ export class Table implements IRenderable {
 			apis[element.getName()] = element.getApi();
 		}
 		return apis;
+	}
+
+	public getElements(): { [key: string]: IScriptable<any> } {
+		const elements: { [key: string]: any } = {};
+		const elementList = this.items.filter(item => !!(item as any).getApi) as Array<IScriptable<any>>;
+		for (const element of elementList) {
+			elements[element.getName()] = element;
+		}
+		return elements;
 	}
 
 	public getScaleZ(): number {

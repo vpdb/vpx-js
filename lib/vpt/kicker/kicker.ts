@@ -137,4 +137,8 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 				return Texture.fromFilesystem('kickerHoleWood.bmp');
 		}
 	}
+
+	public getEventNames(): string[] {
+		return [ 'Init', 'Hit', 'Unhit', 'Timer' ];
+	}
 }
