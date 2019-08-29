@@ -18,6 +18,7 @@
  */
 
 import { generate } from 'escodegen';
+import { Program } from 'estree';
 import { Grammar, Parser } from 'nearley';
 import * as vbsGrammar from './vbscript';
 
@@ -25,14 +26,21 @@ import * as vbsGrammar from './vbscript';
  * A function that transpiles VBScript to JavaScript.
  */
 export function vbsToJs(vbs: string): string {
+	return astToVbs(vbsToAst(vbs));
+}
+
+export function vbsToAst(vbs: string): Program {
 	const parser = new Parser(Grammar.fromCompiled(vbsGrammar));
 	parser.feed(vbs);
 	/* istanbul ignore if */
 	if (parser.results.length === 0) {
 		throw new Error('Parser returned no results.');
 	}
+	return parser.results[0] as Program;
+}
 
-	return generate(parser.results[0], {
+export function astToVbs(ast: Program): string {
+	return generate(ast, {
 		comment: true,
 	});
 }

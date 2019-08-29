@@ -18,12 +18,13 @@
  */
 
 import { replace } from 'estraverse';
-import { ExpressionStatement, FunctionDeclaration, Program } from 'estree';
+import { FunctionDeclaration, Program } from 'estree';
 import { IScriptable } from '../game/iscriptable';
 import { Table } from '../vpt/table/table';
+import { arrowFunctionExpression, callExpressionStatement, identifier, literal, memberExpression } from './estree';
 
 /**
- * This wraps event callbacks into proper JavaScript event listeners.
+ * This transforms event subs into proper JavaScript event listeners.
  *
  * Example: `function Plunger_Init() {}` would become: `Plunger.on('Init', () => {})`.
  */
@@ -40,17 +41,20 @@ export class EventTransformer {
 	public transform(ast: Program): Program {
 		return replace(ast, {
 			enter: (node, parent: any) => {
+
+				// must be a function
 				if (node.type !== 'FunctionDeclaration') {
 					return node;
 				}
-				const fct = (node as FunctionDeclaration);
+				const functionNode = (node as FunctionDeclaration);
+
 				// must have an id (duh.)
-				if (!fct.id) {
+				if (!functionNode.id) {
 					return node;
 				}
 
 				// must have a _Event suffix
-				const [objName, eventName] = fct.id.name.split('_');
+				const [objName, eventName] = functionNode.id.name.split('_');
 				if (!eventName) {
 					return node;
 				}
@@ -65,39 +69,16 @@ export class EventTransformer {
 					return node;
 				}
 
-				return {
-					type: 'ExpressionStatement',
-					expression: {
-						type: 'CallExpression',
-						callee: {
-							type: 'MemberExpression',
-							object: {
-								type: 'Identifier',
-								name: objName,
-							},
-							property: {
-								type: 'Identifier',
-								name: 'on',
-							},
-							computed: false,
-						},
-						arguments: [
-							{
-								type: 'Literal',
-								value: eventName,
-								raw: `'${eventName}'`,
-							},
-							{
-								type: 'ArrowFunctionExpression',
-								id: null,
-								expression: false,
-								generator: false,
-								params: fct.params,
-								body: fct.body,
-							},
-						],
-					},
-				};
+				return callExpressionStatement(
+					memberExpression(
+						identifier(objName),
+						identifier('on'),
+					),
+					[
+						literal(eventName),
+						arrowFunctionExpression(functionNode.body, functionNode.params),
+					],
+				);
 			},
 		}) as Program;
 	}
