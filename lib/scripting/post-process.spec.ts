@@ -18,7 +18,7 @@
  */
 
 import { expect } from 'chai';
-import { vbsToJs } from './transpile';
+import { vbsToJs } from '../../test/script.helper';
 
 describe('The VBScript transpiler', () => {
 	it('should transpile an Option Explicit', () => {
