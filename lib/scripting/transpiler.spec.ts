@@ -22,8 +22,6 @@ import { expect } from 'chai';
 import { ThreeHelper } from '../../test/three.helper';
 import { NodeBinaryReader } from '../io/binary-reader.node';
 import { Table } from '../vpt/table/table';
-import { astToVbs, vbsToAst } from '../../test/script.helper';
-import { ScopeTransformer } from './scope-transformer';
 import { Transpiler } from './transpiler';
 
 chai.use(require('sinon-chai'));
