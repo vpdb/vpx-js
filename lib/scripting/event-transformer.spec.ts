@@ -19,11 +19,11 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
+import { astToVbs, vbsToAst } from '../../test/script.helper';
 import { ThreeHelper } from '../../test/three.helper';
 import { NodeBinaryReader } from '../io/binary-reader.node';
 import { Table } from '../vpt/table/table';
 import { EventTransformer } from './event-transformer';
-import { astToVbs, vbsToAst } from '../../test/script.helper';
 
 chai.use(require('sinon-chai'));
 
@@ -38,29 +38,25 @@ describe('The scripting event transformer', () => {
 	});
 
 	it('should transform a valid event on a valid item', () => {
-
-		const vbs = `Sub WireRectangle_Init()\n    BallRelease.CreateBall\nEnd Sub\n`;
+		const vbs = `Sub WireRectangle_Init()\nBallRelease.CreateBall\nEnd Sub\n`;
 		const js = transform(vbs, table);
 		expect(js).to.equal(`WireRectangle.on('Init', () => {\n    BallRelease.CreateBall();\n});`);
 	});
 
 	it('should not transform an invalid event on a valid item', () => {
-
-		const vbs = `Sub WireRectangle_DuhDah()\n    BallRelease.CreateBall\nEnd Sub\n`;
+		const vbs = `Sub WireRectangle_DuhDah()\nBallRelease.CreateBall\nEnd Sub\n`;
 		const js = transform(vbs, table);
 		expect(js).to.equal(`function WireRectangle_DuhDah() {\n    BallRelease.CreateBall();\n}`);
 	});
 
 	it('should not transform a valid event on an invalid item', () => {
-
-		const vbs = `Sub DoesntExist_Init()\n    BallRelease.CreateBall\nEnd Sub\n`;
+		const vbs = `Sub DoesntExist_Init()\nBallRelease.CreateBall\nEnd Sub\n`;
 		const js = transform(vbs, table);
 		expect(js).to.equal(`function DoesntExist_Init() {\n    BallRelease.CreateBall();\n}`);
 	});
 
 	it('should not transform a non-event sub', () => {
-
-		const vbs = `Sub MySub()\n    BallRelease.CreateBall\nEnd Sub\n`;
+		const vbs = `Sub MySub()\nBallRelease.CreateBall\nEnd Sub\n`;
 		const js = transform(vbs, table);
 		expect(js).to.equal(`function MySub() {\n    BallRelease.CreateBall();\n}`);
 	});

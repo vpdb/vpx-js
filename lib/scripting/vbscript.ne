@@ -1,5 +1,4 @@
 @preprocessor typescript
-@builtin "whitespace.ne"
 @builtin "number.ne"
 
 @{%
@@ -76,10 +75,11 @@ GlobalStmt           -> OptionExplicit                                          
                       | BlockStmt                                                                                  {% id %}
 
 MethodStmt           -> ConstDecl                                                                                  {% id %}
-                      | _ BlockStmt                                                                                {% data => data[1] %} 
+                      | BlockStmt                                                                                  {% id %}
 
 BlockStmt            -> DimDecl                                                                                    {% id %}
-                      | _ InlineStmt NL                                                                            {% data => data[1] %}
+                      | IfStmt                                                                                     {% id %}
+                      | InlineStmt NL                                                                              {% id %}
 
 InlineStmt           -> AssignStmt                                                                                 {% id %}
                       | SubCallStmt                                                                                {% id %}
@@ -95,15 +95,13 @@ SubCallStmt          -> QualifiedID __ SubSafeExprOpt _ CommaExprList:*         
 #                      | QualifiedID "(" ")"
                       | QualifiedID                                                                                {% pp.subCallStmt %}
 
+SubSafeExprOpt       -> SubSafeExpr                                                                                {% id %}
+
 LeftExpr             -> QualifiedID                                                                                {% id %}
 #                      | QualifiedID IndexOrParamsList "." LeftExprTail
 #                      | QualifiedID IndexOrParamsListDot LeftExprTail
 #                      | QualifiedID IndexOrParamsList
 #                      | SafeKeywordID
-
-CommaExprList        -> "," _ Expr                                                                                 {% data => data[2] %}
-
-SubSafeExprOpt       -> SubSafeExpr                                                                                {% id %}
 
 QualifiedID          -> IDDot QualifiedIDTail                                                                      {% data => estree.memberExpression(data[0], data[1]) %}
                       | ID                                                                                         {% id %}
@@ -121,7 +119,20 @@ SafeKeywordID        -> "Default"
 ExtendedID           -> SafeKeywordID
                       | ID                                                                                         {% id %}
 
-NLOpt                -> NL:*
+CommaExprList        -> "," _ Expr                                                                                 {% data => data[2] %}
+
+#========= If Statement
+
+IfStmt               -> "If" _ Expr _ "Then" NL BlockStmt:* ElseStmt:? _ "End" _ "If" NL                           {% pp.ifStmt %}
+#                      | "If" _ Expr _ "Then" _ InlineStmt ElseOpt:? EndIfOpt:? NL
+
+ElseStmt             -> "ElseIf" _ Expr _ "Then" NL BlockStmt:* ElseStmt:?                                         {% pp.ifStmt %}
+#                      | "ElseIf" _ Expr _ "Then" _ InlineStmt NL ElseStmt:?
+                      | "Else" NL BlockStmt:*                                                                      {% data => estree.blockStatement(data[2]) %}
+
+#ElseOpt              -> "Else" _ InlineStmt                                                                        {% data => data[2] %}
+
+#EndIfOpt             -> "End" _ "If"
 
 #===============================
 # Rules : Expressions
@@ -148,6 +159,18 @@ AndExpr              -> AndExpr _ "And" _ NotExpr                               
                       | NotExpr                                                                                    {% id %}
 
 NotExpr              -> "Not" _ NotExpr                                                                            {% data => estree.unaryExpression('~', data[2]) %}
+                      | CompareExpr                                                                                {% id %}
+
+CompareExpr          -> CompareExpr _ "Is" _ AddExpr                                                               {% data => estree.binaryExpression('==', data[0], data[4]) %}
+                      | CompareExpr _ "Is" __ "Not" _ AddExpr                                                      {% data => estree.binaryExpression('!=', data[0], data[6]) %}
+                      | CompareExpr _ ">=" _ AddExpr                                                               {% data => estree.binaryExpression('>=', data[0], data[4]) %}
+                      | CompareExpr _ "=>" _ AddExpr                                                               {% data => estree.binaryExpression('=>', data[0], data[4]) %}
+                      | CompareExpr _ "<=" _ AddExpr                                                               {% data => estree.binaryExpression('<=', data[0], data[4]) %}
+                      | CompareExpr _ "=<" _ AddExpr                                                               {% data => estree.binaryExpression('=<', data[0], data[4]) %}
+                      | CompareExpr _ ">"  _ AddExpr                                                               {% data => estree.binaryExpression('>', data[0], data[4]) %}
+                      | CompareExpr _ "<"  _ AddExpr                                                               {% data => estree.binaryExpression('<', data[0], data[4]) %}
+                      | CompareExpr _ "<>" _ AddExpr                                                               {% data => estree.binaryExpression('!=', data[0], data[4]) %}
+                      | CompareExpr _ "=" _ AddExpr                                                                {% data => estree.binaryExpression('==', data[0], data[4]) %}
                       | AddExpr                                                                                    {% id %}
 
 AddExpr              -> AddExpr _ "+" _ ModExpr                                                                    {% data => estree.binaryExpression('+', data[0], data[4]) %}
@@ -188,6 +211,8 @@ Nothing              -> "Nothing"                                               
 # Terminals
 #===============================
 
+NLOpt                -> NL:*
+
 ID                   -> Letter IDTail                                                                              {% data => estree.identifier(data[0] + data[1]) %}
 #                      | "[" IDNameChar:* "]"
 
@@ -227,3 +252,8 @@ CR                   -> [\r]
 StringChar           -> [\x01-\x21|\x23-\xD7FF|\xE000-\xFFEF]                                                      {% id %}
 
 IDTail               -> [a-zA-Z0-9_]:*                                                                             {% data => data[0].join('') %}
+
+_                    -> wschar:*                                                                                   {% data => null %}
+__                   -> wschar:+                                                                                   {% data => null %}
+
+wschar               -> [ \t\v\f]                                                                                  {% id %}
