@@ -19,9 +19,11 @@
 
 import {
 	ArrowFunctionExpression,
-	AssignmentExpression, AssignmentOperator,
+	AssignmentExpression,
+	AssignmentOperator,
 	BinaryExpression,
-	BinaryOperator, BlockStatement,
+	BinaryOperator,
+	BlockStatement,
 	CallExpression,
 	Comment,
 	EmptyStatement,
@@ -29,28 +31,32 @@ import {
 	ExpressionStatement,
 	FunctionDeclaration,
 	Identifier,
-	Literal, MemberExpression, Pattern,
+	IfStatement,
+	Literal,
+	MemberExpression,
+	Pattern,
 	Program,
 	SpreadElement,
-	Statement, Super,
+	Statement,
+	Super,
 	UnaryExpression,
 	UnaryOperator,
 	VariableDeclaration,
 	VariableDeclarator,
 } from 'estree';
 
+export function program(data: Statement[]): Program {
+	return {
+		type: 'Program',
+		sourceType: 'script',
+		body: data,
+	};
+}
+
 export function comment(type: 'Line' | 'Block', value: string): Comment {
 	return {
 		type,
 		value,
-	};
-}
-
-export function emptyStatement(leadingComments: Comment[] = [], trailingComments: Comment[] = []): EmptyStatement {
-	return {
-		type: 'EmptyStatement',
-		leadingComments,
-		trailingComments,
 	};
 }
 
@@ -68,50 +74,15 @@ export function literal(value: string | boolean | number | null): Literal {
 	};
 }
 
-export function binaryExpression(operator: BinaryOperator, left: Expression, right: Expression): BinaryExpression {
+export function variableDeclarator(id: Identifier, init: Expression | null): VariableDeclarator {
 	return {
-		type: 'BinaryExpression',
-		operator,
-		left,
-		right,
+		type: 'VariableDeclarator',
+		id,
+		init,
 	};
 }
 
-export function unaryExpression(operator: UnaryOperator, argument: Expression): UnaryExpression {
-	return {
-		type: 'UnaryExpression',
-		operator,
-		prefix: true,
-		argument,
-	};
-}
-
-export function program(data: Statement[]): Program {
-	return {
-		type: 'Program',
-		sourceType: 'script',
-		body: data,
-	};
-}
-
-export function memberExpression(object: Expression | Super, property: Expression): MemberExpression {
-	return {
-		type: 'MemberExpression',
-		object,
-		property,
-		computed: false,
-	};
-}
-
-export function variableDeclaration(kind: 'var' | 'let' | 'const', declarations: VariableDeclarator[]): VariableDeclaration {
-	return {
-		type: 'VariableDeclaration',
-		kind,
-		declarations,
-	};
-}
-
-export function functionDeclaration(id: Identifier | null, params: Pattern[], statements: Statement[]): FunctionDeclaration {
+export function functionDeclaration(id: Identifier, params: Identifier[], statements: Statement[]): FunctionDeclaration {
 	return {
 		type: 'FunctionDeclaration',
 		id,
@@ -121,42 +92,11 @@ export function functionDeclaration(id: Identifier | null, params: Pattern[], st
 	};
 }
 
-export function variableDeclarator(id: Pattern, init: Expression | null): VariableDeclarator {
+export function variableDeclaration(kind: 'var' | 'let' | 'const', declarations: VariableDeclarator[]): VariableDeclaration {
 	return {
-		type: 'VariableDeclarator',
-		id,
-		init,
-	};
-}
-
-export function assignmentExpressionStatement(left: Pattern | MemberExpression, operator: AssignmentOperator,  right: Expression): ExpressionStatement {
-	return {
-		type: 'ExpressionStatement',
-		expression: assignmentExpression(left, operator, right),
-	};
-}
-
-export function callExpressionStatement(callee: Expression, args: Array<Expression | SpreadElement>): ExpressionStatement {
-	return {
-		type: 'ExpressionStatement',
-		expression: callExpression(callee, args),
-	};
-}
-
-export function callExpression(callee: Expression, args: Array<Expression | SpreadElement>): CallExpression {
-	return {
-		type: 'CallExpression',
-		callee,
-		arguments: args,
-	};
-}
-
-export function assignmentExpression(left: Pattern | MemberExpression, operator: AssignmentOperator,  right: Expression): AssignmentExpression {
-	return {
-		type: 'AssignmentExpression',
-		left,
-		operator,
-		right,
+		type: 'VariableDeclaration',
+		kind,
+		declarations,
 	};
 }
 
@@ -173,9 +113,84 @@ export function arrowFunctionExpression(body: BlockStatement | Expression, param
 	};
 }
 
+export function assignmentExpression(left: Pattern | MemberExpression, operator: AssignmentOperator,  right: Expression): AssignmentExpression {
+	return {
+		type: 'AssignmentExpression',
+		left,
+		operator,
+		right,
+	};
+}
+
+export function binaryExpression(operator: BinaryOperator, left: Expression, right: Expression): BinaryExpression {
+	return {
+		type: 'BinaryExpression',
+		operator,
+		left,
+		right,
+	};
+}
+
+export function callExpression(callee: Expression, args: Array<Expression | SpreadElement>): CallExpression {
+	return {
+		type: 'CallExpression',
+		callee,
+		arguments: args,
+	};
+}
+
+export function memberExpression(object: Expression | Super, property: Expression): MemberExpression {
+	return {
+		type: 'MemberExpression',
+		object,
+		property,
+		computed: false,
+	};
+}
+
+export function unaryExpression(operator: UnaryOperator, argument: Expression): UnaryExpression {
+	return {
+		type: 'UnaryExpression',
+		operator,
+		prefix: true,
+		argument,
+	};
+}
+
+export function assignmentExpressionStatement(left: Pattern | MemberExpression, operator: AssignmentOperator,  right: Expression): ExpressionStatement {
+	return {
+		type: 'ExpressionStatement',
+		expression: assignmentExpression(left, operator, right),
+	};
+}
+
 export function blockStatement(body: Statement[]): BlockStatement {
 	return {
 		type: 'BlockStatement',
 		body,
+	};
+}
+
+export function callExpressionStatement(callee: Expression, args: Array<Expression | SpreadElement>): ExpressionStatement {
+	return {
+		type: 'ExpressionStatement',
+		expression: callExpression(callee, args),
+	};
+}
+
+export function emptyStatement(leadingComments: Comment[] = [], trailingComments: Comment[] = []): EmptyStatement {
+	return {
+		type: 'EmptyStatement',
+		leadingComments,
+		trailingComments,
+	};
+}
+
+export function ifStatement(test: Expression, consequent: Statement, alternate: Statement | null): IfStatement {
+	return {
+		type: 'IfStatement',
+		test,
+		consequent,
+		alternate,
 	};
 }

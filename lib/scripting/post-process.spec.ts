@@ -64,13 +64,13 @@ describe('The VBScript transpiler', () => {
 	});
 
 	it('should transpile a sub declaration without params', () => {
-		const vbs = `Sub BallRelease_Hit()\n    BallRelease.CreateBall\nEnd Sub\n`;
+		const vbs = `Sub BallRelease_Hit()\nBallRelease.CreateBall\nEnd Sub\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('function BallRelease_Hit() {\n    BallRelease.CreateBall();\n}');
 	});
 
 	it('should transpile a sub declaration with params', () => {
-		const vbs = `Sub BallRelease_Hit(value1, value2, value3)\n    BallRelease.CreateBall\nEnd Sub\n`;
+		const vbs = `Sub BallRelease_Hit(value1, value2, value3)\nBallRelease.CreateBall\nEnd Sub\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('function BallRelease_Hit(value1, value2, value3) {\n    BallRelease.CreateBall();\n}');
 	});
@@ -151,5 +151,89 @@ describe('The VBScript transpiler', () => {
 		const vbs = `EnableBallControl = EnableBallControl ^ 2\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = Math.pow(EnableBallControl, 2);;');
+	});
+
+	it ('should transpile a "Is" expression', () => {
+		const vbs = `EnableBallControl = EnableBallControl Is 2\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('EnableBallControl = EnableBallControl == 2;');
+	});
+
+	it ('should transpile a "Is Not" expression', () => {
+		const vbs = `EnableBallControl = EnableBallControl Is Not 2\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('EnableBallControl = EnableBallControl != 2;');
+	});
+
+	it ('should transpile a ">=" expression', () => {
+		const vbs = `EnableBallControl = EnableBallControl >= 2\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('EnableBallControl = EnableBallControl >= 2;');
+	});
+
+	it ('should transpile a "=>" expression', () => {
+		const vbs = `EnableBallControl = EnableBallControl => 2\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('EnableBallControl = EnableBallControl => 2;');
+	});
+
+	it ('should transpile a "<=" expression', () => {
+		const vbs = `EnableBallControl = EnableBallControl <= 2\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('EnableBallControl = EnableBallControl <= 2;');
+	});
+
+	it ('should transpile a "=<" expression', () => {
+		const vbs = `EnableBallControl = EnableBallControl =< 2\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('EnableBallControl = EnableBallControl =< 2;');
+	});
+
+	it ('should transpile a ">" expression', () => {
+		const vbs = `EnableBallControl = EnableBallControl > 2\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('EnableBallControl = EnableBallControl > 2;');
+	});
+
+	it ('should transpile a "<" expression', () => {
+		const vbs = `EnableBallControl = EnableBallControl < 2\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('EnableBallControl = EnableBallControl < 2;');
+	});
+
+	it ('should transpile a "<>" expression', () => {
+		const vbs = `EnableBallControl = EnableBallControl <> 2\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('EnableBallControl = EnableBallControl != 2;');
+	});
+
+	it ('should transpile a "=" expression', () => {
+		const vbs = `EnableBallControl = EnableBallControl = 2\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('EnableBallControl = EnableBallControl == 2;');
+	});
+
+	it ('should transpile an "If/Then" statement', () => {
+		const vbs = `If EnableBallControl = 1 Then\nEnableBallControl = 0\nEnd If\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('if (EnableBallControl == 1) {\n    EnableBallControl = 0;\n}');
+	});
+
+	it ('should transpile an "If/Then...Else" statement', () => {
+		const vbs = `If EnableBallControl = 1 Then\nEnableBallControl = 0\nEnableBallControl = 3\nElse\nEnableBallControl = 1\nEnableBallControl = 2\nEnd If\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('if (EnableBallControl == 1) {\n    EnableBallControl = 0;\n    EnableBallControl = 3;\n} else {\n    EnableBallControl = 1;\n    EnableBallControl = 2;\n}');
+	});
+
+	it ('should transpile an "If/Then...ElseIf/Then" statement', () => {
+		const vbs = `If DayOfWeek = "MON" Then\nDay = 1\nElseIf DayOfWeek = "TUE" Then\nDay = 2\nElseIf DayOfWeek = "WED" Then\nDay=3\nEnd If\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('if (DayOfWeek == \'MON\') {\n    Day = 1;\n} else if (DayOfWeek == \'TUE\') {\n    Day = 2;\n} else if (DayOfWeek == \'WED\') {\n    Day = 3;\n}');
+	});
+
+	it ('should transpile an "If/Then...ElseIf/Then...ElseIf/Then...Else" statement', () => {
+		const vbs = `If DayOfWeek = "MON" Then\nDay = 1\nElseIf DayOfWeek = "TUE" Then\nDay = 2\nElseIf DayOfWeek = "WED" Then\nDay=3\nElse\nDay = 0\nEnd If\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('if (DayOfWeek == \'MON\') {\n    Day = 1;\n} else if (DayOfWeek == \'TUE\') {\n    Day = 2;\n} else if (DayOfWeek == \'WED\') {\n    Day = 3;\n} else {\n    Day = 0;\n}');
 	});
 });

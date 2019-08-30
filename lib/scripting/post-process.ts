@@ -23,6 +23,7 @@ import {
 	ExpressionStatement,
 	FunctionDeclaration,
 	Identifier,
+	IfStatement,
 	Literal,
 	MemberExpression,
 	Statement,
@@ -31,7 +32,6 @@ import {
 	VariableDeclarator,
 } from 'estree';
 import { inspect } from 'util';
-
 import * as estree from './estree';
 
 /**
@@ -317,6 +317,98 @@ export function assignStmt(result: [Identifier, null, '=', null, Literal | Unary
 	const operator = result[2];
 	const right = result[4];
 	return estree.assignmentExpressionStatement(left, operator, right);
+}
+
+/**
+ * Grammar:
+ * ```
+ * IfStmt -> "If" _ Expr _ "Then" NL BlockStmt:* ElseStmt:? _ "End" _ "If" NL
+ * ```
+ * Result:
+ * ```
+ * [
+ *   "If",
+ *   null,
+ *   {
+ *     "type": "BinaryExpression",
+ *     "operator": "==",
+ *     "left": { "type": "Identifier", "name": "DayOfWeek" },
+ *     "right": { "type": "Literal", "value": "MON" }
+ *   },
+ *   null,
+ *   "Then",
+ *   [[["\n"]]],
+ *   [
+ *     {
+ *       "type": "ExpressionStatement",
+ *       "expression": {
+ *         "type": "AssignmentExpression",
+ *         "left": { "type": "Identifier", "name": "Day" },
+ *         "operator": "=",
+ *         "right": { "type": "Literal", "value": 1 }
+ *       }
+ *     }
+ *   ],
+ *   {
+ *     "type": "IfStatement",
+ *     "test": {
+ *       "type": "BinaryExpression",
+ *       "operator": "==",
+ *       "left": { "type": "Identifier", "name": "DayOfWeek" },
+ *       "right": { "type": "Literal", "value": "TUE" }
+ *     },
+ *     "consequent": {
+ *       "type": "BlockStatement",
+ *       "body": [
+ *         {
+ *           "type": "ExpressionStatement",
+ *           "expression": {
+ *             "type": "AssignmentExpression",
+ *             "left": { "type": "Identifier", "name": "Day" },
+ *             "operator": "=",
+ *             "right": { "type": "Literal", "value": 2 }
+ *           }
+ *         }
+ *       ]
+ *     },
+ *     "alternate": {
+ *       "type": "IfStatement",
+ *       "test": {
+ *         "type": "BinaryExpression",
+ *         "operator": "==",
+ *         "left": { "type": "Identifier", "name": "DayOfWeek" },
+ *         "right": { "type": "Literal", "value": "WED" }
+ *       },
+ *       "consequent": {
+ *         "type": "BlockStatement",
+ *         "body": [
+ *           {
+ *             "type": "ExpressionStatement",
+ *             "expression": {
+ *               "type": "AssignmentExpression",
+ *               "left": { "type": "Identifier", "name": "Day" },
+ *               "operator": "=",
+ *               "right": { "type": "Literal", "value": 3 }
+ *             }
+ *           }
+ *         ]
+ *       },
+ *       "alternate": null
+ *     }
+ *   },
+ *   null,
+ *   "End",
+ *   null,
+ *   "If",
+ *   [[["\n"]]]
+ * ]
+ * ```
+ */
+export function ifStmt(result: [string, null, Expression, null, string, null, [Statement], Statement]): IfStatement {
+	const test = result[2];
+	const consequent = estree.blockStatement(result[6]);
+	const alternate = result[7];
+	return estree.ifStatement(test, consequent, alternate);
 }
 
 /**
