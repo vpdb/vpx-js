@@ -392,6 +392,7 @@ export function expExpr(result: [Expression | Literal, null, '^', null, Expressi
 	]);
 }
 
+/* istanbul ignore next */
 /**
  * This just prints out what's given.
  * @example `debug(arguments);`

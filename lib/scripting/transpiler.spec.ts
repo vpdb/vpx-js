@@ -24,6 +24,7 @@ import { NodeBinaryReader } from '../io/binary-reader.node';
 import { Table } from '../vpt/table/table';
 import { Transpiler } from './transpiler';
 
+import * as sinon from 'sinon';
 chai.use(require('sinon-chai'));
 
 /* tslint:disable:no-unused-expression */
@@ -50,6 +51,26 @@ describe('The VBScript transpiler', () => {
 		const transpiler = new Transpiler(table);
 		const js = transpiler.transpile(vbs, 'runTableScript', 'window');
 		expect(js).to.equal(`window.runTableScript = items => {\n    let test;\n};`);
+	});
+
+	it('should wrap everything into a function of an object', () => {
+
+		const vbs = `Dim test\n`;
+		const transpiler = new Transpiler(table);
+		const js = transpiler.transpile(vbs, 'runTableScript', 'window');
+		expect(js).to.equal(`window.runTableScript = items => {\n    let test;\n};`);
+	});
+
+	it('should execute the table script', () => {
+
+		const Spy = sinon.spy();
+		(global as any).Spy = Spy;
+
+		const vbs = `Spy\n`;                                 // that's our spy, in VBScript!
+		const transpiler = new Transpiler(table);
+		transpiler.execute(vbs, 'global');       // this should execute the spy
+
+		expect(Spy).to.have.been.calledOnce;
 	});
 
 });

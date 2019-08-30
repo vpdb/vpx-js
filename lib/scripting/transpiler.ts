@@ -53,9 +53,9 @@ export class Transpiler {
 		return js;
 	}
 
-	public execute(vbs: string) {
+	public execute(vbs: string, globalObject = 'window') {
 
-		const js = this.transpile(vbs, 'play', 'window');
+		const js = this.transpile(vbs, 'play', globalObject);
 
 		// tslint:disable-next-line:no-eval
 		eval(js);
