@@ -63,6 +63,6 @@ describe('The scripting scope transformer', () => {
 function transform(vbs: string, fctName: string, paramName: string, table: Table): string {
 	const ast = vbsToAst(vbs);
 	const scopeTransformer = new ScopeTransformer(table);
-	const eventAst = scopeTransformer.transform(ast, fctName, paramName);
+	const eventAst = scopeTransformer.transform(ast, fctName, paramName,  'window');
 	return astToVbs(eventAst);
 }
