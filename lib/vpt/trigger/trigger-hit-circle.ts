@@ -19,7 +19,7 @@
 
 import { Event } from '../../game/event';
 import { EventProxy } from '../../game/event-proxy';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { STATICTIME } from '../../physics/constants';
@@ -47,7 +47,7 @@ export class TriggerHitCircle extends HitCircle {
 		return super.hitTestBasicRadius(ball, dTime, coll, false, false, false);
 	}
 
-	public collide(coll: CollisionEvent, player: Player): void {
+	public collide(coll: CollisionEvent, player: PlayerPhysics): void {
 		const ball = coll.ball;
 
 		if ((this.objType !== CollisionType.Trigger && this.objType !== CollisionType.Kicker) || !ball.hit.isRealBall()) {

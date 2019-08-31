@@ -18,7 +18,7 @@
  */
 
 import { IAnimation } from '../../game/ianimatable';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { Table } from '../table/table';
 import { Trigger } from './trigger';
 import { TriggerData } from './trigger-data';
@@ -41,7 +41,7 @@ export class TriggerAnimation implements IAnimation {
 		this.state = state;
 	}
 
-	public init(player: Player): void {
+	public init(player: PlayerPhysics): void {
 		// nothing to init.
 	}
 
@@ -53,7 +53,7 @@ export class TriggerAnimation implements IAnimation {
 		this.unhitEvent = true;
 	}
 
-	public updateAnimation(player: Player, table: Table) {
+	public updateAnimation(player: PlayerPhysics, table: Table) {
 		const oldTimeMsec = (this.timeMsec < player.timeMsec) ? this.timeMsec : player.timeMsec;
 		this.timeMsec = player.timeMsec;
 		const diffTimeMsec = player.timeMsec - oldTimeMsec;

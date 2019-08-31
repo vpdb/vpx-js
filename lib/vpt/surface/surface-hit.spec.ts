@@ -22,7 +22,7 @@ import { expect } from 'chai';
 import sinonChai = require('sinon-chai');
 import { createBall, debugBall } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
 
@@ -32,11 +32,11 @@ const three = new ThreeHelper();
 describe('The VPinball surface collision', () => {
 
 	let table: Table;
-	let player: Player;
+	let player: PlayerPhysics;
 
 	beforeEach(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-surface.vpx')));
-		player = new Player(table);
+		player = new PlayerPhysics(table);
 	});
 
 	it('should make the ball bounce off the sides', () => {
@@ -83,7 +83,7 @@ describe('The VPinball surface collision', () => {
 	it('should bounce off a slingshot', async () => {
 
 		const slingshotTable = await Table.load(new NodeBinaryReader(three.fixturePath('table-slingshot.vpx')));
-		player = new Player(slingshotTable);
+		player = new PlayerPhysics(slingshotTable);
 
 		const slingshotKicker = slingshotTable.kickers.SlingShotKicker.getApi();
 		const wallKicker = slingshotTable.kickers.WallKicker.getApi();
@@ -155,7 +155,7 @@ describe('The VPinball surface collision', () => {
 
 	it('should fire the ball up when slingshot is triggered manually', async () => {
 		const slingshotTable = await Table.load(new NodeBinaryReader(three.fixturePath('table-slingshot.vpx')));
-		player = new Player(slingshotTable);
+		player = new PlayerPhysics(slingshotTable);
 
 		const slingShot = table.surfaces.Wall.getApi();
 

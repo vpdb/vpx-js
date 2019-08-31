@@ -21,7 +21,7 @@ import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
@@ -90,7 +90,7 @@ export class Primitive implements IRenderable, IHittable, IScriptable<PrimitiveA
 		return this.mesh;
 	}
 
-	public setupPlayer(player: Player, table: Table): void {
+	public setupPlayer(player: PlayerPhysics, table: Table): void {
 		this.events = new EventProxy(this);
 		this.events.onCollision = (obj: HitObject, ball: Ball, dot: number) => {
 			this.events!.currentHitThreshold = dot;

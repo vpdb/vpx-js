@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 import { EventProxy } from '../game/event-proxy';
-import { Player } from '../game/player';
+import { PlayerPhysics } from '../game/player-physics';
 import { FRect3D } from '../math/frect3d';
 import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
@@ -49,7 +49,7 @@ export class HitQuadtree {
 		this.createNextLevel(bounds, 0, 0);
 	}
 
-	public hitTestBall(ball: Ball, coll: CollisionEvent, player: Player): CollisionEvent {
+	public hitTestBall(ball: Ball, coll: CollisionEvent, player: PlayerPhysics): CollisionEvent {
 		for (const vho of this.vho) {
 			if (ball.hit !== vho                                              // ball can not hit itself
 				&& vho.hitBBox.intersectRect(ball.hit.hitBBox)

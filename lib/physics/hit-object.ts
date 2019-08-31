@@ -20,7 +20,7 @@
 import { Table } from '..';
 import { Event } from '../game/event';
 import { EventProxy } from '../game/event-proxy';
-import { Player } from '../game/player';
+import { PlayerPhysics } from '../game/player-physics';
 import { degToRad } from '../math/float';
 import { FRect3D } from '../math/frect3d';
 import { Ball } from '../vpt/ball/ball';
@@ -62,9 +62,9 @@ export abstract class HitObject {
 
 	public abstract calcHitBBox(): void;
 
-	public abstract hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: Player): HitTestResult;
+	public abstract hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: PlayerPhysics): HitTestResult;
 
-	public abstract collide(coll: CollisionEvent, player: Player): void;
+	public abstract collide(coll: CollisionEvent, player: PlayerPhysics): void;
 
 	/**
 	 * apply contact forces for the given time interval. Ball, Spinner and Gate do nothing here, Flipper has a specialized handling
@@ -73,7 +73,7 @@ export abstract class HitObject {
 	 * @param player
 	 * @constructor
 	 */
-	public contact(coll: CollisionEvent, dtime: number, player: Player): void {
+	public contact(coll: CollisionEvent, dtime: number, player: PlayerPhysics): void {
 		coll.ball.hit.handleStaticContact(coll, this.friction, dtime, player);
 	}
 
@@ -127,7 +127,7 @@ export abstract class HitObject {
 		this.objType = type;
 	}
 
-	public doHitTest(ball: Ball, coll: CollisionEvent, player: Player): CollisionEvent {
+	public doHitTest(ball: Ball, coll: CollisionEvent, player: PlayerPhysics): CollisionEvent {
 		if (!ball) {
 			return coll;
 		}

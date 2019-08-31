@@ -23,7 +23,7 @@ import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { Storage } from '../../io/ole-doc';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
@@ -101,7 +101,7 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		return meshes;
 	}
 
-	public setupPlayer(player: Player, table: Table): void {
+	public setupPlayer(player: PlayerPhysics, table: Table): void {
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
 		this.events = new EventProxy(this);
 		this.hit = new SpinnerHit(this.data, this.state, this.events, height);
@@ -121,7 +121,7 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	}
 
 	/* istanbul ignore next */
-	public applyState(obj: Object3D, table: Table, player: Player): void {
+	public applyState(obj: Object3D, table: Table, player: PlayerPhysics): void {
 
 		const posZ = this.meshGenerator.getZ(table);
 		const matTransToOrigin = new Matrix3D().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, posZ);

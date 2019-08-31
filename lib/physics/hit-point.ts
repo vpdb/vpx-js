@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Player } from '../game/player';
+import { PlayerPhysics } from '../game/player-physics';
 import { FRect3D } from '../math/frect3d';
 import { solveQuadraticEq } from '../math/functions';
 import { Vertex3D } from '../math/vertex3d';
@@ -39,7 +39,7 @@ export class HitPoint extends HitObject {
 		this.hitBBox = new FRect3D(this.p.x, this.p.x, this.p.y, this.p.y, this.p.z, this.p.z);
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: Player): HitTestResult {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: PlayerPhysics): HitTestResult {
 		if (!this.isEnabled) {
 			return { hitTime: -1.0, coll };
 		}

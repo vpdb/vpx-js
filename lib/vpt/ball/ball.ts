@@ -22,7 +22,7 @@ import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
@@ -64,7 +64,7 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRendera
 		return `Ball${this.id}`;
 	}
 
-	public applyState(obj: Object3D, table: Table, player: Player): void {
+	public applyState(obj: Object3D, table: Table, player: PlayerPhysics): void {
 		const zHeight = !this.hit.isFrozen ? this.state.pos.z : this.state.pos.z - this.data.radius;
 		const orientation = new Matrix3D().set([
 			[this.state.orientation.matrix[0][0], this.state.orientation.matrix[1][0], this.state.orientation.matrix[2][0], 0.0],
@@ -115,7 +115,7 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRendera
 	}
 
 	/* istanbul ignore next: never called since there is no ball at player setup */
-	public setupPlayer(player: Player, table: Table): void {
+	public setupPlayer(player: PlayerPhysics, table: Table): void {
 		// there is no ball yet on player setup
 	}
 

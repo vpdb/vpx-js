@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Player } from '../game/player';
+import { PlayerPhysics } from '../game/player-physics';
 import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
@@ -56,7 +56,7 @@ export class HitTriangle extends HitObject {
 		this.hitBBox.zhigh = Math.max(this.rgv[0].z, Math.max(this.rgv[1].z, this.rgv[2].z));
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: Player): HitTestResult {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: PlayerPhysics): HitTestResult {
 		if (!this.isEnabled) {
 			return { hitTime: -1.0, coll };
 		}
@@ -141,7 +141,7 @@ export class HitTriangle extends HitObject {
 		}
 	}
 
-	public collide(coll: CollisionEvent, player: Player): void {
+	public collide(coll: CollisionEvent, player: PlayerPhysics): void {
 		const ball = coll.ball;
 		const hitNormal = coll.hitNormal!;
 		const dot = -(hitNormal.dot(ball.hit.vel));

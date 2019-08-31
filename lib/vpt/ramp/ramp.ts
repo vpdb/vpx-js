@@ -20,7 +20,7 @@
 import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { Storage } from '../../io/ole-doc';
 import { f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
@@ -80,7 +80,7 @@ export class Ramp implements IRenderable, IHittable {
 		return this.data.isCollidable;
 	}
 
-	public setupPlayer(player: Player, table: Table): void {
+	public setupPlayer(player: PlayerPhysics, table: Table): void {
 		this.events = new EventProxy(this);
 		this.hits = this.hitGenerator.generateHitObjects(table, this.events);
 	}

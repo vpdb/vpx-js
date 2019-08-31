@@ -18,7 +18,7 @@
  */
 
 /* tslint:disable:no-bitwise */
-import { Player } from '../game/player';
+import { PlayerPhysics } from '../game/player-physics';
 import { FRect3D } from '../math/frect3d';
 import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
@@ -46,7 +46,7 @@ export class HitKDNode {
 		this.items = 0;
 	}
 
-	public hitTestBall(ball: Ball, coll: CollisionEvent, player: Player): CollisionEvent {
+	public hitTestBall(ball: Ball, coll: CollisionEvent, player: PlayerPhysics): CollisionEvent {
 
 		const orgItems = this.items & 0x3FFFFFFF;
 		const axis = this.items >> 30;

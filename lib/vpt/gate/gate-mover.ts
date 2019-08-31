@@ -19,7 +19,7 @@
 
 import { Event } from '../../game/event';
 import { EventProxy } from '../../game/event-proxy';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { radToDeg } from '../../math/float';
 import { PHYS_FACTOR } from '../../physics/constants';
 import { MoverObject } from '../../physics/mover-object';
@@ -116,7 +116,7 @@ export class GateMover implements MoverObject {
 		this.state.angle += this.angleSpeed * dtime;
 	}
 
-	public updateVelocities(player: Player): void {
+	public updateVelocities(player: PlayerPhysics): void {
 		if (!this.open) {
 			if (Math.abs(this.state.angle) < this.angleMin + 0.01 && Math.abs(this.angleSpeed) < 0.01) {
 				// stop a bit earlier to prevent a nearly endless animation (especially for slow balls)

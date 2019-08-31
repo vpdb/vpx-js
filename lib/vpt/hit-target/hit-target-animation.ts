@@ -20,7 +20,7 @@
 import { Event } from '../../game/event';
 import { EventProxy } from '../../game/event-proxy';
 import { IAnimation } from '../../game/ianimatable';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { Table } from '../table/table';
 import { HitTarget } from './hit-target';
 import { HitTargetData } from './hit-target-data';
@@ -44,11 +44,11 @@ export class HitTargetAnimation implements IAnimation {
 		this.events = events;
 	}
 
-	public init(player: Player): void {
+	public init(player: PlayerPhysics): void {
 		this.timeMsec = player.timeMsec;
 	}
 
-	public updateAnimation(player: Player, table: Table): void {
+	public updateAnimation(player: PlayerPhysics, table: Table): void {
 		const oldTimeMsec = (this.timeMsec < player.timeMsec) ? this.timeMsec : player.timeMsec;
 		this.timeMsec = player.timeMsec;
 		const diffTimeMsec = player.timeMsec - oldTimeMsec;

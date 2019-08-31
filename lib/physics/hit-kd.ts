@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Player } from '../game/player';
+import { PlayerPhysics } from '../game/player-physics';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { HitKDNode } from './hit-kd-node';
@@ -87,7 +87,7 @@ export class HitKD {
 		this.tmp = [];
 	}
 
-	public hitTestBall(pball: Ball, collision: CollisionEvent, player: Player): CollisionEvent {
+	public hitTestBall(pball: Ball, collision: CollisionEvent, player: PlayerPhysics): CollisionEvent {
 		return this.rootNode.hitTestBall(pball, collision, player);
 	}
 

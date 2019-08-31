@@ -23,7 +23,7 @@ import sinonChai = require('sinon-chai');
 import { Mesh } from 'three';
 import { simulateCycles } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
 import { PlungerMover } from './plunger-mover';
@@ -35,14 +35,14 @@ const three = new ThreeHelper();
 describe('The VPinball plunger physics', () => {
 
 	let table: Table;
-	let player: Player;
+	let player: PlayerPhysics;
 
 	before(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-plunger.vpx')));
 	});
 
 	beforeEach(() => {
-		player = new Player(table);
+		player = new PlayerPhysics(table);
 		simulateCycles(player, 50); // move to start position
 	});
 
@@ -144,7 +144,7 @@ describe('The VPinball plunger physics', () => {
 
 });
 
-function popState(player: Player, name: string): PlungerState {
+function popState(player: PlayerPhysics, name: string): PlungerState {
 	const states = player.popStates();
 	return states[name].newState as PlungerState;
 }

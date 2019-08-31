@@ -22,7 +22,7 @@ import { expect } from 'chai';
 import { Mesh, Vector3 } from 'three';
 import { createBall } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
-import { ChangedState, Player } from '../../game/player';
+import { ChangedState, PlayerPhysics } from '../../game/player-physics';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
 import { BumperState } from './bumper-state';
@@ -35,11 +35,11 @@ const three = new ThreeHelper();
 describe('The VPinball bumper collision', () => {
 
 	let table: Table;
-	let player: Player;
+	let player: PlayerPhysics;
 
 	beforeEach(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-bumper.vpx')));
-		player = new Player(table);
+		player = new PlayerPhysics(table);
 	});
 
 	it('should eject the ball when hit threshold has passed', () => {

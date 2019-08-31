@@ -18,7 +18,7 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { TriggerData } from './trigger-data';
@@ -28,7 +28,7 @@ export class TriggerApi extends ItemApi {
 	private readonly data: TriggerData;
 	private readonly events: EventProxy;
 
-	constructor(data: TriggerData, events: EventProxy, player: Player, table: Table) {
+	constructor(data: TriggerData, events: EventProxy, player: PlayerPhysics, table: Table) {
 		super(player, table);
 		this.data = data;
 		this.events = events;

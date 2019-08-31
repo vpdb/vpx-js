@@ -20,7 +20,7 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import { ThreeHelper } from '../../../test/three.helper';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { degToRad, radToDeg } from '../../math/float';
 import { Table } from '../table/table';
@@ -35,14 +35,14 @@ const three = new ThreeHelper();
 describe('The VPinball spinner collision', () => {
 
 	let table: Table;
-	let player: Player;
+	let player: PlayerPhysics;
 
 	before(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-spinner.vpx')));
 	});
 
 	beforeEach(() => {
-		player = new Player(table);
+		player = new PlayerPhysics(table);
 	});
 
 	it('should make the spinner spin', () => {
@@ -115,7 +115,7 @@ describe('The VPinball spinner collision', () => {
  * @param numCycles How many cycles to run
  * @param cycleLength Duration of each cycle
  */
-export function debugSpinner(player: Player, spinner: Spinner, numCycles = 300, cycleLength = 5) {
+export function debugSpinner(player: PlayerPhysics, spinner: Spinner, numCycles = 300, cycleLength = 5) {
 	for (let i = 0; i <= numCycles; i++) {
 		player.updatePhysics(i * cycleLength);
 		// tslint:disable-next-line:no-console

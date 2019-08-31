@@ -19,15 +19,15 @@
 
 import { EventEmitter } from 'events';
 import { EventProxy } from '../game/event-proxy';
-import { Player } from '../game/player';
+import { PlayerPhysics } from '../game/player-physics';
 import { Table } from './table/table';
 
 export abstract class ItemApi extends EventEmitter {
 
-	protected readonly player: Player;
+	protected readonly player: PlayerPhysics;
 	protected readonly table: Table;
 
-	protected constructor(player: Player, table: Table) {
+	protected constructor(player: PlayerPhysics, table: Table) {
 		super();
 		this.player = player;
 		this.table = table;

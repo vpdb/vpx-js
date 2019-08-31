@@ -18,7 +18,7 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { Surface } from './surface';
@@ -32,7 +32,7 @@ export class SurfaceApi extends ItemApi {
 	private readonly hitGenerator: SurfaceHitGenerator;
 	private readonly events: EventProxy;
 
-	constructor(surface: Surface, data: SurfaceData, hitGenerator: SurfaceHitGenerator, events: EventProxy, player: Player, table: Table) {
+	constructor(surface: Surface, data: SurfaceData, hitGenerator: SurfaceHitGenerator, events: EventProxy, player: PlayerPhysics, table: Table) {
 		super(player, table);
 		this.surface = surface;
 		this.data = data;

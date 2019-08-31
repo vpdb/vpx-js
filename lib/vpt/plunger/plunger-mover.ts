@@ -19,7 +19,7 @@
 
 import { Event } from '../../game/event';
 import { EventProxy } from '../../game/event-proxy';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { Vertex2D } from '../../math/vertex2d';
 import { HitLineZ } from '../../physics/hit-line-z';
 import { LineSeg } from '../../physics/line-seg';
@@ -35,7 +35,7 @@ export class PlungerMover implements MoverObject {
 	private readonly data: PlungerData;
 	private readonly state: PlungerState;
 	private readonly events: EventProxy;
-	private readonly player: Player;
+	private readonly player: PlayerPhysics;
 	private readonly tableData: TableData;
 
 	/**
@@ -311,7 +311,7 @@ export class PlungerMover implements MoverObject {
 	 */
 	public scatterVelocity: number = 0;
 
-	constructor(config: PlungerConfig, data: PlungerData, state: PlungerState, events: EventProxy, player: Player, tableData: TableData) {
+	constructor(config: PlungerConfig, data: PlungerData, state: PlungerState, events: EventProxy, player: PlayerPhysics, tableData: TableData) {
 
 		this.data = data;
 		this.state = state;

@@ -19,7 +19,7 @@
 
 import { Event } from '../../game/event';
 import { EventProxy } from '../../game/event-proxy';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { degToRad, radToDeg } from '../../math/float';
 import { Vertex2D } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
@@ -37,7 +37,7 @@ export class FlipperMover implements MoverObject {
 	private readonly data: FlipperData;
 	private readonly state: FlipperState;
 	private readonly events: EventProxy;
-	private readonly player: Player;
+	private readonly player: PlayerPhysics;
 	private readonly tableData: TableData;
 
 	public hitCircleBase: HitCircle;
@@ -68,7 +68,7 @@ export class FlipperMover implements MoverObject {
 
 	public lastHitFace: boolean;
 
-	constructor(config: FlipperConfig, flipperData: FlipperData, state: FlipperState, events: EventProxy, player: Player, tableData: TableData) {
+	constructor(config: FlipperConfig, flipperData: FlipperData, state: FlipperState, events: EventProxy, player: PlayerPhysics, tableData: TableData) {
 
 		this.events = events;
 		this.hitCircleBase = new HitCircle(config.center, config.baseRadius, config.zLow, config.zHigh);

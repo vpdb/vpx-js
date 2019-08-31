@@ -20,7 +20,7 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import { ThreeHelper } from '../../../test/three.helper';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
 
@@ -33,14 +33,14 @@ const three = new ThreeHelper();
 describe('The VPinball plunger collision', () => {
 
 	let table: Table;
-	let player: Player;
+	let player: PlayerPhysics;
 
 	before(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-plunger.vpx')));
 	});
 
 	beforeEach(() => {
-		player = new Player(table);
+		player = new PlayerPhysics(table);
 	});
 
 	it('should collide with the plunger', () => {

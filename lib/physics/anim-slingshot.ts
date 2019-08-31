@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Player } from '../game/player';
+import { PlayerPhysics } from '../game/player-physics';
 import { AnimObject } from './anim-object';
 
 export class SlingshotAnimObject implements AnimObject {
@@ -28,7 +28,7 @@ export class SlingshotAnimObject implements AnimObject {
 	public animations: boolean = false;
 	public iframe: boolean = false;
 
-	public animate(player: Player) {
+	public animate(player: PlayerPhysics) {
 		if (!this.iframe && this.timeReset !== 0 && this.animations) {
 			this.iframe = true;
 

@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { degToRad, radToDeg } from '../../math/float';
 import { clamp } from '../../math/functions';
 import { PHYS_FACTOR } from '../../physics/constants';
@@ -37,7 +37,7 @@ export class GateApi extends ItemApi {
 	private readonly hitGate: GateHit;
 	private readonly hitLine: LineSeg | null;
 
-	constructor(data: GateData, state: GateState, mover: GateMover, hitGate: GateHit, hitLine: LineSeg | null, player: Player, table: Table) {
+	constructor(data: GateData, state: GateState, mover: GateMover, hitGate: GateHit, hitLine: LineSeg | null, player: PlayerPhysics, table: Table) {
 		super(player, table);
 		this.data = data;
 		this.state = state;

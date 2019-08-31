@@ -19,7 +19,7 @@
 
 import { Event } from '../../game/event';
 import { EventProxy } from '../../game/event-proxy';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { degToRad } from '../../math/float';
 import { FRect3D } from '../../math/frect3d';
 import { clamp } from '../../math/functions';
@@ -57,7 +57,7 @@ export class FlipperHit extends HitObject {
 	private readonly events: EventProxy;
 	private lastHitTime: number = 0;
 
-	public static getInstance(data: FlipperData, state: FlipperState, events: EventProxy, player: Player, table: Table): FlipperHit {
+	public static getInstance(data: FlipperData, state: FlipperState, events: EventProxy, player: PlayerPhysics, table: Table): FlipperHit {
 		data.updatePhysicsSettings(table);
 		const height = table.getSurfaceHeight(data.szSurface, data.center.x, data.center.y);
 		if (data.flipperRadiusMin > 0 && data.flipperRadiusMax > data.flipperRadiusMin) {
@@ -84,7 +84,7 @@ export class FlipperHit extends HitObject {
 		);
 	}
 
-	constructor(config: FlipperConfig, data: FlipperData, state: FlipperState, events: EventProxy, player: Player, tableData: TableData) {
+	constructor(config: FlipperConfig, data: FlipperData, state: FlipperState, events: EventProxy, player: PlayerPhysics, tableData: TableData) {
 		super();
 		this.events = events;
 		this.mover = new FlipperMover(config, data, state, events, player, tableData);
@@ -147,7 +147,7 @@ export class FlipperHit extends HitObject {
 		}
 	}
 
-	public contact(coll: CollisionEvent, dTime: number, player: Player): void {
+	public contact(coll: CollisionEvent, dTime: number, player: PlayerPhysics): void {
 		const ball = coll.ball;
 		const normal = coll.hitNormal!;
 
@@ -238,7 +238,7 @@ export class FlipperHit extends HitObject {
 		}
 	}
 
-	public collide(coll: CollisionEvent, player: Player): void {
+	public collide(coll: CollisionEvent, player: PlayerPhysics): void {
 		const ball = coll.ball;
 		const normal = coll.hitNormal!;
 		const [ vRel, rB, rF ] = this.getRelativeVelocity(normal, ball);

@@ -20,7 +20,7 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import { ThreeHelper } from '../../../test/three.helper';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
 
@@ -33,14 +33,14 @@ const three = new ThreeHelper();
 describe('The VPinball plunger API', () => {
 
 	let table: Table;
-	let player: Player;
+	let player: PlayerPhysics;
 
 	before(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-plunger.vpx')));
 	});
 
 	beforeEach(async () => {
-		player = new Player(table);
+		player = new PlayerPhysics(table);
 	});
 
 	it('should correctly read and write the properties', async () => {
@@ -155,7 +155,7 @@ describe('The VPinball plunger API', () => {
 	});
 });
 
-function debugPlunger(plunger: PlungerApi, player: Player, table: Table, t = 0) {
+function debugPlunger(plunger: PlungerApi, player: PlayerPhysics, table: Table, t = 0) {
 	for (let i = 0; i < 300; i++) {
 		player.updatePhysics(t + i * 10);
 		// tslint:disable-next-line:no-console

@@ -24,7 +24,7 @@ import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { Storage } from '../../io/ole-doc';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
@@ -108,7 +108,7 @@ export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHitta
 		return meshes;
 	}
 
-	public setupPlayer(player: Player, table: Table): void {
+	public setupPlayer(player: PlayerPhysics, table: Table): void {
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
 		const radAngle = degToRad(this.data.rotation);
 		const tangent = new Vertex2D(Math.cos(radAngle), Math.sin(radAngle));
@@ -137,7 +137,7 @@ export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHitta
 	}
 
 	/* istanbul ignore next */
-	public applyState(obj: Object3D, table: Table, player: Player, oldState: GateState): void {
+	public applyState(obj: Object3D, table: Table, player: PlayerPhysics, oldState: GateState): void {
 		const posZ = this.data.height;
 		const matTransToOrigin = new Matrix3D().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, posZ);
 		const matRotateToOrigin = new Matrix3D().rotateZMatrix(degToRad(-this.data.rotation));

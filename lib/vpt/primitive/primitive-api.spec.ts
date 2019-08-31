@@ -20,7 +20,7 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import { ThreeHelper } from '../../../test/three.helper';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
 
@@ -32,11 +32,11 @@ const three = new ThreeHelper();
 describe('The VPinball primitive API', () => {
 
 	let table: Table;
-	let player: Player;
+	let player: PlayerPhysics;
 
 	beforeEach(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-primitive.vpx')));
-		player = new Player(table);
+		player = new PlayerPhysics(table);
 	});
 
 	it('should correctly read and write the properties', async () => {
