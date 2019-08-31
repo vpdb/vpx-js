@@ -466,7 +466,7 @@ export class PlayerPhysics extends EventEmitter {
 export interface IBallCreationPosition {
 	getBallCreationPosition(table: Table): Vertex3D;
 	getBallCreationVelocity(table: Table): Vertex3D;
-	onBallCreated(player: PlayerPhysics, ball: Ball): void;
+	onBallCreated(physics: PlayerPhysics, ball: Ball): void;
 }
 
 export interface ChangedStates<STATE> {

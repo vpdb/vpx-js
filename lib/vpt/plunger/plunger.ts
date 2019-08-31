@@ -173,7 +173,7 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 		return new Vertex3D(0, 0, 0);
 	}
 
-	public onBallCreated(player: PlayerPhysics, ball: Ball): void {
+	public onBallCreated(physics: PlayerPhysics, ball: Ball): void {
 		// nothing to be done
 	}
 

@@ -41,7 +41,7 @@ export class TriggerAnimation implements IAnimation {
 		this.state = state;
 	}
 
-	public init(player: PlayerPhysics): void {
+	public init(): void {
 		// nothing to init.
 	}
 
@@ -53,10 +53,10 @@ export class TriggerAnimation implements IAnimation {
 		this.unhitEvent = true;
 	}
 
-	public updateAnimation(player: PlayerPhysics, table: Table) {
-		const oldTimeMsec = (this.timeMsec < player.timeMsec) ? this.timeMsec : player.timeMsec;
-		this.timeMsec = player.timeMsec;
-		const diffTimeMsec = player.timeMsec - oldTimeMsec;
+	public updateAnimation(physics: PlayerPhysics, table: Table) {
+		const oldTimeMsec = (this.timeMsec < physics.timeMsec) ? this.timeMsec : physics.timeMsec;
+		this.timeMsec = physics.timeMsec;
+		const diffTimeMsec = physics.timeMsec - oldTimeMsec;
 
 		let animLimit = this.data.shape === Trigger.ShapeTriggerStar ? this.data.radius * (1.0 / 5.0) : 32.0;
 		if (this.data.shape === Trigger.ShapeTriggerButton) {

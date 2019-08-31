@@ -47,7 +47,7 @@ export class TriggerHitCircle extends HitCircle {
 		return super.hitTestBasicRadius(ball, dTime, coll, false, false, false);
 	}
 
-	public collide(coll: CollisionEvent, player: PlayerPhysics): void {
+	public collide(coll: CollisionEvent, physics: PlayerPhysics): void {
 		const ball = coll.ball;
 
 		if ((this.objType !== CollisionType.Trigger && this.objType !== CollisionType.Kicker) || !ball.hit.isRealBall()) {

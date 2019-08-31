@@ -37,7 +37,7 @@ export class FlipperMover implements MoverObject {
 	private readonly data: FlipperData;
 	private readonly state: FlipperState;
 	private readonly events: EventProxy;
-	private readonly player: PlayerPhysics;
+	private readonly physics: PlayerPhysics;
 	private readonly tableData: TableData;
 
 	public hitCircleBase: HitCircle;
@@ -68,13 +68,13 @@ export class FlipperMover implements MoverObject {
 
 	public lastHitFace: boolean;
 
-	constructor(config: FlipperConfig, flipperData: FlipperData, state: FlipperState, events: EventProxy, player: PlayerPhysics, tableData: TableData) {
+	constructor(config: FlipperConfig, flipperData: FlipperData, state: FlipperState, events: EventProxy, physics: PlayerPhysics, tableData: TableData) {
 
 		this.events = events;
 		this.hitCircleBase = new HitCircle(config.center, config.baseRadius, config.zLow, config.zHigh);
 		this.data = flipperData;
 		this.state = state;
-		this.player = player;
+		this.physics = physics;
 		this.tableData = tableData;
 
 		this.endRadius = config.endRadius;                 // radius of flipper end

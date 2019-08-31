@@ -79,7 +79,7 @@ export class GateHit extends HitObject {
 		this.hitBBox = this.lineSeg[0].hitBBox;
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: PlayerPhysics): HitTestResult {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, physics: PlayerPhysics): HitTestResult {
 		if (!this.isEnabled) {
 			return {hitTime: -1.0, coll};
 		}
@@ -95,7 +95,7 @@ export class GateHit extends HitObject {
 		return {hitTime: -1.0, coll};
 	}
 
-	public collide(coll: CollisionEvent, player: PlayerPhysics): void {
+	public collide(coll: CollisionEvent, physics: PlayerPhysics): void {
 		const ball = coll.ball;
 		const hitNormal = coll.hitNormal!;
 

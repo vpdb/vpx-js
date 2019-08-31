@@ -229,12 +229,12 @@ export class BallHit extends HitObject {
 		return { hitTime, coll };
 	}
 
-	public collide(coll: CollisionEvent, player: PlayerPhysics): void {
+	public collide(coll: CollisionEvent, physics: PlayerPhysics): void {
 		const ball = coll.ball;
 
 		// make sure we process each ball/ball collision only once
 		// (but if we are frozen, there won't be a second collision event, so deal with it now!)
-		if ((player.swapBallCcollisionHandling && ball.id >= this.id || !player.swapBallCcollisionHandling && ball.id <= this.id) && !this.isFrozen) {
+		if ((physics.swapBallCcollisionHandling && ball.id >= this.id || !physics.swapBallCcollisionHandling && ball.id <= this.id) && !this.isFrozen) {
 			return;
 		}
 
@@ -387,12 +387,12 @@ export class BallHit extends HitObject {
 		this.angularVelocity = this.angularMomentum.clone().divideScalar(this.inertia);
 	}
 
-	public handleStaticContact(coll: CollisionEvent, friction: number, dtime: number, player: PlayerPhysics): void {
+	public handleStaticContact(coll: CollisionEvent, friction: number, dtime: number, physics: PlayerPhysics): void {
 		const normVel = this.vel.dot(coll.hitNormal!);      // this should be zero, but only up to +/- C_CONTACTVEL
 
 		// If some collision has changed the ball's velocity, we may not have to do anything.
 		if (normVel <= C_CONTACTVEL) {
-			const fe = player.gravity.clone().multiplyScalar(this.data.mass);   // external forces (only gravity for now)
+			const fe = physics.gravity.clone().multiplyScalar(this.data.mass);   // external forces (only gravity for now)
 			const dot = fe.dot(coll.hitNormal!);
 			const normalForce = Math.max(0.0, -(dot * dtime + coll.hitOrgNormalVelocity!)); // normal force is always nonnegative
 
@@ -405,18 +405,18 @@ export class BallHit extends HitObject {
 			}
 			// #endif
 
-			this.applyFriction(coll.hitNormal!, dtime, friction, player);
+			this.applyFriction(coll.hitNormal!, dtime, friction, physics);
 		}
 	}
 
-	public applyFriction(hitNormal: Vertex3D, dtime: number, fricCoeff: number, player: PlayerPhysics): void {
+	public applyFriction(hitNormal: Vertex3D, dtime: number, fricCoeff: number, physics: PlayerPhysics): void {
 
 		const surfP = hitNormal.clone().multiplyScalar(-this.data.radius);    // surface contact point relative to center of mass
 
 		const surfVel = this.surfaceVelocity(surfP);
 		const slip = surfVel.clone().sub(hitNormal.clone().multiplyScalar(surfVel.dot(hitNormal)));       // calc the tangential slip velocity
 
-		const maxFric = fricCoeff * this.data.mass * - player.gravity.dot(hitNormal);
+		const maxFric = fricCoeff * this.data.mass * - physics.gravity.dot(hitNormal);
 
 		const slipspeed = slip.length();
 		let slipDir: Vertex3D;
@@ -429,7 +429,7 @@ export class BallHit extends HitObject {
 		if ((normVel <= 0.025) || (slipspeed < C_PRECISION)) { // check for <=0.025 originated from ball<->rubber collisions pushing the ball upwards, but this is still not enough, some could even use <=0.2
 			// slip speed zero - static friction case
 
-			const surfAcc = this.surfaceAcceleration(surfP, player);
+			const surfAcc = this.surfaceAcceleration(surfP, physics);
 			const slipAcc = surfAcc.clone().sub(hitNormal.clone().multiplyScalar(surfAcc.dot(hitNormal))) ; // calc the tangential slip acceleration
 
 			// neither slip velocity nor slip acceleration? nothing to do here
@@ -457,9 +457,9 @@ export class BallHit extends HitObject {
 		}
 	}
 
-	public surfaceAcceleration(surfP: Vertex3D, player: PlayerPhysics): Vertex3D {
+	public surfaceAcceleration(surfP: Vertex3D, physics: PlayerPhysics): Vertex3D {
 		// if we had any external torque, we would have to add "(deriv. of ang.vel.) x surfP" here
-		return player.gravity
+		return physics.gravity
 			.clone()
 			.multiplyScalar(this.invMass)                                                                          // linear acceleration
 			.add(Vertex3D.crossProduct(this.angularVelocity, Vertex3D.crossProduct(this.angularVelocity, surfP))); // centripetal acceleration

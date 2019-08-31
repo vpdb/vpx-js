@@ -46,7 +46,7 @@ export class HitKDNode {
 		this.items = 0;
 	}
 
-	public hitTestBall(ball: Ball, coll: CollisionEvent, player: PlayerPhysics): CollisionEvent {
+	public hitTestBall(ball: Ball, coll: CollisionEvent, physics: PlayerPhysics): CollisionEvent {
 
 		const orgItems = this.items & 0x3FFFFFFF;
 		const axis = this.items >> 30;
@@ -54,7 +54,7 @@ export class HitKDNode {
 		for (let i = this.start; i < this.start + orgItems; i++) {
 			const pho = this.hitOct.getItemAt(i);
 			if (ball.hit !== pho && pho.hitBBox.intersectSphere(ball.state.pos, ball.hit.rcHitRadiusSqr)) {
-				coll = pho.doHitTest(ball, coll, player);
+				coll = pho.doHitTest(ball, coll, physics);
 			}
 		}
 
@@ -63,28 +63,28 @@ export class HitKDNode {
 			if (axis === 0) {
 				const vCenter = (this.rectBounds.left + this.rectBounds.right) * 0.5;
 				if (ball.hit.hitBBox.left <= vCenter) {
-					coll = this.children[0].hitTestBall(ball, coll, player);
+					coll = this.children[0].hitTestBall(ball, coll, physics);
 				}
 				if (ball.hit.hitBBox.right >= vCenter) {
-					coll = this.children[1].hitTestBall(ball, coll, player);
+					coll = this.children[1].hitTestBall(ball, coll, physics);
 				}
 
 			} else if (axis === 1) {
 				const vCenter = (this.rectBounds.top + this.rectBounds.bottom) * 0.5;
 				if (ball.hit.hitBBox.top <= vCenter) {
-					coll = this.children[0].hitTestBall(ball, coll, player);
+					coll = this.children[0].hitTestBall(ball, coll, physics);
 				}
 				if (ball.hit.hitBBox.bottom >= vCenter) {
-					coll = this.children[1].hitTestBall(ball, coll, player);
+					coll = this.children[1].hitTestBall(ball, coll, physics);
 				}
 
 			} else {
 				const vCenter = (this.rectBounds.zlow + this.rectBounds.zhigh) * 0.5;
 				if (ball.hit.hitBBox.zlow <= vCenter) {
-					coll = this.children[0].hitTestBall(ball, coll, player);
+					coll = this.children[0].hitTestBall(ball, coll, physics);
 				}
 				if (ball.hit.hitBBox.zhigh >= vCenter) {
-					coll = this.children[1].hitTestBall(ball, coll, player);
+					coll = this.children[1].hitTestBall(ball, coll, physics);
 				}
 			}
 		}

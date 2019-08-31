@@ -120,10 +120,10 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 		return new Vertex3D(0.1, 0, 0);
 	}
 
-	public onBallCreated(player: PlayerPhysics, ball: Ball): void {
+	public onBallCreated(physics: PlayerPhysics, ball: Ball): void {
 		ball.getCollision().hitFlag = true;                        // HACK: avoid capture leaving kicker
 		const hitNormal = new Vertex3D(FLT_MAX, FLT_MAX, FLT_MAX); // unused due to newBall being true
-		this.hit!.doCollide(player, ball, hitNormal, false, true);
+		this.hit!.doCollide(physics, ball, hitNormal, false, true);
 	}
 
 	private getTexture(): Texture {

@@ -7,5 +7,5 @@ export interface MoverObject {
 
 	updateDisplacements(dTime: number): void;
 
-	updateVelocities(player: PlayerPhysics): void;
+	updateVelocities(physics: PlayerPhysics): void;
 }

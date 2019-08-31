@@ -116,7 +116,7 @@ export class GateMover implements MoverObject {
 		this.state.angle += this.angleSpeed * dtime;
 	}
 
-	public updateVelocities(player: PlayerPhysics): void {
+	public updateVelocities(physics: PlayerPhysics): void {
 		if (!this.open) {
 			if (Math.abs(this.state.angle) < this.angleMin + 0.01 && Math.abs(this.angleSpeed) < 0.01) {
 				// stop a bit earlier to prevent a nearly endless animation (especially for slow balls)

@@ -28,7 +28,7 @@ import { LineSeg } from './line-seg';
 
 export class LineSegSlingshot extends LineSeg {
 
-	private readonly player: PlayerPhysics;
+	private readonly physics: PlayerPhysics;
 	private readonly surface: Surface;
 	private readonly surfaceData: SurfaceData;
 	private slingshotAnim = new SlingshotAnimObject();
@@ -36,11 +36,11 @@ export class LineSegSlingshot extends LineSeg {
 	private eventTimeReset: number = 0;
 	public doHitEvent: boolean = false;
 
-	constructor(surface: Surface, surfaceData: SurfaceData, p1: Vertex2D, p2: Vertex2D, zLow: number, zHigh: number, player: PlayerPhysics) {
+	constructor(surface: Surface, surfaceData: SurfaceData, p1: Vertex2D, p2: Vertex2D, zLow: number, zHigh: number, physics: PlayerPhysics) {
 		super(p1, p2, zLow, zHigh);
 		this.surface = surface;
 		this.surfaceData = surfaceData;
-		this.player = player;
+		this.physics = physics;
 	}
 
 	public collide(coll: CollisionEvent): void {
@@ -79,7 +79,7 @@ export class LineSegSlingshot extends LineSeg {
 
 			if (distLs > 0.25) { // must be a new place if only by a little
 				this.obj.fireGroupEvent(Event.SurfaceEventsSlingshot);
-				this.slingshotAnim.timeReset = this.player.timeMsec + 100;
+				this.slingshotAnim.timeReset = this.physics.timeMsec + 100;
 			}
 		}
 	}

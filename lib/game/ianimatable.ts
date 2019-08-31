@@ -42,7 +42,7 @@ export interface IAnimatable<STATE> extends IPlayable {
 
 export interface IAnimation {
 
-	init(player: PlayerPhysics): void;
+	init(physics: PlayerPhysics): void;
 
-	updateAnimation(player: PlayerPhysics, table: Table): void;
+	updateAnimation(physics: PlayerPhysics, table: Table): void;
 }
