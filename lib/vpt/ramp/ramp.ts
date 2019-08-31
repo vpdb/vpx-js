@@ -20,7 +20,7 @@
 import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
-import { PlayerPhysics } from '../../game/player-physics';
+import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
@@ -32,7 +32,6 @@ import { Table } from '../table/table';
 import { RampData } from './ramp-data';
 import { RampHitGenerator } from './ramp-hit-generator';
 import { RampMeshGenerator } from './ramp-mesh-generator';
-import { Player } from '../../game/player';
 
 /**
  * VPinball's ramps.

@@ -18,14 +18,13 @@
  */
 
 import { Matrix4, Object3D } from 'three';
-import { PlayerPhysics } from '../../game/player-physics';
+import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Table } from '../table/table';
 import { BumperData } from './bumper-data';
 import { BumperMeshGenerator } from './bumper-mesh-generator';
 import { BumperState } from './bumper-state';
-import { Player } from '../../game/player';
 
 export class BumperMeshUpdater {
 

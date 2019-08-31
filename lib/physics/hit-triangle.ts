@@ -21,7 +21,6 @@ import { PlayerPhysics } from '../game/player-physics';
 import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
-import { CollisionType } from './collision-type';
 import { C_CONTACTVEL, C_LOWNORMVEL, PHYS_TOUCH } from './constants';
 import { HitObject, HitTestResult } from './hit-object';
 

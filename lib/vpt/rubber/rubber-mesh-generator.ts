@@ -23,7 +23,6 @@ import { Matrix3D } from '../../math/matrix3d';
 import { SplineVertex } from '../../math/spline-vertex';
 import { Vertex3DNoTex2 } from '../../math/vertex';
 import { Vertex3D } from '../../math/vertex3d';
-import { Meshes } from '../item-data';
 import { FLT_MAX, FLT_MIN, Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { RubberData } from './rubber-data';

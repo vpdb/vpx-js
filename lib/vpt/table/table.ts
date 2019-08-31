@@ -28,6 +28,9 @@ import { IScriptable } from '../../game/iscriptable';
 import { IBinaryReader, Storage } from '../../io/ole-doc';
 import { degToRad, f4 } from '../../math/float';
 import { FRect3D } from '../../math/frect3d';
+import { Vertex3D } from '../../math/vertex3d';
+import { HitObject } from '../../physics/hit-object';
+import { HitPlane } from '../../physics/hit-plane';
 import { Transpiler } from '../../scripting/transpiler';
 import { logger } from '../../util/logger';
 import { Bumper } from '../bumper/bumper';
@@ -50,12 +53,9 @@ import { TimerItem } from '../timer-item';
 import { Trigger } from '../trigger/trigger';
 import { TableData } from './table-data';
 import { TableExporter, VpTableExporterOptions } from './table-exporter';
+import { TableHitGenerator } from './table-hit-generator';
 import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
-import { TableHitGenerator } from './table-hit-generator';
-import { HitObject } from '../../physics/hit-object';
-import { HitPlane } from '../../physics/hit-plane';
-import { Vertex3D } from '../../math/vertex3d';
 
 /**
  * A Visual Pinball table.

@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import {BiffParser} from '../io/biff-parser';
-import {logger} from '../util/logger';
+import { BiffParser } from '../io/biff-parser';
+import { logger } from '../util/logger';
 
 /**
  * A binary usually contains image data for a texture.

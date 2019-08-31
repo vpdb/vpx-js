@@ -25,6 +25,7 @@ import { Table } from '../vpt/table/table';
 import { Transpiler } from './transpiler';
 
 import * as sinon from 'sinon';
+
 chai.use(require('sinon-chai'));
 
 /* tslint:disable:no-unused-expression */

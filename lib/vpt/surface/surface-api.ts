@@ -18,13 +18,12 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
-import { PlayerPhysics } from '../../game/player-physics';
+import { Player } from '../../game/player';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { Surface } from './surface';
 import { SurfaceData } from './surface-data';
 import { SurfaceHitGenerator } from './surface-hit-generator';
-import { Player } from '../../game/player';
 
 export class SurfaceApi extends ItemApi {
 

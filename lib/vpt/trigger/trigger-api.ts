@@ -18,11 +18,10 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
-import { PlayerPhysics } from '../../game/player-physics';
+import { Player } from '../../game/player';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { TriggerData } from './trigger-data';
-import { Player } from '../../game/player';
 
 export class TriggerApi extends ItemApi {
 

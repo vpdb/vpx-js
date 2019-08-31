@@ -20,7 +20,6 @@
 /* tslint:disable:no-bitwise */
 
 import { EventEmitter } from 'events';
-import { BinaryReader } from '../refs.node';
 import { readableStream } from './event-stream';
 
 export class Header {

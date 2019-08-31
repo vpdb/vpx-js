@@ -21,7 +21,7 @@ import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
-import { PlayerPhysics } from '../../game/player-physics';
+import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
@@ -32,7 +32,6 @@ import { SurfaceApi } from './surface-api';
 import { SurfaceData } from './surface-data';
 import { SurfaceHitGenerator } from './surface-hit-generator';
 import { SurfaceMeshGenerator } from './surface-mesh-generator';
-import { Player } from '../../game/player';
 
 /**
  * VPinball's surfaces, a.k.a as "walls".

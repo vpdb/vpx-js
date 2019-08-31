@@ -20,8 +20,8 @@
 import { Object3D } from 'three';
 import { Table } from '..';
 import { IPlayable } from './iplayable';
+import { Player } from './player';
 import { PlayerPhysics } from './player-physics';
-import { ChangedState, Player } from './player';
 
 /**
  * Animatables are like movables but their position is only updated

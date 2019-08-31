@@ -20,7 +20,7 @@
 import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
-import { PlayerPhysics } from '../../game/player-physics';
+import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
@@ -29,7 +29,6 @@ import { Table } from '../table/table';
 import { RubberData } from './rubber-data';
 import { RubberHitGenerator } from './rubber-hit-generator';
 import { RubberMeshGenerator } from './rubber-mesh-generator';
-import { Player } from '../../game/player';
 
 /**
  * VPinball's rubber item.
