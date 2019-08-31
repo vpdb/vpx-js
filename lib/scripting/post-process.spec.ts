@@ -20,7 +20,7 @@
 import { expect } from 'chai';
 import { vbsToJs } from '../../test/script.helper';
 
-describe.skip('The VBScript transpiler', () => {
+describe('The VBScript transpiler', () => {
 	it('should transpile an Option Explicit', () => {
 		const vbs = `Option Explicit\n`;
 		const js = vbsToJs(vbs);
