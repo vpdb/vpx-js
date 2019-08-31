@@ -27,6 +27,7 @@ import {
 	BreakStatement,
 	CallExpression,
 	Comment,
+	ConditionalExpression,
 	EmptyStatement,
 	Expression,
 	ExpressionStatement,
@@ -138,6 +139,15 @@ export function callExpression(callee: Expression, args: Array<Expression | Spre
 		type: 'CallExpression',
 		callee,
 		arguments: args,
+	};
+}
+
+export function conditionalExpression(test: Expression, consequent: Expression, alternate: Expression): ConditionalExpression {
+	return {
+		type: 'ConditionalExpression',
+		test,
+		alternate,
+		consequent,
 	};
 }
 
