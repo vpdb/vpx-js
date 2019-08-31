@@ -260,4 +260,10 @@ describe('The VBScript transpiler', () => {
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('{\n    x.value = 5;\n    x.type = \'TEST\';\n}');
 	});
+
+	it ('should transpile a "Do While...Loop" statement', () => {
+		const vbs = `Dim x\nx = 1\nDo While x < 5\nx = x + 1\nLoop\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('let x;\nx = 1;\nwhile (x < 5) {\n    x = x + 1;\n}');
+	});
 });

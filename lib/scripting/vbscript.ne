@@ -80,6 +80,7 @@ MethodStmt           -> ConstDecl                                               
 BlockStmt            -> DimDecl                                                                                    {% id %}
                       | IfStmt                                                                                     {% id %}
                       | WithStmt                                                                                   {% id %}
+                      | LoopStmt                                                                                   {% id %}
                       | ForStmt                                                                                    {% id %}
                       | InlineStmt NL                                                                              {% id %}
 
@@ -140,6 +141,16 @@ ElseStmt             -> "ElseIf" _ Expr _ "Then" NL BlockStmt:* ElseStmt:?      
 #========= With Statement
 
 WithStmt             -> "With" _ Expr NL BlockStmt:* _ "End" _ "With" NL                                           {% pp.withStmt %}
+
+#========= Loop Statement
+ 
+LoopStmt             -> "Do" _ LoopType _ Expr NL BlockStmt:* _ "Loop" NL                                          {% pp.loopStmt %}
+#                      | "Do" NL BlockStmt:* _ "Loop" _ LoopType _ Expr NL
+#                      | "Do" NL BlockStmt:* _ "Loop" NL
+#                      | "While" _ Expr NL BlockStmt:* _ "WEnd" NL
+
+LoopType             -> "While"                                                                                    {% id %}
+                      | "Until"                                                                                    {% id %}
 
 #========= For Statement
 
