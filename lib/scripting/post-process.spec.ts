@@ -238,14 +238,14 @@ describe('The VBScript transpiler', () => {
 	});
 
 	it ('should transpile a "For...Next" statement', () => {
-		const vbs = `For j = 2 To 10\ntotal = total + 1\nNext\n`;
+		const vbs = `For j = 1 To 20\ntotal = total + 1\nNext\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('for (j = 2;; j += 1) {\n    total = total + 1;\n    if (j == 10) {\n        break;\n    }\n}');
+		expect(js).to.equal('for (j = 1; j <= 20; j += 1) {\n    total = total + 1;\n}');
 	});
 
 	it ('should transpile a "For/Step...Next" statement', () => {
-		const vbs = `For j = 2 To 10 Step 2\ntotal = total + 1\nNext\n`;
+		const vbs = `For j = 1 To 20 Step 3\ntotal = total + 1\nNext\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('for (j = 2;; j += 2) {\n    total = total + 1;\n    if (j == 10) {\n        break;\n    }\n}');
+		expect(js).to.equal('for (j = 1; 3 < 0 ? j >= 20 : j <= 20; j += 3) {\n    total = total + 1;\n}');
 	});
 });

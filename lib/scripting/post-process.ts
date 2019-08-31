@@ -460,19 +460,32 @@ export function forStmt(result: ['For', null, Identifier, null, '=', null, Expre
 	const identifier = result[2];
 	const init = result[6];
 	const test = result[10];
-	const step = result[12] ? result[12] : estree.literal(1);
+	const step = result[12];
 	const body = result[14] || [];
 
-	return estree.forStatement(
-		estree.assignmentExpression(identifier, '=', init),
-		null,
-		estree.assignmentExpression(identifier, '+=', step),
-		estree.blockStatement([...body,
-			estree.ifStatement(
-				estree.binaryExpression('==', identifier, test),
-				estree.blockStatement([estree.breakStatement()]),
-			)]),
-	);
+	if (step) {
+		return estree.forStatement(
+			estree.assignmentExpression(identifier, '=', init),
+			estree.conditionalExpression(
+				estree.binaryExpression(
+					'<', step, estree.literal(0),
+				),
+				estree.binaryExpression(
+					'>=', identifier, test),
+				estree.binaryExpression(
+					'<=', identifier, test),
+			),
+			estree.assignmentExpression(identifier, '+=', step),
+			estree.blockStatement(body),
+		);
+	} else {
+		return estree.forStatement(
+			estree.assignmentExpression(identifier, '=', init),
+			estree.binaryExpression('<=', identifier, test),
+			estree.assignmentExpression(identifier, '+=', estree.literal(1)),
+			estree.blockStatement(body),
+		);
+	}
 }
 
 /**
