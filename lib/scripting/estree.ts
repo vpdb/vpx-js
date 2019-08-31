@@ -31,8 +31,8 @@ import {
 	EmptyStatement,
 	Expression,
 	ExpressionStatement,
-	ForStatement,
 	ForOfStatement,
+	ForStatement,
 	FunctionDeclaration,
 	Identifier,
 	IfStatement,
@@ -47,6 +47,7 @@ import {
 	UnaryOperator,
 	VariableDeclaration,
 	VariableDeclarator,
+	WhileStatement,
 } from 'estree';
 
 export function program(data: Statement[]): Program {
@@ -229,6 +230,14 @@ export function forOfStatement(left: VariableDeclaration | Pattern, right: Expre
 		type: 'ForOfStatement',
 		left,
 		right,
+		body,
+	};
+}
+
+export function whileStatement(test: Expression, body: Statement): WhileStatement {
+	return {
+		type: 'WhileStatement',
+		test,
 		body,
 	};
 }

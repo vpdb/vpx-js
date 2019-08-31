@@ -33,7 +33,7 @@ import {
 	UnaryExpression,
 	VariableDeclaration,
 	VariableDeclarator,
-
+	WhileStatement,
 } from 'estree';
 import { inspect } from 'util';
 import * as estree from './estree';
@@ -601,6 +601,53 @@ export function withStmt(result: ['With', null, Expression, null, [Statement]]):
 /**
  * Grammar:
  * ```
+ * LoopStmt -> "Do" _ LoopType _ Expr NL BlockStmt:* _ "Loop" NL
+ * ```
+ * Result:
+ * ```
+ * [
+ *   "Do",
+ *   null,
+ *   "While",
+ *   null,
+ *   {
+ *     "type": "BinaryExpression",
+ *     "operator": "<",
+ *     "left": { "type": "Identifier", "name": "x" },
+ *     "right": { "type": "Literal", "value": 5 }
+ *   },
+ *   [[["\n"]]],
+ *   [
+ *     {
+ *       "type": "ExpressionStatement",
+ *       "expression": {
+ *         "type": "AssignmentExpression",
+ *         "left": { "type": "Identifier", "name": "x" },
+ *         "operator": "=",
+ *         "right": {
+ *           "type": "BinaryExpression",
+ *           "operator": "+",
+ *           "left": { "type": "Identifier", "name": "x" },
+ *           "right": { "type": "Literal", "value": 1 }
+ *         }
+ *       }
+ *     }
+ *   ],
+ *   null,
+ *   "Loop",
+ *   [[["\n"]]]
+ * ]
+ * ```
+ */
+export function loopStmt(result: ['Do', null, string, null, Expression, null, [Statement]]): WhileStatement {
+	const test = result[4];
+	const statements = result[6] || [];
+	return estree.whileStatement(test, estree.blockStatement(statements));
+}
+
+/**
+ * Grammar:
+ * ```
  * IntDivExpr -> IntDivExpr _ "\\" _ MultExpr
  * ```
  * Result:
@@ -614,7 +661,6 @@ export function withStmt(result: ['With', null, Expression, null, [Statement]]):
  * ]
  * ```
  */
-
 export function intDivExpr(result: [Expression | Literal, null, '\\', null, Expression | Literal]): ExpressionStatement  {
 	const leftExpr = result[0] ? [result[0]] : [];
 	const rightExpr = result[4] ? [result[4]] : [];
