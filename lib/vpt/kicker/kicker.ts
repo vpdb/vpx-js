@@ -22,7 +22,7 @@ import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
-import { IBallCreationPosition, PlayerPhysics } from '../../game/player-physics';
+import { PlayerPhysics } from '../../game/player-physics';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
@@ -36,7 +36,7 @@ import { KickerApi } from './kicker-api';
 import { KickerData } from './kicker-data';
 import { KickerHit } from './kicker-hit';
 import { KickerMeshGenerator } from './kicker-mesh-generator';
-import { Player } from '../../game/player';
+import { IBallCreationPosition, Player } from '../../game/player';
 
 /**
  * VPinball's kickers.

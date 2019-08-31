@@ -25,7 +25,7 @@ import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
-import { IBallCreationPosition, PlayerPhysics } from '../../game/player-physics';
+import { PlayerPhysics } from '../../game/player-physics';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
@@ -38,7 +38,7 @@ import { PlungerHit } from './plunger-hit';
 import { PlungerMesh } from './plunger-mesh';
 import { PlungerMover } from './plunger-mover';
 import { PlungerState } from './plunger-state';
-import { Player } from '../../game/player';
+import { IBallCreationPosition, Player } from '../../game/player';
 
 /**
  * VPinball's plunger.
