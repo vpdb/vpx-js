@@ -21,7 +21,7 @@ import * as chai from 'chai';
 import { expect } from 'chai';
 import { createBall, debugBall } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
 import { HitTargetState } from './hit-target-state';
@@ -34,11 +34,11 @@ const three = new ThreeHelper();
 describe('The VPinball hit target collision', () => {
 
 	let table: Table;
-	let player: Player;
+	let player: PlayerPhysics;
 
 	beforeEach(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-hit-target.vpx')));
-		player = new Player(table);
+		player = new PlayerPhysics(table);
 	});
 
 	describe('of a drop target', () => {

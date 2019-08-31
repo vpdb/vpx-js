@@ -18,7 +18,7 @@
  */
 
 import { Matrix4, Object3D } from 'three';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Table } from '../table/table';
@@ -38,7 +38,7 @@ export class BumperMeshUpdater {
 		this.meshGenerator = meshGenerator;
 	}
 
-	public applyState(obj: Object3D, table: Table, player: Player, oldState: BumperState): void {
+	public applyState(obj: Object3D, table: Table, player: PlayerPhysics, oldState: BumperState): void {
 
 		if (this.data.isRingVisible && this.state.ringOffset !== oldState.ringOffset) {
 			this.applyRingState(obj);

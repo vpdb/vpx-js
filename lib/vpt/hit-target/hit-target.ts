@@ -23,7 +23,7 @@ import { IAnimatable, IAnimation } from '../../game/ianimatable';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { Storage } from '../../io/ole-doc';
 import { degToRad, f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
@@ -100,7 +100,7 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 		};
 	}
 
-	public setupPlayer(player: Player, table: Table): void {
+	public setupPlayer(player: PlayerPhysics, table: Table): void {
 		this.events = new EventProxy(this);
 		this.events.onCollision = (obj: HitObject, ball: Ball, dot: number) => {
 			if (!this.data.isDropped) {
@@ -133,7 +133,7 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 		return this.animation!;
 	}
 
-	public applyState(obj: Object3D, table: Table, player: Player, oldState: HitTargetState): void {
+	public applyState(obj: Object3D, table: Table, player: PlayerPhysics, oldState: HitTargetState): void {
 		const matTransToOrigin = new Matrix3D().setTranslation(-this.data.vPosition.x, -this.data.vPosition.y, -this.data.vPosition.z);
 		const matRotateToOrigin = new Matrix3D().rotateZMatrix(degToRad(-this.data.rotZ));
 		const matTransFromOrigin = new Matrix3D().setTranslation(this.data.vPosition.x, this.data.vPosition.y, this.data.vPosition.z);
@@ -159,7 +159,7 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 		this.data.isCollidable = isCollidable;
 	}
 
-	public setDropped(val: boolean, table: Table, player: Player) {
+	public setDropped(val: boolean, table: Table, player: PlayerPhysics) {
 		if (this.data.isDropped !== val && this.animation) {
 			if (val) {
 				this.animation.moveAnimation = true;

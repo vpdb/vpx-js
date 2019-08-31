@@ -19,7 +19,7 @@
 
 import { Table } from '..';
 import { IItem } from './iitem';
-import { Player } from './player';
+import { PlayerPhysics } from './player-physics';
 
 /**
  * A table element that can interact with the game. This corresponds roughly
@@ -27,5 +27,5 @@ import { Player } from './player';
  */
 export interface IPlayable extends IItem {
 
-	setupPlayer(player: Player, table: Table): void;
+	setupPlayer(player: PlayerPhysics, table: Table): void;
 }

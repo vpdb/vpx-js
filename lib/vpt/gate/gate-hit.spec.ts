@@ -22,7 +22,7 @@ import { expect } from 'chai';
 import { Mesh, Vector3 } from 'three';
 import { createBall, debugBall } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
-import { ChangedState, Player } from '../../game/player';
+import { ChangedState, PlayerPhysics } from '../../game/player-physics';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
 
@@ -34,11 +34,11 @@ const three = new ThreeHelper();
 describe('The VPinball gate collision', () => {
 
 	let table: Table;
-	let player: Player;
+	let player: PlayerPhysics;
 
 	beforeEach(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-gate.vpx')));
-		player = new Player(table);
+		player = new PlayerPhysics(table);
 	});
 
 	it('should block the ball on a one-way gate', () => {

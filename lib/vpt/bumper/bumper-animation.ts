@@ -18,7 +18,7 @@
  */
 
 import { IAnimation } from '../../game/ianimatable';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { Vertex3D } from '../../math/vertex3d';
 import { Table } from '../table/table';
 import { BumperData } from './bumper-data';
@@ -44,11 +44,11 @@ export class BumperAnimation implements IAnimation {
 		this.state = state;
 	}
 
-	public init(player: Player): void {
+	public init(player: PlayerPhysics): void {
 		this.timeMsec = player.timeMsec;
 	}
 
-	public updateAnimation(player: Player, table: Table): void {
+	public updateAnimation(player: PlayerPhysics, table: Table): void {
 
 		const oldTimeMsec = this.timeMsec < player.timeMsec ? this.timeMsec : player.timeMsec;
 		this.timeMsec = player.timeMsec;

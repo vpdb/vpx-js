@@ -19,7 +19,7 @@
 
 import { Event } from '../../game/event';
 import { EventProxy } from '../../game/event-proxy';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { CollisionEvent } from '../../physics/collision-event';
 import { HitCircle } from '../../physics/hit-circle';
 import { BumperAnimation } from './bumper-animation';
@@ -44,7 +44,7 @@ export class BumperHit extends HitCircle {
 		this.scatter = this.data.scatter!;
 	}
 
-	public collide(coll: CollisionEvent, player: Player): void {
+	public collide(coll: CollisionEvent, player: PlayerPhysics): void {
 		if (!this.isEnabled) {
 			return;
 		}

@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Player } from '../game/player';
+import { PlayerPhysics } from '../game/player-physics';
 
 /**
  * DispReel, LightSeq and Slingshot
  */
 export interface AnimObject {
 
-	animate(player: Player): void;
+	animate(player: PlayerPhysics): void;
 }

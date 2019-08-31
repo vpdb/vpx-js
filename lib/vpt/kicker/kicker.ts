@@ -22,7 +22,7 @@ import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
-import { IBallCreationPosition, Player } from '../../game/player';
+import { IBallCreationPosition, PlayerPhysics } from '../../game/player-physics';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
@@ -91,7 +91,7 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 		};
 	}
 
-	public setupPlayer(player: Player, table: Table): void {
+	public setupPlayer(player: PlayerPhysics, table: Table): void {
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
 
 		// reduce the hit circle radius because only the inner circle of the kicker should start a hit event
@@ -119,7 +119,7 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 		return new Vertex3D(0.1, 0, 0);
 	}
 
-	public onBallCreated(player: Player, ball: Ball): void {
+	public onBallCreated(player: PlayerPhysics, ball: Ball): void {
 		ball.getCollision().hitFlag = true;                        // HACK: avoid capture leaving kicker
 		const hitNormal = new Vertex3D(FLT_MAX, FLT_MAX, FLT_MAX); // unused due to newBall being true
 		this.hit!.doCollide(player, ball, hitNormal, false, true);

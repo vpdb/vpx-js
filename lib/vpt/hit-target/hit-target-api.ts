@@ -18,7 +18,7 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { clamp } from '../../math/functions';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
@@ -33,7 +33,7 @@ export class HitTargetApi extends ItemApi {
 	private readonly animation: HitTargetAnimation;
 	private readonly events: EventProxy;
 
-	constructor(hitTarget: HitTarget, data: HitTargetData, animation: HitTargetAnimation, events: EventProxy, player: Player, table: Table) {
+	constructor(hitTarget: HitTarget, data: HitTargetData, animation: HitTargetAnimation, events: EventProxy, player: PlayerPhysics, table: Table) {
 		super(player, table);
 		this.data = data;
 		this.hitTarget = hitTarget;

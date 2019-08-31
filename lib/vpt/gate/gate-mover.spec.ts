@@ -21,7 +21,7 @@ import * as chai from 'chai';
 import { expect } from 'chai';
 import { createBall } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { radToDeg } from '../../math/float';
 import { Table } from '../table/table';
@@ -35,14 +35,14 @@ const three = new ThreeHelper();
 describe('The VPinball gate mover', () => {
 
 	let table: Table;
-	let player: Player;
+	let player: PlayerPhysics;
 
 	before(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-gate.vpx')));
 	});
 
 	beforeEach(() => {
-		player = new Player(table);
+		player = new PlayerPhysics(table);
 	});
 
 	it('should make the two-way gate bracket move', () => {

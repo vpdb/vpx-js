@@ -18,7 +18,7 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { degToRad, radToDeg } from '../../math/float';
 import { clamp } from '../../math/functions';
 import { ItemApi } from '../item-api';
@@ -36,7 +36,7 @@ export class FlipperApi extends ItemApi {
 	private readonly mover: FlipperMover;
 	private readonly events: EventProxy;
 
-	constructor(data: FlipperData, state: FlipperState, hit: FlipperHit, mover: FlipperMover, events: EventProxy, player: Player, table: Table) {
+	constructor(data: FlipperData, state: FlipperState, hit: FlipperHit, mover: FlipperMover, events: EventProxy, player: PlayerPhysics, table: Table) {
 		super(player, table);
 		this.data = data;
 		this.state = state;

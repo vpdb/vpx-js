@@ -18,7 +18,7 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
-import { IBallCreationPosition, Player } from '../../game/player';
+import { IBallCreationPosition, PlayerPhysics } from '../../game/player-physics';
 import { Vertex3D } from '../../math/vertex3d';
 import { logger } from '../../util/logger';
 import { Ball } from '../ball/ball';
@@ -34,7 +34,7 @@ export class KickerApi extends ItemApi {
 	private readonly events: EventProxy;
 	private readonly ballCreator: IBallCreationPosition;
 
-	constructor(data: KickerData, hit: KickerHit, events: EventProxy, ballCreator: IBallCreationPosition, player: Player, table: Table) {
+	constructor(data: KickerData, hit: KickerHit, events: EventProxy, ballCreator: IBallCreationPosition, player: PlayerPhysics, table: Table) {
 		super(player, table);
 		this.data = data;
 		this.hit = hit;

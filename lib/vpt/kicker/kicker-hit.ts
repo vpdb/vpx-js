@@ -20,7 +20,7 @@
 import { kickerHitVertices } from '../../../res/meshes/kicker-hit-mesh';
 import { Event } from '../../game/event';
 import { EventProxy } from '../../game/event-proxy';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { degToRad } from '../../math/float';
 import { clamp } from '../../math/functions';
 import { Vertex2D } from '../../math/vertex2d';
@@ -71,11 +71,11 @@ export class KickerHit extends HitCircle {
 		return this.hitTestBasicRadius(ball, dTime, coll, false, false, false);
 	}
 
-	public collide(coll: CollisionEvent, player: Player): void {
+	public collide(coll: CollisionEvent, player: PlayerPhysics): void {
 		this.doCollide(player, coll.ball, coll.hitNormal!, coll.hitFlag, false);
 	}
 
-	public doCollide(player: Player, ball: Ball, hitNormal: Vertex3D, hitBit: boolean, newBall: boolean) {
+	public doCollide(player: PlayerPhysics, ball: Ball, hitNormal: Vertex3D, hitBit: boolean, newBall: boolean) {
 
 		if (this.ball) {
 			// a previous ball already in kicker
@@ -216,7 +216,7 @@ export class KickerHit extends HitCircle {
 		}
 	}
 
-	public kickXyz(table: Table, player: Player, angle: number, speed: number, inclination: number, pos: Vertex3D = new Vertex3D()): void {
+	public kickXyz(table: Table, player: PlayerPhysics, angle: number, speed: number, inclination: number, pos: Vertex3D = new Vertex3D()): void {
 
 		if (!this.ball) {
 			return;

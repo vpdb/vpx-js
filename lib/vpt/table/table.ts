@@ -26,7 +26,7 @@ import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
 import { IBinaryReader, Storage } from '../../io/ole-doc';
-import { f4 } from '../../math/float';
+import { degToRad, f4 } from '../../math/float';
 import { FRect3D } from '../../math/frect3d';
 import { Transpiler } from '../../scripting/transpiler';
 import { logger } from '../../util/logger';
@@ -52,6 +52,10 @@ import { TableData } from './table-data';
 import { TableExporter, VpTableExporterOptions } from './table-exporter';
 import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
+import { TableHitGenerator } from './table-hit-generator';
+import { HitObject } from '../../physics/hit-object';
+import { HitPlane } from '../../physics/hit-plane';
+import { Vertex3D } from '../../math/vertex3d';
 
 /**
  * A Visual Pinball table.
@@ -84,6 +88,8 @@ export class Table implements IRenderable {
 	public readonly triggers: { [key: string]: Trigger } = {};
 
 	private readonly meshGenerator?: TableMeshGenerator;
+	private readonly hitGenerator?: TableHitGenerator;
+
 	private readonly loader: TableLoader;
 
 	public static playfieldThickness = 20.0;
@@ -99,6 +105,7 @@ export class Table implements IRenderable {
 		if (loadedTable.data) {
 			this.data = loadedTable.data;
 			this.meshGenerator = new TableMeshGenerator(loadedTable.data);
+			this.hitGenerator = new TableHitGenerator(loadedTable.data);
 		}
 		if (loadedTable.info) {
 			this.info = loadedTable.info;
@@ -170,6 +177,22 @@ export class Table implements IRenderable {
 
 	public getHittables(): IHittable[] {
 		return this.items.filter(item => !!(item as any).getHitShapes && (item as IHittable).isCollidable()) as IHittable[];
+	}
+
+	public getHitShapes(): HitObject[] {
+		return this.hitGenerator!.generateHitObjects();
+	}
+
+	public generatePlayfieldHit() {
+		return new HitPlane(new Vertex3D(0, 0, 1), this.data!.tableheight)
+			.setFriction(this.data!.getFriction())
+			.setElasticity(this.data!.getElasticity(), this.data!.getElasticityFalloff())
+			.setScatter(degToRad(this.data!.getScatter()));
+	}
+
+	public generateGlassHit() {
+		return new HitPlane(new Vertex3D(0, 0, -1), this.data!.glassheight)
+			.setElasticity(0.2);
 	}
 
 	public async play() {

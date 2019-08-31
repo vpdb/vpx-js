@@ -18,7 +18,7 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { CatmullCurve2D } from '../../math/catmull-curve';
 import { DragPoint } from '../../math/dragpoint';
 import { degToRad } from '../../math/float';
@@ -46,7 +46,7 @@ export class SurfaceHitGenerator {
 		this.data = data;
 	}
 
-	public generateHitObjects(events: EventProxy, player: Player, table: Table): HitObject[] {
+	public generateHitObjects(events: EventProxy, player: PlayerPhysics, table: Table): HitObject[] {
 		return this.updateCommonParameters(this.generate3DPolys(events, player, table), events, table);
 	}
 
@@ -54,7 +54,7 @@ export class SurfaceHitGenerator {
 	 * Returns all hit objects for the surface.
 	 * @see Surface::CurvesToShapes
 	 */
-	private generate3DPolys(events: EventProxy, player: Player, table: Table): HitObject[] {
+	private generate3DPolys(events: EventProxy, player: PlayerPhysics, table: Table): HitObject[] {
 
 		const hitObjects: HitObject[] = [];
 		const vVertex: RenderVertex[] = DragPoint.getRgVertex<RenderVertex>(this.data.dragPoints, () => new RenderVertex(), CatmullCurve2D.fromVertex2D as any);
@@ -92,7 +92,7 @@ export class SurfaceHitGenerator {
 	 * Returns the hit line polygons for the surface.
 	 * @see Surface::AddLine
 	 */
-	private generateLinePolys(pv1: RenderVertex, pv2: RenderVertex, events: EventProxy, player: Player, table: Table): HitObject[]  {
+	private generateLinePolys(pv1: RenderVertex, pv2: RenderVertex, events: EventProxy, player: PlayerPhysics, table: Table): HitObject[]  {
 
 		const linePolys: HitObject[] = [];
 		const bottom = this.data.heightBottom + table.getTableHeight();

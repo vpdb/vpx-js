@@ -20,7 +20,7 @@
 import { Object3D } from 'three';
 import { Table } from '..';
 import { IPlayable } from './iplayable';
-import { ChangedState, Player } from './player';
+import { ChangedState, PlayerPhysics } from './player-physics';
 
 /**
  * Animatables are like movables but their position is only updated
@@ -36,12 +36,12 @@ export interface IAnimatable<STATE> extends IPlayable {
 
 	getState(): STATE;
 
-	applyState(obj: Object3D, table: Table, player: Player, oldState: STATE): void;
+	applyState(obj: Object3D, table: Table, player: PlayerPhysics, oldState: STATE): void;
 }
 
 export interface IAnimation {
 
-	init(player: Player): void;
+	init(player: PlayerPhysics): void;
 
-	updateAnimation(player: Player, table: Table): void;
+	updateAnimation(player: PlayerPhysics, table: Table): void;
 }

@@ -20,7 +20,7 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import { ThreeHelper } from '../../../test/three.helper';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
 
@@ -32,14 +32,14 @@ const three = new ThreeHelper();
 describe('The VPinball primitive collision', () => {
 
 	let table: Table;
-	let player: Player;
+	let player: PlayerPhysics;
 
 	before(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-primitive.vpx')));
 	});
 
 	beforeEach(() => {
-		player = new Player(table);
+		player = new PlayerPhysics(table);
 	});
 
 	it('with a simple primitive make the ball bounce back on collision', () => {
@@ -66,7 +66,7 @@ describe('The VPinball primitive collision', () => {
 	it('with a 3D primitive make the ball bounce back on collision', async () => {
 
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-sink.vpx')));
-		player = new Player(table);
+		player = new PlayerPhysics(table);
 		const kicker = table.kickers.BallRelease.getApi();
 
 		// create ball

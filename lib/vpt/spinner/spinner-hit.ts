@@ -18,7 +18,7 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { degToRad } from '../../math/float';
 import { clamp } from '../../math/functions';
 import { Vertex2D } from '../../math/vertex2d';
@@ -75,7 +75,7 @@ export class SpinnerHit extends HitObject {
 		this.hitBBox = this.lineSegs[0].hitBBox;
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: Player): HitTestResult {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: PlayerPhysics): HitTestResult {
 		if (!this.isEnabled) {
 			return { hitTime: -1.0, coll };
 		}
@@ -91,7 +91,7 @@ export class SpinnerHit extends HitObject {
 		return { hitTime: -1.0, coll };
 	}
 
-	public collide(coll: CollisionEvent, player: Player): void {
+	public collide(coll: CollisionEvent, player: PlayerPhysics): void {
 
 		const dot = coll.hitNormal!.dot(coll.ball.hit.vel);
 		if (dot < 0) {                                     // hit from back doesn't count

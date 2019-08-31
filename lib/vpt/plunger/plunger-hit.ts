@@ -18,7 +18,7 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { Vertex2D } from '../../math/vertex2d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { C_DISP_GAIN, C_DISP_LIMIT, C_EMBEDDED, C_EMBEDSHOT, C_LOWNORMVEL } from '../../physics/constants';
@@ -35,7 +35,7 @@ export class PlungerHit extends HitObject {
 	private readonly mover: PlungerMover;
 	private readonly data: PlungerData;
 
-	constructor(data: PlungerData, state: PlungerState, events: EventProxy, cFrames: number, player: Player, table: Table) {
+	constructor(data: PlungerData, state: PlungerState, events: EventProxy, cFrames: number, player: PlayerPhysics, table: Table) {
 		super();
 		const zHeight = table.getSurfaceHeight(data.szSurface, data.center.x, data.center.y);
 		const config: PlungerConfig = {
@@ -69,7 +69,7 @@ export class PlungerHit extends HitObject {
 		// zlow & zhigh gets set in constructor
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: Player): HitTestResult {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: PlayerPhysics): HitTestResult {
 
 		let hitTime = dTime; //start time
 		let isHit = false;
@@ -236,7 +236,7 @@ export class PlungerHit extends HitObject {
 		}
 	}
 
-	public collide(coll: CollisionEvent, player: Player): void {
+	public collide(coll: CollisionEvent, player: PlayerPhysics): void {
 		const ball = coll.ball;
 
 		let dot = (ball.hit.vel.x - coll.hitVel!.x) * coll.hitNormal!.x + (ball.hit.vel.y - coll.hitVel!.y) * coll.hitNormal!.y;

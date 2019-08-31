@@ -18,7 +18,7 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { clamp, solveQuadraticEq } from '../../math/functions';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
@@ -229,7 +229,7 @@ export class BallHit extends HitObject {
 		return { hitTime, coll };
 	}
 
-	public collide(coll: CollisionEvent, player: Player): void {
+	public collide(coll: CollisionEvent, player: PlayerPhysics): void {
 		const ball = coll.ball;
 
 		// make sure we process each ball/ball collision only once
@@ -387,7 +387,7 @@ export class BallHit extends HitObject {
 		this.angularVelocity = this.angularMomentum.clone().divideScalar(this.inertia);
 	}
 
-	public handleStaticContact(coll: CollisionEvent, friction: number, dtime: number, player: Player): void {
+	public handleStaticContact(coll: CollisionEvent, friction: number, dtime: number, player: PlayerPhysics): void {
 		const normVel = this.vel.dot(coll.hitNormal!);      // this should be zero, but only up to +/- C_CONTACTVEL
 
 		// If some collision has changed the ball's velocity, we may not have to do anything.
@@ -409,7 +409,7 @@ export class BallHit extends HitObject {
 		}
 	}
 
-	public applyFriction(hitNormal: Vertex3D, dtime: number, fricCoeff: number, player: Player): void {
+	public applyFriction(hitNormal: Vertex3D, dtime: number, fricCoeff: number, player: PlayerPhysics): void {
 
 		const surfP = hitNormal.clone().multiplyScalar(-this.data.radius);    // surface contact point relative to center of mass
 
@@ -457,7 +457,7 @@ export class BallHit extends HitObject {
 		}
 	}
 
-	public surfaceAcceleration(surfP: Vertex3D, player: Player): Vertex3D {
+	public surfaceAcceleration(surfP: Vertex3D, player: PlayerPhysics): Vertex3D {
 		// if we had any external torque, we would have to add "(deriv. of ang.vel.) x surfP" here
 		return player.gravity
 			.clone()

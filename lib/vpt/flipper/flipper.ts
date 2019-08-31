@@ -24,7 +24,7 @@ import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { Storage } from '../../io/ole-doc';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
@@ -80,7 +80,7 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		return this.state;
 	}
 
-	public setupPlayer(player: Player, table: Table): void {
+	public setupPlayer(player: PlayerPhysics, table: Table): void {
 		this.events = new EventProxy(this);
 		this.hit = FlipperHit.getInstance(this.data, this.state, this.events, player, table);
 		this.api = new FlipperApi(this.data, this.state, this.hit, this.getMover(), this.events, player, table);

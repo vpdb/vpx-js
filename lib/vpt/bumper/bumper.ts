@@ -23,7 +23,7 @@ import { EventProxy } from '../../game/event-proxy';
 import { IAnimatable } from '../../game/ianimatable';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
 import { Meshes } from '../item-data';
@@ -78,14 +78,14 @@ export class Bumper implements IRenderable, IHittable, IAnimatable<BumperState> 
 		return this.data.isCollidable;
 	}
 
-	public setupPlayer(player: Player, table: Table): void {
+	public setupPlayer(player: PlayerPhysics, table: Table): void {
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
 		this.events = new EventProxy(this);
 		this.animation = new BumperAnimation(this.data, this.state);
 		this.hit = new BumperHit(this.data, this.state, this.animation, this.events, height);
 	}
 
-	public applyState(obj: Object3D, table: Table, player: Player, oldState: BumperState): void {
+	public applyState(obj: Object3D, table: Table, player: PlayerPhysics, oldState: BumperState): void {
 		this.meshUpdater.applyState(obj, table, player, oldState);
 	}
 

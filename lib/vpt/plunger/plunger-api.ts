@@ -18,7 +18,7 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
-import { IBallCreationPosition, Player } from '../../game/player';
+import { IBallCreationPosition, PlayerPhysics } from '../../game/player-physics';
 import { Ball } from '../ball/ball';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
@@ -32,7 +32,7 @@ export class PlungerApi extends ItemApi {
 	private readonly events: EventProxy;
 	private readonly ballCreator: IBallCreationPosition;
 
-	constructor(data: PlungerData, hit: PlungerHit, events: EventProxy, ballCreator: IBallCreationPosition, player: Player, table: Table) {
+	constructor(data: PlungerData, hit: PlungerHit, events: EventProxy, ballCreator: IBallCreationPosition, player: PlayerPhysics, table: Table) {
 		super(player, table);
 		this.data = data;
 		this.hit = hit;

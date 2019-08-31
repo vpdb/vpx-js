@@ -151,6 +151,22 @@ export class TableData extends BiffParser {
 		return this.wzName;
 	}
 
+	public getFriction(): number {
+		return this.overridePhysics ? this.overrideContactFriction : this.friction!;
+	}
+
+	public getElasticity(): number {
+		return this.overridePhysics ? this.overrideElasticity : this.elasticity!;
+	}
+
+	public getElasticityFalloff(): number {
+		return this.overridePhysics ? this.overrideElasticityFalloff : this.elasticityFalloff!;
+	}
+
+	public getScatter(): number {
+		return this.overridePhysics ? this.overrideScatterAngle : this.scatter!;
+	}
+
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
 		switch (tag) {
 			case 'LEFT': this.left = this.getFloat(buffer); break;

@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { Matrix2D } from '../../math/matrix2d';
 import { Vertex3D } from '../../math/vertex3d';
 import { PHYS_FACTOR } from '../../physics/constants';
@@ -62,7 +62,7 @@ export class BallMover implements MoverObject {
 		}
 	}
 
-	public updateVelocities(player: Player): void {
+	public updateVelocities(player: PlayerPhysics): void {
 		if (!this.hit.isFrozen) {
 
 			if (player.ballControl && this.id === player.pactiveballBC!.id && player.pBCTarget) {

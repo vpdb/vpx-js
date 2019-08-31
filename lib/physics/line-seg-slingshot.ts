@@ -18,7 +18,7 @@
  */
 
 import { Event } from '../game/event';
-import { Player } from '../game/player';
+import { PlayerPhysics } from '../game/player-physics';
 import { Vertex2D } from '../math/vertex2d';
 import { Surface } from '../vpt/surface/surface';
 import { SurfaceData } from '../vpt/surface/surface-data';
@@ -28,7 +28,7 @@ import { LineSeg } from './line-seg';
 
 export class LineSegSlingshot extends LineSeg {
 
-	private readonly player: Player;
+	private readonly player: PlayerPhysics;
 	private readonly surface: Surface;
 	private readonly surfaceData: SurfaceData;
 	private slingshotAnim = new SlingshotAnimObject();
@@ -36,7 +36,7 @@ export class LineSegSlingshot extends LineSeg {
 	private eventTimeReset: number = 0;
 	public doHitEvent: boolean = false;
 
-	constructor(surface: Surface, surfaceData: SurfaceData, p1: Vertex2D, p2: Vertex2D, zLow: number, zHigh: number, player: Player) {
+	constructor(surface: Surface, surfaceData: SurfaceData, p1: Vertex2D, p2: Vertex2D, zLow: number, zHigh: number, player: PlayerPhysics) {
 		super(p1, p2, zLow, zHigh);
 		this.surface = surface;
 		this.surfaceData = surfaceData;

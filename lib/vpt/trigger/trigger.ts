@@ -23,7 +23,7 @@ import { IAnimatable, IAnimation } from '../../game/ianimatable';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
@@ -99,7 +99,7 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 		};
 	}
 
-	public setupPlayer(player: Player, table: Table): void {
+	public setupPlayer(player: PlayerPhysics, table: Table): void {
 		this.events = new EventProxy(this);
 		this.animation = new TriggerAnimation(this.data, this.state);
 		if (this.data.shape === Trigger.ShapeTriggerStar || this.data.shape === Trigger.ShapeTriggerButton) {
@@ -123,7 +123,7 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 		return this.animation!;
 	}
 
-	public applyState(obj: Object3D, table: Table, player: Player): void {
+	public applyState(obj: Object3D, table: Table, player: PlayerPhysics): void {
 		const matrix = new Matrix3D().setTranslation(0, 0, -this.state.heightOffset);
 		obj.matrix = matrix.toThreeMatrix4();
 		obj.matrixWorldNeedsUpdate = true;

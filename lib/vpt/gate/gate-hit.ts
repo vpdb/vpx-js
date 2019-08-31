@@ -18,7 +18,7 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
-import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { degToRad } from '../../math/float';
 import { Vertex2D } from '../../math/vertex2d';
 import { CollisionEvent } from '../../physics/collision-event';
@@ -79,7 +79,7 @@ export class GateHit extends HitObject {
 		this.hitBBox = this.lineSeg[0].hitBBox;
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: Player): HitTestResult {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: PlayerPhysics): HitTestResult {
 		if (!this.isEnabled) {
 			return {hitTime: -1.0, coll};
 		}
@@ -95,7 +95,7 @@ export class GateHit extends HitObject {
 		return {hitTime: -1.0, coll};
 	}
 
-	public collide(coll: CollisionEvent, player: Player): void {
+	public collide(coll: CollisionEvent, player: PlayerPhysics): void {
 		const ball = coll.ball;
 		const hitNormal = coll.hitNormal!;
 
