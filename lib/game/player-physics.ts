@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { EventEmitter } from 'events';
 import { Table } from '..';
 import { degToRad } from '../math/float';
 import { Matrix2D } from '../math/matrix2d';
@@ -38,18 +37,16 @@ import { HitPlane } from '../physics/hit-plane';
 import { HitQuadtree } from '../physics/hit-quadtree';
 import { MoverObject } from '../physics/mover-object';
 import { now } from '../refs.node';
-import { logger } from '../util/logger';
 import { Ball } from '../vpt/ball/ball';
 import { BallData } from '../vpt/ball/ball-data';
 import { BallState } from '../vpt/ball/ball-state';
 import { FlipperMover } from '../vpt/flipper/flipper-mover';
-import { ItemState } from '../vpt/item-state';
 
 const ANIM_FPS = 60;
 const ANIM_FRAME_USEC = 1 / ANIM_FPS * 1000000;
 const ANIM_FRAME_MSEC = Math.floor(1 / ANIM_FPS * 1000);
 
-export class PlayerPhysics extends EventEmitter {
+export class PlayerPhysics {
 
 	public gravity = new Vertex3D();
 	private readonly table: Table;
@@ -94,13 +91,9 @@ export class PlayerPhysics extends EventEmitter {
 	public ballControl = false;
 	public pBCTarget?: Vertex3D;
 
-	private previousStates: { [key: string]: ItemState } = {};
-	private currentStates: { [key: string]: ItemState } = {};
-
 	// ball the script user can get with ActiveBall
 
 	constructor(table: Table) {
-		super();
 		this.table = table;
 	}
 
@@ -108,22 +101,6 @@ export class PlayerPhysics extends EventEmitter {
 		this.indexTableElements();
 		this.initOcTree(this.table);
 		this.initPhysics(this.table);
-	}
-
-	/**
-	 * Returns the changed states and clears them.
-	 */
-	public popStates(): ChangedStates<ItemState> {
-		const changedStates: ChangedStates<ItemState> = {};
-		for (const name of Object.keys(this.currentStates)) {
-			const newState = this.currentStates[name];
-			const oldState = this.previousStates[name];
-			if (!newState.equals(oldState)) {
-				changedStates[name] = { oldState, newState };
-				this.previousStates[name] = newState.clone();
-			}
-		}
-		return changedStates;
 	}
 
 	private indexTableElements(): void {
@@ -386,11 +363,9 @@ export class PlayerPhysics extends EventEmitter {
 
 		this.balls.push(ball);
 		this.movers.push(ball.getMover()); // balls are always added separately to this list!
-		this.currentStates[ball.getName()] = state;
 
 		this.hitObjectsDynamic.push(ball.hit);
 		this.hitOcTreeDynamic.fillFromVector(this.hitObjectsDynamic);
-		this.emit('ballCreated', ball.getName());
 
 		return ball;
 	}
@@ -433,8 +408,6 @@ export class PlayerPhysics extends EventEmitter {
 		if (activeBall && this.balls.length > 0) {
 			this.pactiveball = this.balls[0];
 		}
-
-		this.emit('ballDestroyed', ball.getName());
 	}
 
 	// public setGravity(slopeDeg: number, strength: number): void {
