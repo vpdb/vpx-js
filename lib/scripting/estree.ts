@@ -24,11 +24,13 @@ import {
 	BinaryExpression,
 	BinaryOperator,
 	BlockStatement,
+	BreakStatement,
 	CallExpression,
 	Comment,
 	EmptyStatement,
 	Expression,
 	ExpressionStatement,
+	ForStatement,
 	FunctionDeclaration,
 	Identifier,
 	IfStatement,
@@ -171,6 +173,12 @@ export function blockStatement(body: Statement[]): BlockStatement {
 	};
 }
 
+export function breakStatement(): BreakStatement {
+	return {
+		type: 'BreakStatement',
+	};
+}
+
 export function callExpressionStatement(callee: Expression, args: Array<Expression | SpreadElement>): ExpressionStatement {
 	return {
 		type: 'ExpressionStatement',
@@ -186,11 +194,21 @@ export function emptyStatement(leadingComments: Comment[] = [], trailingComments
 	};
 }
 
-export function ifStatement(test: Expression, consequent: Statement, alternate: Statement | null): IfStatement {
+export function ifStatement(test: Expression, consequent: Statement, alternate?: Statement | null): IfStatement {
 	return {
 		type: 'IfStatement',
 		test,
 		consequent,
 		alternate,
+	};
+}
+
+export function forStatement(init: Expression, test: Expression | null, update: Expression, body: Statement): ForStatement {
+	return {
+		type: 'ForStatement',
+		init,
+		test,
+		update,
+		body,
 	};
 }
