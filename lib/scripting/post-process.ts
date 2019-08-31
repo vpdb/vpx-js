@@ -21,6 +21,7 @@ import {
 	EmptyStatement,
 	Expression,
 	ExpressionStatement,
+	ForStatement,
 	FunctionDeclaration,
 	Identifier,
 	IfStatement,
@@ -409,6 +410,69 @@ export function ifStmt(result: [string, null, Expression, null, string, null, [S
 	const consequent = estree.blockStatement(result[6]);
 	const alternate = result[7];
 	return estree.ifStatement(test, consequent, alternate);
+}
+
+/**
+ * Grammar:
+ * ```
+ * ForStmt -> "For" _ ExtendedID _ "=" _ Expr _ "To" _ Expr _ StepOpt:? NL BlockStmt:* _ "Next" NL
+ * ```
+ * Result:
+ * ```
+ * [
+ *   "For",
+ *   null,
+ *   { "type": "Identifier", "name": "j" },
+ *   null,
+ *   "=",
+ *   null,
+ *   { "type": "Literal", "value": 2 },
+ *   null,
+ *   "To",
+ *   null,
+ *   { "type": "Literal", "value": 10 },
+ *   null,
+ *   { "type": "Literal", "value": 2 },
+ *   [[["\n"]]],
+ *   [
+ *     {
+ *       "type": "ExpressionStatement",
+ *       "expression": {
+ *         "type": "AssignmentExpression",
+ *         "left": { "type": "Identifier", "name": "total" },
+ *         "operator": "=",
+ *         "right": {
+ *           "type": "BinaryExpression",
+ *           "operator": "+",
+ *           "left": { "type": "Identifier", "name": "total" },
+ *           "right": { "type": "Literal", "value": 1 }
+ *         }
+ *       }
+ *     }
+ *   ],
+ *   null,
+ *   "Next",
+ *   [[["\n"]]]
+ * ]
+ * ```
+ */
+export function forStmt(result: ['For', null, Identifier, null, '=', null, Expression, null, 'To', null, Expression, null, Expression, null, [Statement]]): ForStatement {
+	const identifier = result[2];
+	const init = result[6];
+	const test = result[10];
+	const step = result[12] ? result[12] : estree.literal(1);
+	const body = result[14] || [];
+
+	return estree.forStatement(
+		estree.assignmentExpression(identifier, '=', init),
+		null,
+		estree.assignmentExpression(identifier, '+=', step),
+		estree.blockStatement([...body,
+			estree.ifStatement(
+				estree.binaryExpression('==', identifier, test),
+				estree.blockStatement([estree.breakStatement()]),
+			)]),
+	);
 }
 
 /**

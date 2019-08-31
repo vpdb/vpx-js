@@ -79,6 +79,7 @@ MethodStmt           -> ConstDecl                                               
 
 BlockStmt            -> DimDecl                                                                                    {% id %}
                       | IfStmt                                                                                     {% id %}
+                      | ForStmt                                                                                    {% id %}
                       | InlineStmt NL                                                                              {% id %}
 
 InlineStmt           -> AssignStmt                                                                                 {% id %}
@@ -133,6 +134,13 @@ ElseStmt             -> "ElseIf" _ Expr _ "Then" NL BlockStmt:* ElseStmt:?      
 #ElseOpt              -> "Else" _ InlineStmt                                                                        {% data => data[2] %}
 
 #EndIfOpt             -> "End" _ "If"
+
+#========= For Statement
+
+ForStmt              -> "For" _ ExtendedID _ "=" _ Expr _ "To" _ Expr _ StepOpt:? NL BlockStmt:* _ "Next" NL       {% pp.forStmt %}
+#                      | "For" _ "Each" _ ExtendedID _ "In" _ Expr NL BlockStmt:* _ "Next" NL
+
+StepOpt              -> "Step" _ Expr                                                                              {% data => data[2] %}
 
 #===============================
 # Rules : Expressions

@@ -236,4 +236,16 @@ describe('The VBScript transpiler', () => {
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('if (DayOfWeek == \'MON\') {\n    Day = 1;\n} else if (DayOfWeek == \'TUE\') {\n    Day = 2;\n} else if (DayOfWeek == \'WED\') {\n    Day = 3;\n} else {\n    Day = 0;\n}');
 	});
+
+	it ('should transpile a "For...Next" statement', () => {
+		const vbs = `For j = 2 To 10\ntotal = total + 1\nNext\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('for (j = 2;; j += 1) {\n    total = total + 1;\n    if (j == 10) {\n        break;\n    }\n}');
+	});
+
+	it ('should transpile a "For/Step...Next" statement', () => {
+		const vbs = `For j = 2 To 10 Step 2\ntotal = total + 1\nNext\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('for (j = 2;; j += 2) {\n    total = total + 1;\n    if (j == 10) {\n        break;\n    }\n}');
+	});
 });
