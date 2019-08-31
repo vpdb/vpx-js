@@ -24,7 +24,7 @@ import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
-import { PlayerPhysics } from '../../game/player-physics';
+import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
@@ -41,7 +41,6 @@ import { GateHitGenerator } from './gate-hit-generator';
 import { GateMeshGenerator } from './gate-mesh-generator';
 import { GateMover } from './gate-mover';
 import { GateState } from './gate-state';
-import { Player } from '../../game/player';
 
 /**
  * VPinball's gates.

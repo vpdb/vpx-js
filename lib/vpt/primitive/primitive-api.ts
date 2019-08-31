@@ -18,13 +18,12 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
-import { PlayerPhysics } from '../../game/player-physics';
+import { Player } from '../../game/player';
 import { HitObject } from '../../physics/hit-object';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { Primitive } from './primitive';
 import { PrimitiveData } from './primitive-data';
-import { Player } from '../../game/player';
 
 export class PrimitiveApi extends ItemApi {
 

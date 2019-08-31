@@ -21,7 +21,6 @@ import { EventProxy } from '../../game/event-proxy';
 import { PlayerPhysics } from '../../game/player-physics';
 import { CatmullCurve2D } from '../../math/catmull-curve';
 import { DragPoint } from '../../math/dragpoint';
-import { degToRad } from '../../math/float';
 import { RenderVertex } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
 import { Hit3DPoly } from '../../physics/hit-3dpoly';

@@ -19,9 +19,8 @@
 
 import { EventEmitter } from 'events';
 import { EventProxy } from '../game/event-proxy';
-import { PlayerPhysics } from '../game/player-physics';
-import { Table } from './table/table';
 import { Player } from '../game/player';
+import { Table } from './table/table';
 
 export abstract class ItemApi extends EventEmitter {
 

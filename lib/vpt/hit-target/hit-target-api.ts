@@ -18,14 +18,13 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
-import { PlayerPhysics } from '../../game/player-physics';
+import { Player } from '../../game/player';
 import { clamp } from '../../math/functions';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { HitTarget } from './hit-target';
 import { HitTargetAnimation } from './hit-target-animation';
 import { HitTargetData } from './hit-target-data';
-import { Player } from '../../game/player';
 
 export class HitTargetApi extends ItemApi {
 

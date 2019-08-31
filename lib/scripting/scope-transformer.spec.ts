@@ -19,10 +19,10 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
+import { astToVbs, vbsToAst } from '../../test/script.helper';
 import { ThreeHelper } from '../../test/three.helper';
 import { NodeBinaryReader } from '../io/binary-reader.node';
 import { Table } from '../vpt/table/table';
-import { astToVbs, vbsToAst } from '../../test/script.helper';
 import { ScopeTransformer } from './scope-transformer';
 
 chai.use(require('sinon-chai'));

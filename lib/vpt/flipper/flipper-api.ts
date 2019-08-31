@@ -18,7 +18,7 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
-import { PlayerPhysics } from '../../game/player-physics';
+import { Player } from '../../game/player';
 import { degToRad, radToDeg } from '../../math/float';
 import { clamp } from '../../math/functions';
 import { ItemApi } from '../item-api';
@@ -27,7 +27,6 @@ import { FlipperData } from './flipper-data';
 import { FlipperHit } from './flipper-hit';
 import { FlipperMover } from './flipper-mover';
 import { FlipperState } from './flipper-state';
-import { Player } from '../../game/player';
 
 export class FlipperApi extends ItemApi {
 

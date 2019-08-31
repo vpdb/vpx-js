@@ -23,12 +23,11 @@ import sinonChai = require('sinon-chai');
 import { Mesh } from 'three';
 import { simulateCycles } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
-import { PlayerPhysics } from '../../game/player-physics';
+import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
 import { PlungerMover } from './plunger-mover';
 import { PlungerState } from './plunger-state';
-import { Player } from '../../game/player';
 
 chai.use(sinonChai);
 const three = new ThreeHelper();

@@ -19,7 +19,6 @@
 
 import { Table } from '..';
 import { IItem } from './iitem';
-import { PlayerPhysics } from './player-physics';
 import { Player } from './player';
 
 /**

@@ -19,14 +19,12 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import { ThreeHelper } from '../../../test/three.helper';
-import { PlayerPhysics } from '../../game/player-physics';
-import { NodeBinaryReader } from '../../io/binary-reader.node';
-import { Table } from '../table/table';
-
 import sinon = require('sinon');
 import sinonChai = require('sinon-chai');
+import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
+import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { Table } from '../table/table';
 
 /* tslint:disable:no-unused-expression */
 chai.use(sinonChai);

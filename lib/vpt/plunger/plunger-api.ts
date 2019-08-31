@@ -18,13 +18,12 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
-import { PlayerPhysics } from '../../game/player-physics';
+import { IBallCreationPosition, Player } from '../../game/player';
 import { Ball } from '../ball/ball';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { PlungerData } from './plunger-data';
 import { PlungerHit } from './plunger-hit';
-import { IBallCreationPosition, Player } from '../../game/player';
 
 export class PlungerApi extends ItemApi {
 

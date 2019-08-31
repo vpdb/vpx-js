@@ -19,17 +19,17 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
+import sinonChai = require('sinon-chai');
+import { createBall } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
+import { Player } from '../../game/player';
 import { PlayerPhysics } from '../../game/player-physics';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { degToRad, radToDeg } from '../../math/float';
 import { Table } from '../table/table';
 import { Spinner } from './spinner';
-
-import sinonChai = require('sinon-chai');
-import { createBall } from '../../../test/physics.helper';
 import { SpinnerState } from './spinner-state';
-import { Player } from '../../game/player';
+
 chai.use(sinonChai);
 const three = new ThreeHelper();
 

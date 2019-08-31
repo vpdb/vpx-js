@@ -23,6 +23,7 @@ import { IAnimatable, IAnimation } from '../../game/ianimatable';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
+import { Player } from '../../game/player';
 import { PlayerPhysics } from '../../game/player-physics';
 import { Storage } from '../../io/ole-doc';
 import { degToRad, f4 } from '../../math/float';
@@ -37,7 +38,6 @@ import { HitTargetData } from './hit-target-data';
 import { HitTargetHitGenerator } from './hit-target-hit-generator';
 import { HitTargetMeshGenerator } from './hit-target-mesh-generator';
 import { HitTargetState } from './hit-target-state';
-import { Player } from '../../game/player';
 
 /**
  * VPinball's hit- and drop targets.

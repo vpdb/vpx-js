@@ -20,7 +20,8 @@
 import {
 	BufferGeometry,
 	Float32BufferAttribute,
-	Geometry, Line,
+	Geometry,
+	Line,
 	Matrix3,
 	Mesh as ThreeMesh,
 	Object3D,

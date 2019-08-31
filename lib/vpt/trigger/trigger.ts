@@ -23,7 +23,7 @@ import { IAnimatable, IAnimation } from '../../game/ianimatable';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
-import { PlayerPhysics } from '../../game/player-physics';
+import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
@@ -36,7 +36,6 @@ import { TriggerHitCircle } from './trigger-hit-circle';
 import { TriggerHitGenerator } from './trigger-hit-generator';
 import { TriggerMeshGenerator } from './trigger-mesh-generator';
 import { TriggerState } from './trigger-state';
-import { Player } from '../../game/player';
 
 /**
  * VPinball's triggers.

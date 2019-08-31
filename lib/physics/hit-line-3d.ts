@@ -22,7 +22,6 @@ import { Vertex2D } from '../math/vertex2d';
 import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
-import { CollisionType } from './collision-type';
 import { HitLineZ } from './hit-line-z';
 import { HitTestResult } from './hit-object';
 

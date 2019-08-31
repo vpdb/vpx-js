@@ -22,7 +22,6 @@ import { Table } from '..';
 import { MoverObject } from '../physics/mover-object';
 import { ItemState } from '../vpt/item-state';
 import { IPlayable } from './iplayable';
-import { PlayerPhysics } from './player-physics';
 import { Player } from './player';
 
 export interface IMovable<STATE extends ItemState> extends IPlayable {
