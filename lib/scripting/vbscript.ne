@@ -138,7 +138,7 @@ ElseStmt             -> "ElseIf" _ Expr _ "Then" NL BlockStmt:* ElseStmt:?      
 #========= For Statement
 
 ForStmt              -> "For" _ ExtendedID _ "=" _ Expr _ "To" _ Expr _ StepOpt:? NL BlockStmt:* _ "Next" NL       {% pp.forStmt %}
-#                      | "For" _ "Each" _ ExtendedID _ "In" _ Expr NL BlockStmt:* _ "Next" NL
+                      | "For" _ "Each" _ ExtendedID _ "In" _ Expr NL BlockStmt:* _ "Next" NL                       {% pp.forEachStmt %}
 
 StepOpt              -> "Step" _ Expr                                                                              {% data => data[2] %}
 

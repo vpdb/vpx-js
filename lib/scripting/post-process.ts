@@ -21,6 +21,7 @@ import {
 	EmptyStatement,
 	Expression,
 	ExpressionStatement,
+	ForOfStatement,
 	ForStatement,
 	FunctionDeclaration,
 	Identifier,
@@ -486,6 +487,57 @@ export function forStmt(result: ['For', null, Identifier, null, '=', null, Expre
 			estree.blockStatement(body),
 		);
 	}
+}
+
+/**
+ * Grammar:
+ * ```
+ * ForStmt -> | "For" _ "Each" _ ExtendedID _ "In" _ Expr NL BlockStmt:* _ "Next" NL
+ * ```
+ * Result:
+ * ```
+ * [
+ *   "For",
+ *   null,
+ *   "Each",
+ *   null,
+ *   { "type": "Identifier", "name": "x" },
+ *   null,
+ *   "In",
+ *   null,
+ *   { "type": "Identifier", "name": "students" },
+ *   [[["\n"]]],
+ *   [
+ *     {
+ *       "type": "ExpressionStatement",
+ *       "expression": {
+ *         "type": "AssignmentExpression",
+ *         "left": { "type": "Identifier", "name": "total" },
+ *         "operator": "=",
+ *         "right": {
+ *           "type": "BinaryExpression",
+ *           "operator": "+",
+ *           "left": { "type": "Identifier", "name": "total" },
+ *           "right": { "type": "Literal", "value": 1 }
+ *         }
+ *       }
+ *     }
+ *   ],
+ *   null,
+ *   "Next",
+ *   [[["\n"]]]
+ * ]
+ * ```
+ */
+export function forEachStmt(result: ['For', null, 'Each', null, Identifier, null, 'In', null, Expression, null, [Statement]]): ForOfStatement {
+	const identifier = result[4];
+	const expression = result[8];
+	const body = result[10] || [] ;
+	return estree.forOfStatement(
+		identifier,
+		expression,
+		estree.blockStatement(body),
+	);
 }
 
 /**
