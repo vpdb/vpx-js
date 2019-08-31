@@ -44,7 +44,7 @@ export class BumperHit extends HitCircle {
 		this.scatter = this.data.scatter!;
 	}
 
-	public collide(coll: CollisionEvent, player: PlayerPhysics): void {
+	public collide(coll: CollisionEvent, physics: PlayerPhysics): void {
 		if (!this.isEnabled) {
 			return;
 		}

@@ -40,7 +40,7 @@ export class HitCircle extends HitObject {
 		this.hitBBox.zhigh = zHigh;
 	}
 
-	public collide(coll: CollisionEvent, player: PlayerPhysics): void {
+	public collide(coll: CollisionEvent, physics: PlayerPhysics): void {
 		coll.ball.hit.collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 	}
 

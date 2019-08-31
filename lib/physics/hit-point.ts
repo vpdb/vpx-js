@@ -39,7 +39,7 @@ export class HitPoint extends HitObject {
 		this.hitBBox = new FRect3D(this.p.x, this.p.x, this.p.y, this.p.y, this.p.z, this.p.z);
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: PlayerPhysics): HitTestResult {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, physics: PlayerPhysics): HitTestResult {
 		if (!this.isEnabled) {
 			return { hitTime: -1.0, coll };
 		}

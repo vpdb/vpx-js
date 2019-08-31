@@ -35,7 +35,7 @@ export class PlungerMover implements MoverObject {
 	private readonly data: PlungerData;
 	private readonly state: PlungerState;
 	private readonly events: EventProxy;
-	private readonly player: PlayerPhysics;
+	private readonly physics: PlayerPhysics;
 	private readonly tableData: TableData;
 
 	/**
@@ -311,12 +311,12 @@ export class PlungerMover implements MoverObject {
 	 */
 	public scatterVelocity: number = 0;
 
-	constructor(config: PlungerConfig, data: PlungerData, state: PlungerState, events: EventProxy, player: PlayerPhysics, tableData: TableData) {
+	constructor(config: PlungerConfig, data: PlungerData, state: PlungerState, events: EventProxy, physics: PlayerPhysics, tableData: TableData) {
 
 		this.data = data;
 		this.state = state;
 		this.events = events;
-		this.player = player;
+		this.physics = physics;
 		this.tableData = tableData;
 
 		this.x = config.x;
@@ -482,7 +482,7 @@ export class PlungerMover implements MoverObject {
 			// When the timer reaches zero, we'll send the corresponding
 			// KeyUp event and cancel the timer.
 			if (--this.autoFireTimer === 0) {
-				if (this.player) {
+				if (this.physics) {
 					//g_pplayer->this.ptable->FireKeyEvent(DISPID_GameEvents_KeyUp, g_pplayer->this.rgKeys[ePlungerKey]);
 				}
 			}
@@ -521,7 +521,7 @@ export class PlungerMover implements MoverObject {
 			// will allow the script to set ROM switch levels or
 			// perform any other tasks it normally does when the
 			// actual Launch Ball button is pressed.
-			if (this.player) {
+			if (this.physics) {
 				// fixme event
 				//g_pplayer->this.ptable->FireKeyEvent(DISPID_GameEvents_KeyDown, g_pplayer->this.rgKeys[ePlungerKey]);
 			}

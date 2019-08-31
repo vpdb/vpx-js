@@ -156,9 +156,9 @@ describe('The VPinball plunger API', () => {
 	});
 });
 
-function debugPlunger(plunger: PlungerApi, player: PlayerPhysics, table: Table, t = 0) {
+function debugPlunger(plunger: PlungerApi, physics: PlayerPhysics, table: Table, t = 0) {
 	for (let i = 0; i < 300; i++) {
-		player.updatePhysics(t + i * 10);
+		physics.updatePhysics(t + i * 10);
 		// tslint:disable-next-line:no-console
 		console.log(t + i * 10, table.plungers.ModernPlunger.getState().frame, plunger.Position());
 	}

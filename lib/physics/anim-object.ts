@@ -24,5 +24,5 @@ import { PlayerPhysics } from '../game/player-physics';
  */
 export interface AnimObject {
 
-	animate(player: PlayerPhysics): void;
+	animate(physics: PlayerPhysics): void;
 }

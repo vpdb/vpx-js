@@ -69,7 +69,7 @@ export class PlungerHit extends HitObject {
 		// zlow & zhigh gets set in constructor
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: PlayerPhysics): HitTestResult {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, physics: PlayerPhysics): HitTestResult {
 
 		let hitTime = dTime; //start time
 		let isHit = false;
@@ -77,7 +77,7 @@ export class PlungerHit extends HitObject {
 		// If we got here, then the ball is close enough to the plunger
 		// to where we should animate the button's light.
 		// Save the time so we can tell the button when to turn on/off.
-		player.lastPlungerHit = player.timeMsec;
+		physics.lastPlungerHit = physics.timeMsec;
 
 		// We are close enable the plunger light.
 		let hit = new CollisionEvent(ball);
@@ -236,7 +236,7 @@ export class PlungerHit extends HitObject {
 		}
 	}
 
-	public collide(coll: CollisionEvent, player: PlayerPhysics): void {
+	public collide(coll: CollisionEvent, physics: PlayerPhysics): void {
 		const ball = coll.ball;
 
 		let dot = (ball.hit.vel.x - coll.hitVel!.x) * coll.hitNormal!.x + (ball.hit.vel.y - coll.hitVel!.y) * coll.hitNormal!.y;
@@ -252,7 +252,7 @@ export class PlungerHit extends HitObject {
 			}
 //#endif
 		}
-		player.pactiveballBC = ball;                       // Ball control most recently collided with plunger
+		physics.pactiveballBC = ball;                       // Ball control most recently collided with plunger
 
 //#ifdef C_DISP_GAIN
 		// correct displacements, mostly from low velocity blidness, an alternative to true acceleration processing

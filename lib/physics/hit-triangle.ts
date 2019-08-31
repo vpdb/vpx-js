@@ -56,7 +56,7 @@ export class HitTriangle extends HitObject {
 		this.hitBBox.zhigh = Math.max(this.rgv[0].z, Math.max(this.rgv[1].z, this.rgv[2].z));
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: PlayerPhysics): HitTestResult {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, physics: PlayerPhysics): HitTestResult {
 		if (!this.isEnabled) {
 			return { hitTime: -1.0, coll };
 		}
@@ -141,7 +141,7 @@ export class HitTriangle extends HitObject {
 		}
 	}
 
-	public collide(coll: CollisionEvent, player: PlayerPhysics): void {
+	public collide(coll: CollisionEvent, physics: PlayerPhysics): void {
 		const ball = coll.ball;
 		const hitNormal = coll.hitNormal!;
 		const dot = -(hitNormal.dot(ball.hit.vel));

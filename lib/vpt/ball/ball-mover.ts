@@ -62,20 +62,20 @@ export class BallMover implements MoverObject {
 		}
 	}
 
-	public updateVelocities(player: PlayerPhysics): void {
+	public updateVelocities(physics: PlayerPhysics): void {
 		if (!this.hit.isFrozen) {
 
-			if (player.ballControl && this.id === player.pactiveballBC!.id && player.pBCTarget) {
+			if (physics.ballControl && this.id === physics.pactiveballBC!.id && physics.pBCTarget) {
 				this.hit.vel.x *= 0.5;  // Null out most of the X/Y velocity, want a little bit so the ball can sort of find its way out of obstacles.
 				this.hit.vel.y *= 0.5;
 
 				this.hit.vel.add(new Vertex3D(
-					Math.max(-10.0, Math.min(10.0, (player.pBCTarget.x - this.state.pos.x) / 10.0)),
-					Math.max(-10.0, Math.min(10.0, (player.pBCTarget.y - this.state.pos.y) / 10.0)),
+					Math.max(-10.0, Math.min(10.0, (physics.pBCTarget.x - this.state.pos.x) / 10.0)),
+					Math.max(-10.0, Math.min(10.0, (physics.pBCTarget.y - this.state.pos.y) / 10.0)),
 					-2.0,
 				));
 			} else {
-				this.hit.vel.add(player.gravity.clone().multiplyScalar(PHYS_FACTOR));
+				this.hit.vel.add(physics.gravity.clone().multiplyScalar(PHYS_FACTOR));
 			}
 
 			// todo nudge

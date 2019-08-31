@@ -46,15 +46,15 @@ export class SurfaceHitGenerator {
 		this.data = data;
 	}
 
-	public generateHitObjects(events: EventProxy, player: PlayerPhysics, table: Table): HitObject[] {
-		return this.updateCommonParameters(this.generate3DPolys(events, player, table), events, table);
+	public generateHitObjects(events: EventProxy, physics: PlayerPhysics, table: Table): HitObject[] {
+		return this.updateCommonParameters(this.generate3DPolys(events, physics, table), events, table);
 	}
 
 	/**
 	 * Returns all hit objects for the surface.
 	 * @see Surface::CurvesToShapes
 	 */
-	private generate3DPolys(events: EventProxy, player: PlayerPhysics, table: Table): HitObject[] {
+	private generate3DPolys(events: EventProxy, physics: PlayerPhysics, table: Table): HitObject[] {
 
 		const hitObjects: HitObject[] = [];
 		const vVertex: RenderVertex[] = DragPoint.getRgVertex<RenderVertex>(this.data.dragPoints, () => new RenderVertex(), CatmullCurve2D.fromVertex2D as any);
@@ -76,7 +76,7 @@ export class SurfaceHitGenerator {
 
 			const pv2 = vVertex[(i + 1) % count];
 			const pv3 = vVertex[(i + 2) % count];
-			hitObjects.push(...this.generateLinePolys(pv2, pv3, events, player, table));
+			hitObjects.push(...this.generateLinePolys(pv2, pv3, events, physics, table));
 		}
 
 		hitObjects.push(new Hit3DPoly(rgv3Dt));
@@ -92,7 +92,7 @@ export class SurfaceHitGenerator {
 	 * Returns the hit line polygons for the surface.
 	 * @see Surface::AddLine
 	 */
-	private generateLinePolys(pv1: RenderVertex, pv2: RenderVertex, events: EventProxy, player: PlayerPhysics, table: Table): HitObject[]  {
+	private generateLinePolys(pv1: RenderVertex, pv2: RenderVertex, events: EventProxy, physics: PlayerPhysics, table: Table): HitObject[]  {
 
 		const linePolys: HitObject[] = [];
 		const bottom = this.data.heightBottom + table.getTableHeight();
@@ -102,7 +102,7 @@ export class SurfaceHitGenerator {
 			linePolys.push(new LineSeg(pv1, pv2, bottom, top));
 
 		} else {
-			const slingLine = new LineSegSlingshot(this.surface, this.data, pv1, pv2, bottom, top, player);
+			const slingLine = new LineSegSlingshot(this.surface, this.data, pv1, pv2, bottom, top, physics);
 			slingLine.force = this.data.slingshotForce;
 
 			// slingshots always have hit events

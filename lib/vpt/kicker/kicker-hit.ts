@@ -71,11 +71,11 @@ export class KickerHit extends HitCircle {
 		return this.hitTestBasicRadius(ball, dTime, coll, false, false, false);
 	}
 
-	public collide(coll: CollisionEvent, player: PlayerPhysics): void {
-		this.doCollide(player, coll.ball, coll.hitNormal!, coll.hitFlag, false);
+	public collide(coll: CollisionEvent, physics: PlayerPhysics): void {
+		this.doCollide(physics, coll.ball, coll.hitNormal!, coll.hitFlag, false);
 	}
 
-	public doCollide(player: PlayerPhysics, ball: Ball, hitNormal: Vertex3D, hitBit: boolean, newBall: boolean) {
+	public doCollide(physics: PlayerPhysics, ball: Ball, hitNormal: Vertex3D, hitBit: boolean, newBall: boolean) {
 
 		if (this.ball) {
 			// a previous ball already in kicker
@@ -125,8 +125,8 @@ export class KickerHit extends HitCircle {
 						ball.hit.vpVolObjs.push(this.obj!); // add kicker to ball's volume set
 						this.ball = ball;
 						this.lastCapturedBall = ball;
-						if (ball === player.pactiveballBC) {
-							player.pactiveballBC = undefined;
+						if (ball === physics.pactiveballBC) {
+							physics.pactiveballBC = undefined;
 						}
 					}
 
@@ -216,20 +216,20 @@ export class KickerHit extends HitCircle {
 		}
 	}
 
-	public kickXyz(table: Table, player: PlayerPhysics, angle: number, speed: number, inclination: number, pos: Vertex3D = new Vertex3D()): void {
+	public kickXyz(table: Table, physics: PlayerPhysics, angle: number, speed: number, inclination: number, pos: Vertex3D = new Vertex3D()): void {
 
 		if (!this.ball) {
 			return;
 		}
 
-		if (!player.pactiveballBC) {
+		if (!physics.pactiveballBC) {
 			// Ball control most recently kicked if none currently.
-			player.pactiveballBC = this.ball;
+			physics.pactiveballBC = this.ball;
 		}
 
-		if (player.pactiveballBC === this.ball) {
+		if (physics.pactiveballBC === this.ball) {
 			// Clear any existing ball control target to allow kickout to work correctly.
-			player.pBCTarget = undefined;
+			physics.pBCTarget = undefined;
 		}
 		let angleRad = degToRad(angle);                                        // yaw angle, zero is along -Y axis
 

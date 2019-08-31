@@ -62,19 +62,19 @@ export abstract class HitObject {
 
 	public abstract calcHitBBox(): void;
 
-	public abstract hitTest(ball: Ball, dTime: number, coll: CollisionEvent, player: PlayerPhysics): HitTestResult;
+	public abstract hitTest(ball: Ball, dTime: number, coll: CollisionEvent, physics: PlayerPhysics): HitTestResult;
 
-	public abstract collide(coll: CollisionEvent, player: PlayerPhysics): void;
+	public abstract collide(coll: CollisionEvent, physics: PlayerPhysics): void;
 
 	/**
 	 * apply contact forces for the given time interval. Ball, Spinner and Gate do nothing here, Flipper has a specialized handling
 	 * @param coll
 	 * @param dtime
-	 * @param player
+	 * @param physics
 	 * @constructor
 	 */
-	public contact(coll: CollisionEvent, dtime: number, player: PlayerPhysics): void {
-		coll.ball.hit.handleStaticContact(coll, this.friction, dtime, player);
+	public contact(coll: CollisionEvent, dtime: number, physics: PlayerPhysics): void {
+		coll.ball.hit.handleStaticContact(coll, this.friction, dtime, physics);
 	}
 
 	public setFriction(friction: number): this {
@@ -127,7 +127,7 @@ export abstract class HitObject {
 		this.objType = type;
 	}
 
-	public doHitTest(ball: Ball, coll: CollisionEvent, player: PlayerPhysics): CollisionEvent {
+	public doHitTest(ball: Ball, coll: CollisionEvent, physics: PlayerPhysics): CollisionEvent {
 		if (!ball) {
 			return coll;
 		}
@@ -137,16 +137,16 @@ export abstract class HitObject {
 		}
 
 		let newColl = new CollisionEvent(ball);
-		const hitResult = this.hitTest(ball, coll.hitTime, !player.recordContacts ? coll : newColl, player);
+		const hitResult = this.hitTest(ball, coll.hitTime, !physics.recordContacts ? coll : newColl, physics);
 		const newTime = hitResult.hitTime;
-		if (!player.recordContacts) {
+		if (!physics.recordContacts) {
 			coll = hitResult.coll;
 		} else {
 			newColl = hitResult.coll;
 		}
 		const validHit = newTime >= 0 && newTime <= coll.hitTime;
 
-		if (!player.recordContacts) {            // simply find first event
+		if (!physics.recordContacts) {            // simply find first event
 			if (validHit) {
 				coll.ball = ball;
 				coll.obj = this;
@@ -159,7 +159,7 @@ export abstract class HitObject {
 				newColl.obj = this;
 
 				if (newColl.isContact) {
-					player.contacts.push(newColl);
+					physics.contacts.push(newColl);
 				} else { //if (validhit)
 					coll = newColl;
 					coll.hitTime = newTime;

@@ -111,14 +111,14 @@ describe('The VPinball spinner collision', () => {
 
 /**
  * Let time pass while logging the spinner rotation.
- * @param player
+ * @param physics
  * @param spinner
  * @param numCycles How many cycles to run
  * @param cycleLength Duration of each cycle
  */
-export function debugSpinner(player: PlayerPhysics, spinner: Spinner, numCycles = 300, cycleLength = 5) {
+export function debugSpinner(physics: PlayerPhysics, spinner: Spinner, numCycles = 300, cycleLength = 5) {
 	for (let i = 0; i <= numCycles; i++) {
-		player.updatePhysics(i * cycleLength);
+		physics.updatePhysics(i * cycleLength);
 		// tslint:disable-next-line:no-console
 		console.log('[%sms] %s (%s°)', i * cycleLength, spinner.getState().angle, radToDeg(spinner.getState().angle));
 	}

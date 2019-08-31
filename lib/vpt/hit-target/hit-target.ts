@@ -160,7 +160,7 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 		this.data.isCollidable = isCollidable;
 	}
 
-	public setDropped(val: boolean, table: Table, player: PlayerPhysics) {
+	public setDropped(val: boolean, table: Table, physics: PlayerPhysics) {
 		if (this.data.isDropped !== val && this.animation) {
 			if (val) {
 				this.animation.moveAnimation = true;
@@ -171,7 +171,7 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 				this.animation.moveAnimation = true;
 				this.state.zOffset = -HitTarget.DROP_TARGET_LIMIT * table.getScaleZ();
 				this.animation.moveDown = false;
-				this.animation.timeStamp = player.timeMsec;
+				this.animation.timeStamp = physics.timeMsec;
 			}
 		} else {
 			this.data.isDropped = val;

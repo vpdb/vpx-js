@@ -57,7 +57,7 @@ export class FlipperHit extends HitObject {
 	private readonly events: EventProxy;
 	private lastHitTime: number = 0;
 
-	public static getInstance(data: FlipperData, state: FlipperState, events: EventProxy, player: PlayerPhysics, table: Table): FlipperHit {
+	public static getInstance(data: FlipperData, state: FlipperState, events: EventProxy, physics: PlayerPhysics, table: Table): FlipperHit {
 		data.updatePhysicsSettings(table);
 		const height = table.getSurfaceHeight(data.szSurface, data.center.x, data.center.y);
 		if (data.flipperRadiusMin > 0 && data.flipperRadiusMax > data.flipperRadiusMin) {
@@ -79,15 +79,15 @@ export class FlipperHit extends HitObject {
 			data,
 			state,
 			events,
-			player,
+			physics,
 			table.data!,
 		);
 	}
 
-	constructor(config: FlipperConfig, data: FlipperData, state: FlipperState, events: EventProxy, player: PlayerPhysics, tableData: TableData) {
+	constructor(config: FlipperConfig, data: FlipperData, state: FlipperState, events: EventProxy, physics: PlayerPhysics, tableData: TableData) {
 		super();
 		this.events = events;
-		this.mover = new FlipperMover(config, data, state, events, player, tableData);
+		this.mover = new FlipperMover(config, data, state, events, physics, tableData);
 		this.data = data;
 		this.state = state;
 		this.tableData = tableData;
@@ -147,7 +147,7 @@ export class FlipperHit extends HitObject {
 		}
 	}
 
-	public contact(coll: CollisionEvent, dTime: number, player: PlayerPhysics): void {
+	public contact(coll: CollisionEvent, dTime: number, physics: PlayerPhysics): void {
 		const ball = coll.ball;
 		const normal = coll.hitNormal!;
 
@@ -166,7 +166,7 @@ export class FlipperHit extends HitObject {
 		if (normVel <= C_CONTACTVEL) {
 
 			// compute accelerations of point on ball and flipper
-			const aB = ball.hit.surfaceAcceleration(rB, player);
+			const aB = ball.hit.surfaceAcceleration(rB, physics);
 			const aF = this.mover.surfaceAcceleration(rF);
 			const aRel = aB.clone().sub(aF);
 
@@ -238,7 +238,7 @@ export class FlipperHit extends HitObject {
 		}
 	}
 
-	public collide(coll: CollisionEvent, player: PlayerPhysics): void {
+	public collide(coll: CollisionEvent, physics: PlayerPhysics): void {
 		const ball = coll.ball;
 		const normal = coll.hitNormal!;
 		const [ vRel, rB, rF ] = this.getRelativeVelocity(normal, ball);
@@ -257,7 +257,7 @@ export class FlipperHit extends HitObject {
 			}
 //#endif
 		}
-		player.pactiveballBC = ball;                       // Ball control most recently collided with flipper
+		physics.pactiveballBC = ball;                       // Ball control most recently collided with flipper
 
 //#ifdef C_DISP_GAIN
 		// correct displacements, mostly from low velocity blindness, an alternative to true acceleration processing
@@ -348,7 +348,7 @@ export class FlipperHit extends HitObject {
 			this.mover.applyImpulse(crossF.clone().multiplyScalar(-jt));
 		}
 
-		if (bnv < -0.25 && (player.timeMsec - this.lastHitTime) > 250) {       // limit rate to 250 milliseconds per event
+		if (bnv < -0.25 && (physics.timeMsec - this.lastHitTime) > 250) {       // limit rate to 250 milliseconds per event
 			const flipperHit = coll.hitMomentBit ? -1.0 : -bnv;                // move event processing to end of collision handler...
 			if (flipperHit < 0) {
 				this.events.fireGroupEvent(Event.HitEventsHit);        // simple hit event
@@ -359,7 +359,7 @@ export class FlipperHit extends HitObject {
 			}
 		}
 
-		this.lastHitTime = player.timeMsec; // keep resetting until idle for 250 milliseconds
+		this.lastHitTime = physics.timeMsec; // keep resetting until idle for 250 milliseconds
 	}
 
 	public getMoverObject(): FlipperMover {
