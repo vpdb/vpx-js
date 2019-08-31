@@ -49,7 +49,7 @@ export abstract class ItemApi extends EventEmitter {
 		for (const ball of this.player.balls) {
 			if (ball.hit.isRealBall() && ball.hit.vpVolObjs.indexOf(events) >= 0) {
 				++cnt;
-				this.player.getPhysics().pactiveball = ball; // set active ball for scriptor
+				this.player.getPhysics().activeBall = ball; // set active ball for scriptor
 			}
 		}
 		return cnt;

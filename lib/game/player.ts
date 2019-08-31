@@ -18,10 +18,11 @@
  */
 
 import { EventEmitter } from 'events';
+import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
 import { ItemState } from '../vpt/item-state';
 import { Table } from '../vpt/table/table';
-import { ChangedStates, IBallCreationPosition, PlayerPhysics } from './player-physics';
+import { PlayerPhysics } from './player-physics';
 
 export class Player extends EventEmitter {
 
@@ -103,28 +104,39 @@ export class Player extends EventEmitter {
 		this.emit('ballDestroyed', ball.getName());
 	}
 
-	// public setGravity(slopeDeg: number, strength: number): void {
-	// 	this.gravity.x = 0;
-	// 	this.gravity.y = Math.sin(degToRad(slopeDeg)) * strength;
-	// 	this.gravity.z = -Math.cos(degToRad(slopeDeg)) * strength;
-	// }
+	public getPhysics(): PlayerPhysics {
+		return this.physics;
+	}
 
 	/**
-	 * @deprecated
+	 * @deprecated use updatePhysics()
 	 */
 	public updateVelocities() {
 		this.physics.updateVelocities();
 	}
 
 	/**
-	 * @deprecated
+	 * @deprecated use updatePhysics()
 	 */
 	public physicsSimulateCycle(tickDuration: number) {
 		this.physics.physicsSimulateCycle(tickDuration);
 	}
+}
 
-	public getPhysics(): PlayerPhysics {
-		return this.physics;
-	}
+export interface IBallCreationPosition {
 
+	getBallCreationPosition(table: Table): Vertex3D;
+
+	getBallCreationVelocity(table: Table): Vertex3D;
+
+	onBallCreated(physics: PlayerPhysics, ball: Ball): void;
+}
+
+export interface ChangedStates<STATE> {
+	[key: string]: ChangedState<STATE>;
+}
+
+export interface ChangedState<STATE> {
+	oldState: STATE;
+	newState: STATE;
 }

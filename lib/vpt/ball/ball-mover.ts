@@ -65,13 +65,13 @@ export class BallMover implements MoverObject {
 	public updateVelocities(physics: PlayerPhysics): void {
 		if (!this.hit.isFrozen) {
 
-			if (physics.ballControl && this.id === physics.pactiveballBC!.id && physics.pBCTarget) {
+			if (physics.ballControl && this.id === physics.activeBallBC!.id && physics.bcTarget) {
 				this.hit.vel.x *= 0.5;  // Null out most of the X/Y velocity, want a little bit so the ball can sort of find its way out of obstacles.
 				this.hit.vel.y *= 0.5;
 
 				this.hit.vel.add(new Vertex3D(
-					Math.max(-10.0, Math.min(10.0, (physics.pBCTarget.x - this.state.pos.x) / 10.0)),
-					Math.max(-10.0, Math.min(10.0, (physics.pBCTarget.y - this.state.pos.y) / 10.0)),
+					Math.max(-10.0, Math.min(10.0, (physics.bcTarget.x - this.state.pos.x) / 10.0)),
+					Math.max(-10.0, Math.min(10.0, (physics.bcTarget.y - this.state.pos.y) / 10.0)),
 					-2.0,
 				));
 			} else {

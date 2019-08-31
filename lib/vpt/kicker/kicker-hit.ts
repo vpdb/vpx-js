@@ -125,8 +125,8 @@ export class KickerHit extends HitCircle {
 						ball.hit.vpVolObjs.push(this.obj!); // add kicker to ball's volume set
 						this.ball = ball;
 						this.lastCapturedBall = ball;
-						if (ball === physics.pactiveballBC) {
-							physics.pactiveballBC = undefined;
+						if (ball === physics.activeBallBC) {
+							physics.activeBallBC = undefined;
 						}
 					}
 
@@ -222,14 +222,14 @@ export class KickerHit extends HitCircle {
 			return;
 		}
 
-		if (!physics.pactiveballBC) {
+		if (!physics.activeBallBC) {
 			// Ball control most recently kicked if none currently.
-			physics.pactiveballBC = this.ball;
+			physics.activeBallBC = this.ball;
 		}
 
-		if (physics.pactiveballBC === this.ball) {
+		if (physics.activeBallBC === this.ball) {
 			// Clear any existing ball control target to allow kickout to work correctly.
-			physics.pBCTarget = undefined;
+			physics.bcTarget = undefined;
 		}
 		let angleRad = degToRad(angle);                                        // yaw angle, zero is along -Y axis
 

@@ -252,7 +252,7 @@ export class PlungerHit extends HitObject {
 			}
 //#endif
 		}
-		physics.pactiveballBC = ball;                       // Ball control most recently collided with plunger
+		physics.activeBallBC = ball;                       // Ball control most recently collided with plunger
 
 //#ifdef C_DISP_GAIN
 		// correct displacements, mostly from low velocity blidness, an alternative to true acceleration processing

@@ -234,7 +234,7 @@ export class BallHit extends HitObject {
 
 		// make sure we process each ball/ball collision only once
 		// (but if we are frozen, there won't be a second collision event, so deal with it now!)
-		if ((physics.swapBallCcollisionHandling && ball.id >= this.id || !physics.swapBallCcollisionHandling && ball.id <= this.id) && !this.isFrozen) {
+		if ((physics.swapBallCollisionHandling && ball.id >= this.id || !physics.swapBallCollisionHandling && ball.id <= this.id) && !this.isFrozen) {
 			return;
 		}
 

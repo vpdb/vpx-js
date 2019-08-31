@@ -22,13 +22,13 @@ import { expect } from 'chai';
 import { Mesh, Vector3 } from 'three';
 import { createBall } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
-import { ChangedState, PlayerPhysics } from '../../game/player-physics';
+import { PlayerPhysics } from '../../game/player-physics';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
 import { BumperState } from './bumper-state';
 
 import sinonChai = require('sinon-chai');
-import { Player } from '../../game/player';
+import { ChangedState, Player } from '../../game/player';
 
 chai.use(sinonChai);
 const three = new ThreeHelper();

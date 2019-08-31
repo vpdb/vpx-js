@@ -18,7 +18,7 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
-import { IBallCreationPosition, PlayerPhysics } from '../../game/player-physics';
+import { PlayerPhysics } from '../../game/player-physics';
 import { Vertex3D } from '../../math/vertex3d';
 import { logger } from '../../util/logger';
 import { Ball } from '../ball/ball';
@@ -26,7 +26,7 @@ import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { KickerData } from './kicker-data';
 import { KickerHit } from './kicker-hit';
-import { Player } from '../../game/player';
+import { IBallCreationPosition, Player } from '../../game/player';
 
 export class KickerApi extends ItemApi {
 

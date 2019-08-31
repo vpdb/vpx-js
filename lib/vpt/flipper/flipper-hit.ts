@@ -257,7 +257,7 @@ export class FlipperHit extends HitObject {
 			}
 //#endif
 		}
-		physics.pactiveballBC = ball;                       // Ball control most recently collided with flipper
+		physics.activeBallBC = ball;                       // Ball control most recently collided with flipper
 
 //#ifdef C_DISP_GAIN
 		// correct displacements, mostly from low velocity blindness, an alternative to true acceleration processing

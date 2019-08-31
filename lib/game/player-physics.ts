@@ -41,22 +41,40 @@ import { Ball } from '../vpt/ball/ball';
 import { BallData } from '../vpt/ball/ball-data';
 import { BallState } from '../vpt/ball/ball-state';
 import { FlipperMover } from '../vpt/flipper/flipper-mover';
+import { IBallCreationPosition } from './player';
 
+const SLOW_MO = 1; // the lower, the slower
 const ANIM_FPS = 60;
 const ANIM_FRAME_USEC = 1 / ANIM_FPS * 1000000;
 const ANIM_FRAME_MSEC = Math.floor(1 / ANIM_FPS * 1000);
 
 export class PlayerPhysics {
 
-	public gravity = new Vertex3D();
-	private readonly table: Table;
 	public readonly balls: Ball[] = [];
+	public gravity = new Vertex3D();
+	public timeMsec: number = 0;
+
+	public recordContacts: boolean = false;
+	public contacts: CollisionEvent[] = [];
+	public activeBall?: Ball;
+	public activeBallBC?: Ball;
+	public swapBallCollisionHandling: boolean = false;
+	public lastPlungerHit: number = 0;
+	public ballControl = false;
+	public bcTarget?: Vertex3D;
+
+	private readonly table: Table;
 	private readonly movers: MoverObject[] = [];
 	private readonly flipperMovers: FlipperMover[] = [];
+
 	private readonly hitObjects: HitObject[] = [];
 	private readonly hitObjectsDynamic: HitObject[] = [];
+	private hitPlayfield!: HitPlane; // HitPlanes cannot be part of octree (infinite size)
+	private hitTopGlass!: HitPlane;
 
-	public static SLOW_MO = 1; // the lower, the slower
+	private meshAsPlayfield: boolean = false;
+	private hitOcTreeDynamic: HitKD = new HitKD();
+	private hitOcTree: HitQuadtree = new HitQuadtree();
 
 	private minPhysLoopTime: number = 0;
 	private lastAnimTimeUsec: number = 0;
@@ -64,7 +82,7 @@ export class PlayerPhysics {
 	private lastTimeUsec: number = 0;
 	private lastFrameDuration: number = 0;
 	private cFrames: number = 0;
-	public timeMsec: number = 0;
+
 	private lastFpsTime: number = 0;
 	private fps: number = 0;
 	private fpsAvg: number = 0;
@@ -75,23 +93,7 @@ export class PlayerPhysics {
 	private startTimeUsec: number = 0;
 	private physPeriod: number = 0;
 
-	private hitPlayfield!: HitPlane; // HitPlanes cannot be part of octree (infinite size)
-	private hitTopGlass!: HitPlane;
-	public recordContacts: boolean = false;
-	public contacts: CollisionEvent[] = [];
-
-	private meshAsPlayfield: boolean = false;
-	private hitOcTreeDynamic: HitKD = new HitKD();
-	private hitOcTree: HitQuadtree = new HitQuadtree();
-	public pactiveball?: Ball;
-	public pactiveballBC?: Ball;
-	private pactiveballDebug?: Ball;
-	public swapBallCcollisionHandling: boolean = false;
-	public lastPlungerHit: number = 0;
-	public ballControl = false;
-	public pBCTarget?: Vertex3D;
-
-	// ball the script user can get with ActiveBall
+	private activeBallDebug?: Ball;
 
 	constructor(table: Table) {
 		this.table = table;
@@ -128,7 +130,6 @@ export class PlayerPhysics {
 	}
 
 	private initOcTree(table: Table) {
-
 		for (const hitObject of this.hitObjects) {
 			this.hitOcTree.addElement(hitObject);
 		}
@@ -228,7 +229,7 @@ export class PlayerPhysics {
 				if (pho && ball.getCollision().hitTime <= hitTime) {
 					// now collision, contact and script reactions on active ball (object)+++++++++
 
-					this.pactiveball = ball;                         // For script that wants the ball doing the collision
+					this.activeBall = ball;                         // For script that wants the ball doing the collision
 					pho.collide(ball.getCollision(), this);          // !!!!! 3) collision on active ball
 					ball.getCollision().clear();                     // remove trial hit object pointer
 
@@ -270,7 +271,7 @@ export class PlayerPhysics {
 			// fixme ballspinhack
 
 			dTime -= hitTime;
-			this.swapBallCcollisionHandling = !this.swapBallCcollisionHandling; // swap order of ball-ball collisions
+			this.swapBallCollisionHandling = !this.swapBallCollisionHandling; // swap order of ball-ball collisions
 		}
 	}
 
@@ -376,23 +377,23 @@ export class PlayerPhysics {
 		}
 
 		let activeBall: boolean;
-		if (this.pactiveballBC === ball) {
+		if (this.activeBallBC === ball) {
 			activeBall = true;
-			this.pactiveball = undefined;
+			this.activeBall = undefined;
 		} else {
 			activeBall = false;
 		}
 
 		let debugBall: boolean;
-		if (this.pactiveballDebug === ball) {
+		if (this.activeBallDebug === ball) {
 			debugBall = true;
-			this.pactiveballDebug = undefined;
+			this.activeBallDebug = undefined;
 		} else {
 			debugBall = false;
 		}
 
-		if (this.pactiveballBC === ball) {
-			this.pactiveballBC = undefined;
+		if (this.activeBallBC === ball) {
+			this.activeBallBC = undefined;
 		}
 
 		this.balls.splice(this.balls.indexOf(ball), 1);
@@ -403,18 +404,12 @@ export class PlayerPhysics {
 		//m_vballDelete.push_back(pball);
 
 		if (debugBall && this.balls.length > 0) {
-			this.pactiveballDebug = this.balls[0];
+			this.activeBallDebug = this.balls[0];
 		}
 		if (activeBall && this.balls.length > 0) {
-			this.pactiveball = this.balls[0];
+			this.activeBall = this.balls[0];
 		}
 	}
-
-	// public setGravity(slopeDeg: number, strength: number): void {
-	// 	this.gravity.x = 0;
-	// 	this.gravity.y = Math.sin(degToRad(slopeDeg)) * strength;
-	// 	this.gravity.z = -Math.cos(degToRad(slopeDeg)) * strength;
-	// }
 
 	private initPhysics(table: Table) {
 		const minSlope = table.data!.overridePhysics ? DEFAULT_TABLE_MIN_SLOPE : table.data!.angletiltMin!;
@@ -432,21 +427,12 @@ export class PlayerPhysics {
 	}
 
 	private now(): number {
-		return now() * PlayerPhysics.SLOW_MO;
+		return now() * SLOW_MO;
 	}
-}
 
-export interface IBallCreationPosition {
-	getBallCreationPosition(table: Table): Vertex3D;
-	getBallCreationVelocity(table: Table): Vertex3D;
-	onBallCreated(physics: PlayerPhysics, ball: Ball): void;
-}
-
-export interface ChangedStates<STATE> {
-	[key: string]: ChangedState<STATE>;
-}
-
-export interface ChangedState<STATE> {
-	oldState: STATE;
-	newState: STATE;
+	// public setGravity(slopeDeg: number, strength: number): void {
+	// 	this.gravity.x = 0;
+	// 	this.gravity.y = Math.sin(degToRad(slopeDeg)) * strength;
+	// 	this.gravity.z = -Math.cos(degToRad(slopeDeg)) * strength;
+	// }
 }
