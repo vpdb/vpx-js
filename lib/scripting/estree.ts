@@ -32,6 +32,7 @@ import {
 	Expression,
 	ExpressionStatement,
 	ForStatement,
+	ForOfStatement,
 	FunctionDeclaration,
 	Identifier,
 	IfStatement,
@@ -219,6 +220,15 @@ export function forStatement(init: Expression, test: Expression | null, update: 
 		init,
 		test,
 		update,
+		body,
+	};
+}
+
+export function forOfStatement(left: VariableDeclaration | Pattern, right: Expression, body: Statement): ForOfStatement {
+	return {
+		type: 'ForOfStatement',
+		left,
+		right,
 		body,
 	};
 }
