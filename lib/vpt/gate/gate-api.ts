@@ -28,6 +28,7 @@ import { GateData } from './gate-data';
 import { GateHit } from './gate-hit';
 import { GateMover } from './gate-mover';
 import { GateState } from './gate-state';
+import { Player } from '../../game/player';
 
 export class GateApi extends ItemApi {
 
@@ -37,7 +38,7 @@ export class GateApi extends ItemApi {
 	private readonly hitGate: GateHit;
 	private readonly hitLine: LineSeg | null;
 
-	constructor(data: GateData, state: GateState, mover: GateMover, hitGate: GateHit, hitLine: LineSeg | null, player: PlayerPhysics, table: Table) {
+	constructor(data: GateData, state: GateState, mover: GateMover, hitGate: GateHit, hitLine: LineSeg | null, player: Player, table: Table) {
 		super(player, table);
 		this.data = data;
 		this.state = state;

@@ -27,6 +27,7 @@ import { FlipperData } from './flipper-data';
 import { FlipperHit } from './flipper-hit';
 import { FlipperMover } from './flipper-mover';
 import { FlipperState } from './flipper-state';
+import { Player } from '../../game/player';
 
 export class FlipperApi extends ItemApi {
 
@@ -36,7 +37,7 @@ export class FlipperApi extends ItemApi {
 	private readonly mover: FlipperMover;
 	private readonly events: EventProxy;
 
-	constructor(data: FlipperData, state: FlipperState, hit: FlipperHit, mover: FlipperMover, events: EventProxy, player: PlayerPhysics, table: Table) {
+	constructor(data: FlipperData, state: FlipperState, hit: FlipperHit, mover: FlipperMover, events: EventProxy, player: Player, table: Table) {
 		super(player, table);
 		this.data = data;
 		this.state = state;

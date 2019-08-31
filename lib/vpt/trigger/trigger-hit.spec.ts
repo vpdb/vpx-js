@@ -27,6 +27,7 @@ import { Table } from '../table/table';
 import { TriggerState } from './trigger-state';
 
 import sinonChai = require('sinon-chai');
+import { Player } from '../../game/player';
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
@@ -34,14 +35,14 @@ const three = new ThreeHelper();
 describe('The VPinball trigger collision', () => {
 
 	let table: Table;
-	let player: PlayerPhysics;
+	let player: Player;
 
 	before(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-trigger.vpx')));
 	});
 
 	beforeEach(() => {
-		player = new PlayerPhysics(table);
+		player = new Player(table);
 	});
 
 	it('should collide with the ball and animate',  () => {

@@ -26,6 +26,7 @@ import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { KickerData } from './kicker-data';
 import { KickerHit } from './kicker-hit';
+import { Player } from '../../game/player';
 
 export class KickerApi extends ItemApi {
 
@@ -34,7 +35,7 @@ export class KickerApi extends ItemApi {
 	private readonly events: EventProxy;
 	private readonly ballCreator: IBallCreationPosition;
 
-	constructor(data: KickerData, hit: KickerHit, events: EventProxy, ballCreator: IBallCreationPosition, player: PlayerPhysics, table: Table) {
+	constructor(data: KickerData, hit: KickerHit, events: EventProxy, ballCreator: IBallCreationPosition, player: Player, table: Table) {
 		super(player, table);
 		this.data = data;
 		this.hit = hit;
@@ -127,15 +128,15 @@ export class KickerApi extends ItemApi {
 	}
 
 	public KickXYZ(angle: number, speed: number, inclination: number, x: number, y: number, z: number) {
-		this.hit.kickXyz(this.table, this.player, angle, speed, inclination, new Vertex3D(x, y, z));
+		this.hit.kickXyz(this.table, this.player.getPhysics(), angle, speed, inclination, new Vertex3D(x, y, z));
 	}
 
 	public KickZ(angle: number, speed: number, inclination: number, heightZ: number) {
-		this.hit.kickXyz(this.table, this.player, angle, speed, inclination, new Vertex3D(0, 0, heightZ));
+		this.hit.kickXyz(this.table, this.player.getPhysics(), angle, speed, inclination, new Vertex3D(0, 0, heightZ));
 	}
 
 	public Kick(angle: number, speed: number, inclination: number = 0): void {
-		this.hit.kickXyz(this.table, this.player, angle, speed, inclination, new Vertex3D(0, 0, 0));
+		this.hit.kickXyz(this.table, this.player.getPhysics(), angle, speed, inclination, new Vertex3D(0, 0, 0));
 	}
 
 	public BallCntOver(): number {

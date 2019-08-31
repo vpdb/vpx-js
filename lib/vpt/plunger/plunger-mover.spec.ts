@@ -28,6 +28,7 @@ import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
 import { PlungerMover } from './plunger-mover';
 import { PlungerState } from './plunger-state';
+import { Player } from '../../game/player';
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
@@ -35,14 +36,14 @@ const three = new ThreeHelper();
 describe('The VPinball plunger physics', () => {
 
 	let table: Table;
-	let player: PlayerPhysics;
+	let player: Player;
 
 	before(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-plunger.vpx')));
 	});
 
 	beforeEach(() => {
-		player = new PlayerPhysics(table);
+		player = new Player(table);
 		simulateCycles(player, 50); // move to start position
 	});
 
@@ -144,7 +145,7 @@ describe('The VPinball plunger physics', () => {
 
 });
 
-function popState(player: PlayerPhysics, name: string): PlungerState {
+function popState(player: Player, name: string): PlungerState {
 	const states = player.popStates();
 	return states[name].newState as PlungerState;
 }

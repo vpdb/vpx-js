@@ -41,6 +41,7 @@ import { GateHitGenerator } from './gate-hit-generator';
 import { GateMeshGenerator } from './gate-mesh-generator';
 import { GateMover } from './gate-mover';
 import { GateState } from './gate-state';
+import { Player } from '../../game/player';
 
 /**
  * VPinball's gates.
@@ -108,7 +109,7 @@ export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHitta
 		return meshes;
 	}
 
-	public setupPlayer(player: PlayerPhysics, table: Table): void {
+	public setupPlayer(player: Player, table: Table): void {
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
 		const radAngle = degToRad(this.data.rotation);
 		const tangent = new Vertex2D(Math.cos(radAngle), Math.sin(radAngle));
@@ -137,7 +138,7 @@ export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHitta
 	}
 
 	/* istanbul ignore next */
-	public applyState(obj: Object3D, table: Table, player: PlayerPhysics, oldState: GateState): void {
+	public applyState(obj: Object3D, table: Table, player: Player, oldState: GateState): void {
 		const posZ = this.data.height;
 		const matTransToOrigin = new Matrix3D().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, posZ);
 		const matRotateToOrigin = new Matrix3D().rotateZMatrix(degToRad(-this.data.rotation));

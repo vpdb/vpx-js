@@ -25,6 +25,7 @@ import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
 
 import sinonChai = require('sinon-chai');
+import { Player } from '../../game/player';
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
@@ -32,11 +33,11 @@ const three = new ThreeHelper();
 describe('The VPinball primitive API', () => {
 
 	let table: Table;
-	let player: PlayerPhysics;
+	let player: Player;
 
 	beforeEach(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-primitive.vpx')));
-		player = new PlayerPhysics(table);
+		player = new Player(table);
 	});
 
 	it('should correctly read and write the properties', async () => {

@@ -21,13 +21,14 @@ import { EventEmitter } from 'events';
 import { EventProxy } from '../game/event-proxy';
 import { PlayerPhysics } from '../game/player-physics';
 import { Table } from './table/table';
+import { Player } from '../game/player';
 
 export abstract class ItemApi extends EventEmitter {
 
-	protected readonly player: PlayerPhysics;
+	protected readonly player: Player;
 	protected readonly table: Table;
 
-	protected constructor(player: PlayerPhysics, table: Table) {
+	protected constructor(player: Player, table: Table) {
 		super();
 		this.player = player;
 		this.table = table;
@@ -48,7 +49,7 @@ export abstract class ItemApi extends EventEmitter {
 		for (const ball of this.player.balls) {
 			if (ball.hit.isRealBall() && ball.hit.vpVolObjs.indexOf(events) >= 0) {
 				++cnt;
-				this.player.pactiveball = ball; // set active ball for scriptor
+				this.player.getPhysics().pactiveball = ball; // set active ball for scriptor
 			}
 		}
 		return cnt;

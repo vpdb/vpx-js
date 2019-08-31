@@ -36,6 +36,7 @@ import { KickerApi } from './kicker-api';
 import { KickerData } from './kicker-data';
 import { KickerHit } from './kicker-hit';
 import { KickerMeshGenerator } from './kicker-mesh-generator';
+import { Player } from '../../game/player';
 
 /**
  * VPinball's kickers.
@@ -91,7 +92,7 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 		};
 	}
 
-	public setupPlayer(player: PlayerPhysics, table: Table): void {
+	public setupPlayer(player: Player, table: Table): void {
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
 
 		// reduce the hit circle radius because only the inner circle of the kicker should start a hit event

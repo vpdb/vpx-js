@@ -27,6 +27,7 @@ import { Table } from '../table/table';
 import { HitTargetState } from './hit-target-state';
 
 import sinonChai = require('sinon-chai');
+import { Player } from '../../game/player';
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
@@ -34,11 +35,11 @@ const three = new ThreeHelper();
 describe('The VPinball hit target collision', () => {
 
 	let table: Table;
-	let player: PlayerPhysics;
+	let player: Player;
 
 	beforeEach(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-hit-target.vpx')));
-		player = new PlayerPhysics(table);
+		player = new Player(table);
 	});
 
 	describe('of a drop target', () => {

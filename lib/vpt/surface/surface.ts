@@ -32,6 +32,7 @@ import { SurfaceApi } from './surface-api';
 import { SurfaceData } from './surface-data';
 import { SurfaceHitGenerator } from './surface-hit-generator';
 import { SurfaceMeshGenerator } from './surface-mesh-generator';
+import { Player } from '../../game/player';
 
 /**
  * VPinball's surfaces, a.k.a as "walls".
@@ -125,9 +126,9 @@ export class Surface implements IRenderable, IHittable, IScriptable<SurfaceApi> 
 		return meshes;
 	}
 
-	public setupPlayer(player: PlayerPhysics, table: Table): void {
+	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
-		this.hits = this.hitGenerator.generateHitObjects(this.events, player, table);
+		this.hits = this.hitGenerator.generateHitObjects(this.events, player.getPhysics(), table);
 		this.drops = this.data.isCollidable ? this.hits : [];
 		this.api = new SurfaceApi(this, this.data, this.hitGenerator, this.events, player, table);
 	}

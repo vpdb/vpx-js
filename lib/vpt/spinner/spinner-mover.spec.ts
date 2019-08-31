@@ -29,20 +29,21 @@ import { Spinner } from './spinner';
 import sinonChai = require('sinon-chai');
 import { createBall } from '../../../test/physics.helper';
 import { SpinnerState } from './spinner-state';
+import { Player } from '../../game/player';
 chai.use(sinonChai);
 const three = new ThreeHelper();
 
 describe('The VPinball spinner collision', () => {
 
 	let table: Table;
-	let player: PlayerPhysics;
+	let player: Player;
 
 	before(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-spinner.vpx')));
 	});
 
 	beforeEach(() => {
-		player = new PlayerPhysics(table);
+		player = new Player(table);
 	});
 
 	it('should make the spinner spin', () => {

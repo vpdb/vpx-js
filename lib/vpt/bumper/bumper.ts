@@ -34,6 +34,7 @@ import { BumperHit } from './bumper-hit';
 import { BumperMeshGenerator } from './bumper-mesh-generator';
 import { BumperMeshUpdater } from './bumper-mesh-updater';
 import { BumperState } from './bumper-state';
+import { Player } from '../../game/player';
 
 /**
  * VPinball's bumper item.
@@ -78,14 +79,14 @@ export class Bumper implements IRenderable, IHittable, IAnimatable<BumperState> 
 		return this.data.isCollidable;
 	}
 
-	public setupPlayer(player: PlayerPhysics, table: Table): void {
+	public setupPlayer(player: Player, table: Table): void {
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
 		this.events = new EventProxy(this);
 		this.animation = new BumperAnimation(this.data, this.state);
 		this.hit = new BumperHit(this.data, this.state, this.animation, this.events, height);
 	}
 
-	public applyState(obj: Object3D, table: Table, player: PlayerPhysics, oldState: BumperState): void {
+	public applyState(obj: Object3D, table: Table, player: Player, oldState: BumperState): void {
 		this.meshUpdater.applyState(obj, table, player, oldState);
 	}
 

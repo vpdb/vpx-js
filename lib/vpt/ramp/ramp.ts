@@ -32,6 +32,7 @@ import { Table } from '../table/table';
 import { RampData } from './ramp-data';
 import { RampHitGenerator } from './ramp-hit-generator';
 import { RampMeshGenerator } from './ramp-mesh-generator';
+import { Player } from '../../game/player';
 
 /**
  * VPinball's ramps.
@@ -80,7 +81,7 @@ export class Ramp implements IRenderable, IHittable {
 		return this.data.isCollidable;
 	}
 
-	public setupPlayer(player: PlayerPhysics, table: Table): void {
+	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
 		this.hits = this.hitGenerator.generateHitObjects(table, this.events);
 	}

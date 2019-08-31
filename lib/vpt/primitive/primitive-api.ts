@@ -24,6 +24,7 @@ import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { Primitive } from './primitive';
 import { PrimitiveData } from './primitive-data';
+import { Player } from '../../game/player';
 
 export class PrimitiveApi extends ItemApi {
 
@@ -32,7 +33,7 @@ export class PrimitiveApi extends ItemApi {
 	private readonly hits: HitObject[];
 	private readonly events: EventProxy;
 
-	constructor(primitive: Primitive, data: PrimitiveData, hits: HitObject[], events: EventProxy, player: PlayerPhysics, table: Table) {
+	constructor(primitive: Primitive, data: PrimitiveData, hits: HitObject[], events: EventProxy, player: Player, table: Table) {
 		super(player, table);
 		this.primitive = primitive;
 		this.data = data;

@@ -25,6 +25,7 @@ import { Table } from '../table/table';
 import { BumperData } from './bumper-data';
 import { BumperMeshGenerator } from './bumper-mesh-generator';
 import { BumperState } from './bumper-state';
+import { Player } from '../../game/player';
 
 export class BumperMeshUpdater {
 
@@ -38,7 +39,7 @@ export class BumperMeshUpdater {
 		this.meshGenerator = meshGenerator;
 	}
 
-	public applyState(obj: Object3D, table: Table, player: PlayerPhysics, oldState: BumperState): void {
+	public applyState(obj: Object3D, table: Table, player: Player, oldState: BumperState): void {
 
 		if (this.data.isRingVisible && this.state.ringOffset !== oldState.ringOffset) {
 			this.applyRingState(obj);

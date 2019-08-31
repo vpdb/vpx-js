@@ -26,6 +26,7 @@ import { Table } from '../table/table';
 
 import sinonChai = require('sinon-chai');
 import { PlungerApi } from './plunger-api';
+import { Player } from '../../game/player';
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
@@ -33,14 +34,14 @@ const three = new ThreeHelper();
 describe('The VPinball plunger API', () => {
 
 	let table: Table;
-	let player: PlayerPhysics;
+	let player: Player;
 
 	before(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-plunger.vpx')));
 	});
 
 	beforeEach(async () => {
-		player = new PlayerPhysics(table);
+		player = new Player(table);
 	});
 
 	it('should correctly read and write the properties', async () => {

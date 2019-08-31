@@ -36,6 +36,7 @@ import { TriggerHitCircle } from './trigger-hit-circle';
 import { TriggerHitGenerator } from './trigger-hit-generator';
 import { TriggerMeshGenerator } from './trigger-mesh-generator';
 import { TriggerState } from './trigger-state';
+import { Player } from '../../game/player';
 
 /**
  * VPinball's triggers.
@@ -99,7 +100,7 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 		};
 	}
 
-	public setupPlayer(player: PlayerPhysics, table: Table): void {
+	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
 		this.animation = new TriggerAnimation(this.data, this.state);
 		if (this.data.shape === Trigger.ShapeTriggerStar || this.data.shape === Trigger.ShapeTriggerButton) {
@@ -123,7 +124,7 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 		return this.animation!;
 	}
 
-	public applyState(obj: Object3D, table: Table, player: PlayerPhysics): void {
+	public applyState(obj: Object3D, table: Table, player: Player): void {
 		const matrix = new Matrix3D().setTranslation(0, 0, -this.state.heightOffset);
 		obj.matrix = matrix.toThreeMatrix4();
 		obj.matrixWorldNeedsUpdate = true;

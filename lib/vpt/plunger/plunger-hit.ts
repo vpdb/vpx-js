@@ -35,7 +35,7 @@ export class PlungerHit extends HitObject {
 	private readonly mover: PlungerMover;
 	private readonly data: PlungerData;
 
-	constructor(data: PlungerData, state: PlungerState, events: EventProxy, cFrames: number, player: PlayerPhysics, table: Table) {
+	constructor(data: PlungerData, state: PlungerState, events: EventProxy, cFrames: number, physics: PlayerPhysics, table: Table) {
 		super();
 		const zHeight = table.getSurfaceHeight(data.szSurface, data.center.x, data.center.y);
 		const config: PlungerConfig = {
@@ -52,7 +52,7 @@ export class PlungerHit extends HitObject {
 		this.hitBBox.zhigh = config.zHeight + Plunger.PLUNGER_HEIGHT;
 
 		this.data = data;
-		this.mover = new PlungerMover(config, data, state, events, player, table.data!);
+		this.mover = new PlungerMover(config, data, state, events, physics, table.data!);
 	}
 
 	public getMoverObject(): PlungerMover {
