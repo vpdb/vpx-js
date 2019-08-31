@@ -79,6 +79,7 @@ MethodStmt           -> ConstDecl                                               
 
 BlockStmt            -> DimDecl                                                                                    {% id %}
                       | IfStmt                                                                                     {% id %}
+                      | WithStmt                                                                                   {% id %}
                       | ForStmt                                                                                    {% id %}
                       | InlineStmt NL                                                                              {% id %}
 
@@ -106,6 +107,7 @@ LeftExpr             -> QualifiedID                                             
 
 QualifiedID          -> IDDot QualifiedIDTail                                                                      {% data => estree.memberExpression(data[0], data[1]) %}
                       | ID                                                                                         {% id %}
+                      | DotID                                                                                      {% id %}
 
 QualifiedIDTail      -> IDDot QualifiedIDTail
                       | ID                                                                                         {% id %}
@@ -134,6 +136,10 @@ ElseStmt             -> "ElseIf" _ Expr _ "Then" NL BlockStmt:* ElseStmt:?      
 #ElseOpt              -> "Else" _ InlineStmt                                                                        {% data => data[2] %}
 
 #EndIfOpt             -> "End" _ "If"
+
+#========= With Statement
+
+WithStmt             -> "With" _ Expr NL BlockStmt:* _ "End" _ "With" NL                                           {% pp.withStmt %}
 
 #========= For Statement
 
@@ -225,6 +231,9 @@ ID                   -> Letter IDTail                                           
 #                      | "[" IDNameChar:* "]"
 
 IDDot                -> Letter IDTail "."                                                                          {% data => estree.identifier(data[0] + data[1]) %}
+
+DotID                -> "." Letter IDTail                                                                          {% data => estree.identifier("." + data[1] + data[2]) %}
+#                      | '.' '[' {ID Name Char}* ']'
 
 NL                   -> NewLine NL
                       | NewLine

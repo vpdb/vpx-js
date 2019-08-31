@@ -18,6 +18,7 @@
  */
 
 import {
+	BlockStatement,
 	EmptyStatement,
 	Expression,
 	ExpressionStatement,
@@ -32,6 +33,7 @@ import {
 	UnaryExpression,
 	VariableDeclaration,
 	VariableDeclarator,
+
 } from 'estree';
 import { inspect } from 'util';
 import * as estree from './estree';
@@ -463,7 +465,6 @@ export function forStmt(result: ['For', null, Identifier, null, '=', null, Expre
 	const test = result[10];
 	const step = result[12];
 	const body = result[14] || [];
-
 	if (step) {
 		return estree.forStatement(
 			estree.assignmentExpression(identifier, '=', init),
@@ -538,6 +539,63 @@ export function forEachStmt(result: ['For', null, 'Each', null, Identifier, null
 		expression,
 		estree.blockStatement(body),
 	);
+}
+/**
+ * Grammar:
+ * ```
+ * WithStmt -> "With" _ Expr NL BlockStmt:* _ "End" _ "With" NL
+ * ```
+ * Result:
+ * ```
+ * [
+ *   "With",
+ *   null,
+ *   { "type": "Identifier", "name": "x" },
+ *   [[["\n"]]],
+ *   [
+ *     {
+ *       "type": "ExpressionStatement",
+ *       "expression": {
+ *         "type": "AssignmentExpression",
+ *         "left": { "type": "Identifier", "name": ".value" },
+ *         "operator": "=",
+ *         "right": { "type": "Literal", "value": 5 }
+ *       }
+ *     },
+ *     {
+ *       "type": "ExpressionStatement",
+ *       "expression": {
+ *         "type": "AssignmentExpression",
+ *         "left": { "type": "Identifier", "name": ".type" },
+ *         "operator": "=",
+ *         "right": { "type": "Literal", "value": "TEST" }
+ *       }
+ *     }
+ *   ],
+ *   null,
+ *   "End",
+ *   null,
+ *   "With",
+ *   [[["\n"]]]
+ * ]
+ * ```
+ */
+export function withStmt(result: ['With', null, Expression, null, [Statement]]): BlockStatement {
+	const identifier = result[2];
+	const statements = result[4] || [];
+	for (const statement of statements) {
+		if (statement.type === 'ExpressionStatement') {
+			if (statement.expression.type === 'AssignmentExpression') {
+				if (statement.expression.left.type === 'Identifier') {
+					if (statement.expression.left.name.startsWith('.')) {
+						statement.expression.left.name = statement.expression.left.name.substr(1);
+						statement.expression.left = estree.memberExpression(identifier, statement.expression.left);
+					}
+				}
+			}
+		}
+	}
+	return estree.blockStatement(statements);
 }
 
 /**

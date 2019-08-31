@@ -254,4 +254,10 @@ describe('The VBScript transpiler', () => {
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('for (x of students) {\n    total = total + x;\n}');
 	});
+
+	it ('should transpile a "With...End With" statement', () => {
+		const vbs = `With x\n.value = 5\n.type = \"TEST\"\nEnd With\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('{\n    x.value = 5;\n    x.type = \'TEST\';\n}');
+	});
 });
