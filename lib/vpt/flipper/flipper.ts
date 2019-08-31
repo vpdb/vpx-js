@@ -38,6 +38,7 @@ import { FlipperHit } from './flipper-hit';
 import { FlipperMesh } from './flipper-mesh';
 import { FlipperMover } from './flipper-mover';
 import { FlipperState } from './flipper-state';
+import { Player } from '../../game/player';
 
 /**
  * VPinball's flippers
@@ -80,9 +81,9 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		return this.state;
 	}
 
-	public setupPlayer(player: PlayerPhysics, table: Table): void {
+	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
-		this.hit = FlipperHit.getInstance(this.data, this.state, this.events, player, table);
+		this.hit = FlipperHit.getInstance(this.data, this.state, this.events, player.getPhysics(), table);
 		this.api = new FlipperApi(this.data, this.state, this.hit, this.getMover(), this.events, player, table);
 	}
 

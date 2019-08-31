@@ -102,9 +102,12 @@ export class PlayerPhysics extends EventEmitter {
 	constructor(table: Table) {
 		super();
 		this.table = table;
-		this.addTableElements(table);
-		this.initOcTree(table);
-		this.initPhysics(table);
+	}
+
+	public setup(): void {
+		this.indexTableElements();
+		this.initOcTree(this.table);
+		this.initPhysics(this.table);
 	}
 
 	/**
@@ -123,30 +126,15 @@ export class PlayerPhysics extends EventEmitter {
 		return changedStates;
 	}
 
-	private addTableElements(table: Table): void {
+	private indexTableElements(): void {
 
-		// setup table elements with player
-		for (const playable of table.getPlayables()) {
-			playable.setupPlayer(this, table);
-		}
-
-		// link movables to player
-		for (const movable of table.getMovables()) {
+		// index movables
+		for (const movable of this.table.getMovables()) {
 			this.movers.push(movable.getMover());
-			const state = movable.getState();
-			this.currentStates[state.getName()] = state;
-			this.previousStates[state.getName()] = state.clone();
 		}
 
-		// link animatables to player
-		for (const animatable of table.getAnimatables()) {
-			const state = animatable.getState();
-			this.currentStates[state.getName()] = state;
-			this.previousStates[state.getName()] = state.clone();
-		}
-
-		// link hittables to player
-		for (const hittable of table.getHittables()) {
+		// index hittables
+		for (const hittable of this.table.getHittables()) {
 			for (const hitObject of hittable.getHitShapes()) {
 				this.hitObjects.push(hitObject);
 				hitObject.calcHitBBox();
@@ -156,8 +144,8 @@ export class PlayerPhysics extends EventEmitter {
 		this.hitPlayfield = this.table.generatePlayfieldHit();
 		this.hitTopGlass = this.table.generateGlassHit();
 
-		// flippers are a special case
-		for (const flipper of Object.values(table.flippers)) {
+		// index flippers
+		for (const flipper of Object.values(this.table.flippers)) {
 			this.flipperMovers.push(flipper.getMover());
 		}
 	}
@@ -171,30 +159,6 @@ export class PlayerPhysics extends EventEmitter {
 		this.hitOcTree.initialize(tableBounds);
 		// initialize hit structure for dynamic objects
 		this.hitOcTreeDynamic.fillFromVector(this.hitObjectsDynamic);
-	}
-
-	private getFriction(): number {
-		return this.table.data!.overridePhysics
-			? this.table.data!.overrideContactFriction
-			: this.table.data!.friction!;
-	}
-
-	private getElasticity(): number {
-		return this.table.data!.overridePhysics
-			? this.table.data!.overrideElasticity
-			: this.table.data!.elasticity!;
-	}
-
-	private getElasticityFalloff(): number {
-		return this.table.data!.overridePhysics
-			? this.table.data!.overrideElasticityFalloff
-			: this.table.data!.elasticityFalloff!;
-	}
-
-	private getScatter(): number {
-		return this.table.data!.overridePhysics
-			? this.table.data!.overrideScatterAngle
-			: this.table.data!.scatter!;
 	}
 
 	public physicsSimulateCycle(dTime: number) {

@@ -38,6 +38,7 @@ import { PlungerHit } from './plunger-hit';
 import { PlungerMesh } from './plunger-mesh';
 import { PlungerMover } from './plunger-mover';
 import { PlungerState } from './plunger-state';
+import { Player } from '../../game/player';
 
 /**
  * VPinball's plunger.
@@ -105,9 +106,9 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 		return true;
 	}
 
-	public setupPlayer(player: PlayerPhysics, table: Table): void {
+	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
-		this.hit = new PlungerHit(this.data, this.state, this.events, this.mesh.cFrames, player, table);
+		this.hit = new PlungerHit(this.data, this.state, this.events, this.mesh.cFrames, player.getPhysics(), table);
 		this.api = new PlungerApi(this.data, this.hit, this.events, this, player, table);
 	}
 

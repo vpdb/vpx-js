@@ -28,6 +28,7 @@ import { Table } from '../table/table';
 import { GateState } from './gate-state';
 
 import sinonChai = require('sinon-chai');
+import { Player } from '../../game/player';
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
@@ -35,14 +36,14 @@ const three = new ThreeHelper();
 describe('The VPinball gate mover', () => {
 
 	let table: Table;
-	let player: PlayerPhysics;
+	let player: Player;
 
 	before(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-gate.vpx')));
 	});
 
 	beforeEach(() => {
-		player = new PlayerPhysics(table);
+		player = new Player(table);
 	});
 
 	it('should make the two-way gate bracket move', () => {

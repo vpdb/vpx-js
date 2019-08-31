@@ -33,6 +33,7 @@ import { PrimitiveApi } from './primitive-api';
 import { PrimitiveData } from './primitive-data';
 import { PrimitiveHitGenerator } from './primitive-hit-generator';
 import { PrimitiveMeshGenerator } from './primitive-mesh-generator';
+import { Player } from '../../game/player';
 
 /**
  * VPinball's primitive.
@@ -90,7 +91,7 @@ export class Primitive implements IRenderable, IHittable, IScriptable<PrimitiveA
 		return this.mesh;
 	}
 
-	public setupPlayer(player: PlayerPhysics, table: Table): void {
+	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
 		this.events.onCollision = (obj: HitObject, ball: Ball, dot: number) => {
 			this.events!.currentHitThreshold = dot;

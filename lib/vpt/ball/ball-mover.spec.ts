@@ -26,6 +26,7 @@ import { ThreeHelper } from '../../../test/three.helper';
 import { PlayerPhysics } from '../../game/player-physics';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
+import { Player } from '../../game/player';
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
@@ -33,14 +34,14 @@ const three = new ThreeHelper();
 describe('The VPinball ball physics', () => {
 
 	let table: Table;
-	let player: PlayerPhysics;
+	let player: Player;
 
 	before(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-empty.vpx')));
 	});
 
 	beforeEach(() => {
-		player = new PlayerPhysics(table);
+		player = new Player(table);
 	});
 
 	it('should add the ball to the right position', async () => {

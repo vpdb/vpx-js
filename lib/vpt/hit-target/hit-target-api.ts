@@ -25,6 +25,7 @@ import { Table } from '../table/table';
 import { HitTarget } from './hit-target';
 import { HitTargetAnimation } from './hit-target-animation';
 import { HitTargetData } from './hit-target-data';
+import { Player } from '../../game/player';
 
 export class HitTargetApi extends ItemApi {
 
@@ -33,7 +34,7 @@ export class HitTargetApi extends ItemApi {
 	private readonly animation: HitTargetAnimation;
 	private readonly events: EventProxy;
 
-	constructor(hitTarget: HitTarget, data: HitTargetData, animation: HitTargetAnimation, events: EventProxy, player: PlayerPhysics, table: Table) {
+	constructor(hitTarget: HitTarget, data: HitTargetData, animation: HitTargetAnimation, events: EventProxy, player: Player, table: Table) {
 		super(player, table);
 		this.data = data;
 		this.hitTarget = hitTarget;
@@ -96,7 +97,7 @@ export class HitTargetApi extends ItemApi {
 	get DropSpeed() { return this.data.dropSpeed; }
 	set DropSpeed(v) { this.data.dropSpeed = v; }
 	get IsDropped() { return this.data.isDropped; }
-	set IsDropped(v) { this.hitTarget.setDropped(v, this.table, this.player); }
+	set IsDropped(v) { this.hitTarget.setDropped(v, this.table, this.player.getPhysics()); }
 	get LegacyMode() { return this.data.legacy; }
 	set LegacyMode(v) { this.data.legacy = v; }
 	get DrawStyle() { return this.data.targetType; }

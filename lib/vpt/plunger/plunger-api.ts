@@ -24,6 +24,7 @@ import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { PlungerData } from './plunger-data';
 import { PlungerHit } from './plunger-hit';
+import { Player } from '../../game/player';
 
 export class PlungerApi extends ItemApi {
 
@@ -32,7 +33,7 @@ export class PlungerApi extends ItemApi {
 	private readonly events: EventProxy;
 	private readonly ballCreator: IBallCreationPosition;
 
-	constructor(data: PlungerData, hit: PlungerHit, events: EventProxy, ballCreator: IBallCreationPosition, player: PlayerPhysics, table: Table) {
+	constructor(data: PlungerData, hit: PlungerHit, events: EventProxy, ballCreator: IBallCreationPosition, player: Player, table: Table) {
 		super(player, table);
 		this.data = data;
 		this.hit = hit;

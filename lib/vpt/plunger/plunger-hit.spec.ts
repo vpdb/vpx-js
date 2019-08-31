@@ -26,6 +26,7 @@ import { Table } from '../table/table';
 
 import sinonChai = require('sinon-chai');
 import { createBall, debugBall } from '../../../test/physics.helper';
+import { Player } from '../../game/player';
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
@@ -33,14 +34,14 @@ const three = new ThreeHelper();
 describe('The VPinball plunger collision', () => {
 
 	let table: Table;
-	let player: PlayerPhysics;
+	let player: Player;
 
 	before(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-plunger.vpx')));
 	});
 
 	beforeEach(() => {
-		player = new PlayerPhysics(table);
+		player = new Player(table);
 	});
 
 	it('should collide with the plunger', () => {

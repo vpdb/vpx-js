@@ -28,6 +28,7 @@ import { Table } from '../table/table';
 import { BumperState } from './bumper-state';
 
 import sinonChai = require('sinon-chai');
+import { Player } from '../../game/player';
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
@@ -35,11 +36,11 @@ const three = new ThreeHelper();
 describe('The VPinball bumper collision', () => {
 
 	let table: Table;
-	let player: PlayerPhysics;
+	let player: Player;
 
 	beforeEach(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-bumper.vpx')));
-		player = new PlayerPhysics(table);
+		player = new Player(table);
 	});
 
 	it('should eject the ball when hit threshold has passed', () => {

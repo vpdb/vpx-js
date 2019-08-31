@@ -29,6 +29,7 @@ import { Table } from '../table/table';
 import { RubberData } from './rubber-data';
 import { RubberHitGenerator } from './rubber-hit-generator';
 import { RubberMeshGenerator } from './rubber-mesh-generator';
+import { Player } from '../../game/player';
 
 /**
  * VPinball's rubber item.
@@ -78,7 +79,7 @@ export class Rubber implements IRenderable, IHittable {
 		};
 	}
 
-	public setupPlayer(player: PlayerPhysics, table: Table): void {
+	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
 		this.hits = this.hitGenerator.generateHitObjects(this.events, table);
 	}

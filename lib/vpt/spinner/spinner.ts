@@ -38,6 +38,7 @@ import { SpinnerHit } from './spinner-hit';
 import { SpinnerHitGenerator } from './spinner-hit-generator';
 import { SpinnerMeshGenerator } from './spinner-mesh-generator';
 import { SpinnerState } from './spinner-state';
+import { Player } from '../../game/player';
 
 /**
  * VPinball's spinners.
@@ -101,7 +102,7 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		return meshes;
 	}
 
-	public setupPlayer(player: PlayerPhysics, table: Table): void {
+	public setupPlayer(player: Player, table: Table): void {
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
 		this.events = new EventProxy(this);
 		this.hit = new SpinnerHit(this.data, this.state, this.events, height);
@@ -121,7 +122,7 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	}
 
 	/* istanbul ignore next */
-	public applyState(obj: Object3D, table: Table, player: PlayerPhysics): void {
+	public applyState(obj: Object3D, table: Table, player: Player): void {
 
 		const posZ = this.meshGenerator.getZ(table);
 		const matTransToOrigin = new Matrix3D().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, posZ);

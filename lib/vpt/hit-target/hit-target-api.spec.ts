@@ -26,6 +26,7 @@ import { Table } from '../table/table';
 
 import sinonChai = require('sinon-chai');
 import { createBall } from '../../../test/physics.helper';
+import { Player } from '../../game/player';
 
 /* tslint:disable:no-unused-expression */
 chai.use(sinonChai);
@@ -34,11 +35,11 @@ const three = new ThreeHelper();
 describe('The VPinball hit target API', () => {
 
 	let table: Table;
-	let player: PlayerPhysics;
+	let player: Player;
 
 	beforeEach(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-hit-target.vpx')));
-		player = new PlayerPhysics(table);
+		player = new Player(table);
 	});
 
 	it('should correctly read and write the properties', async () => {

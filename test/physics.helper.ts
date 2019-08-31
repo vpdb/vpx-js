@@ -23,6 +23,7 @@ import { Table } from '../lib';
 import { Vertex3D } from '../lib/math/vertex3d';
 import { Spinner } from '../lib/vpt/spinner/spinner';
 import { radToDeg } from '../lib/math/float';
+import { Player } from '../lib/game/player';
 
 /**
  * Simulates a given number of milliseconds.
@@ -31,7 +32,7 @@ import { radToDeg } from '../lib/math/float';
  * @param duration Duration in milliseconds
  * @param tickDuration How many ticks to simulate (default 1ms per tick)
  */
-export function simulateCycles(player: PlayerPhysics, duration: number, tickDuration = 1) {
+export function simulateCycles(player: Player, duration: number, tickDuration = 1) {
 	const numTicks = Math.floor(duration / tickDuration);
 	for (let i = 0; i < numTicks; i++) {
 		player.updateVelocities();
@@ -51,7 +52,7 @@ export function simulateCycles(player: PlayerPhysics, duration: number, tickDura
  * @param vz Velocity for z
  * @returns Created ball
  */
-export function createBall(player: PlayerPhysics, x: number, y: number, z: number, vx = 0, vy = 0, vz = 0): Ball {
+export function createBall(player: Player, x: number, y: number, z: number, vx = 0, vy = 0, vz = 0): Ball {
 	return player.createBall({
 		getBallCreationPosition(t: Table): Vertex3D {
 			return new Vertex3D(x, y, z);

@@ -27,20 +27,21 @@ import { Table } from '../table/table';
 
 import sinonChai = require('sinon-chai');
 import { radToDeg } from '../../math/float';
+import { Player } from '../../game/player';
 chai.use(sinonChai);
 const three = new ThreeHelper();
 
 describe('The VPinball flipper collision', () => {
 
 	let table: Table;
-	let player: PlayerPhysics;
+	let player: Player;
 
 	before(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-flipper.vpx')));
 	});
 
 	beforeEach(() => {
-		player = new PlayerPhysics(table);
+		player = new Player(table);
 	});
 
 	it('should collide with the ball when hitting on the face',  () => {

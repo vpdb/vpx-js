@@ -37,6 +37,7 @@ import { HitTargetData } from './hit-target-data';
 import { HitTargetHitGenerator } from './hit-target-hit-generator';
 import { HitTargetMeshGenerator } from './hit-target-mesh-generator';
 import { HitTargetState } from './hit-target-state';
+import { Player } from '../../game/player';
 
 /**
  * VPinball's hit- and drop targets.
@@ -100,7 +101,7 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 		};
 	}
 
-	public setupPlayer(player: PlayerPhysics, table: Table): void {
+	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
 		this.events.onCollision = (obj: HitObject, ball: Ball, dot: number) => {
 			if (!this.data.isDropped) {
@@ -133,7 +134,7 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 		return this.animation!;
 	}
 
-	public applyState(obj: Object3D, table: Table, player: PlayerPhysics, oldState: HitTargetState): void {
+	public applyState(obj: Object3D, table: Table, player: Player, oldState: HitTargetState): void {
 		const matTransToOrigin = new Matrix3D().setTranslation(-this.data.vPosition.x, -this.data.vPosition.y, -this.data.vPosition.z);
 		const matRotateToOrigin = new Matrix3D().rotateZMatrix(degToRad(-this.data.rotZ));
 		const matTransFromOrigin = new Matrix3D().setTranslation(this.data.vPosition.x, this.data.vPosition.y, this.data.vPosition.z);

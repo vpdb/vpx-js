@@ -36,6 +36,7 @@ import { BallHit } from './ball-hit';
 import { BallMeshGenerator } from './ball-mesh-generator';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
+import { Player } from '../../game/player';
 
 export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRenderable {
 
@@ -64,7 +65,7 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRendera
 		return `Ball${this.id}`;
 	}
 
-	public applyState(obj: Object3D, table: Table, player: PlayerPhysics): void {
+	public applyState(obj: Object3D, table: Table, player: Player): void {
 		const zHeight = !this.hit.isFrozen ? this.state.pos.z : this.state.pos.z - this.data.radius;
 		const orientation = new Matrix3D().set([
 			[this.state.orientation.matrix[0][0], this.state.orientation.matrix[1][0], this.state.orientation.matrix[2][0], 0.0],
@@ -115,7 +116,7 @@ export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRendera
 	}
 
 	/* istanbul ignore next: never called since there is no ball at player setup */
-	public setupPlayer(player: PlayerPhysics, table: Table): void {
+	public setupPlayer(): void {
 		// there is no ball yet on player setup
 	}
 
