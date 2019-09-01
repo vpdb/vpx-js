@@ -98,6 +98,10 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		return this.data.wzName;
 	}
 
+	public getEventProxy(): EventProxy {
+		return this.events!;
+	}
+
 	public getMeshes(table: Table): Meshes {
 		const meshes: Meshes = {};
 

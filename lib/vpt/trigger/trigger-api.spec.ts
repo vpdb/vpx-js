@@ -37,7 +37,7 @@ describe('The VPinball trigger API', () => {
 
 	beforeEach(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-trigger.vpx')));
-		player = new Player(table);
+		player = new Player(table).init();
 	});
 
 	it('should correctly read and write the properties', async () => {

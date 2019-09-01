@@ -86,4 +86,8 @@ export class Rubber implements IRenderable, IHittable {
 	public getHitShapes(): HitObject[] {
 		return this.hits;
 	}
+
+	public getEventProxy(): EventProxy {
+		return this.events!;
+	}
 }

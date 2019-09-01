@@ -140,6 +140,10 @@ export class Surface implements IRenderable, IHittable, IScriptable<SurfaceApi> 
 		return this.hits;
 	}
 
+	public getEventProxy(): EventProxy {
+		return this.events!;
+	}
+
 	public getEventNames(): string[] {
 		return [ 'Init', 'Hit', 'Slingshot', 'Timer' ];
 	}

@@ -82,6 +82,10 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 		return true;
 	}
 
+	public getEventProxy(): EventProxy {
+		return this.events!;
+	}
+
 	public getMeshes(table: Table): Meshes {
 		return {
 			kicker: {

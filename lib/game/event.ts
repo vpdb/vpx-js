@@ -20,29 +20,29 @@
 export enum Event {
 
 	// Table
-	GameEventsKeyDown = 1000,
-	GameEventsKeyUp = 1001,
-	GameEventsInit = 1002,
-	GameEventsMusicDone = 1003,
-	GameEventsExit = 1004,
-	GameEventsPaused = 1005,
-	GameEventsUnPaused = 1006,
+	GameEventsKeyDown = 1000, // DISPID_GameEvents_KeyDown
+	GameEventsKeyUp = 1001, // DISPID_GameEvents_KeyUp
+	GameEventsInit = 1002, // DISPID_GameEvents_Init
+	GameEventsMusicDone = 1003, // DISPID_GameEvents_MusicDone
+	GameEventsExit = 1004, // DISPID_GameEvents_Exit
+	GameEventsPaused = 1005, // DISPID_GameEvents_Paused
+	GameEventsUnPaused = 1006, // DISPID_GameEvents_UnPaused
 
 	// Surface
-	SurfaceEventsSlingshot = 1101,
+	SurfaceEventsSlingshot = 1101, // DISPID_SurfaceEvents_Slingshot
 
 	// Flipper
-	FlipperEventsCollide = 1200,
+	FlipperEventsCollide = 1200, // DISPID_FlipperEvents_Collide
 
 	// Timer
-	TimerEventsTimer = 1300,
+	TimerEventsTimer = 1300, // DISPID_TimerEvents_Timer
 
 	// Spinner
-	SpinnerEventsSpin = 1301,
+	SpinnerEventsSpin = 1301, // DISPID_SpinnerEvents_Spin
 
 	// HitTarget
-	TargetEventsDropped = 1302,
-	TargetEventsRaised = 1303,
+	TargetEventsDropped = 1302, // DISPID_TargetEvents_Dropped
+	TargetEventsRaised = 1303,  // DISPID_TargetEvents_Raised
 
 	// Light Sequencer
 	LightSeqEventsPlayDone = 1320,
@@ -63,8 +63,8 @@ export enum Event {
 	// SpringEndLoops = 475,
 
 	// Generic
-	HitEventsHit = 1400,
-	HitEventsUnhit = 1401,
-	LimitEventsEOS = 1402,
-	LimitEventsBOS = 1403,
+	HitEventsHit = 1400, // DISPID_HitEvents_Hit
+	HitEventsUnhit = 1401, // DISPID_HitEvents_Unhit
+	LimitEventsEOS = 1402, // DISPID_LimitEvents_EOS
+	LimitEventsBOS = 1403, // DISPID_LimitEvents_BOS
 }

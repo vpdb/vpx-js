@@ -38,7 +38,7 @@ describe('The VPinball primitive collision', () => {
 	});
 
 	beforeEach(() => {
-		player = new Player(table);
+		player = new Player(table).init();
 	});
 
 	it('with a simple primitive make the ball bounce back on collision', () => {
@@ -65,7 +65,7 @@ describe('The VPinball primitive collision', () => {
 	it('with a 3D primitive make the ball bounce back on collision', async () => {
 
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-sink.vpx')));
-		player = new Player(table);
+		player = new Player(table).init();
 		const kicker = table.kickers.BallRelease.getApi();
 
 		// create ball

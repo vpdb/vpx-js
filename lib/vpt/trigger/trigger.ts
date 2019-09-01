@@ -90,6 +90,10 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 		return true;
 	}
 
+	public getEventProxy(): EventProxy {
+		return this.events!;
+	}
+
 	public getMeshes(table: Table): Meshes {
 		return {
 			trigger: {

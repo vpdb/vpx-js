@@ -39,7 +39,7 @@ describe('The VPinball kicker collision', () => {
 	});
 
 	beforeEach(() => {
-		player = new Player(table);
+		player = new Player(table).init();
 	});
 
 	describe('in legacy mode', () => {

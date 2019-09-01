@@ -38,7 +38,7 @@ describe('The VPinball rubber collision', () => {
 	});
 
 	beforeEach(() => {
-		player = new Player(table);
+		player = new Player(table).init();
 	});
 
 	it('should make the ball bounce off', () => {

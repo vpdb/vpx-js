@@ -83,6 +83,10 @@ export class Primitive implements IRenderable, IHittable, IScriptable<PrimitiveA
 		};
 	}
 
+	public getEventProxy(): EventProxy {
+		return this.events!;
+	}
+
 	private getMesh(table: Table): Mesh {
 		if (!this.mesh) {
 			this.mesh = this.meshGenerator.getMesh(table);

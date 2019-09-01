@@ -41,7 +41,7 @@ describe('The VPinball gate mover', () => {
 	});
 
 	beforeEach(() => {
-		player = new Player(table);
+		player = new Player(table).init();
 	});
 
 	it('should make the two-way gate bracket move', () => {

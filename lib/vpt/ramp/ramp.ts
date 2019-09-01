@@ -89,6 +89,10 @@ export class Ramp implements IRenderable, IHittable {
 		return this.hits!;
 	}
 
+	public getEventProxy(): EventProxy {
+		return this.events!;
+	}
+
 	public getMeshes(table: Table): Meshes {
 		const meshes: Meshes = {};
 		const ramp = this.meshGenerator.getMeshes(table);

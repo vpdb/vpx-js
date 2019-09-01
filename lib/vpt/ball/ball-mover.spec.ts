@@ -40,7 +40,7 @@ describe('The VPinball ball physics', () => {
 	});
 
 	beforeEach(() => {
-		player = new Player(table);
+		player = new Player(table).init();
 	});
 
 	it('should add the ball to the right position', async () => {

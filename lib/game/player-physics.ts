@@ -95,14 +95,33 @@ export class PlayerPhysics {
 
 	private activeBallDebug?: Ball;
 
+	/**
+	 * Player physics are instantiated in the Player's constructor.
+	 * @param table
+	 */
 	constructor(table: Table) {
 		this.table = table;
 	}
 
-	public setup(): void {
+	/**
+	 * This is called in the player's init().
+	 */
+	public init() {
+		const minSlope = this.table.data!.overridePhysics ? DEFAULT_TABLE_MIN_SLOPE : this.table.data!.angletiltMin!;
+		const maxSlope = this.table.data!.overridePhysics ? DEFAULT_TABLE_MAX_SLOPE : this.table.data!.angletiltMax!;
+		const slope = minSlope + (maxSlope - minSlope) * this.table.data!.globalDifficulty!;
+
+		this.gravity.x = 0;
+		this.gravity.y = Math.sin(degToRad(slope)) * (this.table.data!.overridePhysics ? DEFAULT_TABLE_GRAVITY : this.table.data!.Gravity);
+		this.gravity.z = -Math.cos(degToRad(slope)) * (this.table.data!.overridePhysics ? DEFAULT_TABLE_GRAVITY : this.table.data!.Gravity);
+
+		// [vpx-js added] init animation timers
+		for (const animatable of this.table.getAnimatables()) {
+			animatable.getAnimation().init(this);
+		}
+
 		this.indexTableElements();
 		this.initOcTree(this.table);
-		this.initPhysics(this.table);
 	}
 
 	private indexTableElements(): void {
@@ -408,21 +427,6 @@ export class PlayerPhysics {
 		}
 		if (activeBall && this.balls.length > 0) {
 			this.activeBall = this.balls[0];
-		}
-	}
-
-	private initPhysics(table: Table) {
-		const minSlope = table.data!.overridePhysics ? DEFAULT_TABLE_MIN_SLOPE : table.data!.angletiltMin!;
-		const maxSlope = table.data!.overridePhysics ? DEFAULT_TABLE_MAX_SLOPE : table.data!.angletiltMax!;
-		const slope = minSlope + (maxSlope - minSlope) * table.data!.globalDifficulty!;
-
-		this.gravity.x = 0;
-		this.gravity.y = Math.sin(degToRad(slope)) * (table.data!.overridePhysics ? DEFAULT_TABLE_GRAVITY : table.data!.Gravity);
-		this.gravity.z = -Math.cos(degToRad(slope)) * (table.data!.overridePhysics ? DEFAULT_TABLE_GRAVITY : table.data!.Gravity);
-
-		// [vpx-js added] init animation timers
-		for (const animatable of this.table.getAnimatables()) {
-			animatable.getAnimation().init(this);
 		}
 	}
 

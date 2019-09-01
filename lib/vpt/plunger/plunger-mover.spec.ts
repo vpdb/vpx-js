@@ -42,7 +42,7 @@ describe('The VPinball plunger physics', () => {
 	});
 
 	beforeEach(() => {
-		player = new Player(table);
+		player = new Player(table).init();
 		simulateCycles(player, 50); // move to start position
 	});
 

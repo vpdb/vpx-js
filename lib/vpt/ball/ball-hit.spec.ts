@@ -39,7 +39,7 @@ describe('The VPinball ball collision', () => {
 	});
 
 	beforeEach(() => {
-		player = new Player(table);
+		player = new Player(table).init();
 	});
 
 	it('should hit the bottom of the playfield', async () => {

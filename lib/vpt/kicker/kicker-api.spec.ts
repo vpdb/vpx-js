@@ -38,7 +38,7 @@ describe('The VPinball kicker API', () => {
 	});
 
 	beforeEach(async () => {
-		player = new Player(table);
+		player = new Player(table).init();
 	});
 
 	it('should correctly read and write the properties', async () => {

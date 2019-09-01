@@ -36,7 +36,7 @@ describe('The VPinball flipper API', () => {
 
 	beforeEach(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-flipper.vpx')));
-		player = new Player(table);
+		player = new Player(table).init();
 	});
 
 	it('should correctly read and write the properties', async () => {

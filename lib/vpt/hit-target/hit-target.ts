@@ -134,6 +134,10 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 		return this.animation!;
 	}
 
+	public getEventProxy(): EventProxy {
+		return this.events!;
+	}
+
 	public applyState(obj: Object3D, table: Table, player: Player, oldState: HitTargetState): void {
 		const matTransToOrigin = new Matrix3D().setTranslation(-this.data.vPosition.x, -this.data.vPosition.y, -this.data.vPosition.z);
 		const matRotateToOrigin = new Matrix3D().rotateZMatrix(degToRad(-this.data.rotZ));

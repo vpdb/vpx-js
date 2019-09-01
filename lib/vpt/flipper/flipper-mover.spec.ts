@@ -41,7 +41,7 @@ describe('The VPinball flipper physics', () => {
 	});
 
 	beforeEach(() => {
-		player = new Player(table);
+		player = new Player(table).init();
 	});
 
 	it('should move to the end when solenoid is on', async () => {

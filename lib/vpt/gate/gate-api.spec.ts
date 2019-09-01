@@ -38,7 +38,7 @@ describe('The VPinball gate API', () => {
 
 	beforeEach(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-gate.vpx')));
-		player = new Player(table);
+		player = new Player(table).init();
 	});
 
 	it('should correctly read and write the properties', async () => {

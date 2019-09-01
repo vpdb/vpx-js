@@ -18,6 +18,7 @@
  */
 
 import { Group, Scene } from 'three';
+import { Event } from '../../game/event';
 import { IAnimatable } from '../../game/ianimatable';
 import { IHittable } from '../../game/ihittable';
 import { IItem } from '../../game/iitem';
@@ -68,6 +69,7 @@ export class Table implements IRenderable {
 	public readonly data?: TableData;
 	public readonly info?: { [key: string]: string };
 	public readonly items: IItem[];
+	public readonly tableScript?: string;
 
 	public readonly textures: { [key: string]: Texture } = {};
 
@@ -95,6 +97,7 @@ export class Table implements IRenderable {
 	public static playfieldThickness = 20.0;
 
 	public static async load(reader: IBinaryReader, opts?: TableLoadOptions): Promise<Table> {
+		opts = opts || defaultTableLoadOptions;
 		const tableLoader = new TableLoader();
 		return new Table(tableLoader, await tableLoader.load(reader, opts));
 	}
@@ -109,6 +112,9 @@ export class Table implements IRenderable {
 		}
 		if (loadedTable.info) {
 			this.info = loadedTable.info;
+		}
+		if (loadedTable.tableScript) {
+			this.tableScript = loadedTable.tableScript;
 		}
 		const items: Array<[any, any]> = [
 			[loadedTable.textures, this.textures],
@@ -176,7 +182,7 @@ export class Table implements IRenderable {
 	}
 
 	public getHittables(): IHittable[] {
-		return this.items.filter(item => !!(item as any).getHitShapes && (item as IHittable).isCollidable()) as IHittable[];
+		return this.items.filter(item => !!(item as any).getHitShapes) as IHittable[];
 	}
 
 	public getHitShapes(): HitObject[] {
@@ -193,11 +199,6 @@ export class Table implements IRenderable {
 	public generateGlassHit() {
 		return new HitPlane(new Vertex3D(0, 0, -1), this.data!.glassheight)
 			.setElasticity(0.2);
-	}
-
-	public async play() {
-		const transpiler = new Transpiler(this);
-		transpiler.execute(await this.getTableScript());
 	}
 
 	public getElementApis(): { [key: string]: any } {
@@ -333,11 +334,34 @@ export class Table implements IRenderable {
 			},
 		};
 	}
+
+	public runTableScript() {
+		if (!this.tableScript) {
+			logger().warn('Table script is not loaded!');
+			return;
+		}
+		const transpiler = new Transpiler(this);
+		transpiler.execute(this.tableScript);
+		logger().info('Table script loaded, transpiled and executed.');
+	}
+
+	public broadcastInit() {
+		for (const hittable of this.getHittables()) {
+			hittable.getEventProxy().fireVoidEvent(Event.GameEventsInit);
+		}
+	}
 }
 
 function isLoaded(items: any[] | undefined) {
 	return items && items.length > 0;
 }
+
+const defaultTableLoadOptions: TableLoadOptions = {
+	tableDataOnly: false,
+	tableInfoOnly: false,
+	loadInvisibleItems: true,
+	loadTableScript: true,
+};
 
 export interface TableLoadOptions {
 	/**
@@ -354,4 +378,9 @@ export interface TableLoadOptions {
 	 * If set, also parse items like timers, i.e. non-visible items.
 	 */
 	loadInvisibleItems?: boolean;
+
+	/**
+	 * If set, table script is read
+	 */
+	loadTableScript?: boolean;
 }

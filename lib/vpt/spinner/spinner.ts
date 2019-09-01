@@ -120,6 +120,10 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		return this.state;
 	}
 
+	public getEventProxy(): EventProxy {
+		return this.events!;
+	}
+
 	/* istanbul ignore next */
 	public applyState(obj: Object3D, table: Table, player: Player): void {
 

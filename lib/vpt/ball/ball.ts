@@ -18,7 +18,6 @@
  */
 
 import { Group, Object3D, Scene } from 'three';
-import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
@@ -37,7 +36,7 @@ import { BallMeshGenerator } from './ball-mesh-generator';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
 
-export class Ball implements IPlayable, IMovable<BallState>, IHittable, IRenderable {
+export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 
 	public readonly state: BallState;
 	public readonly data: BallData;

@@ -49,7 +49,7 @@ export class TableLoader {
 		try {
 
 			const loadedTable: LoadedTable = { items: [] };
-			if (opts.tableDataOnly || !opts.tableInfoOnly) {
+			if (opts.loadTableScript || (opts.tableDataOnly || !opts.tableInfoOnly)) {
 
 				// open game storage
 				const gameStorage = this.doc.storage('GameStg');
@@ -64,6 +64,11 @@ export class TableLoader {
 
 					// load images
 					await this.loadTextures(loadedTable, gameStorage, loadedTable.data.numTextures);
+				}
+
+				if (opts.loadTableScript) {
+					const script = await gameStorage.read('GameData', loadedTable.data.scriptPos, loadedTable.data.scriptLen);
+					loadedTable.tableScript = script.toString();
 				}
 			}
 
@@ -264,6 +269,7 @@ export interface LoadedTable {
 	info?: { [key: string]: string };
 	items: any[];
 
+	tableScript?: string;
 	textures?: Texture[];
 
 	surfaces?: Surface[];

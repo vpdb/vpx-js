@@ -38,7 +38,7 @@ describe('The VPinball bumper collision', () => {
 
 	beforeEach(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-bumper.vpx')));
-		player = new Player(table);
+		player = new Player(table).init();
 	});
 
 	it('should eject the ball when hit threshold has passed', () => {

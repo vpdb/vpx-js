@@ -51,16 +51,27 @@ export class EventProxy {
 		this.playable = playable;
 	}
 
-	public fireGroupEvent(e: Event): void {
+	public fireDispID(e: Event, ...params: any[]) {
 		const scriptable = this.playable as IScriptable<ItemApi>;
 		if (scriptable.getApi) {
-			scriptable.getApi().emit(getEventName(e));
+			scriptable.getApi().emit(getEventName(e), params);
+			logger().info('[%s] fireDispID(%s)', this.playable.getName(), e);
 		}
-		logger().info('[%s] fireGroupEvent(%s)', this.playable.getName(), e);
 	}
 
-	public fireVoidEventParm(e: Event, data: number): void {
-		logger().info('[%s] fireGroupEvent(%s, %s)', this.playable.getName(), e, data);
+	public fireGroupEvent(e: Event): void {
+		// todo send to collection
+		this.fireDispID(e);
+		//logger().info('[%s] fireGroupEvent(%s)', this.playable.getName(), e);
+	}
+
+	public fireVoidEvent(e: Event) {
+		this.fireDispID(e);
+	}
+
+	public fireVoidEventParm(e: Event, ...params: any[]): void {
+		this.fireDispID(e, params);
+		//logger().info('[%s] fireGroupEvent(%s, %s)', this.playable.getName(), e, data);
 	}
 }
 
@@ -68,8 +79,8 @@ function getEventName(event: Event): string {
 	switch (event) {
 		case Event.HitEventsHit: return 'Hit';
 		case Event.HitEventsUnhit: return 'Unhit';
-		// case FireEvent.TimerEventsTimer: return 'Timer';
-		// case FireEvent.GameEventsInit: return 'Init';
+		// case Event.TimerEventsTimer: return 'Timer';
+		case Event.GameEventsInit: return 'Init';
 		default: return 'UnknownEvent';
 	}
 }
