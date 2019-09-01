@@ -215,7 +215,7 @@ export function ifStatement(test: Expression, consequent: Statement, alternate?:
 	};
 }
 
-export function forStatement(init: Expression, test: Expression | null, update: Expression, body: Statement): ForStatement {
+export function forStatement(init: Expression | null, test: Expression | null, update: Expression | null, body: Statement): ForStatement {
 	return {
 		type: 'ForStatement',
 		init,
