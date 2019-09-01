@@ -639,7 +639,7 @@ export function withStmt(result: ['With', null, Expression, null, [Statement]]):
  * ]
  * ```
  */
-export function loopStmt(result: ['Do', null, string, null, Expression, null, [Statement]]): ForStatement | WhileStatement {
+export function doWhileUntilLoopStmt(result: ['Do', null, string, null, Expression, null, [Statement]]): ForStatement | WhileStatement {
 	const type = result[2];
 	const test = result[4];
 	const statements = result[6] || [];
@@ -651,6 +651,52 @@ export function loopStmt(result: ['Do', null, string, null, Expression, null, [S
 	} else {
 		return estree.whileStatement(test, estree.blockStatement(statements));
 	}
+}
+
+/**
+ * Grammar:
+ * ```
+ * "While" _ Expr NL BlockStmt:* _ "Wend" NL
+ * ```
+ * Result:
+ * ```
+ * [
+ *   "While",
+ *   null,
+ *   {
+ *     "type": "BinaryExpression",
+ *     "operator": "<",
+ *     "left": { "type": "Identifier", "name": "x" },
+ *     "right": { "type": "Literal", "value": 5 }
+ *   },
+ *   [[["\n"]]],
+ *   [
+ *     {
+ *       "type": "ExpressionStatement",
+ *       "expression": {
+ *         "type": "AssignmentExpression",
+ *         "left": { "type": "Identifier", "name": "x" },
+ *         "operator": "=",
+ *         "right": {
+ *           "type": "BinaryExpression",
+ *           "operator": "+",
+ *           "left": { "type": "Identifier", "name": "x" },
+ *           "right": { "type": "Literal", "value": 1 }
+ *         }
+ *       }
+ *     }
+ *   ],
+ *   null,
+ *   ["Wend"],
+ *   [[["\n"]]]
+ * ]
+ * ```
+ */
+
+export function whileLoopStmt(result: ['While', null, Expression, null, [Statement]]): WhileStatement {
+	const test = result[2];
+	const statements = result[4] || [];
+	return estree.whileStatement(test, estree.blockStatement(statements));
 }
 
 /**
