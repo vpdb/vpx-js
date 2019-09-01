@@ -144,10 +144,10 @@ WithStmt             -> "With" _ Expr NL BlockStmt:* _ "End" _ "With" NL        
 
 #========= Loop Statement
  
-LoopStmt             -> "Do" _ LoopType _ Expr NL BlockStmt:* _ "Loop" NL                                          {% pp.loopStmt %}
+LoopStmt             -> "Do" _ LoopType _ Expr NL BlockStmt:* _ "Loop" NL                                          {% pp.doWhileUntilLoopStmt %}
 #                      | "Do" NL BlockStmt:* _ "Loop" _ LoopType _ Expr NL
 #                      | "Do" NL BlockStmt:* _ "Loop" NL
-#                      | "While" _ Expr NL BlockStmt:* _ "WEnd" NL
+                       | "While" _ Expr NL BlockStmt:* _ ("WEnd"|"Wend") NL                                        {% pp.whileLoopStmt %}
 
 LoopType             -> "While"                                                                                    {% id %}
                       | "Until"                                                                                    {% id %}
