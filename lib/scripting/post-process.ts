@@ -639,10 +639,18 @@ export function withStmt(result: ['With', null, Expression, null, [Statement]]):
  * ]
  * ```
  */
-export function loopStmt(result: ['Do', null, string, null, Expression, null, [Statement]]): WhileStatement {
+export function loopStmt(result: ['Do', null, string, null, Expression, null, [Statement]]): ForStatement | WhileStatement {
+	const type = result[2];
 	const test = result[4];
 	const statements = result[6] || [];
-	return estree.whileStatement(test, estree.blockStatement(statements));
+
+	if (type === 'Until') {
+		return estree.forStatement(null, null, null,
+			estree.blockStatement([estree.ifStatement(test,
+					estree.blockStatement([estree.breakStatement()])), ...statements]));
+	} else {
+		return estree.whileStatement(test, estree.blockStatement(statements));
+	}
 }
 
 /**
