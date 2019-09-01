@@ -55,7 +55,7 @@ export class EventProxy {
 		const scriptable = this.playable as IScriptable<ItemApi>;
 		if (scriptable.getApi) {
 			scriptable.getApi().emit(getEventName(e), params);
-			logger().info('[%s] fireDispID(%s)', this.playable.getName(), e);
+			//logger().info('[%s] fireDispID(%s)', this.playable.getName(), e);
 		}
 	}
 
