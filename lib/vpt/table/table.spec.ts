@@ -47,9 +47,9 @@ describe('The VPinball table generator', () => {
 		expect(compareArray(playfieldVertices, expectedVertices)).to.equal(true);
 	});
 
-	it('should read the table script correctly', async () => {
-		const script = await vpt.getTableScript();
-		expect(script).to.equal(`'Empty Table\r\n\r\nOption Explicit\r\n\r\n' EOF`);
+	it('should read the table script correctly', () => {
+		const script = vpt.getTableScript();
+		expect(script).to.equal(`Option Explicit\r\n`);
 	});
 
 	it('should read the table info correctly', async () => {

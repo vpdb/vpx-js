@@ -40,8 +40,8 @@ import { NodeBinaryReader } from '../lib/io/binary-reader.node';
 			throw new Error(`The file "${vpxPath}" does not exist.`);
 		}
 
-		const vpt = await Table.load(new NodeBinaryReader(vpxPath), { loadInvisibleItems: true });
-		console.log(await vpt.getTableScript());
+		const vpt = await Table.load(new NodeBinaryReader(vpxPath), { loadTableScript: true });
+		console.log(vpt.getTableScript());
 
 	} catch (err) {
 		console.error(`ERROR: ${err.message}`);
