@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Group, Object3D, Scene } from 'three';
+import { Group, Matrix4, Object3D, Scene } from 'three';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
@@ -77,7 +77,8 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 			.preMultiply(orientation)
 			.multiply(trans);
 
-		obj.matrix = matrix.toRightHanded().toThreeMatrix4();
+		obj.matrix = new Matrix4();
+		obj.applyMatrix(matrix.toRightHanded().toThreeMatrix4());
 		obj.matrixWorldNeedsUpdate = true;
 	}
 

@@ -96,7 +96,7 @@ export class Player extends EventEmitter {
 		const ball = this.physics.createBall(ballCreator, radius, mass);
 		this.currentStates[ball.getName()] = ball.getState();
 		//this.previousStates[ball.getName()] = ball.getState().clone();
-		this.emit('ballCreated', ball.getName());
+		this.emit('ballCreated', ball);
 		return ball;
 	}
 
@@ -107,7 +107,7 @@ export class Player extends EventEmitter {
 		this.physics.destroyBall(ball);
 		delete this.currentStates[ball.getName()];
 		delete this.previousStates[ball.getName()];
-		this.emit('ballDestroyed', ball.getName());
+		this.emit('ballDestroyed', ball);
 	}
 
 	public getPhysics(): PlayerPhysics {
