@@ -19,6 +19,7 @@
 
 import {
 	BlockStatement,
+	DoWhileStatement,
 	EmptyStatement,
 	Expression,
 	ExpressionStatement,
@@ -639,18 +640,110 @@ export function withStmt(result: ['With', null, Expression, null, [Statement]]):
  * ]
  * ```
  */
-export function doWhileUntilLoopStmt(result: ['Do', null, string, null, Expression, null, [Statement]]): ForStatement | WhileStatement {
+
+export function doWhileLoopStmt(result: ['Do', null, string, null, Expression, null, [Statement]]): WhileStatement | DoWhileStatement {
 	const type = result[2];
 	const test = result[4];
 	const statements = result[6] || [];
 
-	if (type === 'Until') {
-		return estree.forStatement(null, null, null,
-			estree.blockStatement([estree.ifStatement(test,
-					estree.blockStatement([estree.breakStatement()])), ...statements]));
-	} else {
+	if (type === 'While') {
 		return estree.whileStatement(test, estree.blockStatement(statements));
+	} else {
+		return estree.doWhileStatement(
+			estree.blockStatement([estree.ifStatement(test, estree.blockStatement([estree.breakStatement()])), ...statements]),
+			estree.literal(true));
 	}
+}
+
+/**
+ * Grammar:
+ * ```
+ * LoopStmt -> | "Do" NL BlockStmt:* _ "Loop" _ LoopType _ Expr NL
+ * ```
+ * Result:
+ * ```
+ * [
+ *   "Do",
+ *   null,
+ *   "While",
+ *   null,
+ *   {
+ *     "type": "BinaryExpression",
+ *     "operator": "<",
+ *     "left": { "type": "Identifier", "name": "x" },
+ *     "right": { "type": "Literal", "value": 5 }
+ *   },
+ *   [[["\n"]]],
+ *   [
+ *     {
+ *       "type": "ExpressionStatement",
+ *       "expression": {
+ *         "type": "AssignmentExpression",
+ *         "left": { "type": "Identifier", "name": "x" },
+ *         "operator": "=",
+ *         "right": {
+ *           "type": "BinaryExpression",
+ *           "operator": "+",
+ *           "left": { "type": "Identifier", "name": "x" },
+ *           "right": { "type": "Literal", "value": 1 }
+ *         }
+ *       }
+ *     }
+ *   ],
+ *   null,
+ *   "Loop",
+ *   [[["\n"]]]
+ * ]
+ * ```
+ */
+
+export function doLoopWhileStmt(result: ['Do', null, [Statement], null, 'Loop', null, string, null, Expression]) {
+	const type = result[6];
+	const statements = result[2] || [];
+	const test = result[8];
+	if (type === 'While') {
+		return estree.doWhileStatement(estree.blockStatement(statements), test);
+	} else {
+		return estree.doWhileStatement(
+			estree.blockStatement([...statements, estree.ifStatement(test, estree.blockStatement([estree.breakStatement()]))]),
+			estree.literal(true));
+	}
+}
+
+/**
+ * Grammar:
+ * ```
+ * LoopStmt -> | "Do" NL BlockStmt:* _ "Loop" NL
+ * ```
+ * Result:
+ * ```
+ * [
+ *   "Do",
+ *   [[["\n"]]],
+ *   [
+ *     {
+ *       "type": "ExpressionStatement",
+ *       "expression": {
+ *         "type": "AssignmentExpression",
+ *         "left": { "type": "Identifier", "name": "x" },
+ *         "operator": "=",
+ *         "right": {
+ *           "type": "BinaryExpression",
+ *           "operator": "+",
+ *           "left": { "type": "Identifier", "name": "x" },
+ *           "right": { "type": "Literal", "value": 1 }
+ *         }
+ *       }
+ *     }
+ *   ],
+ *   null,
+ *   "Loop",
+ *   [[["\n"]]]
+ * ]
+ */
+export function doLoopStmt(result: ['Do', null, [Statement], null, 'Loop']): DoWhileStatement {
+	const statements = result[2] || [];
+	return estree.doWhileStatement(estree.blockStatement(statements), estree.literal(true));
 }
 
 /**

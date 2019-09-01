@@ -94,33 +94,37 @@ AssignStmt           -> LeftExpr _ "=" _ Expr                                   
 #                      | "Set" LeftExpr _ "=" _ "New" _ LeftExpr
 
 
-SubCallStmt          -> QualifiedID __ SubSafeExprOpt _ CommaExprList:*                                            {% pp.subCallStmt %}
+SubCallStmt          -> QualifiedID _ SubSafeExpr:? _ CommaExprList:*                                              {% pp.subCallStmt %}
+                       | QualifiedID _ SubSafeExpr:?                                                               {% pp.subCallStmt %}
 #                      | QualifiedID "(" ")"
-                      | QualifiedID                                                                                {% pp.subCallStmt %}
-
-SubSafeExprOpt       -> SubSafeExpr                                                                                {% id %}
 
 LeftExpr             -> QualifiedID                                                                                {% id %}
 #                      | QualifiedID IndexOrParamsList "." LeftExprTail
 #                      | QualifiedID IndexOrParamsListDot LeftExprTail
 #                      | QualifiedID IndexOrParamsList
-#                      | SafeKeywordID
+                      | SafeKeywordID                                                                              {% id %}
 
 QualifiedID          -> IDDot QualifiedIDTail                                                                      {% data => estree.memberExpression(data[0], data[1]) %}
+#                      | DotIDDot QualifiedIDTail
                       | ID                                                                                         {% id %}
                       | DotID                                                                                      {% id %}
+                      
 
 QualifiedIDTail      -> IDDot QualifiedIDTail
                       | ID                                                                                         {% id %}
+                      | KeywordID                                                                                  {% id %}
 
-SafeKeywordID        -> "Default"
-                      | "Erase"
-                      | "Error"
-                      | "Explicit"
-                      | "Property"
-                      | "Step"
+KeywordID            -> SafeKeywordID                                                                              {% id %}
+                      | "Do"                                                                                       {% id %}
 
-ExtendedID           -> SafeKeywordID
+SafeKeywordID        -> "Default"                                                                                  {% id %}
+                      | "Erase"                                                                                    {% id %}
+                      | "Error"                                                                                    {% id %}
+                      | "Explicit"                                                                                 {% id %}
+                      | "Property"                                                                                 {% id %}
+                      | "Step"                                                                                     {% id %}
+
+ExtendedID           -> SafeKeywordID                                                                              {% id %}
                       | ID                                                                                         {% id %}
 
 CommaExprList        -> "," _ Expr                                                                                 {% data => data[2] %}
@@ -144,10 +148,10 @@ WithStmt             -> "With" _ Expr NL BlockStmt:* _ "End" _ "With" NL        
 
 #========= Loop Statement
  
-LoopStmt             -> "Do" _ LoopType _ Expr NL BlockStmt:* _ "Loop" NL                                          {% pp.doWhileUntilLoopStmt %}
-#                      | "Do" NL BlockStmt:* _ "Loop" _ LoopType _ Expr NL
-#                      | "Do" NL BlockStmt:* _ "Loop" NL
-                       | "While" _ Expr NL BlockStmt:* _ ("WEnd"|"Wend") NL                                        {% pp.whileLoopStmt %}
+LoopStmt             -> "Do" _ LoopType _ Expr NL BlockStmt:* _ "Loop" NL                                          {% pp.doWhileLoopStmt %}
+                      | "Do" NL BlockStmt:* _ "Loop" _ LoopType _ Expr NL                                          {% pp.doLoopWhileStmt %}
+                      | "Do" NL BlockStmt:* _ "Loop" NL                                                            {% pp.doLoopStmt %}
+                      | "While" _ Expr NL BlockStmt:* _ ("WEnd"|"Wend") NL                                         {% pp.whileLoopStmt %}
 
 LoopType             -> "While"                                                                                    {% id %}
                       | "Until"                                                                                    {% id %}
@@ -223,20 +227,24 @@ Value                -> ConstExpr                                               
                       | LeftExpr                                                                                   {% id %}
 #                      | "(" _ Expr _ ")"
 
-ConstExpr            -> IntLiteral                                                                                 {% data => estree.literal(data[0]) %}
+ConstExpr            -> BoolLiteral                                                                                {% id %}
+                      | IntLiteral                                                                                 {% data => estree.literal(data[0]) %}
                       | FloatLiteral                                                                               {% data => estree.literal(data[0]) %}
                       | StringLiteral                                                                              {% data => estree.literal(data[0]) %}
                       | Nothing                                                                                    {% id %}
 
-Nothing              -> "Nothing"                                                                                  {% id %}
-                      | "Null"                                                                                     {% id %}
-                      | "Empty"                                                                                    {% id %}
+BoolLiteral          -> "True"                                                                                     {% data => estree.literal(true) %}
+                      | "False"                                                                                    {% data => estree.literal(false) %}
+
+Nothing              -> "Nothing"                                                                                  {% data => estree.literal(null) %}
+                      | "Null"                                                                                     {% data => estree.literal(null) %}
+                      | "Empty"                                                                                    {% data => estree.literal(null) %}
 
 #===============================
 # Terminals
 #===============================
 
-NLOpt                -> NL:*
+NLOpt                -> NL:?
 
 ID                   -> Letter IDTail                                                                              {% data => estree.identifier(data[0] + data[1]) %}
 #                      | "[" IDNameChar:* "]"
@@ -285,3 +293,4 @@ _                    -> wschar:*                                                
 __                   -> wschar:+                                                                                   {% data => null %}
 
 wschar               -> [ \t\v\f]                                                                                  {% id %}
+

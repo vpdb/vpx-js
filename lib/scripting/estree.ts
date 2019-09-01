@@ -25,6 +25,7 @@ import {
 	BinaryOperator,
 	BlockStatement,
 	BreakStatement,
+	DoWhileStatement,
 	CallExpression,
 	Comment,
 	ConditionalExpression,
@@ -195,6 +196,14 @@ export function callExpressionStatement(callee: Expression, args: Array<Expressi
 	return {
 		type: 'ExpressionStatement',
 		expression: callExpression(callee, args),
+	};
+}
+
+export function doWhileStatement(body: Statement, test: Expression): DoWhileStatement {
+	return {
+		type: 'DoWhileStatement',
+		body,
+		test,
 	};
 }
 

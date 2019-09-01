@@ -270,7 +270,25 @@ describe('The VBScript transpiler', () => {
 	it ('should transpile a "Do Until...Loop" statement', () => {
 		const vbs = `Dim x\nx = 1\nDo Until x = 5\nx = x + 1\nLoop\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('let x;\nx = 1;\nfor (;;) {\n    if (x == 5) {\n        break;\n    }\n    x = x + 1;\n}');
+		expect(js).to.equal('let x;\nx = 1;\ndo {\n    if (x == 5) {\n        break;\n    }\n    x = x + 1;\n} while (true);');
+	});
+
+	it ('should transpile a "Do...Loop While" statement', () => {
+		const vbs = `Dim x\nx = 7\nDo\nx = x + 1\nLoop While x < 5\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('let x;\nx = 7;\ndo {\n    x = x + 1;\n} while (x < 5);');
+	});
+
+	it ('should transpile a "Do...Loop Until" statement', () => {
+		const vbs = `Dim i\ni = 10\nDo\ni = i + 1\nLoop Until i < 15\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('let i;\ni = 10;\ndo {\n    i = i + 1;\n    if (i < 15) {\n        break;\n    }\n} while (true);');
+	});
+
+	it ('should transpile a "Do...Loop" statement', () => {
+		const vbs = `Dim x\nx = 7\nDo\nx = x + 1\nLoop\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('let x;\nx = 7;\ndo {\n    x = x + 1;\n} while (true);');
 	});
 
 	it ('should transpile a "While...Wend" statement', () => {
