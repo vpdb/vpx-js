@@ -69,6 +69,9 @@ export class TableLoader {
 				if (opts.loadTableScript) {
 					const script = await gameStorage.read('GameData', loadedTable.data.scriptPos, loadedTable.data.scriptLen);
 					loadedTable.tableScript = script.toString();
+					if (loadedTable.tableScript.endsWith('ENDB')) { // when the script is empty, the counter seems to be wrong, so cut.
+						loadedTable.tableScript = loadedTable.tableScript.substr(0, loadedTable.tableScript.length - 8);
+					}
 				}
 			}
 

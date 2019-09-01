@@ -308,12 +308,12 @@ export class Table implements IRenderable {
 		return this.loader.streamStorage(name, streamer);
 	}
 
-	public async getTableScript(): Promise<string> {
+	public getTableScript(): string {
 		/* istanbul ignore if */
-		if (!this.data) {
-			throw new Error('Table data is not loaded. Load table with tableDataOnly = false.');
+		if (!this.tableScript) {
+			throw new Error('Table script is not loaded. Load table with loadTableScript = true.');
 		}
-		return await this.loader.getTableScript(this.data!);
+		return this.tableScript;
 	}
 
 	public isVisible(): boolean {

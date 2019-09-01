@@ -21,7 +21,7 @@ const { Table } = require(`vpx-toolbox`);
 	const vpt = await Table.load('my-table.vpx');
 	
 	// read script
-	const script = await vpt.getTableScript();
+	const script = vpt.getTableScript();
 	console.log(script);
 })();
 ```
