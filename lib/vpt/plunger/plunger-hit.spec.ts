@@ -39,7 +39,7 @@ describe('The VPinball plunger collision', () => {
 	});
 
 	beforeEach(() => {
-		player = new Player(table);
+		player = new Player(table).init();
 	});
 
 	it('should collide with the plunger', () => {

@@ -36,7 +36,7 @@ describe('The VPinball surface collision', () => {
 
 	beforeEach(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-surface.vpx')));
-		player = new Player(table);
+		player = new Player(table).init();
 	});
 
 	it('should make the ball bounce off the sides', () => {
@@ -83,7 +83,7 @@ describe('The VPinball surface collision', () => {
 	it('should bounce off a slingshot', async () => {
 
 		const slingshotTable = await Table.load(new NodeBinaryReader(three.fixturePath('table-slingshot.vpx')));
-		player = new Player(slingshotTable);
+		player = new Player(slingshotTable).init();
 
 		const slingshotKicker = slingshotTable.kickers.SlingShotKicker.getApi();
 		const wallKicker = slingshotTable.kickers.WallKicker.getApi();
@@ -155,7 +155,7 @@ describe('The VPinball surface collision', () => {
 
 	it('should fire the ball up when slingshot is triggered manually', async () => {
 		const slingshotTable = await Table.load(new NodeBinaryReader(three.fixturePath('table-slingshot.vpx')));
-		player = new Player(slingshotTable);
+		player = new Player(slingshotTable).init();
 
 		const slingShot = table.surfaces.Wall.getApi();
 

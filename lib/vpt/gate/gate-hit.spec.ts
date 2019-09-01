@@ -36,7 +36,7 @@ describe('The VPinball gate collision', () => {
 
 	beforeEach(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-gate.vpx')));
-		player = new Player(table);
+		player = new Player(table).init();
 	});
 
 	it('should block the ball on a one-way gate', () => {

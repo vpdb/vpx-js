@@ -37,7 +37,7 @@ describe('The VPinball hit target collision', () => {
 
 	beforeEach(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-hit-target.vpx')));
-		player = new Player(table);
+		player = new Player(table).init();
 	});
 
 	describe('of a drop target', () => {

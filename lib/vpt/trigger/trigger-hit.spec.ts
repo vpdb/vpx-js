@@ -40,7 +40,7 @@ describe('The VPinball trigger collision', () => {
 	});
 
 	beforeEach(() => {
-		player = new Player(table);
+		player = new Player(table).init();
 	});
 
 	it('should collide with the ball and animate',  () => {

@@ -39,7 +39,7 @@ describe('The VPinball ramp collision', () => {
 	});
 
 	beforeEach(() => {
-		player = new Player(table);
+		player = new Player(table).init();
 	});
 
 	it('should make the ball roll up and down a flat ramp', () => {

@@ -43,7 +43,7 @@ describe('The VPinball spinner collision', () => {
 	});
 
 	beforeEach(() => {
-		player = new Player(table);
+		player = new Player(table).init();
 	});
 
 	it('should make the spinner spin', () => {

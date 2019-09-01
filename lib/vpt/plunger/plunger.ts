@@ -124,6 +124,10 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 		return [ this.hit! ];
 	}
 
+	public getEventProxy(): EventProxy {
+		return this.events!;
+	}
+
 	public pullBack(): void {
 		this.getMover().pullBack(this.data.speedPull);
 	}

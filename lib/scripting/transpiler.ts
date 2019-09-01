@@ -53,8 +53,9 @@ export class Transpiler {
 		return js;
 	}
 
-	public execute(vbs: string, globalObject = 'window') {
+	public execute(vbs: string, globalObject?: string) {
 
+		globalObject = globalObject || typeof window !== 'undefined' ? 'window' : 'global';
 		const js = this.transpile(vbs, 'play', globalObject);
 
 		// tslint:disable-next-line:no-eval

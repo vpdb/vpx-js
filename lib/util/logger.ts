@@ -31,6 +31,7 @@ export class Logger implements ILogger {
 	}
 
 	public debug(format: any, ...param: any[]): void {
+		console.debug.apply(console.log, [ format, ...param ]);
 	}
 
 	public error(format: any, ...param: any[]): void {
@@ -42,6 +43,7 @@ export class Logger implements ILogger {
 	}
 
 	public verbose(format: any, ...param: any[]): void {
+		console.debug.apply(console.log, [ format, ...param ]);
 	}
 
 	public warn(format: any, ...param: any[]): void {
@@ -49,6 +51,7 @@ export class Logger implements ILogger {
 	}
 
 	public wtf(format: any, ...param: any[]): void {
+		console.error.apply(console.log, [ format, ...param ]);
 	}
 }
 

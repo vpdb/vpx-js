@@ -40,7 +40,13 @@ export class Player extends EventEmitter {
 		this.physics = new PlayerPhysics(table);
 		this.setupTableElements();
 		this.setupStates();
-		this.physics.setup();
+	}
+
+	public init(): this {
+		this.physics.init();
+		this.table.runTableScript();
+		this.table.broadcastInit();
+		return this;
 	}
 
 	private setupTableElements() {
@@ -89,7 +95,7 @@ export class Player extends EventEmitter {
 	public createBall(ballCreator: IBallCreationPosition, radius = 25, mass = 1): Ball {
 		const ball = this.physics.createBall(ballCreator, radius, mass);
 		this.currentStates[ball.getName()] = ball.getState();
-		this.previousStates[ball.getName()] = ball.getState().clone();
+		//this.previousStates[ball.getName()] = ball.getState().clone();
 		this.emit('ballCreated', ball.getName());
 		return ball;
 	}
