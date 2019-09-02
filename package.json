@@ -9,11 +9,11 @@
 		"url": "https://github.com/vpdb/vpx-js"
 	},
 	"scripts": {
-		"build": "npm compile && rimraf dist && tsc && cp -r res/maps dist/res",
-		"build:watch": "npm compile && npm run compile && tsc --watch",
+		"build": "npm run compile && rimraf dist && tsc && cp -r res/maps dist/res",
+		"build:watch": "npm run compile && npm run compile && tsc --watch",
 		"compile": "nearleyc lib/scripting/vbscript.ne -o lib/scripting/vbscript.ts",
 		"lint": "tslint lib/**/*.ts --format stylish",
-		"test": "npm compile && nyc mocha"
+		"test": "npm run compile && nyc mocha"
 	},
 	"bin": {
 		"vpt2glb": "./dist/bin/vpt2glb.js",
