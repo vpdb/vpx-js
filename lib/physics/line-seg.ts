@@ -192,7 +192,7 @@ export class LineSeg extends HitObject {
 		this.length = vT.length();
 		const invLength = 1.0 / this.length;
 		this.normal.set(vT.y * invLength, -vT.x * invLength);
-		vT.release();
+		Vertex2D.release(vT);
 		return this;
 	}
 }

@@ -95,7 +95,7 @@ export class HitPlane extends HitObject {
 			// if ball has penetrated, push it out of the plane
 			const v = this.normal.clone(true).multiplyScalar(bnd);
 			coll.ball.state.pos.add(v);
-			v.release();
+			Vertex3D.release(v);
 		}
 	}
 }

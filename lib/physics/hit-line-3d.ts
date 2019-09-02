@@ -66,10 +66,7 @@ export class HitLine3D extends HitLineZ {
 		this.hitBBox.zlow = Math.min(v1.z, v2.z);
 		this.hitBBox.zhigh = Math.max(v1.z, v2.z);
 
-		vTrans1.release();
-		vTrans2.release();
-		transAxis.release();
-		vLine.release();
+		Vertex3D.release(vTrans1, vTrans2, transAxis, vLine);
 	}
 
 	public calcHitBBox(): void {
@@ -103,9 +100,8 @@ export class HitLine3D extends HitLineZ {
 			coll.hitNormal = this.matrix.multiplyVectorT(coll.hitNormal!);
 		}
 
-		oldZ.release();
-		oldPos.release();
-		oldVel.release();
+		Vertex2D.release(oldZ);
+		Vertex3D.release(oldPos, oldVel);
 		return { hitTime, coll };
 	}
 

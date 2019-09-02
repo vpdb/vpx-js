@@ -109,26 +109,26 @@ export class HitKDNode {
 		let axis: number;
 		if (vDiag.x > vDiag.y && vDiag.x > vDiag.z) {
 			if (vDiag.x < 0.0001) { //!! magic
-				vDiag.release();
+				Vertex3D.release(vDiag);
 				return;
 			}
 			axis = 0;
 
 		} else if (vDiag.y > vDiag.z) {
 			if (vDiag.y < 0.0001) { //!!
-				vDiag.release();
+				Vertex3D.release(vDiag);
 				return;
 			}
 			axis = 1;
 
 		} else {
 			if (vDiag.z < 0.0001) { //!!
-				vDiag.release();
+				Vertex3D.release(vDiag);
 				return;
 			}
 			axis = 2;
 		}
-		vDiag.release();
+		Vertex3D.release(vDiag);
 
 		//!! weight this with ratio of elements going to middle vs left&right! (avoids volume split that goes directly through object)
 
@@ -226,7 +226,7 @@ export class HitKDNode {
 		if (levelEmpty > 8) {// If 8 levels were all just subdividing the same objects without luck, exit & Free the nodes again (but at least empty space was cut off)
 			this.hitOct.numNodes -= 2;
 			this.children = [];
-			vCenter.release();
+			Vertex3D.release(vCenter);
 			return;
 		}
 
@@ -276,7 +276,7 @@ export class HitKDNode {
 				}
 			}
 		}
-		vCenter.release();
+		Vertex3D.release(vCenter);
 		// The following assertions hold after this step:
 		//assert( this.start + items == this.children[0].this.start );
 		//assert( this.children[0].this.start + this.children[0].this.items == this.children[1].this.start );

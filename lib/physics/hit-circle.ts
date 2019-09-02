@@ -89,26 +89,23 @@ export class HitCircle extends HitObject {
 		const bcddsq = dist.lengthSq();             // ball center to circle center distance ... squared
 		const bcdd = Math.sqrt(bcddsq);             // distance center to center
 		if (bcdd <= 1.0e-6) {
-			dist.release();
-			dv.release();
-			c.release();
+			Vertex3D.release(dist, dv, c);
 			return { hitTime: -1.0, coll };         // no hit on exact center
 		}
 
 		const b = dist.dot(dv);
 		const bnv = b / bcdd;                       // ball normal velocity
-		dist.release();
+		Vertex3D.release(dist);
 
 		if (direction && bnv > C_LOWNORMVEL) {
-			dv.release();
-			c.release();
+			Vertex3D.release(dv, c);
 			return { hitTime: -1.0, coll };         // clearly receding from radius
 		}
 
 		const bnd = bcdd - targetRadius;            // ball normal distance to
 
 		const a = dv.lengthSq();
-		dv.release();
+		Vertex3D.release(dv);
 
 		let hitTime = 0;
 		let isUnhit = false;
@@ -124,7 +121,7 @@ export class HitCircle extends HitObject {
 		// positive: contact possible in future ... Negative: objects in contact now
 		if (rigid && bnd < PHYS_TOUCH) {
 			if (bnd < -ball.data.radius) {
-				c.release();
+				Vertex3D.release(c);
 				return { hitTime: -1.0, coll };
 
 			} else if (Math.abs(bnv) <= C_CONTACTVEL) {
@@ -151,13 +148,13 @@ export class HitCircle extends HitObject {
 		} else {
 			if ((!rigid && bnd * bnv > 0) || (a < 1.0e-8)) { // (outside and receding) or (inside and approaching)
 				// no hit ... ball not moving relative to object
-				c.release();
+				Vertex3D.release(c);
 				return { hitTime: -1.0, coll };
 			}
 
 			const sol = solveQuadraticEq(a, 2.0 * b, bcddsq - targetRadius * targetRadius);
 			if (!sol) {
-				c.release();
+				Vertex3D.release(c);
 				return { hitTime: -1.0, coll };
 			}
 			const [time1, time2] = sol;
@@ -167,7 +164,7 @@ export class HitCircle extends HitObject {
 
 		if (!isFinite(hitTime) || hitTime < 0 || hitTime > dTime) {
 			// contact out of physics frame
-			c.release();
+			Vertex3D.release(c);
 			return { hitTime: -1.0, coll };
 		}
 
@@ -175,7 +172,7 @@ export class HitCircle extends HitObject {
 		if (hitZ + ball.data.radius * 0.5 < this.hitBBox.zlow
 			|| !capsule3D && (hitZ - ball.data.radius * 0.5) > this.hitBBox.zhigh
 			|| capsule3D && hitZ < this.hitBBox.zhigh) {
-			c.release();
+			Vertex3D.release(c);
 			return { hitTime: -1.0, coll };
 		}
 
@@ -196,7 +193,7 @@ export class HitCircle extends HitObject {
 			coll.hitNormal.y = 1.0;
 			coll.hitNormal.z = 0.0;
 		}
-		c.release();
+		Vertex3D.release(c);
 
 		if (!rigid) {                                      // non rigid body collision? return direction
 			coll.hitFlag = isUnhit;                        // UnHit signal is receding from target

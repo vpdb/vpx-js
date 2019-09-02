@@ -27,6 +27,7 @@ import { Ball } from '../vpt/ball/ball';
 import { IPhysicalData } from '../vpt/item-data';
 import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
+import { Vertex3D } from '../math/vertex3d';
 
 export abstract class HitObject {
 
@@ -93,7 +94,7 @@ export abstract class HitObject {
 			// is this the same place as last event? if same then ignore it
 			const posDiff = ball.hit.eventPos.clone(true).sub(ball.state.pos);
 			const distLs = posDiff.lengthSq();
-			posDiff.release();
+			Vertex3D.release(posDiff);
 
 			// remember last collide position
 			ball.hit.eventPos.set(ball.state.pos.x, ball.state.pos.y, ball.state.pos.z);
