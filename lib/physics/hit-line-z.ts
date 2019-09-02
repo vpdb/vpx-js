@@ -19,11 +19,10 @@
 
 import { solveQuadraticEq } from '../math/functions';
 import { Vertex2D } from '../math/vertex2d';
-import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { C_CONTACTVEL, PHYS_TOUCH } from './constants';
-import { HitObject, HitTestResult } from './hit-object';
+import { HitObject } from './hit-object';
 
 export class HitLineZ extends HitObject {
 
@@ -55,9 +54,9 @@ export class HitLineZ extends HitObject {
 		// zlow and zhigh set in ctor
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): HitTestResult {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): number {
 		if (!this.isEnabled) {
-			return { hitTime: -1.0, coll };
+			return -1.0;
 		}
 
 		const bp2d = Vertex2D.claim(ball.state.pos.x, ball.state.pos.y);
@@ -69,7 +68,7 @@ export class HitLineZ extends HitObject {
 		const bcdd = Math.sqrt(bcddsq);                    // distance ball to line
 		if (bcdd <= 1.0e-6) {
 			Vertex2D.release(dv, dist);
-			return { hitTime: -1.0, coll };                // no hit on exact center
+			return -1.0;                // no hit on exact center
 		}
 
 		const b = dist.dot(dv);
@@ -78,7 +77,7 @@ export class HitLineZ extends HitObject {
 
 		if (bnv > C_CONTACTVEL) {
 			Vertex2D.release(dv);
-			return { hitTime: -1.0, coll };                // clearly receding from radius
+			return -1.0;                // clearly receding from radius
 		}
 
 		const bnd = bcdd - ball.data.radius;               // ball distance to line
@@ -98,11 +97,11 @@ export class HitLineZ extends HitObject {
 			}
 		} else {
 			if (a < 1.0e-8) {
-				return { hitTime: -1.0, coll };            // no hit - ball not moving relative to object
+				return -1.0;            // no hit - ball not moving relative to object
 			}
 			const sol = solveQuadraticEq(a, 2.0 * b, bcddsq - ball.data.radius * ball.data.radius);
 			if (!sol) {
-				return { hitTime: -1.0, coll };
+				return -1.0;
 			}
 			const time1 = sol[0];
 			const time2 = sol[1];
@@ -112,13 +111,13 @@ export class HitLineZ extends HitObject {
 		}
 
 		if (!isFinite(hitTime) || hitTime < 0 || hitTime > dTime) {
-			return { hitTime: -1.0, coll };                                    // contact out of physics frame
+			return -1.0;                                    // contact out of physics frame
 		}
 
 		const hitZ = ball.state.pos.z + hitTime * ball.hit.vel.z;              // ball z position at hit time
 
 		if (hitZ < this.hitBBox.zlow || hitZ > this.hitBBox.zhigh) {           // check z coordinate
-			return { hitTime: -1.0, coll };
+			return -1.0;
 		}
 
 		const hitX = ball.state.pos.x + hitTime * ball.hit.vel.x;              // ball x position at hit time
@@ -136,7 +135,7 @@ export class HitLineZ extends HitObject {
 		coll.hitDistance = bnd;                                                // actual contact distance
 		//coll.m_hitRigid = true;
 
-		return { hitTime, coll };
+		return hitTime;
 	}
 
 	public collide(coll: CollisionEvent): void {

@@ -22,7 +22,6 @@ import { Vertex2D } from '../../math/vertex2d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { STATICTIME } from '../../physics/constants';
-import { HitTestResult } from '../../physics/hit-object';
 import { LineSeg } from '../../physics/line-seg';
 import { Ball } from '../ball/ball';
 import { TriggerAnimation } from './trigger-animation';
@@ -40,9 +39,9 @@ export class TriggerLineSeg extends LineSeg {
 		this.objType = CollisionType.Trigger;
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): HitTestResult {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): number {
 		if (!this.data.isEnabled) {
-			return { hitTime: -1.0, coll };
+			return -1.0;
 		}
 
 		// approach either face, not lateral-rolling point (assume center), not a rigid body contact

@@ -23,11 +23,11 @@ import { EventProxy } from '../game/event-proxy';
 import { PlayerPhysics } from '../game/player-physics';
 import { degToRad } from '../math/float';
 import { FRect3D } from '../math/frect3d';
+import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
 import { IPhysicalData } from '../vpt/item-data';
 import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
-import { Vertex3D } from '../math/vertex3d';
 
 export abstract class HitObject {
 
@@ -63,7 +63,7 @@ export abstract class HitObject {
 
 	public abstract calcHitBBox(): void;
 
-	public abstract hitTest(ball: Ball, dTime: number, coll: CollisionEvent, physics: PlayerPhysics): HitTestResult;
+	public abstract hitTest(ball: Ball, dTime: number, coll: CollisionEvent, physics: PlayerPhysics): number;
 
 	public abstract collide(coll: CollisionEvent, physics: PlayerPhysics): void;
 
@@ -139,14 +139,8 @@ export abstract class HitObject {
 			return coll;
 		}
 
-		let newColl = new CollisionEvent(ball);
-		const hitResult = this.hitTest(ball, coll.hitTime, !physics.recordContacts ? coll : newColl, physics);
-		const newTime = hitResult.hitTime;
-		if (!physics.recordContacts) {
-			coll = hitResult.coll;
-		} else {
-			newColl = hitResult.coll;
-		}
+		const newColl = new CollisionEvent(ball);
+		const newTime = this.hitTest(ball, coll.hitTime, !physics.recordContacts ? coll : newColl, physics);
 		const validHit = newTime >= 0 && newTime <= coll.hitTime;
 
 		if (!physics.recordContacts) {            // simply find first event
@@ -187,9 +181,4 @@ export abstract class HitObject {
 
 		this.setEnabled(data.isCollidable);
 	}
-}
-
-export interface HitTestResult {
-	hitTime: number;
-	coll: CollisionEvent;
 }

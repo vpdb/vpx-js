@@ -24,7 +24,6 @@ import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { STATICTIME } from '../../physics/constants';
 import { HitCircle } from '../../physics/hit-circle';
-import { HitTestResult } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
 import { Table } from '../table/table';
 import { TriggerAnimation } from './trigger-animation';
@@ -42,7 +41,7 @@ export class TriggerHitCircle extends HitCircle {
 		this.obj = events;
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): HitTestResult {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): number {
 		// any face, not-lateral, non-rigid
 		return super.hitTestBasicRadius(ball, dTime, coll, false, false, false);
 	}

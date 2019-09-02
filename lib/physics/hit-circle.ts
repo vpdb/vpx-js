@@ -25,7 +25,7 @@ import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { C_CONTACTVEL, C_LOWNORMVEL, PHYS_TOUCH } from './constants';
-import { HitObject, HitTestResult } from './hit-object';
+import { HitObject } from './hit-object';
 
 export class HitCircle extends HitObject {
 
@@ -53,14 +53,14 @@ export class HitCircle extends HitObject {
 		// zlow & zhigh already set in ctor
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): HitTestResult {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): number {
 		// normal face, lateral, rigid
 		return this.hitTestBasicRadius(ball, dTime, coll, true, true, true);
 	}
 
-	protected hitTestBasicRadius(ball: Ball, dTime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean): HitTestResult {
+	protected hitTestBasicRadius(ball: Ball, dTime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean): number {
 		if (!this.isEnabled || ball.hit.isFrozen) {
-			return { hitTime: -1.0, coll };
+			return -1.0;
 		}
 
 		const c = Vertex3D.claim(this.center.x, this.center.y, 0.0);
@@ -90,7 +90,7 @@ export class HitCircle extends HitObject {
 		const bcdd = Math.sqrt(bcddsq);             // distance center to center
 		if (bcdd <= 1.0e-6) {
 			Vertex3D.release(dist, dv, c);
-			return { hitTime: -1.0, coll };         // no hit on exact center
+			return -1.0;         // no hit on exact center
 		}
 
 		const b = dist.dot(dv);
@@ -99,7 +99,7 @@ export class HitCircle extends HitObject {
 
 		if (direction && bnv > C_LOWNORMVEL) {
 			Vertex3D.release(dv, c);
-			return { hitTime: -1.0, coll };         // clearly receding from radius
+			return -1.0;         // clearly receding from radius
 		}
 
 		const bnd = bcdd - targetRadius;            // ball normal distance to
@@ -122,7 +122,7 @@ export class HitCircle extends HitObject {
 		if (rigid && bnd < PHYS_TOUCH) {
 			if (bnd < -ball.data.radius) {
 				Vertex3D.release(c);
-				return { hitTime: -1.0, coll };
+				return -1.0;
 
 			} else if (Math.abs(bnv) <= C_CONTACTVEL) {
 				isContact = true;
@@ -149,13 +149,13 @@ export class HitCircle extends HitObject {
 			if ((!rigid && bnd * bnv > 0) || (a < 1.0e-8)) { // (outside and receding) or (inside and approaching)
 				// no hit ... ball not moving relative to object
 				Vertex3D.release(c);
-				return { hitTime: -1.0, coll };
+				return -1.0;
 			}
 
 			const sol = solveQuadraticEq(a, 2.0 * b, bcddsq - targetRadius * targetRadius);
 			if (!sol) {
 				Vertex3D.release(c);
-				return { hitTime: -1.0, coll };
+				return -1.0;
 			}
 			const [time1, time2] = sol;
 			isUnhit = (time1 * time2 < 0);
@@ -165,7 +165,7 @@ export class HitCircle extends HitObject {
 		if (!isFinite(hitTime) || hitTime < 0 || hitTime > dTime) {
 			// contact out of physics frame
 			Vertex3D.release(c);
-			return { hitTime: -1.0, coll };
+			return -1.0;
 		}
 
 		const hitZ = ball.state.pos.z + ball.hit.vel.z * hitTime; // rolling point
@@ -173,7 +173,7 @@ export class HitCircle extends HitObject {
 			|| !capsule3D && (hitZ - ball.data.radius * 0.5) > this.hitBBox.zhigh
 			|| capsule3D && hitZ < this.hitBBox.zhigh) {
 			Vertex3D.release(c);
-			return { hitTime: -1.0, coll };
+			return -1.0;
 		}
 
 		const hitX = ball.state.pos.x + ball.hit.vel.x * hitTime;
@@ -207,6 +207,6 @@ export class HitCircle extends HitObject {
 		coll.hitDistance = bnd;                            // actual contact distance ...
 		//coll.m_hitRigid = rigid;                         // collision type
 
-		return { hitTime, coll };
+		return hitTime;
 	}
 }

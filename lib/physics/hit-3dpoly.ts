@@ -24,7 +24,7 @@ import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 import { C_CONTACTVEL, C_LOWNORMVEL, PHYS_TOUCH, STATICTIME } from './constants';
-import { HitObject, HitTestResult } from './hit-object';
+import { HitObject } from './hit-object';
 
 export class Hit3DPoly extends HitObject {
 
@@ -111,15 +111,15 @@ export class Hit3DPoly extends HitObject {
 		}
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): HitTestResult {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): number {
 		if (!this.isEnabled) {
-			return { hitTime: -1.0, coll };
+			return -1.0;
 		}
 
 		const bnv = this.normal.dot(ball.hit.vel);                                       // speed in Normal-vector direction
 
 		if ((this.objType !== CollisionType.Trigger) && (bnv > C_LOWNORMVEL)) {          // return if clearly ball is receding from object
-			return { hitTime: -1.0, coll };
+			return -1.0;
 		}
 
 		// Point on the ball that will hit the polygon, if it hits at all
@@ -138,7 +138,7 @@ export class Hit3DPoly extends HitObject {
 			if (bnd < -ball.data.radius) {
 				// (ball normal distance) excessive penetration of object skin ... no collision HACK //!! *2 necessary?
 				Vertex3D.release(hitPos);
-				return { hitTime: -1.0, coll };
+				return -1.0;
 			}
 
 			if (bnd <= PHYS_TOUCH) {
@@ -156,7 +156,7 @@ export class Hit3DPoly extends HitObject {
 
 			} else {
 				Vertex3D.release(hitPos);
-				return { hitTime: -1.0, coll };                                // wait for touching
+				return -1.0;                                // wait for touching
 			}
 		} else {                                                               // non-rigid polygon
 			if (bnv * bnd >= 0) {                                              // outside-receding || inside-approaching
@@ -164,7 +164,7 @@ export class Hit3DPoly extends HitObject {
 					|| Math.abs(bnd) >= ball.data.radius * 0.5                 // not too close ... nor too far away
 					|| inside !== ball.hit.vpVolObjs.indexOf(this.obj!) < 0) { // ...ball outside and hit set or ball inside and no hit set
 					Vertex3D.release(hitPos);
-					return { hitTime: -1.0, coll };
+					return -1.0;
 				}
 				hitTime = 0;
 				bUnHit = !inside;                                              // ball on outside is UnHit, otherwise it's a Hit
@@ -176,7 +176,7 @@ export class Hit3DPoly extends HitObject {
 
 		if (!isFinite(hitTime) || hitTime < 0 || hitTime > dTime) {            // time is outside this frame ... no collision
 			Vertex3D.release(hitPos);
-			return { hitTime: -1.0, coll };
+			return -1.0;
 		}
 
 		const adv = ball.hit.vel.clone(true).multiplyScalar(hitTime);
@@ -235,9 +235,9 @@ export class Hit3DPoly extends HitObject {
 			coll.hitDistance = bnd;                                            // 3dhit actual contact distance ...
 			//coll.m_hitRigid = rigid;                                         // collision type
 
-			return { hitTime, coll };
+			return hitTime;
 		}
 
-		return { hitTime: -1.0, coll };
+		return -1.0;
 	}
 }
