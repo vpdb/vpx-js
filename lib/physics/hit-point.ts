@@ -24,7 +24,7 @@ import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { C_CONTACTVEL, PHYS_TOUCH } from './constants';
-import { HitObject, HitTestResult } from './hit-object';
+import { HitObject } from './hit-object';
 
 export class HitPoint extends HitObject {
 
@@ -39,9 +39,9 @@ export class HitPoint extends HitObject {
 		this.hitBBox = new FRect3D(this.p.x, this.p.x, this.p.y, this.p.y, this.p.z, this.p.z);
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, physics: PlayerPhysics): HitTestResult {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, physics: PlayerPhysics): number {
 		if (!this.isEnabled) {
-			return { hitTime: -1.0, coll };
+			return -1.0;
 		}
 
 		// relative ball position
@@ -51,7 +51,7 @@ export class HitPoint extends HitObject {
 		const bcdd = Math.sqrt(bcddsq);                    // distance ball to line
 		if (bcdd <= 1.0e-6) {
 			Vertex3D.release(dist);
-			return { hitTime: -1.0, coll };                // no hit on exact center
+			return -1.0;                // no hit on exact center
 		}
 
 		const b = dist.dot(ball.hit.vel);
@@ -59,7 +59,7 @@ export class HitPoint extends HitObject {
 		Vertex3D.release(dist);
 
 		if (bnv > C_CONTACTVEL) {
-			return { hitTime: -1.0, coll };                // clearly receding from radius
+			return -1.0;                // clearly receding from radius
 		}
 
 		const bnd = bcdd - ball.data.radius;               // ball distance to line
@@ -77,12 +77,12 @@ export class HitPoint extends HitObject {
 			}
 		} else {
 			if (a < 1.0e-8) {
-				return { hitTime: -1.0, coll };            // no hit - ball not moving relative to object
+				return -1.0;            // no hit - ball not moving relative to object
 			}
 
 			const sol = solveQuadraticEq(a, 2.0 * b, bcddsq - ball.data.radius * ball.data.radius);
 			if (!sol) {
-				return { hitTime: -1.0, coll };
+				return -1.0;
 			}
 			const time1 = sol[0];
 			const time2 = sol[1];
@@ -92,7 +92,7 @@ export class HitPoint extends HitObject {
 		}
 
 		if (!isFinite(hitTime) || hitTime < 0 || hitTime > dTime) {
-			return { hitTime: -1.0, coll };                // contact out of physics frame
+			return -1.0;                // contact out of physics frame
 		}
 
 		const hitVel = ball.hit.vel.clone(true).multiplyScalar(hitTime);
@@ -111,7 +111,7 @@ export class HitPoint extends HitObject {
 		coll.hitDistance = bnd;                            // actual contact distance
 		//coll.m_hitRigid = true;
 
-		return { hitTime, coll };
+		return hitTime;
 	}
 
 	public collide(coll: CollisionEvent): void {

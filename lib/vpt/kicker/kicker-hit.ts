@@ -30,7 +30,6 @@ import { CollisionType } from '../../physics/collision-type';
 import { STATICTIME } from '../../physics/constants';
 import { hardScatter } from '../../physics/functions';
 import { HitCircle } from '../../physics/hit-circle';
-import { HitTestResult } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
 import { FLT_MAX } from '../mesh';
 import { Table } from '../table/table';
@@ -66,7 +65,7 @@ export class KickerHit extends HitCircle {
 		this.obj = events;
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): HitTestResult {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): number {
 		// any face, not-lateral, non-rigid
 		return this.hitTestBasicRadius(ball, dTime, coll, false, false, false);
 	}

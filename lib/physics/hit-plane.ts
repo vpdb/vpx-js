@@ -21,7 +21,7 @@ import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { C_CONTACTVEL, PHYS_TOUCH } from './constants';
-import { HitObject, HitTestResult } from './hit-object';
+import { HitObject } from './hit-object';
 
 export class HitPlane extends HitObject {
 
@@ -38,15 +38,15 @@ export class HitPlane extends HitObject {
 		// plane's not a box (i assume)
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): HitTestResult {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): number {
 		if (!this.isEnabled) {
-			return { hitTime: -1.0, coll };
+			return -1.0;
 		}
 
 		const bnv = this.normal.dot(ball.hit.vel);         // speed in normal direction
 
 		if (bnv > C_CONTACTVEL) {                          // return if clearly ball is receding from object
-			return { hitTime: -1.0, coll };
+			return -1.0;
 		}
 
 		const bnd = this.normal.dot(ball.state.pos) - ball.data.radius - this.d; // distance from plane to ball surface
@@ -54,7 +54,7 @@ export class HitPlane extends HitObject {
 		//!! solely responsible for ball through playfield?? check other places, too (radius*2??)
 		if (bnd < ball.data.radius * -2.0) {
 			// excessive penetration of plane ... no collision HACK
-			return { hitTime: -1.0, coll };
+			return -1.0;
 		}
 
 		let hitTime: number;
@@ -64,9 +64,9 @@ export class HitPlane extends HitObject {
 				coll.hitNormal = this.normal;
 				coll.hitOrgNormalVelocity = bnv;           // remember original normal velocity
 				coll.hitDistance = bnd;
-				return { hitTime: 0, coll };               // hit time is ignored for contacts
+				return 0.0;                                // hit time is ignored for contacts
 			} else {
-				return { hitTime: -1.0, coll };            // large distance, small velocity -> no hit
+				return -1.0;                               // large distance, small velocity -> no hit
 			}
 		}
 
@@ -77,13 +77,13 @@ export class HitPlane extends HitObject {
 
 		if (!isFinite(hitTime) || hitTime < 0 || hitTime > dTime) {
 			// time is outside this frame ... no collision
-			return { hitTime: -1.0, coll };
+			return -1.0;
 		}
 
 		coll.hitNormal = this.normal;
 		coll.hitDistance = bnd;                            // actual contact distance
 
-		return { hitTime, coll };
+		return hitTime;
 	}
 
 	public collide(coll: CollisionEvent): void {

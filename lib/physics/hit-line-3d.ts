@@ -23,7 +23,6 @@ import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
 import { CollisionEvent } from './collision-event';
 import { HitLineZ } from './hit-line-z';
-import { HitTestResult } from './hit-object';
 
 export class HitLine3D extends HitLineZ {
 
@@ -73,9 +72,9 @@ export class HitLine3D extends HitLineZ {
 		// already one in constructor
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): HitTestResult {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): number {
 		if (!this.isEnabled) {
-			return { hitTime: -1.0, coll };
+			return -1.0;
 		}
 		// transform ball to cylinder coordinate system
 		const oldPos = ball.state.pos.clone(true);
@@ -88,8 +87,7 @@ export class HitLine3D extends HitLineZ {
 		this.hitBBox.zlow = this.zLow;   // HACK; needed below // evil cast to non-const, should actually change the stupid HitLineZ to have explicit z coordinates!
 		this.hitBBox.zhigh = this.zHigh; // dto.
 
-		let hitTime: number;
-		({ hitTime, coll } = super.hitTest(ball, dTime, coll));
+		const hitTime = super.hitTest(ball, dTime, coll);
 
 		ball.state.pos.set(oldPos.x, oldPos.y, oldPos.z); // see above
 		ball.hit.vel.set(oldVel.x, oldVel.y, oldVel.z);
@@ -102,7 +100,7 @@ export class HitLine3D extends HitLineZ {
 
 		Vertex2D.release(oldZ);
 		Vertex3D.release(oldPos, oldVel);
-		return { hitTime, coll };
+		return hitTime;
 	}
 
 	public collide(coll: CollisionEvent): void {

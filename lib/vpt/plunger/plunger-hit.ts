@@ -22,7 +22,7 @@ import { PlayerPhysics } from '../../game/player-physics';
 import { Vertex2D } from '../../math/vertex2d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { C_DISP_GAIN, C_DISP_LIMIT, C_EMBEDDED, C_EMBEDSHOT, C_LOWNORMVEL } from '../../physics/constants';
-import { HitObject, HitTestResult } from '../../physics/hit-object';
+import { HitObject } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
 import { Table } from '../table/table';
 import { Plunger, PlungerConfig } from './plunger';
@@ -69,7 +69,7 @@ export class PlungerHit extends HitObject {
 		// zlow & zhigh gets set in constructor
 	}
 
-	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, physics: PlayerPhysics): HitTestResult {
+	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent, physics: PlayerPhysics): number {
 
 		let hitTime = dTime; //start time
 		let isHit = false;
@@ -80,35 +80,33 @@ export class PlungerHit extends HitObject {
 		physics.lastPlungerHit = physics.timeMsec;
 
 		// We are close enable the plunger light.
-		let hit = new CollisionEvent(ball);
-		let newTime: number;
+		const hit = new CollisionEvent(ball);
 
 		// Check for hits on the non-moving parts, like the side of back
 		// of the plunger.  These are just like hitting a wall.
 		// Check all and find the nearest collision.
-
-		({ hitTime: newTime, coll: hit } = this.mover.lineSegBase.hitTest(ball, dTime, hit));
+		let newTime = this.mover.lineSegBase.hitTest(ball, dTime, hit);
 		if (newTime >= 0 && newTime <= hitTime) {
 			isHit = true;
 			hitTime = newTime;
-			coll = hit;
+			coll.set(hit);
 			coll.hitVel = new Vertex2D(0, 0);
 		}
 
 		for (let i = 0; i < 2; i++) {
-			({ hitTime: newTime, coll: hit } = this.mover.lineSegSide[i].hitTest(ball, hitTime, hit));
+			newTime = this.mover.lineSegSide[i].hitTest(ball, hitTime, hit);
 			if (newTime >= 0 && newTime <= hitTime) {
 				isHit = true;
 				hitTime = newTime;
-				coll = hit;
+				coll.set(hit);
 				coll.hitVel = new Vertex2D(0, 0);
 			}
 
-			({ hitTime: newTime, coll: hit } = this.mover.jointBase[i].hitTest(ball, hitTime, hit));
+			newTime = this.mover.jointBase[i].hitTest(ball, hitTime, hit);
 			if (newTime >= 0 && newTime <= hitTime) {
 				isHit = true;
 				hitTime = newTime;
-				coll = hit;
+				coll.set(hit);
 				coll.hitVel = new Vertex2D(0, 0);
 			}
 		}
@@ -164,20 +162,20 @@ export class PlungerHit extends HitObject {
 		const deltaY = this.mover.speed * xferRatio;
 
 		// check the moving bits
-		({ hitTime: newTime, coll: hit } = this.mover.lineSegEnd.hitTest(ball, hitTime, hit));
+		newTime = this.mover.lineSegEnd.hitTest(ball, hitTime, hit);
 		if (newTime >= 0 && newTime <= hitTime) {
 			isHit = true;
 			hitTime = newTime;
-			coll = hit;
+			coll.set(hit);
 			coll.hitVel = new Vertex2D(0, deltaY);
 		}
 
 		for (let i = 0; i < 2; i++) {
-			({ hitTime: newTime, coll: hit } = this.mover.jointEnd[i].hitTest(ball, hitTime, hit));
+			newTime = this.mover.jointEnd[i].hitTest(ball, hitTime, hit);
 			if (newTime >= 0 && newTime <= hitTime) {
 				isHit = true;
 				hitTime = newTime;
-				coll = hit;
+				coll.set(hit);
 				coll.hitVel = new Vertex2D(0, deltaY);
 			}
 		}
@@ -228,11 +226,11 @@ export class PlungerHit extends HitObject {
 			}
 
 			// return the collision time delta
-			return { hitTime, coll };
+			return hitTime;
 
 		} else {
 			// no collision
-			return { hitTime: -1.0, coll };
+			return -1.0;
 		}
 	}
 
