@@ -31,15 +31,44 @@ import {
 	Literal,
 	MemberExpression,
 	Statement,
+	SwitchCase,
+	SwitchStatement,
 	UnaryExpression,
 	VariableDeclaration,
 	VariableDeclarator,
 	WhileStatement,
-	SwitchStatement,
-	SwitchCase,
 } from 'estree';
 import { inspect } from 'util';
 import * as estree from './estree';
+
+/**
+ * Grammar:
+ * ```
+ * Comment -> "Rem" __ CommentChar:* NL
+ *          | "'" _ CommentChar:* NL
+ * ```
+ * Result:
+ * ```
+ * [
+ *   "Rem",
+ *   null,
+ *   [
+ *     ["T"],
+ *     ["e"],
+ *     ["s"],
+ *     ["t"],
+ *   ],
+ *   [[["\n"]]]
+ * ]
+ * ```
+ */
+export function comment(result: [string, null, string[], null]): EmptyStatement {
+	const value = result[2].join('');
+	return estree.emptyStatement(
+		[],
+		[estree.comment('Line', ' ' + value)],
+	);
+}
 
 /**
  * Grammar:
@@ -57,7 +86,7 @@ export function optionExplicit(result: [string, null, string]): EmptyStatement {
 	const explicit = result[2];
 	return estree.emptyStatement(
 		[],
-		[estree.comment('Block', ' ' + option + ' ' + explicit + ' ')],
+		[estree.comment('Line', ' ' + option + ' ' + explicit)],
 	);
 }
 
@@ -411,7 +440,7 @@ export function assignStmt(result: [Identifier, null, '=', null, Literal | Unary
  * ]
  * ```
  */
-export function ifStmt(result: [string, null, Expression, null, string, null, [Statement], Statement]): IfStatement {
+export function ifStmt(result: [string, null, Expression, null, string, null, Statement[], Statement]): IfStatement {
 	const test = result[2];
 	const consequent = estree.blockStatement(result[6]);
 	const alternate = result[7];
@@ -462,7 +491,7 @@ export function ifStmt(result: [string, null, Expression, null, string, null, [S
  * ]
  * ```
  */
-export function forStmt(result: ['For', null, Identifier, null, '=', null, Expression, null, 'To', null, Expression, null, Expression, null, [Statement]]): ForStatement {
+export function forStmt(result: ['For', null, Identifier, null, '=', null, Expression, null, 'To', null, Expression, null, Expression, null, Statement[]]): ForStatement {
 	const identifier = result[2];
 	const init = result[6];
 	const test = result[10];
@@ -533,7 +562,7 @@ export function forStmt(result: ['For', null, Identifier, null, '=', null, Expre
  * ]
  * ```
  */
-export function forEachStmt(result: ['For', null, 'Each', null, Identifier, null, 'In', null, Expression, null, [Statement]]): ForOfStatement {
+export function forEachStmt(result: ['For', null, 'Each', null, Identifier, null, 'In', null, Expression, null, Statement[]]): ForOfStatement {
 	const identifier = result[4];
 	const expression = result[8];
 	const body = result[10] || [] ;
@@ -584,7 +613,7 @@ export function forEachStmt(result: ['For', null, 'Each', null, Identifier, null
  * ]
  * ```
  */
-export function withStmt(result: ['With', null, Expression, null, [Statement]]): BlockStatement {
+export function withStmt(result: ['With', null, Expression, null, Statement[]]): BlockStatement {
 	const identifier = result[2];
 	const statements = result[4] || [];
 	for (const statement of statements) {
@@ -644,7 +673,7 @@ export function withStmt(result: ['With', null, Expression, null, [Statement]]):
  * ```
  */
 
-export function doWhileLoopStmt(result: ['Do', null, string, null, Expression, null, [Statement]]): WhileStatement | DoWhileStatement {
+export function doWhileLoopStmt(result: ['Do', null, string, null, Expression, null, Statement[]]): WhileStatement | DoWhileStatement {
 	const type = result[2];
 	const test = result[4];
 	const statements = result[6] || [];
@@ -700,7 +729,7 @@ export function doWhileLoopStmt(result: ['Do', null, string, null, Expression, n
  * ```
  */
 
-export function doLoopWhileStmt(result: ['Do', null, [Statement], null, 'Loop', null, string, null, Expression]) {
+export function doLoopWhileStmt(result: ['Do', null, Statement[], null, 'Loop', null, string, null, Expression]) {
 	const type = result[6];
 	const statements = result[2] || [];
 	const test = result[8];
@@ -744,7 +773,7 @@ export function doLoopWhileStmt(result: ['Do', null, [Statement], null, 'Loop', 
  *   [[["\n"]]]
  * ]
  */
-export function doLoopStmt(result: ['Do', null, [Statement], null, 'Loop']): DoWhileStatement {
+export function doLoopStmt(result: ['Do', null, Statement[], null, 'Loop']): DoWhileStatement {
 	const statements = result[2] || [];
 	return estree.doWhileStatement(estree.blockStatement(statements), estree.literal(true));
 }
@@ -788,7 +817,7 @@ export function doLoopStmt(result: ['Do', null, [Statement], null, 'Loop']): DoW
  * ]
  * ```
  */
-export function whileLoopStmt(result: ['While', null, Expression, null, [Statement]]): WhileStatement {
+export function whileLoopStmt(result: ['While', null, Expression, null, Statement[]]): WhileStatement {
 	const test = result[2];
 	const statements = result[4] || [];
 	return estree.whileStatement(test, estree.blockStatement(statements));
@@ -886,18 +915,17 @@ export function selectStmt(result: ['Select', null, 'Case', null, Expression, nu
  *   ]
  * ]
  */
-export function caseStmt(result: ['Case', null, Expression | Identifier, null, [Expression], null, [Statement]]): SwitchCase[] {
+export function caseStmt(result: ['Case', null, Expression | Identifier, null, Expression[], null, Statement[]]): SwitchCase[] {
 	const firstCase = result[2];
 	const otherCases = result[4];
 	const statements = result[6] || [];
-	const cases = [firstCase, ...otherCases];	
-	let switchCases = [] as SwitchCase[];
+	const cases = [firstCase, ...otherCases];
+	const switchCases = [] as SwitchCase[];
 	cases.forEach((val, key, arr) => {
 		if (Object.is(cases.length - 1, key)) {
-		   switchCases.push(
-		      estree.switchCase(val, [...statements, estree.breakStatement()]));			
-		}
-		else {
+			switchCases.push(
+				estree.switchCase(val, [...statements, estree.breakStatement()]));
+		} else {
 			switchCases.push(estree.switchCase(val, []));
 		}
 	});
@@ -931,10 +959,10 @@ export function caseStmt(result: ['Case', null, Expression | Identifier, null, [
  * ]
  * ```
  */
-export function caseElseStmt(result: ['Case', null, 'Else', null, null, [Statement]]): SwitchCase[] {
+export function caseElseStmt(result: ['Case', null, 'Else', null, null, Statement[]]): SwitchCase[] {
 	const statements = result[5];
 	return [
-		estree.switchCase(null, statements)
+		estree.switchCase(null, statements),
 	];
 }
 
@@ -1018,25 +1046,31 @@ export function expExpr(result: [Expression | Literal, null, '^', null, Expressi
  * [["w"],"eekend"]
  * ```
  */
-export function identifier(result: [string, string, string | null], location: number, reject: Object): Identifier | Object {	
-	const keywords = ['And', 'ByRef', 'ByVal', 'Call', 'Case', 'Class', 'Const', 'Dim', 'Do', 
-	'Each', 'Else', 'ElseIf', 'Empty', 'End', 'Eqv', 'Exit', 'False', 'For', 'Function', 'Get',
-	'GoTo', 'If', 'Imp', 'In', 'Is', 'Let', 'Loop', 'Mod', 'New', 'Next', 'Not', 'Nothing', 'Null',
-	'On', 'Option', 'Or', 'Preserve', 'Private', 'Public', 'Redim', 'Resume', 'Select', 'Set', 'Sub',
-	'Then', 'To', 'True', 'Until', 'WEnd', 'While', 'With', 'Xor', 'Default', 'Erase', 'Error', 'Explicit',
-	'Property', 'Step'];
+export function id(result: [string, string, string | null], location: number, reject: object): Identifier | object {
+	const keywords = [
+		'And', 'ByRef', 'ByVal', 'Call', 'Case',
+		'Class', 'Const', 'Dim', 'Do', 'Each',
+		'Else', 'ElseIf', 'Empty', 'End', 'Eqv',
+		'Exit', 'False', 'For', 'Function', 'Get',
+		'GoTo', 'If', 'Imp', 'In', 'Is',
+		'Let', 'Loop', 'Mod', 'New', 'Next',
+		'Not', 'Nothing', 'Null', 'On', 'Option',
+		'Or', 'Preserve', 'Private', 'Public', 'Redim',
+		'Rem', 'Resume', 'Select', 'Set', 'Sub',
+		'Then', 'To', 'True', 'Until', 'WEnd',
+		'While', 'With', 'Xor', 'Default', 'Erase',
+		'Error', 'Explicit', 'Property', 'Step'];
 
-	let id = result.join("");
-	
-	if (id.endsWith(".")) {
-		id = id.substr(0, id.length - 1);
+	let name = result.join('');
+
+	if (name.endsWith('.')) {
+		name = name.substr(0, name.length - 1);
 	}
 
-	if (keywords.indexOf(id) > -1) {
+	if (keywords.indexOf(name) > -1) {
 		return reject;
-	}
-	else {
-		return estree.identifier(id);
+	} else {
+		return estree.identifier(name);
 	}
 }
 
