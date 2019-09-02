@@ -35,6 +35,8 @@ import {
 	VariableDeclaration,
 	VariableDeclarator,
 	WhileStatement,
+	SwitchStatement,
+	SwitchCase,
 } from 'estree';
 import { inspect } from 'util';
 import * as estree from './estree';
@@ -541,6 +543,7 @@ export function forEachStmt(result: ['For', null, 'Each', null, Identifier, null
 		estree.blockStatement(body),
 	);
 }
+
 /**
  * Grammar:
  * ```
@@ -749,7 +752,7 @@ export function doLoopStmt(result: ['Do', null, [Statement], null, 'Loop']): DoW
 /**
  * Grammar:
  * ```
- * "While" _ Expr NL BlockStmt:* _ "Wend" NL
+ * LoopStmt -> "While" _ Expr NL BlockStmt:* _ "WEnd" NL
  * ```
  * Result:
  * ```
@@ -780,16 +783,159 @@ export function doLoopStmt(result: ['Do', null, [Statement], null, 'Loop']): DoW
  *     }
  *   ],
  *   null,
- *   ["Wend"],
+ *   ["WEnd"],
  *   [[["\n"]]]
  * ]
  * ```
  */
-
 export function whileLoopStmt(result: ['While', null, Expression, null, [Statement]]): WhileStatement {
 	const test = result[2];
 	const statements = result[4] || [];
 	return estree.whileStatement(test, estree.blockStatement(statements));
+}
+
+/**
+ * Grammar:
+ * ```
+ * SelectStmt -> "Select" __ "Case" _ Expr NL CaseStmt:* CaseElseStmt:? _ "End" __ "Select" NL
+ * ```
+ * Result:
+ * ```
+ * [
+ *   "Select",
+ *   null,
+ *   "Case",
+ *   null,
+ *   { "type": "Identifier", "name": "today" },
+ *   [[["\n"]]],
+ *   [
+ *     [
+ *       { "type": "SwitchCase", "test": { "type": "Literal", "value": "Saturday" }, "consequent": [ ] },
+ *       {
+ *         "type": "SwitchCase",
+ *         "test": { "type": "Literal", "value": "Sunday" },
+ *         "consequent": [
+ *           {
+ *             "type": "ExpressionStatement",
+ *             "expression": {
+ *               "type": "AssignmentExpression",
+ *               "left": { "type": "Identifier", "name": "weekend" },
+ *               "operator": "=",
+ *               "right": { "type": "Literal", "value": 1 }
+ *             }
+ *           },
+ *           { "type": "BreakStatement" }
+ *         ]
+ *       }
+ *     ]
+ *   ],
+ *   [
+ *     {
+ *       "type": "SwitchCase",
+ *       "test": null,
+ *       "consequent": [
+ *         {
+ *           "type": "ExpressionStatement",
+ *           "expression": {
+ *             "type": "AssignmentExpression",
+ *             "left": { "type": "Identifier", "name": "weekend" },
+ *             "operator": "=",
+ *             "right": { "type": "Literal", "value": 0 }
+ *           }
+ *         }
+ *       ]
+ *     }
+ *   ],
+ *   null,
+ *   "End",
+ *   null,
+ *   "Select",
+ *   [[["\n"]]]
+ * ]
+ */
+export function selectStmt(result: ['Select', null, 'Case', null, Expression, null, SwitchCase[][]]): SwitchStatement {
+	const discriminant = result[4];
+	const switchCases = ([] as SwitchCase[]).concat(...result[6]);
+	return estree.switchStatement(discriminant, switchCases);
+}
+
+/**
+ * Grammar:
+ * ```
+ * CaseStmt -> "Case" _ Expr _ ExprList:* NLOpt BlockStmt:*
+ * ```
+ * Result:
+ * ```
+ * [
+ *   "Case",
+ *   null,
+ *   { "type": "Literal", "value": "Saturday" },
+ *   null,
+ *   [{ "type": "Literal", "value": "Sunday" }],
+ *   [[[["\n"]]]],
+ *   [
+ *     {
+ *       "type": "ExpressionStatement",
+ *       "expression": {
+ *         "type": "AssignmentExpression",
+ *         "left": { "type": "Identifier", "name": "weekend" },
+ *         "operator": "=",
+ *         "right": { "type": "Literal", "value": 1 }
+ *       }
+ *     }
+ *   ]
+ * ]
+ */
+export function caseStmt(result: ['Case', null, Expression | Identifier, null, [Expression], null, [Statement]]): SwitchCase[] {
+	const firstCase = result[2];
+	const otherCases = result[4];
+	const statements = result[6] || [];
+	const cases = [firstCase, ...otherCases];	
+	let switchCases = [] as SwitchCase[];
+	cases.forEach((val, key, arr) => {
+		if (Object.is(cases.length - 1, key)) {
+		   switchCases.push(
+		      estree.switchCase(val, [...statements, estree.breakStatement()]));			
+		}
+		else {
+			switchCases.push(estree.switchCase(val, []));
+		}
+	});
+	return switchCases;
+}
+
+/**
+ * Grammar:
+ * ```
+ * CaseElseStmt         -> "Case" __ "Else" _ NLOpt BlockStmt:*
+ * ```
+ * Result:
+ * ```
+ * [
+ *   "Case",
+ *   null,
+ *   "Else",
+ *   null,
+ *   [[[["\n"]]]],
+ *   [
+ *     {
+ *       "type": "ExpressionStatement",
+ *       "expression": {
+ *         "type": "AssignmentExpression",
+ *         "left": { "type": "Identifier", "name": "weekend" },
+ *         "operator": "=",
+ *         "right": { "type": "Literal", "value": 0 }
+ *       }
+ *     }
+ *   ]
+ * ]
+ * ```
+ */
+export function caseElseStmt(result: ['Case', null, 'Else', null, null, [Statement]]): SwitchCase[] {
+	const statements = result[5];
+	return [
+		estree.switchCase(null, statements)
+	];
 }
 
 /**
@@ -829,7 +975,6 @@ export function intDivExpr(result: [Expression | Literal, null, '\\', null, Expr
  * [{ "type": "Literal", "value": 10 }, null, "Eqv", null, { "type": "Literal", "value": 8 }]
  * ```
  */
-
 export function eqvExpr(result: [Expression | Literal, null, 'Eqv', null, Expression | Literal]): UnaryExpression {
 	const leftExpr = result[0];
 	const rightExpr = result[4];
@@ -853,7 +998,6 @@ export function eqvExpr(result: [Expression | Literal, null, 'Eqv', null, Expres
  * ]
  * ```
  */
-
 export function expExpr(result: [Expression | Literal, null, '^', null, Expression | Literal]): ExpressionStatement {
 	const leftExpr = result[0];
 	const rightExpr = result[4];
@@ -862,6 +1006,38 @@ export function expExpr(result: [Expression | Literal, null, '^', null, Expressi
 		leftExpr,
 		rightExpr,
 	]);
+}
+
+/**
+ * Grammar:
+ * ```
+ * ID -> Letter IDTail
+ * ```
+ * Result:
+ * ```
+ * [["w"],"eekend"]
+ * ```
+ */
+export function identifier(result: [string, string, string | null], location: number, reject: Object): Identifier | Object {	
+	const keywords = ['And', 'ByRef', 'ByVal', 'Call', 'Case', 'Class', 'Const', 'Dim', 'Do', 
+	'Each', 'Else', 'ElseIf', 'Empty', 'End', 'Eqv', 'Exit', 'False', 'For', 'Function', 'Get',
+	'GoTo', 'If', 'Imp', 'In', 'Is', 'Let', 'Loop', 'Mod', 'New', 'Next', 'Not', 'Nothing', 'Null',
+	'On', 'Option', 'Or', 'Preserve', 'Private', 'Public', 'Redim', 'Resume', 'Select', 'Set', 'Sub',
+	'Then', 'To', 'True', 'Until', 'WEnd', 'While', 'With', 'Xor', 'Default', 'Erase', 'Error', 'Explicit',
+	'Property', 'Step'];
+
+	let id = result.join("");
+	
+	if (id.endsWith(".")) {
+		id = id.substr(0, id.length - 1);
+	}
+
+	if (keywords.indexOf(id) > -1) {
+		return reject;
+	}
+	else {
+		return estree.identifier(id);
+	}
 }
 
 /* istanbul ignore next */

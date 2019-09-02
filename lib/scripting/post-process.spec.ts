@@ -291,9 +291,27 @@ describe('The VBScript transpiler', () => {
 		expect(js).to.equal('let x;\nx = 7;\ndo {\n    x = x + 1;\n} while (true);');
 	});
 
-	it ('should transpile a "While...Wend" statement', () => {
-		const vbs = `Dim x\nx = 1\nWhile x < 5\nx = x + 1\nWend\n`;
+	it ('should transpile a "While...WEnd" statement', () => {
+		const vbs = `Dim x\nx = 1\nWhile x < 5\nx = x + 1\nWEnd\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('let x;\nx = 1;\nwhile (x < 5) {\n    x = x + 1;\n}');
+	});
+
+	it ('should transpile a "Select Case...End Select" statement', () => {
+		const vbs = `Select Case today\nCase "Sunday"\nday=0\nCase "Monday"\nday=1\nCase "Tuesday"\nday=2\nCase "Wednesday"\nday=3\nEnd Select\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('switch (today) {\ncase \'Sunday\':\n    day = 0;\n    break;\ncase \'Monday\':\n    day = 1;\n    break;\ncase \'Tuesday\':\n    day = 2;\n    break;\ncase \'Wednesday\':\n    day = 3;\n    break;\n}');
+	});
+
+	it ('should transpile a "Select Case/Case...End Select" statement', () => {
+		const vbs = `Select Case today\nCase "Saturday", "Sunday"\nweekend=1\nCase "Monday"\nweekend=0\nEnd Select\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('switch (today) {\ncase \'Saturday\':\ncase \'Sunday\':\n    weekend = 1;\n    break;\ncase \'Monday\':\n    weekend = 0;\n    break;\n}');
+	});
+
+	it ('should transpile a "Select Case/Case...Else...End Select" statement', () => {
+		const vbs = `Select Case today\nCase "Saturday", "Sunday"\nweekend=1\nCase Else\nweekend=0\nEnd Select\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('switch (today) {\ncase \'Saturday\':\ncase \'Sunday\':\n    weekend = 1;\n    break;\ndefault:\n    weekend = 0;\n}');
 	});
 });

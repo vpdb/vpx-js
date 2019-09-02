@@ -44,6 +44,8 @@ import {
 	SpreadElement,
 	Statement,
 	Super,
+	SwitchCase,
+	SwitchStatement,
 	UnaryExpression,
 	UnaryOperator,
 	VariableDeclaration,
@@ -51,7 +53,7 @@ import {
 	WhileStatement,
 } from 'estree';
 
-export function program(data: Statement[]): Program {
+export function program(data: Array<Statement>): Program {
 	return {
 		type: 'Program',
 		sourceType: 'script',
@@ -88,7 +90,7 @@ export function variableDeclarator(id: Identifier, init: Expression | null): Var
 	};
 }
 
-export function functionDeclaration(id: Identifier, params: Identifier[], statements: Statement[]): FunctionDeclaration {
+export function functionDeclaration(id: Identifier, params: Array<Identifier>, statements: Array<Statement>): FunctionDeclaration {
 	return {
 		type: 'FunctionDeclaration',
 		id,
@@ -98,7 +100,7 @@ export function functionDeclaration(id: Identifier, params: Identifier[], statem
 	};
 }
 
-export function variableDeclaration(kind: 'var' | 'let' | 'const', declarations: VariableDeclarator[]): VariableDeclaration {
+export function variableDeclaration(kind: 'var' | 'let' | 'const', declarations: Array<VariableDeclarator>): VariableDeclaration {
 	return {
 		type: 'VariableDeclaration',
 		kind,
@@ -106,11 +108,11 @@ export function variableDeclaration(kind: 'var' | 'let' | 'const', declarations:
 	};
 }
 
-export function arrowFunctionExpressionBlock(body: Statement[], params: Pattern[] = []): ArrowFunctionExpression {
+export function arrowFunctionExpressionBlock(body: Array<Statement>, params: Array<Pattern> = []): ArrowFunctionExpression {
 	return arrowFunctionExpression(blockStatement(body), params);
 }
 
-export function arrowFunctionExpression(body: BlockStatement | Expression, params: Pattern[] = []): ArrowFunctionExpression {
+export function arrowFunctionExpression(body: BlockStatement | Expression, params: Array<Pattern> = []): ArrowFunctionExpression {
 	return {
 		type: 'ArrowFunctionExpression',
 		expression: false,
@@ -179,7 +181,7 @@ export function assignmentExpressionStatement(left: Pattern | MemberExpression, 
 	};
 }
 
-export function blockStatement(body: Statement[]): BlockStatement {
+export function blockStatement(body: Array<Statement>): BlockStatement {
 	return {
 		type: 'BlockStatement',
 		body,
@@ -207,7 +209,7 @@ export function doWhileStatement(body: Statement, test: Expression): DoWhileStat
 	};
 }
 
-export function emptyStatement(leadingComments: Comment[] = [], trailingComments: Comment[] = []): EmptyStatement {
+export function emptyStatement(leadingComments: Array<Comment> = [], trailingComments: Array<Comment> = []): EmptyStatement {
 	return {
 		type: 'EmptyStatement',
 		leadingComments,
@@ -215,12 +217,12 @@ export function emptyStatement(leadingComments: Comment[] = [], trailingComments
 	};
 }
 
-export function ifStatement(test: Expression, consequent: Statement, alternate?: Statement | null): IfStatement {
+export function forOfStatement(left: VariableDeclaration | Pattern, right: Expression, body: Statement): ForOfStatement {
 	return {
-		type: 'IfStatement',
-		test,
-		consequent,
-		alternate,
+		type: 'ForOfStatement',
+		left,
+		right,
+		body,
 	};
 }
 
@@ -234,12 +236,28 @@ export function forStatement(init: Expression | null, test: Expression | null, u
 	};
 }
 
-export function forOfStatement(left: VariableDeclaration | Pattern, right: Expression, body: Statement): ForOfStatement {
+export function ifStatement(test: Expression, consequent: Statement, alternate?: Statement | null): IfStatement {
 	return {
-		type: 'ForOfStatement',
-		left,
-		right,
-		body,
+		type: 'IfStatement',
+		test,
+		consequent,
+		alternate,
+	};
+}
+
+export function switchStatement(discriminant: Expression, cases: Array<SwitchCase>): SwitchStatement {
+	return {
+		type: 'SwitchStatement',
+		discriminant,
+		cases,
+	};
+}
+
+export function switchCase(test: Expression | null, consequent: Array<Statement>): SwitchCase {
+	return {
+		type: 'SwitchCase',
+		test,
+		consequent
 	};
 }
 
