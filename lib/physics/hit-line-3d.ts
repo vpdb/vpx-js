@@ -55,7 +55,7 @@ export class HitLine3D extends HitLineZ {
 		const vTrans2z = vTrans2.z;
 
 		// set up HitLineZ parameters
-		this.xy = new Vertex2D(vTrans1.x, vTrans1.y);
+		this.xy.set(vTrans1.x, vTrans1.y);
 		this.zLow = Math.min(vTrans1.z, vTrans2z);
 		this.zHigh = Math.max(vTrans1.z, vTrans2z);
 
@@ -87,7 +87,7 @@ export class HitLine3D extends HitLineZ {
 		ball.state.pos.applyMatrix2D(this.matrix);
 
 		// and update z bounds of LineZ with transformed coordinates
-		const oldZ = new Vertex2D(this.hitBBox.zlow, this.hitBBox.zhigh);
+		const oldZ = Vertex2D.claim(this.hitBBox.zlow, this.hitBBox.zhigh);
 		this.hitBBox.zlow = this.zLow;   // HACK; needed below // evil cast to non-const, should actually change the stupid HitLineZ to have explicit z coordinates!
 		this.hitBBox.zhigh = this.zHigh; // dto.
 
@@ -103,6 +103,7 @@ export class HitLine3D extends HitLineZ {
 			coll.hitNormal = this.matrix.multiplyVectorT(coll.hitNormal!);
 		}
 
+		oldZ.release();
 		oldPos.release();
 		oldVel.release();
 		return { hitTime, coll };

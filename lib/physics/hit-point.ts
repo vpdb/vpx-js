@@ -44,16 +44,19 @@ export class HitPoint extends HitObject {
 			return { hitTime: -1.0, coll };
 		}
 
-		const dist = ball.state.pos.clone().sub(this.p);   // relative ball position
+		// relative ball position
+		const dist = ball.state.pos.clone(true).sub(this.p);
 
 		const bcddsq = dist.lengthSq();                    // ball center to line distance squared
 		const bcdd = Math.sqrt(bcddsq);                    // distance ball to line
 		if (bcdd <= 1.0e-6) {
+			dist.release();
 			return { hitTime: -1.0, coll };                // no hit on exact center
 		}
 
 		const b = dist.dot(ball.hit.vel);
 		const bnv = b / bcdd;                              // ball normal velocity
+		dist.release();
 
 		if (bnv > C_CONTACTVEL) {
 			return { hitTime: -1.0, coll };                // clearly receding from radius
@@ -92,9 +95,14 @@ export class HitPoint extends HitObject {
 			return { hitTime: -1.0, coll };                // contact out of physics frame
 		}
 
-		const hitPos = ball.state.pos.clone().add(ball.hit.vel.clone().multiplyScalar(hitTime));
-		coll.hitNormal = hitPos.clone().sub(this.p);
-		coll.hitNormal.normalize();
+		const hitVel = ball.hit.vel.clone(true).multiplyScalar(hitTime);
+		const hitNormal = ball.state.pos.clone(true)
+			.add(hitVel)
+			.sub(this.p)
+			.normalize();
+		coll.hitNormal.set(hitNormal);
+		hitVel.release();
+		hitNormal.release();
 
 		coll.isContact = isContact;
 		if (isContact) {
