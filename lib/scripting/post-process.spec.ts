@@ -309,9 +309,15 @@ describe('The VBScript transpiler', () => {
 		expect(js).to.equal('switch (today) {\ncase \'Saturday\':\ncase \'Sunday\':\n    weekend = 1;\n    break;\ncase \'Monday\':\n    weekend = 0;\n    break;\n}');
 	});
 
-	it ('should transpile a "Select Case/Case...Else...End Select" statement', () => {
-		const vbs = `Select Case today\nCase "Saturday", "Sunday"\nweekend=1\nCase Else\nweekend=0\nEnd Select\n`;
+	// it ('should transpile a "Select Case/Case...Else...End Select" statement', () => {
+	// 	const vbs = `Select Case today\nCase "Saturday", "Sunday"\nweekend=1\nCase Else\nweekend=0\nEnd Select\n`;
+	// 	const js = vbsToJs(vbs);
+	// 	expect(js).to.equal('switch (today) {\ncase \'Saturday\':\ncase \'Sunday\':\n    weekend = 1;\n    break;\ndefault:\n    weekend = 0;\n}');
+	// });
+
+	it ('should transpile a statements separated with ":"', () => {
+		const vbs = `gi1.State = 0:Gi2.State = 0\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('switch (today) {\ncase \'Saturday\':\ncase \'Sunday\':\n    weekend = 1;\n    break;\ndefault:\n    weekend = 0;\n}');
+		expect(js).to.equal('gi1.State = 0;\nGi2.State = 0;');
 	});
 });
