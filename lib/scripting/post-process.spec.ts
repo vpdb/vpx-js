@@ -21,10 +21,22 @@ import { expect } from 'chai';
 import { vbsToJs } from '../../test/script.helper';
 
 describe('The VBScript transpiler', () => {
+	it ('should transpile a comment statement', () => {
+		const vbs = `'This is a "test" 'comment';\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal(';    // This is a "test" \'comment\';\n');
+	});
+
+	it ('should transpile a "Rem" statement', () => {
+		const vbs = `Rem This is a "test" 'comment';\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal(';    // This is a "test" \'comment\';\n');
+	});
+
 	it('should transpile an Option Explicit', () => {
 		const vbs = `Option Explicit\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal(';    /* Option Explicit */');
+		expect(js).to.equal(';    // Option Explicit\n');
 	});
 
 	it('should transpile a single variable declaration', () => {

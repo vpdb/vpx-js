@@ -69,7 +69,8 @@ Arg                  -> ExtendedID                                              
 # Rules : Statements
 #===============================
 
-GlobalStmt           -> OptionExplicit                                                                             {% id %}
+GlobalStmt           -> Comment                                                                                    {% id %}
+                      | OptionExplicit                                                                             {% id %}
                       | ConstDecl                                                                                  {% id %}
                       | SubDecl                                                                                    {% id %}
                       | BlockStmt                                                                                  {% id %}
@@ -260,12 +261,15 @@ Nothing              -> "Nothing"                                               
 # Terminals
 #===============================
 
-ID                   -> Letter IDTail                                                                              {% pp.identifier %}
+Comment              -> "Rem" __ CommentChar:* NL                                                                  {% pp.comment %}
+                       | "'" _ CommentChar:* NL                                                                    {% pp.comment %}
+
+ID                   -> Letter IDTail                                                                              {% pp.id %}
 #                      | "[" IDNameChar:* "]"
 
-IDDot                -> Letter IDTail "."                                                                          {% pp.identifier  %}
+IDDot                -> Letter IDTail "."                                                                          {% pp.id %}
 
-DotID                -> "." Letter IDTail                                                                          {% pp.identifier %}
+DotID                -> "." Letter IDTail                                                                          {% pp.id %}
 #                      | '.' '[' {ID Name Char}* ']'
 
 NL                   -> NewLine NL
@@ -302,6 +306,8 @@ CR                   -> [\r]
 StringChar           -> [\x01-\x21|\x23-\xD7FF|\xE000-\xFFEF]                                                      {% id %}
 
 IDTail               -> [a-zA-Z0-9_]:*                                                                             {% data => data[0].join('') %}
+
+CommentChar          -> [\x01-\x09|\x0b-\x0c|\x0e-\x39|\x3b-\xD7FF|\xE000-\xFFEF]
 
 _                    -> wschar:*                                                                                   {% data => null %}
 __                   -> wschar:+                                                                                   {% data => null %}
