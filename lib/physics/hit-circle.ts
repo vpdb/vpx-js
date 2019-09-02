@@ -64,8 +64,8 @@ export class HitCircle extends HitObject {
 		}
 
 		const c = new Vertex3D(this.center.x, this.center.y, 0.0);
-		const dist = ball.state.pos.clone().sub(c);    // relative ball position
-		const dv = ball.hit.vel.clone();
+		const dist = ball.state.pos.clone(true).sub(c);    // relative ball position
+		const dv = ball.hit.vel.clone(true);
 
 		const capsule3D = !lateral && ball.state.pos.z > this.hitBBox.zhigh;
 		const isKicker = this.objType === CollisionType.Kicker;
@@ -89,19 +89,24 @@ export class HitCircle extends HitObject {
 		const bcddsq = dist.lengthSq();             // ball center to circle center distance ... squared
 		const bcdd = Math.sqrt(bcddsq);             // distance center to center
 		if (bcdd <= 1.0e-6) {
+			dist.release();
+			dv.release();
 			return { hitTime: -1.0, coll };         // no hit on exact center
 		}
 
 		const b = dist.dot(dv);
 		const bnv = b / bcdd;                       // ball normal velocity
+		dist.release();
 
 		if (direction && bnv > C_LOWNORMVEL) {
+			dv.release();
 			return { hitTime: -1.0, coll };         // clearly receding from radius
 		}
 
 		const bnd = bcdd - targetRadius;            // ball normal distance to
 
 		const a = dv.lengthSq();
+		dv.release();
 
 		let hitTime = 0;
 		let isUnhit = false;

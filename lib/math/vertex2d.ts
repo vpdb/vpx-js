@@ -18,10 +18,13 @@
  */
 
 /* tslint:disable:variable-name adjacent-overload-signatures */
+import { Pool } from '../util/object-pool';
 import { f4 } from './float';
 import { IRenderVertex, Vertex } from './vertex';
 
 export class Vertex2D implements Vertex {
+
+	private static POOL = new Pool(Vertex2D);
 
 	public readonly isVector2 = true;
 	public readonly isVector3 = false;
@@ -47,6 +50,14 @@ export class Vertex2D implements Vertex {
 		return v2;
 	}
 
+	public static claim(x?: number, y?: number, z?: number): Vertex2D {
+		return Vertex2D.POOL.get().set(x || 0, y || 0);
+	}
+
+	public static reset(v: Vertex2D): void {
+		v.set(0, 0);
+	}
+
 	public set(x: number, y: number): this {
 		this.x = x;
 		this.y = y;
@@ -57,8 +68,15 @@ export class Vertex2D implements Vertex {
 		return this.set(0, 0);
 	}
 
-	public clone(): Vertex2D {
+	public clone(recycle = false): Vertex2D {
+		if (recycle) {
+			Vertex2D.POOL.get().set(this._x, this._y);
+		}
 		return new Vertex2D(this._x, this._y);
+	}
+
+	public release() {
+		Vertex2D.POOL.release(this);
 	}
 
 	public add(v: Vertex2D): this {

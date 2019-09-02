@@ -91,7 +91,9 @@ export abstract class HitObject {
 		if (this.obj && this.fe && this.isEnabled) {
 
 			// is this the same place as last event? if same then ignore it
-			const distLs = (ball.hit.eventPos.clone().sub(ball.state.pos)).lengthSq();
+			const posDiff = ball.hit.eventPos.clone(true).sub(ball.state.pos);
+			const distLs = posDiff.lengthSq();
+			posDiff.release();
 
 			// remember last collide position
 			ball.hit.eventPos.set(ball.state.pos.x, ball.state.pos.y, ball.state.pos.z);

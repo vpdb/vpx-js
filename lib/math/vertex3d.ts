@@ -18,6 +18,7 @@
  */
 
 /* tslint:disable:variable-name adjacent-overload-signatures */
+import { Pool } from '../util/object-pool';
 import { FLT_MIN } from '../vpt/mesh';
 import { f4 } from './float';
 import { Matrix2D } from './matrix2d';
@@ -25,6 +26,8 @@ import { IRenderVertex, Vertex } from './vertex';
 import { Vertex2D } from './vertex2d';
 
 export class Vertex3D implements Vertex {
+
+	private static POOL = new Pool(Vertex3D);
 
 	public readonly isVector2 = false;
 	public readonly isVector3 = true;
@@ -55,31 +58,12 @@ export class Vertex3D implements Vertex {
 		return Object.assign(new Vertex3D(), data);
 	}
 
-	public static getRotatedAxis(angle: number, axis: Vertex3D, temp: Vertex3D): Vertex3D {
-		const u = axis.clone();
-		u.normalize();
+	public static claim(x?: number, y?: number, z?: number): Vertex3D {
+		return Vertex3D.POOL.get().set(x || 0, y || 0, z || 0);
+	}
 
-		const sinAngle = f4(Math.sin(f4(f4(Math.PI / 180.0) * angle)));
-		const cosAngle = f4(Math.cos(f4(f4(Math.PI / 180.0) * angle)));
-		const oneMinusCosAngle = f4(1.0 - cosAngle);
-
-		const rotMatrixRow0 = new Vertex3D();
-		const rotMatrixRow1 = new Vertex3D();
-		const rotMatrixRow2 = new Vertex3D();
-
-		rotMatrixRow0.x = f4(u.x * u.x) + f4(cosAngle * f4(1.0 - f4(u.x * u.x)));
-		rotMatrixRow0.y = f4(f4(u.x * u.y) * oneMinusCosAngle) - f4(sinAngle * u.z);
-		rotMatrixRow0.z = f4(f4(u.x * u.z) * oneMinusCosAngle) + f4(sinAngle * u.y);
-
-		rotMatrixRow1.x = f4(f4(u.x * u.y) * oneMinusCosAngle) + f4(sinAngle * u.z);
-		rotMatrixRow1.y = f4(u.y * u.y) + f4(cosAngle * (1.0 - f4(u.y * u.y)));
-		rotMatrixRow1.z = f4(f4(u.y * u.z) * oneMinusCosAngle) - f4(sinAngle * u.x);
-
-		rotMatrixRow2.x = f4(f4(u.x * u.z) * oneMinusCosAngle) - f4(sinAngle * u.y);
-		rotMatrixRow2.y = f4(f4(u.y * u.z) * oneMinusCosAngle) + f4(sinAngle * u.x);
-		rotMatrixRow2.z = f4(u.z * u.z) + f4(cosAngle * f4(1.0 - f4(u.z * u.z)));
-
-		return new Vertex3D(temp.dot(rotMatrixRow0), temp.dot(rotMatrixRow1), temp.dot(rotMatrixRow2));
+	public static reset(v: Vertex3D): void {
+		v.set(0, 0, 0);
 	}
 
 	constructor(x?: number, y?: number, z?: number) {
@@ -104,8 +88,15 @@ export class Vertex3D implements Vertex {
 		return this;
 	}
 
-	public clone(): Vertex3D {
+	public clone(recycle = false): Vertex3D {
+		if (recycle) {
+			Vertex3D.POOL.get().set(this._x, this._y, this._z);
+		}
 		return new Vertex3D(this._x, this._y, this._z);
+	}
+
+	public release() {
+		Vertex3D.POOL.release(this);
 	}
 
 	public normalize(): this {
@@ -211,6 +202,33 @@ export class Vertex3D implements Vertex {
 
 	public static crossZ(rz: number, v: Vertex3D) {
 		return new Vertex3D(-rz * v.y, rz * v.x, 0);
+	}
+
+	public static getRotatedAxis(angle: number, axis: Vertex3D, temp: Vertex3D): Vertex3D {
+		const u = axis.clone();
+		u.normalize();
+
+		const sinAngle = f4(Math.sin(f4(f4(Math.PI / 180.0) * angle)));
+		const cosAngle = f4(Math.cos(f4(f4(Math.PI / 180.0) * angle)));
+		const oneMinusCosAngle = f4(1.0 - cosAngle);
+
+		const rotMatrixRow0 = new Vertex3D();
+		const rotMatrixRow1 = new Vertex3D();
+		const rotMatrixRow2 = new Vertex3D();
+
+		rotMatrixRow0.x = f4(u.x * u.x) + f4(cosAngle * f4(1.0 - f4(u.x * u.x)));
+		rotMatrixRow0.y = f4(f4(u.x * u.y) * oneMinusCosAngle) - f4(sinAngle * u.z);
+		rotMatrixRow0.z = f4(f4(u.x * u.z) * oneMinusCosAngle) + f4(sinAngle * u.y);
+
+		rotMatrixRow1.x = f4(f4(u.x * u.y) * oneMinusCosAngle) + f4(sinAngle * u.z);
+		rotMatrixRow1.y = f4(u.y * u.y) + f4(cosAngle * (1.0 - f4(u.y * u.y)));
+		rotMatrixRow1.z = f4(f4(u.y * u.z) * oneMinusCosAngle) - f4(sinAngle * u.x);
+
+		rotMatrixRow2.x = f4(f4(u.x * u.z) * oneMinusCosAngle) - f4(sinAngle * u.y);
+		rotMatrixRow2.y = f4(f4(u.y * u.z) * oneMinusCosAngle) + f4(sinAngle * u.x);
+		rotMatrixRow2.z = f4(u.z * u.z) + f4(cosAngle * f4(1.0 - f4(u.z * u.z)));
+
+		return new Vertex3D(temp.dot(rotMatrixRow0), temp.dot(rotMatrixRow1), temp.dot(rotMatrixRow2));
 	}
 }
 
