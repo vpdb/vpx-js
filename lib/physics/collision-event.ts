@@ -52,7 +52,7 @@ export class CollisionEvent {
 	/**
 	 * Additional collision information
 	 */
-	public hitNormal?: Vertex3D;
+	public hitNormal: Vertex3D = new Vertex3D();
 
 	/**
 	 * Only "correctly" used by plunger and flipper

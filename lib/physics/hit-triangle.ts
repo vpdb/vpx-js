@@ -36,10 +36,12 @@ export class HitTriangle extends HitObject {
 		 * the vertices must be passed in counterclockwise order
 		 * (but rendering uses clockwise order!)
 		 */
-		const e0 = this.rgv[2].clone().sub(this.rgv[0]);
-		const e1 = this.rgv[1].clone().sub(this.rgv[0]);
+		const e0 = this.rgv[2].clone(true).sub(this.rgv[0]);
+		const e1 = this.rgv[1].clone(true).sub(this.rgv[0]);
 		this.normal = Vertex3D.crossProduct(e0, e1);
 		this.normal.normalizeSafe();
+		e0.release();
+		e1.release();
 
 		this.elasticity = 0.3;
 		this.setFriction(0.3);
@@ -66,11 +68,16 @@ export class HitTriangle extends HitObject {
 		}
 
 		// Point on the ball that will hit the polygon, if it hits at all
-		const hitPos = ball.state.pos.clone().sub(this.normal.clone().multiplyScalar(ball.data.radius)); // nearest point on ball ... projected radius along norm
-		const bnd = this.normal.dot(hitPos.clone().sub(this.rgv[0]));          // distance from plane to ball
+		const normRadius = this.normal.clone(true).multiplyScalar(ball.data.radius);
+		const hitPos = ball.state.pos.clone(true).sub(normRadius);     // nearest point on ball ... projected radius along norm
+		const hpSubRgv0 = hitPos.clone(true).sub(this.rgv[0]);
+		const bnd = this.normal.dot(hpSubRgv0);                                // distance from plane to ball
+		normRadius.release();
+		hpSubRgv0.release();
 
 		if (bnd < -ball.data.radius) {
 			// (ball normal distance) excessive penetration of object skin ... no collision HACK
+			hitPos.release();
 			return { hitTime: -1.0, coll };
 		}
 
@@ -93,21 +100,25 @@ export class HitTriangle extends HitObject {
 			hitTime = bnd / -bnv;                          // rate ok for safe divide
 
 		} else {
+			hitPos.release();
 			return { hitTime: -1.0, coll };                // wait for touching
 		}
 
 		if (!isFinite(hitTime) || hitTime < 0 || hitTime > dTime) {
+			hitPos.release();
 			return { hitTime: -1.0, coll };                // time is outside this frame ... no collision
 		}
 
 		// advance hit point to contact
-		hitPos.add(ball.hit.vel.clone().multiplyScalar(hitTime));
+		const adv = ball.hit.vel.clone(true).multiplyScalar(hitTime);
+		hitPos.add(adv);
+		adv.release();
 
 		// Check if hitPos is within the triangle
 		// 1. Compute vectors
-		const v0 = this.rgv[2].clone().sub(this.rgv[0]);
-		const v1 = this.rgv[1].clone().sub(this.rgv[0]);
-		const v2 = hitPos.clone().sub(this.rgv[0]);
+		const v0 = this.rgv[2].clone(true).sub(this.rgv[0]);
+		const v1 = this.rgv[1].clone(true).sub(this.rgv[0]);
+		const v2 = hitPos.clone(true).sub(this.rgv[0]);
 
 		// 2. Compute dot products
 		const dot00 = v0.dot(v0);
@@ -115,6 +126,10 @@ export class HitTriangle extends HitObject {
 		const dot02 = v0.dot(v2);
 		const dot11 = v1.dot(v1);
 		const dot12 = v1.dot(v2);
+
+		v0.release();
+		v1.release();
+		v2.release();
 
 		// 3. Compute barycentric coordinates
 		const invDenom = 1.0 / (dot00 * dot11 - dot01 * dot01);
@@ -124,6 +139,7 @@ export class HitTriangle extends HitObject {
 		// 4. Check if point is in triangle
 		const pointInTriangle = (u >= 0) && (v >= 0) && (u + v <= 1);
 
+		hitPos.release();
 		if (pointInTriangle) {
 			coll.hitNormal = this.normal;
 			coll.hitDistance = bnd;                        // 3dhit actual contact distance ...

@@ -93,7 +93,9 @@ export class HitPlane extends HitObject {
 		const bnd = this.normal.dot(coll.ball.state.pos) - coll.ball.data.radius - this.d;
 		if (bnd < 0) {
 			// if ball has penetrated, push it out of the plane
-			coll.ball.state.pos.add(this.normal.clone().multiplyScalar(bnd));
+			const v = this.normal.clone(true).multiplyScalar(bnd);
+			coll.ball.state.pos.add(v);
+			v.release();
 		}
 	}
 }

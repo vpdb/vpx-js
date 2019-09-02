@@ -100,7 +100,7 @@ export class HitKDNode {
 			return;
 		}
 
-		const vDiag = new Vertex3D(
+		const vDiag = Vertex3D.claim(
 			this.rectBounds.right - this.rectBounds.left,
 			this.rectBounds.bottom - this.rectBounds.top,
 			this.rectBounds.zhigh - this.rectBounds.zlow,
@@ -109,22 +109,26 @@ export class HitKDNode {
 		let axis: number;
 		if (vDiag.x > vDiag.y && vDiag.x > vDiag.z) {
 			if (vDiag.x < 0.0001) { //!! magic
+				vDiag.release();
 				return;
 			}
 			axis = 0;
 
 		} else if (vDiag.y > vDiag.z) {
 			if (vDiag.y < 0.0001) { //!!
+				vDiag.release();
 				return;
 			}
 			axis = 1;
 
 		} else {
 			if (vDiag.z < 0.0001) { //!!
+				vDiag.release();
 				return;
 			}
 			axis = 2;
 		}
+		vDiag.release();
 
 		//!! weight this with ratio of elements going to middle vs left&right! (avoids volume split that goes directly through object)
 
@@ -137,7 +141,7 @@ export class HitKDNode {
 		this.children[0].rectBounds = this.rectBounds;
 		this.children[1].rectBounds = this.rectBounds;
 
-		const vCenter = new Vertex3D(
+		const vCenter = Vertex3D.claim(
 			(this.rectBounds.left + this.rectBounds.right) * 0.5,
 			(this.rectBounds.top + this.rectBounds.bottom) * 0.5,
 			(this.rectBounds.zlow + this.rectBounds.zhigh) * 0.5,
@@ -222,6 +226,7 @@ export class HitKDNode {
 		if (levelEmpty > 8) {// If 8 levels were all just subdividing the same objects without luck, exit & Free the nodes again (but at least empty space was cut off)
 			this.hitOct.numNodes -= 2;
 			this.children = [];
+			vCenter.release();
 			return;
 		}
 
@@ -271,6 +276,7 @@ export class HitKDNode {
 				}
 			}
 		}
+		vCenter.release();
 		// The following assertions hold after this step:
 		//assert( this.start + items == this.children[0].this.start );
 		//assert( this.children[0].this.start + this.children[0].this.items == this.children[1].this.start );

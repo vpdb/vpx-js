@@ -29,7 +29,7 @@ export class LineSeg extends HitObject {
 
 	public readonly v1: Vertex2D;
 	public readonly v2: Vertex2D;
-	protected normal!: Vertex2D;
+	protected normal: Vertex2D = new Vertex2D();
 	protected length!: number;
 
 	constructor(p1: Vertex2D, p2: Vertex2D, zLow: number, zHigh: number, objType?: CollisionType) {
@@ -164,7 +164,7 @@ export class LineSeg extends HitObject {
 		}
 
 		// hit normal is same as line segment normal
-		coll.hitNormal = new Vertex3D(this.normal.x, this.normal.y, 0.0);
+		coll.hitNormal.set(this.normal.x, this.normal.y, 0.0);
 		coll.hitDistance = bnd;        // actual contact distance ...
 		//coll.m_hitRigid = rigid;     // collision type
 
@@ -186,12 +186,13 @@ export class LineSeg extends HitObject {
 	}
 
 	private calcNormal(): this {
-		const vT = new Vertex2D(this.v1.x - this.v2.x, this.v1.y - this.v2.y);
+		const vT = Vertex2D.claim(this.v1.x - this.v2.x, this.v1.y - this.v2.y);
 
 		// Set up line normal
 		this.length = vT.length();
 		const invLength = 1.0 / this.length;
-		this.normal = new Vertex2D(vT.y * invLength, -vT.x * invLength);
+		this.normal.set(vT.y * invLength, -vT.x * invLength);
+		vT.release();
 		return this;
 	}
 }

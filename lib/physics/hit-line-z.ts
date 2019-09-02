@@ -60,25 +60,31 @@ export class HitLineZ extends HitObject {
 			return { hitTime: -1.0, coll };
 		}
 
-		const bp2d = new Vertex2D(ball.state.pos.x, ball.state.pos.y);
-		const dist = bp2d.clone().sub(this.xy);            // relative ball position
-		const dv = new Vertex2D(ball.hit.vel.x, ball.hit.vel.y);
+		const bp2d = Vertex2D.claim(ball.state.pos.x, ball.state.pos.y);
+		const dist = bp2d.clone(true).sub(this.xy);            // relative ball position
+		const dv = Vertex2D.claim(ball.hit.vel.x, ball.hit.vel.y);
+		bp2d.release();
 
 		const bcddsq = dist.lengthSq();                    // ball center to line distance squared
 		const bcdd = Math.sqrt(bcddsq);                    // distance ball to line
 		if (bcdd <= 1.0e-6) {
+			dv.release();
+			dist.release();
 			return { hitTime: -1.0, coll };                // no hit on exact center
 		}
 
 		const b = dist.dot(dv);
 		const bnv = b / bcdd;                              // ball normal velocity
+		dist.release();
 
 		if (bnv > C_CONTACTVEL) {
+			dv.release();
 			return { hitTime: -1.0, coll };                // clearly receding from radius
 		}
 
 		const bnd = bcdd - ball.data.radius;               // ball distance to line
 		const a = dv.lengthSq();
+		dv.release();
 
 		let hitTime = 0;
 		let isContact = false;
@@ -119,9 +125,9 @@ export class HitLineZ extends HitObject {
 		const hitX = ball.state.pos.x + hitTime * ball.hit.vel.x;              // ball x position at hit time
 		const hitY = ball.state.pos.y + hitTime * ball.hit.vel.y;              // ball y position at hit time
 
-		const norm = new Vertex2D(hitX - this.xy.x, hitY - this.xy.y);
-		norm.normalize();
-		coll.hitNormal = new Vertex3D(norm.x, norm.y, 0.0);
+		const norm = Vertex2D.claim(hitX - this.xy.x, hitY - this.xy.y).normalize();
+		coll.hitNormal.set(norm.x, norm.y, 0.0);
+		norm.release();
 
 		coll.isContact = isContact;
 		if (isContact) {

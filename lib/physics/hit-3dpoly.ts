@@ -29,13 +29,12 @@ import { HitObject, HitTestResult } from './hit-object';
 export class Hit3DPoly extends HitObject {
 
 	private readonly rgv: Vertex3D[];
-	private readonly normal: Vertex3D;
+	private readonly normal: Vertex3D = new Vertex3D();
 
 	constructor(rgv: Vertex3D[], objType?: CollisionType) {
 		super();
 
 		this.rgv = rgv;
-		this.normal = new Vertex3D();
 		if (objType) {
 			this.objType = objType;
 		}

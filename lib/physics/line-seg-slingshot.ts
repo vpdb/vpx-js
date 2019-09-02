@@ -53,7 +53,7 @@ export class LineSegSlingshot extends LineSeg {
 		if (!this.surface.isDisabled && threshold) {                           // enabled and if velocity greater than threshold level
 			const len = (this.v2.x - this.v1.x) * hitNormal.y - (this.v2.y - this.v1.y) * hitNormal.x; // length of segment, Unit TAN points from V1 to V2
 
-			const vHitPoint = new Vertex2D(
+			const vHitPoint = Vertex2D.claim(
 				ball.state.pos.x - hitNormal.x * ball.data.radius,          // project ball radius along norm
 				ball.state.pos.y - hitNormal.y * ball.data.radius,
 			);
@@ -61,21 +61,26 @@ export class LineSegSlingshot extends LineSeg {
 			// vHitPoint will now be the point where the ball hits the line
 			// Calculate this distance from the center of the slingshot to get force
 			const btd = (vHitPoint.x - this.v1.x) * hitNormal.y - (vHitPoint.y - this.v1.y) * hitNormal.x; // distance to vhit from V1
+			vHitPoint.release();
 			let force = (Math.abs(len) > 1.0e-6) ? ((btd + btd) / len - 1.0) : -1.0;                       // -1..+1
 			force = 0.5 * (1.0 - force * force);                               // !! maximum value 0.5 ...I think this should have been 1.0...oh well
 			// will match the previous physics
 			force *= this.force; //-80;
 
 			// boost velocity, drive into slingshot (counter normal), allow CollideWall to handle the remainder
-			ball.hit.vel.sub(hitNormal.clone().multiplyScalar(force));
+			const normForce = hitNormal.clone(true).multiplyScalar(force);
+			ball.hit.vel.sub(normForce);
+			normForce.release();
 		}
 
 		ball.hit.collide3DWall(hitNormal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
 		if (this.obj && this.fe && !this.surface.isDisabled && this.threshold) {
 			// is this the same place as last event? if same then ignore it
-			const distLs = (ball.hit.eventPos.clone().sub(ball.state.pos)).lengthSq();
-			ball.hit.eventPos = ball.state.pos.clone(); //remember last collide position
+			const eventPos = ball.hit.eventPos.clone(true);
+			const distLs = eventPos.sub(ball.state.pos).lengthSq();
+			eventPos.release();
+			ball.hit.eventPos.set(ball.state.pos); //remember last collide position
 
 			if (distLs > 0.25) { // must be a new place if only by a little
 				this.obj.fireGroupEvent(Event.SurfaceEventsSlingshot);

@@ -50,7 +50,7 @@ export class Vertex2D implements Vertex {
 		return v2;
 	}
 
-	public static claim(x?: number, y?: number, z?: number): Vertex2D {
+	public static claim(x?: number, y?: number): Vertex2D {
 		return Vertex2D.POOL.get().set(x || 0, y || 0);
 	}
 
