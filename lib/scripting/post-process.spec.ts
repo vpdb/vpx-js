@@ -327,7 +327,7 @@ describe('The VBScript transpiler', () => {
 	// 	expect(js).to.equal('switch (today) {\ncase \'Saturday\':\ncase \'Sunday\':\n    weekend = 1;\n    break;\ndefault:\n    weekend = 0;\n}');
 	// });
 
-	it ('should transpile a statements separated with ":"', () => {
+	it ('should transpile statements separated with ":"', () => {
 		const vbs = `gi1.State = 0:Gi2.State = 0\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('gi1.State = 0;\nGi2.State = 0;');
