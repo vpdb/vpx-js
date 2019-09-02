@@ -83,6 +83,10 @@ export class Primitive implements IRenderable, IHittable, IScriptable<PrimitiveA
 		};
 	}
 
+	public clearMesh() {
+		this.data.mesh = new Mesh();
+	}
+
 	public getEventProxy(): EventProxy {
 		return this.events!;
 	}
