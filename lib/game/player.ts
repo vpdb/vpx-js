@@ -44,6 +44,7 @@ export class Player extends EventEmitter {
 
 	public init(): this {
 		this.physics.init();
+		this.table.prepareToPlay();
 		this.table.runTableScript();
 		this.table.broadcastInit();
 		return this;

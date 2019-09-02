@@ -335,6 +335,12 @@ export class Table implements IRenderable {
 		};
 	}
 
+	public prepareToPlay() {
+		for (const primitive of Object.values<Primitive>(this.primitives)) {
+			primitive.clearMesh();
+		}
+	}
+
 	public runTableScript() {
 		if (!this.tableScript) {
 			logger().warn('Table script is not loaded!');
