@@ -80,6 +80,7 @@ MethodStmt           -> ConstDecl                                               
 BlockStmt            -> DimDecl                                                                                    {% id %}
                       | IfStmt                                                                                     {% id %}
                       | WithStmt                                                                                   {% id %}
+                      | SelectStmt                                                                                 {% id %}
                       | LoopStmt                                                                                   {% id %}
                       | ForStmt                                                                                    {% id %}
                       | InlineStmt NL                                                                              {% id %}
@@ -115,7 +116,10 @@ QualifiedIDTail      -> IDDot QualifiedIDTail
                       | KeywordID                                                                                  {% id %}
 
 KeywordID            -> SafeKeywordID                                                                              {% id %}
+                      | "Case"                                                                                     {% id %}
                       | "Do"                                                                                       {% id %}
+                      | "Select"                                                                                   {% id %}
+                      | "Else"                                                                                     {% id %}
 
 SafeKeywordID        -> "Default"                                                                                  {% id %}
                       | "Erase"                                                                                    {% id %}
@@ -131,7 +135,7 @@ CommaExprList        -> "," _ Expr                                              
 
 #========= If Statement
 
-IfStmt               -> "If" _ Expr _ "Then" NL BlockStmt:* ElseStmt:? _ "End" _ "If" NL                           {% pp.ifStmt %}
+IfStmt               -> "If" _ Expr _ "Then" NL BlockStmt:* ElseStmt:? _ "End" __ "If" NL                          {% pp.ifStmt %}
 #                      | "If" _ Expr _ "Then" _ InlineStmt ElseOpt:? EndIfOpt:? NL
 
 ElseStmt             -> "ElseIf" _ Expr _ "Then" NL BlockStmt:* ElseStmt:?                                         {% pp.ifStmt %}
@@ -144,14 +148,14 @@ ElseStmt             -> "ElseIf" _ Expr _ "Then" NL BlockStmt:* ElseStmt:?      
 
 #========= With Statement
 
-WithStmt             -> "With" _ Expr NL BlockStmt:* _ "End" _ "With" NL                                           {% pp.withStmt %}
+WithStmt             -> "With" _ Expr NL BlockStmt:* _ "End" __ "With" NL                                          {% pp.withStmt %}
 
 #========= Loop Statement
  
 LoopStmt             -> "Do" _ LoopType _ Expr NL BlockStmt:* _ "Loop" NL                                          {% pp.doWhileLoopStmt %}
                       | "Do" NL BlockStmt:* _ "Loop" _ LoopType _ Expr NL                                          {% pp.doLoopWhileStmt %}
                       | "Do" NL BlockStmt:* _ "Loop" NL                                                            {% pp.doLoopStmt %}
-                      | "While" _ Expr NL BlockStmt:* _ ("WEnd"|"Wend") NL                                         {% pp.whileLoopStmt %}
+                      | "While" _ Expr NL BlockStmt:* _ "WEnd" NL                                                  {% pp.whileLoopStmt %}
 
 LoopType             -> "While"                                                                                    {% id %}
                       | "Until"                                                                                    {% id %}
@@ -162,6 +166,18 @@ ForStmt              -> "For" _ ExtendedID _ "=" _ Expr _ "To" _ Expr _ StepOpt:
                       | "For" _ "Each" _ ExtendedID _ "In" _ Expr NL BlockStmt:* _ "Next" NL                       {% pp.forEachStmt %}
 
 StepOpt              -> "Step" _ Expr                                                                              {% data => data[2] %}
+
+#========= Select Statement
+
+SelectStmt           -> "Select" __ "Case" _ Expr NL CaseStmt:* CaseElseStmt:? _ "End" __ "Select" NL              {% pp.selectStmt %}
+
+CaseStmt             -> "Case" _ Expr _ ExprList:* NLOpt BlockStmt:*                                               {% pp.caseStmt %}
+
+CaseElseStmt         -> "Case" __ "Else" _ NLOpt BlockStmt:*                                                       {% pp.caseElseStmt %}
+
+NLOpt                -> NL:?
+
+ExprList             -> "," _ Expr                                                                                 {% data => data[2] %}
 
 #===============================
 # Rules : Expressions
@@ -244,14 +260,12 @@ Nothing              -> "Nothing"                                               
 # Terminals
 #===============================
 
-NLOpt                -> NL:?
-
-ID                   -> Letter IDTail                                                                              {% data => estree.identifier(data[0] + data[1]) %}
+ID                   -> Letter IDTail                                                                              {% pp.identifier %}
 #                      | "[" IDNameChar:* "]"
 
-IDDot                -> Letter IDTail "."                                                                          {% data => estree.identifier(data[0] + data[1]) %}
+IDDot                -> Letter IDTail "."                                                                          {% pp.identifier  %}
 
-DotID                -> "." Letter IDTail                                                                          {% data => estree.identifier("." + data[1] + data[2]) %}
+DotID                -> "." Letter IDTail                                                                          {% pp.identifier %}
 #                      | '.' '[' {ID Name Char}* ']'
 
 NL                   -> NewLine NL
@@ -293,4 +307,3 @@ _                    -> wschar:*                                                
 __                   -> wschar:+                                                                                   {% data => null %}
 
 wschar               -> [ \t\v\f]                                                                                  {% id %}
-
