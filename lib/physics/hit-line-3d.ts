@@ -33,11 +33,11 @@ export class HitLine3D extends HitLineZ {
 
 	constructor(v1: Vertex3D, v2: Vertex3D) {
 		super(new Vertex2D()); // correct xy is set later below
-		const vLine = v2.clone().sub(v1);
+		const vLine = v2.clone(true).sub(v1);
 		vLine.normalize();
 
 		// Axis of rotation to make 3D cylinder a cylinder along the z-axis
-		const transAxis = new Vertex3D(vLine.y, -vLine.x, 0);
+		const transAxis = Vertex3D.claim(vLine.y, -vLine.x, 0);
 		const l = transAxis.lengthSq();
 		if (l <= 1e-6) {                                   // line already points in z axis?
 			transAxis.set(1, 0, 0);                        // choose arbitrary rotation vector
@@ -50,8 +50,9 @@ export class HitLine3D extends HitLineZ {
 
 		this.matrix.rotationAroundAxis(transAxis, -Math.sqrt(1 - dot * dot), dot);
 
-		const vTrans1 = v1.clone().applyMatrix2D(this.matrix);
-		const vTrans2z = v2.clone().applyMatrix2D(this.matrix).z;
+		const vTrans1 = v1.clone(true).applyMatrix2D(this.matrix);
+		const vTrans2 = v2.clone(true).applyMatrix2D(this.matrix);
+		const vTrans2z = vTrans2.z;
 
 		// set up HitLineZ parameters
 		this.xy = new Vertex2D(vTrans1.x, vTrans1.y);
@@ -64,6 +65,11 @@ export class HitLine3D extends HitLineZ {
 		this.hitBBox.bottom = Math.max(v1.y, v2.y);
 		this.hitBBox.zlow = Math.min(v1.z, v2.z);
 		this.hitBBox.zhigh = Math.max(v1.z, v2.z);
+
+		vTrans1.release();
+		vTrans2.release();
+		transAxis.release();
+		vLine.release();
 	}
 
 	public calcHitBBox(): void {
@@ -75,8 +81,8 @@ export class HitLine3D extends HitLineZ {
 			return { hitTime: -1.0, coll };
 		}
 		// transform ball to cylinder coordinate system
-		const oldPos = ball.state.pos.clone();
-		const oldVel = ball.hit.vel.clone();
+		const oldPos = ball.state.pos.clone(true);
+		const oldVel = ball.hit.vel.clone(true);
 		ball.state.pos.applyMatrix2D(this.matrix);
 		ball.state.pos.applyMatrix2D(this.matrix);
 
@@ -96,6 +102,9 @@ export class HitLine3D extends HitLineZ {
 		if (hitTime >= 0) {      // transform hit normal back to world coordinate system
 			coll.hitNormal = this.matrix.multiplyVectorT(coll.hitNormal!);
 		}
+
+		oldPos.release();
+		oldVel.release();
 		return { hitTime, coll };
 	}
 
