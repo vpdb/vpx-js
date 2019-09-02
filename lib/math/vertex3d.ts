@@ -62,6 +62,12 @@ export class Vertex3D implements Vertex {
 		return Vertex3D.POOL.get().set(x || 0, y || 0, z || 0);
 	}
 
+	public static release(...vertices: Vertex3D[]) {
+		for (const vertex of vertices) {
+			Vertex3D.POOL.release(vertex);
+		}
+	}
+
 	public static reset(v: Vertex3D): void {
 		v.set(0, 0, 0);
 	}
@@ -93,10 +99,6 @@ export class Vertex3D implements Vertex {
 			Vertex3D.POOL.get().set(this._x, this._y, this._z);
 		}
 		return new Vertex3D(this._x, this._y, this._z);
-	}
-
-	public release() {
-		Vertex3D.POOL.release(this);
 	}
 
 	public normalize(): this {

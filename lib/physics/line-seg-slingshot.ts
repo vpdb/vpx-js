@@ -25,6 +25,7 @@ import { SurfaceData } from '../vpt/surface/surface-data';
 import { SlingshotAnimObject } from './anim-slingshot';
 import { CollisionEvent } from './collision-event';
 import { LineSeg } from './line-seg';
+import { Vertex3D } from '../math/vertex3d';
 
 export class LineSegSlingshot extends LineSeg {
 
@@ -61,7 +62,7 @@ export class LineSegSlingshot extends LineSeg {
 			// vHitPoint will now be the point where the ball hits the line
 			// Calculate this distance from the center of the slingshot to get force
 			const btd = (vHitPoint.x - this.v1.x) * hitNormal.y - (vHitPoint.y - this.v1.y) * hitNormal.x; // distance to vhit from V1
-			vHitPoint.release();
+			Vertex2D.release(vHitPoint);
 			let force = (Math.abs(len) > 1.0e-6) ? ((btd + btd) / len - 1.0) : -1.0;                       // -1..+1
 			force = 0.5 * (1.0 - force * force);                               // !! maximum value 0.5 ...I think this should have been 1.0...oh well
 			// will match the previous physics
@@ -70,7 +71,7 @@ export class LineSegSlingshot extends LineSeg {
 			// boost velocity, drive into slingshot (counter normal), allow CollideWall to handle the remainder
 			const normForce = hitNormal.clone(true).multiplyScalar(force);
 			ball.hit.vel.sub(normForce);
-			normForce.release();
+			Vertex3D.release(normForce);
 		}
 
 		ball.hit.collide3DWall(hitNormal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
@@ -79,7 +80,7 @@ export class LineSegSlingshot extends LineSeg {
 			// is this the same place as last event? if same then ignore it
 			const eventPos = ball.hit.eventPos.clone(true);
 			const distLs = eventPos.sub(ball.state.pos).lengthSq();
-			eventPos.release();
+			Vertex3D.release(eventPos);
 			ball.hit.eventPos.set(ball.state.pos); //remember last collide position
 
 			if (distLs > 0.25) { // must be a new place if only by a little

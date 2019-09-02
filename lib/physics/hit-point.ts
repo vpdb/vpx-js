@@ -50,13 +50,13 @@ export class HitPoint extends HitObject {
 		const bcddsq = dist.lengthSq();                    // ball center to line distance squared
 		const bcdd = Math.sqrt(bcddsq);                    // distance ball to line
 		if (bcdd <= 1.0e-6) {
-			dist.release();
+			Vertex3D.release(dist);
 			return { hitTime: -1.0, coll };                // no hit on exact center
 		}
 
 		const b = dist.dot(ball.hit.vel);
 		const bnv = b / bcdd;                              // ball normal velocity
-		dist.release();
+		Vertex3D.release(dist);
 
 		if (bnv > C_CONTACTVEL) {
 			return { hitTime: -1.0, coll };                // clearly receding from radius
@@ -101,8 +101,7 @@ export class HitPoint extends HitObject {
 			.sub(this.p)
 			.normalize();
 		coll.hitNormal.set(hitNormal);
-		hitVel.release();
-		hitNormal.release();
+		Vertex3D.release(hitVel, hitNormal);
 
 		coll.isContact = isContact;
 		if (isContact) {

@@ -54,6 +54,12 @@ export class Vertex2D implements Vertex {
 		return Vertex2D.POOL.get().set(x || 0, y || 0);
 	}
 
+	public static release(...vertices: Vertex2D[]) {
+		for (const vertex of vertices) {
+			Vertex2D.POOL.release(vertex);
+		}
+	}
+
 	public static reset(v: Vertex2D): void {
 		v.set(0, 0);
 	}
@@ -73,10 +79,6 @@ export class Vertex2D implements Vertex {
 			Vertex2D.POOL.get().set(this._x, this._y);
 		}
 		return new Vertex2D(this._x, this._y);
-	}
-
-	public release() {
-		Vertex2D.POOL.release(this);
 	}
 
 	public add(v: Vertex2D): this {

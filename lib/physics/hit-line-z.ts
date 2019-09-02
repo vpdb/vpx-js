@@ -63,28 +63,27 @@ export class HitLineZ extends HitObject {
 		const bp2d = Vertex2D.claim(ball.state.pos.x, ball.state.pos.y);
 		const dist = bp2d.clone(true).sub(this.xy);            // relative ball position
 		const dv = Vertex2D.claim(ball.hit.vel.x, ball.hit.vel.y);
-		bp2d.release();
+		Vertex2D.release(bp2d);
 
 		const bcddsq = dist.lengthSq();                    // ball center to line distance squared
 		const bcdd = Math.sqrt(bcddsq);                    // distance ball to line
 		if (bcdd <= 1.0e-6) {
-			dv.release();
-			dist.release();
+			Vertex2D.release(dv, dist);
 			return { hitTime: -1.0, coll };                // no hit on exact center
 		}
 
 		const b = dist.dot(dv);
 		const bnv = b / bcdd;                              // ball normal velocity
-		dist.release();
+		Vertex2D.release(dist);
 
 		if (bnv > C_CONTACTVEL) {
-			dv.release();
+			Vertex2D.release(dv);
 			return { hitTime: -1.0, coll };                // clearly receding from radius
 		}
 
 		const bnd = bcdd - ball.data.radius;               // ball distance to line
 		const a = dv.lengthSq();
-		dv.release();
+		Vertex2D.release(dv);
 
 		let hitTime = 0;
 		let isContact = false;
@@ -127,7 +126,7 @@ export class HitLineZ extends HitObject {
 
 		const norm = Vertex2D.claim(hitX - this.xy.x, hitY - this.xy.y).normalize();
 		coll.hitNormal.set(norm.x, norm.y, 0.0);
-		norm.release();
+		Vertex2D.release(norm);
 
 		coll.isContact = isContact;
 		if (isContact) {
