@@ -19,8 +19,9 @@ Visual Pinball's player can be split into three parts:
     
 This library allows exporting a VPX file into a [three.js](https://threejs.org/)
 scene, which covers the first point. A physics loop is implemented by the `Player`
-class. Collision detection and rigid body dynamics will be fully ported, covering
-the second part. The third part is still TODO, more details can be found [here](https://github.com/freezy/vpweb/issues/1).  
+class. Collision detection and rigid body dynamics is now ported, covering the 
+second part. Work on the third has begun with the wiring set up and simple 
+statements working. More info about how we go about this can be found [here](https://github.com/freezy/vpweb/issues/1).  
     
 ### Rendering 
 
@@ -53,14 +54,44 @@ VPM, there isn't a JavaScript implementation of PinMAME yet. However, @neophob
 wrote a [WPC emulator](https://github.com/neophob/wpc-emu) from scratch that will
 cover many games already. 
 
-## Installation
+## Development Setup
 
-Clone the repo and use it! At some point it'll be on NPM.
+Given this is a lib, you'll need an actual web application to test. There is a 
+simple one we're currently using for development [here](https://github.com/freezy/vpweb).
+
+To get the library set up and re-compiling on changes:
 
 ```bash
 git clone https://github.com/vpdb/vpx-js.git
 cd vpx-js
-npm run build
+npm ci
+npm run build:watch
+```
+
+And the host application:
+
+```bash
+git clone https://github.com/freezy/vpweb.git
+cd vpweb
+npm ci
+npm run start:dev
+```
+
+Then connect to `http://localhost:8080` and drag a VPX file into it. Note that 
+the scripting engine is currently pretty limited, but with the blank table from 
+VP, this table script should work fine:
+
+```vbs
+Sub Drain_Hit()
+Drain.DestroyBall
+BallRelease.CreateBall
+BallRelease.Kick 90, 7
+End Sub
+
+Sub Plunger_Init()
+BallRelease.CreateBall
+BallRelease.Kick 90, 7
+End Sub
 ```
 
 ## Usage
