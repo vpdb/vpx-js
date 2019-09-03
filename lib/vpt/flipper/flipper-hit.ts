@@ -432,7 +432,7 @@ export class FlipperHit extends HitObject {
 			this.mover.hitCircleBase.radius * ffny,
 		);
 
-		const F = new Vertex2D();                          // flipper face normal
+		const faceNormal = Vertex2D.claim();               // flipper face normal
 
 		let bffnd: number = 0;                             // ball flipper face normal distance (negative for normal side)
 		let ballVtx: number = 0;                           // new ball position at time t in flipper face coordinate
@@ -464,8 +464,8 @@ export class FlipperHit extends HitObject {
 			const radSin = Math.sin(contactAng);           // Green's transform matrix... rotate angle delta
 			const radCos = Math.cos(contactAng);           // rotational transform from current position to position at time t
 
-			F.x = ffnx * radCos - ffny * radSin;           // rotate to time t, norm and face offset point
-			F.y = ffny * radCos + ffnx * radSin;
+			faceNormal.x = ffnx * radCos - ffny * radSin;  // rotate to time t, norm and face offset point
+			faceNormal.y = ffny * radCos + ffnx * radSin;
 
 			const vt = new Vertex2D(
 				vp.x * radCos - vp.y * radSin + flipperBase.x,       // rotate and translate to world position
@@ -475,7 +475,7 @@ export class FlipperHit extends HitObject {
 			ballVtx = ball.state.pos.x + ballVx * t - vt.x;          // new ball position relative to rotated line segment endpoint
 			ballVty = ball.state.pos.y + ballVy * t - vt.y;
 
-			bffnd = ballVtx * F.x + ballVty * F.y - ballRadius;      // normal distance to segment
+			bffnd = ballVtx * faceNormal.x + ballVty * faceNormal.y - ballRadius;      // normal distance to segment
 
 			if (Math.abs(bffnd) <= C_PRECISION) {
 				break;
@@ -486,6 +486,7 @@ export class FlipperHit extends HitObject {
 
 				// test for already inside flipper plane, either embedded or beyond the face endpoints
 				if (bffnd < -(ball.data.radius + feRadius)) {
+					Vertex2D.release(faceNormal);
 					return -1.0;                           // wrong side of face, or too deeply embedded
 				}
 				if (bffnd <= PHYS_TOUCH) {
@@ -497,6 +498,7 @@ export class FlipperHit extends HitObject {
 
 			} else if (k === 2) {                          // end pass two, check if zero crossing on initial interval, exit
 				if (dp * bffnd > 0.0) {
+					Vertex2D.release(faceNormal);
 					return -1.0;                           // no solution ... no obvious zero crossing
 				}
 				t0 = 0;
@@ -531,23 +533,25 @@ export class FlipperHit extends HitObject {
 			|| t > dTime                                   // time is outside this frame ... no collision
 			|| (k > C_INTERATIONS && Math.abs(bffnd) > ball.data.radius * 0.25)) { // last ditch effort to accept a near solution
 
+			Vertex2D.release(faceNormal);
 			return -1.0; // no solution
 		}
 
 		// here ball and flipper face are in contact... past the endpoints, also, don't forget embedded and near solution
 		const T = new Vertex2D();                          // flipper face tangent
 		if (face1) {                                       // left face?
-			T.x = -F.y;
-			T.y = F.x;
+			T.x = -faceNormal.y;
+			T.y = faceNormal.x;
 		} else {                                           // rotate to form Tangent vector
-			T.x = F.y;
-			T.y = -F.x;
+			T.x = faceNormal.y;
+			T.y = -faceNormal.x;
 		}
 
 		const bfftd = ballVtx * T.x + ballVty * T.y;       // ball to flipper face tangent distance
 
 		const len = this.mover.flipperRadius * this.mover.zeroAngNorm.x;       // face segment length ... e.g. same on either face
 		if (bfftd < -C_TOL_ENDPNTS || bfftd > len + C_TOL_ENDPNTS) {
+			Vertex2D.release(faceNormal);
 			return -1.0;                                                       // not in range of touching
 		}
 
@@ -555,6 +559,7 @@ export class FlipperHit extends HitObject {
 
 		// check limits of object's height and depth
 		if ((hitz + ballRadius * 0.5) < this.hitBBox.zlow || (hitz - ballRadius * 0.5) > this.hitBBox.zhigh) {
+			Vertex2D.release(faceNormal);
 			return -1.0;
 		}
 
@@ -562,12 +567,13 @@ export class FlipperHit extends HitObject {
 		// parameters need to be calculated from the actual configuration, i.e contact radius must be calc'ed
 
 		// hit normal is same as line segment normal
-		coll.hitNormal = new Vertex3D(F.x, F.y, 0);
+		coll.hitNormal = new Vertex3D(faceNormal.x, faceNormal.y, 0);
 
 		const dist = Vertex2D.claim( // calculate moment from flipper base center
-			ball.state.pos.x + ballVx * t - ballRadius * F.x - this.mover.hitCircleBase.center.x, // center of ball + projected radius to contact point
-			ball.state.pos.y + ballVy * t - ballRadius * F.y - this.mover.hitCircleBase.center.y, // all at time t
+			ball.state.pos.x + ballVx * t - ballRadius * faceNormal.x - this.mover.hitCircleBase.center.x, // center of ball + projected radius to contact point
+			ball.state.pos.y + ballVy * t - ballRadius * faceNormal.y - this.mover.hitCircleBase.center.y, // all at time t
 		);
+		Vertex2D.release(faceNormal);
 
 		const distance = Math.sqrt(dist.x * dist.x + dist.y * dist.y);         // distance from base center to contact point
 
