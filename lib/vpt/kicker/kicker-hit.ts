@@ -28,7 +28,7 @@ import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';
 import { STATICTIME } from '../../physics/constants';
-import { hardScatter } from '../../physics/functions';
+import { HARD_SCATTER } from '../../physics/functions';
 import { HitCircle } from '../../physics/hit-circle';
 import { Ball } from '../ball/ball';
 import { FLT_MAX } from '../mesh';
@@ -237,7 +237,7 @@ export class KickerHit extends HitCircle {
 		}
 
 		let scatterAngle = this.data.scatter < 0.0                             // if < 0 use global value
-			? hardScatter
+			? HARD_SCATTER
 			: degToRad(this.data.scatter);
 		scatterAngle *= table.getGlobalDifficulty();                           // apply difficulty weighting
 

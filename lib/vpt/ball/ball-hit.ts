@@ -33,7 +33,7 @@ import {
 	C_PRECISION,
 	PHYS_TOUCH,
 } from '../../physics/constants';
-import { elasticityWithFalloff, hardScatter } from '../../physics/functions';
+import { elasticityWithFalloff, HARD_SCATTER } from '../../physics/functions';
 import { HitObject } from '../../physics/hit-object';
 import { FLT_MIN } from '../mesh';
 import { TableData } from '../table/table-data';
@@ -381,7 +381,7 @@ export class BallHit extends HitObject {
 		Vertex3D.release(surfP, surfVel, tangent);
 
 		if (scatterAngle < 0.0) {
-			scatterAngle = hardScatter;
+			scatterAngle = HARD_SCATTER;
 		}  // if < 0 use global value
 		scatterAngle *= this.tableData.globalDifficulty!; // apply difficulty weighting
 
