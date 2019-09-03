@@ -104,7 +104,7 @@ export class Vertex3D implements Vertex {
 
 	public clone(recycle = false): Vertex3D {
 		if (recycle) {
-			Vertex3D.POOL.get().set(this._x, this._y, this._z);
+			return Vertex3D.POOL.get().set(this._x, this._y, this._z);
 		}
 		return new Vertex3D(this._x, this._y, this._z);
 	}
