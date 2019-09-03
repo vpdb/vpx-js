@@ -144,6 +144,12 @@ export class Vertex3D implements Vertex {
 		return f4(f4(this.x * v.x) + f4(this.y * v.y)) + f4(this.z * v.z);
 	}
 
+	public dotAndRelease(v: Vertex3D): number {
+		const dot = this.dot(v);
+		Vertex3D.release(v);
+		return dot;
+	}
+
 	public sub(v: Vertex3D): this {
 		this.x -= v.x;
 		this.y -= v.y;
@@ -151,10 +157,22 @@ export class Vertex3D implements Vertex {
 		return this;
 	}
 
+	public subAndRelease(v: Vertex3D): this {
+		this.sub(v);
+		Vertex3D.release(v);
+		return this;
+	}
+
 	public add(v: Vertex3D): this {
 		this.x += v.x;
 		this.y += v.y;
 		this.z += v.z;
+		return this;
+	}
+
+	public addAndRelease(v: Vertex3D): this {
+		this.add(v);
+		Vertex3D.release(v);
 		return this;
 	}
 
@@ -194,12 +212,18 @@ export class Vertex3D implements Vertex {
 		return v.x === this.x && v.y === this.y && v.z === this.z;
 	}
 
-	public static crossProduct(pv1: Vertex3D, pv2: Vertex3D): Vertex3D {
-		return new Vertex3D(
-			pv1.y * pv2.z - pv1.z * pv2.y,
-			pv1.z * pv2.x - pv1.x * pv2.z,
-			pv1.x * pv2.y - pv1.y * pv2.x,
-		);
+	public static crossProduct(pv1: Vertex3D, pv2: Vertex3D, recycle = false): Vertex3D {
+		return recycle
+			? Vertex3D.claim(
+				pv1.y * pv2.z - pv1.z * pv2.y,
+				pv1.z * pv2.x - pv1.x * pv2.z,
+				pv1.x * pv2.y - pv1.y * pv2.x,
+			)
+			: new Vertex3D(
+				pv1.y * pv2.z - pv1.z * pv2.y,
+				pv1.z * pv2.x - pv1.x * pv2.z,
+				pv1.x * pv2.y - pv1.y * pv2.x,
+			);
 	}
 
 	public static crossZ(rz: number, v: Vertex3D) {

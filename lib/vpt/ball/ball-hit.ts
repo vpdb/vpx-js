@@ -41,6 +41,7 @@ import { Ball } from './ball';
 import { BallData } from './ball-data';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
+import { Vector2 } from 'three';
 
 /**
  * In the VP source code this is all part of ball.cpp. We'll try
@@ -248,9 +249,10 @@ export class BallHit extends HitObject {
 		}
 
 		// target ball to object ball delta velocity
-		const vRel = ball.hit.vel.clone().sub(this.vel);
-		const vNormal = coll.hitNormal!;
+		const vRel = ball.hit.vel.clone(true).sub(this.vel);
+		const vNormal = coll.hitNormal;
 		let dot = vRel.dot(vNormal);
+		Vertex3D.release(vRel);
 
 		// correct displacements, mostly from low velocity, alternative to true acceleration processing
 		if (dot >= -C_LOWNORMVEL) {                        // nearly receding ... make sure of conditions
@@ -274,6 +276,7 @@ export class BallHit extends HitObject {
 
 //#ifdef C_DISP_GAIN
 		let eDist = -C_DISP_GAIN * coll.hitDistance;
+		const normalDist = vNormal.clone(true).multiplyScalar(eDist);
 		if (eDist > 1.0e-4) {
 			if (eDist > C_DISP_LIMIT) {
 				eDist = C_DISP_LIMIT;		// crossing ramps, delta noise
@@ -281,7 +284,7 @@ export class BallHit extends HitObject {
 			if (!this.isFrozen) {	// if the hit ball is not frozen
 				eDist *= 0.5;
 			}
-			ball.state.pos.add(vNormal.clone().multiplyScalar(eDist)); // push along norm, back to free area
+			ball.state.pos.add(normalDist); // push along norm, back to free area
 			// use the norm, but is not correct, but cheaply handled
 		}
 
@@ -291,17 +294,19 @@ export class BallHit extends HitObject {
 				eDist = C_DISP_LIMIT;		// crossing ramps, delta noise
 			}
 			eDist *= 0.5;
-			this.state.pos.sub(vNormal.clone().multiplyScalar(eDist));       // pull along norm, back to free area
+			this.state.pos.sub(normalDist);       // pull along norm, back to free area
 		}
+		Vertex3D.release(normalDist);
 //#endif
 
 		const myInvMass = this.isFrozen ? 0.0 : this.invMass; // frozen ball has infinite mass
 		const impulse = -(1.0 + 0.8) * dot / (myInvMass + ball.hit.invMass);    // resitution = 0.8
 
 		if (!this.isFrozen) {
-			this.vel.sub(vNormal.clone().multiplyScalar(impulse * myInvMass));
+			this.vel.subAndRelease(vNormal.clone(true).multiplyScalar(impulse * myInvMass));
 		}
-		ball.hit.vel.add(vNormal.clone().multiplyScalar(impulse * ball.hit.invMass));
+		ball.hit.vel.addAndRelease(vNormal.clone(true).multiplyScalar(impulse * ball.hit.invMass));
+		Vertex3D.release(vNormal);
 	}
 
 	public collide3DWall(hitNormal: Vertex3D, elasticity: number, elasticityFalloff: number, friction: number, scatterAngle: number): void {
@@ -330,7 +335,7 @@ export class BallHit extends HitObject {
 				hDist = C_DISP_LIMIT;                      // crossing ramps, delta noise
 			}
 			// push along norm, back to free area
-			this.state.pos.add(hitNormal.clone().multiplyScalar(hDist));
+			this.state.pos.addAndRelease(hitNormal.clone(true).multiplyScalar(hDist));
 			// use the norm, but this is not correct, reverse time is correct
 		}
 //#endif
@@ -341,12 +346,14 @@ export class BallHit extends HitObject {
 
 		elasticity = elasticityWithFalloff(elasticity, elasticityFalloff, dot);
 		dot *= -(1.0 + elasticity);
-		this.vel.add(hitNormal.clone().multiplyScalar(dot));                   // apply collision impulse (along normal, so no torque)
+		this.vel.addAndRelease(hitNormal.clone(true).multiplyScalar(dot));   // apply collision impulse (along normal, so no torque)
 
 		// compute friction impulse
-		const surfP = hitNormal.clone().multiplyScalar(-this.data.radius);     // surface contact point relative to center of mass
-		const surfVel = this.surfaceVelocity(surfP);                           // velocity at impact point
-		const tangent = surfVel.clone().sub(hitNormal.clone().multiplyScalar(surfVel.dot(hitNormal))); // calc the tangential velocity
+		const surfP = hitNormal.clone(true).multiplyScalar(-this.data.radius);    // surface contact point relative to center of mass
+		const surfVel = this.surfaceVelocity(surfP, true);                        // velocity at impact point
+		const tangent = surfVel.clone(true)
+			.subAndRelease(hitNormal.clone(true)
+				.multiplyScalar(surfVel.dot(hitNormal)));                                // calc the tangential velocity
 
 		const tangentSpSq = tangent.lengthSq();
 		if (tangentSpSq > 1e-6) {
@@ -354,17 +361,25 @@ export class BallHit extends HitObject {
 			const vt = surfVel.dot(tangent);                                   // get speed in tangential direction
 
 			// compute friction impulse
-			const cross = Vertex3D.crossProduct(surfP, tangent);
-			const kt = this.invMass + tangent.dot(Vertex3D.crossProduct(cross.clone().divideScalar(this.inertia), surfP));
+			const cross = Vertex3D.crossProduct(surfP, tangent, true);
+			const crossInertia = cross.clone(true).divideScalar(this.inertia);
+			const kt = this.invMass + tangent.dotAndRelease(Vertex3D.crossProduct(crossInertia, surfP, true));
+			Vertex3D.release(crossInertia);
 
 			// friction impulse can't be greather than coefficient of friction times collision impulse (Coulomb friction cone)
 			const maxFric = friction * reactionImpulse;
 			const jt = clamp(-vt / kt, -maxFric, maxFric);
 
 			if (isFinite(jt)) {
-				this.applySurfaceImpulse(cross.clone().multiplyScalar(jt), tangent.clone().multiplyScalar(jt));
+				this.applySurfaceImpulse(
+					cross.clone(true).multiplyScalar(jt),
+					tangent.clone(true).multiplyScalar(jt),
+					true,
+				);
 			}
+			Vertex3D.release(cross);
 		}
+		Vertex3D.release(surfP, surfVel, tangent);
 
 		if (scatterAngle < 0.0) {
 			scatterAngle = hardScatter;
@@ -383,17 +398,25 @@ export class BallHit extends HitObject {
 		}
 	}
 
-	public surfaceVelocity(surfP: Vertex3D): Vertex3D {
-		return this.vel
-			.clone()
-			.add(Vertex3D.crossProduct(this.angularVelocity, surfP)); // linear velocity plus tangential velocity due to rotation
+	public surfaceVelocity(surfP: Vertex3D, recycle = false): Vertex3D {
+		return recycle
+			? this.vel
+				.clone(true)
+				.addAndRelease(Vertex3D.crossProduct(this.angularVelocity, surfP, true)) // linear velocity plus tangential velocity due to rotation
+			: this.vel
+				.clone()
+				.add(Vertex3D.crossProduct(this.angularVelocity, surfP));
 	}
 
-	public applySurfaceImpulse(rotI: Vertex3D, impulse: Vertex3D): void {
-		this.vel.add(impulse.clone().multiplyScalar(this.invMass));
-
+	public applySurfaceImpulse(rotI: Vertex3D, impulse: Vertex3D, recycle = false): void {
+		this.vel.addAndRelease(impulse.clone(true).multiplyScalar(this.invMass));
 		this.angularMomentum.add(rotI);
-		this.angularVelocity = this.angularMomentum.clone().divideScalar(this.inertia);
+		const angularMomentum = this.angularMomentum.clone(true);
+		this.angularVelocity.set(angularMomentum.divideScalar(this.inertia));
+		if (recycle) {
+			Vertex3D.release(rotI, impulse);
+		}
+		Vertex3D.release(angularMomentum);
 	}
 
 	public handleStaticContact(coll: CollisionEvent, friction: number, dtime: number, physics: PlayerPhysics): void {
@@ -421,8 +444,7 @@ export class BallHit extends HitObject {
 	public applyFriction(hitNormal: Vertex3D, dtime: number, fricCoeff: number, physics: PlayerPhysics): void {
 
 		const surfP = hitNormal.clone().multiplyScalar(-this.data.radius);    // surface contact point relative to center of mass
-
-		const surfVel = this.surfaceVelocity(surfP);
+		const surfVel = this.surfaceVelocity(surfP, true);
 		const slip = surfVel.clone().sub(hitNormal.clone().multiplyScalar(surfVel.dot(hitNormal)));       // calc the tangential slip velocity
 
 		const maxFric = fricCoeff * this.data.mass * - physics.gravity.dot(hitNormal);
@@ -443,6 +465,7 @@ export class BallHit extends HitObject {
 
 			// neither slip velocity nor slip acceleration? nothing to do here
 			if (slipAcc.lengthSq() < 1e-6) {
+				Vertex3D.release(surfVel);
 				return;
 			}
 
@@ -457,13 +480,18 @@ export class BallHit extends HitObject {
 			numer = -slipDir.dot(surfVel);
 		}
 
-		const cp = Vertex3D.crossProduct(surfP, slipDir);
+		const cp = Vertex3D.crossProduct(surfP, slipDir, true);
 		const denom = this.invMass + slipDir.dot(Vertex3D.crossProduct(cp.clone().divideScalar(this.inertia), surfP));
 		const fric = clamp(numer / denom, -maxFric, maxFric);
 
 		if (isFinite(fric)) {
-			this.applySurfaceImpulse(cp.clone().multiplyScalar(dtime * fric), slipDir.clone().multiplyScalar(dtime * fric));
+			this.applySurfaceImpulse(
+				cp.clone(true).multiplyScalar(dtime * fric),
+				slipDir.clone(true).multiplyScalar(dtime * fric),
+				true,
+			);
 		}
+		Vertex3D.release(surfVel, cp);
 	}
 
 	public surfaceAcceleration(surfP: Vertex3D, physics: PlayerPhysics): Vertex3D {
