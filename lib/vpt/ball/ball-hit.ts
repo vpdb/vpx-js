@@ -503,7 +503,7 @@ export class BallHit extends HitObject {
 		const p2 = Vertex3D.crossProduct(this.angularVelocity, surfP);
 		const acceleration = physics.gravity
 			.clone(true)
-			.multiplyScalar(this.invMass)                                                                          // linear acceleration
+			.multiplyScalar(this.invMass)                                                 // linear acceleration
 			.addAndRelease(Vertex3D.crossProduct(this.angularVelocity, p2, true)); // centripetal acceleration
 		Vertex3D.release(p2);
 		return acceleration;
