@@ -87,7 +87,7 @@ export class KickerHit extends HitCircle {
 
 			if (this.data.legacyMode || newBall) {
 				// move ball slightly forward
-				ball.state.pos.add(ball.hit.vel.clone().multiplyScalar(STATICTIME));
+				ball.state.pos.addAndRelease(ball.hit.vel.clone(true).multiplyScalar(STATICTIME));
 			}
 
 			if (i < 0) { // entering Kickers volume
@@ -112,7 +112,7 @@ export class KickerHit extends HitCircle {
 					if (length < 0.2) {
 						ball.hit.vel.set(ball.oldVel);
 					}
-					ball.oldVel = ball.hit.vel.clone();
+					ball.oldVel.set(ball.hit.vel);
 				}
 
 				if (hitEvent) {
@@ -173,7 +173,9 @@ export class KickerHit extends HitCircle {
 		for (let t = 0; t < this.hitMesh.length; t++) {
 
 			// find the right normal by calculating the distance from current ball position to vertex of the kicker mesh
-			const lengthSqr = ball.state.pos.clone().sub(this.hitMesh[t]).lengthSq();
+			const dist = ball.state.pos.clone(true).sub(this.hitMesh[t]);
+			const lengthSqr = dist.lengthSq();
+			Vertex3D.release(dist);
 			if (lengthSqr < minDistSqr) {
 				minDistSqr = lengthSqr;
 				idx = t;
@@ -183,17 +185,18 @@ export class KickerHit extends HitCircle {
 
 		if (idx !== 3435973836) {
 			// we have the nearest vertex now use the normal and damp it so it doesn't speed up the ball velocity too much
-			const hitNorm = new Vertex3D(kickerHitVertices[idx].nx, kickerHitVertices[idx].ny, kickerHitVertices[idx].nz);
+			const hitNorm = Vertex3D.claim(kickerHitVertices[idx].nx, kickerHitVertices[idx].ny, kickerHitVertices[idx].nz);
 			const dot = -ball.hit.vel.dot(hitNorm);
 			const reactionImpulse = ball.data.mass * Math.abs(dot);
 
-			const surfP = hitNormal.clone().multiplyScalar(-ball.data.radius); // surface contact point relative to center of mass
-			const surfVel = ball.hit.surfaceVelocity(surfP);                   // velocity at impact point
-			const tangent = surfVel.clone().sub(                               // calc the tangential velocity
-				hitNorm.clone().multiplyScalar(surfVel.dot(hitNormal)),
+			const surfP = hitNormal.clone(true).multiplyScalar(-ball.data.radius);  // surface contact point relative to center of mass
+			const surfVel = ball.hit.surfaceVelocity(surfP, true);                  // velocity at impact point
+			const tangent = surfVel.clone(true).subAndRelease(                      // calc the tangential velocity
+				hitNorm.clone(true).multiplyScalar(surfVel.dot(hitNormal)),
 			);
 
-			ball.hit.vel.add(hitNorm.clone().multiplyScalar(dot));             // apply collision impulse (along normal, so no torque)
+			ball.hit.vel.addAndRelease(hitNorm.clone(true).multiplyScalar(dot)); // apply collision impulse (along normal, so no torque)
+			Vertex3D.release(hitNorm);
 
 			const friction = 0.3;
 			const tangentSpSq = tangent.lengthSq();
@@ -203,15 +206,21 @@ export class KickerHit extends HitCircle {
 				const vt = surfVel.dot(tangent);                               // get speed in tangential direction
 
 				// compute friction impulse
-				const cross = Vertex3D.crossProduct(surfP, tangent);
-				const kt = ball.hit.invMass + tangent.dot(Vertex3D.crossProduct(cross.clone().divideScalar(ball.hit.inertia), surfP));
+				const cross = Vertex3D.crossProduct(surfP, tangent, true);
+				const pv1 = cross.clone(true).divideScalar(ball.hit.inertia);
+				const kt = ball.hit.invMass + tangent.dotAndRelease(Vertex3D.crossProduct(pv1, surfP, true));
 
 				// friction impulse can't be greater than coefficient of friction times collision impulse (Coulomb friction cone)
 				const maxFriction = friction * reactionImpulse;
 				const jt = clamp(-vt / kt, -maxFriction, maxFriction);
 
-				ball.hit.applySurfaceImpulse(cross.clone().multiplyScalar(jt), tangent.clone().multiplyScalar(jt));
+				ball.hit.applySurfaceImpulseAndRelease(
+					cross.clone(true).multiplyScalar(jt),
+					tangent.clone(true).multiplyScalar(jt),
+				);
+				Vertex3D.release(cross, pv1);
 			}
+			Vertex3D.release(surfP, surfVel, tangent);
 		}
 	}
 
