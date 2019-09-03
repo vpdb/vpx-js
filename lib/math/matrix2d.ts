@@ -17,15 +17,45 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Pool } from '../util/object-pool';
 import { Vertex3D } from './vertex3d';
 
 export class Matrix2D {
+
+	private static readonly POOL = new Pool(Matrix2D);
 
 	public readonly matrix = [
 		[ 1, 0, 0 ],
 		[ 0, 1, 0 ],
 		[ 0, 0, 1 ],
 	];
+
+	public static claim(): Matrix2D {
+		return Matrix2D.POOL.get();
+	}
+
+	public static release(...matrices: Matrix2D[]) {
+		for (const matrix of matrices) {
+			Matrix2D.POOL.release(matrix);
+		}
+	}
+
+	public static reset(m: Matrix2D): void {
+		m.setIdentity();
+	}
+
+	public setIdentity(): this {
+		this.matrix[0][0] = 1;
+		this.matrix[0][1] = 0;
+		this.matrix[0][2] = 0;
+		this.matrix[1][0] = 0;
+		this.matrix[1][1] = 1;
+		this.matrix[1][2] = 0;
+		this.matrix[2][0] = 0;
+		this.matrix[2][1] = 0;
+		this.matrix[2][2] = 1;
+		return this;
+	}
 
 	public multiplyVectorT(v: Vertex3D, recycle = false): Vertex3D {
 		return recycle
@@ -65,22 +95,25 @@ export class Matrix2D {
 		this.matrix[2][2] = 0;
 	}
 
-	public clone(): Matrix2D {
-		const matrix = new Matrix2D();
-		Object.assign(matrix.matrix, this.matrix);
-		return matrix;
-	}
-
-	public multiplyMatrix(pmat1: Matrix2D, pmat2: Matrix2D) {
-		const matans = new Matrix2D() ;
+	public clone(recycle = false): Matrix2D {
+		const m = recycle ? Matrix2D.claim() : new Matrix2D();
 		for (let i = 0; i < 3; ++i) {
 			for (let l = 0; l < 3; ++l) {
-				matans.matrix[i][l] = pmat1.matrix[i][0] * pmat2.matrix[0][l] +
-					pmat1.matrix[i][1] * pmat2.matrix[1][l] +
-					pmat1.matrix[i][2] * pmat2.matrix[2][l];
+				m.matrix[i][l] = this.matrix[i][l];
 			}
 		}
-		Object.assign(this.matrix, matans.matrix);
+		return m;
+	}
+
+	public multiplyMatrix(m1: Matrix2D, m2: Matrix2D) {
+		for (let i = 0; i < 3; ++i) {
+			for (let l = 0; l < 3; ++l) {
+				this.matrix[i][l] =
+					m1.matrix[i][0] * m2.matrix[0][l] +
+					m1.matrix[i][1] * m2.matrix[1][l] +
+					m1.matrix[i][2] * m2.matrix[2][l];
+			}
+		}
 	}
 
 	public multiplyScalar(scalar: number) {
@@ -91,31 +124,33 @@ export class Matrix2D {
 		}
 	}
 
-	public addMatrix(pmat1: Matrix2D, pmat2: Matrix2D) {
+	public addMatrix(m1: Matrix2D, m2: Matrix2D) {
 		for (let i = 0; i < 3; ++i) {
 			for (let l = 0; l < 3; ++l) {
-				this.matrix[i][l] = pmat1.matrix[i][l] + pmat2.matrix[i][l];
+				this.matrix[i][l] = m1.matrix[i][l] + m2.matrix[i][l];
 			}
 		}
 	}
 
 	public orthoNormalize() {
-		const vX = new Vertex3D(this.matrix[0][0], this.matrix[1][0], this.matrix[2][0]);
-		let vY = new Vertex3D(this.matrix[0][1], this.matrix[1][1], this.matrix[2][1]);
-		const vZ = Vertex3D.crossProduct(vX, vY);
+		const vX = Vertex3D.claim(this.matrix[0][0], this.matrix[1][0], this.matrix[2][0]);
+		const vY = Vertex3D.claim(this.matrix[0][1], this.matrix[1][1], this.matrix[2][1]);
+		const vZ = Vertex3D.crossProduct(vX, vY, true);
 		vX.normalize();
 		vZ.normalize();
-		vY = Vertex3D.crossProduct(vZ, vX);
+		const vYY = Vertex3D.crossProduct(vZ, vX, true);
 
 		this.matrix[0][0] = vX.x;
-		this.matrix[0][1] = vY.x;
+		this.matrix[0][1] = vYY.x;
 		this.matrix[0][2] = vZ.x;
 		this.matrix[1][0] = vX.y;
-		this.matrix[1][1] = vY.y;
+		this.matrix[1][1] = vYY.y;
 		this.matrix[1][2] = vZ.y;
 		this.matrix[2][0] = vX.z;
-		this.matrix[2][1] = vY.z;
+		this.matrix[2][1] = vYY.z;
 		this.matrix[2][2] = vZ.z;
+
+		Vertex3D.release(vX, vY, vZ, vYY);
 	}
 
 	/* istanbul ignore next: debugging only */
