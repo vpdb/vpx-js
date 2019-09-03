@@ -154,7 +154,7 @@ export class FlipperHit extends HitObject {
 //#ifdef C_EMBEDDED
 		if (coll.hitDistance < -C_EMBEDDED) {
 			// magic to avoid balls being pushed by each other through resting flippers!
-			ball.hit.vel.add(normal.clone().multiplyScalar(0.1));
+			ball.hit.vel.addAndRelease(normal.clone(true).multiplyScalar(0.1));
 		}
 //#endif
 
@@ -167,74 +167,88 @@ export class FlipperHit extends HitObject {
 
 			// compute accelerations of point on ball and flipper
 			const aB = ball.hit.surfaceAcceleration(rB, physics);
-			const aF = this.mover.surfaceAcceleration(rF);
-			const aRel = aB.clone().sub(aF);
+			const aF = this.mover.surfaceAcceleration(rF, true);
+			const aRel = aB.clone(true).sub(aF);
 
 			// time derivative of the normal vector
-			const normalDeriv = Vertex3D.crossZ(this.mover.angleSpeed, normal);
+			const normalDeriv = Vertex3D.crossZ(this.mover.angleSpeed, normal, true);
 
 			// relative acceleration in the normal direction
 			const normAcc = aRel.dot(normal) + 2.0 * normalDeriv.dot(vRel);
+			Vertex3D.release(normalDeriv, aF);
 
 			if (normAcc >= 0) {
+				Vertex3D.release(aRel, vRel, rB, rF);
 				return;     // objects accelerating away from each other, nothing to do
 			}
 
 			// hypothetical accelerations arising from a unit contact force in normal direction
-			const aBc = normal.clone().multiplyScalar(ball.hit.invMass);
-			const cross = Vertex3D.crossProduct(rF, normal.clone().multiplyScalar(-1));
-			const aFc = Vertex3D.crossProduct(cross.clone().divideScalar(this.mover.inertia), rF);
-			const contactForceAcc = normal.dot(aBc.clone().sub(aFc));
+			const aBc = normal.clone(true).multiplyScalar(ball.hit.invMass);
+			const pv2 = normal.clone(true).multiplyScalar(-1);
+			const cross = Vertex3D.crossProduct(rF, pv2, true);
+			const pv1 = cross.clone(true).divideScalar(this.mover.inertia);
+			const aFc = Vertex3D.crossProduct(pv1, rF, true);
+			const contactForceAcc = normal.dotAndRelease(aBc.clone(true).sub(aFc));
 
 			// find j >= 0 such that normAcc + j * contactForceAcc >= 0  (bodies should not accelerate towards each other)
 			const j = -normAcc / contactForceAcc;
 
 			// kill any existing normal velocity
-			ball.hit.vel.add(normal.clone().multiplyScalar(j * dTime * ball.hit.invMass - coll.hitOrgNormalVelocity));
-			this.mover.applyImpulse(cross.clone().multiplyScalar(j * dTime));
+			ball.hit.vel.addAndRelease(normal.clone(true).multiplyScalar(j * dTime * ball.hit.invMass - coll.hitOrgNormalVelocity));
+			this.mover.applyImpulseAndRelease(cross.clone(true).multiplyScalar(j * dTime));
 
+			Vertex3D.release(aBc, aFc, cross, pv1, pv2);
 			// apply friction
 
 			// first check for slippage
-			const slip = vRel.sub(normal.clone().multiplyScalar(normVel));       // calc the tangential slip velocity
+			const slip = vRel.clone(true).subAndRelease(normal.clone(true).multiplyScalar(normVel));       // calc the tangential slip velocity
 			const maxFriction = j * this.friction;
 			const slipSpeed = slip.length();
 			let slipDir: Vertex3D;
 			let crossF: Vertex3D;
 			let numer: number;
 			let denomF: number;
+			let pv13: Vertex3D;
 
 			if (slipSpeed < C_PRECISION) {
 				// slip speed zero - static friction case
-				const slipAcc = aRel.sub(normal.clone().multiplyScalar(aRel.dot(normal)));       // calc the tangential slip acceleration
+				const slipAcc = aRel.clone(true).subAndRelease(normal.clone(true).multiplyScalar(aRel.dot(normal)));  // calc the tangential slip acceleration
 
 				// neither slip velocity nor slip acceleration? nothing to do here
 				if (slipAcc.lengthSq() < 1e-6) {
+					Vertex3D.release(aRel, vRel, rB, rF, slip, slipAcc);
 					return;
 				}
 
-				slipDir = slipAcc;
-				slipDir.normalize();
-
+				slipDir = slipAcc.normalize();
 				numer = -slipDir.dot(aRel);
-				crossF = Vertex3D.crossProduct(rF, slipDir);
-				denomF = slipDir.dot(Vertex3D.crossProduct(crossF.clone().divideScalar(-this.mover.inertia), rF));
+				crossF = Vertex3D.crossProduct(rF, slipDir, true);
+				pv13 = crossF.clone(true).divideScalar(-this.mover.inertia);
+				denomF = slipDir.dotAndRelease(Vertex3D.crossProduct(pv13, rF, true));
 
 			} else {
 				// nonzero slip speed - dynamic friction case
-				slipDir = slip.clone().divideScalar(slipSpeed);
+				slipDir = slip.clone(true).divideScalar(slipSpeed);
 
 				numer = -slipDir.dot(vRel);
-				crossF = Vertex3D.crossProduct(rF, slipDir);
-				denomF = slipDir.dot(Vertex3D.crossProduct(crossF.clone().divideScalar(this.mover.inertia), rF));
+				crossF = Vertex3D.crossProduct(rF, slipDir, true);
+				pv13 = crossF.clone(true).divideScalar(this.mover.inertia);
+				denomF = slipDir.dotAndRelease(Vertex3D.crossProduct(pv13, rF, true));
 			}
+			Vertex3D.release(aRel, vRel, rF, slip, pv13);
 
-			const crossB = Vertex3D.crossProduct(rB, slipDir);
-			const denomB = ball.hit.invMass + slipDir.dot(Vertex3D.crossProduct(crossB.clone().divideScalar(ball.hit.inertia), rB));
+			const crossB = Vertex3D.crossProduct(rB, slipDir, true);
+			const pv12 = crossB.clone(true).divideScalar(ball.hit.inertia);
+			const denomB = ball.hit.invMass + slipDir.dotAndRelease(Vertex3D.crossProduct(pv12, rB, true));
 			const friction = clamp(numer / (denomB + denomF), -maxFriction, maxFriction);
+			Vertex3D.release(rB, pv12);
 
-			ball.hit.applySurfaceImpulse(crossB.clone().multiplyScalar(dTime * friction), slipDir.clone().multiplyScalar(dTime * friction));
-			this.mover.applyImpulse(crossF.clone().multiplyScalar(-dTime * friction));
+			ball.hit.applySurfaceImpulseAndRelease(
+				crossB.clone(true).multiplyScalar(dTime * friction),
+				slipDir.clone(true).multiplyScalar(dTime * friction),
+			);
+			this.mover.applyImpulseAndRelease(crossF.clone(true).multiplyScalar(-dTime * friction));
+			Vertex3D.release(crossF, slipDir, crossB);
 		}
 	}
 
@@ -486,7 +500,7 @@ export class FlipperHit extends HitObject {
 						d0 *= 0.5;
 					}
 
-				} else { // 	move right limits
+				} else {                                   // move right limits
 					t0 = t;
 					d0 = bffnd;
 					if (dp * bffnd > 0.0) {
@@ -538,7 +552,7 @@ export class FlipperHit extends HitObject {
 		// hit normal is same as line segment normal
 		coll.hitNormal = new Vertex3D(F.x, F.y, 0);
 
-		const dist = new Vertex2D( // calculate moment from flipper base center
+		const dist = Vertex2D.claim( // calculate moment from flipper base center
 			ball.state.pos.x + ballVx * t - ballRadius * F.x - this.mover.hitCircleBase.center.x, // center of ball + projected radius to contact point
 			ball.state.pos.y + ballVy * t - ballRadius * F.y - this.mover.hitCircleBase.center.y, // all at time t
 		);
@@ -546,7 +560,8 @@ export class FlipperHit extends HitObject {
 		const distance = Math.sqrt(dist.x * dist.x + dist.y * dist.y);         // distance from base center to contact point
 
 		const invDist = 1.0 / distance;
-		coll.hitVel = new Vertex2D(-dist.y * invDist, dist.x * invDist);       // Unit Tangent velocity of contact point(rotate Normal clockwise)
+		coll.hitVel.set(-dist.y * invDist, dist.x * invDist);       // Unit Tangent velocity of contact point(rotate Normal clockwise)
+		Vertex2D.release(dist);
 		//coll.hitvelocity.z = 0.0f; // used as normal velocity so far, only if isContact is set, see below
 
 		if (contactAng >= angleMax && angleSpeed > 0 || contactAng <= angleMin && angleSpeed < 0) { // hit limits ???
@@ -555,12 +570,13 @@ export class FlipperHit extends HitObject {
 
 		coll.hitMomentBit = (distance === 0);
 
-		const dv = new Vertex2D(                                               // delta velocity ball to face
+		const dv = Vertex2D.claim(                                               // delta velocity ball to face
 			ballVx - coll.hitVel!.x * angleSpeed * distance,
 			ballVy - coll.hitVel!.y * angleSpeed * distance,
 		);
 
 		const bnv = dv.x * coll.hitNormal!.x + dv.y * coll.hitNormal!.y;       // dot Normal to delta v
+		Vertex2D.release(dv);
 
 		if (Math.abs(bnv) <= C_CONTACTVEL && bffnd <= PHYS_TOUCH) {
 			coll.isContact = true;
@@ -576,19 +592,22 @@ export class FlipperHit extends HitObject {
 	}
 
 	private getRelativeVelocity(normal: Vertex3D, ball: Ball): [ Vertex3D, Vertex3D, Vertex3D] {
-		const rB = normal.clone().multiplyScalar(-ball.data.radius);
-		const hitPos = ball.state.pos.clone().add(rB);
+		const rB = normal.clone(true).multiplyScalar(-ball.data.radius);
+		const hitPos = ball.state.pos.clone(true).add(rB);
 
-		const cF = new Vertex3D(
+		const cF = Vertex3D.claim(
 			this.mover.hitCircleBase.center.x,
 			this.mover.hitCircleBase.center.y,
 			ball.state.pos.z,                              // make sure collision happens in same z plane where ball is
 		);
 
-		const rF = hitPos.clone().sub(cF);                 // displacement relative to flipper center
-		const vB = ball.hit.surfaceVelocity(rB);
-		const vF = this.mover.surfaceVelocity(rF);
-		return [ vB.sub(vF), rB, rF ];
+		const rF = hitPos.clone(true).sub(cF);                 // displacement relative to flipper center
+		const vB = ball.hit.surfaceVelocity(rB, true);
+		const vF = this.mover.surfaceVelocity(rF, true);
+		const vRel = vB.clone(true).sub(vF);
+		Vertex3D.release(hitPos, cF, vB, vF);
+
+		return [ vRel, rB, rF ];
 	}
 
 	private hitTestFlipperEnd(ball: Ball, dTime: number, coll: CollisionEvent): number {
@@ -735,7 +754,7 @@ export class FlipperHit extends HitObject {
 		coll.hitNormal.z = 0.0;
 
 		// vector from base to flipperEnd plus the projected End radius
-		const dist = new Vertex2D(
+		const dist = Vertex2D.claim(
 			ball.state.pos.x + ballVx * t - ballRadius * coll.hitNormal.x - this.mover.hitCircleBase.center.x,
 			ball.state.pos.y + ballVy * t - ballRadius * coll.hitNormal.y - this.mover.hitCircleBase.center.y,
 		);
@@ -750,16 +769,18 @@ export class FlipperHit extends HitObject {
 
 		// Unit Tangent vector velocity of contact point(rotate normal right)
 		const invDistance = 1.0 / distance;
-		coll.hitVel = new Vertex2D(-dist.y * invDistance, dist.x * invDistance);
+		coll.hitVel.set(-dist.y * invDistance, dist.x * invDistance);
 		coll.hitMomentBit = (distance === 0);
+		Vertex2D.release(dist);
 
 		// recheck using actual contact angle of velocity direction
-		const dv = new Vertex2D(
+		const dv = Vertex2D.claim(
 			ballVx - coll.hitVel.x * angleSpeed * distance,                    // delta velocity ball to face
 			ballVy - coll.hitVel.y * angleSpeed * distance,
 		);
 
 		const bnv = dv.x * coll.hitNormal.x + dv.y * coll.hitNormal.y;         // dot Normal to delta v
+		Vertex2D.release(dv);
 
 		if (bnv >= 0) {
 			return -1.0; // not hit ... ball is receding from face already, must have been embedded or shallow angled

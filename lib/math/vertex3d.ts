@@ -226,8 +226,10 @@ export class Vertex3D implements Vertex {
 			);
 	}
 
-	public static crossZ(rz: number, v: Vertex3D) {
-		return new Vertex3D(-rz * v.y, rz * v.x, 0);
+	public static crossZ(rz: number, v: Vertex3D, recycle = false) {
+		return recycle
+			? Vertex3D.claim(-rz * v.y, rz * v.x, 0)
+			: new Vertex3D(-rz * v.y, rz * v.x, 0);
 	}
 
 	public static getRotatedAxis(angle: number, axis: Vertex3D, temp: Vertex3D): Vertex3D {

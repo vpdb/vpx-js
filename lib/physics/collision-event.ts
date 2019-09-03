@@ -57,7 +57,7 @@ export class CollisionEvent {
 	/**
 	 * Only "correctly" used by plunger and flipper
 	 */
-	public hitVel?: Vertex2D;
+	public hitVel: Vertex2D = new Vertex2D();
 
 	/**
 	 * Only set if isContact is true

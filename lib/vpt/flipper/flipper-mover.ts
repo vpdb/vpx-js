@@ -304,8 +304,8 @@ export class FlipperMover implements MoverObject {
 	}
 
 	// rigid body functions
-	public surfaceVelocity(surfP: Vertex3D): Vertex3D {
-		return Vertex3D.crossZ(this.angleSpeed, surfP);
+	public surfaceVelocity(surfP: Vertex3D, recycle = false): Vertex3D {
+		return Vertex3D.crossZ(this.angleSpeed, surfP, recycle);
 	}
 
 	public getHitTime(): number {
@@ -328,20 +328,27 @@ export class FlipperMover implements MoverObject {
 		}
 	}
 
+	/** @deprecated Use {@link #applyImpulseAndRelease()} */
 	public applyImpulse(rotI: Vertex3D): void {
 		this.angularMomentum += rotI.z;            // only rotation about z axis
 		this.angleSpeed = this.angularMomentum / this.inertia;    // TODO: figure out moment of inertia
 	}
 
-	public surfaceAcceleration(surfP: Vertex3D): Vertex3D {
+	public applyImpulseAndRelease(rotI: Vertex3D): void {
+		this.angularMomentum += rotI.z;            // only rotation about z axis
+		this.angleSpeed = this.angularMomentum / this.inertia;    // TODO: figure out moment of inertia
+		Vertex3D.release(rotI);
+	}
+
+	public surfaceAcceleration(surfP: Vertex3D, recycle = false): Vertex3D {
 		// tangential acceleration = (0, 0, omega) x surfP
-		const tangAcc = Vertex3D.crossZ(this.angularAcceleration, surfP);
+		const tangAcc = Vertex3D.crossZ(this.angularAcceleration, surfP, recycle);
 
 		// centripetal acceleration = (0,0,omega) x ( (0,0,omega) x surfP )
 		const av2 = this.angleSpeed * this.angleSpeed;
-		const centrAcc = new Vertex3D(-av2 * surfP.x, -av2 * surfP.y, 0);
+		const centrAcc = Vertex3D.claim(-av2 * surfP.x, -av2 * surfP.y, 0);
 
-		return tangAcc.add(centrAcc);
+		return tangAcc.addAndRelease(centrAcc);
 	}
 
 	public setStartAngle(r: number): void {
