@@ -152,14 +152,15 @@ export class Mesh {
 			const B = vertices[indices[i + 1]];
 			const C = vertices[indices[i + 2]];
 
-			const e0 = new Vertex3D(B.x - A.x, B.y - A.y, B.z - A.z);
-			const e1 = new Vertex3D(C.x - A.x, C.y - A.y, C.z - A.z);
-			const normal = e0.clone().cross(e1);
-			normal.normalize();
+			const e0 = Vertex3D.claim(B.x - A.x, B.y - A.y, B.z - A.z);
+			const e1 = Vertex3D.claim(C.x - A.x, C.y - A.y, C.z - A.z);
+			const normal = e0.clone(true).cross(e1).normalize();
 
 			A.nx += normal.x; A.ny += normal.y; A.nz += normal.z;
 			B.nx += normal.x; B.ny += normal.y; B.nz += normal.z;
 			C.nx += normal.x; C.ny += normal.y; C.nz += normal.z;
+
+			Vertex3D.release(e0, e1, normal);
 		}
 
 		for (let i = 0; i < numVertices; i++) {

@@ -142,8 +142,8 @@ export class BallHit extends HitObject {
 	}
 
 	public hitTest(ball: Ball, dTime: number, coll: CollisionEvent): number {
-		const d = this.state.pos.clone().sub(ball.state.pos!);  // delta position
-		const dv = this.vel.clone().sub(ball.hit.vel);           // delta velocity
+		const d = this.state.pos.clone(true).sub(ball.state.pos);  // delta position
+		const dv = this.vel.clone(true).sub(ball.hit.vel);           // delta velocity
 
 		let bcddSq = d.lengthSq();            // square of ball center's delta distance
 		let bcdd = Math.sqrt(bcddSq);         // length of delta
@@ -160,8 +160,10 @@ export class BallHit extends HitObject {
 
 		const b = dv.dot(d);                               // inner product
 		const bnv = b / bcdd;                              // normal speed of balls toward each other
+		Vertex3D.release(d);
 
 		if (bnv > C_LOWNORMVEL) {                          // dot of delta velocity and delta displacement, positive if receding no collison
+			Vertex3D.release(dv);
 			return -1.0;
 		}
 
@@ -174,6 +176,7 @@ export class BallHit extends HitObject {
 //#endif
 		if (bnd <= PHYS_TOUCH) {                           // in contact?
 			if (bnd < ball.data.radius * -2.0) {
+				Vertex3D.release(dv);
 				return -1.0;            // embedded too deep?
 			}
 
@@ -192,11 +195,13 @@ export class BallHit extends HitObject {
 		} else {
 			const a = dv.lengthSq();                       // square of differential velocity
 			if (a < 1.0e-8) {
+				Vertex3D.release(dv);
 				return -1.0;            // ball moving really slow, then wait for contact
 			}
 
 			const sol = solveQuadraticEq(a, 2.0 * b, bcddSq - totalRadius * totalRadius);
 			if (!sol) {
+				Vertex3D.release(dv);
 				return -1.0;
 			}
 			const [time1, time2] = sol;
@@ -204,18 +209,22 @@ export class BallHit extends HitObject {
 		}
 
 		if (!isFinite(hitTime) || hitTime < 0 || hitTime > dTime) {
+			Vertex3D.release(dv);
 			return -1.0;                // .. was some time previous || beyond the next physics tick
 		}
 
-		const hitPos = ball.state.pos.clone().add(dv.clone().multiplyScalar(hitTime)); // new ball position
+		const hitPos = ball.state.pos.clone(true).add(dv.multiplyScalar(hitTime)); // new ball position
+		Vertex3D.release(dv);
 
 		// calc unit normal of collision
-		const hitNormal = hitPos.clone().sub(this.state.pos);
+		const hitNormal = hitPos.clone(true).sub(this.state.pos);
+		Vertex3D.release(hitPos);
 		if (Math.abs(hitNormal.x) <= FLT_MIN && Math.abs(hitNormal.y) <= FLT_MIN && Math.abs(hitNormal.z) <= FLT_MIN) {
+			Vertex3D.release(hitNormal);
 			return -1.0;
 		}
-		coll.hitNormal = hitNormal;
-		coll.hitNormal.normalize();
+		coll.hitNormal.set(hitNormal).normalize();
+		Vertex3D.release(hitNormal);
 
 		coll.hitDistance = bnd;                            // actual contact distance
 
