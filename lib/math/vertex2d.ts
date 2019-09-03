@@ -76,7 +76,7 @@ export class Vertex2D implements Vertex {
 
 	public clone(recycle = false): Vertex2D {
 		if (recycle) {
-			Vertex2D.POOL.get().set(this._x, this._y);
+			return Vertex2D.POOL.get().set(this._x, this._y);
 		}
 		return new Vertex2D(this._x, this._y);
 	}
