@@ -538,16 +538,17 @@ export class FlipperHit extends HitObject {
 		}
 
 		// here ball and flipper face are in contact... past the endpoints, also, don't forget embedded and near solution
-		const T = new Vertex2D();                          // flipper face tangent
+		const faceTangent = Vertex2D.claim();                // flipper face tangent
 		if (face1) {                                       // left face?
-			T.x = -faceNormal.y;
-			T.y = faceNormal.x;
+			faceTangent.x = -faceNormal.y;
+			faceTangent.y = faceNormal.x;
 		} else {                                           // rotate to form Tangent vector
-			T.x = faceNormal.y;
-			T.y = -faceNormal.x;
+			faceTangent.x = faceNormal.y;
+			faceTangent.y = -faceNormal.x;
 		}
 
-		const bfftd = ballVtx * T.x + ballVty * T.y;       // ball to flipper face tangent distance
+		const bfftd = ballVtx * faceTangent.x + ballVty * faceTangent.y;       // ball to flipper face tangent distance
+		Vertex2D.release(faceTangent);
 
 		const len = this.mover.flipperRadius * this.mover.zeroAngNorm.x;       // face segment length ... e.g. same on either face
 		if (bfftd < -C_TOL_ENDPNTS || bfftd > len + C_TOL_ENDPNTS) {
