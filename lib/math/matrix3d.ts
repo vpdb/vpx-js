@@ -20,6 +20,7 @@
 import { Matrix4 } from 'three';
 import { f4, fr } from './float';
 import { Vertex3D } from './vertex3d';
+import { Pool } from '../util/object-pool';
 
 /**
  * Three's Matrix4.multiply() gives different results than VPinball's. Duh.
@@ -28,6 +29,8 @@ import { Vertex3D } from './vertex3d';
  * @see https://github.com/vpinball/vpinball/blob/master/math/matrix.h#L160
  */
 export class Matrix3D {
+
+	private static readonly POOL = new Pool(Matrix3D);
 
 	private readonly matrix = [
 		[ 1, 0, 0, 0 ],
@@ -40,6 +43,20 @@ export class Matrix3D {
 		this.setIdentity();
 	}
 
+	public static claim(): Matrix3D {
+		return Matrix3D.POOL.get();
+	}
+
+	public static release(...matrices: Matrix3D[]) {
+		for (const matrix of matrices) {
+			Matrix3D.POOL.release(matrix);
+		}
+	}
+
+	public static reset(m: Matrix3D): void {
+		m.setIdentity();
+	}
+
 	public set(matrix: number[][]): this {
 		for (let i = 0; i < 4; i++) {
 			for (let j = 0; j < 4; j++) {
@@ -47,6 +64,17 @@ export class Matrix3D {
 			}
 		}
 		return this;
+	}
+
+	public equals(matrix: Matrix3D): boolean {
+		for (let i = 0; i < 4; i++) {
+			for (let j = 0; j < 4; j++) {
+				if (this.matrix[i][j] !== matrix.matrix[i][j]) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	public setIdentity(): this {
@@ -116,11 +144,12 @@ export class Matrix3D {
 	}
 
 	public multiply(a: Matrix3D, b?: Matrix3D): this {
-		if (b) {
-			Object.assign(this.matrix, Matrix3D.multiplyMatrices(a, b).matrix);
-		} else {
-			Object.assign(this.matrix, Matrix3D.multiplyMatrices(this, a).matrix);
-		}
+		const product = b
+			? Matrix3D.multiplyMatrices(a, b, false)
+			: Matrix3D.multiplyMatrices(this, a, false);
+
+		Object.assign(this.matrix, product.matrix);
+		//Matrix3D.release(product);
 		return this;
 	}
 
@@ -133,7 +162,10 @@ export class Matrix3D {
 	// }
 
 	public preMultiply(a: Matrix3D): this {
-		Object.assign(this.matrix, Matrix3D.multiplyMatrices(a, this).matrix);
+		const product = Matrix3D.multiplyMatrices(a, this, false);
+		Object.assign(this.matrix, product.matrix);
+		//this.set(product.matrix);
+		//Matrix3D.release(product);
 		return this;
 	}
 
@@ -211,8 +243,8 @@ export class Matrix3D {
 		return matrix;
 	}
 
-	private static multiplyMatrices(a: Matrix3D, b: Matrix3D): Matrix3D {
-		const result = new Matrix3D();
+	private static multiplyMatrices(a: Matrix3D, b: Matrix3D, recycle = false): Matrix3D {
+		const result = recycle ? Matrix3D.claim() : new Matrix3D();
 		for (let i = 0; i < 4; ++i) {
 			for (let l = 0; l < 4; ++l) {
 				result.matrix[i][l] =
