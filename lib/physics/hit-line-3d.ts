@@ -95,7 +95,7 @@ export class HitLine3D extends HitLineZ {
 		this.hitBBox.zhigh = oldZ.y;  // dto.
 
 		if (hitTime >= 0) {      // transform hit normal back to world coordinate system
-			coll.hitNormal = this.matrix.multiplyVectorT(coll.hitNormal!);
+			coll.hitNormal.setAndRelease(this.matrix.multiplyVectorT(coll.hitNormal, true));
 		}
 
 		Vertex2D.release(oldZ);
@@ -105,7 +105,7 @@ export class HitLine3D extends HitLineZ {
 
 	public collide(coll: CollisionEvent): void {
 		const ball = coll.ball;
-		const hitNormal = coll.hitNormal!;
+		const hitNormal = coll.hitNormal;
 
 		const dot = -hitNormal.dot(ball.hit.vel);
 		ball.hit.collide3DWall(hitNormal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);

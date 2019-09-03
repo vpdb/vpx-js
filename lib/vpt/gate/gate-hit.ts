@@ -97,7 +97,7 @@ export class GateHit extends HitObject {
 
 	public collide(coll: CollisionEvent, physics: PlayerPhysics): void {
 		const ball = coll.ball;
-		const hitNormal = coll.hitNormal!;
+		const hitNormal = coll.hitNormal;
 
 		const dot = hitNormal.dot(coll.ball.hit.vel);
 		const h = this.data.height * 0.5;

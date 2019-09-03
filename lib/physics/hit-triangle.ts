@@ -154,7 +154,7 @@ export class HitTriangle extends HitObject {
 
 	public collide(coll: CollisionEvent, physics: PlayerPhysics): void {
 		const ball = coll.ball;
-		const hitNormal = coll.hitNormal!;
+		const hitNormal = coll.hitNormal;
 		const dot = -(hitNormal.dot(ball.hit.vel));
 
 		ball.hit.collide3DWall(this.normal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);

@@ -78,7 +78,7 @@ export class Hit3DPoly extends HitObject {
 
 	public collide(coll: CollisionEvent): void {
 		const ball = coll.ball;
-		const hitNormal = coll.hitNormal!;
+		const hitNormal = coll.hitNormal;
 
 		/* istanbul ignore else: This seems dead code to me. The actual trigger logic is handled in TriggerHitCircle and TriggerHitLine. */
 		if (this.objType !== CollisionType.Trigger) {

@@ -27,11 +27,16 @@ export class Matrix2D {
 		[ 0, 0, 1 ],
 	];
 
-	public multiplyVectorT(v: Vertex3D): Vertex3D {
-		return new Vertex3D(
-			this.matrix[0][0] * v.x + this.matrix[1][0] * v.y + this.matrix[2][0] * v.z,
-			this.matrix[0][1] * v.x + this.matrix[1][1] * v.y + this.matrix[2][1] * v.z,
-			this.matrix[0][2] * v.x + this.matrix[1][2] * v.y + this.matrix[2][2] * v.z);
+	public multiplyVectorT(v: Vertex3D, recycle = false): Vertex3D {
+		return recycle
+			? Vertex3D.claim(
+				this.matrix[0][0] * v.x + this.matrix[1][0] * v.y + this.matrix[2][0] * v.z,
+				this.matrix[0][1] * v.x + this.matrix[1][1] * v.y + this.matrix[2][1] * v.z,
+				this.matrix[0][2] * v.x + this.matrix[1][2] * v.y + this.matrix[2][2] * v.z)
+			: new Vertex3D(
+				this.matrix[0][0] * v.x + this.matrix[1][0] * v.y + this.matrix[2][0] * v.z,
+				this.matrix[0][1] * v.x + this.matrix[1][1] * v.y + this.matrix[2][1] * v.z,
+				this.matrix[0][2] * v.x + this.matrix[1][2] * v.y + this.matrix[2][2] * v.z);
 	}
 
 	public rotationAroundAxis(axis: Vertex3D, rsin: number, rcos: number) {

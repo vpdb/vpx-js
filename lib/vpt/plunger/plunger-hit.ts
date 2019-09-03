@@ -90,7 +90,7 @@ export class PlungerHit extends HitObject {
 			isHit = true;
 			hitTime = newTime;
 			coll.set(hit);
-			coll.hitVel = new Vertex2D(0, 0);
+			coll.hitVel.set(0, 0);
 		}
 
 		for (let i = 0; i < 2; i++) {
@@ -99,7 +99,7 @@ export class PlungerHit extends HitObject {
 				isHit = true;
 				hitTime = newTime;
 				coll.set(hit);
-				coll.hitVel = new Vertex2D(0, 0);
+				coll.hitVel.set(0, 0);
 			}
 
 			newTime = this.mover.jointBase[i].hitTest(ball, hitTime, hit);
@@ -107,7 +107,7 @@ export class PlungerHit extends HitObject {
 				isHit = true;
 				hitTime = newTime;
 				coll.set(hit);
-				coll.hitVel = new Vertex2D(0, 0);
+				coll.hitVel.set(0, 0);
 			}
 		}
 
@@ -167,7 +167,7 @@ export class PlungerHit extends HitObject {
 			isHit = true;
 			hitTime = newTime;
 			coll.set(hit);
-			coll.hitVel = new Vertex2D(0, deltaY);
+			coll.hitVel.set(0, deltaY);
 		}
 
 		for (let i = 0; i < 2; i++) {
@@ -176,7 +176,7 @@ export class PlungerHit extends HitObject {
 				isHit = true;
 				hitTime = newTime;
 				coll.set(hit);
-				coll.hitVel = new Vertex2D(0, deltaY);
+				coll.hitVel.set(0, deltaY);
 			}
 		}
 
@@ -237,7 +237,7 @@ export class PlungerHit extends HitObject {
 	public collide(coll: CollisionEvent, physics: PlayerPhysics): void {
 		const ball = coll.ball;
 
-		let dot = (ball.hit.vel.x - coll.hitVel!.x) * coll.hitNormal!.x + (ball.hit.vel.y - coll.hitVel!.y) * coll.hitNormal!.y;
+		let dot = (ball.hit.vel.x - coll.hitVel!.x) * coll.hitNormal.x + (ball.hit.vel.y - coll.hitVel!.y) * coll.hitNormal.y;
 		if (dot >= -C_LOWNORMVEL) {                        // nearly receding ... make sure of conditions
 			if (dot > C_LOWNORMVEL) {                      // otherwise if clearly approaching .. process the collision
 				return;                                    // is this velocity clearly receding (i.e must > a minimum)
@@ -260,7 +260,7 @@ export class PlungerHit extends HitObject {
 				hDist = C_DISP_LIMIT;
 			}                                              // crossing ramps, delta noise
 			// push along norm, back to free area (use the norm, but is not correct)
-			ball.state.pos.add(coll.hitNormal!.clone().multiplyScalar(hDist));
+			ball.state.pos.add(coll.hitNormal.clone().multiplyScalar(hDist));
 		}
 //#endif
 
@@ -299,7 +299,7 @@ export class PlungerHit extends HitObject {
 		}
 
 		// update the ball speed for the impulse
-		ball.hit.vel.add(coll.hitNormal!.clone().multiplyScalar(impulse));
+		ball.hit.vel.add(coll.hitNormal.clone().multiplyScalar(impulse));
 		ball.hit.vel.multiplyScalar(0.999);           //friction all axiz     //!! TODO: fix this
 
 		const scatterVel = this.mover.scatterVelocity; // fixme * g_pplayer->m_ptable->m_globalDifficulty;// apply dificulty weighting

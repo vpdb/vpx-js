@@ -50,15 +50,15 @@ export class BumperHit extends HitCircle {
 		}
 
 		// needs to be computed before Collide3DWall()
-		const dot = coll.hitNormal!.dot(coll.ball.hit.vel);
+		const dot = coll.hitNormal.dot(coll.ball.hit.vel);
 
 		// reflect ball from wall
-		coll.ball.hit.collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
+		coll.ball.hit.collide3DWall(coll.hitNormal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
 		// if velocity greater than threshold level
 		if (this.data.hitEvent && (dot <= -this.data.threshold)) {
 			// add a chunk of velocity to drive ball away
-			coll.ball.hit.vel.add(coll.hitNormal!.clone().multiplyScalar(this.data.force));
+			coll.ball.hit.vel.add(coll.hitNormal.clone().multiplyScalar(this.data.force));
 
 			this.animation.hitEvent = true;
 			this.animation.ballHitPosition = coll.ball.state.pos.clone();

@@ -41,7 +41,7 @@ export class HitCircle extends HitObject {
 	}
 
 	public collide(coll: CollisionEvent, physics: PlayerPhysics): void {
-		coll.ball.hit.collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
+		coll.ball.hit.collide3DWall(coll.hitNormal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 	}
 
 	public calcHitBBox(): void {
