@@ -261,12 +261,14 @@ export class FlipperHit extends HitObject {
 
 		if (bnv >= -C_LOWNORMVEL) {                        // nearly receding ... make sure of conditions
 			if (bnv > C_LOWNORMVEL) {                      // otherwise if clearly approaching .. process the collision
-				return;                                    // is this velocity clearly receding (i.e must > a minimum)
+				Vertex3D.release(vRel, rB, rF);            // is this velocity clearly receding (i.e must > a minimum)
+				return;
 			}
 //#ifdef C_EMBEDDED
 			if (coll.hitDistance < -C_EMBEDDED) {
 				bnv = -C_EMBEDSHOT;                        // has ball become embedded???, give it a kick
 			} else {
+				Vertex3D.release(vRel, rB, rF);
 				return;
 			}
 //#endif
@@ -281,12 +283,12 @@ export class FlipperHit extends HitObject {
 				hdist = C_DISP_LIMIT;                      // crossing ramps, delta noise
 			}
 			// push along norm, back to free area; use the norm, but is not correct
-			ball.state.pos.add(coll.hitNormal!.clone().multiplyScalar(hdist));
+			ball.state.pos.addAndRelease(coll.hitNormal!.clone(true).multiplyScalar(hdist));
 		}
 //#endif
 
 		// angular response to impulse in normal direction
-		const angResp = Vertex3D.crossProduct(rF, normal);
+		const angResp = Vertex3D.crossProduct(rF, normal, true);
 
 		/*
 		 * Check if flipper is in contact with its stopper and the collision impulse
@@ -310,10 +312,12 @@ export class FlipperHit extends HitObject {
 		 */
 		const epsilon = elasticityWithFalloff(this.elasticity, this.elasticityFalloff, bnv);
 
-		let impulse = -(1.0 + epsilon) * bnv / (ball.hit.invMass + normal.dot(Vertex3D.crossProduct(angResp.clone().divideScalar(this.mover.inertia), rF)));
-		const flipperImp = normal.clone().multiplyScalar(-(impulse * flipperResponseScaling));
+		const pv1 = angResp.clone(true).divideScalar(this.mover.inertia);
+		let impulse = -(1.0 + epsilon) * bnv / (ball.hit.invMass + normal.dotAndRelease(Vertex3D.crossProduct(pv1, rF, true)));
+		const flipperImp = normal.clone(true).multiplyScalar(-(impulse * flipperResponseScaling));
+		Vertex3D.release(angResp, pv1);
 
-		const rotI = Vertex3D.crossProduct(rF, flipperImp);
+		const rotI = Vertex3D.crossProduct(rF, flipperImp, true);
 		if (this.mover.isInContact) {
 			if (rotI.z * this.mover.contactTorque < 0) {   // pushing against the solenoid?
 
@@ -335,12 +339,13 @@ export class FlipperHit extends HitObject {
 				}
 			}
 		}
+		Vertex3D.release(flipperImp);
 
-		ball.hit.vel.add(normal.clone().multiplyScalar(impulse * ball.hit.invMass));      // new velocity for ball after impact
-		this.mover.applyImpulse(rotI);
+		ball.hit.vel.addAndRelease(normal.clone(true).multiplyScalar(impulse * ball.hit.invMass));      // new velocity for ball after impact
+		this.mover.applyImpulseAndRelease(rotI);
 
 		// apply friction
-		const tangent = vRel.clone().sub(normal.clone().multiplyScalar(vRel.dot(normal)));       // calc the tangential velocity
+		const tangent = vRel.clone(true).subAndRelease(normal.clone(true).multiplyScalar(vRel.dot(normal)));       // calc the tangential velocity
 
 		const tangentSpSq = tangent.lengthSq();
 		if (tangentSpSq > 1e-6) {
@@ -348,19 +353,26 @@ export class FlipperHit extends HitObject {
 			const vt = vRel.dot(tangent);                                      // get speed in tangential direction
 
 			// compute friction impulse
-			const crossB = Vertex3D.crossProduct(rB, tangent);
-			let kt = ball.hit.invMass + tangent.dot(Vertex3D.crossProduct(crossB.clone().divideScalar(ball.hit.inertia), rB));
+			const crossB = Vertex3D.crossProduct(rB, tangent, true);
+			const pv12 = crossB.clone(true).divideScalar(ball.hit.inertia);
+			let kt = ball.hit.invMass + tangent.dotAndRelease(Vertex3D.crossProduct(pv12, rB, true));
 
-			const crossF = Vertex3D.crossProduct(rF, tangent);
-			kt += tangent.dot(Vertex3D.crossProduct(crossF.clone().divideScalar(this.mover.inertia), rF));   // flipper only has angular response
+			const crossF = Vertex3D.crossProduct(rF, tangent, true);
+			const pv13 = crossF.clone(true).divideScalar(this.mover.inertia);
+			kt += tangent.dotAndRelease(Vertex3D.crossProduct(pv13, rF, true));   // flipper only has angular response
 
 			// friction impulse can't be greater than coefficient of friction times collision impulse (Coulomb friction cone)
 			const maxFriction = this.friction * impulse;
 			const jt = clamp(-vt / kt, -maxFriction, maxFriction);
 
-			ball.hit.applySurfaceImpulse(crossB.clone().multiplyScalar(jt), tangent.clone().multiplyScalar(jt));
-			this.mover.applyImpulse(crossF.clone().multiplyScalar(-jt));
+			ball.hit.applySurfaceImpulseAndRelease(
+				crossB.clone(true).multiplyScalar(jt),
+				tangent.clone(true).multiplyScalar(jt),
+			);
+			this.mover.applyImpulseAndRelease(crossF.clone(true).multiplyScalar(-jt));
+			Vertex3D.release(crossB, pv12, crossF, pv13);
 		}
+		Vertex3D.release(vRel, rB, rF, tangent);
 
 		if (bnv < -0.25 && (physics.timeMsec - this.lastHitTime) > 250) {       // limit rate to 250 milliseconds per event
 			const flipperHit = coll.hitMomentBit ? -1.0 : -bnv;                // move event processing to end of collision handler...

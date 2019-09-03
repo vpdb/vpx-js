@@ -15,4 +15,4 @@ export function elasticityWithFalloff(elasticity: number, falloff: number, vel: 
 	}
 }
 
-export const hardScatter = 0.0;
+export const HARD_SCATTER = 0.0;
