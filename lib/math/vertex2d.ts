@@ -24,7 +24,7 @@ import { IRenderVertex, Vertex } from './vertex';
 
 export class Vertex2D implements Vertex {
 
-	private static POOL = new Pool(Vertex2D);
+	private static readonly POOL = new Pool(Vertex2D);
 
 	public readonly isVector2 = true;
 	public readonly isVector3 = false;

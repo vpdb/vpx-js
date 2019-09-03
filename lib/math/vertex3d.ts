@@ -27,7 +27,7 @@ import { Vertex2D } from './vertex2d';
 
 export class Vertex3D implements Vertex {
 
-	private static POOL = new Pool(Vertex3D);
+	private static readonly POOL = new Pool(Vertex3D);
 
 	public readonly isVector2 = false;
 	public readonly isVector3 = true;
