@@ -46,9 +46,9 @@ export class LineSegSlingshot extends LineSeg {
 
 	public collide(coll: CollisionEvent): void {
 		const ball = coll.ball;
-		const hitNormal = coll.hitNormal!;
+		const hitNormal = coll.hitNormal;
 
-		const dot = coll.hitNormal!.dot(coll.ball.hit.vel);                    // normal velocity to slingshot
+		const dot = coll.hitNormal.dot(coll.ball.hit.vel);                    // normal velocity to slingshot
 		const threshold = (dot <= -this.surfaceData.slingshotThreshold);       // normal greater than threshold?
 
 		if (!this.surface.isDisabled && threshold) {                           // enabled and if velocity greater than threshold level

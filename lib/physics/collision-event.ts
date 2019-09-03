@@ -57,7 +57,7 @@ export class CollisionEvent {
 	/**
 	 * Only "correctly" used by plunger and flipper
 	 */
-	public hitVel: Vertex2D = new Vertex2D();
+	public readonly hitVel: Vertex2D = new Vertex2D();
 
 	/**
 	 * Only set if isContact is true
@@ -88,8 +88,8 @@ export class CollisionEvent {
 		this.isContact = coll.isContact;
 		this.hitTime = coll.hitTime;
 		this.hitDistance = coll.hitDistance;
-		this.hitNormal = coll.hitNormal;
-		this.hitVel = coll.hitVel;
+		this.hitNormal.set(coll.hitNormal);
+		this.hitVel.set(coll.hitVel.x, coll.hitVel.y);
 		this.hitOrgNormalVelocity = coll.hitOrgNormalVelocity;
 		this.hitMomentBit = coll.hitMomentBit;
 		this.hitFlag = coll.hitFlag;

@@ -94,6 +94,14 @@ export class Vertex3D implements Vertex {
 		return this;
 	}
 
+	public setAndRelease(v: Vertex3D): this {
+		this.x = v.x;
+		this.y = v.y;
+		this.z = v.z;
+		Vertex3D.release(v);
+		return this;
+	}
+
 	public clone(recycle = false): Vertex3D {
 		if (recycle) {
 			Vertex3D.POOL.get().set(this._x, this._y, this._z);

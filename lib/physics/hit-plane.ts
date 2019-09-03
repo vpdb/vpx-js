@@ -87,7 +87,7 @@ export class HitPlane extends HitObject {
 	}
 
 	public collide(coll: CollisionEvent): void {
-		coll.ball.hit.collide3DWall(coll.hitNormal!, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
+		coll.ball.hit.collide3DWall(coll.hitNormal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
 		// distance from plane to ball surface
 		const bnd = this.normal.dot(coll.ball.state.pos) - coll.ball.data.radius - this.d;

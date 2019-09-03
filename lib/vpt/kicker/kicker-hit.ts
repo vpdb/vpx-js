@@ -71,7 +71,7 @@ export class KickerHit extends HitCircle {
 	}
 
 	public collide(coll: CollisionEvent, physics: PlayerPhysics): void {
-		this.doCollide(physics, coll.ball, coll.hitNormal!, coll.hitFlag, false);
+		this.doCollide(physics, coll.ball, coll.hitNormal, coll.hitFlag, false);
 	}
 
 	public doCollide(physics: PlayerPhysics, ball: Ball, hitNormal: Vertex3D, hitBit: boolean, newBall: boolean) {
@@ -256,8 +256,8 @@ export class KickerHit extends HitCircle {
 		this.ball.hit.angularMomentum.setZero();
 		this.ball.hit.coll.hitDistance = 0.0;
 		this.ball.hit.coll.hitTime = -1.0;
-		this.ball.hit.coll.hitNormal = new Vertex3D();
-		this.ball.hit.coll.hitVel = new Vertex2D();
+		this.ball.hit.coll.hitNormal.setZero();
+		this.ball.hit.coll.hitVel.setZero();
 		this.ball.hit.coll.hitFlag = false;
 		this.ball.hit.coll.isContact = false;
 		this.ball.hit.coll.hitMomentBit = true;

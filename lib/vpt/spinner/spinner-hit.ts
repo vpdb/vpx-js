@@ -92,7 +92,7 @@ export class SpinnerHit extends HitObject {
 
 	public collide(coll: CollisionEvent, physics: PlayerPhysics): void {
 
-		const dot = coll.hitNormal!.dot(coll.ball.hit.vel);
+		const dot = coll.hitNormal.dot(coll.ball.hit.vel);
 		if (dot < 0) {                                     // hit from back doesn't count
 			return;
 		}

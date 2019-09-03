@@ -138,7 +138,7 @@ export class FlipperHit extends HitObject {
 		if (hitTime >= 0) {
 			// Tangent velocity of contact point (rotate Normal right)
 			// units: rad*d/t (Radians*diameter/time)
-			coll.hitVel = new Vertex2D(0, 0);
+			coll.hitVel.set(0, 0);
 			coll.hitMomentBit = true;
 			return hitTime;
 
@@ -149,7 +149,7 @@ export class FlipperHit extends HitObject {
 
 	public contact(coll: CollisionEvent, dTime: number, physics: PlayerPhysics): void {
 		const ball = coll.ball;
-		const normal = coll.hitNormal!;
+		const normal = coll.hitNormal;
 
 //#ifdef C_EMBEDDED
 		if (coll.hitDistance < -C_EMBEDDED) {
@@ -254,7 +254,7 @@ export class FlipperHit extends HitObject {
 
 	public collide(coll: CollisionEvent, physics: PlayerPhysics): void {
 		const ball = coll.ball;
-		const normal = coll.hitNormal!;
+		const normal = coll.hitNormal;
 		const [ vRel, rB, rF ] = this.getRelativeVelocity(normal, ball);
 
 		let bnv = normal.dot(vRel);                        // relative normal velocity
@@ -283,7 +283,7 @@ export class FlipperHit extends HitObject {
 				hdist = C_DISP_LIMIT;                      // crossing ramps, delta noise
 			}
 			// push along norm, back to free area; use the norm, but is not correct
-			ball.state.pos.addAndRelease(coll.hitNormal!.clone(true).multiplyScalar(hdist));
+			ball.state.pos.addAndRelease(coll.hitNormal.clone(true).multiplyScalar(hdist));
 		}
 //#endif
 
@@ -427,7 +427,7 @@ export class FlipperHit extends HitObject {
 			ffnx = -ffnx;
 		}
 		const ffny = this.mover.zeroAngNorm.y;             // norm y component same for either face
-		const vp = new Vertex2D(                           // face segment V1 point
+		const vp = Vertex2D.claim(                         // face segment V1 point
 			this.mover.hitCircleBase.radius * ffnx,     // face endpoint of line segment on base radius
 			this.mover.hitCircleBase.radius * ffny,
 		);
@@ -467,13 +467,14 @@ export class FlipperHit extends HitObject {
 			faceNormal.x = ffnx * radCos - ffny * radSin;  // rotate to time t, norm and face offset point
 			faceNormal.y = ffny * radCos + ffnx * radSin;
 
-			const vt = new Vertex2D(
+			const vt = Vertex2D.claim(
 				vp.x * radCos - vp.y * radSin + flipperBase.x,       // rotate and translate to world position
 				vp.y * radCos + vp.x * radSin + flipperBase.y,
 			);
 
 			ballVtx = ball.state.pos.x + ballVx * t - vt.x;          // new ball position relative to rotated line segment endpoint
 			ballVty = ball.state.pos.y + ballVy * t - vt.y;
+			Vertex2D.release(vt);
 
 			bffnd = ballVtx * faceNormal.x + ballVty * faceNormal.y - ballRadius;      // normal distance to segment
 
@@ -526,6 +527,7 @@ export class FlipperHit extends HitObject {
 			t = t0 - d0 * (t1 - t0) / (d1 - d0);           // next estimate
 			dp = bffnd;                                    // remember
 		}
+		Vertex2D.release(vp);
 
 		// +++ End time iteration loop found time t soultion ++++++
 		if (!isFinite(t)
@@ -568,7 +570,7 @@ export class FlipperHit extends HitObject {
 		// parameters need to be calculated from the actual configuration, i.e contact radius must be calc'ed
 
 		// hit normal is same as line segment normal
-		coll.hitNormal = new Vertex3D(faceNormal.x, faceNormal.y, 0);
+		coll.hitNormal.set(faceNormal.x, faceNormal.y, 0);
 
 		const dist = Vertex2D.claim( // calculate moment from flipper base center
 			ball.state.pos.x + ballVx * t - ballRadius * faceNormal.x - this.mover.hitCircleBase.center.x, // center of ball + projected radius to contact point
@@ -594,7 +596,7 @@ export class FlipperHit extends HitObject {
 			ballVy - coll.hitVel!.y * angleSpeed * distance,
 		);
 
-		const bnv = dv.x * coll.hitNormal!.x + dv.y * coll.hitNormal!.y;       // dot Normal to delta v
+		const bnv = dv.x * coll.hitNormal.x + dv.y * coll.hitNormal.y;       // dot Normal to delta v
 		Vertex2D.release(dv);
 
 		if (Math.abs(bnv) <= C_CONTACTVEL && bffnd <= PHYS_TOUCH) {
@@ -650,7 +652,7 @@ export class FlipperHit extends HitObject {
 		const ballVx = ball.hit.vel.x;
 		const ballVy = ball.hit.vel.y;
 
-		const vp = new Vertex2D(
+		const vp = Vertex2D.claim(
 			0.0,                                           // m_flipperradius * sin(0);
 			-this.mover.flipperRadius,                     // m_flipperradius * (-cos(0));
 		);
@@ -684,13 +686,14 @@ export class FlipperHit extends HitObject {
 			const radCos = Math.cos(contactAng);           // rotational transform from zero position to position at time t
 
 			// rotate angle delta unit vector, rotates system according to flipper face angle
-			const vt = new Vertex2D(
+			const vt = Vertex2D.claim(
 				vp.x * radCos - vp.y * radSin + flipperBase.x,       // rotate and translate to world position
 				vp.y * radCos + vp.x * radSin + flipperBase.y,
 			);
 
 			ballVtx = ballX + ballVx * t - vt.x;           // new ball position relative to flipper end radius
 			ballVty = ballY + ballVy * t - vt.y;
+			Vertex2D.release(vt);
 
 			// center ball to center end radius distance
 			cbceDist = Math.sqrt(ballVtx * ballVtx + ballVty * ballVty);
@@ -746,8 +749,8 @@ export class FlipperHit extends HitObject {
 
 			t = t0 - d0 * (t1 - t0) / (d1 - d0); // estimate next t
 			dp = bFend; // remember
-
 		}
+		Vertex2D.release(vp);
 
 		//+++ End time interaction loop found time t solution ++++++
 
@@ -767,10 +770,11 @@ export class FlipperHit extends HitObject {
 		// ok we have a confirmed contact, calc the stats, remember there are "near" solution, so all
 		// parameters need to be calculated from the actual configuration, i.e. contact radius must be calc'ed
 		const invCbceDist = 1.0 / cbceDist;
-		coll.hitNormal = new Vertex3D();
-		coll.hitNormal.x = ballVtx * invCbceDist;          // normal vector from flipper end to ball
-		coll.hitNormal.y = ballVty * invCbceDist;
-		coll.hitNormal.z = 0.0;
+		coll.hitNormal.set(
+			ballVtx * invCbceDist,          // normal vector from flipper end to ball
+			ballVty * invCbceDist,
+			0.0,
+		);
 
 		// vector from base to flipperEnd plus the projected End radius
 		const dist = Vertex2D.claim(
