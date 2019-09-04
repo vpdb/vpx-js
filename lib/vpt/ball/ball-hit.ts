@@ -499,7 +499,7 @@ export class BallHit extends HitObject {
 
 	public surfaceAcceleration(surfP: Vertex3D, physics: PlayerPhysics): Vertex3D {
 		// if we had any external torque, we would have to add "(deriv. of ang.vel.) x surfP" here
-		const p2 = Vertex3D.crossProduct(this.angularVelocity, surfP);
+		const p2 = Vertex3D.crossProduct(this.angularVelocity, surfP, true);
 		const acceleration = physics.gravity
 			.clone(true)
 			.multiplyScalar(this.invMass)                                                 // linear acceleration

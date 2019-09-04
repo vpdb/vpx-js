@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { logger } from './logger';
+
 export class Pool<T> {
 
 	private static MAX_POOL_SIZE = 100;
@@ -36,13 +38,19 @@ export class Pool<T> {
 		if (this.pool.length < Pool.MAX_POOL_SIZE) {
 			this.warned = false;
 		}
-		return new this.poolable();
+		const obj = new this.poolable();
+		(obj as any).__pool = true;
+		return obj;
 	}
 
 	public release(obj: T): void {
+		if (!(obj as any).__pool) {
+			logger().warn('Trying to recycle non-claimed %s, aborting.', this.poolable.name);
+			return;
+		}
 		if (this.pool.length >= Pool.MAX_POOL_SIZE) {
 			if (!this.warned) {
-				console.warn('Pool size %s of %s is exhausted, future objects will be garbage-collected.', Pool.MAX_POOL_SIZE, this.poolable.name);
+				logger().warn('Pool size %s of %s is exhausted, future objects will be garbage-collected.', Pool.MAX_POOL_SIZE, this.poolable.name);
 				this.warned = true;
 			}
 			return;

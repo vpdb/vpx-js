@@ -80,7 +80,7 @@ export class PlungerHit extends HitObject {
 		physics.lastPlungerHit = physics.timeMsec;
 
 		// We are close enable the plunger light.
-		const hit = new CollisionEvent(ball);
+		const hit = CollisionEvent.claim(ball);
 
 		// Check for hits on the non-moving parts, like the side of back
 		// of the plunger.  These are just like hitting a wall.
