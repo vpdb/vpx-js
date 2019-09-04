@@ -242,8 +242,7 @@ export class Vertex3D implements Vertex {
 	}
 
 	public static getRotatedAxis(angle: number, axis: Vertex3D, temp: Vertex3D): Vertex3D {
-		const u = axis.clone();
-		u.normalize();
+		const u = axis.clone(true).normalize();
 
 		const sinAngle = f4(Math.sin(f4(f4(Math.PI / 180.0) * angle)));
 		const cosAngle = f4(Math.cos(f4(f4(Math.PI / 180.0) * angle)));
@@ -265,6 +264,7 @@ export class Vertex3D implements Vertex {
 		rotMatrixRow2.y = f4(f4(u.y * u.z) * oneMinusCosAngle) + f4(sinAngle * u.x);
 		rotMatrixRow2.z = f4(u.z * u.z) + f4(cosAngle * f4(1.0 - f4(u.z * u.z)));
 
+		Vertex3D.release(u);
 		return new Vertex3D(temp.dot(rotMatrixRow0), temp.dot(rotMatrixRow1), temp.dot(rotMatrixRow2));
 	}
 

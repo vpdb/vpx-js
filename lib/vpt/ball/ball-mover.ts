@@ -43,22 +43,21 @@ export class BallMover implements MoverObject {
 	public updateDisplacements(dtime: number): void {
 		if (!this.hit.isFrozen) {
 
-			const ds = this.hit.vel.clone().multiplyScalar(dtime);
-			this.state.pos.add(ds);
-
+			this.state.pos.addAndRelease(this.hit.vel.clone(true).multiplyScalar(dtime));
 			this.hit.calcHitBBox();
 
-			const mat3 = new Matrix2D();
-			mat3.createSkewSymmetric(this.hit.angularVelocity);
+			const mat3 = Matrix2D.claim().createSkewSymmetric(this.hit.angularVelocity);
 
-			const addedOrientation = new Matrix2D();
-			addedOrientation.multiplyMatrix(mat3.clone(), this.state.orientation);
+			const addedOrientation = Matrix2D.claim();
+			addedOrientation.multiplyMatrix(mat3, this.state.orientation);
 			addedOrientation.multiplyScalar(dtime);
 
 			this.state.orientation.addMatrix(addedOrientation, this.state.orientation);
 			this.state.orientation.orthoNormalize();
 
-			this.hit.angularVelocity = this.hit.angularMomentum.clone().divideScalar(this.hit.inertia);
+			this.hit.angularVelocity.setAndRelease(this.hit.angularMomentum.clone(true).divideScalar(this.hit.inertia));
+
+			Matrix2D.release(mat3, addedOrientation);
 		}
 	}
 
@@ -69,13 +68,13 @@ export class BallMover implements MoverObject {
 				this.hit.vel.x *= 0.5;  // Null out most of the X/Y velocity, want a little bit so the ball can sort of find its way out of obstacles.
 				this.hit.vel.y *= 0.5;
 
-				this.hit.vel.add(new Vertex3D(
+				this.hit.vel.addAndRelease(Vertex3D.claim(
 					Math.max(-10.0, Math.min(10.0, (physics.bcTarget.x - this.state.pos.x) / 10.0)),
 					Math.max(-10.0, Math.min(10.0, (physics.bcTarget.y - this.state.pos.y) / 10.0)),
 					-2.0,
 				));
 			} else {
-				this.hit.vel.add(physics.gravity.clone().multiplyScalar(PHYS_FACTOR));
+				this.hit.vel.addAndRelease(physics.gravity.clone(true).multiplyScalar(PHYS_FACTOR));
 			}
 
 			// todo nudge

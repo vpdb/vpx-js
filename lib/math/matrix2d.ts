@@ -83,7 +83,7 @@ export class Matrix2D {
 		this.matrix[2][2] = axis.z * axis.z + rcos * (1.0 - axis.z * axis.z);
 	}
 
-	public createSkewSymmetric(pv3D: Vertex3D) {
+	public createSkewSymmetric(pv3D: Vertex3D): this {
 		this.matrix[0][0] = 0;
 		this.matrix[0][1] = -pv3D.z;
 		this.matrix[0][2] = pv3D.y;
@@ -93,6 +93,7 @@ export class Matrix2D {
 		this.matrix[2][0] = -pv3D.y;
 		this.matrix[2][1] = pv3D.x;
 		this.matrix[2][2] = 0;
+		return this;
 	}
 
 	public clone(recycle = false): Matrix2D {
