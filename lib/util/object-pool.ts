@@ -19,8 +19,10 @@
 
 export class Pool<T> {
 
+	private static MAX_POOL_SIZE = 100;
 	private readonly pool: T[];
 	private readonly poolable: IPoolable<T>;
+	private warned = false;
 
 	constructor(poolable: IPoolable<T>) {
 		this.pool = [];
@@ -31,10 +33,20 @@ export class Pool<T> {
 		if (this.pool.length) {
 			return this.pool.splice(0, 1)[0];
 		}
+		if (this.pool.length < Pool.MAX_POOL_SIZE) {
+			this.warned = false;
+		}
 		return new this.poolable();
 	}
 
 	public release(obj: T): void {
+		if (this.pool.length >= Pool.MAX_POOL_SIZE) {
+			if (!this.warned) {
+				console.warn('Pool size %s of %s is exhausted, future objects will be garbage-collected.', Pool.MAX_POOL_SIZE, this.poolable.name);
+				this.warned = true;
+			}
+			return;
+		}
 		if (this.poolable.reset) {
 			this.poolable.reset(obj);
 		}

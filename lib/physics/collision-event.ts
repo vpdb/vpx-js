@@ -55,12 +55,12 @@ export class CollisionEvent {
 	/**
 	 * Additional collision information
 	 */
-	public hitNormal: Vertex3D = new Vertex3D();
+	public readonly hitNormal: Vertex3D = new Vertex3D();
 
 	/**
 	 * Only "correctly" used by plunger and flipper
 	 */
-	public readonly hitVel: Vertex2D = new Vertex2D();
+	public hitVel: Vertex2D = new Vertex2D();
 
 	/**
 	 * Only set if isContact is true
@@ -94,8 +94,8 @@ export class CollisionEvent {
 	}
 
 	public static reset(event: CollisionEvent): void {
-		event.ball = undefined!;
-		event.obj = undefined;
+		delete event.ball;
+		delete event.obj;
 		event.isContact = false;
 		event.hitTime = 0;
 		event.hitDistance = 0;

@@ -177,7 +177,7 @@ export class PlayerPhysics {
 			}
 
 			this.recordContacts = true;
-			//CollisionEvent.release(...this.contacts);
+			CollisionEvent.release(...this.contacts);
 			this.contacts = [];
 
 			for (const ball of this.balls) {
@@ -286,7 +286,7 @@ export class PlayerPhysics {
 					this.contacts[i].obj!.contact(this.contacts[i], hitTime, this);
 				}
 			}
-			//CollisionEvent.release(...this.contacts);
+			CollisionEvent.release(...this.contacts);
 			this.contacts = [];
 
 			// fixme ballspinhack

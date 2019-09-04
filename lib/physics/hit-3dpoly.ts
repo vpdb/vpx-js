@@ -226,7 +226,7 @@ export class Hit3DPoly extends HitObject {
 		Vertex3D.release(hitPos);
 
 		if (crossCount & 1) {
-			coll.hitNormal = this.normal;
+			coll.hitNormal.set(this.normal);
 
 			if (!rigid) {                                                      // non rigid body collision? return direction
 				coll.hitFlag = bUnHit;                                         // UnHit signal is receding from outside target
