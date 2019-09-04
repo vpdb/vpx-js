@@ -130,13 +130,13 @@ export abstract class HitObject {
 		this.objType = type;
 	}
 
-	public doHitTest(ball: Ball, coll: CollisionEvent, physics: PlayerPhysics): CollisionEvent {
+	public doHitTest(ball: Ball, coll: CollisionEvent, physics: PlayerPhysics): void {
 		if (!ball) {
-			return coll;
+			return;
 		}
 
 		if (this.obj && this.obj.abortHitTest && this.obj.abortHitTest()) {
-			return coll;
+			return;
 		}
 
 		const newColl = new CollisionEvent(ball);
@@ -157,13 +157,13 @@ export abstract class HitObject {
 
 				if (newColl.isContact) {
 					physics.contacts.push(newColl);
-				} else { //if (validhit)
-					coll = newColl;
+				} else {                         // if (validhit)
+					coll.set(newColl);
 					coll.hitTime = newTime;
+					//CollisionEvent.release(newColl);
 				}
 			}
 		}
-		return coll;
 	}
 
 	public applyPhysics(data: IPhysicalData, table: Table) {

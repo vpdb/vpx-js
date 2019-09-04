@@ -177,6 +177,7 @@ export class PlayerPhysics {
 			}
 
 			this.recordContacts = true;
+			//CollisionEvent.release(...this.contacts);
 			this.contacts = [];
 
 			for (const ball of this.balls) {
@@ -189,26 +190,26 @@ export class PlayerPhysics {
 
 					// always check for playfield and top glass
 					if (!this.meshAsPlayfield) {
-						ball.setCollision(this.hitPlayfield.doHitTest(ball, ball.getCollision(), this));
+						this.hitPlayfield.doHitTest(ball, ball.coll, this);
 					}
-					ball.setCollision(this.hitTopGlass.doHitTest(ball, ball.getCollision(), this));
+					this.hitTopGlass.doHitTest(ball, ball.coll, this);
 
 					// swap order of dynamic and static obj checks randomly
 					if (Math.random() < 0.5) {
-						ball.setCollision(this.hitOcTreeDynamic.hitTestBall(ball, ball.getCollision(), this));  // dynamic objects
-						ball.setCollision(this.hitOcTree.hitTestBall(ball, ball.getCollision(), this));         // find the hit objects and hit times
+						this.hitOcTreeDynamic.hitTestBall(ball, ball.coll, this);  // dynamic objects
+						this.hitOcTree.hitTestBall(ball, ball.coll, this);         // find the hit objects and hit times
 					} else {
-						ball.setCollision(this.hitOcTree.hitTestBall(ball, ball.getCollision(), this));         // find the hit objects and hit times
-						ball.setCollision(this.hitOcTreeDynamic.hitTestBall(ball, ball.getCollision(), this));  // dynamic objects
+						this.hitOcTree.hitTestBall(ball, ball.coll, this);         // find the hit objects and hit times
+						this.hitOcTreeDynamic.hitTestBall(ball, ball.coll, this);  // dynamic objects
 					}
 
-					const htz = ball.getCollision().hitTime;                                 // this ball's hit time
+					const htz = ball.coll.hitTime;                                 // this ball's hit time
 
 					if (htz < 0) {                         // no negative time allowed
-						ball.getCollision().clear();
+						ball.coll.clear();
 					}
 
-					if (ball.getCollision().obj) {
+					if (ball.coll.obj) {
 						///////////////////////////////////////////////////////////////////////////
 						if (htz <= hitTime) {
 							hitTime = htz;                 // record actual event time
@@ -242,15 +243,15 @@ export class PlayerPhysics {
 			for (let i = 0; i < this.balls.length; i++) {
 
 				const ball = this.balls[i];
-				const pho = ball.getCollision().obj; // object that ball hit in trials
+				const pho = ball.coll.obj; // object that ball hit in trials
 
 				// find balls with hit objects and minimum time
-				if (pho && ball.getCollision().hitTime <= hitTime) {
+				if (pho && ball.coll.hitTime <= hitTime) {
 					// now collision, contact and script reactions on active ball (object)+++++++++
 
 					this.activeBall = ball;                         // For script that wants the ball doing the collision
-					pho.collide(ball.getCollision(), this);          // !!!!! 3) collision on active ball
-					ball.getCollision().clear();                     // remove trial hit object pointer
+					pho.collide(ball.coll, this);          // !!!!! 3) collision on active ball
+					ball.coll.clear();                     // remove trial hit object pointer
 
 					// Collide may have changed the velocity of the ball,
 					// and therefore the bounding box for the next hit cycle
@@ -285,6 +286,7 @@ export class PlayerPhysics {
 					this.contacts[i].obj!.contact(this.contacts[i], hitTime, this);
 				}
 			}
+			//CollisionEvent.release(...this.contacts);
 			this.contacts = [];
 
 			// fixme ballspinhack

@@ -19,10 +19,13 @@
 
 import { Vertex2D } from '../math/vertex2d';
 import { Vertex3D } from '../math/vertex3d';
+import { Pool } from '../util/object-pool';
 import { Ball } from '../vpt/ball/ball';
 import { HitObject } from './hit-object';
 
 export class CollisionEvent {
+
+	private static readonly POOL = new Pool(CollisionEvent);
 
 	/**
 	 * The ball that collided with something
@@ -74,8 +77,33 @@ export class CollisionEvent {
 	 */
 	public hitFlag: boolean = false;
 
-	constructor(ball: Ball) {
-		this.ball = ball;
+	constructor(ball?: Ball) {
+		this.ball = ball!;
+	}
+
+	public static claim(ball: Ball): CollisionEvent {
+		const event = CollisionEvent.POOL.get();
+		event.ball = ball;
+		return event;
+	}
+
+	public static release(...events: CollisionEvent[]) {
+		for (const event of events) {
+			CollisionEvent.POOL.release(event);
+		}
+	}
+
+	public static reset(event: CollisionEvent): void {
+		event.ball = undefined!;
+		event.obj = undefined;
+		event.isContact = false;
+		event.hitTime = 0;
+		event.hitDistance = 0;
+		event.hitNormal.setZero();
+		event.hitVel.setZero();
+		event.hitOrgNormalVelocity = 0;
+		event.hitMomentBit = true;
+		event.hitFlag = false;
 	}
 
 	public clear() {

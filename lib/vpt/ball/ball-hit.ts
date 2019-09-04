@@ -41,7 +41,6 @@ import { Ball } from './ball';
 import { BallData } from './ball-data';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
-import { Vector2 } from 'three';
 
 /**
  * In the VP source code this is all part of ball.cpp. We'll try
@@ -50,7 +49,7 @@ import { Vector2 } from 'three';
 export class BallHit extends HitObject {
 
 	public isFrozen: boolean;
-	public coll: CollisionEvent;
+	public readonly coll: CollisionEvent;
 	public rcHitRadiusSqr: number = 0;
 	public vpVolObjs: EventProxy[] = [];
 
