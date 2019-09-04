@@ -60,21 +60,22 @@ export class HitTargetMeshGenerator {
 		fullMatrix.multiply(tempMatrix);
 
 		for (const vertex of hitTargetMesh.vertices) {
-			let vert = new Vertex3D(vertex.x, vertex.y, vertex.z);
+			const vert = Vertex3D.claim(vertex.x, vertex.y, vertex.z);
 			vert.x *= this.data.vSize.x;
 			vert.y *= this.data.vSize.y;
 			vert.z *= this.data.vSize.z;
-			vert = fullMatrix.multiplyVector(vert);
+			vert.multiplyMatrix(fullMatrix);
 
 			vertex.x = f4(vert.x + this.data.vPosition.x);
 			vertex.y = f4(vert.y + this.data.vPosition.y);
 			vertex.z = f4(f4(f4(vert.z * table.getScaleZ()) + this.data.vPosition.z) + table.getTableHeight()) + dropOffset;
 
-			vert = new Vertex3D(vertex.nx, vertex.ny, vertex.nz);
-			vert = fullMatrix.multiplyVectorNoTranslate(vert);
-			vertex.nx = vert.x;
-			vertex.ny = vert.y;
-			vertex.nz = vert.z;
+			const normal = Vertex3D.claim(vertex.nx, vertex.ny, vertex.nz).multiplyMatrixNoTranslate(fullMatrix);
+			vertex.nx = normal.x;
+			vertex.ny = normal.y;
+			vertex.nz = normal.z;
+
+			Vertex3D.release(vert, normal);
 		}
 
 		return hitTargetMesh;

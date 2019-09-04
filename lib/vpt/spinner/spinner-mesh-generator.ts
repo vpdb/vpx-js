@@ -65,17 +65,17 @@ export class SpinnerMeshGenerator {
 	private updateVertices(table: Table, posZ: number, mesh: Mesh): Mesh {
 		const matrix = new Matrix3D().rotateZMatrix(degToRad(this.data.rotation));
 		for (const vertex of mesh.vertices) {
-			let vert = new Vertex3D(vertex.x, vertex.y, vertex.z);
-			vert = matrix.multiplyVector(vert);
+			const vert = Vertex3D.claim(vertex.x, vertex.y, vertex.z).multiplyMatrix(matrix);
 			vertex.x = f4(vert.x * this.data.length) + this.data.vCenter.x;
 			vertex.y = f4(vert.y * this.data.length) + this.data.vCenter.y;
 			vertex.z = f4(f4(vert.z * this.data.length) * table.getScaleZ()) + posZ;
 
-			let norm = new Vertex3D(vertex.nx, vertex.ny, vertex.nz);
-			norm = matrix.multiplyVectorNoTranslate(norm);
-			vertex.nx = norm.x;
-			vertex.ny = norm.y;
-			vertex.nz = norm.z;
+			const normal = Vertex3D.claim(vertex.nx, vertex.ny, vertex.nz).multiplyMatrixNoTranslate(matrix);
+			vertex.nx = normal.x;
+			vertex.ny = normal.y;
+			vertex.nz = normal.z;
+
+			Vertex3D.release(vert, normal);
 		}
 		return mesh;
 	}

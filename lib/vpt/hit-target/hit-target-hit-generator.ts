@@ -73,11 +73,11 @@ export class HitTargetHitGenerator {
 
 			// now create a special hit shape with hit event enabled to prevent a hit event when hit from behind
 			for (const dropTargetHitPlaneVertex of dropTargetHitPlaneVertices) {
-				let vert = new Vertex3D(dropTargetHitPlaneVertex.x, dropTargetHitPlaneVertex.y + hitShapeOffset, dropTargetHitPlaneVertex.z);
+				const vert = new Vertex3D(dropTargetHitPlaneVertex.x, dropTargetHitPlaneVertex.y + hitShapeOffset, dropTargetHitPlaneVertex.z);
 				vert.x *= this.data.vSize.x;
 				vert.y *= this.data.vSize.y;
 				vert.z *= this.data.vSize.z;
-				vert = fullMatrix.multiplyVector(vert);
+				vert.multiplyMatrix(fullMatrix);
 				rgv3D.push(new Vertex3D(
 					vert.x + this.data.vPosition.x,
 					vert.y + this.data.vPosition.y,
