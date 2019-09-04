@@ -59,7 +59,7 @@ export class TriggerLineSeg extends LineSeg {
 
 		// if -1 then not in objects volume set (i.e not already hit)
 		if (coll.hitFlag !== i < 0) {                                             // Hit == NotAlreadyHit
-			ball.state.pos.add(ball.hit.vel.clone().multiplyScalar(STATICTIME));  // move ball slightly forward
+			ball.state.pos.addAndRelease(ball.hit.vel.clone(true).multiplyScalar(STATICTIME));  // move ball slightly forward
 
 			if (i < 0) {
 				ball.hit.vpVolObjs.push(this.obj!);

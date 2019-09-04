@@ -47,8 +47,8 @@ export class GateHitGenerator {
 		this.data.angleMax = angleMax;
 
 		const rgv: Vertex2D[] = [ //oversize by the ball's radius to prevent the ball from clipping through
-			this.data.vCenter.clone().add(tangent.clone().multiplyScalar(halfLength + PHYS_SKIN)),
-			this.data.vCenter.clone().sub(tangent.clone().multiplyScalar(halfLength + PHYS_SKIN)),
+			this.data.vCenter.clone().addAndRelease(tangent.clone(true).multiplyScalar(halfLength + PHYS_SKIN)),
+			this.data.vCenter.clone().subAndRelease(tangent.clone(true).multiplyScalar(halfLength + PHYS_SKIN)),
 		];
 		const lineSeg = new LineSeg(rgv[0], rgv[1], height, height + 2.0 * PHYS_SKIN); //!! = ball diameter
 
@@ -72,8 +72,8 @@ export class GateHitGenerator {
 		const halfLength = this.data.length * 0.5;
 		if (this.data.showBracket) {
 			return [
-				new HitCircle(this.data.vCenter.clone().add(tangent.clone().multiplyScalar(halfLength)), 0.01, height, height + this.data.height),
-				new HitCircle(this.data.vCenter.clone().sub(tangent.clone().multiplyScalar(halfLength)), 0.01, height, height + this.data.height),
+				new HitCircle(this.data.vCenter.clone().addAndRelease(tangent.clone(true).multiplyScalar(halfLength)), 0.01, height, height + this.data.height),
+				new HitCircle(this.data.vCenter.clone().subAndRelease(tangent.clone(true).multiplyScalar(halfLength)), 0.01, height, height + this.data.height),
 			];
 		} else {
 			return [];

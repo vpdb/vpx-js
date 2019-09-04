@@ -58,10 +58,10 @@ export class BumperHit extends HitCircle {
 		// if velocity greater than threshold level
 		if (this.data.hitEvent && (dot <= -this.data.threshold)) {
 			// add a chunk of velocity to drive ball away
-			coll.ball.hit.vel.add(coll.hitNormal.clone().multiplyScalar(this.data.force));
+			coll.ball.hit.vel.addAndRelease(coll.hitNormal.clone(true).multiplyScalar(this.data.force));
 
 			this.animation.hitEvent = true;
-			this.animation.ballHitPosition = coll.ball.state.pos.clone();
+			this.animation.ballHitPosition.setAndRelease(coll.ball.state.pos.clone(true));
 			this.events.fireGroupEvent(Event.HitEventsHit);
 		}
 	}

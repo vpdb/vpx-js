@@ -87,9 +87,21 @@ export class Vertex2D implements Vertex {
 		return this;
 	}
 
+	public addAndRelease(v: Vertex2D): this {
+		this.add(v);
+		Vertex2D.release(v);
+		return this;
+	}
+
 	public sub(v: Vertex2D): this {
 		this.x -= v.x;
 		this.y -= v.y;
+		return this;
+	}
+
+	public subAndRelease(v: Vertex2D): this {
+		this.sub(v);
+		Vertex2D.release(v);
 		return this;
 	}
 
