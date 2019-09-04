@@ -22,6 +22,7 @@ import { Pool } from '../util/object-pool';
 import { FLT_MIN } from '../vpt/mesh';
 import { f4 } from './float';
 import { Matrix2D } from './matrix2d';
+import { Matrix3D } from './matrix3d';
 import { IRenderVertex, Vertex } from './vertex';
 import { Vertex2D } from './vertex2d';
 
@@ -265,6 +266,24 @@ export class Vertex3D implements Vertex {
 		rotMatrixRow2.z = f4(u.z * u.z) + f4(cosAngle * f4(1.0 - f4(u.z * u.z)));
 
 		return new Vertex3D(temp.dot(rotMatrixRow0), temp.dot(rotMatrixRow1), temp.dot(rotMatrixRow2));
+	}
+
+	public multiplyMatrix(matrix: Matrix3D) {
+		// Transform it through the current matrix set
+		const xp = f4(f4(f4(f4(matrix._11 * this.x) + f4(matrix._21 * this.y)) + f4(matrix._31 * this.z)) + matrix._41);
+		const yp = f4(f4(f4(f4(matrix._12 * this.x) + f4(matrix._22 * this.y)) + f4(matrix._32 * this.z)) + matrix._42);
+		const zp = f4(f4(f4(f4(matrix._13 * this.x) + f4(matrix._23 * this.y)) + f4(matrix._33 * this.z)) + matrix._43);
+		const wp = f4(f4(f4(f4(matrix._14 * this.x) + f4(matrix._24 * this.y)) + f4(matrix._34 * this.z)) + matrix._44);
+		const invWp = f4(1.0 / wp);
+		return this.set(xp * invWp, yp * invWp, zp * invWp);
+	}
+
+	public multiplyMatrixNoTranslate(matrix: Matrix3D): Vertex3D {
+		// Transform it through the current matrix set
+		const xp = f4(f4(matrix._11 * this.x) + f4(matrix._21 * this.y)) + f4(matrix._31 * this.z);
+		const yp = f4(f4(matrix._12 * this.x) + f4(matrix._22 * this.y)) + f4(matrix._32 * this.z);
+		const zp = f4(f4(matrix._13 * this.x) + f4(matrix._23 * this.y)) + f4(matrix._33 * this.z);
+		return this.set(xp, yp, zp);
 	}
 }
 

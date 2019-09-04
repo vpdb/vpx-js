@@ -85,17 +85,17 @@ export class Mesh {
 
 	public transform(matrix: Matrix3D, normalMatrix?: Matrix3D, getZ?: (x: number) => number): this {
 		for (const vertex of this.vertices) {
-			let vert = new Vertex3D(vertex.x, vertex.y, vertex.z);
-			vert = matrix.multiplyVector(vert);
+			const vert = Vertex3D.claim(vertex.x, vertex.y, vertex.z).multiplyMatrix(matrix);
 			vertex.x = vert.x;
 			vertex.y = vert.y;
 			vertex.z = getZ ? getZ(vert.z) : vert.z;
 
-			let norm = new Vertex3D(vertex.nx, vertex.ny, vertex.nz);
-			norm = (normalMatrix || matrix).multiplyVectorNoTranslate(norm);
+			const norm = Vertex3D.claim(vertex.nx, vertex.ny, vertex.nz).multiplyMatrixNoTranslate(normalMatrix || matrix);
 			vertex.nx = norm.x;
 			vertex.ny = norm.y;
 			vertex.nz = norm.z;
+
+			Vertex3D.release(vert, norm);
 		}
 		return this;
 	}

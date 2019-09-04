@@ -91,17 +91,17 @@ export class BumperMeshGenerator {
 	private generateMesh(name: string, mesh: Mesh, matrix: Matrix3D, zPos: (z: number) => number): Mesh {
 		const generatedMesh = mesh.clone(name);
 		for (const vertex of generatedMesh.vertices) {
-			let vert = new Vertex3D(vertex.x, vertex.y, vertex.z);
-			vert = matrix.multiplyVector(vert);
+			const vert = Vertex3D.claim(vertex.x, vertex.y, vertex.z).multiplyMatrix(matrix);
 			vertex.x = vert.x + this.data.vCenter.x;
 			vertex.y = vert.y + this.data.vCenter.y;
 			vertex.z = zPos(vert.z);
 
-			let normal = new Vertex3D(vertex.nx, vertex.ny, vertex.nz);
-			normal = matrix.multiplyVectorNoTranslate(normal);
+			const normal = Vertex3D.claim(vertex.nx, vertex.ny, vertex.nz).multiplyMatrixNoTranslate(matrix);
 			vertex.nx = normal.x;
 			vertex.ny = normal.y;
 			vertex.nz = normal.z;
+
+			Vertex3D.release(vert, normal);
 		}
 		return generatedMesh;
 	}

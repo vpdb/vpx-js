@@ -66,17 +66,6 @@ export class Matrix3D {
 		return this;
 	}
 
-	public equals(matrix: Matrix3D): boolean {
-		for (let i = 0; i < 4; i++) {
-			for (let j = 0; j < 4; j++) {
-				if (this.matrix[i][j] !== matrix.matrix[i][j]) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
 	public setIdentity(): this {
 		this._11 = this._22 = this._33 = this._44 = 1.0;
 		this._12 = this._13 = this._14 = this._41 =
@@ -125,23 +114,8 @@ export class Matrix3D {
 		return this;
 	}
 
-	public multiplyVector(v: Vertex3D): Vertex3D {
-		// Transform it through the current matrix set
-		const xp = f4(f4(f4(f4(this._11 * v.x) + f4(this._21 * v.y)) + f4(this._31 * v.z)) + this._41);
-		const yp = f4(f4(f4(f4(this._12 * v.x) + f4(this._22 * v.y)) + f4(this._32 * v.z)) + this._42);
-		const zp = f4(f4(f4(f4(this._13 * v.x) + f4(this._23 * v.y)) + f4(this._33 * v.z)) + this._43);
-		const wp = f4(f4(f4(f4(this._14 * v.x) + f4(this._24 * v.y)) + f4(this._34 * v.z)) + this._44);
-		const invWp = f4(1.0 / wp);
-		return new Vertex3D(xp * invWp, yp * invWp, zp * invWp);
-	}
-
-	public multiplyVectorNoTranslate(v: Vertex3D): Vertex3D {
-		// Transform it through the current matrix set
-		const xp = f4(f4(this._11 * v.x) + f4(this._21 * v.y)) + f4(this._31 * v.z);
-		const yp = f4(f4(this._12 * v.x) + f4(this._22 * v.y)) + f4(this._32 * v.z);
-		const zp = f4(f4(this._13 * v.x) + f4(this._23 * v.y)) + f4(this._33 * v.z);
-		return new Vertex3D(xp, yp, zp);
-	}
+	/* multiplyVector() has moved to {@link Vertex3D.multiplyMatrix()} */
+	/* multiplyVectorNoTranslate() has moved to {@link Vertex3D.multiplyMatrixNoTranslate()} */
 
 	public multiply(a: Matrix3D, b?: Matrix3D): this {
 		const product = b
@@ -167,7 +141,6 @@ export class Matrix3D {
 		return matrix;
 	}
 
-	/** istanbul ignore next */
 	public toThreeMatrix4(): Matrix4 {
 		const matrix = new Matrix4();
 		matrix.set(
@@ -180,6 +153,7 @@ export class Matrix3D {
 	}
 
 	private static multiplyMatrices(a: Matrix3D, b: Matrix3D, recycle = false): Matrix3D {
+		/* istanbul ignore else: we always recycle now */
 		const result = recycle ? Matrix3D.claim() : new Matrix3D();
 		for (let i = 0; i < 4; ++i) {
 			for (let l = 0; l < 4; ++l) {
@@ -197,7 +171,19 @@ export class Matrix3D {
 		return recycle ? Matrix3D.claim().set(this.matrix) : new Matrix3D().set(this.matrix);
 	}
 
-	/** istanbul ignore next */
+	/* istanbul ignore next: for debugging */
+	public equals(matrix: Matrix3D): boolean {
+		for (let i = 0; i < 4; i++) {
+			for (let j = 0; j < 4; j++) {
+				if (this.matrix[i][j] !== matrix.matrix[i][j]) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/* istanbul ignore next */
 	public debug(): string[] {
 		return [
 			`_11: ${fr(this._11)}`,

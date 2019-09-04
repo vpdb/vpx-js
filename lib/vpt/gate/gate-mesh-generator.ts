@@ -74,17 +74,17 @@ export class GateMeshGenerator {
 		fullMatrix.rotateZMatrix(degToRad(this.data.rotation));
 		for (const vertex of mesh.vertices) {
 
-			let vert = new Vertex3D(vertex.x, vertex.y, vertex.z);
-			vert = fullMatrix.multiplyVector(vert);
+			const vert = Vertex3D.claim(vertex.x, vertex.y, vertex.z).multiplyMatrix(fullMatrix);
 			vertex.x = f4(vert.x * this.data.length) + this.data.vCenter.x;
 			vertex.y = f4(vert.y * this.data.length) + this.data.vCenter.y;
 			vertex.z = f4(f4(f4(vert.z * this.data.length) * table.getScaleZ()) + f4(this.data.height * table.getScaleZ())) + baseHeight;
 
-			vert = new Vertex3D(vertex.nx, vertex.ny, vertex.nz);
-			vert = fullMatrix.multiplyVectorNoTranslate(vert);
-			vertex.nx = vert.x;
-			vertex.ny = vert.y;
-			vertex.nz = vert.z;
+			const normal = Vertex3D.claim(vertex.nx, vertex.ny, vertex.nz).multiplyMatrixNoTranslate(fullMatrix);
+			vertex.nx = normal.x;
+			vertex.ny = normal.y;
+			vertex.nz = normal.z;
+
+			Vertex3D.release(vert, normal);
 		}
 		return mesh;
 	}

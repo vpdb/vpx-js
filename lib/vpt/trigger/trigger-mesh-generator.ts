@@ -66,8 +66,8 @@ export class TriggerMeshGenerator {
 		const mesh = this.getBaseMesh();
 		for (const vertex of mesh.vertices) {
 
-			let vert = new Vertex3D(vertex.x, vertex.y, vertex.z);
-			vert = fullMatrix.multiplyVector(vert);
+			const vert = Vertex3D.claim(vertex.x, vertex.y, vertex.z).multiplyMatrix(fullMatrix);
+			//fullMatrix.multiplyVector(vert);
 
 			if (this.data.shape === Trigger.ShapeTriggerButton || this.data.shape === Trigger.ShapeTriggerStar) {
 				vertex.x = f4(vert.x * this.data.radius) + this.data.vCenter.x;
@@ -79,11 +79,12 @@ export class TriggerMeshGenerator {
 				vertex.z = f4(f4(vert.z * table.getScaleZ()) + baseHeight) + zOffset;
 			}
 
-			vert = new Vertex3D(vertex.nx, vertex.ny, vertex.nz);
-			vert = fullMatrix.multiplyVectorNoTranslate(vert);
-			vertex.nx = vert.x;
-			vertex.ny = vert.y;
-			vertex.nz = vert.z;
+			const normal = Vertex3D.claim(vertex.nx, vertex.ny, vertex.nz).multiplyMatrixNoTranslate(fullMatrix);
+			vertex.nx = normal.x;
+			vertex.ny = normal.y;
+			vertex.nz = normal.z;
+
+			Vertex3D.release(vert, normal);
 		}
 		return mesh;
 	}
