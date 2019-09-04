@@ -80,7 +80,6 @@ export class RubberMeshGenerator {
 		for (let i = 0; i < numRings; i++) {
 
 			const i2 = (i === numRings - 1) ? 0 : i + 1;
-
 			const tangent = new Vertex3D(sv.pMiddlePoints[i2].x - sv.pMiddlePoints[i].x, sv.pMiddlePoints[i2].y - sv.pMiddlePoints[i].y, 0.0);
 
 			let binorm: Vertex3D;

@@ -260,7 +260,7 @@ export class PlungerHit extends HitObject {
 				hDist = C_DISP_LIMIT;
 			}                                              // crossing ramps, delta noise
 			// push along norm, back to free area (use the norm, but is not correct)
-			ball.state.pos.add(coll.hitNormal.clone().multiplyScalar(hDist));
+			ball.state.pos.addAndRelease(coll.hitNormal.clone(true).multiplyScalar(hDist));
 		}
 //#endif
 
@@ -299,7 +299,7 @@ export class PlungerHit extends HitObject {
 		}
 
 		// update the ball speed for the impulse
-		ball.hit.vel.add(coll.hitNormal.clone().multiplyScalar(impulse));
+		ball.hit.vel.addAndRelease(coll.hitNormal.clone(true).multiplyScalar(impulse));
 		ball.hit.vel.multiplyScalar(0.999);           //friction all axiz     //!! TODO: fix this
 
 		const scatterVel = this.mover.scatterVelocity; // fixme * g_pplayer->m_ptable->m_globalDifficulty;// apply dificulty weighting
