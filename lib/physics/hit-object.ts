@@ -158,6 +158,7 @@ export abstract class HitObject {
 
 				if (newColl.isContact) {
 					physics.contacts.push(newColl);
+
 				} else {                         // if (validhit)
 					coll.set(newColl);
 					coll.hitTime = newTime;
