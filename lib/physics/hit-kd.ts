@@ -87,8 +87,8 @@ export class HitKD {
 		this.tmp = [];
 	}
 
-	public hitTestBall(pball: Ball, collision: CollisionEvent, physics: PlayerPhysics): CollisionEvent {
-		return this.rootNode.hitTestBall(pball, collision, physics);
+	public hitTestBall(ball: Ball, collision: CollisionEvent, physics: PlayerPhysics) {
+		this.rootNode.hitTestBall(ball, collision, physics);
 	}
 
 	// public hitTestXRay(pball: Ball, pvhoHit: HitObject[], coll: CollisionEvent, player: Player) {

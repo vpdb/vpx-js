@@ -46,6 +46,9 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 	// unique ID for each ball
 	public readonly id: number;
 
+	// public props
+	get coll() { return this.hit.coll; }
+
 	public static idCounter = 0;
 
 	// ugly hacks
@@ -104,14 +107,6 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 
 	public getMover(): BallMover {
 		return this.hit.getMoverObject();
-	}
-
-	public getCollision(): CollisionEvent {
-		return this.hit.coll;
-	}
-
-	public setCollision(coll: CollisionEvent) {
-		return this.hit.coll = coll;
 	}
 
 	/* istanbul ignore next: never called since there is no ball at player setup */

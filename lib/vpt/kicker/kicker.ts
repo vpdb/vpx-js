@@ -125,7 +125,7 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 	}
 
 	public onBallCreated(physics: PlayerPhysics, ball: Ball): void {
-		ball.getCollision().hitFlag = true;                        // HACK: avoid capture leaving kicker
+		ball.coll.hitFlag = true;                        // HACK: avoid capture leaving kicker
 		const hitNormal = new Vertex3D(FLT_MAX, FLT_MAX, FLT_MAX); // unused due to newBall being true
 		this.hit!.doCollide(physics, ball, hitNormal, false, true);
 	}

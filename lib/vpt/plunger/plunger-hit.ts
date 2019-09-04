@@ -182,6 +182,7 @@ export class PlungerHit extends HitObject {
 
 		// restore the original ball velocity (WARNING! CONST POINTER OVERRIDE!)
 		ball.hit.vel.y = oldVelY;
+		//CollisionEvent.release(hit);
 
 		// check for a hit
 		if (isHit) {
