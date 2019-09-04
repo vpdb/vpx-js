@@ -28,7 +28,7 @@ import { Vertex2D } from './vertex2d';
 
 export class Vertex3D implements Vertex {
 
-	private static readonly POOL = new Pool(Vertex3D);
+	public static readonly POOL = new Pool(Vertex3D);
 
 	public readonly isVector2 = false;
 	public readonly isVector3 = true;
@@ -296,3 +296,5 @@ export class RenderVertex3D extends Vertex3D implements IRenderVertex {
 		super(x, y, z);
 	}
 }
+
+//setTimeout(() => Vertex3D.POOL.enableDebug(10000), 10000);

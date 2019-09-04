@@ -464,18 +464,20 @@ export class BallHit extends HitObject {
 		if ((normVel <= 0.025) || (slipspeed < C_PRECISION)) { // check for <=0.025 originated from ball<->rubber collisions pushing the ball upwards, but this is still not enough, some could even use <=0.2
 			// slip speed zero - static friction case
 
-			const surfAcc = this.surfaceAcceleration(surfP, physics);
+			const surfAcc = this.surfaceAcceleration(surfP, physics, true);
 			// calc the tangential slip acceleration
-			const slipAcc = surfAcc.clone(true).subAndRelease(hitNormal.clone(true).multiplyScalar(surfAcc.dot(hitNormal))); // slipAcc recycled as slipDir
+			const slipAcc = surfAcc.clone(true).subAndRelease(hitNormal.clone(true).multiplyScalar(surfAcc.dot(hitNormal)));
 
 			// neither slip velocity nor slip acceleration? nothing to do here
 			if (slipAcc.lengthSq() < 1e-6) {
-				Vertex3D.release(surfVel, surfP, slip, slipAcc);
+				Vertex3D.release(surfVel, surfP, slip, slipAcc, surfAcc);
 				return;
 			}
 
-			slipDir = slipAcc.normalize();
+			slipDir = slipAcc.clone(true).normalize();
 			numer = -slipDir.dot(surfAcc);
+
+			Vertex3D.release(surfAcc);
 
 		} else {
 			// nonzero slip speed - dynamic friction case
@@ -497,11 +499,11 @@ export class BallHit extends HitObject {
 		Vertex3D.release(surfVel, cp, surfP, slip, slipDir, p1);
 	}
 
-	public surfaceAcceleration(surfP: Vertex3D, physics: PlayerPhysics): Vertex3D {
+	public surfaceAcceleration(surfP: Vertex3D, physics: PlayerPhysics, recycle = false): Vertex3D {
 		// if we had any external torque, we would have to add "(deriv. of ang.vel.) x surfP" here
 		const p2 = Vertex3D.crossProduct(this.angularVelocity, surfP, true);
 		const acceleration = physics.gravity
-			.clone(true)
+			.clone(recycle)
 			.multiplyScalar(this.invMass)                                                 // linear acceleration
 			.addAndRelease(Vertex3D.crossProduct(this.angularVelocity, p2, true)); // centripetal acceleration
 		Vertex3D.release(p2);

@@ -166,7 +166,7 @@ export class FlipperHit extends HitObject {
 		if (normVel <= C_CONTACTVEL) {
 
 			// compute accelerations of point on ball and flipper
-			const aB = ball.hit.surfaceAcceleration(rB, physics);
+			const aB = ball.hit.surfaceAcceleration(rB, physics, true);
 			const aF = this.mover.surfaceAcceleration(rF, true);
 			const aRel = aB.clone(true).sub(aF);
 
@@ -175,7 +175,7 @@ export class FlipperHit extends HitObject {
 
 			// relative acceleration in the normal direction
 			const normAcc = aRel.dot(normal) + 2.0 * normalDeriv.dot(vRel);
-			Vertex3D.release(normalDeriv, aF);
+			Vertex3D.release(normalDeriv, aF, aB);
 
 			if (normAcc >= 0) {
 				Vertex3D.release(aRel, vRel, rB, rF);
