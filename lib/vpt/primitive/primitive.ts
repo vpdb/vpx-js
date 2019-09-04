@@ -75,7 +75,7 @@ export class Primitive implements IRenderable, IHittable, IScriptable<PrimitiveA
 	public getMeshes(table: Table): Meshes {
 		return {
 			primitive: {
-				mesh: this.getMesh(table).clone().transform(new Matrix3D().toRightHanded()),
+				mesh: this.getMesh(table).clone().transform(Matrix3D.RIGHT_HANDED),
 				map: table.getTexture(this.data.szImage),
 				normalMap: table.getTexture(this.data.szNormalMap),
 				material: table.getMaterial(this.data.szMaterial),

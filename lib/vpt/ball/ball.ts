@@ -125,7 +125,7 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 	}
 
 	public getMeshes(table: Table, opts: VpTableExporterOptions): Meshes {
-		return { ball: { mesh: this.meshGenerator.getMesh().transform(new Matrix3D().toRightHanded()) } };
+		return { ball: { mesh: this.meshGenerator.getMesh().transform(Matrix3D.RIGHT_HANDED) } };
 	}
 
 	/* istanbul ignore next: balls have their own visibility treatment */

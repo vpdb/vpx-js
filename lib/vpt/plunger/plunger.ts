@@ -84,7 +84,7 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 		const material = table.getMaterial(this.data.szMaterial);
 		const map = table.getTexture(this.data.szImage);
 
-		const matrix = new Matrix3D().toRightHanded();
+		const matrix = Matrix3D.RIGHT_HANDED;
 
 		if (plunger.rod) {
 			meshes.rod = { mesh: plunger.rod.transform(matrix), material, map };
@@ -153,7 +153,7 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 
 	public applyState(obj: Object3D, table: Table): void {
 
-		const matrix = new Matrix3D().toRightHanded();
+		const matrix = Matrix3D.RIGHT_HANDED;
 		const mesh = this.mesh.generateMeshes(this.state.frame, table);
 
 		const rodObj = obj.children.find(o => o.name === 'rod') as any;

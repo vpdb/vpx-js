@@ -94,14 +94,14 @@ export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHitta
 
 		// wire mesh
 		meshes.wire = {
-			mesh: gate.wire.transform(new Matrix3D().toRightHanded()),
+			mesh: gate.wire.transform(Matrix3D.RIGHT_HANDED),
 			material: table.getMaterial(this.data.szMaterial),
 		};
 
 		// bracket mesh
 		if (gate.bracket) {
 			meshes.bracket = {
-				mesh: gate.bracket.transform(new Matrix3D().toRightHanded()),
+				mesh: gate.bracket.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
 			};
 		}

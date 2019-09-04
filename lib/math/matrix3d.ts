@@ -18,9 +18,9 @@
  */
 
 import { Matrix4 } from 'three';
+import { Pool } from '../util/object-pool';
 import { f4, fr } from './float';
 import { Vertex3D } from './vertex3d';
-import { Pool } from '../util/object-pool';
 
 /**
  * Three's Matrix4.multiply() gives different results than VPinball's. Duh.
@@ -145,90 +145,26 @@ export class Matrix3D {
 
 	public multiply(a: Matrix3D, b?: Matrix3D): this {
 		const product = b
-			? Matrix3D.multiplyMatrices(a, b, false)
-			: Matrix3D.multiplyMatrices(this, a, false);
+			? Matrix3D.multiplyMatrices(a, b, true)
+			: Matrix3D.multiplyMatrices(this, a, true);
 
-		Object.assign(this.matrix, product.matrix);
-		//Matrix3D.release(product);
+		this.set(product.matrix);
+		Matrix3D.release(product);
 		return this;
 	}
-
-	// public multiplyScalar(scalar: number) {
-	// 	for (let i = 0; i < 3; ++i) {
-	// 		for (let l = 0; l < 3; ++l) {
-	// 			this.matrix[i][l] *= scalar;
-	// 		}
-	// 	}
-	// }
 
 	public preMultiply(a: Matrix3D): this {
-		const product = Matrix3D.multiplyMatrices(a, this, false);
-		Object.assign(this.matrix, product.matrix);
-		//this.set(product.matrix);
-		//Matrix3D.release(product);
+		const product = Matrix3D.multiplyMatrices(a, this, true);
+		this.set(product.matrix);
+		Matrix3D.release(product);
 		return this;
 	}
 
-	// public invert(): this {
-	// 	const ipvt = [0, 1, 2, 3];
-	// 	for (let k = 0; k < 4; ++k) {
-	// 		let temp = 0;
-	// 		let l = k;
-	// 		for (let i = k; i < 4; ++i) {
-	// 			const dd = Math.abs(this.matrix[k][i]);
-	// 			if (dd > temp) {
-	// 				temp = dd;
-	// 				l = i;
-	// 			}
-	// 		}
-	// 		if (l !== k) {
-	// 			const tmp = ipvt[k];
-	// 			ipvt[k] = ipvt[l];
-	// 			ipvt[l] = tmp;
-	// 			for (let j = 0; j < 4; ++j) {
-	// 				temp = this.matrix[j][k];
-	// 				this.matrix[j][k] = this.matrix[j][l];
-	// 				this.matrix[j][l] = temp;
-	// 			}
-	// 		}
-	// 		const d = 1.0 / this.matrix[k][k];
-	// 		for (let j = 0; j < k; ++j) {
-	// 			const c = this.matrix[j][k] * d;
-	// 			for (let i = 0; i < 4; ++i) {
-	// 				this.matrix[j][i] -= this.matrix[k][i] * c;
-	// 			}
-	// 			this.matrix[j][k] = c;
-	// 		}
-	// 		for (let j = k + 1; j < 4; ++j) {
-	// 			const c = this.matrix[j][k] * d;
-	// 			for (let i = 0; i < 4; ++i) {
-	// 				this.matrix[j][i] -= this.matrix[k][i] * c;
-	// 			}
-	// 			this.matrix[j][k] = c;
-	// 		}
-	// 		for (let i = 0; i < 4; ++i) {
-	// 			this.matrix[k][i] = -this.matrix[k][i] * d;
-	// 		}
-	// 		this.matrix[k][k] = d;
-	// 	}
-	// 	return this;
-	// }
-	//
-	// public transpose(): this {
-	// 	const clone = this.clone();
-	// 	for (let i = 0; i < 4; ++i) {
-	// 		this.matrix[0][i] = clone.matrix[i][0];
-	// 		this.matrix[1][i] = clone.matrix[i][1];
-	// 		this.matrix[2][i] = clone.matrix[i][2];
-	// 		this.matrix[3][i] = clone.matrix[i][3];
-	// 	}
-	// 	return this;
-	// }
-
-	public toRightHanded(): Matrix3D {
-		const tempMat = new Matrix3D();
-		tempMat.setScaling(1, 1, -1);
-		return this.clone().multiply(tempMat);
+	public toRightHanded(recycle = false): Matrix3D {
+		const tempMat = Matrix3D.claim().setScaling(1, 1, -1);
+		const matrix = this.clone(recycle).multiply(tempMat);
+		Matrix3D.release(tempMat);
+		return matrix;
 	}
 
 	/** istanbul ignore next */
@@ -257,10 +193,8 @@ export class Matrix3D {
 		return result;
 	}
 
-	public clone(): Matrix3D {
-		const matrix = new Matrix3D();
-		Object.assign(matrix.matrix, this.matrix);
-		return matrix;
+	public clone(recycle = false): Matrix3D {
+		return recycle ? Matrix3D.claim().set(this.matrix) : new Matrix3D().set(this.matrix);
 	}
 
 	/** istanbul ignore next */
@@ -317,4 +251,6 @@ export class Matrix3D {
 	set _43(v) { this.matrix[2][3] = f4(v); }
 	get _44() { return this.matrix[3][3]; }
 	set _44(v) { this.matrix[3][3] = f4(v); }
+
+	public static readonly RIGHT_HANDED = new Matrix3D().set([ [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1] ]);
 }

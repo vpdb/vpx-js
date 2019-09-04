@@ -94,7 +94,7 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 	public getMeshes(table: Table): Meshes {
 		return {
 			hitTarget: {
-				mesh: this.meshGenerator.getMesh(table).transform(new Matrix3D().toRightHanded()),
+				mesh: this.meshGenerator.getMesh(table).transform(Matrix3D.RIGHT_HANDED),
 				map: table.getTexture(this.data.szImage),
 				material: table.getMaterial(this.data.szMaterial),
 			},
