@@ -109,7 +109,7 @@ export class Surface implements IRenderable, IHittable, IScriptable<SurfaceApi> 
 		const surface = this.meshGenerator.generateMeshes(this.data, table);
 		if (surface.top) {
 			meshes.top = {
-				mesh: surface.top.transform(new Matrix3D().toRightHanded()),
+				mesh: surface.top.transform(Matrix3D.RIGHT_HANDED),
 				map: table.getTexture(this.data.szImage),
 				material: table.getMaterial(this.data.szTopMaterial),
 			};
@@ -117,7 +117,7 @@ export class Surface implements IRenderable, IHittable, IScriptable<SurfaceApi> 
 
 		if (surface.side) {
 			meshes.side = {
-				mesh: surface.side.transform(new Matrix3D().toRightHanded()),
+				mesh: surface.side.transform(Matrix3D.RIGHT_HANDED),
 				map: table.getTexture(this.data.szSideImage),
 				material: table.getMaterial(this.data.szSideMaterial),
 			};

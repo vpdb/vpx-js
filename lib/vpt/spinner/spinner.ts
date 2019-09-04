@@ -87,13 +87,13 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		const meshes: Meshes = {};
 
 		meshes.plate = {
-			mesh: spinner.plate.transform(new Matrix3D().toRightHanded()),
+			mesh: spinner.plate.transform(Matrix3D.RIGHT_HANDED),
 			map: table.getTexture(this.data.szImage),
 			material: table.getMaterial(this.data.szMaterial),
 		};
 		if (spinner.bracket) {
 			meshes.bracket = {
-				mesh: spinner.bracket.transform(new Matrix3D().toRightHanded()),
+				mesh: spinner.bracket.transform(Matrix3D.RIGHT_HANDED),
 				map: table.getTexture(this.data.szImage),
 				material: table.getMaterial(this.data.szMaterial),
 			};

@@ -106,28 +106,28 @@ export class Bumper implements IRenderable, IHittable, IAnimatable<BumperState> 
 		const bumper = this.meshGenerator.getMeshes(table);
 		if (bumper.base) {
 			meshes.base = {
-				mesh: bumper.base.transform(new Matrix3D().toRightHanded()),
+				mesh: bumper.base.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szBaseMaterial),
 				map: Texture.fromFilesystem('bumperbase.bmp'),
 			};
 		}
 		if (bumper.ring) {
 			meshes.ring = {
-				mesh: bumper.ring.transform(new Matrix3D().toRightHanded()),
+				mesh: bumper.ring.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szRingMaterial),
 				map: Texture.fromFilesystem('bumperring.bmp'),
 			};
 		}
 		if (bumper.skirt) {
 			meshes.skirt = {
-				mesh: bumper.skirt.transform(new Matrix3D().toRightHanded()),
+				mesh: bumper.skirt.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szSkirtMaterial),
 				map: Texture.fromFilesystem('bumperskirt.bmp'),
 			};
 		}
 		if (bumper.cap) {
 			meshes.cap = {
-				mesh: bumper.cap.transform(new Matrix3D().toRightHanded()),
+				mesh: bumper.cap.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szCapMaterial),
 				map: Texture.fromFilesystem('bumperCap.bmp'),
 			};

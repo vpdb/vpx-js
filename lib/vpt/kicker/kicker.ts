@@ -89,7 +89,7 @@ export class Kicker extends EventEmitter implements IRenderable, IHittable, IBal
 	public getMeshes(table: Table): Meshes {
 		return {
 			kicker: {
-				mesh: this.meshGenerator.getMesh(table).transform(new Matrix3D().toRightHanded()),
+				mesh: this.meshGenerator.getMesh(table).transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
 				map: this.getTexture(),
 			},

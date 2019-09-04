@@ -99,45 +99,45 @@ export class Ramp implements IRenderable, IHittable {
 
 		if (ramp.wire1) {
 			meshes.wire1 = {
-				mesh: ramp.wire1.transform(new Matrix3D().toRightHanded()),
+				mesh: ramp.wire1.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
 			};
 		}
 		if (ramp.wire2) {
 			meshes.wire2 = {
-				mesh: ramp.wire2.transform(new Matrix3D().toRightHanded()),
+				mesh: ramp.wire2.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
 			};
 		}
 		if (ramp.wire3) {
 			meshes.wire3 = {
-				mesh: ramp.wire3.transform(new Matrix3D().toRightHanded()),
+				mesh: ramp.wire3.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
 			};
 		}
 		if (ramp.wire4) {
 			meshes.wire4 = {
-				mesh: ramp.wire4.transform(new Matrix3D().toRightHanded()),
+				mesh: ramp.wire4.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
 			};
 		}
 		if (ramp.floor) {
 			meshes.floor = {
-				mesh: ramp.floor.transform(new Matrix3D().toRightHanded()),
+				mesh: ramp.floor.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
 				map: table.getTexture(this.data.szImage),
 			};
 		}
 		if (ramp.left) {
 			meshes.left = {
-				mesh: ramp.left.transform(new Matrix3D().toRightHanded()),
+				mesh: ramp.left.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
 				map: table.getTexture(this.data.szImage),
 			};
 		}
 		if (ramp.right) {
 			meshes.right = {
-				mesh: ramp.right.transform(new Matrix3D().toRightHanded()),
+				mesh: ramp.right.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
 				map: table.getTexture(this.data.szImage),
 			};

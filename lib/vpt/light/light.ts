@@ -95,7 +95,7 @@ export class Light implements IRenderable {
 			lightMaterial.emissiveIntensity = 1;
 
 			meshes.light = {
-				mesh: light.light.transform(new Matrix3D().toRightHanded()),
+				mesh: light.light.transform(Matrix3D.RIGHT_HANDED),
 				material: lightMaterial,
 			};
 		}
@@ -116,7 +116,7 @@ export class Light implements IRenderable {
 			socketMaterial.cClearcoat = 0;
 
 			meshes.socket = {
-				mesh: light.socket.transform(new Matrix3D().toRightHanded()),
+				mesh: light.socket.transform(Matrix3D.RIGHT_HANDED),
 				material: socketMaterial,
 			};
 		}
