@@ -137,7 +137,7 @@ export class HitTriangle extends HitObject {
 
 		Vertex3D.release(hitPos);
 		if (pointInTriangle) {
-			coll.hitNormal = this.normal;
+			coll.hitNormal.set(this.normal);
 			coll.hitDistance = bnd;                        // 3dhit actual contact distance ...
 			//coll.m_hitRigid = true;                      // collision type
 

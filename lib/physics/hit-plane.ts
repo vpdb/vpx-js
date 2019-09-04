@@ -61,7 +61,7 @@ export class HitPlane extends HitObject {
 		if (Math.abs(bnv) <= C_CONTACTVEL) {
 			if (Math.abs(bnd) <= PHYS_TOUCH) {
 				coll.isContact = true;
-				coll.hitNormal = this.normal;
+				coll.hitNormal.set(this.normal);
 				coll.hitOrgNormalVelocity = bnv;           // remember original normal velocity
 				coll.hitDistance = bnd;
 				return 0.0;                                // hit time is ignored for contacts
@@ -80,7 +80,7 @@ export class HitPlane extends HitObject {
 			return -1.0;
 		}
 
-		coll.hitNormal = this.normal;
+		coll.hitNormal.set(this.normal);
 		coll.hitDistance = bnd;                            // actual contact distance
 
 		return hitTime;

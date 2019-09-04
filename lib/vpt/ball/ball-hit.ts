@@ -422,14 +422,14 @@ export class BallHit extends HitObject {
 		Vertex3D.release(rotI, impulse, angularMomentum);
 	}
 
-	public handleStaticContact(coll: CollisionEvent, friction: number, dtime: number, physics: PlayerPhysics): void {
+	public handleStaticContact(coll: CollisionEvent, friction: number, dTime: number, physics: PlayerPhysics): void {
 		const normVel = this.vel.dot(coll.hitNormal);      // this should be zero, but only up to +/- C_CONTACTVEL
 
 		// If some collision has changed the ball's velocity, we may not have to do anything.
 		if (normVel <= C_CONTACTVEL) {
 			const fe = physics.gravity.clone(true).multiplyScalar(this.data.mass);   // external forces (only gravity for now)
 			const dot = fe.dot(coll.hitNormal);
-			const normalForce = Math.max(0.0, -(dot * dtime + coll.hitOrgNormalVelocity!)); // normal force is always nonnegative
+			const normalForce = Math.max(0.0, -(dot * dTime + coll.hitOrgNormalVelocity!)); // normal force is always nonnegative
 			Vertex3D.release(fe);
 
 			// Add just enough to kill original normal velocity and counteract the external forces.
@@ -441,7 +441,7 @@ export class BallHit extends HitObject {
 			}
 			// #endif
 
-			this.applyFriction(coll.hitNormal, dtime, friction, physics);
+			this.applyFriction(coll.hitNormal, dTime, friction, physics);
 		}
 	}
 

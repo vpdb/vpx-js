@@ -70,12 +70,12 @@ export abstract class HitObject {
 	/**
 	 * apply contact forces for the given time interval. Ball, Spinner and Gate do nothing here, Flipper has a specialized handling
 	 * @param coll
-	 * @param dtime
+	 * @param dTime
 	 * @param physics
 	 * @constructor
 	 */
-	public contact(coll: CollisionEvent, dtime: number, physics: PlayerPhysics): void {
-		coll.ball.hit.handleStaticContact(coll, this.friction, dtime, physics);
+	public contact(coll: CollisionEvent, dTime: number, physics: PlayerPhysics): void {
+		coll.ball.hit.handleStaticContact(coll, this.friction, dTime, physics);
 	}
 
 	public setFriction(friction: number): this {
@@ -139,7 +139,7 @@ export abstract class HitObject {
 			return;
 		}
 
-		const newColl = new CollisionEvent(ball);
+		const newColl = CollisionEvent.claim(ball);
 		const newTime = this.hitTest(ball, coll.hitTime, !physics.recordContacts ? coll : newColl, physics);
 		const validHit = newTime >= 0 && newTime <= coll.hitTime;
 
@@ -149,6 +149,7 @@ export abstract class HitObject {
 				coll.obj = this;
 				coll.hitTime = newTime;
 			}
+			CollisionEvent.release(newColl);
 
 		} else {                                 // find first collision, but also remember all contacts
 			if (newColl.isContact || validHit) {
@@ -160,8 +161,10 @@ export abstract class HitObject {
 				} else {                         // if (validhit)
 					coll.set(newColl);
 					coll.hitTime = newTime;
-					//CollisionEvent.release(newColl);
+					CollisionEvent.release(newColl);
 				}
+			} else {
+				CollisionEvent.release(newColl);
 			}
 		}
 	}
