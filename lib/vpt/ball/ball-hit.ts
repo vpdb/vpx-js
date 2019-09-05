@@ -466,7 +466,8 @@ export class BallHit extends HitObject {
 
 			const surfAcc = this.surfaceAcceleration(surfP, physics, true);
 			// calc the tangential slip acceleration
-			const slipAcc = surfAcc.clone(true).subAndRelease(hitNormal.clone(true).multiplyScalar(surfAcc.dot(hitNormal)));
+			const slipAcc = surfAcc.clone(true)
+				.subAndRelease(hitNormal.clone(true).multiplyScalar(surfAcc.dot(hitNormal)));
 
 			// neither slip velocity nor slip acceleration? nothing to do here
 			if (slipAcc.lengthSq() < 1e-6) {
@@ -476,8 +477,7 @@ export class BallHit extends HitObject {
 
 			slipDir = slipAcc.clone(true).normalize();
 			numer = -slipDir.dot(surfAcc);
-
-			Vertex3D.release(surfAcc);
+			Vertex3D.release(surfAcc, slipAcc);
 
 		} else {
 			// nonzero slip speed - dynamic friction case
