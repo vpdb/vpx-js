@@ -297,4 +297,4 @@ export class RenderVertex3D extends Vertex3D implements IRenderVertex {
 	}
 }
 
-//setTimeout(() => Vertex3D.POOL.enableDebug(10000), 10000);
+//setTimeout(() => Vertex3D.POOL.enableDebug(20000), 20000);

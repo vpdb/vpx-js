@@ -22,6 +22,7 @@ import { logger } from './logger';
 export class Pool<T> {
 
 	private static DEBUG = 0; // globally enable debug prints
+	private static TRACE = false;
 	private static MAX_POOL_SIZE = 100;
 	private readonly pool: T[];
 	private readonly poolable: IPoolable<T>;
@@ -46,7 +47,7 @@ export class Pool<T> {
 	public get(): T {
 		let caller = '';
 		let obj: any;
-		if (this.debugging) {
+		if (this.debugging && Pool.TRACE) {
 			caller = (new Error()).stack!.split('\n')[3].trim();
 			if (!this.claimed[caller]) {
 				this.claimed[caller] = 0;
@@ -68,16 +69,18 @@ export class Pool<T> {
 
 		if (caller) {                                                // update meta props
 			obj.__caller = caller;
-		} else {
+		} else if (obj._caller) {
 			delete obj._caller;
 		}
 		obj.__pool = true;
 		return obj;
 	}
 
-	public release(obj: T): void {
-		if ((obj as any).__caller) {
-			const caller = (obj as any).__caller;
+	public release(o: T): void {
+		const obj = o as any;
+		if (obj.__caller) {
+			const caller = obj.__caller;
+			delete obj.__caller;
 			if (!this.claimed[caller]) {
 				if (!this.unclaimed[caller]) {
 					this.unclaimed[caller] = 0;
@@ -90,7 +93,7 @@ export class Pool<T> {
 				}
 			}
 		}
-		if (!(obj as any).__pool) {
+		if (!obj.__pool) {
 			this.skipped++;
 			logger().warn('Trying to recycle non-claimed %s, aborting.', this.poolable.name);
 			return;
@@ -104,14 +107,14 @@ export class Pool<T> {
 			return;
 		}
 		if (this.poolable.reset) {
-			this.poolable.reset(obj);
+			this.poolable.reset(o);
 		}
 		this.released++;
-		this.pool.push(obj);
+		this.pool.push(o);
 	}
 
 	public enableDebug(interval = 10000): this {
-		if (Pool.DEBUG <= 0 && interval > 0) {
+		if (Pool.DEBUG <= 0 && interval > 0 && !this.debugging) {
 			logger().debug('[Pool] %s: Debug enabled.', this.poolable.name);
 			this.setupDebug(interval);
 		}
@@ -124,11 +127,13 @@ export class Pool<T> {
 				this.poolable.name, this.recycled, this.created, this.released, this.skipped,
 				Math.floor(this.recycled / (this.recycled + this.created) * 100000) / 1000);
 
-			for (const caller of Object.keys(this.claimed)) {
-				logger().debug('[Pool] %s: Unreleased: %d %s', this.poolable.name, this.claimed[caller], caller);
-			}
-			for (const caller of Object.keys(this.unclaimed)) {
-				logger().debug('[Pool] %s: Released without claimed: %d %s', this.poolable.name, this.unclaimed[caller], caller);
+			if (Pool.TRACE) {
+				for (const caller of Object.keys(this.claimed)) {
+					logger().debug('[Pool] %s: Unreleased: %d %s', this.poolable.name, this.claimed[caller], caller);
+				}
+				for (const caller of Object.keys(this.unclaimed)) {
+					logger().debug('[Pool] %s: Released without claimed: %d %s', this.poolable.name, this.unclaimed[caller], caller);
+				}
 			}
 
 			this.recycled = 0;
