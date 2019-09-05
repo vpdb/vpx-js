@@ -19,6 +19,7 @@
 
 import { Matrix2D } from '../../math/matrix2d';
 import { Vertex3D } from '../../math/vertex3d';
+import { Pool } from '../../util/object-pool';
 import { ItemState } from '../item-state';
 
 /**
@@ -28,17 +29,30 @@ import { ItemState } from '../item-state';
  */
 export class BallState extends ItemState {
 
-	public readonly pos: Vertex3D;
+	public static readonly POOL = new Pool(BallState);
+
+	public readonly pos: Vertex3D = new Vertex3D();
 	public readonly orientation = new Matrix2D();
 
-	constructor(name: string, pos: Vertex3D, orientation: Matrix2D) {
-		super(name);
-		this.pos = pos;
-		this.orientation = orientation;
+	public constructor() {
+		super();
 	}
 
-	public clone(): ItemState {
-		return new BallState(this.name, this.pos.clone(), this.orientation.clone());
+	public static claim(name: string, pos: Vertex3D): BallState {
+		const state = BallState.POOL.get();
+		state.name = name;
+		state.pos.set(pos);
+		return state;
+	}
+
+	public clone(): BallState {
+		const state = BallState.claim(this.name, this.pos);
+		state.orientation.set(this.orientation);
+		return state;
+	}
+
+	public release(): void {
+		BallState.POOL.release(this);
 	}
 
 	public equals(state: BallState): boolean {

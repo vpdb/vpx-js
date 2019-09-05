@@ -60,14 +60,14 @@ export class Player extends EventEmitter {
 
 		// save mover states
 		for (const movable of this.table.getMovables()) {
-			const state = movable.getState();
+			const state = movable.getState() as ItemState;
 			this.currentStates[state.getName()] = state;
 			this.previousStates[state.getName()] = state.clone();
 		}
 
 		// save animation states
 		for (const animatable of this.table.getAnimatables()) {
-			const state = animatable.getState();
+			const state = animatable.getState() as ItemState;
 			this.currentStates[state.getName()] = state;
 			this.previousStates[state.getName()] = state.clone();
 		}
@@ -77,12 +77,12 @@ export class Player extends EventEmitter {
 	 * Returns the changed states and clears them.
 	 */
 	public popStates(): ChangedStates<ItemState> {
-		const changedStates: ChangedStates<ItemState> = {};
+		const changedStates: ChangedStates = new ChangedStates<ItemState>();
 		for (const name of Object.keys(this.currentStates)) {
 			const newState = this.currentStates[name];
 			const oldState = this.previousStates[name];
 			if (!newState.equals(oldState)) {
-				changedStates[name] = { oldState, newState };
+				changedStates.setState(name,  oldState, newState);
 				this.previousStates[name] = newState.clone();
 			}
 		}
@@ -139,11 +139,40 @@ export interface IBallCreationPosition {
 	onBallCreated(physics: PlayerPhysics, ball: Ball): void;
 }
 
-export interface ChangedStates<STATE> {
-	[key: string]: ChangedState<STATE>;
+export class ChangedStates<STATE extends ItemState = ItemState> {
+
+	public readonly changedStates: { [key: string]: ChangedState<STATE> } = {};
+
+	get keys() { return Object.keys(this.changedStates); }
+	get states() { return Object.values(this.changedStates); }
+
+	public setState(name: string, oldState: STATE, newState: STATE): void {
+		this.changedStates[name] = new ChangedState<STATE>(oldState, newState);
+	}
+
+	public getState<S extends STATE>(name: string): ChangedState<S> {
+		return this.changedStates[name] as ChangedState<S>;
+	}
+
+	public release(): void {
+		for (const name of this.keys) {
+			this.changedStates[name].release();
+		}
+	}
 }
 
-export interface ChangedState<STATE> {
-	oldState: STATE;
-	newState: STATE;
+export class ChangedState<STATE extends ItemState> {
+	public readonly oldState: STATE;
+	public readonly newState: STATE;
+
+	constructor(oldState: STATE, newState: STATE) {
+		this.oldState = oldState;
+		this.newState = newState;
+	}
+
+	public release(): void {
+		if (this.oldState) {
+			this.oldState.release();
+		}
+	}
 }

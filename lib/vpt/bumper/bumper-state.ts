@@ -17,23 +17,40 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Pool } from '../../util/object-pool';
 import { ItemState } from '../item-state';
 
 export class BumperState extends ItemState {
 
+	public static readonly POOL = new Pool(BumperState);
+
 	/**
 	 * Z-offset of the bumper ring
 	 */
-	public ringOffset: number;
+	public ringOffset: number = 0;
 
-	public skirtRotX: number;
-	public skirtRotY: number;
+	public skirtRotX: number = 0;
+	public skirtRotY: number = 0;
 
-	constructor(name: string, ringOffset: number, skirtRotX: number, skirtRotY: number) {
-		super(name);
-		this.ringOffset = ringOffset;
-		this.skirtRotX = skirtRotX;
-		this.skirtRotY = skirtRotY;
+	public constructor() {
+		super();
+	}
+
+	public static claim(name: string, ringOffset: number, skirtRotX: number, skirtRotY: number): BumperState {
+		const state = BumperState.POOL.get();
+		state.name = name;
+		state.ringOffset = ringOffset;
+		state.skirtRotX = skirtRotX;
+		state.skirtRotY = skirtRotY;
+		return state;
+	}
+
+	public clone(): BumperState {
+		return BumperState.claim(this.name, this.ringOffset, this.skirtRotX, this.skirtRotY);
+	}
+
+	public release(): void {
+		BumperState.POOL.release(this);
 	}
 
 	public equals(state: BumperState): boolean {
@@ -44,9 +61,5 @@ export class BumperState extends ItemState {
 		return state.ringOffset === this.ringOffset
 			&& state.skirtRotX === this.skirtRotX
 			&& state.skirtRotY === this.skirtRotY;
-	}
-
-	public clone(): BumperState {
-		return new BumperState(this.name, this.ringOffset, this.skirtRotX, this.skirtRotY);
 	}
 }

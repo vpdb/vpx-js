@@ -69,7 +69,7 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 
 	private constructor(data: TriggerData) {
 		this.data = data;
-		this.state = new TriggerState(data.getName(), 0);
+		this.state = TriggerState.claim(data.getName(), 0);
 		this.meshGenerator = new TriggerMeshGenerator(data);
 		this.hitGenerator = new TriggerHitGenerator(data);
 	}

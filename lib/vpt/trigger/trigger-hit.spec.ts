@@ -101,7 +101,7 @@ describe('The VPinball trigger collision', () => {
 		// let it roll onto trigger
 		player.updatePhysics(0);
 		player.updatePhysics(900);
-		const state = player.popStates().WireB.newState as TriggerState;
+		const state = player.popStates().getState<TriggerState>('WireB').newState;
 		expect(state.heightOffset).to.equal(trigger.getState().heightOffset);
 	});
 

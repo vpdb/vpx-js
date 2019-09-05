@@ -71,7 +71,7 @@ export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHitta
 
 	private constructor(data: GateData) {
 		this.data = data;
-		this.state = new GateState(this.getName(), 0);
+		this.state = GateState.claim(this.getName(), 0);
 		this.meshGenerator = new GateMeshGenerator(data);
 		this.hitGenerator = new GateHitGenerator(data);
 	}

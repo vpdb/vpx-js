@@ -17,15 +17,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Pool } from '../../util/object-pool';
 import { ItemState } from '../item-state';
 
 export class TriggerState extends ItemState {
 
-	public heightOffset: number;
+	public static readonly POOL = new Pool(TriggerState);
 
-	constructor(name: string, heightOffset: number = 0) {
-		super(name);
-		this.heightOffset = heightOffset;
+	public heightOffset: number = 0;
+
+	public constructor() {
+		super();
+	}
+
+	public static claim(name: string, heightOffset: number): TriggerState {
+		const state = TriggerState.POOL.get();
+		state.name = name;
+		state.heightOffset = heightOffset;
+		return state;
+	}
+
+	public clone(): TriggerState {
+		return TriggerState.claim(this.name, this.heightOffset);
+	}
+
+	public release(): void {
+		TriggerState.POOL.release(this);
 	}
 
 	public equals(state: TriggerState): boolean {
@@ -34,9 +51,5 @@ export class TriggerState extends ItemState {
 			return false;
 		}
 		return state.heightOffset === this.heightOffset;
-	}
-
-	public clone(): TriggerState {
-		return new TriggerState(this.name, this.heightOffset);
 	}
 }

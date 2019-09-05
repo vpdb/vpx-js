@@ -146,5 +146,5 @@ describe('The VPinball plunger physics', () => {
 
 function popState(player: Player, name: string): PlungerState {
 	const states = player.popStates();
-	return states[name].newState as PlungerState;
+	return states.getState<PlungerState>(name).newState;
 }

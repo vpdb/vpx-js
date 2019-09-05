@@ -17,20 +17,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-/* tslint:disable:variable-name */
-
+import { Pool } from '../../util/object-pool';
 import { ItemState } from '../item-state';
 
 export class FlipperState extends ItemState {
 
+	public static readonly POOL = new Pool(FlipperState);
+
 	/**
 	 * Angle in rad
 	 */
-	public angle: number;
+	public angle: number = 0;
 
-	constructor(name: string, angle: number) {
-		super(name);
-		this.angle = angle;
+	public constructor() {
+		super();
+	}
+
+	public static claim(name: string, angle: number): FlipperState {
+		const state = FlipperState.POOL.get();
+		state.name = name;
+		state.angle = angle;
+		return state;
+	}
+
+	public clone(): FlipperState {
+		return FlipperState.claim(this.name, this.angle);
+	}
+
+	public release(): void {
+		FlipperState.POOL.release(this);
 	}
 
 	public equals(state: FlipperState): boolean {
@@ -39,9 +54,5 @@ export class FlipperState extends ItemState {
 			return false;
 		}
 		return state.angle === this.angle;
-	}
-
-	public clone(): FlipperState {
-		return new FlipperState(this.name, this.angle);
 	}
 }
