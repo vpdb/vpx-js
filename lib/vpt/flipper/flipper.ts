@@ -61,7 +61,7 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	public constructor(itemName: string, data: FlipperData) {
 		this.data = data;
 		this.mesh = new FlipperMesh();
-		this.state = new FlipperState(this.getName(), this.data.startAngle);
+		this.state = FlipperState.claim(this.getName(), this.data.startAngle);
 	}
 
 	public isVisible(): boolean {

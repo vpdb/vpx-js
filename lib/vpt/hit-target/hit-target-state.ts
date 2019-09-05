@@ -17,17 +17,34 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Pool } from '../../util/object-pool';
 import { ItemState } from '../item-state';
 
 export class HitTargetState extends ItemState {
 
-	public zOffset: number;
-	public xRotation: number;
+	public static readonly POOL = new Pool(HitTargetState);
 
-	constructor(name: string, zOffset: number = 0, xRotation = 0) {
-		super(name);
-		this.zOffset = zOffset;
-		this.xRotation = xRotation;
+	public zOffset: number = 0;
+	public xRotation: number = 0;
+
+	public constructor() {
+		super();
+	}
+
+	public static claim(name: string, zOffset: number = 0, xRotation = 0): HitTargetState {
+		const state = HitTargetState.POOL.get();
+		state.name = name;
+		state.zOffset = zOffset;
+		state.xRotation = xRotation;
+		return state;
+	}
+
+	public clone(): HitTargetState {
+		return HitTargetState.claim(this.name, this.zOffset, this.xRotation);
+	}
+
+	public release(): void {
+		HitTargetState.POOL.release(this);
 	}
 
 	public equals(state: HitTargetState): boolean {
@@ -36,9 +53,5 @@ export class HitTargetState extends ItemState {
 			return false;
 		}
 		return state.zOffset === this.zOffset && state.xRotation === this.xRotation;
-	}
-
-	public clone(): HitTargetState {
-		return new HitTargetState(this.name, this.zOffset, this.xRotation);
 	}
 }

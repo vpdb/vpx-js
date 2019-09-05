@@ -17,18 +17,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Pool } from '../../util/object-pool';
 import { ItemState } from '../item-state';
 
 export class SpinnerState extends ItemState {
 
+	public static readonly POOL = new Pool(SpinnerState);
+
 	/**
 	 * Angle in rad
 	 */
-	public angle: number;
+	public angle: number = 0;
 
-	constructor(name: string, angle: number) {
-		super(name);
-		this.angle = angle;
+	public constructor() {
+		super();
+	}
+
+	public static claim(name: string, angle: number): SpinnerState {
+		const state = SpinnerState.POOL.get();
+		state.name = name;
+		state.angle = angle;
+		return state;
+	}
+
+	public clone(): SpinnerState {
+		return SpinnerState.claim(this.name, this.angle);
+	}
+
+	public release(): void {
+		SpinnerState.POOL.release(this);
 	}
 
 	public equals(state: SpinnerState): boolean {
@@ -37,9 +54,5 @@ export class SpinnerState extends ItemState {
 			return false;
 		}
 		return state.angle === this.angle;
-	}
-
-	public clone(): SpinnerState {
-		return new SpinnerState(this.name, this.angle);
 	}
 }

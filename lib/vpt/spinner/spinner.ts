@@ -65,7 +65,7 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 
 	constructor(data: SpinnerData) {
 		this.data = data;
-		this.state = new SpinnerState(this.data.getName(), 0);
+		this.state = SpinnerState.claim(this.data.getName(), 0);
 		this.meshGenerator = new SpinnerMeshGenerator(data);
 		this.hitGenerator = new SpinnerHitGenerator(data);
 	}

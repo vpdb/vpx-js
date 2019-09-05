@@ -74,7 +74,7 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 
 	private constructor(data: HitTargetData) {
 		this.data = data;
-		this.state = new HitTargetState(this.data.getName());
+		this.state = HitTargetState.claim(this.data.getName());
 		this.meshGenerator = new HitTargetMeshGenerator(data);
 		this.hitGenerator = new HitTargetHitGenerator(data, this.meshGenerator);
 	}

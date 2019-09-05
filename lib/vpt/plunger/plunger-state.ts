@@ -17,18 +17,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Pool } from '../../util/object-pool';
 import { ItemState } from '../item-state';
 
 export class PlungerState extends ItemState {
 
+	public static readonly POOL = new Pool(PlungerState);
+
 	/**
 	 * Which frame to render
 	 */
-	public frame: number;
+	public frame: number = 0;
 
-	constructor(name: string, frame: number) {
-		super(name);
-		this.frame = frame;
+	public constructor() {
+		super();
+	}
+
+	public static claim(name: string, frame: number): PlungerState {
+		const state = PlungerState.POOL.get();
+		state.name = name;
+		state.frame = frame;
+		return state;
+	}
+
+	public clone(): PlungerState {
+		return PlungerState.claim(this.name, this.frame);
+	}
+
+	public release(): void {
+		PlungerState.POOL.release(this);
 	}
 
 	public equals(state: PlungerState): boolean {
@@ -37,9 +54,5 @@ export class PlungerState extends ItemState {
 			return false;
 		}
 		return state.frame === this.frame;
-	}
-
-	public clone(): PlungerState {
-		return new PlungerState(this.name, this.frame);
 	}
 }

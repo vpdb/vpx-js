@@ -106,6 +106,14 @@ export class Matrix2D {
 		return m;
 	}
 
+	public set(m: Matrix2D) {
+		for (let i = 0; i < 3; ++i) {
+			for (let l = 0; l < 3; ++l) {
+				this.matrix[i][l] = m.matrix[i][l];
+			}
+		}
+	}
+
 	public multiplyMatrix(m1: Matrix2D, m2: Matrix2D) {
 		for (let i = 0; i < 3; ++i) {
 			for (let l = 0; l < 3; ++l) {

@@ -63,7 +63,7 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 	public constructor(itemName: string, data: PlungerData) {
 		this.data = data;
 		this.mesh = new PlungerMesh(data);
-		this.state = new PlungerState(this.getName(), 0);
+		this.state = PlungerState.claim(this.getName(), 0);
 	}
 
 	public getName(): string {

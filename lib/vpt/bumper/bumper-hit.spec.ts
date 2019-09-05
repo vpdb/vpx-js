@@ -97,14 +97,14 @@ describe('The VPinball bumper collision', () => {
 
 		player.updatePhysics(710);
 		let states = player.popStates();
-		let state = states.Bumper2 as ChangedState<BumperState>;
+		let state = states.getState<BumperState>('Bumper2');
 		bumper.applyState(bumperObj, table, player, state.oldState as BumperState);
 		ringObj.getWorldPosition(ringPos);
 		expect(ringPos.z).to.equal(16);
 
 		player.updatePhysics(770);
 		states = player.popStates();
-		state = states.Bumper2 as ChangedState<BumperState>;
+		state = states.getState<BumperState>('Bumper2');
 		bumper.applyState(bumperObj, table, player, state.oldState as BumperState);
 		ringObj.getWorldPosition(ringPos);
 		expect(ringPos.z).to.equal(61);

@@ -57,7 +57,7 @@ export class Bumper implements IRenderable, IHittable, IAnimatable<BumperState> 
 
 	private constructor(data: BumperData) {
 		this.data = data;
-		this.state = new BumperState(this.getName(), 0, 0, 0);
+		this.state = BumperState.claim(this.getName(), 0, 0, 0);
 		this.meshGenerator = new BumperMeshGenerator(data);
 		this.meshUpdater = new BumperMeshUpdater(this.data, this.state, this.meshGenerator);
 	}

@@ -19,14 +19,17 @@
 
 export abstract class ItemState {
 
-	protected readonly name: string;
+	protected name: string = '';
 
-	public constructor(name: string) {
-		this.name = name;
+	protected constructor(name?: string) {
+		if (name) {
+			this.name = name;
+		}
 	}
 
 	public abstract clone(): ItemState;
 	public abstract equals(state: ItemState): boolean;
+	public abstract release(): void;
 
 	public getName() {
 		return this.name;
