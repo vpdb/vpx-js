@@ -487,7 +487,7 @@ export class FlipperHit extends HitObject {
 
 				// test for already inside flipper plane, either embedded or beyond the face endpoints
 				if (bffnd < -(ball.data.radius + feRadius)) {
-					Vertex2D.release(faceNormal);
+					Vertex2D.release(faceNormal, vp);
 					return -1.0;                           // wrong side of face, or too deeply embedded
 				}
 				if (bffnd <= PHYS_TOUCH) {
@@ -499,7 +499,7 @@ export class FlipperHit extends HitObject {
 
 			} else if (k === 2) {                          // end pass two, check if zero crossing on initial interval, exit
 				if (dp * bffnd > 0.0) {
-					Vertex2D.release(faceNormal);
+					Vertex2D.release(faceNormal, vp);
 					return -1.0;                           // no solution ... no obvious zero crossing
 				}
 				t0 = 0;
@@ -709,6 +709,7 @@ export class FlipperHit extends HitObject {
 				// test for extreme conditions
 				if (bFend < -(ball.data.radius + feRadius)) {
 					// too deeply embedded, ambiguous position
+					Vertex2D.release(vp);
 					return -1.0;
 				}
 				if (bFend <= PHYS_TOUCH) {
@@ -723,6 +724,7 @@ export class FlipperHit extends HitObject {
 			} else if (k === 2) {                          // end pass two, check if zero crossing on initial interval, exit if none
 				if (dp * bFend > 0.0) {
 					// no solution ... no obvious zero crossing
+					Vertex2D.release(vp);
 					return -1.0;
 				}
 

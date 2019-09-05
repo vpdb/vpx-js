@@ -296,5 +296,3 @@ export class RenderVertex3D extends Vertex3D implements IRenderVertex {
 		super(x, y, z);
 	}
 }
-
-//setTimeout(() => Vertex3D.POOL.enableDebug(20000), 20000);
