@@ -90,8 +90,6 @@ export class PlungerMeshGenerator {
 			return this.cache[frame];
 		}
 
-		console.log('Creating plunger mesh %s.', frame);
-
 		this.zHeight = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y) + this.data.zAdjust;
 		this.zScale = table.getScaleZ();
 		this.desc = this.getDesc();
