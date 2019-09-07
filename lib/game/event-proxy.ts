@@ -18,7 +18,6 @@
  */
 
 import { HitObject } from '../physics/hit-object';
-import { logger } from '../util/logger';
 import { Ball } from '../vpt/ball/ball';
 import { ItemApi } from '../vpt/item-api';
 import { Event } from './event';

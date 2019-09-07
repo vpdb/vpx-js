@@ -23,7 +23,6 @@ import { EventProxy } from '../../game/event-proxy';
 import { PlayerPhysics } from '../../game/player-physics';
 import { degToRad } from '../../math/float';
 import { clamp } from '../../math/functions';
-import { Vertex2D } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { CollisionType } from '../../physics/collision-type';

@@ -17,13 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3DNoTex2 } from '../../math/vertex';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { PlungerType } from './plunger';
 import { PlungerData } from './plunger-data';
 import { PlungerDesc } from './plunger-desc';
-import { Matrix3D } from '../../math/matrix3d';
 
 const PLUNGER_FRAME_COUNT = 25;
 

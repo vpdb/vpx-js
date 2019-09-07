@@ -19,7 +19,6 @@
 
 import { Table } from '..';
 import { degToRad } from '../math/float';
-import { Matrix2D } from '../math/matrix2d';
 import { Vertex3D } from '../math/vertex3d';
 import { CollisionEvent } from '../physics/collision-event';
 import {
