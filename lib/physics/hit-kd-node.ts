@@ -40,7 +40,7 @@ export class HitKDNode {
 	}
 
 	public reset(hitOct: HitKD) {
-		this.children = [];
+		this.children.length = 0;
 		this.hitOct = hitOct;
 		this.start = 0;
 		this.items = 0;
@@ -160,10 +160,10 @@ export class HitKDNode {
 
 		this.children[0].hitOct = this.hitOct; //!! meh
 		this.children[0].items = 0;
-		this.children[0].children = [];
+		this.children[0].children.length = 0;
 		this.children[1].hitOct = this.hitOct; //!! meh
 		this.children[1].items = 0;
-		this.children[1].children = [];
+		this.children[1].children.length = 0;
 
 		// determine amount of items that cross splitplane, or are passed on to the children
 		if (axis === 0) {
@@ -224,7 +224,7 @@ export class HitKDNode {
 
 		if (levelEmpty > 8) {// If 8 levels were all just subdividing the same objects without luck, exit & Free the nodes again (but at least empty space was cut off)
 			this.hitOct.numNodes -= 2;
-			this.children = [];
+			this.children.length = 0;
 			Vertex3D.release(vCenter);
 			return;
 		}

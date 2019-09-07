@@ -66,6 +66,15 @@ export class Matrix3D {
 		return this;
 	}
 
+	public setEach(...m: number[]): this {
+		for (let i = 0; i < 4; i++) {
+			for (let j = 0; j < 4; j++) {
+				this.matrix[i][j] = m[i * 4 + j];
+			}
+		}
+		return this;
+	}
+
 	public setIdentity(): this {
 		this._11 = this._22 = this._33 = this._44 = 1.0;
 		this._12 = this._13 = this._14 = this._41 =
@@ -249,5 +258,5 @@ export class Matrix3D {
 	get _44() { return this.matrix[3][3]; }
 	set _44(v) { this.matrix[3][3] = f4(v); }
 
-	public static readonly RIGHT_HANDED = new Matrix3D().set([ [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1] ]);
+	public static readonly RIGHT_HANDED = new Matrix3D().setEach(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1);
 }
