@@ -144,9 +144,13 @@ export class Matrix3D {
 	public applyToObject3D(obj: Object3D) {
 		if (!obj.matrix) {
 			obj.matrix = new Matrix4();
+		} else {
+			obj.matrix.identity();
 		}
-		this.applyToThreeMatrix4(obj.matrix);
-		obj.matrixWorldNeedsUpdate = true;
+		const m4 = Pool.GENERIC.Matrix4.get();
+		this.applyToThreeMatrix4(m4);
+		obj.applyMatrix(m4);
+		Pool.GENERIC.Matrix4.release(m4);
 	}
 
 	public applyToThreeMatrix4(matrix: Matrix4): Matrix4 {
