@@ -158,7 +158,10 @@ export class FlipperHit extends HitObject {
 		}
 //#endif
 
-		const [ vRel, rB, rF ] = this.getRelativeVelocity(normal, ball);
+		const vRel = Vertex3D.claim();
+		const rB = Vertex3D.claim();
+		const rF = Vertex3D.claim();
+		this.getRelativeVelocity(normal, ball, vRel, rB, rF);
 
 		const normVel = vRel.dot(normal);                  // this should be zero, but only up to +/- C_CONTACTVEL
 
@@ -255,7 +258,10 @@ export class FlipperHit extends HitObject {
 	public collide(coll: CollisionEvent, physics: PlayerPhysics): void {
 		const ball = coll.ball;
 		const normal = coll.hitNormal;
-		const [ vRel, rB, rF ] = this.getRelativeVelocity(normal, ball);
+		const vRel = Vertex3D.claim();
+		const rB = Vertex3D.claim();
+		const rF = Vertex3D.claim();
+		this.getRelativeVelocity(normal, ball, vRel, rB, rF);
 
 		let bnv = normal.dot(vRel);                        // relative normal velocity
 
@@ -612,8 +618,8 @@ export class FlipperHit extends HitObject {
 		return t;
 	}
 
-	private getRelativeVelocity(normal: Vertex3D, ball: Ball): [ Vertex3D, Vertex3D, Vertex3D] {
-		const rB = normal.clone(true).multiplyScalar(-ball.data.radius);
+	private getRelativeVelocity(normal: Vertex3D, ball: Ball, vRel: Vertex3D, rB: Vertex3D, rF: Vertex3D): void {
+		rB.setAndRelease(normal.clone(true).multiplyScalar(-ball.data.radius));
 		const hitPos = ball.state.pos.clone(true).add(rB);
 
 		const cF = Vertex3D.claim(
@@ -622,13 +628,11 @@ export class FlipperHit extends HitObject {
 			ball.state.pos.z,                              // make sure collision happens in same z plane where ball is
 		);
 
-		const rF = hitPos.clone(true).sub(cF);                 // displacement relative to flipper center
+		rF.setAndRelease(hitPos.clone(true).sub(cF));                 // displacement relative to flipper center
 		const vB = ball.hit.surfaceVelocity(rB, true);
 		const vF = this.mover.surfaceVelocity(rF, true);
-		const vRel = vB.clone(true).sub(vF);
+		vRel.setAndRelease(vB.clone(true).sub(vF));
 		Vertex3D.release(hitPos, cF, vB, vF);
-
-		return [ vRel, rB, rF ];
 	}
 
 	private hitTestFlipperEnd(ball: Ball, dTime: number, coll: CollisionEvent): number {
