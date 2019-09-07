@@ -25,9 +25,8 @@ import { Matrix2D } from './matrix2d';
 import { Matrix3D } from './matrix3d';
 import { IRenderVertex, Vertex } from './vertex';
 import { Vertex2D } from './vertex2d';
-import { Base } from '../base';
 
-export class Vertex3D extends Base implements Vertex {
+export class Vertex3D implements Vertex {
 
 	public static readonly POOL = new Pool(Vertex3D);
 
@@ -75,7 +74,6 @@ export class Vertex3D extends Base implements Vertex {
 	}
 
 	constructor(x?: number, y?: number, z?: number) {
-		super();
 		this.x = x || 0;
 		this.y = y || 0;
 		this.z = z || 0;
