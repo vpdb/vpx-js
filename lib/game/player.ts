@@ -19,6 +19,7 @@
 
 import { EventEmitter } from 'events';
 import { Vertex3D } from '../math/vertex3d';
+import { Pool } from '../util/object-pool';
 import { Ball } from '../vpt/ball/ball';
 import { ItemState } from '../vpt/item-state';
 import { Table } from '../vpt/table/table';
@@ -75,14 +76,18 @@ export class Player extends EventEmitter {
 
 	/**
 	 * Returns the changed states and clears them.
+	 *
+	 * Note that the returned object is recycled and should be released after
+	 * usage.
 	 */
 	public popStates(): ChangedStates<ItemState> {
-		const changedStates: ChangedStates = new ChangedStates<ItemState>();
+		const changedStates = ChangedStates.claim();
 		for (const name of Object.keys(this.currentStates)) {
 			const newState = this.currentStates[name];
 			const oldState = this.previousStates[name];
 			if (!newState.equals(oldState)) {
-				changedStates.setState(name,  oldState, newState);
+				changedStates.setState(name, oldState.clone(), newState.clone());
+				this.previousStates[name].release();
 				this.previousStates[name] = newState.clone();
 			}
 		}
@@ -96,7 +101,7 @@ export class Player extends EventEmitter {
 	public createBall(ballCreator: IBallCreationPosition, radius = 25, mass = 1): Ball {
 		const ball = this.physics.createBall(ballCreator, radius, mass);
 		this.currentStates[ball.getName()] = ball.getState();
-		//this.previousStates[ball.getName()] = ball.getState().clone();
+		this.previousStates[ball.getName()] = ball.getState().clone();
 		this.emit('ballCreated', ball);
 		return ball;
 	}
@@ -106,6 +111,8 @@ export class Player extends EventEmitter {
 			return;
 		}
 		this.physics.destroyBall(ball);
+		this.currentStates[ball.getName()].release();
+		this.previousStates[ball.getName()].release();
 		delete this.currentStates[ball.getName()];
 		delete this.previousStates[ball.getName()];
 		this.emit('ballDestroyed', ball);
@@ -141,13 +148,19 @@ export interface IBallCreationPosition {
 
 export class ChangedStates<STATE extends ItemState = ItemState> {
 
-	public readonly changedStates: { [key: string]: ChangedState<STATE> } = {};
+	public static readonly POOL = new Pool(ChangedStates);
+
+	public changedStates: { [key: string]: ChangedState<STATE> } = {};
 
 	get keys() { return Object.keys(this.changedStates); }
 	get states() { return Object.values(this.changedStates); }
 
+	public static claim(): ChangedStates {
+		return ChangedStates.POOL.get();
+	}
+
 	public setState(name: string, oldState: STATE, newState: STATE): void {
-		this.changedStates[name] = new ChangedState<STATE>(oldState, newState);
+		this.changedStates[name] = ChangedState.claim<STATE>(oldState, newState);
 	}
 
 	public getState<S extends STATE>(name: string): ChangedState<S> {
@@ -158,21 +171,31 @@ export class ChangedStates<STATE extends ItemState = ItemState> {
 		for (const name of this.keys) {
 			this.changedStates[name].release();
 		}
+		this.changedStates = {};
+		ChangedStates.POOL.release(this);
 	}
 }
 
 export class ChangedState<STATE extends ItemState> {
-	public readonly oldState: STATE;
-	public readonly newState: STATE;
 
-	constructor(oldState: STATE, newState: STATE) {
+	public static readonly POOL = new Pool(ChangedState);
+
+	public oldState!: STATE;
+	public newState!: STATE;
+
+	public static claim<S extends ItemState>(oldState: S, newState: S): ChangedState<S> {
+		return (ChangedState.POOL.get() as ChangedState<S>).set(oldState, newState);
+	}
+
+	public set(oldState: STATE, newState: STATE): this {
 		this.oldState = oldState;
 		this.newState = newState;
+		return this;
 	}
 
 	public release(): void {
-		if (this.oldState) {
-			this.oldState.release();
-		}
+		this.oldState.release();
+		this.newState.release();
+		ChangedState.POOL.release(this);
 	}
 }

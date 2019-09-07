@@ -27,6 +27,12 @@ export abstract class ItemState {
 		}
 	}
 
+	/**
+	 * Clones the state.
+	 *
+	 * Note that returned clone is always recycled (i.e. retrieved from the object
+	 * pool), so it should be released after usage.
+	 */
 	public abstract clone(): ItemState;
 	public abstract equals(state: ItemState): boolean;
 	public abstract release(): void;
