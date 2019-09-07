@@ -36,7 +36,7 @@ import { VpTableExporterOptions } from '../table/table-exporter';
 import { PlungerApi } from './plunger-api';
 import { PlungerData } from './plunger-data';
 import { PlungerHit } from './plunger-hit';
-import { PlungerMesh } from './plunger-mesh';
+import { PlungerMeshGenerator } from './plunger-mesh-generator';
 import { PlungerMover } from './plunger-mover';
 import { PlungerState } from './plunger-state';
 
@@ -49,7 +49,7 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 	public static PLUNGER_HEIGHT = 50.0;
 
 	private readonly data: PlungerData;
-	private readonly mesh: PlungerMesh;
+	private readonly meshGenerator: PlungerMeshGenerator;
 	private readonly state: PlungerState;
 	private api?: PlungerApi;
 	private hit?: PlungerHit;
@@ -62,7 +62,7 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 
 	public constructor(itemName: string, data: PlungerData) {
 		this.data = data;
-		this.mesh = new PlungerMesh(data);
+		this.meshGenerator = new PlungerMeshGenerator(data);
 		this.state = PlungerState.claim(this.getName(), 0);
 	}
 
@@ -79,21 +79,19 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 	}
 
 	public getMeshes(table: Table, opts: VpTableExporterOptions): Meshes {
-		const plunger = this.mesh.generateMeshes(0, table);
+		const plunger = this.meshGenerator.generateMeshes(0, table);
 		const meshes: Meshes = {};
 		const material = table.getMaterial(this.data.szMaterial);
 		const map = table.getTexture(this.data.szImage);
 
-		const matrix = Matrix3D.RIGHT_HANDED;
-
 		if (plunger.rod) {
-			meshes.rod = { mesh: plunger.rod.transform(matrix), material, map };
+			meshes.rod = { mesh: plunger.rod, material, map };
 		}
 		if (plunger.spring) {
-			meshes.spring = { mesh: plunger.spring.transform(matrix), material, map };
+			meshes.spring = { mesh: plunger.spring, material, map };
 		}
 		if (plunger.flat) {
-			meshes.flat = { mesh: plunger.flat.transform(matrix), material, map };
+			meshes.flat = { mesh: plunger.flat, material, map };
 		}
 		return meshes;
 	}
@@ -108,7 +106,7 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 
 	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
-		this.hit = new PlungerHit(this.data, this.state, this.events, this.mesh.cFrames, player.getPhysics(), table);
+		this.hit = new PlungerHit(this.data, this.state, this.events, this.meshGenerator.cFrames, player.getPhysics(), table);
 		this.api = new PlungerApi(this.data, this.hit, this.events, this, player, table);
 	}
 
@@ -153,16 +151,14 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 
 	public applyState(obj: Object3D, table: Table): void {
 
-		const matrix = Matrix3D.RIGHT_HANDED;
-		const mesh = this.mesh.generateMeshes(this.state.frame, table);
-
+		const mesh = this.meshGenerator.generateMeshes(this.state.frame, table);
 		const rodObj = obj.children.find(o => o.name === 'rod') as any;
 		if (rodObj) {
-			mesh.rod!.transform(matrix).applyToObject(rodObj);
+			mesh.rod!.applyToObject(rodObj);
 		}
 		const springObj = obj.children.find(o => o.name === 'spring') as any;
 		if (springObj) {
-			mesh.spring!.transform(matrix).applyToObject(springObj);
+			mesh.spring!.applyToObject(springObj);
 		}
 	}
 

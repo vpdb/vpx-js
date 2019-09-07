@@ -23,12 +23,14 @@ import { Table } from '../table/table';
 import { PlungerType } from './plunger';
 import { PlungerData } from './plunger-data';
 import { PlungerDesc } from './plunger-desc';
+import { Matrix3D } from '../../math/matrix3d';
 
 const PLUNGER_FRAME_COUNT = 25;
 
-export class PlungerMesh {
+export class PlungerMeshGenerator {
 
 	private readonly data: PlungerData;
+	private readonly cache: { [key: number]: { rod?: Mesh, spring?: Mesh, flat?: Mesh } } = {};
 
 	public readonly cFrames: number;
 	private readonly stroke: number;
@@ -84,6 +86,12 @@ export class PlungerMesh {
 
 	public generateMeshes(frame: number, table: Table): { rod?: Mesh, spring?: Mesh, flat?: Mesh } {
 
+		if (this.cache[frame]) {
+			return this.cache[frame];
+		}
+
+		console.log('Creating plunger mesh %s.', frame);
+
 		this.zHeight = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y) + this.data.zAdjust;
 		this.zScale = table.getScaleZ();
 		this.desc = this.getDesc();
@@ -94,12 +102,13 @@ export class PlungerMesh {
 		this.calculateFrameRenderingDetails();
 
 		if (this.data.type === PlungerType.Flat) {
-			return { flat: this.buildFlatMesh(frame) };
+			this.cache[frame] = { flat: this.buildFlatMesh(frame).transform(Matrix3D.RIGHT_HANDED) };
 		} else {
-			const rod = this.buildRodMesh(frame);
-			const spring = this.buildSpringMesh(frame, rod.vertices);
-			return { rod, spring };
+			const rod = this.buildRodMesh(frame).transform(Matrix3D.RIGHT_HANDED);
+			const spring = this.buildSpringMesh(frame, rod.vertices).transform(Matrix3D.RIGHT_HANDED);
+			this.cache[frame] = { rod, spring };
 		}
+		return this.cache[frame];
 	}
 
 	private getDesc(): PlungerDesc {
