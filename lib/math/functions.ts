@@ -17,6 +17,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+const solution: [number, number] = [0, 0];
+
+/**
+ * Solves an quadratic equation.
+ *
+ * Note that the result is recycled, meaning running it twice will make the second
+ * run update the first run's result, so retrieve the result before running it a
+ * second time in a row!
+ */
 export function solveQuadraticEq(a: number, b: number, c: number): [number, number] | undefined {
 	let discr = b * b - 4.0 * a * c;
 
@@ -27,10 +36,10 @@ export function solveQuadraticEq(a: number, b: number, c: number): [number, numb
 	discr = Math.sqrt(discr);
 
 	const invA = (-0.5) / a;
-	const sol1 = (b + discr) * invA;
-	const sol2 = (b - discr) * invA;
+	solution[0] = (b + discr) * invA;
+	solution[1] = (b - discr) * invA;
 
-	return [sol1, sol2];
+	return solution;
 }
 
 export function clamp(x: number, min: number, max: number) {

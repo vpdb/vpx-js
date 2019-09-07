@@ -170,8 +170,8 @@ export class ChangedStates<STATE extends ItemState = ItemState> {
 	public release(): void {
 		for (const name of this.keys) {
 			this.changedStates[name].release();
+			delete this.changedStates[name];
 		}
-		this.changedStates = {};
 		ChangedStates.POOL.release(this);
 	}
 }
