@@ -51,26 +51,26 @@ export class BumperMeshUpdater {
 	private applyRingState(obj: Object3D) {
 		const ringObj = obj.children.find(o => o.name === `bumper-ring-${this.data.getName()}`) as Object3D;
 		if (ringObj) {
-			const matrix = new Matrix3D().setTranslation(0, 0, -this.state.ringOffset);
-			ringObj.matrix = new Matrix4();
-			ringObj.applyMatrix(matrix.toThreeMatrix4());
+			const matrix = Matrix3D.claim().setTranslation(0, 0, -this.state.ringOffset);
+			matrix.applyToObject3D(ringObj);
+			Matrix3D.release(matrix);
 		}
 	}
 
 	/* istanbul ignore next: this looks weird. test when sure it's the correct "animation" */
 	private applySkirtState(obj: Object3D, table: Table) {
-		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
-		const matToOrigin = new Matrix3D().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, -height);
-		const matFromOrigin = new Matrix3D().setTranslation(this.data.vCenter.x, this.data.vCenter.y, height);
-		const matRotX = new Matrix3D().rotateXMatrix(degToRad(this.state.skirtRotX));
-		const matRotY = new Matrix3D().rotateYMatrix(degToRad(this.state.skirtRotY));
-
-		const matrix = matToOrigin.multiply(matRotY).multiply(matRotX).multiply(matFromOrigin);
-
 		const skirtObj = obj.children.find(o => o.name === `bumper-socket-${this.data.getName()}`) as any;
 		if (skirtObj) {
-			skirtObj.matrix = new Matrix4();
-			skirtObj.applyMatrix(matrix.toThreeMatrix4());
+			const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
+			const matToOrigin = Matrix3D.claim().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, -height);
+			const matFromOrigin = Matrix3D.claim().setTranslation(this.data.vCenter.x, this.data.vCenter.y, height);
+			const matRotX = Matrix3D.claim().rotateXMatrix(degToRad(this.state.skirtRotX));
+			const matRotY = Matrix3D.claim().rotateYMatrix(degToRad(this.state.skirtRotY));
+
+			const matrix = matToOrigin.multiply(matRotY).multiply(matRotX).multiply(matFromOrigin);
+
+			matrix.applyToObject3D(skirtObj);
+			Matrix3D.release(matToOrigin, matFromOrigin, matRotX, matRotY);
 		}
 	}
 }

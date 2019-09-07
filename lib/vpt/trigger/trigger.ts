@@ -128,9 +128,9 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 	}
 
 	public applyState(obj: Object3D, table: Table, player: Player): void {
-		const matrix = new Matrix3D().setTranslation(0, 0, -this.state.heightOffset);
-		obj.matrix = matrix.toThreeMatrix4();
-		obj.matrixWorldNeedsUpdate = true;
+		const matrix = Matrix3D.claim().setTranslation(0, 0, -this.state.heightOffset);
+		matrix.applyToObject3D(obj);
+		Matrix3D.release(matrix);
 	}
 
 	public getEventNames(): string[] {
