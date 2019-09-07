@@ -139,20 +139,21 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 	}
 
 	public applyState(obj: Object3D, table: Table, player: Player, oldState: HitTargetState): void {
-		const matTransToOrigin = new Matrix3D().setTranslation(-this.data.vPosition.x, -this.data.vPosition.y, -this.data.vPosition.z);
-		const matRotateToOrigin = new Matrix3D().rotateZMatrix(degToRad(-this.data.rotZ));
-		const matTransFromOrigin = new Matrix3D().setTranslation(this.data.vPosition.x, this.data.vPosition.y, this.data.vPosition.z);
-		const matRotateFromOrigin = new Matrix3D().rotateZMatrix(degToRad(this.data.rotZ));
-		const matRotateX = new Matrix3D().rotateXMatrix(degToRad(this.state.xRotation));
-		const matTranslateZ = new Matrix3D().setTranslation(0, 0, -this.state.zOffset);
+		const matTransToOrigin = Matrix3D.claim().setTranslation(-this.data.vPosition.x, -this.data.vPosition.y, -this.data.vPosition.z);
+		const matRotateToOrigin = Matrix3D.claim().rotateZMatrix(degToRad(-this.data.rotZ));
+		const matTransFromOrigin = Matrix3D.claim().setTranslation(this.data.vPosition.x, this.data.vPosition.y, this.data.vPosition.z);
+		const matRotateFromOrigin = Matrix3D.claim().rotateZMatrix(degToRad(this.data.rotZ));
+		const matRotateX = Matrix3D.claim().rotateXMatrix(degToRad(this.state.xRotation));
+		const matTranslateZ = Matrix3D.claim().setTranslation(0, 0, -this.state.zOffset);
 		const matrix = matTransToOrigin
 			.multiply(matRotateToOrigin)
 			.multiply(matRotateX)
 			.multiply(matTranslateZ)
 			.multiply(matRotateFromOrigin)
 			.multiply(matTransFromOrigin);
-		obj.matrix = new Matrix4();
-		obj.applyMatrix(matrix.toThreeMatrix4());
+
+		matrix.applyToObject3D(obj);
+		Matrix3D.release(matTransToOrigin, matRotateToOrigin, matTransFromOrigin, matRotateFromOrigin, matRotateX, matTranslateZ);
 	}
 
 	public setCollidable(isCollidable: boolean) {

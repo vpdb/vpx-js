@@ -149,18 +149,6 @@ export class Matrix3D {
 		obj.matrixWorldNeedsUpdate = true;
 	}
 
-	/** @deprecated Use applyToThreeMatrix4 */
-	public toThreeMatrix4(): Matrix4 {
-		const matrix = new Matrix4();
-		matrix.set(
-			this._11, this._21, this._31, this._41,
-			this._12, this._22, this._32, this._42,
-			this._13, this._23, this._33, this._43,
-			this._14, this._24, this._34, this._44,
-		);
-		return matrix;
-	}
-
 	public applyToThreeMatrix4(matrix: Matrix4): Matrix4 {
 		matrix.set(
 			this._11, this._21, this._31, this._41,

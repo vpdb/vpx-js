@@ -143,11 +143,11 @@ export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHitta
 	/* istanbul ignore next */
 	public applyState(obj: Object3D, table: Table, player: Player, oldState: GateState): void {
 		const posZ = this.data.height;
-		const matTransToOrigin = new Matrix3D().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, posZ);
-		const matRotateToOrigin = new Matrix3D().rotateZMatrix(degToRad(-this.data.rotation));
-		const matTransFromOrigin = new Matrix3D().setTranslation(this.data.vCenter.x, this.data.vCenter.y, -posZ);
-		const matRotateFromOrigin = new Matrix3D().rotateZMatrix(degToRad(this.data.rotation));
-		const matRotateX = new Matrix3D().rotateXMatrix(this.state.angle - degToRad(this.data.angleMin));
+		const matTransToOrigin = Matrix3D.claim().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, posZ);
+		const matRotateToOrigin = Matrix3D.claim().rotateZMatrix(degToRad(-this.data.rotation));
+		const matTransFromOrigin = Matrix3D.claim().setTranslation(this.data.vCenter.x, this.data.vCenter.y, -posZ);
+		const matRotateFromOrigin = Matrix3D.claim().rotateZMatrix(degToRad(this.data.rotation));
+		const matRotateX = Matrix3D.claim().rotateXMatrix(this.state.angle - degToRad(this.data.angleMin));
 
 		const matrix = matTransToOrigin
 			.multiply(matRotateToOrigin)
@@ -156,8 +156,9 @@ export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHitta
 			.multiply(matTransFromOrigin);
 
 		const wireObj = obj.children.find(c => c.name === `gate.wire-${this.data.getName()}`)!;
-		wireObj.matrix = new Matrix4();
-		wireObj.applyMatrix(matrix.toThreeMatrix4());
+		matrix.applyToObject3D(wireObj);
+
+		Matrix3D.release(matTransToOrigin, matRotateToOrigin, matTransFromOrigin, matRotateFromOrigin, matRotateX);
 	}
 
 	public getEventNames(): string[] {
