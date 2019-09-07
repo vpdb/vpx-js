@@ -27,7 +27,6 @@ import { IRenderable } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
 import { IBallCreationPosition, Player } from '../../game/player';
 import { PlayerPhysics } from '../../game/player-physics';
-import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';

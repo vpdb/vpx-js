@@ -20,12 +20,12 @@
 import { Event } from '../game/event';
 import { PlayerPhysics } from '../game/player-physics';
 import { Vertex2D } from '../math/vertex2d';
+import { Vertex3D } from '../math/vertex3d';
 import { Surface } from '../vpt/surface/surface';
 import { SurfaceData } from '../vpt/surface/surface-data';
 import { SlingshotAnimObject } from './anim-slingshot';
 import { CollisionEvent } from './collision-event';
 import { LineSeg } from './line-seg';
-import { Vertex3D } from '../math/vertex3d';
 
 export class LineSegSlingshot extends LineSeg {
 

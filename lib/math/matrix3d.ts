@@ -20,7 +20,6 @@
 import { Matrix4, Object3D } from 'three';
 import { Pool } from '../util/object-pool';
 import { f4, fr } from './float';
-import { Vertex3D } from './vertex3d';
 
 /**
  * Three's Matrix4.multiply() gives different results than VPinball's. Duh.

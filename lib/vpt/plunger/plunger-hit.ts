@@ -19,7 +19,6 @@
 
 import { EventProxy } from '../../game/event-proxy';
 import { PlayerPhysics } from '../../game/player-physics';
-import { Vertex2D } from '../../math/vertex2d';
 import { CollisionEvent } from '../../physics/collision-event';
 import { C_DISP_GAIN, C_DISP_LIMIT, C_EMBEDDED, C_EMBEDSHOT, C_LOWNORMVEL } from '../../physics/constants';
 import { HitObject } from '../../physics/hit-object';
