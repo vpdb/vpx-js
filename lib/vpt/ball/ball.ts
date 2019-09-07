@@ -68,21 +68,21 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 
 	public applyState(obj: Object3D, table: Table, player: Player): void {
 		const zHeight = !this.hit.isFrozen ? this.state.pos.z : this.state.pos.z - this.data.radius;
-		const orientation = new Matrix3D().set([
+		const orientation = Matrix3D.claim().set([
 			[this.state.orientation.matrix[0][0], this.state.orientation.matrix[1][0], this.state.orientation.matrix[2][0], 0.0],
 			[this.state.orientation.matrix[0][1], this.state.orientation.matrix[1][1], this.state.orientation.matrix[2][1], 0.0],
 			[this.state.orientation.matrix[0][2], this.state.orientation.matrix[1][2], this.state.orientation.matrix[2][2], 0.0],
 			[0, 0, 0, 1],
 		]);
-		const trans = new Matrix3D().setTranslation(this.state.pos.x, this.state.pos.y, zHeight);
-		const matrix = new Matrix3D()
+		const trans = Matrix3D.claim().setTranslation(this.state.pos.x, this.state.pos.y, zHeight);
+		const matrix = Matrix3D.claim()
 			.setScaling(this.data.radius, this.data.radius, this.data.radius)
 			.preMultiply(orientation)
-			.multiply(trans);
+			.multiply(trans)
+			.toRightHanded();
 
-		obj.matrix = new Matrix4();
-		obj.applyMatrix(matrix.toRightHanded().toThreeMatrix4());
-		obj.matrixWorldNeedsUpdate = true;
+		matrix.applyToObject3D(obj);
+		Matrix3D.release(orientation, trans, matrix);
 	}
 
 	public async addToScene(scene: Scene, table: Table): Promise<Group> {

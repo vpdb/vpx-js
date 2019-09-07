@@ -105,12 +105,12 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	public getMeshes(table: Table): Meshes {
 		const meshes: Meshes = {};
 
-		const matrix = this.getMatrix();
+		const matrix = this.getMatrix().toRightHanded();
 		const flipper = this.mesh.generateMeshes(this.data, table);
 
 		// base mesh
 		meshes.base = {
-			mesh: flipper.base.transform(matrix.toRightHanded()),
+			mesh: flipper.base.transform(matrix),
 			material: table.getMaterial(this.data.szMaterial),
 			map: table.getTexture(this.data.szImage),
 		};
@@ -118,7 +118,7 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		// rubber mesh
 		if (flipper.rubber) {
 			meshes.rubber = {
-				mesh: flipper.rubber.transform(matrix.toRightHanded()),
+				mesh: flipper.rubber.transform(matrix),
 				material: table.getMaterial(this.data.szRubberMaterial),
 			};
 		}
@@ -143,10 +143,12 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 
 	private getMatrix(rotation: number = this.data.startAngle): Matrix3D {
 		const trafoMatrix = new Matrix3D();
-		const tempMatrix = new Matrix3D();
+		const tempMatrix = Matrix3D.claim();
 		trafoMatrix.setTranslation(this.data.center.x, this.data.center.y, 0);
 		tempMatrix.rotateZMatrix(degToRad(rotation));
 		trafoMatrix.preMultiply(tempMatrix);
+
+		Matrix3D.release(tempMatrix);
 		return trafoMatrix;
 	}
 

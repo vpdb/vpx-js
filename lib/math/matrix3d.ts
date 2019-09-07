@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Matrix4 } from 'three';
+import { Matrix4, Object3D } from 'three';
 import { Pool } from '../util/object-pool';
 import { f4, fr } from './float';
 import { Vertex3D } from './vertex3d';
@@ -134,15 +134,34 @@ export class Matrix3D {
 		return this;
 	}
 
-	public toRightHanded(recycle = false): Matrix3D {
+	public toRightHanded(): this {
 		const tempMat = Matrix3D.claim().setScaling(1, 1, -1);
-		const matrix = this.clone(recycle).multiply(tempMat);
+		this.multiply(tempMat);
 		Matrix3D.release(tempMat);
+		return this;
+	}
+
+	public applyToObject3D(obj: Object3D) {
+		if (!obj.matrix) {
+			obj.matrix = new Matrix4();
+		}
+		this.applyToThreeMatrix4(obj.matrix);
+		obj.matrixWorldNeedsUpdate = true;
+	}
+
+	/** @deprecated Use applyToThreeMatrix4 */
+	public toThreeMatrix4(): Matrix4 {
+		const matrix = new Matrix4();
+		matrix.set(
+			this._11, this._21, this._31, this._41,
+			this._12, this._22, this._32, this._42,
+			this._13, this._23, this._33, this._43,
+			this._14, this._24, this._34, this._44,
+		);
 		return matrix;
 	}
 
-	public toThreeMatrix4(): Matrix4 {
-		const matrix = new Matrix4();
+	public applyToThreeMatrix4(matrix: Matrix4): Matrix4 {
 		matrix.set(
 			this._11, this._21, this._31, this._41,
 			this._12, this._22, this._32, this._42,
