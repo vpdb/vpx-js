@@ -17,14 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Matrix4 } from 'three';
 import { logger } from './logger';
 
 export class Pool<T> {
-
-	public static GENERIC = {
-		Matrix4: new Pool<Matrix4>(Matrix4),
-	};
 
 	private static DEBUG = 0; // globally enable debug prints
 	private static TRACE = false;

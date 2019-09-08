@@ -17,8 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BufferGeometry, Object3D } from 'three';
-import { MeshConverter } from '../gltf/mesh-converter';
 import { f4, fr } from '../math/float';
 import { Matrix3D } from '../math/matrix3d';
 import { Vertex3DNoTex2 } from '../math/vertex';
@@ -76,11 +74,6 @@ export class Mesh {
 		this._writeFaceInfoLong(objFile);
 
 		return objFile.join('\n');
-	}
-
-	public getBufferGeometry(): BufferGeometry {
-		const converter = new MeshConverter(this);
-		return converter.convertToBufferGeometry();
 	}
 
 	public transform(matrix: Matrix3D, normalMatrix?: Matrix3D, getZ?: (x: number) => number): this {

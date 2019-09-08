@@ -30,7 +30,7 @@ import { BufferGeometry, Face3, Geometry, Matrix3, Matrix4, Mesh, Vector2, Vecto
  *
  * @see https://github.com/manthrax/THREE-CSGMesh
  */
-export default class CSG {
+export default class ThreeCsg {
 
 	private polygons: Polygon[] = [];
 	// private static currentOp: string;
@@ -41,7 +41,7 @@ export default class CSG {
 	private static _tmpm3 = new Matrix3();
 
 	public clone() {
-		const csg = new CSG();
+		const csg = new ThreeCsg();
 		csg.polygons = this.polygons.map(p => p.clone());
 		return csg;
 	}
@@ -64,7 +64,7 @@ export default class CSG {
 	 * ```
 	 * @param csg
 	 */
-	public union(csg: CSG): CSG {
+	public union(csg: ThreeCsg): ThreeCsg {
 		const a = new Node(this.clone().polygons);
 		const b = new Node(csg.clone().polygons);
 		a.clipTo(b);
@@ -73,7 +73,7 @@ export default class CSG {
 		b.clipTo(a);
 		b.invert();
 		a.build(b.allPolygons());
-		return CSG.fromPolygons(a.allPolygons());
+		return ThreeCsg.fromPolygons(a.allPolygons());
 	}
 
 	/**
@@ -94,7 +94,7 @@ export default class CSG {
 	 * ```
 	 * @param csg
 	 */
-	public subtract(csg: CSG): CSG {
+	public subtract(csg: ThreeCsg): ThreeCsg {
 		const a = new Node(this.clone().polygons);
 		const b = new Node(csg.clone().polygons);
 		a.invert();
@@ -105,7 +105,7 @@ export default class CSG {
 		b.invert();
 		a.build(b.allPolygons());
 		a.invert();
-		return CSG.fromPolygons(a.allPolygons());
+		return ThreeCsg.fromPolygons(a.allPolygons());
 	}
 
 	/**
@@ -126,7 +126,7 @@ export default class CSG {
 	 * ```
 	 * @param csg
 	 */
-	public intersect(csg: CSG): CSG {
+	public intersect(csg: ThreeCsg): ThreeCsg {
 		const a = new Node(this.clone().polygons);
 		const b = new Node(csg.clone().polygons);
 		a.invert();
@@ -136,14 +136,14 @@ export default class CSG {
 		b.clipTo(a);
 		a.build(b.allPolygons());
 		a.invert();
-		return CSG.fromPolygons(a.allPolygons());
+		return ThreeCsg.fromPolygons(a.allPolygons());
 	}
 
 	/**
 	 * Return a new CSG solid with solid and empty space switched. This solid is
 	 * not modified.
 	 */
-	public inverse(): CSG {
+	public inverse(): ThreeCsg {
 		const csg = this.clone();
 		csg.polygons.map(p => p.flip());
 		return csg;
@@ -157,8 +157,8 @@ export default class CSG {
 	 * Construct a CSG solid from a list of `Polygon` instances.
 	 * @param polygons
 	 */
-	static fromPolygons(polygons: Polygon[]): CSG {
-		const csg = new CSG();
+	static fromPolygons(polygons: Polygon[]): ThreeCsg {
+		const csg = new ThreeCsg();
 		csg.polygons = polygons;
 		return csg;
 	}
@@ -179,25 +179,25 @@ export default class CSG {
 			vertices.push(new Vertex(vs[f.c], f.vertexNormals[2] as Vector, geometry.faceVertexUvs[0][i][2]));
 			polys.push(new Polygon(vertices));
 		}
-		return CSG.fromPolygons(polys)
+		return ThreeCsg.fromPolygons(polys)
 	}
 
 	static fromMesh(mesh: Mesh) {
 
-		const csg = CSG.fromGeometry(mesh.geometry);
-		CSG._tmpm3.getNormalMatrix(mesh.matrix);
+		const csg = ThreeCsg.fromGeometry(mesh.geometry);
+		ThreeCsg._tmpm3.getNormalMatrix(mesh.matrix);
 		for (let i = 0; i < csg.polygons.length; i++) {
 			const p = csg.polygons[i];
 			for (let j = 0; j < p.vertices.length; j++) {
 				const v = p.vertices[j];
 				v.pos.applyMatrix4(mesh.matrix);
-				v.normal.applyMatrix3(CSG._tmpm3);
+				v.normal.applyMatrix3(ThreeCsg._tmpm3);
 			}
 		}
 		return csg;
 	}
 
-	static toMesh(csg: CSG, toMatrix: Matrix4) {
+	static toMesh(csg: ThreeCsg, toMatrix: Matrix4) {
 		const geom = new Geometry();
 		const ps = csg.polygons;
 		const vs = geom.vertices;
