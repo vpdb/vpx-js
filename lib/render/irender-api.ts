@@ -17,15 +17,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { IRenderable } from '../game/irenderable';
 import { Matrix3D } from '../math/matrix3d';
 import { Mesh } from '../vpt/mesh';
+import { Table } from '../vpt/table/table';
 
 export interface IRenderApi<OBJECT, GROUP> {
 
-	findInGroup(group: GROUP, name: string): OBJECT | undefined;
+	addToGroup(group: GROUP, obj: OBJECT | GROUP): void;
+
+	findInGroup(group: GROUP, name: string): OBJECT | GROUP | undefined;
+
+	removeFromGroup(group: GROUP, obj: OBJECT | GROUP | undefined): void;
 
 	applyMatrixToObject(matrix: Matrix3D, obj: OBJECT | undefined): void;
 
 	applyMeshToObject(mesh: Mesh, obj: OBJECT | undefined): void;
 
+	createObjectFromRenderable(renderable: IRenderable, table: Table): Promise<GROUP>;
+}
+
+export interface MeshConvertOptions {
+	applyMaterials?: boolean;
+	applyTextures?: boolean;
+	optimizeTextures?: boolean;
 }

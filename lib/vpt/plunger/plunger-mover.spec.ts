@@ -25,7 +25,7 @@ import { simulateCycles } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
-import { ThreeRenderApi } from '../../render/three-render-api';
+import { ThreeRenderApi } from '../../render/threejs/three-render-api';
 import { Table } from '../table/table';
 import { PlungerMover } from './plunger-mover';
 import { PlungerState } from './plunger-state';

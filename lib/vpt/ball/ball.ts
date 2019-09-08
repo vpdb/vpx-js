@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Group, Object3D, Scene } from 'three';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable } from '../../game/irenderable';
@@ -85,20 +84,19 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 		Matrix3D.release(orientation, trans, matrix);
 	}
 
-	public async addToScene(scene: Scene, table: Table): Promise<Group> {
-		const mesh = await table.exportElement(this);
-		const playfield = scene.children.find(c => c.name === 'playfield')!;
-		const ballGroup = playfield.children.find(c => c.name === 'balls')!;
-		mesh.matrixAutoUpdate = false;
-		ballGroup.add(mesh);
-		return mesh;
+	public async addToScene<OBJECT, GROUP>(scene: GROUP, renderApi: IRenderApi<OBJECT, GROUP>, table: Table): Promise<GROUP> {
+		const ballMesh = await renderApi.createObjectFromRenderable(this, table);
+		const playfield = renderApi.findInGroup(scene, 'playfield') as GROUP;
+		const ballGroup = renderApi.findInGroup(playfield, 'balls') as GROUP;
+		renderApi.addToGroup(ballGroup, ballMesh);
+		return ballMesh;
 	}
 
-	public removeFromScene(scene: Scene): void {
-		const playfield = scene.children.find(c => c.name === 'playfield')!;
-		const ballGroup = playfield.children.find(c => c.name === 'balls')!;
-		const ball = ballGroup.children.find(c => c.name === this.getName())!;
-		ballGroup.remove(ball);
+	public removeFromScene<OBJECT, GROUP>(scene: GROUP, renderApi: IRenderApi<OBJECT, GROUP>): void {
+		const playfield = renderApi.findInGroup(scene, 'playfield') as GROUP;
+		const ballGroup = renderApi.findInGroup(playfield, 'balls') as GROUP;
+		const ball = renderApi.findInGroup(ballGroup, this.getName());
+		renderApi.removeFromGroup(ballGroup, ball);
 	}
 
 	public getState(): BallState {
