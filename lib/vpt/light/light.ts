@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BufferGeometry, MeshStandardMaterial } from 'three';
 import { IRenderable, Meshes } from '../../game/irenderable';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
@@ -73,24 +72,25 @@ export class Light implements IRenderable {
 				surfaceLight: {
 					geometry: light.surfaceLight,
 					map: table.getTexture(this.data.szOffImage),
+					material: this.getSurfaceMaterial(table),
 				},
 			};
 		}
 		const meshes: Meshes<GEOMETRY> = {};
 		if (light.light) {
 			const lightMaterial = new Material();
-			lightMaterial.cBase = 0;
-			lightMaterial.fWrapLighting = 0.5;
-			lightMaterial.bOpacityActive = true;
-			lightMaterial.fOpacity = 0.2;
-			lightMaterial.cGlossy = 0xFFFFFF;
-			lightMaterial.bIsMetal = false;
-			lightMaterial.fEdge = 1.0;
-			lightMaterial.fEdgeAlpha = 1.0;
-			lightMaterial.fRoughness = 0.9;
-			lightMaterial.fGlossyImageLerp = 1.0;
-			lightMaterial.fThickness = 0.05;
-			lightMaterial.cClearcoat = 0xFFFFFF;
+			lightMaterial.baseColor = 0;
+			lightMaterial.wrapLighting = 0.5;
+			lightMaterial.isOpacityActive = true;
+			lightMaterial.opacity = 0.2;
+			lightMaterial.glossiness = 0xFFFFFF;
+			lightMaterial.isMetal = false;
+			lightMaterial.edge = 1.0;
+			lightMaterial.edgeAlpha = 1.0;
+			lightMaterial.roughness = 0.9;
+			lightMaterial.glossyImageLerp = 1.0;
+			lightMaterial.thickness = 0.05;
+			lightMaterial.clearCoat = 0xFFFFFF;
 			lightMaterial.emissiveColor = this.data.color;
 			lightMaterial.emissiveIntensity = 1;
 
@@ -102,18 +102,18 @@ export class Light implements IRenderable {
 
 		if (light.socket) {
 			const socketMaterial = new Material();
-			socketMaterial.cBase = 0x181818;
-			socketMaterial.fWrapLighting = 0.5;
-			socketMaterial.bOpacityActive = false;
-			socketMaterial.fOpacity = 1.0;
-			socketMaterial.cGlossy = 0xB4B4B4;
-			socketMaterial.bIsMetal = false;
-			socketMaterial.fEdge = 1.0;
-			socketMaterial.fEdgeAlpha = 1.0;
-			socketMaterial.fRoughness = 0.9;
-			socketMaterial.fGlossyImageLerp = 1.0;
-			socketMaterial.fThickness = 0.05;
-			socketMaterial.cClearcoat = 0;
+			socketMaterial.baseColor = 0x181818;
+			socketMaterial.wrapLighting = 0.5;
+			socketMaterial.isOpacityActive = false;
+			socketMaterial.opacity = 1.0;
+			socketMaterial.glossiness = 0xB4B4B4;
+			socketMaterial.isMetal = false;
+			socketMaterial.edge = 1.0;
+			socketMaterial.edgeAlpha = 1.0;
+			socketMaterial.roughness = 0.9;
+			socketMaterial.glossyImageLerp = 1.0;
+			socketMaterial.thickness = 0.05;
+			socketMaterial.clearCoat = 0;
 
 			meshes.socket = {
 				mesh: light.socket.transform(Matrix3D.RIGHT_HANDED),
@@ -121,6 +121,15 @@ export class Light implements IRenderable {
 			};
 		}
 		return meshes;
+	}
+
+	public getSurfaceMaterial(table: Table): Material {
+		const material = new Material();
+		material.emissiveMap = table.getTexture(this.data.szOffImage);
+		material.emissiveIntensity = 0;
+		material.emissiveColor =  0x808080;
+		material.opacity = 1;
+		return material;
 	}
 
 	public isBulbLight() {
@@ -138,15 +147,4 @@ export class Light implements IRenderable {
 	// public getPath(table: Table) {
 	// 	return this.meshGenerator.getPath(table);
 	// }
-
-	public postProcessMaterial(table: Table, geometry: BufferGeometry, material: MeshStandardMaterial): MeshStandardMaterial | MeshStandardMaterial[] {
-		if (!this.data.isSurfaceLight(table)) {
-			return material;
-		}
-		material.emissiveMap = material.map;
-		material.emissiveIntensity = 0;
-		material.emissive.setRGB(50, 50, 50);
-		material.opacity = 1;
-		return material;
-	}
 }

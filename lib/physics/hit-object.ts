@@ -173,9 +173,9 @@ export abstract class HitObject {
 	public applyPhysics(data: IPhysicalData, table: Table) {
 		const mat = table.getMaterial(data.szPhysicsMaterial);
 		if (mat && !data.overwritePhysics) {
-			this.setElasticity(mat.fElasticity, mat.fElasticityFalloff);
-			this.setFriction(mat.fFriction);
-			this.setScatter(degToRad(mat.fScatterAngle));
+			this.setElasticity(mat.elasticity, mat.elasticityFalloff);
+			this.setFriction(mat.friction);
+			this.setScatter(degToRad(mat.scatterAngle));
 
 		} else {
 			this.setElasticity(data.elasticity, data.elasticityFalloff);
