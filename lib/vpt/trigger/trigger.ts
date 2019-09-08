@@ -20,14 +20,13 @@
 import { EventProxy } from '../../game/event-proxy';
 import { IAnimatable, IAnimation } from '../../game/ianimatable';
 import { IHittable } from '../../game/ihittable';
-import { IRenderable } from '../../game/irenderable';
+import { IRenderable, Meshes } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
 import { IRenderApi } from '../../render/irender-api';
-import { Meshes } from '../item-data';
 import { Table } from '../table/table';
 import { TriggerAnimation } from './trigger-animation';
 import { TriggerApi } from './trigger-api';
@@ -127,7 +126,7 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 		return this.animation!;
 	}
 
-	public applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player): void {
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, player: Player): void {
 		const matrix = Matrix3D.claim().setTranslation(0, 0, -this.state.heightOffset);
 		renderApi.applyMatrixToObject(matrix, obj);
 		Matrix3D.release(matrix);

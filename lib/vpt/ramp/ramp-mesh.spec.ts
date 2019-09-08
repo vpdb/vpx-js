@@ -22,6 +22,7 @@ import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { ThreeHelper } from '../../../test/three.helper';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
+import { TableExporter } from '../table/table-exporter';
 
 const three = new ThreeHelper();
 
@@ -33,8 +34,10 @@ describe('The VPinball ramp generator', () => {
 	before(async () => {
 		const vpt = await Table.load(new NodeBinaryReader(three.fixturePath('table-ramp.vpx')));
 		const vptOnSurface = await Table.load(new NodeBinaryReader(three.fixturePath('table-ramp-surface.vpx')));
-		gltf = await three.loadGlb(await vpt.exportGlb());
-		gltfOnSurface = await three.loadGlb(await vptOnSurface.exportGlb());
+		const exporter = new TableExporter(vpt);
+		const exporterSurface = new TableExporter(vptOnSurface);
+		gltf = await three.loadGlb(await exporter.exportGlb());
+		gltfOnSurface = await three.loadGlb(await exporterSurface.exportGlb());
 	});
 
 	it('should generate a flat ramp mesh', async () => {

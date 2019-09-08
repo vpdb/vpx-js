@@ -17,12 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Object3D } from 'three';
-import { Table } from '..';
+import { IRenderApi } from '../render/irender-api';
+import { Table } from '../vpt/table/table';
 import { IPlayable } from './iplayable';
 import { Player } from './player';
 import { PlayerPhysics } from './player-physics';
-import { IRenderApi } from '../render/irender-api';
 
 /**
  * Animatables are like movables but their position is only updated
@@ -38,7 +37,7 @@ export interface IAnimatable<STATE> extends IPlayable {
 
 	getState(): STATE;
 
-	applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player, oldState: STATE): void;
+	applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, player: Player, oldState: STATE): void;
 }
 
 export interface IAnimation {

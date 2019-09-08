@@ -17,19 +17,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Group, Matrix4, Object3D } from 'three';
+import { BufferGeometry, Group, Matrix4, Object3D, PointLight } from 'three';
 import { IRenderable } from '../../game/irenderable';
 import { Matrix3D } from '../../math/matrix3d';
 import { Pool } from '../../util/object-pool';
+import { LightData } from '../../vpt/light/light-data';
 import { Mesh } from '../../vpt/mesh';
 import { Table } from '../../vpt/table/table';
 import { IRenderApi, MeshConvertOptions } from '../irender-api';
 import { ThreeConverter } from './three-converter';
+import { ThreeLightMeshGenerator } from './three-light-mesh-generator';
 
-export class ThreeRenderApi implements IRenderApi<Object3D, Group> {
+export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, PointLight> {
+
+	private static readonly SCALE = 0.05;
 
 	private readonly converter: ThreeConverter;
 	private readonly meshConvertOpts: MeshConvertOptions;
+	private readonly lightGenerator: ThreeLightMeshGenerator;
 
 	constructor(opts?: MeshConvertOptions) {
 		this.meshConvertOpts = opts || {
@@ -38,6 +43,28 @@ export class ThreeRenderApi implements IRenderApi<Object3D, Group> {
 			optimizeTextures: false,
 		};
 		this.converter = new ThreeConverter(this.meshConvertOpts);
+		this.lightGenerator = new ThreeLightMeshGenerator();
+	}
+
+	public transformScene(scene: Group, table: Table): void {
+		const dim = table.getDimensions();
+		scene.rotateX(Math.PI / 2);
+		scene.translateY(-dim.height * ThreeRenderApi.SCALE / 2);
+		scene.translateX(-dim.width * ThreeRenderApi.SCALE / 2);
+		scene.scale.set(ThreeRenderApi.SCALE, ThreeRenderApi.SCALE, ThreeRenderApi.SCALE);
+	}
+
+	public createGroup(name: string): Group {
+		const group = new Group();
+		group.name = name;
+		return group;
+	}
+
+	public createPointLight(lightData: LightData): PointLight {
+		const light = new PointLight(lightData.color, lightData.intensity, lightData.falloff * ThreeRenderApi.SCALE, 2);
+		light.name = 'light:' + lightData.getName();
+		light.position.set(lightData.vCenter.x, lightData.vCenter.y, -17);
+		return light;
 	}
 
 	public addToGroup(group: Group, obj: Object3D | Group): void {
@@ -92,5 +119,9 @@ export class ThreeRenderApi implements IRenderApi<Object3D, Group> {
 
 	public async createObjectFromRenderable(renderable: IRenderable, table: Table): Promise<Group> {
 		return this.converter.createObject(renderable, table);
+	}
+
+	public createLightGeometry(lightData: LightData, table: Table): BufferGeometry {
+		return this.lightGenerator.createLight(lightData, table);
 	}
 }

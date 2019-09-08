@@ -38,7 +38,7 @@ export class BumperMeshUpdater {
 		this.meshGenerator = meshGenerator;
 	}
 
-	public applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player, oldState: BumperState) {
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, player: Player, oldState: BumperState) {
 
 		if (this.data.isRingVisible && this.state.ringOffset !== oldState.ringOffset) {
 			this.applyRingState(obj, renderApi);
@@ -48,7 +48,7 @@ export class BumperMeshUpdater {
 		}
 	}
 
-	private applyRingState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>) {
+	private applyRingState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>) {
 		const ringObj = renderApi.findInGroup(obj, `bumper-ring-${this.data.getName()}`);
 		if (ringObj) {
 			const matrix = Matrix3D.claim().setTranslation(0, 0, -this.state.ringOffset);
@@ -58,7 +58,7 @@ export class BumperMeshUpdater {
 	}
 
 	/* istanbul ignore next: this looks weird. test when sure it's the correct "animation" */
-	private applySkirtState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table) {
+	private applySkirtState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table) {
 		const skirtObj = renderApi.findInGroup(obj, `bumper-socket-${this.data.getName()}`);
 		if (skirtObj) {
 			const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();

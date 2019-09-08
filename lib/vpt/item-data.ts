@@ -17,9 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Storage } from '..';
-import { RenderInfo } from '../game/irenderable';
 import { BiffParser } from '../io/biff-parser';
+import { Storage } from '../io/ole-doc';
 import { Table } from './table/table';
 
 /**
@@ -132,8 +131,4 @@ export interface IPhysicalData {
 export class TimerDataRoot {
 	public interval: number = 0;
 	public enabled: boolean = false;
-}
-
-export interface Meshes {
-	[key: string]: RenderInfo;
 }

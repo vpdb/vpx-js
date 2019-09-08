@@ -17,274 +17,51 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import {
-	Color,
-	DoubleSide,
-	Group,
-	Mesh as ThreeMesh,
-	MeshStandardMaterial,
-	PointLight,
-	RGBAFormat,
-	RGBFormat,
-	Scene,
-	Texture,
-} from 'three';
-import { IRenderable, RenderInfo } from '../../game/irenderable';
-import { IImage } from '../../gltf/image';
+import { Scene } from 'three';
 import { exportGltf } from '../../refs.node';
-import { logger } from '../../util/logger';
-import { Bumper } from '../bumper/bumper';
-import { Flipper } from '../flipper/flipper';
-import { Primitive } from '../primitive/primitive';
-import { Ramp } from '../ramp/ramp';
-import { Rubber } from '../rubber/rubber';
-import { Surface } from '../surface/surface';
-import { Texture as VpTexture } from '../texture';
-import { Table } from './table';
+import { MeshConvertOptions } from '../../render/irender-api';
+import { ThreeRenderApi } from '../../render/threejs/three-render-api';
+import { Table, TableGenerateOptions } from './table';
+import { TableMeshGenerator } from './table-mesh-generator';
 
 export class TableExporter {
 
-	private static readonly scale = 0.05;
 	private readonly table: Table;
-	private readonly scene: Scene;
-	private readonly opts: VpTableExporterOptions;
-	private readonly playfield: Group;
-	private readonly images: Map<string, IImage> = new Map();
+	private readonly meshGenerator: TableMeshGenerator;
 
-	constructor(table: Table, opts: VpTableExporterOptions = {}) {
-		this.opts = Object.assign({}, defaultOptions, opts);
-
-		const dim = table.getDimensions();
+	constructor(table: Table) {
 		this.table = table;
-		this.scene = new Scene();
-		this.scene.name = 'vpdb-table';
-		this.playfield = new Group();
-		this.playfield.name = 'playfield';
-		this.playfield.rotateX(Math.PI / 2);
-		this.playfield.translateY(-dim.height * TableExporter.scale / 2);
-		this.playfield.translateX(-dim.width * TableExporter.scale / 2);
-		this.playfield.scale.set(TableExporter.scale, TableExporter.scale, TableExporter.scale);
+		this.meshGenerator = new TableMeshGenerator(table);
 	}
 
-	public async exportGltf(): Promise<string> {
-		this.opts.gltfOptions!.binary = false;
-		return JSON.stringify(await this.export<any>());
+	// public async exportGltf(): Promise<string> {
+	// 	this.opts.gltfOptions!.binary = false;
+	// 	return JSON.stringify(await this.export<any>());
+	// }
+
+	public async exportGlb(opts: TableExportOptions = {}): Promise<Buffer> {
+		opts = Object.assign({}, defaultOptions, opts);
+		opts.gltfOptions!.binary = true;
+		return await this.export<Buffer>(opts);
 	}
 
-	public async exportGlb(): Promise<Buffer> {
-		this.opts.gltfOptions!.binary = true;
-		return await this.export<Buffer>();
-	}
+	private async export<T>(opts: TableExportOptions): Promise<T> {
+		// we always use Three.js for GLTF generation
+		const renderApi = new ThreeRenderApi();
+		const playfieldGroup = await this.meshGenerator.generateTableNode(renderApi, opts);
 
-	public async createScene(): Promise<Scene> {
-
-		const renderGroups: IRenderGroup[] = [
-			{ name: 'playfield', meshes: [ this.table ], enabled: !!this.opts.exportPlayfield },
-			{ name: 'primitives', meshes: Object.values<Primitive>(this.table.primitives), enabled: !!this.opts.exportPrimitives },
-			{ name: 'rubbers', meshes: Object.values<Rubber>(this.table.rubbers), enabled: !!this.opts.exportRubbers },
-			{ name: 'surfaces', meshes: Object.values<Surface>(this.table.surfaces), enabled: !!this.opts.exportSurfaces},
-			{ name: 'flippers', meshes: Object.values<Flipper>(this.table.flippers), enabled: !!this.opts.exportFlippers},
-			{ name: 'bumpers', meshes: Object.values<Bumper>(this.table.bumpers), enabled: !!this.opts.exportBumpers },
-			{ name: 'ramps', meshes: Object.values<Ramp>(this.table.ramps), enabled: !!this.opts.exportRamps },
-			{ name: 'lightBulbs', meshes: Object.values(this.table.lights).filter(l => l.isBulbLight()), enabled: !!this.opts.exportLightBulbs },
-			{ name: 'playfieldLights', meshes: Object.values(this.table.lights).filter(l => l.isSurfaceLight(this.table)), enabled: !!this.opts.exportPlayfieldLights },
-			{ name: 'hitTargets', meshes: Object.values(this.table.hitTargets), enabled: !!this.opts.exportHitTargets },
-			{ name: 'gates', meshes: Object.values(this.table.gates), enabled: !!this.opts.exportGates },
-			{ name: 'kickers', meshes: Object.values(this.table.kickers), enabled: !!this.opts.exportKickers },
-			{ name: 'triggers', meshes: Object.values(this.table.triggers), enabled: !!this.opts.exportTriggers },
-			{ name: 'spinners', meshes: Object.values(this.table.spinners), enabled: !!this.opts.exportSpinners },
-			{ name: 'plungers', meshes: Object.values(this.table.plungers), enabled: !!this.opts.exportPlungers },
-		];
-
-		// meshes
-		for (const group of renderGroups) {
-			if (!group.enabled) {
-				continue;
-			}
-			const itemTypeGroup = new Group();
-			itemTypeGroup.name = group.name;
-			for (const renderable of group.meshes.filter(i => i.isVisible(this.table))) {
-				const itemGroup = await this.createItemMesh(renderable);
-				itemTypeGroup.add(itemGroup);
-			}
-			if (itemTypeGroup.children.length > 0) {
-				this.playfield.add(itemTypeGroup);
-			}
-		}
-
-		const lightGroup = new Group();
-		lightGroup.name = 'lights';
-
-		// light bulb lights
-		if (this.opts.exportLightBulbLights) {
-			for (const lightInfo of Object.values(this.table.lights).filter(l => l.isBulbLight())) {
-				const light = new PointLight(lightInfo.color, lightInfo.intensity, lightInfo.falloff * TableExporter.scale, 2);
-				const itemGroup = new Group();
-				itemGroup.name = lightInfo.getName();
-				light.name = 'light:' + lightInfo.getName();
-				light.position.set(lightInfo.vCenter.x, lightInfo.vCenter.y, -17);
-				itemGroup.add(light);
-				lightGroup.add(itemGroup);
-			}
-		}
-
-		// ball group
-		const ballGroup = new Group();
-		ballGroup.name = 'balls';
-		this.playfield.add(ballGroup);
-
-		// playfield lights
-		// if (this.opts.exportPlayfieldLights) {
-		// 	for (const lightInfo of this.table.lights.filter(l => l.isSurfaceLight(this.table)).slice(0, 10)) {
-		// 		const light = new PointLight(lightInfo.color, lightInfo.intensity, lightInfo.falloff * TableExporter.scale, 2);
-		// 		light.name = 'light:' + lightInfo.getName();
-		// 		light.position.set(lightInfo.vCenter.x, lightInfo.vCenter.y, 10);
-		// 		lightGroup.add(light);
-		// 	}
-		// }
-
-		if (lightGroup.children.length > 0) {
-			this.playfield.add(lightGroup);
-		}
-
-		// finally, add to scene
-		this.scene.add(this.playfield);
-
-		return this.scene;
-	}
-
-	public async createItemMesh(renderable: IRenderable): Promise<Group> {
-		const objects = renderable.getMeshes(this.table, this.opts);
-		let obj: RenderInfo;
-		const itemGroup = new Group();
-		itemGroup.name = renderable.getName();
-		for (obj of Object.values(objects)) {
-			const mesh = await this.createElementMesh(renderable, obj);
-			itemGroup.add(mesh);
-		}
-		return itemGroup;
-	}
-
-	private async createElementMesh(renderable: IRenderable, obj: RenderInfo): Promise<ThreeMesh> {
-		/* istanbul ignore if */
-		if (!obj.geometry && !obj.mesh) {
-			throw new Error('Mesh export must either provide mesh or geometry.');
-		}
-		const geometry = obj.geometry || obj.mesh!.getBufferGeometry();
-		const material = await this.getMaterial(obj);
-		const postProcessedMaterial = renderable.postProcessMaterial ? renderable.postProcessMaterial(this.table, geometry, material) : material;
-		const mesh = new ThreeMesh(geometry, postProcessedMaterial);
-		mesh.name = (obj.geometry || obj.mesh!).name;
-
-		return mesh;
-	}
-
-	private async export<T>(): Promise<T> {
-
-		await this.createScene();
+		const scene = new Scene();
+		scene.name = 'table';
+		scene.add(playfieldGroup);
 
 		// now, export to GLTF
-		return exportGltf(this.scene, this.opts, this.opts.gltfOptions);
-	}
-
-	private async getMaterial(obj: RenderInfo): Promise<MeshStandardMaterial> {
-		const material = new MeshStandardMaterial();
-		const name = (obj.geometry || obj.mesh!).name;
-		material.name = `material:${name}`;
-		const materialInfo = obj.material;
-		if (materialInfo && this.opts.applyMaterials) {
-			material.metalness = materialInfo.bIsMetal ? 1.0 : 0.0;
-			material.roughness = Math.max(0, 1 - (materialInfo.fRoughness / 1.5));
-			material.color = new Color(materialInfo.cBase);
-			material.opacity = materialInfo.bOpacityActive ? Math.min(1, Math.max(0, materialInfo.fOpacity)) : 1;
-			material.transparent = materialInfo.bOpacityActive && materialInfo.fOpacity < 0.98;
-			material.side = DoubleSide;
-
-			if (materialInfo.emissiveIntensity > 0) {
-				material.emissive = new Color(materialInfo.emissiveColor);
-				material.emissiveIntensity = materialInfo.emissiveIntensity;
-			}
-		}
-
-		if (this.opts.applyTextures) {
-			if (obj.map) {
-				material.map = new Texture();
-				material.map.name = 'texture:' + obj.map.getName();
-				if (await this.loadMap(name, obj.map, material.map)) {
-					if ((material.map.image as IImage).containsTransparency()) {
-						material.transparent = true;
-					}
-					material.needsUpdate = true;
-				} else {
-					logger().warn('[VpTableExporter.getMaterial] Error getting map.');
-					material.map = null;
-				}
-			}
-			if (obj.normalMap) {
-				material.normalMap = new Texture();
-				material.normalMap.name = 'normal-map:' + obj.normalMap.getName();
-				if (await this.loadMap(name, obj.normalMap, material.normalMap)) {
-					material.normalMap.anisotropy = 16;
-					material.needsUpdate = true;
-				} else {
-					material.normalMap = null;
-				}
-			}
-		}
-		return material;
-	}
-
-	private async loadMap(name: string, texture: VpTexture, threeMaterial: Texture): Promise<boolean> {
-		try {
-			let image: IImage;
-			if (this.images.has(texture.getName())) {
-				image = this.images.get(texture.getName())!;
-			} else {
-				image = await texture.getImage(this.table);
-				this.images.set(texture.getName(), image);
-			}
-			threeMaterial.image = image;
-			threeMaterial.format = image.hasTransparency() ? RGBAFormat : RGBFormat;
-			threeMaterial.needsUpdate = true;
-			return true;
-		} catch (err) {
-			threeMaterial.image = Texture.DEFAULT_IMAGE;
-			logger().warn('[VpTableExporter.loadMap] Error loading map %s (%s/%s): %s', name, texture.storageName, texture.getName(), err.message);
-			return false;
-		}
+		return exportGltf(scene, opts, opts.gltfOptions);
 	}
 }
 
-interface IRenderGroup {
-	name: string;
-	meshes: IRenderable[];
-	enabled: boolean;
-}
+export interface TableExportOptions extends TableGenerateOptions, MeshConvertOptions { }
 
-export interface VpTableExporterOptions {
-	applyMaterials?: boolean;
-	applyTextures?: boolean;
-	optimizeTextures?: boolean;
-	exportPlayfield?: boolean;
-	exportPrimitives?: boolean;
-	exportRubbers?: boolean;
-	exportSurfaces?: boolean;
-	exportFlippers?: boolean;
-	exportBumpers?: boolean;
-	exportRamps?: boolean;
-	exportLightBulbs?: boolean;
-	exportPlayfieldLights?: boolean;
-	exportLightBulbLights?: boolean;
-	exportHitTargets?: boolean;
-	exportGates?: boolean;
-	exportKickers?: boolean;
-	exportTriggers?: boolean;
-	exportSpinners?: boolean;
-	exportPlungers?: boolean;
-	gltfOptions?: ParseOptions;
-}
-
-const defaultOptions: VpTableExporterOptions = {
+const defaultOptions: TableExportOptions = {
 	applyMaterials: true,
 	applyTextures: true,
 	optimizeTextures: false,
@@ -306,26 +83,3 @@ const defaultOptions: VpTableExporterOptions = {
 	exportPlungers: true,
 	gltfOptions: {},
 };
-
-export interface ParseOptions {
-	binary?: boolean;
-	optimizeImages?: boolean;
-	trs?: boolean;
-	onlyVisible?: boolean;
-	truncateDrawRange?: boolean;
-	embedImages?: boolean;
-	animations?: any[];
-	forceIndices?: boolean;
-	forcePowerOfTwoTextures?: boolean;
-	compressVertices?: boolean;
-	versionString?: string;
-	dracoOptions?: {
-		compressionLevel?: number;
-		quantizePosition?: number;
-		quantizeNormal?: number;
-		quantizeTexcoord?: number;
-		quantizeColor?: number;
-		quantizeSkin?: number;
-		unifiedQuantization?: boolean;
-	};
-}

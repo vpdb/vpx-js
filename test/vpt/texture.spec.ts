@@ -18,13 +18,13 @@
  */
 
 import { ThreeHelper } from '../three.helper';
-import { Table } from '../../lib';
 import { readFileSync, writeFileSync } from 'fs';
 import { createDiff } from 'looks-same';
 import * as sharp from 'sharp';
 import { expect } from 'chai';
 import looksSame = require('looks-same');
 import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
+import { Table } from '../../lib/vpt/table/table';
 
 const three = new ThreeHelper();
 const imgDiffTolerance = 7;

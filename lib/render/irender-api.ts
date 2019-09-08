@@ -19,22 +19,31 @@
 
 import { IRenderable } from '../game/irenderable';
 import { Matrix3D } from '../math/matrix3d';
+import { LightData } from '../vpt/light/light-data';
 import { Mesh } from '../vpt/mesh';
 import { Table } from '../vpt/table/table';
 
-export interface IRenderApi<OBJECT, GROUP> {
+export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 
-	addToGroup(group: GROUP, obj: OBJECT | GROUP): void;
+	transformScene(scene: NODE, table: Table): void;
 
-	findInGroup(group: GROUP, name: string): OBJECT | GROUP | undefined;
+	createGroup(name: string): NODE;
 
-	removeFromGroup(group: GROUP, obj: OBJECT | GROUP | undefined): void;
+	addToGroup(group: NODE, obj: NODE | POINT_LIGHT): void;
 
-	applyMatrixToObject(matrix: Matrix3D, obj: OBJECT | undefined): void;
+	findInGroup(group: NODE, name: string): NODE | undefined;
 
-	applyMeshToObject(mesh: Mesh, obj: OBJECT | undefined): void;
+	removeFromGroup(group: NODE, obj: NODE | undefined): void;
 
-	createObjectFromRenderable(renderable: IRenderable, table: Table): Promise<GROUP>;
+	applyMatrixToObject(matrix: Matrix3D, obj: NODE | undefined): void;
+
+	applyMeshToObject(mesh: Mesh, obj: NODE | undefined): void;
+
+	createObjectFromRenderable(renderable: IRenderable, table: Table): Promise<NODE>;
+
+	createLightGeometry(lightData: LightData, table: Table): GEOMETRY;
+
+	createPointLight(lightData: LightData): POINT_LIGHT;
 }
 
 export interface MeshConvertOptions {

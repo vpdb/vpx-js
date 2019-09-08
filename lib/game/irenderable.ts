@@ -18,21 +18,24 @@
  */
 
 import { BufferGeometry, Material as ThreeMaterial, MeshStandardMaterial } from 'three';
-import { Table } from '..';
-import { Meshes } from '../vpt/item-data';
 import { Material } from '../vpt/material';
 import { Mesh } from '../vpt/mesh';
-import { VpTableExporterOptions } from '../vpt/table/table-exporter';
+import { Table } from '../vpt/table/table';
+import { TableExportOptions } from '../vpt/table/table-exporter';
 import { Texture } from '../vpt/texture';
 import { IItem } from './iitem';
 
 export interface IRenderable extends IItem {
 
-	getMeshes(table: Table, opts: VpTableExporterOptions): Meshes;
+	getMeshes(table: Table, opts: TableExportOptions): Meshes;
 
 	isVisible(table: Table): boolean;
 
 	postProcessMaterial?(table: Table, geometry: BufferGeometry, material: MeshStandardMaterial): MeshStandardMaterial | MeshStandardMaterial[];
+}
+
+export interface Meshes {
+	[key: string]: RenderInfo;
 }
 
 export interface RenderInfo {

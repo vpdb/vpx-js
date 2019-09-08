@@ -17,28 +17,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Group, Scene } from 'three';
 import { Event } from '../../game/event';
 import { IAnimatable } from '../../game/ianimatable';
 import { IHittable } from '../../game/ihittable';
 import { IItem } from '../../game/iitem';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
-import { IRenderable } from '../../game/irenderable';
+import { IRenderable, Meshes } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
+import { IImage } from '../../gltf/image';
 import { IBinaryReader, Storage } from '../../io/ole-doc';
 import { degToRad, f4 } from '../../math/float';
 import { FRect3D } from '../../math/frect3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
 import { HitPlane } from '../../physics/hit-plane';
+import { IRenderApi } from '../../render/irender-api';
 import { Transpiler } from '../../scripting/transpiler';
 import { logger } from '../../util/logger';
 import { Bumper } from '../bumper/bumper';
 import { Flipper } from '../flipper/flipper';
 import { Gate } from '../gate/gate';
 import { HitTarget } from '../hit-target/hit-target';
-import { Meshes } from '../item-data';
 import { Kicker } from '../kicker/kicker';
 import { Light } from '../light/light';
 import { Material } from '../material';
@@ -53,11 +53,10 @@ import { Texture } from '../texture';
 import { TimerItem } from '../timer-item';
 import { Trigger } from '../trigger/trigger';
 import { TableData } from './table-data';
-import { TableExporter, VpTableExporterOptions } from './table-exporter';
+import { TableExportOptions } from './table-exporter';
 import { TableHitGenerator } from './table-hit-generator';
 import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
-import { IImage } from '../../gltf/image';
 
 /**
  * A Visual Pinball table.
@@ -110,7 +109,7 @@ export class Table implements IRenderable {
 		this.items = loadedTable.items;
 		if (loadedTable.data) {
 			this.data = loadedTable.data;
-			this.meshGenerator = new TableMeshGenerator(loadedTable.data);
+			this.meshGenerator = new TableMeshGenerator(this);
 			this.hitGenerator = new TableHitGenerator(loadedTable.data);
 		}
 		if (loadedTable.info) {
@@ -287,25 +286,15 @@ export class Table implements IRenderable {
 		return this.data.tableheight;
 	}
 
-	public async exportScene(opts?: VpTableExporterOptions): Promise<Scene> {
-		const exporter = new TableExporter(this, opts || {});
-		return await exporter.createScene();
-	}
+	// public async exportGltf(opts?: TableExportOptions): Promise<string> {
+	// 	const exporter = new TableExporter(this, opts || {});
+	// 	return await exporter.exportGltf();
+	// }
 
-	public async exportGltf(opts?: VpTableExporterOptions): Promise<string> {
-		const exporter = new TableExporter(this, opts || {});
-		return await exporter.exportGltf();
-	}
-
-	public async exportGlb(opts?: VpTableExporterOptions): Promise<Buffer> {
-		const exporter = new TableExporter(this, opts || {});
-		return await exporter.exportGlb();
-	}
-
-	public async exportElement(renderable: IRenderable, opts?: VpTableExporterOptions): Promise<Group> {
-		const exporter = new TableExporter(this, opts || {});
-		return await exporter.createItemMesh(renderable);
-	}
+	// public async exportGlb(opts?: TableExportOptions): Promise<Buffer> {
+	// 	const exporter = new TableExporter(new ThreeRenderApi(), this, opts || {});
+	// 	return await exporter.exportGlb();
+	// }
 
 	public async streamStorage<T>(name: string, streamer: (stg: Storage) => Promise<T>): Promise<T> {
 		return this.loader.streamStorage(name, streamer);
@@ -323,12 +312,12 @@ export class Table implements IRenderable {
 		return true;
 	}
 
-	public getMeshes(table: Table, opts: VpTableExporterOptions): Meshes {
+	public getMeshes(table: Table, opts: TableExportOptions): Meshes {
 		/* istanbul ignore if */
 		if (!this.data) {
 			throw new Error('Table data is not loaded. Load table with tableDataOnly = false.');
 		}
-		const geometry = this.meshGenerator!.getMesh(this, opts);
+		const geometry = this.meshGenerator!.getPlayfieldMesh(this, opts);
 		return {
 			playfield: {
 				geometry,
@@ -336,6 +325,16 @@ export class Table implements IRenderable {
 				map: this.getTexture(this.data.szImage),
 			},
 		};
+	}
+
+	/**
+	 * Generates the top-most node for the render engine that contains the entire table.
+	 *
+	 * @param renderApi Render API
+	 * @param opts Which elements to generate
+	 */
+	public async generateTableNode<NODE, GEOMETRY, POINT_LIGHT>(renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, opts: TableExportOptions = {}): Promise<NODE> {
+		return await this.meshGenerator!.generateTableNode(renderApi, opts);
 	}
 
 	public prepareToPlay() {
@@ -404,4 +403,47 @@ export interface TableLoadOptions {
 	 * If set, table script is read
 	 */
 	loadTableScript?: boolean;
+}
+
+export interface TableGenerateOptions {
+	exportPlayfield?: boolean;
+	exportPrimitives?: boolean;
+	exportRubbers?: boolean;
+	exportSurfaces?: boolean;
+	exportFlippers?: boolean;
+	exportBumpers?: boolean;
+	exportRamps?: boolean;
+	exportLightBulbs?: boolean;
+	exportPlayfieldLights?: boolean;
+	exportLightBulbLights?: boolean;
+	exportHitTargets?: boolean;
+	exportGates?: boolean;
+	exportKickers?: boolean;
+	exportTriggers?: boolean;
+	exportSpinners?: boolean;
+	exportPlungers?: boolean;
+	gltfOptions?: TableGenerateGltfOptions;
+}
+
+export interface TableGenerateGltfOptions {
+	binary?: boolean;
+	optimizeImages?: boolean;
+	trs?: boolean;
+	onlyVisible?: boolean;
+	truncateDrawRange?: boolean;
+	embedImages?: boolean;
+	animations?: any[];
+	forceIndices?: boolean;
+	forcePowerOfTwoTextures?: boolean;
+	compressVertices?: boolean;
+	versionString?: string;
+	dracoOptions?: {
+		compressionLevel?: number;
+		quantizePosition?: number;
+		quantizeNormal?: number;
+		quantizeTexcoord?: number;
+		quantizeColor?: number;
+		quantizeSkin?: number;
+		unifiedQuantization?: boolean;
+	};
 }

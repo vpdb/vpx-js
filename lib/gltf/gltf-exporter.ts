@@ -54,7 +54,7 @@ import {
 	Vector3,
 } from 'three';
 import { logger } from '../util/logger';
-import { ParseOptions } from '../vpt/table/table-exporter';
+import { TableGenerateGltfOptions } from '../vpt/table/table';
 import {
 	GltfAnimationSampler,
 	GltfBufferView,
@@ -141,7 +141,7 @@ const PATH_PROPERTIES: { [key: string]: string } = {
 export class GLTFExporter {
 
 	private started = false;
-	private options: ParseOptions;
+	private options: TableGenerateGltfOptions;
 	private byteOffset: number = 0;
 	private buffers: Buffer[] = [];
 	private pending: Array<() => Promise<void>> = [];
@@ -162,8 +162,8 @@ export class GLTFExporter {
 		},
 	};
 
-	constructor(options?: ParseOptions) {
-		const DEFAULT_OPTIONS: ParseOptions = {
+	constructor(options?: TableGenerateGltfOptions) {
+		const DEFAULT_OPTIONS: TableGenerateGltfOptions = {
 			binary: false,
 			optimizeImages: false,
 			trs: false,

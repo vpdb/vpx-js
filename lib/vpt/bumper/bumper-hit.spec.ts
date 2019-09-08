@@ -27,6 +27,7 @@ import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { ThreeRenderApi } from '../../render/threejs/three-render-api';
 import { Table } from '../table/table';
+import { TableExporter } from '../table/table-exporter';
 import { BumperState } from './bumper-state';
 
 chai.use(sinonChai);
@@ -36,10 +37,12 @@ const renderApi = new ThreeRenderApi();
 describe('The VPinball bumper collision', () => {
 
 	let table: Table;
+	let exporter: TableExporter;
 	let player: Player;
 
 	beforeEach(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-bumper.vpx')));
+		exporter = new TableExporter(table);
 		player = new Player(table).init();
 	});
 
@@ -88,7 +91,7 @@ describe('The VPinball bumper collision', () => {
 
 	it('should apply the ring transformation to the object', async () => {
 		// create scene
-		const gltf = await three.loadGlb(await table.exportGlb());
+		const gltf = await three.loadGlb(await exporter.exportGlb());
 
 		// add ball
 		createBall(player, 450, 750, 50, 0, 1);

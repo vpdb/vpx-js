@@ -17,11 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Storage, Table } from '../..';
 import { BiffParser } from '../../io/biff-parser';
+import { Storage } from '../../io/ole-doc';
 import { DragPoint } from '../../math/dragpoint';
 import { Vertex2D } from '../../math/vertex2d';
 import { ItemData } from '../item-data';
+import { Table } from '../table/table';
 import { Light } from './light';
 
 export class LightData extends ItemData {

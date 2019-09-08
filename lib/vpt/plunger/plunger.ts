@@ -17,21 +17,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Storage, Table } from '../..';
 import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
-import { IRenderable } from '../../game/irenderable';
+import { IRenderable, Meshes } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
 import { IBallCreationPosition, Player } from '../../game/player';
 import { PlayerPhysics } from '../../game/player-physics';
+import { Storage } from '../../io/ole-doc';
 import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
 import { IRenderApi } from '../../render/irender-api';
 import { Ball } from '../ball/ball';
-import { Meshes } from '../item-data';
-import { VpTableExporterOptions } from '../table/table-exporter';
+import { Table } from '../table/table';
 import { PlungerApi } from './plunger-api';
 import { PlungerData } from './plunger-data';
 import { PlungerHit } from './plunger-hit';
@@ -77,7 +76,7 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 		return this.state!;
 	}
 
-	public getMeshes(table: Table, opts: VpTableExporterOptions): Meshes {
+	public getMeshes(table: Table): Meshes {
 		const plunger = this.meshGenerator.generateMeshes(0, table);
 		const meshes: Meshes = {};
 		const material = table.getMaterial(this.data.szMaterial);
@@ -148,7 +147,7 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 		}
 	}
 
-	public applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player): void {
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, player: Player): void {
 		const mesh = this.meshGenerator.generateMeshes(this.state.frame, table);
 		const rodObj = renderApi.findInGroup(obj, 'rod');
 		if (rodObj) {

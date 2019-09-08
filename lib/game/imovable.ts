@@ -17,10 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '..';
 import { MoverObject } from '../physics/mover-object';
 import { IRenderApi } from '../render/irender-api';
 import { ItemState } from '../vpt/item-state';
+import { Table } from '../vpt/table/table';
 import { IPlayable } from './iplayable';
 import { Player } from './player';
 
@@ -30,5 +30,5 @@ export interface IMovable<STATE extends ItemState> extends IPlayable {
 
 	getState(): STATE;
 
-	applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player, oldState: STATE): void;
+	applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, player: Player, oldState: STATE): void;
 }

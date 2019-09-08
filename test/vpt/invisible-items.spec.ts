@@ -18,9 +18,9 @@
  */
 
 import { ThreeHelper } from '../three.helper';
-import { Table } from '../../lib';
 import { expect } from 'chai';
 import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
+import { Table } from '../../lib/vpt/table/table';
 
 const three = new ThreeHelper();
 

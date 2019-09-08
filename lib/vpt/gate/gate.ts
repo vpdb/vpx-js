@@ -17,12 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Object3D } from 'three';
 import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
-import { IRenderable } from '../../game/irenderable';
+import { IRenderable, Meshes } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
@@ -32,7 +31,7 @@ import { Vertex2D } from '../../math/vertex2d';
 import { HitCircle } from '../../physics/hit-circle';
 import { HitObject } from '../../physics/hit-object';
 import { LineSeg } from '../../physics/line-seg';
-import { Meshes } from '../item-data';
+import { IRenderApi } from '../../render/irender-api';
 import { Table } from '../table/table';
 import { GateApi } from './gate-api';
 import { GateData } from './gate-data';
@@ -41,7 +40,6 @@ import { GateHitGenerator } from './gate-hit-generator';
 import { GateMeshGenerator } from './gate-mesh-generator';
 import { GateMover } from './gate-mover';
 import { GateState } from './gate-state';
-import { IRenderApi } from '../../render/irender-api';
 
 /**
  * VPinball's gates.
@@ -142,7 +140,7 @@ export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHitta
 	}
 
 	/* istanbul ignore next */
-	public applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player): void {
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, player: Player): void {
 		const posZ = this.data.height;
 		const matTransToOrigin = Matrix3D.claim().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, posZ);
 		const matRotateToOrigin = Matrix3D.claim().rotateZMatrix(degToRad(-this.data.rotation));

@@ -20,7 +20,7 @@
 import { EventEmitter } from 'events';
 import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
-import { IRenderable } from '../../game/irenderable';
+import { IRenderable, Meshes } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
 import { IBallCreationPosition, Player } from '../../game/player';
 import { PlayerPhysics } from '../../game/player-physics';
@@ -29,7 +29,6 @@ import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
-import { Meshes } from '../item-data';
 import { FLT_MAX } from '../mesh';
 import { Table } from '../table/table';
 import { Texture } from '../texture';

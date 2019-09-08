@@ -27,6 +27,7 @@ import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { ThreeRenderApi } from '../../render/threejs/three-render-api';
 import { Table } from '../table/table';
+import { TableExporter } from '../table/table-exporter';
 import { PlungerMover } from './plunger-mover';
 import { PlungerState } from './plunger-state';
 
@@ -37,10 +38,12 @@ const renderApi = new ThreeRenderApi();
 describe('The VPinball plunger physics', () => {
 
 	let table: Table;
+	let exporter: TableExporter;
 	let player: Player;
 
 	before(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-plunger.vpx')));
+		exporter = new TableExporter(table);
 	});
 
 	beforeEach(() => {
@@ -113,7 +116,7 @@ describe('The VPinball plunger physics', () => {
 	it('should apply the mesh transformation when animated', async () => {
 
 		// create scene
-		const gltf = await three.loadGlb(await table.exportGlb());
+		const gltf = await three.loadGlb(await exporter.exportGlb());
 		const plunger = table.plungers.CustomPlunger;
 
 		// retrieve plunger

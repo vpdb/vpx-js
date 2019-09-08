@@ -22,6 +22,7 @@ import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { ThreeHelper } from '../../../test/three.helper';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
+import { TableExporter } from '../table/table-exporter';
 
 const three = new ThreeHelper();
 
@@ -30,8 +31,9 @@ describe('The VPinball primitive generator', () => {
 	let gltf: GLTF;
 
 	before(async () => {
-		const vpt = await Table.load(new NodeBinaryReader(three.fixturePath('table-primitive.vpx')));
-		gltf = await three.loadGlb(await vpt.exportGlb({ applyTextures: false }));
+		const table = await Table.load(new NodeBinaryReader(three.fixturePath('table-primitive.vpx')));
+		const exporter = new TableExporter(table);
+		gltf = await three.loadGlb(await exporter.exportGlb({ applyTextures: false }));
 	});
 
 	it('should generate a simple primitive mesh', async () => {
@@ -93,7 +95,8 @@ describe('The VPinball primitive generator', () => {
 	it('should generate a compressed mesh', async () => {
 
 		const vptSink = await Table.load(new NodeBinaryReader(three.fixturePath('table-sink.vpx')));
-		const gltfSink = await three.loadGlb(await vptSink.exportGlb());
+		const exporterSink = new TableExporter(vptSink);
+		const gltfSink = await three.loadGlb(await exporterSink.exportGlb());
 
 		const sinkMesh = three.find<Mesh>(gltfSink, 'primitives', 'Primitive1', 'primitive-Primitive1');
 		const sinkMeshVertices = three.vertices(sinkMesh);

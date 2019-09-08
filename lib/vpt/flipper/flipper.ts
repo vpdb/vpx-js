@@ -17,12 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Object3D } from 'three';
 import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
-import { IRenderable } from '../../game/irenderable';
+import { IRenderable, Meshes } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
@@ -30,7 +29,7 @@ import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex2D } from '../../math/vertex2d';
 import { HitObject } from '../../physics/hit-object';
-import { Meshes } from '../item-data';
+import { IRenderApi } from '../../render/irender-api';
 import { Table } from '../table/table';
 import { FlipperApi } from './flipper-api';
 import { FlipperData } from './flipper-data';
@@ -38,7 +37,6 @@ import { FlipperHit } from './flipper-hit';
 import { FlipperMesh } from './flipper-mesh';
 import { FlipperMover } from './flipper-mover';
 import { FlipperState } from './flipper-state';
-import { IRenderApi } from '../../render/irender-api';
 
 /**
  * VPinball's flippers
@@ -126,7 +124,7 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		return meshes;
 	}
 
-	public applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player): void {
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, player: Player): void {
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y) * table.getScaleZ();
 
 		const matToOrigin = Matrix3D.claim().setTranslation(-this.data.center.x, -this.data.center.y, -height);

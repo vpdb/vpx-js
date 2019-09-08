@@ -18,10 +18,10 @@
  */
 
 import { basename, resolve as resolvePath } from 'path';
-import { Storage } from '..';
 import { IImage } from '../gltf/image';
 import { LzwReader } from '../gltf/lzw-reader';
 import { BiffParser } from '../io/biff-parser';
+import { Storage } from '../io/ole-doc';
 import { getRawImage, loadImage, streamImage } from '../refs.node';
 import { logger } from '../util/logger';
 import { Binary } from './binary';

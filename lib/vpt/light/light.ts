@@ -18,10 +18,9 @@
  */
 
 import { BufferGeometry, MeshStandardMaterial } from 'three';
-import { IRenderable } from '../../game/irenderable';
+import { IRenderable, Meshes } from '../../game/irenderable';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
-import { Meshes } from '../item-data';
 import { Material } from '../material';
 import { Table } from '../table/table';
 import { LightData } from './light-data';
@@ -45,7 +44,7 @@ export class Light implements IRenderable {
 	get vCenter() { return this.data.vCenter; }
 	get offImage() { return this.data.szOffImage; }
 
-	private readonly data: LightData;
+	public readonly data: LightData;
 	private readonly meshGenerator: LightMeshGenerator;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Light> {

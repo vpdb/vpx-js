@@ -17,16 +17,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Object3D } from 'three';
-import { Storage, Table } from '../..';
 import { EventProxy } from '../../game/event-proxy';
 import { IAnimatable } from '../../game/ianimatable';
 import { IHittable } from '../../game/ihittable';
-import { IRenderable } from '../../game/irenderable';
+import { IRenderable, Meshes } from '../../game/irenderable';
 import { Player } from '../../game/player';
+import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
-import { Meshes } from '../item-data';
+import { IRenderApi } from '../../render/irender-api';
+import { Table } from '../table/table';
 import { Texture } from '../texture';
 import { BumperAnimation } from './bumper-animation';
 import { BumperData } from './bumper-data';
@@ -34,7 +34,6 @@ import { BumperHit } from './bumper-hit';
 import { BumperMeshGenerator } from './bumper-mesh-generator';
 import { BumperMeshUpdater } from './bumper-mesh-updater';
 import { BumperState } from './bumper-state';
-import { IRenderApi } from '../../render/irender-api';
 
 /**
  * VPinball's bumper item.
@@ -86,7 +85,7 @@ export class Bumper implements IRenderable, IHittable, IAnimatable<BumperState> 
 		this.hit = new BumperHit(this.data, this.state, this.animation, this.events, height);
 	}
 
-	public applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player, oldState: BumperState): void {
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, player: Player, oldState: BumperState): void {
 		this.meshUpdater.applyState(obj, renderApi, table, player, oldState);
 	}
 
