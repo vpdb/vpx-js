@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Object3D } from 'three';
 import { EventProxy } from '../../game/event-proxy';
 import { IAnimatable, IAnimation } from '../../game/ianimatable';
 import { IHittable } from '../../game/ihittable';
@@ -29,6 +28,7 @@ import { Storage } from '../../io/ole-doc';
 import { degToRad, f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
+import { IRenderApi } from '../../render/irender-api';
 import { Ball } from '../ball/ball';
 import { Meshes } from '../item-data';
 import { Table } from '../table/table';
@@ -138,7 +138,7 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 		return this.events!;
 	}
 
-	public applyState(obj: Object3D, table: Table, player: Player, oldState: HitTargetState): void {
+	public applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player): void {
 		const matTransToOrigin = Matrix3D.claim().setTranslation(-this.data.vPosition.x, -this.data.vPosition.y, -this.data.vPosition.z);
 		const matRotateToOrigin = Matrix3D.claim().rotateZMatrix(degToRad(-this.data.rotZ));
 		const matTransFromOrigin = Matrix3D.claim().setTranslation(this.data.vPosition.x, this.data.vPosition.y, this.data.vPosition.z);
@@ -152,7 +152,7 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 			.multiply(matRotateFromOrigin)
 			.multiply(matTransFromOrigin);
 
-		matrix.applyToObject3D(obj);
+		renderApi.applyMatrixToObject(matrix, obj);
 		Matrix3D.release(matTransToOrigin, matRotateToOrigin, matTransFromOrigin, matRotateFromOrigin, matRotateX, matTranslateZ);
 	}
 

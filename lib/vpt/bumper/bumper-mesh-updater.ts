@@ -17,10 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Object3D } from 'three';
 import { Player } from '../../game/player';
 import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
+import { IRenderApi } from '../../render/irender-api';
 import { Table } from '../table/table';
 import { BumperData } from './bumper-data';
 import { BumperMeshGenerator } from './bumper-mesh-generator';
@@ -38,28 +38,28 @@ export class BumperMeshUpdater {
 		this.meshGenerator = meshGenerator;
 	}
 
-	public applyState(obj: Object3D, table: Table, player: Player, oldState: BumperState): void {
+	public applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player, oldState: BumperState) {
 
 		if (this.data.isRingVisible && this.state.ringOffset !== oldState.ringOffset) {
-			this.applyRingState(obj);
+			this.applyRingState(obj, renderApi);
 		}
 		if (this.data.isSkirtVisible && (this.state.skirtRotX !== oldState.skirtRotX || this.state.skirtRotY !== oldState.skirtRotY)) {
-			this.applySkirtState(obj, table);
+			this.applySkirtState(obj, renderApi, table);
 		}
 	}
 
-	private applyRingState(obj: Object3D) {
-		const ringObj = obj.children.find(o => o.name === `bumper-ring-${this.data.getName()}`) as Object3D;
+	private applyRingState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>) {
+		const ringObj = renderApi.findInGroup(obj, `bumper-ring-${this.data.getName()}`);
 		if (ringObj) {
 			const matrix = Matrix3D.claim().setTranslation(0, 0, -this.state.ringOffset);
-			matrix.applyToObject3D(ringObj);
+			renderApi.applyMatrixToObject(matrix, ringObj);
 			Matrix3D.release(matrix);
 		}
 	}
 
 	/* istanbul ignore next: this looks weird. test when sure it's the correct "animation" */
-	private applySkirtState(obj: Object3D, table: Table) {
-		const skirtObj = obj.children.find(o => o.name === `bumper-socket-${this.data.getName()}`) as any;
+	private applySkirtState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table) {
+		const skirtObj = renderApi.findInGroup(obj, `bumper-socket-${this.data.getName()}`);
 		if (skirtObj) {
 			const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
 			const matToOrigin = Matrix3D.claim().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, -height);
@@ -69,7 +69,7 @@ export class BumperMeshUpdater {
 
 			const matrix = matToOrigin.multiply(matRotY).multiply(matRotX).multiply(matFromOrigin);
 
-			matrix.applyToObject3D(skirtObj);
+			renderApi.applyMatrixToObject(matrix, skirtObj);
 			Matrix3D.release(matToOrigin, matFromOrigin, matRotX, matRotY);
 		}
 	}

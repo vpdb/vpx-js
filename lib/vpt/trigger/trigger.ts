@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Object3D } from 'three';
 import { EventProxy } from '../../game/event-proxy';
 import { IAnimatable, IAnimation } from '../../game/ianimatable';
 import { IHittable } from '../../game/ihittable';
@@ -27,6 +26,7 @@ import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
+import { IRenderApi } from '../../render/irender-api';
 import { Meshes } from '../item-data';
 import { Table } from '../table/table';
 import { TriggerAnimation } from './trigger-animation';
@@ -127,9 +127,9 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 		return this.animation!;
 	}
 
-	public applyState(obj: Object3D, table: Table, player: Player): void {
+	public applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player): void {
 		const matrix = Matrix3D.claim().setTranslation(0, 0, -this.state.heightOffset);
-		matrix.applyToObject3D(obj);
+		renderApi.applyMatrixToObject(matrix, obj);
 		Matrix3D.release(matrix);
 	}
 

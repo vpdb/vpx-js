@@ -34,6 +34,7 @@ import { BumperHit } from './bumper-hit';
 import { BumperMeshGenerator } from './bumper-mesh-generator';
 import { BumperMeshUpdater } from './bumper-mesh-updater';
 import { BumperState } from './bumper-state';
+import { IRenderApi } from '../../render/irender-api';
 
 /**
  * VPinball's bumper item.
@@ -85,8 +86,8 @@ export class Bumper implements IRenderable, IHittable, IAnimatable<BumperState> 
 		this.hit = new BumperHit(this.data, this.state, this.animation, this.events, height);
 	}
 
-	public applyState(obj: Object3D, table: Table, player: Player, oldState: BumperState): void {
-		this.meshUpdater.applyState(obj, table, player, oldState);
+	public applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player, oldState: BumperState): void {
+		this.meshUpdater.applyState(obj, renderApi, table, player, oldState);
 	}
 
 	public getHitShapes(): HitObject[] {
