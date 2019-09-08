@@ -25,6 +25,7 @@ import { Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
+import { IRenderApi } from '../../render/irender-api';
 import { Meshes } from '../item-data';
 import { Table } from '../table/table';
 import { TableData } from '../table/table-data';
@@ -65,7 +66,7 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 		return `Ball${this.id}`;
 	}
 
-	public applyState(obj: Object3D, table: Table, player: Player): void {
+	public applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player): void {
 		const zHeight = !this.hit.isFrozen ? this.state.pos.z : this.state.pos.z - this.data.radius;
 		const orientation = Matrix3D.claim().setEach(
 			this.state.orientation.matrix[0][0], this.state.orientation.matrix[1][0], this.state.orientation.matrix[2][0], 0.0,
@@ -80,7 +81,7 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 			.multiply(trans)
 			.toRightHanded();
 
-		matrix.applyToObject3D(obj);
+		renderApi.applyMatrixToObject(matrix, obj);
 		Matrix3D.release(orientation, trans, matrix);
 	}
 

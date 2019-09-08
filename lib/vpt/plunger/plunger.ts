@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Object3D } from 'three';
 import { Storage, Table } from '../..';
 import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
@@ -29,6 +28,7 @@ import { IBallCreationPosition, Player } from '../../game/player';
 import { PlayerPhysics } from '../../game/player-physics';
 import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
+import { IRenderApi } from '../../render/irender-api';
 import { Ball } from '../ball/ball';
 import { Meshes } from '../item-data';
 import { VpTableExporterOptions } from '../table/table-exporter';
@@ -148,16 +148,15 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 		}
 	}
 
-	public applyState(obj: Object3D, table: Table): void {
-
+	public applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player): void {
 		const mesh = this.meshGenerator.generateMeshes(this.state.frame, table);
-		const rodObj = obj.children.find(o => o.name === 'rod') as any;
+		const rodObj = renderApi.findInGroup(obj, 'rod');
 		if (rodObj) {
-			mesh.rod!.applyToObject(rodObj);
+			renderApi.applyMeshToObject(mesh.rod!, rodObj);
 		}
-		const springObj = obj.children.find(o => o.name === 'spring') as any;
+		const springObj = renderApi.findInGroup(obj, 'spring');
 		if (springObj) {
-			mesh.spring!.applyToObject(springObj);
+			renderApi.applyMeshToObject(mesh.spring!, springObj);
 		}
 	}
 

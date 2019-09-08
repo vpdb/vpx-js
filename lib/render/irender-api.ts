@@ -17,18 +17,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '..';
-import { MoverObject } from '../physics/mover-object';
-import { IRenderApi } from '../render/irender-api';
-import { ItemState } from '../vpt/item-state';
-import { IPlayable } from './iplayable';
-import { Player } from './player';
+import { Matrix3D } from '../math/matrix3d';
+import { Mesh } from '../vpt/mesh';
 
-export interface IMovable<STATE extends ItemState> extends IPlayable {
+export interface IRenderApi<OBJECT, GROUP> {
 
-	getMover(): MoverObject;
+	findInGroup(group: GROUP, name: string): OBJECT | undefined;
 
-	getState(): STATE;
+	applyMatrixToObject(matrix: Matrix3D, obj: OBJECT | undefined): void;
 
-	applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player, oldState: STATE): void;
+	applyMeshToObject(mesh: Mesh, obj: OBJECT | undefined): void;
+
 }

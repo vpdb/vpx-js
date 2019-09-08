@@ -38,6 +38,7 @@ import { SpinnerHit } from './spinner-hit';
 import { SpinnerHitGenerator } from './spinner-hit-generator';
 import { SpinnerMeshGenerator } from './spinner-mesh-generator';
 import { SpinnerState } from './spinner-state';
+import { IRenderApi } from '../../render/irender-api';
 
 /**
  * VPinball's spinners.
@@ -125,7 +126,7 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	}
 
 	/* istanbul ignore next */
-	public applyState(obj: Object3D, table: Table, player: Player): void {
+	public applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player): void {
 
 		const posZ = this.meshGenerator.getZ(table);
 		const matTransToOrigin = Matrix3D.claim().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, posZ);
@@ -140,8 +141,8 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 			.multiply(matRotateFromOrigin)
 			.multiply(matTransFromOrigin);
 
-		const plateObj = obj.children.find(c => c.name === `spinner.plate-${this.getName()}`)!;
-		matrix.applyToObject3D(plateObj);
+		const plateObj = renderApi.findInGroup(obj, `spinner.plate-${this.getName()}`);
+		renderApi.applyMatrixToObject(matrix, plateObj!);
 
 		Matrix3D.release(matTransToOrigin, matRotateToOrigin, matTransFromOrigin, matRotateFromOrigin, matRotateX);
 	}

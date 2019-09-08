@@ -38,6 +38,7 @@ import { FlipperHit } from './flipper-hit';
 import { FlipperMesh } from './flipper-mesh';
 import { FlipperMover } from './flipper-mover';
 import { FlipperState } from './flipper-state';
+import { IRenderApi } from '../../render/irender-api';
 
 /**
  * VPinball's flippers
@@ -125,7 +126,7 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		return meshes;
 	}
 
-	public applyState(obj: Object3D, table: Table): void {
+	public applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player): void {
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y) * table.getScaleZ();
 
 		const matToOrigin = Matrix3D.claim().setTranslation(-this.data.center.x, -this.data.center.y, -height);
@@ -133,7 +134,7 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		const matRotate = Matrix3D.claim().rotateZMatrix(this.state.angle - degToRad(this.data.startAngle));
 		const matrix = matToOrigin.multiply(matRotate).multiply(matFromOrigin);
 
-		matrix.applyToObject3D(obj);
+		renderApi.applyMatrixToObject(matrix, obj);
 		Matrix3D.release(matToOrigin, matFromOrigin, matRotate); // matrix and matToOrigin are the same instance
 	}
 

@@ -149,6 +149,7 @@ export class Matrix3D {
 		return this;
 	}
 
+	/** @deprecated use {@link IRenderApi} */
 	public applyToObject3D(obj: Object3D) {
 		if (!obj.matrix) {
 			obj.matrix = new Matrix4();

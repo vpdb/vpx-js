@@ -25,10 +25,12 @@ import { createBall } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { ThreeRenderApi } from '../../render/three-render-api';
 import { Table } from '../table/table';
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
+const renderApi = new ThreeRenderApi();
 
 describe('The VPinball ball physics', () => {
 
@@ -120,12 +122,12 @@ describe('The VPinball ball physics', () => {
 
 		// position ball
 		player.updatePhysics(0);
-		ball.applyState(ballObj, table, player);
+		ball.applyState(ballObj, renderApi, table, player);
 		ballObj.getWorldPosition(startPos);
 
 		// let ball roll some
 		player.updatePhysics(100);
-		ball.applyState(ballObj, table, player);
+		ball.applyState(ballObj, renderApi, table, player);
 		ballObj.getWorldPosition(endPos);
 
 		expect(startPos.y).to.be.below(endPos.y);

@@ -41,6 +41,7 @@ import { GateHitGenerator } from './gate-hit-generator';
 import { GateMeshGenerator } from './gate-mesh-generator';
 import { GateMover } from './gate-mover';
 import { GateState } from './gate-state';
+import { IRenderApi } from '../../render/irender-api';
 
 /**
  * VPinball's gates.
@@ -141,7 +142,7 @@ export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHitta
 	}
 
 	/* istanbul ignore next */
-	public applyState(obj: Object3D, table: Table, player: Player, oldState: GateState): void {
+	public applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player): void {
 		const posZ = this.data.height;
 		const matTransToOrigin = Matrix3D.claim().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, posZ);
 		const matRotateToOrigin = Matrix3D.claim().rotateZMatrix(degToRad(-this.data.rotation));
@@ -155,8 +156,8 @@ export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHitta
 			.multiply(matRotateFromOrigin)
 			.multiply(matTransFromOrigin);
 
-		const wireObj = obj.children.find(c => c.name === `gate.wire-${this.data.getName()}`)!;
-		matrix.applyToObject3D(wireObj);
+		const wireObj = renderApi.findInGroup(obj, `gate.wire-${this.data.getName()}`);
+		renderApi.applyMatrixToObject(matrix, wireObj);
 
 		Matrix3D.release(matTransToOrigin, matRotateToOrigin, matTransFromOrigin, matRotateFromOrigin, matRotateX);
 	}

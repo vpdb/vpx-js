@@ -25,12 +25,14 @@ import { simulateCycles } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { ThreeRenderApi } from '../../render/three-render-api';
 import { Table } from '../table/table';
 import { PlungerMover } from './plunger-mover';
 import { PlungerState } from './plunger-state';
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
+const renderApi = new ThreeRenderApi();
 
 describe('The VPinball plunger physics', () => {
 
@@ -120,7 +122,7 @@ describe('The VPinball plunger physics', () => {
 		const springObj = plungerObj.children.find(c => c.name === 'spring') as Mesh;
 
 		// apply player state to plunger
-		plunger.applyState(plungerObj, table);
+		plunger.applyState(plungerObj, renderApi, table, player);
 		rodObj.geometry.computeBoundingBox();
 		springObj.geometry.computeBoundingBox();
 
@@ -133,7 +135,7 @@ describe('The VPinball plunger physics', () => {
 		simulateCycles(player, 50);
 
 		// apply again
-		plunger.applyState(plungerObj, table);
+		plunger.applyState(plungerObj, renderApi, table, player);
 		rodObj.geometry.computeBoundingBox();
 		springObj.geometry.computeBoundingBox();
 
