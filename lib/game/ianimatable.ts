@@ -22,6 +22,7 @@ import { Table } from '..';
 import { IPlayable } from './iplayable';
 import { Player } from './player';
 import { PlayerPhysics } from './player-physics';
+import { IRenderApi } from '../render/irender-api';
 
 /**
  * Animatables are like movables but their position is only updated
@@ -37,7 +38,7 @@ export interface IAnimatable<STATE> extends IPlayable {
 
 	getState(): STATE;
 
-	applyState(obj: Object3D, table: Table, player: Player, oldState: STATE): void;
+	applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player, oldState: STATE): void;
 }
 
 export interface IAnimation {
