@@ -93,7 +93,7 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 		return this.events!;
 	}
 
-	public getMeshes(table: Table): Meshes {
+	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
 		return {
 			trigger: {
 				mesh: this.meshGenerator.getMesh(table).transform(Matrix3D.RIGHT_HANDED),

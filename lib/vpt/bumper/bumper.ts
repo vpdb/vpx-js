@@ -101,8 +101,8 @@ export class Bumper implements IRenderable, IHittable, IAnimatable<BumperState> 
 		return this.events!;
 	}
 
-	public getMeshes(table: Table): Meshes {
-		const meshes: Meshes = {};
+	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
+		const meshes: Meshes<GEOMETRY> = {};
 		const bumper = this.meshGenerator.getMeshes(table);
 		if (bumper.base) {
 			meshes.base = {

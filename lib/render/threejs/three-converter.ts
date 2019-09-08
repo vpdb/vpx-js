@@ -18,11 +18,12 @@
  */
 
 import {
+	BufferGeometry,
 	Color,
 	DoubleSide,
 	Group,
 	Mesh as ThreeMesh,
-	MeshStandardMaterial,
+	MeshStandardMaterial, Object3D, PointLight,
 	RGBAFormat,
 	RGBFormat,
 	Texture as ThreeTexture,
@@ -30,31 +31,32 @@ import {
 import { IRenderable, RenderInfo } from '../../game/irenderable';
 import { IImage } from '../../gltf/image';
 import { logger } from '../../util/logger';
-import { Table } from '../../vpt/table/table';
+import { Table, TableGenerateOptions } from '../../vpt/table/table';
 import { Texture } from '../../vpt/texture';
-import { MeshConvertOptions } from '../irender-api';
+import { IRenderApi, MeshConvertOptions } from '../irender-api';
 
 export class ThreeConverter {
 
-	private readonly opts: MeshConvertOptions;
+	private readonly opts: TableGenerateOptions & MeshConvertOptions;
 
-	constructor(opts: MeshConvertOptions) {
+	constructor(opts: TableGenerateOptions & MeshConvertOptions) {
 		this.opts = opts;
 	}
 
-	public async createObject(renderable: IRenderable, table: Table): Promise<Group> {
-		const objects = renderable.getMeshes(table, this.opts);
+	public async createObject(renderable: IRenderable, table: Table, renderApi: IRenderApi<Object3D, BufferGeometry, PointLight>): Promise<Group> {
+		const objects = renderable.getMeshes(table, renderApi, this.opts);
 		const itemGroup = new Group();
 		itemGroup.matrixAutoUpdate = false;
 		itemGroup.name = renderable.getName();
-		for (const obj of Object.values<RenderInfo>(objects)) {
+		let obj: RenderInfo<BufferGeometry>;
+		for (obj of Object.values<RenderInfo<BufferGeometry>>(objects)) {
 			const mesh = await this.createMesh(renderable, obj, table);
 			itemGroup.add(mesh);
 		}
 		return itemGroup;
 	}
 
-	private async createMesh(renderable: IRenderable, obj: RenderInfo, table: Table): Promise<ThreeMesh> {
+	private async createMesh(renderable: IRenderable, obj: RenderInfo<BufferGeometry>, table: Table): Promise<ThreeMesh> {
 		/* istanbul ignore if */
 		if (!obj.geometry && !obj.mesh) {
 			throw new Error('Mesh export must either provide mesh or geometry.');
@@ -69,7 +71,7 @@ export class ThreeConverter {
 		return mesh;
 	}
 
-	private async getMaterial(obj: RenderInfo, table: Table): Promise<MeshStandardMaterial> {
+	private async getMaterial(obj: RenderInfo<BufferGeometry>, table: Table): Promise<MeshStandardMaterial> {
 		const material = new MeshStandardMaterial();
 		const name = (obj.geometry || obj.mesh!).name;
 		material.name = `material:${name}`;

@@ -102,8 +102,8 @@ export class Surface implements IRenderable, IHittable, IScriptable<SurfaceApi> 
 		}
 	}
 
-	public getMeshes(table: Table): Meshes {
-		const meshes: Meshes = {};
+	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
+		const meshes: Meshes<GEOMETRY> = {};
 		const surface = this.meshGenerator.generateMeshes(this.data, table);
 		if (surface.top) {
 			meshes.top = {

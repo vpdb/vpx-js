@@ -21,6 +21,7 @@ import { BufferGeometry, MeshStandardMaterial } from 'three';
 import { IRenderable, Meshes } from '../../game/irenderable';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
+import { IRenderApi } from '../../render/irender-api';
 import { Material } from '../material';
 import { Table } from '../table/table';
 import { LightData } from './light-data';
@@ -65,8 +66,8 @@ export class Light implements IRenderable {
 		return true; // we filter by bulb/playfield light
 	}
 
-	public getMeshes(table: Table): Meshes {
-		const light = this.meshGenerator.getMeshes(table);
+	public getMeshes<NODE, GEOMETRY, POINT_LIGHT>(table: Table, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>): Meshes<GEOMETRY> {
+		const light = this.meshGenerator.getMeshes(table, renderApi);
 		if (light.surfaceLight) {
 			return {
 				surfaceLight: {
@@ -75,7 +76,7 @@ export class Light implements IRenderable {
 				},
 			};
 		}
-		const meshes: Meshes = {};
+		const meshes: Meshes<GEOMETRY> = {};
 		if (light.light) {
 			const lightMaterial = new Material();
 			lightMaterial.cBase = 0;
@@ -134,9 +135,9 @@ export class Light implements IRenderable {
 		return this.data.isPlayfieldLight(table);
 	}
 
-	public getPath(table: Table) {
-		return this.meshGenerator.getPath(table);
-	}
+	// public getPath(table: Table) {
+	// 	return this.meshGenerator.getPath(table);
+	// }
 
 	public postProcessMaterial(table: Table, geometry: BufferGeometry, material: MeshStandardMaterial): MeshStandardMaterial | MeshStandardMaterial[] {
 		if (!this.data.isSurfaceLight(table)) {

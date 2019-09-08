@@ -101,8 +101,8 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		return this.events!;
 	}
 
-	public getMeshes(table: Table): Meshes {
-		const meshes: Meshes = {};
+	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
+		const meshes: Meshes<GEOMETRY> = {};
 
 		const matrix = this.getMatrix().toRightHanded();
 		const flipper = this.mesh.generateMeshes(this.data, table);
