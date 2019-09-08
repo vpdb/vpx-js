@@ -118,6 +118,7 @@ export class Mesh {
 		return this;
 	}
 
+	/** @deprecated use {@link IRenderApi} */
 	public applyToObject(obj: Object3D) {
 		const destGeo = (obj as any).geometry;
 		const srcGeo = this.getBufferGeometry();
