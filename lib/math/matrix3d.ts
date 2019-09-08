@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Matrix4, Object3D } from 'three';
 import { Pool } from '../util/object-pool';
 import { f4, fr } from './float';
 
@@ -147,29 +146,6 @@ export class Matrix3D {
 		this.multiply(tempMat);
 		Matrix3D.release(tempMat);
 		return this;
-	}
-
-	/** @deprecated use {@link IRenderApi} */
-	public applyToObject3D(obj: Object3D) {
-		if (!obj.matrix) {
-			obj.matrix = new Matrix4();
-		} else {
-			obj.matrix.identity();
-		}
-		const m4 = Pool.GENERIC.Matrix4.get();
-		this.applyToThreeMatrix4(m4);
-		obj.applyMatrix(m4);
-		Pool.GENERIC.Matrix4.release(m4);
-	}
-
-	public applyToThreeMatrix4(matrix: Matrix4): Matrix4 {
-		matrix.set(
-			this._11, this._21, this._31, this._41,
-			this._12, this._22, this._32, this._42,
-			this._13, this._23, this._33, this._43,
-			this._14, this._24, this._34, this._44,
-		);
-		return matrix;
 	}
 
 	private static multiplyMatrices(a: Matrix3D, b: Matrix3D, recycle = false): Matrix3D {
