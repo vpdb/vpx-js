@@ -115,7 +115,7 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 		return [ this.hit ];
 	}
 
-	public getMeshes(table: Table): Meshes {
+	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
 		return { ball: { mesh: this.meshGenerator.getMesh().transform(Matrix3D.RIGHT_HANDED) } };
 	}
 

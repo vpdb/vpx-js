@@ -312,12 +312,12 @@ export class Table implements IRenderable {
 		return true;
 	}
 
-	public getMeshes(table: Table, opts: TableExportOptions): Meshes {
+	public getMeshes<NODE, GEOMETRY, POINT_LIGHT>(table: Table, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, opts: TableExportOptions): Meshes<GEOMETRY> {
 		/* istanbul ignore if */
 		if (!this.data) {
 			throw new Error('Table data is not loaded. Load table with tableDataOnly = false.');
 		}
-		const geometry = this.meshGenerator!.getPlayfieldMesh(this, opts);
+		const geometry = this.meshGenerator!.getPlayfieldMesh(renderApi, opts);
 		return {
 			playfield: {
 				geometry,

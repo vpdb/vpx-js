@@ -18,29 +18,29 @@
  */
 
 import { BufferGeometry, Material as ThreeMaterial, MeshStandardMaterial } from 'three';
+import { IRenderApi } from '../render/irender-api';
 import { Material } from '../vpt/material';
 import { Mesh } from '../vpt/mesh';
-import { Table } from '../vpt/table/table';
-import { TableExportOptions } from '../vpt/table/table-exporter';
+import { Table, TableGenerateOptions } from '../vpt/table/table';
 import { Texture } from '../vpt/texture';
 import { IItem } from './iitem';
 
 export interface IRenderable extends IItem {
 
-	getMeshes(table: Table, opts: TableExportOptions): Meshes;
+	getMeshes<NODE, GEOMETRY, POINT_LIGHT>(table: Table, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, opts: TableGenerateOptions): Meshes<GEOMETRY>;
 
 	isVisible(table: Table): boolean;
 
 	postProcessMaterial?(table: Table, geometry: BufferGeometry, material: MeshStandardMaterial): MeshStandardMaterial | MeshStandardMaterial[];
 }
 
-export interface Meshes {
-	[key: string]: RenderInfo;
+export interface Meshes<GEOMETRY> {
+	[key: string]: RenderInfo<GEOMETRY>;
 }
 
-export interface RenderInfo {
+export interface RenderInfo<GEOMETRY> {
 	mesh?: Mesh;
-	geometry?: BufferGeometry;
+	geometry?: GEOMETRY;
 	map?: Texture;
 	normalMap?: Texture;
 	material?: Material;

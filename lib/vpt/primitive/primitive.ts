@@ -71,7 +71,7 @@ export class Primitive implements IRenderable, IHittable, IScriptable<PrimitiveA
 		return this.data.isCollidable;
 	}
 
-	public getMeshes(table: Table): Meshes {
+	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
 		return {
 			primitive: {
 				mesh: this.getMesh(table).clone().transform(Matrix3D.RIGHT_HANDED),

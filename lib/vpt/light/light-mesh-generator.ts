@@ -17,10 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ExtrudeBufferGeometry, Path, Shape, Vector2 } from 'three';
 import { bulbLightMesh } from '../../../res/meshes/bulb-light-mesh';
 import { bulbSocketMesh } from '../../../res/meshes/bulb-socket-mesh';
-import { SplineVertex } from '../../math/spline-vertex';
+import { IRenderApi } from '../../render/irender-api';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { LightData } from './light-data';
@@ -33,24 +32,19 @@ export class LightMeshGenerator {
 		this.data = data;
 	}
 
-	public getMeshes(table: Table): LightMeshes {
+	public getMeshes<NODE, GEOMETRY, POINT_LIGHT>(table: Table, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>): LightMeshes<GEOMETRY> {
 		if (this.data.isBulbLight()) {
 			return this.getBulbMeshes(table);
 		}
 		return {
-			surfaceLight: this.getSurfaceGeometry(table, Table.playfieldThickness / 2),
+			surfaceLight: renderApi.createLightGeometry(this.data, table),
 		};
 	}
 
-	public getShape(table: Table): Shape {
-		const vvertex = SplineVertex.getCentralCurve(this.data.dragPoints, table.getDetailLevel(), -1);
-		return this.getPathFromPoints<Shape>(vvertex.map(v => new Vector2(v.x, v.y)), new Shape());
-	}
-
-	public getPath(table: Table): Path {
-		const vvertex = SplineVertex.getCentralCurve(this.data.dragPoints, table.getDetailLevel(), -1);
-		return this.getPathFromPoints<Path>(vvertex.map(v => new Vector2(v.x, v.y)), new Path());
-	}
+	// public getPath(table: Table): Path {
+	// 	const vvertex = SplineVertex.getCentralCurve(this.data.dragPoints, table.getDetailLevel(), -1);
+	// 	return this.getPathFromPoints<Path>(vvertex.map(v => new Vector2(v.x, v.y)), new Path());
+	// }
 
 	// public getExtendedPath(table: Table, distance: number): Path {
 	// 	const path = this.getPath(table);
@@ -70,65 +64,20 @@ export class LightMeshGenerator {
 	// 	return this.getPathFromPoints(points);
 	// }
 
-	public getSurfaceGeometry(table: Table, depth = 5, bevel = 0.5): ExtrudeBufferGeometry {
+	// private getPathFromPoints<T extends Path>(points: Vector2[], path: T): T {
+	// 	/* istanbul ignore if */
+	// 	if (points.length === 0) {
+	// 		throw new Error('Cannot get path from no points.');
+	// 	}
+	// 	path.moveTo(points[0].x, points[0].y);
+	// 	for (const v of points.slice(1)) {
+	// 		path.lineTo(v.x, v.y);
+	// 	}
+	// 	//path.moveTo(points[0].x, points[0].y);
+	// 	return path;
+	// }
 
-		const shape = this.getShape(table);
-		const dim = table.getDimensions();
-		const invTableWidth = 1.0 / dim.width;
-		const invTableHeight = 1.0 / dim.height;
-
-		const geometry = new ExtrudeBufferGeometry(shape, {
-			depth,
-			bevelEnabled: bevel > 0,
-			bevelSegments: 1,
-			steps: 1,
-			bevelSize: bevel,
-			bevelThickness: bevel,
-			UVGenerator: {
-				generateSideWallUV(g: ExtrudeBufferGeometry, vertices: number[], indexA: number, indexB: number, indexC: number, indexD: number): Vector2[] {
-					return [
-						new Vector2( 0, 0),
-						new Vector2( 0, 0),
-						new Vector2( 0, 0),
-						new Vector2( 0, 0),
-					];
-				},
-				generateTopUV(g: ExtrudeBufferGeometry, vertices: number[], indexA: number, indexB: number, indexC: number): Vector2[] {
-					const ax = vertices[indexA * 3];
-					const ay = vertices[indexA * 3 + 1];
-					const bx = vertices[indexB * 3];
-					const by = vertices[indexB * 3 + 1];
-					const cx = vertices[indexC * 3];
-					const cy = vertices[indexC * 3 + 1];
-					return [
-						new Vector2(ax * invTableWidth, 1 - ay * invTableHeight),
-						new Vector2(bx * invTableWidth, 1 - by * invTableHeight),
-						new Vector2(cx * invTableWidth, 1 - cy * invTableHeight),
-					];
-				},
-			},
-		});
-		if (this.data.szSurface) {
-			geometry.translate(0, 0, -table.getSurfaceHeight(this.data.szSurface, 0, 0));
-		}
-		geometry.name = `surface.light-${this.data.getName()}`;
-		return geometry;
-	}
-
-	private getPathFromPoints<T extends Path>(points: Vector2[], path: T): T {
-		/* istanbul ignore if */
-		if (points.length === 0) {
-			throw new Error('Cannot get path from no points.');
-		}
-		path.moveTo(points[0].x, points[0].y);
-		for (const v of points.slice(1)) {
-			path.lineTo(v.x, v.y);
-		}
-		//path.moveTo(points[0].x, points[0].y);
-		return path;
-	}
-
-	private getBulbMeshes(table: Table): LightMeshes {
+	private getBulbMeshes<GEOMETRY>(table: Table): LightMeshes<GEOMETRY> {
 		const lightMesh = bulbLightMesh.clone(`bulb.light-${this.data.getName()}`);
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
 		for (const vertex of lightMesh.vertices) {
@@ -151,8 +100,8 @@ export class LightMeshGenerator {
 	}
 }
 
-export interface LightMeshes {
+export interface LightMeshes<GEOMETRY> {
 	light?: Mesh;
 	socket?: Mesh;
-	surfaceLight?: ExtrudeBufferGeometry;
+	surfaceLight?: GEOMETRY;
 }

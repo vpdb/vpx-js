@@ -76,9 +76,9 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 		return this.state!;
 	}
 
-	public getMeshes(table: Table): Meshes {
+	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
 		const plunger = this.meshGenerator.generateMeshes(0, table);
-		const meshes: Meshes = {};
+		const meshes: Meshes<GEOMETRY> = {};
 		const material = table.getMaterial(this.data.szMaterial);
 		const map = table.getTexture(this.data.szImage);
 

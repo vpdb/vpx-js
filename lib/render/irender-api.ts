@@ -21,7 +21,7 @@ import { IRenderable } from '../game/irenderable';
 import { Matrix3D } from '../math/matrix3d';
 import { LightData } from '../vpt/light/light-data';
 import { Mesh } from '../vpt/mesh';
-import { Table } from '../vpt/table/table';
+import { Table, TableGenerateOptions } from '../vpt/table/table';
 
 export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 
@@ -43,6 +43,8 @@ export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 
 	createLightGeometry(lightData: LightData, table: Table): GEOMETRY;
 
+	createPlayfieldGeometry(table: Table, opts: TableGenerateOptions): GEOMETRY;
+
 	createPointLight(lightData: LightData): POINT_LIGHT;
 }
 
@@ -51,3 +53,5 @@ export interface MeshConvertOptions {
 	applyTextures?: boolean;
 	optimizeTextures?: boolean;
 }
+
+export interface TableExportOptions extends TableGenerateOptions, MeshConvertOptions { }

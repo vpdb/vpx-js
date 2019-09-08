@@ -90,7 +90,7 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 		return this.data.isCollidable;
 	}
 
-	public getMeshes(table: Table): Meshes {
+	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
 		return {
 			hitTarget: {
 				mesh: this.meshGenerator.getMesh(table).transform(Matrix3D.RIGHT_HANDED),

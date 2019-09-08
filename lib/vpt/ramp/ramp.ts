@@ -92,8 +92,8 @@ export class Ramp implements IRenderable, IHittable {
 		return this.events!;
 	}
 
-	public getMeshes(table: Table): Meshes {
-		const meshes: Meshes = {};
+	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
+		const meshes: Meshes<GEOMETRY> = {};
 		const ramp = this.meshGenerator.getMeshes(table);
 
 		if (ramp.wire1) {

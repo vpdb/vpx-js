@@ -65,8 +65,7 @@ export class Rubber implements IRenderable, IHittable {
 		return this.data.isCollidable;
 	}
 
-	public getMeshes(table: Table): Meshes {
-
+	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
 		const mesh = this.meshGenerator.getMeshes(table);
 		return {
 			rubber: {

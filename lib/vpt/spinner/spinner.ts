@@ -81,9 +81,9 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		return true;
 	}
 
-	public getMeshes(table: Table): Meshes {
+	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
 		const spinner = this.meshGenerator.generateMeshes(table);
-		const meshes: Meshes = {};
+		const meshes: Meshes<GEOMETRY> = {};
 
 		meshes.plate = {
 			mesh: spinner.plate.transform(Matrix3D.RIGHT_HANDED),
