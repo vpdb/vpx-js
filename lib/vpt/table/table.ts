@@ -57,6 +57,7 @@ import { TableExporter, VpTableExporterOptions } from './table-exporter';
 import { TableHitGenerator } from './table-hit-generator';
 import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
+import { IImage } from '../../gltf/image';
 
 /**
  * A Visual Pinball table.
@@ -70,6 +71,8 @@ export class Table implements IRenderable {
 	public readonly info?: { [key: string]: string };
 	public readonly items: IItem[];
 	public readonly tableScript?: string;
+
+	private readonly imageCache: Map<string, IImage> = new Map();
 
 	public readonly textures: { [key: string]: Texture } = {};
 
@@ -355,6 +358,18 @@ export class Table implements IRenderable {
 		for (const hittable of this.getHittables()) {
 			hittable.getEventProxy().fireVoidEvent(Event.GameEventsInit);
 		}
+	}
+
+	public getImageFromCache(name: string) {
+		return this.imageCache.get(name);
+	}
+
+	public addImageToCache(name: string, image: IImage) {
+		this.imageCache.set(name, image);
+	}
+
+	public clearImageCache() {
+		this.imageCache.clear();
 	}
 }
 

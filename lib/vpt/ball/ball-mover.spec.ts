@@ -20,12 +20,12 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import sinonChai = require('sinon-chai');
-import { Mesh, Vector3 } from 'three';
+import { Group, Mesh, Vector3 } from 'three';
 import { createBall } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
-import { ThreeRenderApi } from '../../render/three-render-api';
+import { ThreeRenderApi } from '../../render/threejs/three-render-api';
 import { Table } from '../table/table';
 
 chai.use(sinonChai);
@@ -113,7 +113,7 @@ describe('The VPinball ball physics', () => {
 
 		// add ball
 		const ball = createBall(player, 500, 500, 0, 0, 10);
-		await ball.addToScene(gltf.scene, table);
+		await ball.addToScene(gltf.scene as any, renderApi, table);  // fixme type
 		const ballObj = three.find<Mesh>(gltf, 'balls', ball.getName());
 
 		// init vectors
@@ -140,14 +140,14 @@ describe('The VPinball ball physics', () => {
 
 		// add ball
 		const ball = createBall(player, 500, 500, 0, 0, 10);
-		await ball.addToScene(gltf.scene, table);
+		await ball.addToScene(gltf.scene as any, renderApi, table);  // fixme type
 
 		// assert it's in the scene
 		three.expectObject(gltf, 'balls', ball.getName());
 
 		// destroy ball
 		player.destroyBall(ball);
-		ball.removeFromScene(gltf.scene);
+		ball.removeFromScene(gltf.scene as any, renderApi); // fixme type
 
 		// assert it's gone
 		three.expectNoObject(gltf, 'balls', ball.getName());

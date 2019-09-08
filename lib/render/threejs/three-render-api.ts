@@ -18,15 +18,41 @@
  */
 
 import { Group, Matrix4, Object3D } from 'three';
-import { Matrix3D } from '../math/matrix3d';
-import { Pool } from '../util/object-pool';
-import { Mesh } from '../vpt/mesh';
-import { IRenderApi } from './irender-api';
+import { IRenderable } from '../../game/irenderable';
+import { Matrix3D } from '../../math/matrix3d';
+import { Pool } from '../../util/object-pool';
+import { Mesh } from '../../vpt/mesh';
+import { Table } from '../../vpt/table/table';
+import { IRenderApi, MeshConvertOptions } from '../irender-api';
+import { ThreeConverter } from './three-converter';
 
 export class ThreeRenderApi implements IRenderApi<Object3D, Group> {
 
+	private readonly converter: ThreeConverter;
+	private readonly meshConvertOpts: MeshConvertOptions;
+
+	constructor(opts?: MeshConvertOptions) {
+		this.meshConvertOpts = opts || {
+			applyMaterials: false,
+			applyTextures: false,
+			optimizeTextures: false,
+		};
+		this.converter = new ThreeConverter(this.meshConvertOpts);
+	}
+
+	public addToGroup(group: Group, obj: Object3D | Group): void {
+		group.add(obj);
+	}
+
 	public findInGroup(group: Group, name: string): Object3D | undefined {
 		return group.children.find(c => c.name === name);
+	}
+
+	public removeFromGroup(group: Group, obj: Object3D | Group): void {
+		if (!obj) {
+			return;
+		}
+		group.remove(obj);
 	}
 
 	public applyMatrixToObject(matrix: Matrix3D, obj: Object3D): void {
@@ -64,4 +90,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, Group> {
 		destGeo.attributes.position.needsUpdate = true;
 	}
 
+	public async createObjectFromRenderable(renderable: IRenderable, table: Table): Promise<Group> {
+		return this.converter.createObject(renderable, table);
+	}
 }
