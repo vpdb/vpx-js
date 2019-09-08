@@ -20,8 +20,8 @@
 
 import { existsSync } from 'fs';
 import { resolve } from 'path';
-import { Table } from '../lib';
 import { NodeBinaryReader } from '../lib/io/binary-reader.node';
+import { Table } from '../lib/vpt/table/table';
 
 (async () => {
 

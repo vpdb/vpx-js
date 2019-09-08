@@ -19,11 +19,9 @@
 
 import { PlayerPhysics } from '../lib/game/player-physics';
 import { Ball } from '../lib/vpt/ball/ball';
-import { Table } from '../lib';
 import { Vertex3D } from '../lib/math/vertex3d';
-import { Spinner } from '../lib/vpt/spinner/spinner';
-import { radToDeg } from '../lib/math/float';
 import { Player } from '../lib/game/player';
+import { Table } from '../lib/vpt/table/table';
 
 /**
  * Simulates a given number of milliseconds.

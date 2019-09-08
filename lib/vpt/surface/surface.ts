@@ -19,15 +19,13 @@
 
 import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
-import { IRenderable } from '../../game/irenderable';
+import { IRenderable, Meshes } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
-import { Meshes } from '../item-data';
 import { Table } from '../table/table';
-import { VpTableExporterOptions } from '../table/table-exporter';
 import { SurfaceApi } from './surface-api';
 import { SurfaceData } from './surface-data';
 import { SurfaceHitGenerator } from './surface-hit-generator';
@@ -104,7 +102,7 @@ export class Surface implements IRenderable, IHittable, IScriptable<SurfaceApi> 
 		}
 	}
 
-	public getMeshes(table: Table, opts: VpTableExporterOptions): Meshes {
+	public getMeshes(table: Table): Meshes {
 		const meshes: Meshes = {};
 		const surface = this.meshGenerator.generateMeshes(this.data, table);
 		if (surface.top) {

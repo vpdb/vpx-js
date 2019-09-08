@@ -20,8 +20,10 @@
 
 import { existsSync, writeFileSync } from 'fs';
 import { basename, dirname, resolve } from 'path';
-import { Logger, Table } from '../lib';
 import { NodeBinaryReader } from '../lib/io/binary-reader.node';
+import { TableExporter } from '../lib/vpt/table/table-exporter';
+import { Logger } from '../lib/util/logger';
+import { Table } from '../lib/vpt/table/table';
 
 (async () => {
 
@@ -90,11 +92,12 @@ import { NodeBinaryReader } from '../lib/io/binary-reader.node';
 
 
 		console.log('Parsing file from %s...', vpxPath);
-		const vpt = await Table.load(new NodeBinaryReader(vpxPath));
+		const table = await Table.load(new NodeBinaryReader(vpxPath));
+		const exporter = new TableExporter(table);
 		const loaded = Date.now();
 
 		console.log('Exporting file to %s...', glbPath);
-		const glb = await vpt.exportGlb({
+		const glb = await exporter.exportGlb({
 
 			applyTextures,
 			applyMaterials,

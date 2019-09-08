@@ -19,16 +19,14 @@
 
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
-import { IRenderable } from '../../game/irenderable';
+import { IRenderable, Meshes } from '../../game/irenderable';
 import { Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
 import { IRenderApi } from '../../render/irender-api';
-import { Meshes } from '../item-data';
 import { Table } from '../table/table';
 import { TableData } from '../table/table-data';
-import { VpTableExporterOptions } from '../table/table-exporter';
 import { BallData } from './ball-data';
 import { BallHit } from './ball-hit';
 import { BallMeshGenerator } from './ball-mesh-generator';
@@ -65,7 +63,7 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 		return `Ball${this.id}`;
 	}
 
-	public applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player): void {
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, player: Player): void {
 		const zHeight = !this.hit.isFrozen ? this.state.pos.z : this.state.pos.z - this.data.radius;
 		const orientation = Matrix3D.claim().setEach(
 			this.state.orientation.matrix[0][0], this.state.orientation.matrix[1][0], this.state.orientation.matrix[2][0], 0.0,
@@ -84,17 +82,17 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 		Matrix3D.release(orientation, trans, matrix);
 	}
 
-	public async addToScene<OBJECT, GROUP>(scene: GROUP, renderApi: IRenderApi<OBJECT, GROUP>, table: Table): Promise<GROUP> {
+	public async addToScene<NODE, GEOMETRY, POINT_LIGHT>(scene: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): Promise<NODE> {
 		const ballMesh = await renderApi.createObjectFromRenderable(this, table);
-		const playfield = renderApi.findInGroup(scene, 'playfield') as GROUP;
-		const ballGroup = renderApi.findInGroup(playfield, 'balls') as GROUP;
+		const playfield = renderApi.findInGroup(scene, 'playfield')!;
+		const ballGroup = renderApi.findInGroup(playfield, 'balls')!;
 		renderApi.addToGroup(ballGroup, ballMesh);
 		return ballMesh;
 	}
 
-	public removeFromScene<OBJECT, GROUP>(scene: GROUP, renderApi: IRenderApi<OBJECT, GROUP>): void {
-		const playfield = renderApi.findInGroup(scene, 'playfield') as GROUP;
-		const ballGroup = renderApi.findInGroup(playfield, 'balls') as GROUP;
+	public removeFromScene<NODE, GEOMETRY, POINT_LIGHT>(scene: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>): void {
+		const playfield = renderApi.findInGroup(scene, 'playfield')!;
+		const ballGroup = renderApi.findInGroup(playfield, 'balls')!;
 		const ball = renderApi.findInGroup(ballGroup, this.getName());
 		renderApi.removeFromGroup(ballGroup, ball);
 	}
@@ -117,7 +115,7 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 		return [ this.hit ];
 	}
 
-	public getMeshes(table: Table, opts: VpTableExporterOptions): Meshes {
+	public getMeshes(table: Table): Meshes {
 		return { ball: { mesh: this.meshGenerator.getMesh().transform(Matrix3D.RIGHT_HANDED) } };
 	}
 

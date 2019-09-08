@@ -19,14 +19,13 @@
 
 import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
-import { IRenderable } from '../../game/irenderable';
+import { IRenderable, Meshes } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
-import { Meshes } from '../item-data';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { PrimitiveApi } from './primitive-api';

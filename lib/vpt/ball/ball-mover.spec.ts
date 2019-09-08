@@ -20,13 +20,14 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import sinonChai = require('sinon-chai');
-import { Group, Mesh, Vector3 } from 'three';
+import { Mesh, Vector3 } from 'three';
 import { createBall } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { ThreeRenderApi } from '../../render/threejs/three-render-api';
 import { Table } from '../table/table';
+import { TableExporter } from '../table/table-exporter';
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
@@ -35,10 +36,12 @@ const renderApi = new ThreeRenderApi();
 describe('The VPinball ball physics', () => {
 
 	let table: Table;
+	let exporter: TableExporter;
 	let player: Player;
 
 	before(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-empty.vpx')));
+		exporter = new TableExporter(table);
 	});
 
 	beforeEach(() => {
@@ -109,7 +112,7 @@ describe('The VPinball ball physics', () => {
 	it('should apply the mesh transformation', async () => {
 
 		// create scene
-		const gltf = await three.loadGlb(await table.exportGlb());
+		const gltf = await three.loadGlb(await exporter.exportGlb());
 
 		// add ball
 		const ball = createBall(player, 500, 500, 0, 0, 10);
@@ -136,7 +139,7 @@ describe('The VPinball ball physics', () => {
 	it('should remove a ball from the scene', async () => {
 
 		// create scene
-		const gltf = await three.loadGlb(await table.exportGlb());
+		const gltf = await three.loadGlb(await exporter.exportGlb());
 
 		// add ball
 		const ball = createBall(player, 500, 500, 0, 0, 10);

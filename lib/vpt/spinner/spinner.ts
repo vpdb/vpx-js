@@ -17,12 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Object3D } from 'three';
 import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
-import { IRenderable } from '../../game/irenderable';
+import { IRenderable, Meshes } from '../../game/irenderable';
 import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { degToRad } from '../../math/float';
@@ -30,15 +29,14 @@ import { Matrix3D } from '../../math/matrix3d';
 import { HitCircle } from '../../physics/hit-circle';
 import { HitObject } from '../../physics/hit-object';
 import { MoverObject } from '../../physics/mover-object';
+import { IRenderApi } from '../../render/irender-api';
 import { FlipperState } from '../flipper/flipper-state';
-import { Meshes } from '../item-data';
 import { Table } from '../table/table';
 import { SpinnerData } from './spinner-data';
 import { SpinnerHit } from './spinner-hit';
 import { SpinnerHitGenerator } from './spinner-hit-generator';
 import { SpinnerMeshGenerator } from './spinner-mesh-generator';
 import { SpinnerState } from './spinner-state';
-import { IRenderApi } from '../../render/irender-api';
 
 /**
  * VPinball's spinners.
@@ -126,7 +124,7 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 	}
 
 	/* istanbul ignore next */
-	public applyState<OBJECT>(obj: OBJECT, renderApi: IRenderApi<OBJECT, any>, table: Table, player: Player): void {
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, player: Player): void {
 
 		const posZ = this.meshGenerator.getZ(table);
 		const matTransToOrigin = Matrix3D.claim().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, posZ);

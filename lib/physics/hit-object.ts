@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '..';
 import { Event } from '../game/event';
 import { EventProxy } from '../game/event-proxy';
 import { PlayerPhysics } from '../game/player-physics';
@@ -26,6 +25,7 @@ import { FRect3D } from '../math/frect3d';
 import { Vertex3D } from '../math/vertex3d';
 import { Ball } from '../vpt/ball/ball';
 import { IPhysicalData } from '../vpt/item-data';
+import { Table } from '../vpt/table/table';
 import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 

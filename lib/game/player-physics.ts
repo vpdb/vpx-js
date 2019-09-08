@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Table } from '..';
 import { degToRad } from '../math/float';
 import { Vertex3D } from '../math/vertex3d';
 import { CollisionEvent } from '../physics/collision-event';
@@ -40,6 +39,7 @@ import { Ball } from '../vpt/ball/ball';
 import { BallData } from '../vpt/ball/ball-data';
 import { BallState } from '../vpt/ball/ball-state';
 import { FlipperMover } from '../vpt/flipper/flipper-mover';
+import { Table } from '../vpt/table/table';
 import { IBallCreationPosition } from './player';
 
 const SLOW_MO = 1; // the lower, the slower

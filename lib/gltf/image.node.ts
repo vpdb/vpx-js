@@ -23,7 +23,7 @@ import { State } from 'gm';
 import * as sharp from 'sharp';
 import { Stream } from 'stream';
 
-import { Storage } from '..';
+import { Storage } from '../io/ole-doc';
 import { logger } from '../util/logger';
 import { Binary } from '../vpt/binary';
 import { IImage } from './image';
