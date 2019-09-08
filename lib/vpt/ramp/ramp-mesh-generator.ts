@@ -298,7 +298,7 @@ export class RampMeshGenerator {
 
 		// as solid ramps are rendered into the static buffer, always use maximum precision
 		const mat = table.getMaterial(this.data.szMaterial);
-		if (!mat || !mat.bOpacityActive) {
+		if (!mat || !mat.isOpacityActive) {
 			accuracy = f4(12.0); // see above
 		}
 
@@ -562,7 +562,7 @@ export class RampMeshGenerator {
 			accuracy = acc; // used for hit shape calculation, always!
 		} else {
 			const mat = table.getMaterial(this.data.szMaterial);
-			if (!mat || !mat.bOpacityActive) {
+			if (!mat || !mat.isOpacityActive) {
 				accuracy = 10.0;
 			} else {
 				accuracy = table.getDetailLevel();

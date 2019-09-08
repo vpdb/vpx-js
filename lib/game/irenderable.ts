@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BufferGeometry, Material as ThreeMaterial, MeshStandardMaterial } from 'three';
 import { IRenderApi } from '../render/irender-api';
 import { Material } from '../vpt/material';
 import { Mesh } from '../vpt/mesh';
@@ -30,8 +29,6 @@ export interface IRenderable extends IItem {
 	getMeshes<NODE, GEOMETRY, POINT_LIGHT>(table: Table, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, opts: TableGenerateOptions): Meshes<GEOMETRY>;
 
 	isVisible(table: Table): boolean;
-
-	postProcessMaterial?(table: Table, geometry: BufferGeometry, material: MeshStandardMaterial): MeshStandardMaterial | MeshStandardMaterial[];
 }
 
 export interface Meshes<GEOMETRY> {
@@ -44,5 +41,4 @@ export interface RenderInfo<GEOMETRY> {
 	map?: Texture;
 	normalMap?: Texture;
 	material?: Material;
-	threeMaterial?: ThreeMaterial;
 }

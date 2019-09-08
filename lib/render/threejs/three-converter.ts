@@ -63,8 +63,7 @@ export class ThreeConverter {
 		}
 		const geometry = obj.geometry || obj.mesh!.getBufferGeometry();
 		const material = await this.getMaterial(obj, table);
-		const postProcessedMaterial = renderable.postProcessMaterial ? renderable.postProcessMaterial(table, geometry, material) : material;
-		const mesh = new ThreeMesh(geometry, postProcessedMaterial);
+		const mesh = new ThreeMesh(geometry, material);
 		mesh.name = (obj.geometry || obj.mesh!).name;
 		mesh.matrixAutoUpdate = false;
 
@@ -77,11 +76,11 @@ export class ThreeConverter {
 		material.name = `material:${name}`;
 		const materialInfo = obj.material;
 		if (materialInfo && this.opts.applyMaterials) {
-			material.metalness = materialInfo.bIsMetal ? 1.0 : 0.0;
-			material.roughness = Math.max(0, 1 - (materialInfo.fRoughness / 1.5));
-			material.color = new Color(materialInfo.cBase);
-			material.opacity = materialInfo.bOpacityActive ? Math.min(1, Math.max(0, materialInfo.fOpacity)) : 1;
-			material.transparent = materialInfo.bOpacityActive && materialInfo.fOpacity < 0.98;
+			material.metalness = materialInfo.isMetal ? 1.0 : 0.0;
+			material.roughness = Math.max(0, 1 - (materialInfo.roughness / 1.5));
+			material.color = new Color(materialInfo.baseColor);
+			material.opacity = materialInfo.isOpacityActive ? Math.min(1, Math.max(0, materialInfo.opacity)) : 1;
+			material.transparent = materialInfo.isOpacityActive && materialInfo.opacity < 0.98;
 			material.side = DoubleSide;
 
 			if (materialInfo.emissiveIntensity > 0) {
@@ -112,6 +111,20 @@ export class ThreeConverter {
 					material.needsUpdate = true;
 				} else {
 					material.normalMap = null;
+				}
+			}
+			// todo TEST!
+			if (obj.material && obj.material.emissiveMap) {
+				material.emissiveMap = new ThreeTexture();
+				material.emissiveMap.name = 'emissive-map:' + obj.material.emissiveMap.getName();
+				if (await this.loadMap(name, obj.material.emissiveMap, material.emissiveMap, table)) {
+					if ((material.emissiveMap.image as IImage).containsTransparency()) {
+						material.transparent = true;
+					}
+					material.needsUpdate = true;
+				} else {
+					logger().warn('[VpTableExporter.getMaterial] Error getting map.');
+					material.map = null;
 				}
 			}
 		}

@@ -34,8 +34,6 @@ export class LightData extends ItemData {
 	public color: number = 0xffff00;
 	public color2: number = 0xffffff;
 	public szOffImage?: string;
-	public fTimerEnabled: boolean = false;
-	public TimerInterval?: number;
 	public roundLight: boolean = false;
 	public rgblinkpattern?: string;
 	public blinkinterval: number = 125;

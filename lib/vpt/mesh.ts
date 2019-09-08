@@ -118,19 +118,6 @@ export class Mesh {
 		return this;
 	}
 
-	/** @deprecated use {@link IRenderApi} */
-	public applyToObject(obj: Object3D) {
-		const destGeo = (obj as any).geometry;
-		const srcGeo = this.getBufferGeometry();
-		if (srcGeo.attributes.position.array.length !== destGeo.attributes.position.array.length) {
-			throw new Error(`Trying to apply geometry of ${srcGeo.attributes.position.array.length} positions to ${destGeo.attributes.position.array.length} positions.`);
-		}
-		for (let i = 0; i < destGeo.attributes.position.array.length; i++) {
-			destGeo.attributes.position.array[i] = srcGeo.attributes.position.array[i];
-		}
-		destGeo.attributes.position.needsUpdate = true;
-	}
-
 	public clone(name?: string): Mesh {
 		const mesh = new Mesh();
 		mesh.name = name || this.name;
