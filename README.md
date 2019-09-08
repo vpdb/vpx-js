@@ -9,38 +9,40 @@
 ## Features
 
 This isn't a ready-to-use game. It's a library of loosely-coupled components that
-implement some of Visual Pinball's features.
+together implement [Visual Pinball](https://sourceforge.net/projects/vpinball/)'s 
+player for the web.
 
-Visual Pinball's player can be split into three parts:
+The player can be split into three parts:
 
 1. The rendering engine
 2. The physics engine
 3. The scripting engine
     
-This library allows exporting a VPX file into a [three.js](https://threejs.org/)
-scene, which covers the first point. A physics loop is implemented by the `Player`
-class. Collision detection and rigid body dynamics is now ported, covering the 
-second part. Work on the third has begun with the wiring set up and simple 
+This library provides an abstraction layer for rendering with [three.js](https://threejs.org/),
+which covers the first point. A physics loop is implemented by the `Player`
+class. Collision detection and rigid body dynamics are fully ported, covering the 
+second part. Work on scripting has begun with the wiring set up and simple 
 statements working. More info about how we go about this can be found [here](https://github.com/freezy/vpweb/issues/1).  
     
 ### Rendering 
 
-VPX-JS allows reading a VPX file file and exporting a three.js scene directly
-in the browser. However, it also supports export to [GLTF](https://www.khronos.org/gltf/)
-files, which is nice, because it allows off-loading the export to a server.
+VPX-JS reads Visual Pinball's VPX format and extracts all meshes in VP's internal
+format. Using an abstraction layer, any WebGL framework can convert this format
+and construct a scene. An adapter for three.js is shipped with this library.
 
-So why use this when Visual Pinball already has an [OBJ](https://en.wikipedia.org/wiki/Wavefront_.obj_file)
-export feature? Well, VPX-JS does some more things:
+Additionally, VPX-JS supports direct export to [GLTF](https://www.khronos.org/gltf/)
+files, which is nice, because it allows off-loading the export to a server. It's
+also nice because GLTF allows doing stuff that Visual Pinball's [OBJ](https://en.wikipedia.org/wiki/Wavefront_.obj_file)
+export doesn't, for example:
 
-- GLTF is somewhat more powerful than OBJ. It allows us to include materials, 
-  textures and lights in one single file.
-- VPX-JS does some optimizations when reading data from the `.vpx` file:
+- Include materials, textures and lights in one single file
+- Apply optimizations:
    - PNG textures with no transparency are converted to JPEG
    - PNG textures with transparency are [PNG-crushed](https://en.wikipedia.org/wiki/Pngcrush)
    - Meshes are compressed using [Draco](https://google.github.io/draco/)
-- It's platform-independent, so you can run it on Linux and MacOS as well.
 
 ![image](https://user-images.githubusercontent.com/70426/56841267-0419fc00-688d-11e9-9996-6d84070da392.png)
+*A table in the browser using three.js*
 
 ### Physics
 
