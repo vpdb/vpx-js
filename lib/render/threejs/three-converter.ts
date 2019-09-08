@@ -34,6 +34,7 @@ import { logger } from '../../util/logger';
 import { Table, TableGenerateOptions } from '../../vpt/table/table';
 import { Texture } from '../../vpt/texture';
 import { IRenderApi, MeshConvertOptions } from '../irender-api';
+import { ThreeMeshGenerator } from './three-mesh-generator';
 
 export class ThreeConverter {
 
@@ -61,7 +62,18 @@ export class ThreeConverter {
 		if (!obj.geometry && !obj.mesh) {
 			throw new Error('Mesh export must either provide mesh or geometry.');
 		}
-		const geometry = obj.geometry || obj.mesh!.getBufferGeometry();
+		let geometry: BufferGeometry;
+		if (obj.geometry) {
+			geometry = obj.geometry;
+
+		} else  if (obj.mesh) {
+			const generator = new ThreeMeshGenerator(obj.mesh);
+			geometry = generator.convertToBufferGeometry();
+
+		} else {
+			throw new Error('Either `geometry` or `mesh` must be defined!');
+		}
+
 		const material = await this.getMaterial(obj, table);
 		const mesh = new ThreeMesh(geometry, material);
 		mesh.name = (obj.geometry || obj.mesh!).name;

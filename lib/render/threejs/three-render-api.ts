@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BufferGeometry, ExtrudeBufferGeometry, Group, Matrix4, Object3D, PointLight, Shape, Vector2 } from 'three';
+import { BufferGeometry, Group, Matrix4, Object3D, PointLight } from 'three';
 import { IRenderable } from '../../game/irenderable';
 import { Matrix3D } from '../../math/matrix3d';
 import { Pool } from '../../util/object-pool';
@@ -27,11 +27,16 @@ import { Table, TableGenerateOptions } from '../../vpt/table/table';
 import { IRenderApi, MeshConvertOptions } from '../irender-api';
 import { ThreeConverter } from './three-converter';
 import { ThreeLightMeshGenerator } from './three-light-mesh-generator';
+import { ThreeMeshGenerator } from './three-mesh-generator';
 import { ThreePlayfieldMeshGenerator } from './three-playfield-mesh-generator';
 
 export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, PointLight> {
 
-	private static readonly SCALE = 0.05;
+	public static readonly SCALE = 0.05;
+
+	public static POOL = {
+		Matrix4: new Pool<Matrix4>(Matrix4),
+	};
 
 	private readonly converter: ThreeConverter;
 	private readonly meshConvertOpts: MeshConvertOptions;
@@ -94,7 +99,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		} else {
 			obj.matrix.identity();
 		}
-		const m4 = Pool.GENERIC.Matrix4.get();
+		const m4 = ThreeRenderApi.POOL.Matrix4.get();
 		m4.set(
 			matrix._11, matrix._21, matrix._31, matrix._41,
 			matrix._12, matrix._22, matrix._32, matrix._42,
@@ -102,15 +107,17 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 			matrix._14, matrix._24, matrix._34, matrix._44,
 		);
 		obj.applyMatrix(m4);
-		Pool.GENERIC.Matrix4.release(m4);
+		ThreeRenderApi.POOL.Matrix4.release(m4);
 	}
 
 	public applyMeshToObject(mesh: Mesh, obj: Object3D): void {
 		if (!obj) {
 			return;
 		}
+		const generator = new ThreeMeshGenerator(mesh);
 		const destGeo = (obj as any).geometry;
-		const srcGeo = mesh.getBufferGeometry();
+		const srcGeo = generator.convertToBufferGeometry();
+
 		if (srcGeo.attributes.position.array.length !== destGeo.attributes.position.array.length) {
 			throw new Error(`Trying to apply geometry of ${srcGeo.attributes.position.array.length} positions to ${destGeo.attributes.position.array.length} positions.`);
 		}

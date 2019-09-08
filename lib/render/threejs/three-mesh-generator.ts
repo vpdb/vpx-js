@@ -28,9 +28,9 @@ import {
 	Vector2,
 	Vector3,
 } from 'three';
-import { Vertex3DNoTex2 } from '../math/vertex';
-import { logger } from '../util/logger';
-import { Mesh } from '../vpt/mesh';
+import { Vertex3DNoTex2 } from '../../math/vertex';
+import { logger } from '../../util/logger';
+import { Mesh } from '../../vpt/mesh';
 
 /**
  * A class that converts the meshes we read from VPinball to Three.js meshes.
@@ -38,7 +38,7 @@ import { Mesh } from '../vpt/mesh';
  * It takes a similar approach as Three's OBJLoader, e.g. first read data into
  * a "state" and then convert it into BufferGeometries.
  */
-export class MeshConverter {
+export class ThreeMeshGenerator {
 
 	private mesh: Mesh;
 
