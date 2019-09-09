@@ -39,7 +39,7 @@ export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 
 	applyMeshToObject(mesh: Mesh, obj: NODE | undefined): void;
 
-	createObjectFromRenderable(renderable: IRenderable, table: Table): Promise<NODE>;
+	createObjectFromRenderable(renderable: IRenderable, table: Table, opts: TableGenerateOptions): Promise<NODE>;
 
 	createLightGeometry(lightData: LightData, table: Table): GEOMETRY;
 

@@ -38,14 +38,14 @@ import { ThreeMeshGenerator } from './three-mesh-generator';
 
 export class ThreeConverter {
 
-	private readonly opts: TableGenerateOptions & MeshConvertOptions;
+	private readonly meshConvertOpts: MeshConvertOptions;
 
-	constructor(opts: TableGenerateOptions & MeshConvertOptions) {
-		this.opts = opts;
+	constructor(opts: MeshConvertOptions) {
+		this.meshConvertOpts = opts;
 	}
 
-	public async createObject(renderable: IRenderable, table: Table, renderApi: IRenderApi<Object3D, BufferGeometry, PointLight>): Promise<Group> {
-		const objects = renderable.getMeshes(table, renderApi, this.opts);
+	public async createObject(renderable: IRenderable, table: Table, renderApi: IRenderApi<Object3D, BufferGeometry, PointLight>, opts: TableGenerateOptions): Promise<Group> {
+		const objects = renderable.getMeshes(table, renderApi, opts);
 		const itemGroup = new Group();
 		itemGroup.matrixAutoUpdate = false;
 		itemGroup.name = renderable.getName();
@@ -87,7 +87,7 @@ export class ThreeConverter {
 		const name = (obj.geometry || obj.mesh!).name;
 		material.name = `material:${name}`;
 		const materialInfo = obj.material;
-		if (materialInfo && this.opts.applyMaterials) {
+		if (materialInfo && this.meshConvertOpts.applyMaterials) {
 			material.metalness = materialInfo.isMetal ? 1.0 : 0.0;
 			material.roughness = Math.max(0, 1 - (materialInfo.roughness / 1.5));
 			material.color = new Color(materialInfo.baseColor);
@@ -101,7 +101,7 @@ export class ThreeConverter {
 			}
 		}
 
-		if (this.opts.applyTextures) {
+		if (this.meshConvertOpts.applyTextures) {
 			if (obj.map) {
 				material.map = new ThreeTexture();
 				material.map.name = 'texture:' + obj.map.getName();
@@ -111,7 +111,7 @@ export class ThreeConverter {
 					}
 					material.needsUpdate = true;
 				} else {
-					logger().warn('[VpTableExporter.getMaterial] Error getting map.');
+					logger().warn('[ThreeConverter.getMaterial] Error getting map.');
 					material.map = null;
 				}
 			}
@@ -135,7 +135,7 @@ export class ThreeConverter {
 					}
 					material.needsUpdate = true;
 				} else {
-					logger().warn('[VpTableExporter.getMaterial] Error getting map.');
+					logger().warn('[ThreeConverter.getMaterial] Error getting map.');
 					material.map = null;
 				}
 			}
@@ -152,7 +152,7 @@ export class ThreeConverter {
 			return true;
 		} catch (err) {
 			threeMaterial.image = ThreeTexture.DEFAULT_IMAGE;
-			logger().warn('[VpTableExporter.loadMap] Error loading map %s (%s/%s): %s', name, texture.storageName, texture.getName(), err.message);
+			logger().warn('[ThreeConverter.loadMap] Error loading map %s (%s/%s): %s', name, texture.storageName, texture.getName(), err.message);
 			return false;
 		}
 	}
