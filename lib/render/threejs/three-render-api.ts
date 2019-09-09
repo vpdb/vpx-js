@@ -127,8 +127,8 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		destGeo.attributes.position.needsUpdate = true;
 	}
 
-	public async createObjectFromRenderable(renderable: IRenderable, table: Table): Promise<Group> {
-		return this.converter.createObject(renderable, table, this);
+	public async createObjectFromRenderable(renderable: IRenderable, table: Table, opts: TableGenerateOptions): Promise<Group> {
+		return this.converter.createObject(renderable, table, this, opts);
 	}
 
 	public createLightGeometry(lightData: LightData, table: Table): BufferGeometry {

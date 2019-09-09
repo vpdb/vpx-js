@@ -66,7 +66,7 @@ export class TableMeshGenerator {
 			}
 			const itemTypeGroup = renderApi.createGroup(group.name);
 			for (const renderable of group.meshes.filter(i => i.isVisible(this.table))) {
-				const itemGroup = await renderApi.createObjectFromRenderable(renderable, this.table);
+				const itemGroup = await renderApi.createObjectFromRenderable(renderable, this.table, opts);
 				renderApi.addToGroup(itemTypeGroup, itemGroup);
 			}
 			renderApi.addToGroup(tableNode, itemTypeGroup);
