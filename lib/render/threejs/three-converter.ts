@@ -68,10 +68,11 @@ export class ThreeConverter {
 		if (obj.geometry) {
 			geometry = obj.geometry;
 
-		} else  if (obj.mesh) {
+		} else if (obj.mesh) {
 			const generator = new ThreeMeshGenerator(obj.mesh);
 			geometry = generator.convertToBufferGeometry();
 
+		/* istanbul ignore next: Should not happen. */
 		} else {
 			throw new Error('Either `geometry` or `mesh` must be defined!');
 		}
@@ -84,6 +85,7 @@ export class ThreeConverter {
 		return mesh;
 	}
 
+	/* istanbul ignore next: These are subject to change and are currently untested. */
 	private async getMaterial(obj: RenderInfo<BufferGeometry>, table: Table): Promise<MeshStandardMaterial> {
 		const material = new MeshStandardMaterial();
 		const name = (obj.geometry || obj.mesh!).name;
@@ -145,6 +147,7 @@ export class ThreeConverter {
 		return material;
 	}
 
+	/* istanbul ignore next: Texture extraction is tested, but applying them to three.js is out of scope. */
 	private async loadMap(name: string, texture: Texture, threeMaterial: ThreeTexture, table: Table): Promise<boolean> {
 		try {
 			const image = await texture.getImage(table);
