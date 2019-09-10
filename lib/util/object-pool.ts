@@ -40,6 +40,7 @@ export class Pool<T> {
 	constructor(poolable: IPoolable<T>) {
 		this.pool = [];
 		this.poolable = poolable;
+		/* istanbul ignore next: only needed for debugging */
 		if (Pool.DEBUG > 0) {
 			this.setupDebug(Pool.DEBUG);
 		}
@@ -48,6 +49,7 @@ export class Pool<T> {
 	public get(): T {
 		let caller = '';
 		let obj: any;
+		/* istanbul ignore next: only needed for debugging */
 		if (this.debugging && Pool.TRACE) {
 			caller = (new Error()).stack!.split('\n')[3].trim();
 			if (!this.claimed[caller]) {
@@ -68,6 +70,7 @@ export class Pool<T> {
 			obj = new this.poolable() as any;
 		}
 
+		/* istanbul ignore next: only set when debugging */
 		if (caller) {                                                // update meta props
 			obj.__caller = caller;
 		} else if (obj._caller) {
@@ -79,6 +82,7 @@ export class Pool<T> {
 
 	public release(o: T): void {
 		const obj = o as any;
+		/* istanbul ignore next: only needed for debugging */
 		if (obj.__caller) {
 			const caller = obj.__caller;
 			delete obj.__caller;
@@ -99,6 +103,7 @@ export class Pool<T> {
 			logger().warn('Trying to recycle non-claimed %s, aborting.', this.poolable.name);
 			return;
 		}
+		/* istanbul ignore next: not supposed to happen! */
 		if (this.pool.length >= Pool.MAX_POOL_SIZE) {
 			if (!this.warned) {
 				logger().warn('Pool size %s of %s is exhausted, future objects will be garbage-collected.', Pool.MAX_POOL_SIZE, this.poolable.name);
@@ -114,6 +119,7 @@ export class Pool<T> {
 		this.pool.push(o);
 	}
 
+	/* istanbul ignore next: only needed for debugging */
 	public enableDebug(interval = 10000): this {
 		if (Pool.DEBUG <= 0 && interval > 0 && !this.debugging) {
 			logger().debug('[Pool] %s: Debug enabled.', this.poolable.name);
@@ -122,6 +128,7 @@ export class Pool<T> {
 		return this;
 	}
 
+	/* istanbul ignore next: only needed for debugging */
 	private setupDebug(interval: number) {
 		this.debugging = setInterval(() => {
 			logger().debug('[Pool] %s: %s recycled, %s created, %s released, %s skipped (%s%)',

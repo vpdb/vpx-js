@@ -21,12 +21,6 @@ export abstract class ItemState {
 
 	protected name: string = '';
 
-	protected constructor(name?: string) {
-		if (name) {
-			this.name = name;
-		}
-	}
-
 	/**
 	 * Clones the state.
 	 *
