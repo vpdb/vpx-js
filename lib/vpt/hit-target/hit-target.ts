@@ -151,7 +151,7 @@ export class HitTarget implements IRenderable, IHittable, IAnimatable<HitTargetS
 			.multiply(matRotateFromOrigin)
 			.multiply(matTransFromOrigin);
 
-		renderApi.applyMatrixToObject(matrix, obj);
+		renderApi.applyMatrixToNode(matrix, obj);
 		Matrix3D.release(matTransToOrigin, matRotateToOrigin, matTransFromOrigin, matRotateFromOrigin, matRotateX, matTranslateZ);
 	}
 

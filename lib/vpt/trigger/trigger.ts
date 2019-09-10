@@ -128,7 +128,7 @@ export class Trigger implements IRenderable, IHittable, IAnimatable<TriggerState
 
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, player: Player): void {
 		const matrix = Matrix3D.claim().setTranslation(0, 0, -this.state.heightOffset);
-		renderApi.applyMatrixToObject(matrix, obj);
+		renderApi.applyMatrixToNode(matrix, obj);
 		Matrix3D.release(matrix);
 	}
 

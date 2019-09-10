@@ -155,7 +155,7 @@ export class Gate implements IRenderable, IPlayable, IMovable<GateState>, IHitta
 			.multiply(matTransFromOrigin);
 
 		const wireObj = renderApi.findInGroup(obj, `gate.wire-${this.data.getName()}`);
-		renderApi.applyMatrixToObject(matrix, wireObj);
+		renderApi.applyMatrixToNode(matrix, wireObj);
 
 		Matrix3D.release(matTransToOrigin, matRotateToOrigin, matTransFromOrigin, matRotateFromOrigin, matRotateX);
 	}

@@ -62,7 +62,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		scene.scale.set(ThreeRenderApi.SCALE, ThreeRenderApi.SCALE, ThreeRenderApi.SCALE);
 	}
 
-	public createGroup(name: string): Group {
+	public createParentNode(name: string): Group {
 		const group = new Group();
 		group.name = name;
 		return group;
@@ -75,7 +75,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		return light;
 	}
 
-	public addToGroup(group: Group, obj: Object3D | Group): void {
+	public addChildToParent(group: Group, obj: Object3D | Group): void {
 		group.add(obj);
 	}
 
@@ -83,14 +83,14 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		return group.children.find(c => c.name === name);
 	}
 
-	public removeFromGroup(group: Group, obj: Object3D | Group): void {
+	public removeFromParent(group: Group, obj: Object3D | Group): void {
 		if (!obj) {
 			return;
 		}
 		group.remove(obj);
 	}
 
-	public applyMatrixToObject(matrix: Matrix3D, obj: Object3D): void {
+	public applyMatrixToNode(matrix: Matrix3D, obj: Object3D): void {
 		if (!obj) {
 			return;
 		}
@@ -110,7 +110,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		ThreeRenderApi.POOL.Matrix4.release(m4);
 	}
 
-	public applyMeshToObject(mesh: Mesh, obj: Object3D): void {
+	public applyMeshToNode(mesh: Mesh, obj: Object3D): void {
 		if (!obj) {
 			return;
 		}

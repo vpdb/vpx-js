@@ -151,11 +151,11 @@ export class Plunger implements IRenderable, IPlayable, IMovable<PlungerState>, 
 		const mesh = this.meshGenerator.generateMeshes(this.state.frame, table);
 		const rodObj = renderApi.findInGroup(obj, 'rod');
 		if (rodObj) {
-			renderApi.applyMeshToObject(mesh.rod!, rodObj);
+			renderApi.applyMeshToNode(mesh.rod!, rodObj);
 		}
 		const springObj = renderApi.findInGroup(obj, 'spring');
 		if (springObj) {
-			renderApi.applyMeshToObject(mesh.spring!, springObj);
+			renderApi.applyMeshToNode(mesh.spring!, springObj);
 		}
 	}
 

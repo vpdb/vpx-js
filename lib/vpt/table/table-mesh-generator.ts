@@ -39,7 +39,7 @@ export class TableMeshGenerator {
 	public async generateTableNode<NODE, GEOMETRY, POINT_LIGHT>(renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, opts: TableGenerateOptions = {}): Promise<NODE> {
 
 		opts = Object.assign({}, defaultOptions, opts);
-		const tableNode = renderApi.createGroup('playfield');
+		const tableNode = renderApi.createParentNode('playfield');
 		renderApi.transformScene(tableNode, this.table);
 		const renderGroups: IRenderGroup[] = [
 			{ name: 'playfield', meshes: [ this.table ], enabled: !!opts.exportPlayfield },
@@ -64,28 +64,28 @@ export class TableMeshGenerator {
 			if (!group.enabled) {
 				continue;
 			}
-			const itemTypeGroup = renderApi.createGroup(group.name);
+			const itemTypeGroup = renderApi.createParentNode(group.name);
 			for (const renderable of group.meshes.filter(i => i.isVisible(this.table))) {
 				const itemGroup = await renderApi.createObjectFromRenderable(renderable, this.table, opts);
-				renderApi.addToGroup(itemTypeGroup, itemGroup);
+				renderApi.addChildToParent(itemTypeGroup, itemGroup);
 			}
-			renderApi.addToGroup(tableNode, itemTypeGroup);
+			renderApi.addChildToParent(tableNode, itemTypeGroup);
 		}
 
 		// light bulb lights
 		if (opts.exportLightBulbLights) {
-			const lightGroup = renderApi.createGroup('lights');
+			const lightGroup = renderApi.createParentNode('lights');
 			for (const lightInfo of Object.values(this.table.lights).filter(l => l.isBulbLight())) {
 				const light = renderApi.createPointLight(lightInfo.data);
-				const itemGroup = renderApi.createGroup(lightInfo.getName());
-				renderApi.addToGroup(itemGroup, light);
-				renderApi.addToGroup(lightGroup, itemGroup);
+				const itemGroup = renderApi.createParentNode(lightInfo.getName());
+				renderApi.addChildToParent(itemGroup, light);
+				renderApi.addChildToParent(lightGroup, itemGroup);
 			}
-			renderApi.addToGroup(tableNode, lightGroup);
+			renderApi.addChildToParent(tableNode, lightGroup);
 		}
 
 		// ball group
-		renderApi.addToGroup(tableNode, renderApi.createGroup('balls'));
+		renderApi.addChildToParent(tableNode, renderApi.createParentNode('balls'));
 
 		return tableNode;
 	}
