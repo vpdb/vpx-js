@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Expression, Statement, SwitchCase, SwitchStatement } from 'estree';
+import { BlockStatement, Expression, Statement, SwitchCase, SwitchStatement } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
@@ -49,11 +49,11 @@ export function stmt(
 	return estree.switchStatement(discriminant, cases);
 }
 
-export function caseStmt1(result: [Token, null, Expression, null, Expression[], null, null, Statement[]]): SwitchCase[] {
+export function caseStmt1(result: [Token, null, Expression, null, Expression[], null, null, BlockStatement]): SwitchCase[] {
 	const test = [result[2]];
 	const otherTests = result[4] || [];
 	const tests = [...test, ...otherTests];
-	const consequent = result[7];
+	const consequent = result[7].body;
 	const switchCases = [] as SwitchCase[];
 	tests.forEach((val, key, arr) => {
 		if (Object.is(tests.length - 1, key)) {
@@ -65,11 +65,11 @@ export function caseStmt1(result: [Token, null, Expression, null, Expression[], 
 	return switchCases;
 }
 
-export function caseStmt2(result: [Token, null, Expression, null, Expression[], Statement[]]): SwitchCase[] {
+export function caseStmt2(result: [Token, null, Expression, null, Expression[], BlockStatement]): SwitchCase[] {
 	const test = [result[2]];
 	const otherTests = result[4] || [];
 	const tests = [...test, ...otherTests];
-	const consequent = result[5];
+	const consequent = result[5].body;
 	const switchCases = [] as SwitchCase[];
 	tests.forEach((val, key, arr) => {
 		if (Object.is(tests.length - 1, key)) {
@@ -82,12 +82,12 @@ export function caseStmt2(result: [Token, null, Expression, null, Expression[], 
 	return switchCases;
 }
 
-export function caseElseStmt1(result: [Token, null, Token, null, null, Statement[]]): SwitchCase {
-	const consequent = result[5];
+export function caseElseStmt1(result: [Token, null, Token, null, null, BlockStatement]): SwitchCase {
+	const consequent = result[5].body;
 	return estree.switchCase(null, consequent);
 }
 
-export function caseElseStmt2(result: [Token, null, Token, Statement[]]): SwitchCase {
-	const consequent = result[3];
+export function caseElseStmt2(result: [Token, null, Token, BlockStatement]): SwitchCase {
+	const consequent = result[3].body;
 	return estree.switchCase(null, consequent);
 }

@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Expression, IfStatement, Statement } from 'estree';
+import { BlockStatement, Expression, IfStatement, Statement } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
@@ -30,7 +30,7 @@ export function stmt1(
 		Token,
 		null,
 		null,
-		Statement[],
+		BlockStatement,
 		null,
 		IfStatement[],
 		null,
@@ -44,10 +44,10 @@ export function stmt1(
 	],
 ): IfStatement {
 	const test = result[2];
-	const statements = result[7];
+	const consequent = result[7];
 	const elseIfStatements = result[9];
 	const elseStatement = result[11] ? [result[11]] : [];
-	const ifStatement = estree.ifStatement(test, estree.blockStatement(statements));
+	const ifStatement = estree.ifStatement(test, consequent);
 	let prevStatement: Statement = ifStatement;
 	[...elseIfStatements, ...elseStatement].forEach(statement => {
 		(prevStatement as IfStatement).alternate = statement;
@@ -86,16 +86,16 @@ export function stmt5(result: [Token, null, Expression, null, Token, null, State
 	return estree.ifStatement(test, consequent);
 }
 
-export function elseIfStmt1(result: [Token, null, Expression, null, Token, null, null, Statement[]]): IfStatement {
+export function elseIfStmt1(result: [Token, null, Expression, null, Token, null, null, BlockStatement]): IfStatement {
 	const expr = result[2];
-	const statements = result[7];
-	return estree.ifStatement(expr, estree.blockStatement(statements));
+	const consequent = result[7];
+	return estree.ifStatement(expr, consequent);
 }
 
 export function elseIfStmt2(result: [Token, null, Expression, null, Token, null, Statement, null, null]): IfStatement {
 	const expr = result[2];
-	const statement = result[6];
-	return estree.ifStatement(expr, statement);
+	const consequent = result[6];
+	return estree.ifStatement(expr, consequent);
 }
 
 export function elseStmt1(result: [Token, null, Statement, null, null]): Statement {
@@ -103,7 +103,7 @@ export function elseStmt1(result: [Token, null, Statement, null, null]): Stateme
 	return statement;
 }
 
-export function elseStmt2(result: [Token, null, null, Statement[]]): Statement {
-	const statements = result[3] || [];
-	return estree.blockStatement(statements);
+export function elseStmt2(result: [Token, null, null, BlockStatement]): Statement {
+	const statement = result[3];
+	return statement;
 }

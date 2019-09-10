@@ -91,13 +91,13 @@ export function variableDeclarator(id: Identifier, init: Expression | null): Var
 	};
 }
 
-export function functionDeclaration(id: Identifier, params: Identifier[], statements: Statement[]): FunctionDeclaration {
+export function functionDeclaration(id: Identifier, params: Identifier[], body: BlockStatement): FunctionDeclaration {
 	return {
 		type: 'FunctionDeclaration',
 		id,
 		generator: false,
 		params,
-		body: blockStatement(statements),
+		body,
 	};
 }
 

@@ -21,10 +21,10 @@ import { BlockStatement, Expression, Statement } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
-export function stmt(result: [Token, null, Expression, null, null, Statement[], null, null, null, null]): BlockStatement {
+export function stmt(result: [Token, null, Expression, null, null, BlockStatement, null, null, null, null]): BlockStatement {
 	const identifier = result[2];
-	const statements = result[5] || [];
-	for (const statement of statements) {
+	const body = result[5];
+	body.body.forEach(statement => {
 		if (statement.type === 'ExpressionStatement') {
 			if (statement.expression.type === 'AssignmentExpression') {
 				if (statement.expression.left.type === 'Identifier') {
@@ -35,6 +35,6 @@ export function stmt(result: [Token, null, Expression, null, null, Statement[], 
 				}
 			}
 		}
-	}
-	return estree.blockStatement(statements);
+	});
+	return body;
 }

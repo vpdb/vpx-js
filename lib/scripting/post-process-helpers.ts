@@ -26,6 +26,16 @@ export function program(result: [null, [Statement | null]]): Program {
 	return estree.program(statements);
 }
 
+export function blockStmtList(result: [Statement[]]) {
+	const statements = result[0] || [];
+	return estree.blockStatement(statements);
+}
+
+export function methodStmtList(result: [Statement[]]) {
+	const statements = result[0] || [];
+	return estree.blockStatement(statements);
+}
+
 export function id(result: [Token]): Identifier {
 	let name = result[0].text.trim();
 
@@ -37,7 +47,7 @@ export function id(result: [Token]): Identifier {
 }
 
 export function qualifiedId(result: [Identifier | MemberExpression, Identifier | MemberExpression]): Expression {
-	const firstId = { ...result[0] };
+	const firstId = result[0];
 	const secondId = result[1];
 
 	if (secondId.type === 'Identifier') {
