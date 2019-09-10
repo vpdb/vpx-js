@@ -184,6 +184,7 @@ BlockStmt            -> _ DimDecl                                               
                       | _ LoopStmt                                                                                                        {% data => data[1] %}
                       | _ ForStmt                                                                                                         {% data => data[1] %}
                       | _ InlineStmt NL                                                                                                   {% data => data[1] %}
+                      | _ NL                                                                                                              {% data => null %}
 
 InlineStmt           -> AssignStmt                                                                                                        {% id %}
                       | SubCallStmt                                                                                                       {% id %}
