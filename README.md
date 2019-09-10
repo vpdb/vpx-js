@@ -39,7 +39,7 @@ export doesn't, for example:
 - Apply optimizations:
    - PNG textures with no transparency are converted to JPEG
    - PNG textures with transparency are [PNG-crushed](https://en.wikipedia.org/wiki/Pngcrush)
-   - Meshes are compressed using [Draco](https://google.github.io/draco/)
+   - Compress meshes with [Draco](https://google.github.io/draco/)
 
 ![image](https://user-images.githubusercontent.com/70426/56841267-0419fc00-688d-11e9-9996-6d84070da392.png)
 *A table in the browser using three.js*
