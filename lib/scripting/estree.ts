@@ -75,10 +75,11 @@ export function identifier(name: string): Identifier {
 	};
 }
 
-export function literal(value: string | boolean | number | null): Literal {
+export function literal(value: string | boolean | number | null, raw?: string | undefined): Literal {
 	return {
 		type: 'Literal',
 		value,
+		raw,
 	};
 }
 
@@ -121,7 +122,11 @@ export function arrowFunctionExpression(body: BlockStatement | Expression, param
 	};
 }
 
-export function assignmentExpression(left: Pattern | MemberExpression, operator: AssignmentOperator,  right: Expression): AssignmentExpression {
+export function assignmentExpression(
+	left: Pattern | MemberExpression,
+	operator: AssignmentOperator,
+	right: Expression,
+): AssignmentExpression {
 	return {
 		type: 'AssignmentExpression',
 		left,
@@ -174,7 +179,11 @@ export function unaryExpression(operator: UnaryOperator, argument: Expression): 
 	};
 }
 
-export function assignmentExpressionStatement(left: Pattern | MemberExpression, operator: AssignmentOperator,  right: Expression): ExpressionStatement {
+export function assignmentExpressionStatement(
+	left: Pattern | MemberExpression,
+	operator: AssignmentOperator,
+	right: Expression,
+): ExpressionStatement {
 	return {
 		type: 'ExpressionStatement',
 		expression: assignmentExpression(left, operator, right),
