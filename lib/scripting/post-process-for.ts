@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Expression, ForOfStatement, ForStatement, Identifier, Statement } from 'estree';
+import { BlockStatement, Expression, ForOfStatement, ForStatement, Identifier, Statement } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
@@ -40,7 +40,7 @@ export function stmt1(
 		Expression,
 		null,
 		null,
-		Statement[],
+		BlockStatement,
 		null,
 		Token,
 		null,
@@ -51,7 +51,7 @@ export function stmt1(
 	const init = result[6];
 	const test = result[10];
 	const step = result[14];
-	const body = result[17] || [];
+	const body = result[17];
 	return estree.forStatement(
 		estree.assignmentExpression(identifier, '=', init),
 		estree.conditionalExpression(
@@ -60,7 +60,7 @@ export function stmt1(
 			estree.binaryExpression('<=', identifier, test),
 		),
 		estree.assignmentExpression(identifier, '+=', step),
-		estree.blockStatement(body),
+		body,
 	);
 }
 
@@ -79,7 +79,7 @@ export function stmt2(
 		Expression,
 		null,
 		null,
-		Statement[],
+		BlockStatement,
 		null,
 		Token,
 		null,
@@ -89,20 +89,20 @@ export function stmt2(
 	const identifier = result[2];
 	const init = result[6];
 	const test = result[10];
-	const body = result[13] || [];
+	const body = result[13];
 	return estree.forStatement(
 		estree.assignmentExpression(identifier, '=', init),
 		estree.binaryExpression('<=', identifier, test),
 		estree.assignmentExpression(identifier, '+=', estree.literal(1)),
-		estree.blockStatement(body),
+		body,
 	);
 }
 
 export function stmt3(
-	result: [Token, null, Token, null, Identifier, null, Token, null, Expression, null, null, Statement[]],
+	result: [Token, null, Token, null, Identifier, null, Token, null, Expression, null, null, BlockStatement],
 ): ForOfStatement {
 	const identifier = result[4];
 	const expression = result[8];
-	const body = result[11] || [];
-	return estree.forOfStatement(identifier, expression, estree.blockStatement(body));
+	const body = result[11];
+	return estree.forOfStatement(identifier, expression, body);
 }

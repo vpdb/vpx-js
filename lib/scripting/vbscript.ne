@@ -111,235 +111,238 @@ const lexer = moo.compile({
 # Rules
 #===============================
 
-Program              -> NL:? GlobalStmt:*                                                                                               {% ppHelpers.program %}
+Program              -> NL:? GlobalStmt:*                                                                                                 {% ppHelpers.program %}
 
-Comment              -> %comment_rem NL                                                                                                 {% ppComment.stmt1 %}
-                      | %comment_apostophe NL                                                                                           {% ppComment.stmt2 %}
+Comment              -> %comment_rem NL                                                                                                   {% ppComment.stmt1 %}
+                      | %comment_apostophe NL                                                                                             {% ppComment.stmt2 %}
 
 #===============================
 # Rules : Declarations
 #===============================
 
-DimDecl              -> %kw_dim __  DimVarList NL                                                                                       {% ppDim.stmt %}
+DimDecl              -> %kw_dim __  DimVarList NL                                                                                         {% ppDim.stmt %}
 
-DimVarList           -> DimVarName DimOtherVars:*                                                                                       {% ppDim.dimVarList %} 
+DimVarList           -> DimVarName DimOtherVars:*                                                                                         {% ppDim.dimVarList %}
 
-DimVarName           -> ExtendedID                                                                                                      {% id %}
+DimVarName           -> ExtendedID                                                                                                        {% id %}
 
-DimOtherVars         -> %comma _ DimVarName                                                                                             {% data => data[2] %}
+DimOtherVars         -> %comma _ DimVarName                                                                                               {% data => data[2] %}
 
-ConstDecl            -> AccessModifierOpt __ %kw_const __ ConstVarList NL                                                               {% ppConst.stmt1 %}
-                      | %kw_const __ ConstVarList NL                                                                                    {% ppConst.stmt2 %}
+ConstDecl            -> AccessModifierOpt __ %kw_const __ ConstVarList NL                                                                 {% ppConst.stmt1 %}
+                      | %kw_const __ ConstVarList NL                                                                                      {% ppConst.stmt2 %}
 
-ConstVarList         -> ConstVarNameValue ConstOtherVars:*                                                                              {% ppConst.constVarList %} 
+ConstVarList         -> ConstVarNameValue ConstOtherVars:*                                                                                {% ppConst.constVarList %}
 
-ConstOtherVars       -> %comma _ ConstVarNameValue                                                                                      {% data => data[2] %}
+ConstOtherVars       -> %comma _ ConstVarNameValue                                                                                        {% data => data[2] %}
 
 ConstVarNameValue    -> ExtendedID _ %equals _ ConstExprDef
 
-ConstExprDef         -> %paren_left _ ConstExprDef _ %paren_right                                                                       {% data => data[2] %}
-                      | %unary ConstExprDef                                                                                             {% ppMath.unary %}
-                      | ConstExpr                                                                                                       {% id %}
+ConstExprDef         -> %paren_left _ ConstExprDef _ %paren_right                                                                         {% data => data[2] %}
+                      | %unary ConstExprDef                                                                                               {% ppMath.unary %}
+                      | ConstExpr                                                                                                         {% id %}
                      
-SubDecl              -> MethodAccessOpt __ %kw_sub __ ExtendedID _ MethodArgList:? _ NL MethodStmt:* _ %kw_end __ %kw_sub NL            {% ppSub.stmt1 %}
-                      | %kw_sub __ ExtendedID _ MethodArgList:? _ NL MethodStmt:* _ %kw_end __ %kw_sub NL                               {% ppSub.stmt2 %}
+SubDecl              -> MethodAccessOpt __ %kw_sub __ ExtendedID _ MethodArgList:? _ NL MethodStmtList _ %kw_end __ %kw_sub NL            {% ppSub.stmt1 %}
+                      | %kw_sub __ ExtendedID _ MethodArgList:? _ NL MethodStmtList _ %kw_end __ %kw_sub NL                               {% ppSub.stmt2 %}
                  
-FunctionDecl         -> MethodAccessOpt __ %kw_function __ ExtendedID _ MethodArgList:? _ NL MethodStmt:* _ %kw_end __ %kw_function NL  {% ppFunction.stmt1 %}
-                      | %kw_function __ ExtendedID _ MethodArgList:? _ NL MethodStmt:* _ %kw_end __ %kw_function NL                     {% ppFunction.stmt2 %}
+FunctionDecl         -> MethodAccessOpt __ %kw_function __ ExtendedID _ MethodArgList:? _ NL MethodStmtList _ %kw_end __ %kw_function NL  {% ppFunction.stmt1 %}
+                      | %kw_function __ ExtendedID _ MethodArgList:? _ NL MethodStmtList _ %kw_end __ %kw_function NL                     {% ppFunction.stmt2 %}
 
-MethodAccessOpt      -> %kw_public __ %kw_default                                                                                       {% data => data[0] + ' ' + data[1] %}
-                      | AccessModifierOpt                                                                                               {% id %}
+MethodAccessOpt      -> %kw_public __ %kw_default                                                                                         {% data => data[0] + ' ' + data[1] %}
+                      | AccessModifierOpt                                                                                                 {% id %}
 
-AccessModifierOpt    -> %kw_public                                                                                                      {% id %}
-                      | %kw_private                                                                                                     {% id %}
+AccessModifierOpt    -> %kw_public                                                                                                        {% id %}
+                      | %kw_private                                                                                                       {% id %}
 
-MethodArgList        -> %paren_left _ Arg _ OtherArgsOpt:* _ %paren_right                                                               {% ppHelpers.methodArgList1 %}      
-                      | %paren_left _ %paren_right                                                                                      {% ppHelpers.methodArgList2 %}
+MethodArgList        -> %paren_left _ Arg _ OtherArgsOpt:* _ %paren_right                                                                 {% ppHelpers.methodArgList1 %}
+                      | %paren_left _ %paren_right                                                                                        {% ppHelpers.methodArgList2 %}
 
-OtherArgsOpt         -> %comma _ Arg                                                                                                    {% data => data[2] %}
+OtherArgsOpt         -> %comma _ Arg                                                                                                      {% data => data[2] %}
 
-Arg                  -> ExtendedID                                                                                                      {% id %}
+Arg                  -> ExtendedID                                                                                                        {% id %}
 
 #===============================
 # Rules : Statements
 #===============================
 
-GlobalStmt           -> _ Comment                                                                                                       {% data => data[1] %}
-                      | _ OptionExplicit                                                                                                {% data => data[1] %}
-                      | _ ConstDecl                                                                                                     {% data => data[1] %}
-                      | _ SubDecl                                                                                                       {% data => data[1] %}
-                      | _ FunctionDecl                                                                                                  {% data => data[1] %}
-                      | _ BlockStmt                                                                                                     {% data => data[1] %}
+BlockStmtList        -> BlockStmt:*                                                                                                       {% ppHelpers.blockStmtList %}
+MethodStmtList       -> MethodStmt:*                                                                                                      {% ppHelpers.methodStmtList %}
 
-MethodStmt           -> _ ConstDecl                                                                                                     {% data => data[1] %}
-                      | _ BlockStmt                                                                                                     {% data => data[1] %}    
+GlobalStmt           -> _ Comment                                                                                                         {% data => data[1] %}
+                      | _ OptionExplicit                                                                                                  {% data => data[1] %}
+                      | _ ConstDecl                                                                                                       {% data => data[1] %}
+                      | _ SubDecl                                                                                                         {% data => data[1] %}
+                      | _ FunctionDecl                                                                                                    {% data => data[1] %}
+                      | _ BlockStmt                                                                                                       {% data => data[1] %}
 
-BlockStmt            -> _ DimDecl                                                                                                       {% data => data[1] %}
-                      | _ IfStmt                                                                                                        {% data => data[1] %}
-                      | _ WithStmt                                                                                                      {% data => data[1] %}
-                      | _ SelectStmt                                                                                                    {% data => data[1] %}
-                      | _ LoopStmt                                                                                                      {% data => data[1] %}
-                      | _ ForStmt                                                                                                       {% data => data[1] %}      
-                      | _ InlineStmt NL                                                                                                 {% data => data[1] %}
+MethodStmt           -> _ ConstDecl                                                                                                       {% data => data[1] %}
+                      | _ BlockStmt                                                                                                       {% data => data[1] %}
 
-InlineStmt           -> AssignStmt                                                                                                      {% id %}
-                      | SubCallStmt                                                                                                     {% id %}
+BlockStmt            -> _ DimDecl                                                                                                         {% data => data[1] %}
+                      | _ IfStmt                                                                                                          {% data => data[1] %}
+                      | _ WithStmt                                                                                                        {% data => data[1] %}
+                      | _ SelectStmt                                                                                                      {% data => data[1] %}
+                      | _ LoopStmt                                                                                                        {% data => data[1] %}
+                      | _ ForStmt                                                                                                         {% data => data[1] %}
+                      | _ InlineStmt NL                                                                                                   {% data => data[1] %}
 
-OptionExplicit       -> %kw_option __ %kw_explicit NL                                                                                   {% ppOption.explicit %}
+InlineStmt           -> AssignStmt                                                                                                        {% id %}
+                      | SubCallStmt                                                                                                       {% id %}
 
-AssignStmt           -> LeftExpr _ %equals _ Expr                                                                                       {% ppAssign.stmt %}
+OptionExplicit       -> %kw_option __ %kw_explicit NL                                                                                     {% ppOption.explicit %}
 
-SubCallStmt          -> QualifiedID _ SubSafeExpr:? _ CommaExprList:*                                                                   {% ppSubCall.stmt1 %}
-                      | QualifiedID _ %paren_left _ Expr _ %paren_right _ CommaExprList:*                                               {% ppSubCall.stmt2 %}
-                      | QualifiedID _ %paren_left _ Expr _ %paren_right                                                                 {% ppSubCall.stmt3 %}
-                      | QualifiedID _ %paren_left _ %paren_right                                                                        {% ppSubCall.stmt4 %}
+AssignStmt           -> LeftExpr _ %equals _ Expr                                                                                         {% ppAssign.stmt %}
 
-LeftExpr             -> QualifiedID                                                                                                     {% id %}
+SubCallStmt          -> QualifiedID _ SubSafeExpr:? _ CommaExprList:*                                                                     {% ppSubCall.stmt1 %}
+                      | QualifiedID _ %paren_left _ Expr _ %paren_right _ CommaExprList:*                                                 {% ppSubCall.stmt2 %}
+                      | QualifiedID _ %paren_left _ Expr _ %paren_right                                                                   {% ppSubCall.stmt3 %}
+                      | QualifiedID _ %paren_left _ %paren_right                                                                          {% ppSubCall.stmt4 %}
 
-QualifiedID          -> IDDot QualifiedID                                                                                               {% ppHelpers.qualifiedId %}                            
-                      | ID                                                                                                              {% id %}
-                      | DotID                                                                                                           {% id %}
+LeftExpr             -> QualifiedID                                                                                                       {% id %}
 
-ExtendedID           -> ID                                                                                                              {% id %}
+QualifiedID          -> IDDot QualifiedID                                                                                                 {% ppHelpers.qualifiedId %}
+                      | ID                                                                                                                {% id %}
+                      | DotID                                                                                                             {% id %}
 
-CommaExprList        -> %comma _ Expr                                                                                                   {% data => data[2] %}
+ExtendedID           -> ID                                                                                                                {% id %}
+
+CommaExprList        -> %comma _ Expr                                                                                                     {% data => data[2] %}
 
 #========= If Statement
 
-IfStmt               -> %kw_if _ Expr _ %kw_then _ NL BlockStmt:* _ ElseIfStmt:* _ ElseStmt:? _ %kw_end __ %kw_if _ NL                  {% ppIf.stmt1 %}
-                      | %kw_if _ Expr _ %kw_then __ InlineStmt __ %kw_else __ InlineStmt __ %kw_end __ %kw_if _ NL                      {% ppIf.stmt2 %}
-                      | %kw_if _ Expr _ %kw_then __ InlineStmt __ %kw_else __ InlineStmt _ NL                                           {% ppIf.stmt3 %}
-                      | %kw_if _ Expr _ %kw_then __ InlineStmt __ %kw_end __ %kw_if _ NL                                                {% ppIf.stmt4 %}
-                      | %kw_if _ Expr _ %kw_then __ InlineStmt _ NL                                                                     {% ppIf.stmt5 %}
+IfStmt               -> %kw_if _ Expr _ %kw_then _ NL BlockStmtList _ ElseIfStmt:* _ ElseStmt:? _ %kw_end __ %kw_if _ NL                  {% ppIf.stmt1 %}
+                      | %kw_if _ Expr _ %kw_then __ InlineStmt __ %kw_else __ InlineStmt __ %kw_end __ %kw_if _ NL                        {% ppIf.stmt2 %}
+                      | %kw_if _ Expr _ %kw_then __ InlineStmt __ %kw_else __ InlineStmt _ NL                                             {% ppIf.stmt3 %}
+                      | %kw_if _ Expr _ %kw_then __ InlineStmt __ %kw_end __ %kw_if _ NL                                                  {% ppIf.stmt4 %}
+                      | %kw_if _ Expr _ %kw_then __ InlineStmt _ NL                                                                       {% ppIf.stmt5 %}
 
-ElseIfStmt           -> %kw_elseif _ Expr _ %kw_then _ NL BlockStmt:*                                                                   {% ppIf.elseIfStmt1 %}
-                      | %kw_elseif _ Expr _ %kw_then __ InlineStmt _ NL                                                                 {% ppIf.elseIfStmt2 %}
+ElseIfStmt           -> %kw_elseif _ Expr _ %kw_then _ NL BlockStmtList                                                                   {% ppIf.elseIfStmt1 %}
+                      | %kw_elseif _ Expr _ %kw_then __ InlineStmt _ NL                                                                   {% ppIf.elseIfStmt2 %}
 
-ElseStmt             -> %kw_else __ InlineStmt _ NL                                                                                     {% ppIf.elseStmt1 %}
-                      | %kw_else _ NL BlockStmt:*                                                                                       {% ppIf.elseStmt2 %}
+ElseStmt             -> %kw_else __ InlineStmt _ NL                                                                                       {% ppIf.elseStmt1 %}
+                      | %kw_else _ NL BlockStmtList                                                                                       {% ppIf.elseStmt2 %}
 
 #========= With Statement
 
-WithStmt             -> %kw_with _ Expr _ NL BlockStmt:* _ %kw_end __ %kw_with NL                                                       {% ppWith.stmt %}
+WithStmt             -> %kw_with _ Expr _ NL BlockStmtList _ %kw_end __ %kw_with NL                                                       {% ppWith.stmt %}
 
 #========= Loop Statement
  
-LoopStmt             -> %kw_do __ LoopType _ Expr _ NL BlockStmt:* _ %kw_loop _ NL                                                      {% ppLoop.stmt1 %}
-                      | %kw_do _ NL BlockStmt:* _ %kw_loop __ LoopType _ Expr _ NL                                                      {% ppLoop.stmt2 %}
-                      | %kw_do _ NL BlockStmt:* _ %kw_loop _ NL                                                                         {% ppLoop.stmt3 %}
-                      | %kw_while _ Expr _ NL BlockStmt:* _ %kw_wend _ NL                                                               {% ppLoop.stmt4 %}
+LoopStmt             -> %kw_do __ LoopType _ Expr _ NL BlockStmtList _ %kw_loop _ NL                                                      {% ppLoop.stmt1 %}
+                      | %kw_do _ NL BlockStmtList _ %kw_loop __ LoopType _ Expr _ NL                                                      {% ppLoop.stmt2 %}
+                      | %kw_do _ NL BlockStmtList _ %kw_loop _ NL                                                                         {% ppLoop.stmt3 %}
+                      | %kw_while _ Expr _ NL BlockStmtList _ %kw_wend _ NL                                                               {% ppLoop.stmt4 %}
 
-LoopType             -> %kw_while                                                                                                       {% id %}
-                      | %kw_until                                                                                                       {% id %}
+LoopType             -> %kw_while                                                                                                         {% id %}
+                      | %kw_until                                                                                                         {% id %}
 
 #========= For Statement
 
-ForStmt              -> %kw_for _ ExtendedID _ %equals _ Expr _ %kw_to _ Expr _ %kw_step _ Expr _ NL BlockStmt:* _ %kw_next _ NL        {% ppFor.stmt1 %}
-                      | %kw_for _ ExtendedID _ %equals _ Expr _ %kw_to _ Expr _ NL BlockStmt:* _ %kw_next _ NL                          {% ppFor.stmt2 %}
-                      | %kw_for __ %kw_each _ ExtendedID _ %kw_in _ Expr _ NL BlockStmt:* _ %kw_next _ NL                               {% ppFor.stmt3 %}
+ForStmt              -> %kw_for _ ExtendedID _ %equals _ Expr _ %kw_to _ Expr _ %kw_step _ Expr _ NL BlockStmtList _ %kw_next _ NL        {% ppFor.stmt1 %}
+                      | %kw_for _ ExtendedID _ %equals _ Expr _ %kw_to _ Expr _ NL BlockStmtList _ %kw_next _ NL                          {% ppFor.stmt2 %}
+                      | %kw_for __ %kw_each _ ExtendedID _ %kw_in _ Expr _ NL BlockStmtList _ %kw_next _ NL                               {% ppFor.stmt3 %}
 
 #========= Select Statement
 
-SelectStmt           -> %kw_select __ %kw_case _ Expr _ NL _ CaseStmt:* _ CaseElseStmt:? _ %kw_end __ %kw_select _ NL                   {% ppSelect.stmt %}
+SelectStmt           -> %kw_select __ %kw_case _ Expr _ NL _ CaseStmt:* _ CaseElseStmt:? _ %kw_end __ %kw_select _ NL                     {% ppSelect.stmt %}
 
-CaseStmt             -> %kw_case _ Expr _ OtherExprOpt:* _ NL BlockStmt:*                                                               {% ppSelect.caseStmt1 %}
-                      | %kw_case _ Expr _ OtherExprOpt:* BlockStmt:*                                                                    {% ppSelect.caseStmt2 %}  
+CaseStmt             -> %kw_case _ Expr _ OtherExprOpt:* _ NL BlockStmtList                                                               {% ppSelect.caseStmt1 %}
+                      | %kw_case _ Expr _ OtherExprOpt:* BlockStmtList                                                                    {% ppSelect.caseStmt2 %}
                                                                                                                     
-CaseElseStmt         -> %kw_case __ %kw_else _ NL BlockStmt:*                                                                           {% ppSelect.caseElseStmt1 %}
-                      | %kw_case __ %kw_else BlockStmt:*                                                                                {% ppSelect.caseElseStmt2 %}
+CaseElseStmt         -> %kw_case __ %kw_else _ NL BlockStmtList                                                                           {% ppSelect.caseElseStmt1 %}
+                      | %kw_case __ %kw_else BlockStmtList                                                                                {% ppSelect.caseElseStmt2 %}
 
-OtherExprOpt         -> %comma _ Expr                                                                                                   {% data => data[2] %} 
+OtherExprOpt         -> %comma _ Expr                                                                                                     {% data => data[2] %}
 
 #===============================
 # Rules : Expressions
 #===============================
 
-SubSafeExpr          -> SubSafeValue                                                                                                    {% id %}
+SubSafeExpr          -> SubSafeValue                                                                                                      {% id %}
 
-SubSafeValue         -> ConstExpr                                                                                                       {% id %}
+SubSafeValue         -> ConstExpr                                                                                                         {% id %}
 
-Expr                 -> EqvExpr                                                                                                         {% id %}
+Expr                 -> EqvExpr                                                                                                           {% id %}
 
-EqvExpr              -> EqvExpr _ %kw_eqv _ XorExpr                                                                                     {% ppMath.eqv %}
-                      | XorExpr                                                                                                         {% id %}
+EqvExpr              -> EqvExpr _ %kw_eqv _ XorExpr                                                                                       {% ppMath.eqv %}
+                      | XorExpr                                                                                                           {% id %}
 
-XorExpr              -> XorExpr _ %kw_xor _ OrExpr                                                                                      {% ppMath.xor %}
-                      | OrExpr                                                                                                          {% id %} 
+XorExpr              -> XorExpr _ %kw_xor _ OrExpr                                                                                        {% ppMath.xor %}
+                      | OrExpr                                                                                                            {% id %}
 
-OrExpr               -> OrExpr _ %kw_or _ AndExpr                                                                                       {% ppMath.or %}
-                      | AndExpr                                                                                                         {% id %}
+OrExpr               -> OrExpr _ %kw_or _ AndExpr                                                                                         {% ppMath.or %}
+                      | AndExpr                                                                                                           {% id %}
 
-AndExpr              -> AndExpr _ %kw_and _ NotExpr                                                                                     {% ppMath.and %}
-                      | NotExpr                                                                                                         {% id %}
+AndExpr              -> AndExpr _ %kw_and _ NotExpr                                                                                       {% ppMath.and %}
+                      | NotExpr                                                                                                           {% id %}
 
-NotExpr              -> %kw_not _ NotExpr                                                                                               {% ppMath.not %}
-                      | CompareExpr                                                                                                     {% id %}
+NotExpr              -> %kw_not _ NotExpr                                                                                                 {% ppMath.not %}
+                      | CompareExpr                                                                                                       {% id %}
 
-CompareExpr          -> CompareExpr _ %kw_is _ AddExpr                                                                                  {% ppCompare.is %}
-                      | CompareExpr _ %kw_is __ %kw_not _ AddExpr                                                                       {% ppCompare.isNot %}
-                      | CompareExpr _ %compare_gte _ AddExpr                                                                            {% ppCompare.gte %}
-                      | CompareExpr _ %compare_lte _ AddExpr                                                                            {% ppCompare.lte %}
-                      | CompareExpr _ %compare_gt _ AddExpr                                                                             {% ppCompare.gt %}
-                      | CompareExpr _ %compare_lt _ AddExpr                                                                             {% ppCompare.lt %}
-                      | CompareExpr _ %compare_gtlt _ AddExpr                                                                           {% ppCompare.gtlt %}
-                      | CompareExpr _ %equals _ AddExpr                                                                                 {% ppCompare.eq %}
-                      | AddExpr                                                                                                         {% id %}
+CompareExpr          -> CompareExpr _ %kw_is _ AddExpr                                                                                    {% ppCompare.is %}
+                      | CompareExpr _ %kw_is __ %kw_not _ AddExpr                                                                         {% ppCompare.isNot %}
+                      | CompareExpr _ %compare_gte _ AddExpr                                                                              {% ppCompare.gte %}
+                      | CompareExpr _ %compare_lte _ AddExpr                                                                              {% ppCompare.lte %}
+                      | CompareExpr _ %compare_gt _ AddExpr                                                                               {% ppCompare.gt %}
+                      | CompareExpr _ %compare_lt _ AddExpr                                                                               {% ppCompare.lt %}
+                      | CompareExpr _ %compare_gtlt _ AddExpr                                                                             {% ppCompare.gtlt %}
+                      | CompareExpr _ %equals _ AddExpr                                                                                   {% ppCompare.eq %}
+                      | AddExpr                                                                                                           {% id %}
 
-AddExpr              -> AddExpr _ %unary _ ModExpr                                                                                      {% ppMath.add %}
-                      | ModExpr                                                                                                         {% id %}
+AddExpr              -> AddExpr _ %unary _ ModExpr                                                                                        {% ppMath.add %}
+                      | ModExpr                                                                                                           {% id %}
 
-ModExpr              -> ModExpr _ %kw_mod _ IntDivExpr                                                                                  {% ppMath.mod %}
-                      | IntDivExpr                                                                                                      {% id %}
+ModExpr              -> ModExpr _ %kw_mod _ IntDivExpr                                                                                    {% ppMath.mod %}
+                      | IntDivExpr                                                                                                        {% id %}
 
-IntDivExpr           -> IntDivExpr _ %int_div _ MultExpr                                                                                {% ppMath.intDiv %}
-                      | MultExpr                                                                                                        {% id %}
+IntDivExpr           -> IntDivExpr _ %int_div _ MultExpr                                                                                  {% ppMath.intDiv %}
+                      | MultExpr                                                                                                          {% id %}
 
-MultExpr             -> MultExpr _ %mul_div _ UnaryExpr                                                                                 {% ppMath.mult %}
-                      | UnaryExpr                                                                                                       {% id %}
+MultExpr             -> MultExpr _ %mul_div _ UnaryExpr                                                                                   {% ppMath.mult %}
+                      | UnaryExpr                                                                                                         {% id %}
 
-UnaryExpr            -> %unary UnaryExpr                                                                                                {% ppMath.unary %}
-                      | ExpExpr                                                                                                         {% id %}
+UnaryExpr            -> %unary UnaryExpr                                                                                                  {% ppMath.unary %}
+                      | ExpExpr                                                                                                           {% id %}
 
-ExpExpr              -> Value _ %exponent _ ExpExpr                                                                                     {% ppMath.exp %}
-                      | Value                                                                                                           {% id %}
+ExpExpr              -> Value _ %exponent _ ExpExpr                                                                                       {% ppMath.exp %}
+                      | Value                                                                                                             {% id %}
 
-Value                -> ConstExpr                                                                                                       {% id %}
-                      | LeftExpr                                                                                                        {% id %}
-                      | %paren_left _ Expr _ %paren_right                                                                               {% data => data[2] %}
+Value                -> ConstExpr                                                                                                         {% id %}
+                      | LeftExpr                                                                                                          {% id %}
+                      | %paren_left _ Expr _ %paren_right                                                                                 {% data => data[2] %}
 
-ConstExpr            -> BoolLiteral                                                                                                     {% id %}
-                      | IntLiteral                                                                                                      {% id %}
-                      | FloatLiteral                                                                                                    {% id %}
-                      | StringLiteral                                                                                                   {% id %}                                   
-                      | DateLiteral                                                                                                     {% id %}   
-                      | Nothing                                                                                                         {% id %}   
+ConstExpr            -> BoolLiteral                                                                                                       {% id %}
+                      | IntLiteral                                                                                                        {% id %}
+                      | FloatLiteral                                                                                                      {% id %}
+                      | StringLiteral                                                                                                     {% id %}
+                      | DateLiteral                                                                                                       {% id %}
+                      | Nothing                                                                                                           {% id %}
 
-BoolLiteral          -> %kw_true                                                                                                        {% ppLiteral.bool %}
-                      | %kw_false                                                                                                       {% ppLiteral.bool %}
+BoolLiteral          -> %kw_true                                                                                                          {% ppLiteral.bool %}
+                      | %kw_false                                                                                                         {% ppLiteral.bool %}
 
-IntLiteral           -> %int_literal                                                                                                    {% ppLiteral.int %}
-                      | %hex_literal                                                                                                    {% ppLiteral.hex %}
-                      | %oct_literal                                                                                                    {% ppLiteral.oct %}
+IntLiteral           -> %int_literal                                                                                                      {% ppLiteral.int %}
+                      | %hex_literal                                                                                                      {% ppLiteral.hex %}
+                      | %oct_literal                                                                                                      {% ppLiteral.oct %}
 
-FloatLiteral         -> %float_literal                                                                                                  {% ppLiteral.float %}
+FloatLiteral         -> %float_literal                                                                                                    {% ppLiteral.float %}
 
-StringLiteral        -> %string_literal                                                                                                 {% ppLiteral.string %}
+StringLiteral        -> %string_literal                                                                                                   {% ppLiteral.string %}
 
-DateLiteral          -> %date_literal                                                                                                   {% ppLiteral.date %}
+DateLiteral          -> %date_literal                                                                                                     {% ppLiteral.date %}
 
-Nothing              -> %kw_nothing                                                                                                     {% ppLiteral.nothing %}
-                      | %kw_null                                                                                                        {% ppLiteral.nothing %}
-                      | %kw_empty                                                                                                       {% ppLiteral.nothing %}
+Nothing              -> %kw_nothing                                                                                                       {% ppLiteral.nothing %}
+                      | %kw_null                                                                                                          {% ppLiteral.nothing %}
+                      | %kw_empty                                                                                                         {% ppLiteral.nothing %}
 
 #===============================
 # Terminals
 #===============================
 
-NL                   -> %nl                                                                                                             {% data => null %}
+NL                   -> %nl                                                                                                               {% data => null %}
 
-ID                   -> %identifier                                                                                                     {% ppHelpers.id %}
-IDDot                -> %identifier_dot                                                                                                 {% ppHelpers.id %}
-DotID                -> %dot_identifier                                                                                                 {% ppHelpers.id %}
+ID                   -> %identifier                                                                                                       {% ppHelpers.id %}
+IDDot                -> %identifier_dot                                                                                                   {% ppHelpers.id %}
+DotID                -> %dot_identifier                                                                                                   {% ppHelpers.id %}
 
-_                    -> %ws:*                                                                                                           {% data => null %}
-__                   -> %ws:+                                                                                                           {% data => null %}
+_                    -> %ws:*                                                                                                             {% data => null %}
+__                   -> %ws:+                                                                                                             {% data => null %}

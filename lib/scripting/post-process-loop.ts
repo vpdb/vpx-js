@@ -17,47 +17,43 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { DoWhileStatement, Expression, Statement, WhileStatement } from 'estree';
+import { BlockStatement, DoWhileStatement, Expression, Statement, WhileStatement } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
 export function stmt1(
-	result: [Token, null, Token, null, Expression, null, null, Statement[], null, Token, null, null],
+	result: [Token, null, Token, null, Expression, null, null, BlockStatement, null, Token, null, null],
 ): WhileStatement | DoWhileStatement {
 	const type = result[2].type;
 	const test = result[4];
-	const statements = result[7] || [];
+	const body = result[7];
 	if (type === 'kw_while') {
-		return estree.whileStatement(test, estree.blockStatement(statements));
+		return estree.whileStatement(test, body);
 	} else {
-		return estree.doWhileStatement(
-			estree.blockStatement([estree.ifStatement(test, estree.blockStatement([estree.breakStatement()])), ...statements]),
-			estree.literal(true),
-		);
+		body.body.unshift(estree.ifStatement(test, estree.breakStatement()));
+		return estree.doWhileStatement(body, estree.literal(true));
 	}
 }
 
-export function stmt2(result: [Token, null, null, Statement[], null, Token, null, Token, null, Expression, null, null]) {
+export function stmt2(result: [Token, null, null, BlockStatement, null, Token, null, Token, null, Expression, null, null]) {
 	const type = result[7].type;
-	const statements = result[3] || [];
+	const body = result[3];
 	const test = result[9];
 	if (type === 'kw_while') {
-		return estree.doWhileStatement(estree.blockStatement(statements), test);
+		return estree.doWhileStatement(body, test);
 	} else {
-		return estree.doWhileStatement(
-			estree.blockStatement([...statements, estree.ifStatement(test, estree.blockStatement([estree.breakStatement()]))]),
-			estree.literal(true),
-		);
+		body.body.push(estree.ifStatement(test, estree.breakStatement()));
+		return estree.doWhileStatement(body, estree.literal(true));
 	}
 }
 
-export function stmt3(result: [Token, null, null, Statement[], null, Token, null, null]): DoWhileStatement {
-	const statements = result[3] || [];
-	return estree.doWhileStatement(estree.blockStatement(statements), estree.literal(true));
+export function stmt3(result: [Token, null, null, BlockStatement, null, Token, null, null]): DoWhileStatement {
+	const body = result[3];
+	return estree.doWhileStatement(body, estree.literal(true));
 }
 
-export function stmt4(result: [Token, null, Expression, null, null, Statement[], null, Token, null, null]): WhileStatement {
+export function stmt4(result: [Token, null, Expression, null, null, BlockStatement, null, Token, null, null]): WhileStatement {
 	const test = result[2];
-	const statements = result[5] || [];
-	return estree.whileStatement(test, estree.blockStatement(statements));
+	const body = result[5];
+	return estree.whileStatement(test, body);
 }
