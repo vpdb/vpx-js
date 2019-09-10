@@ -21,13 +21,15 @@ import { Expression, Identifier, MemberExpression, Program, Statement } from 'es
 import { Token } from 'moo';
 import * as estree from './estree';
 
-export function program(result: [null, [Statement | null]]): Program {
-	const statements = result[1].filter(statement => statement) as [Statement];
+export function program(result: [null, Statement[]]): Program {
+	let statements = result[1] || [];
+	statements = statements.filter(statement => statement) as [Statement];
 	return estree.program(statements);
 }
 
 export function blockStmtList(result: [Statement[]]) {
-	const statements = result[0] || [];
+	let statements = result[0] || [];
+	statements = statements.filter(statement => statement) as [Statement];
 	return estree.blockStatement(statements);
 }
 
