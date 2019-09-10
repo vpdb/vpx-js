@@ -140,7 +140,7 @@ export class Spinner implements IRenderable, IPlayable, IMovable<FlipperState>, 
 			.multiply(matTransFromOrigin);
 
 		const plateObj = renderApi.findInGroup(obj, `spinner.plate-${this.getName()}`);
-		renderApi.applyMatrixToObject(matrix, plateObj!);
+		renderApi.applyMatrixToNode(matrix, plateObj!);
 
 		Matrix3D.release(matTransToOrigin, matRotateToOrigin, matTransFromOrigin, matRotateFromOrigin, matRotateX);
 	}

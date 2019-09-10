@@ -52,7 +52,7 @@ export class BumperMeshUpdater {
 		const ringObj = renderApi.findInGroup(obj, `bumper-ring-${this.data.getName()}`);
 		if (ringObj) {
 			const matrix = Matrix3D.claim().setTranslation(0, 0, -this.state.ringOffset);
-			renderApi.applyMatrixToObject(matrix, ringObj);
+			renderApi.applyMatrixToNode(matrix, ringObj);
 			Matrix3D.release(matrix);
 		}
 	}
@@ -69,7 +69,7 @@ export class BumperMeshUpdater {
 
 			const matrix = matToOrigin.multiply(matRotY).multiply(matRotX).multiply(matFromOrigin);
 
-			renderApi.applyMatrixToObject(matrix, skirtObj);
+			renderApi.applyMatrixToNode(matrix, skirtObj);
 			Matrix3D.release(matToOrigin, matFromOrigin, matRotX, matRotY);
 		}
 	}

@@ -25,26 +25,93 @@ import { Table, TableGenerateOptions } from '../vpt/table/table';
 
 export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 
+	/**
+	 * Applies global transformations to the scene.
+	 *
+	 * Use this to size and rotate the playfield to a suitable position.
+	 *
+	 * @param scene Root table node
+	 * @param table Table
+	 */
 	transformScene(scene: NODE, table: Table): void;
 
-	createGroup(name: string): NODE;
+	/**
+	 * Creates a new parent node.
+	 *
+	 * @param name Name of the node
+	 */
+	createParentNode(name: string): NODE;
 
-	addToGroup(group: NODE, obj: NODE | POINT_LIGHT): void;
+	/**
+	 * Adds a child to a parent node.
+	 *
+	 * @param parent Parent node
+	 * @param child Child node
+	 */
+	addChildToParent(parent: NODE, child: NODE | POINT_LIGHT): void;
 
-	findInGroup(group: NODE, name: string): NODE | undefined;
+	/**
+	 * Retrieves a child node from a parent node.
+	 *
+	 * @param parent Parent node
+	 * @param name Name of the child node
+	 */
+	findInGroup(parent: NODE, name: string): NODE | undefined;
 
-	removeFromGroup(group: NODE, obj: NODE | undefined): void;
+	/**
+	 * Removes a child from a parent node
+	 *
+	 * @param parent The parent node
+	 * @param child The child node to remove
+	 */
+	removeFromParent(parent: NODE, child: NODE | undefined): void;
 
-	applyMatrixToObject(matrix: Matrix3D, obj: NODE | undefined): void;
+	/**
+	 * Applies a matrix transformation to a node.
+	 *
+	 * @param matrix The transformation matrix
+	 * @param node The node to transform. Does nothing if not set.
+	 */
+	applyMatrixToNode(matrix: Matrix3D, node: NODE | undefined): void;
 
-	applyMeshToObject(mesh: Mesh, obj: NODE | undefined): void;
+	/**
+	 * Updates a node with a new mesh.
+	 *
+	 * @param mesh New mesh. Must contain the same number of vertices as the node.
+	 * @param node The node to which the new mesh is applied to.
+	 */
+	applyMeshToNode(mesh: Mesh, node: NODE | undefined): void;
 
+	/**
+	 * Creates a new node based on a renderable.
+	 *
+	 * @param renderable The renderable from the VPX file
+	 * @param table The table object
+	 * @param opts Options, see {@link TableGenerateOptions}.
+	 */
 	createObjectFromRenderable(renderable: IRenderable, table: Table, opts: TableGenerateOptions): Promise<NODE>;
 
+	/**
+	 * Creates a playfield light geometry.
+	 *
+	 * @param lightData Light parameters from the VPX file
+	 * @param table The table object
+	 */
 	createLightGeometry(lightData: LightData, table: Table): GEOMETRY;
 
+	/**
+	 * Creates the playfield geometry.
+	 *
+	 * @param table The table object
+	 * @param opts Options, see {@link TableGenerateOptions}.
+	 */
 	createPlayfieldGeometry(table: Table, opts: TableGenerateOptions): GEOMETRY;
 
+	/**
+	 * Creates a new point light.
+	 *
+	 * @param lightData Light parameters from the VPX file.
+	 */
 	createPointLight(lightData: LightData): POINT_LIGHT;
 }
 
@@ -53,5 +120,3 @@ export interface MeshConvertOptions {
 	applyTextures?: boolean;
 	optimizeTextures?: boolean;
 }
-
-export interface TableExportOptions extends TableGenerateOptions, MeshConvertOptions { }

@@ -78,7 +78,7 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 			.multiply(trans)
 			.toRightHanded();
 
-		renderApi.applyMatrixToObject(matrix, obj);
+		renderApi.applyMatrixToNode(matrix, obj);
 		Matrix3D.release(orientation, trans, matrix);
 	}
 
@@ -86,7 +86,7 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 		const ballMesh = await renderApi.createObjectFromRenderable(this, table, {});
 		const playfield = renderApi.findInGroup(scene, 'playfield')!;
 		const ballGroup = renderApi.findInGroup(playfield, 'balls')!;
-		renderApi.addToGroup(ballGroup, ballMesh);
+		renderApi.addChildToParent(ballGroup, ballMesh);
 		return ballMesh;
 	}
 
@@ -94,7 +94,7 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 		const playfield = renderApi.findInGroup(scene, 'playfield')!;
 		const ballGroup = renderApi.findInGroup(playfield, 'balls')!;
 		const ball = renderApi.findInGroup(ballGroup, this.getName());
-		renderApi.removeFromGroup(ballGroup, ball);
+		renderApi.removeFromParent(ballGroup, ball);
 	}
 
 	public getState(): BallState {

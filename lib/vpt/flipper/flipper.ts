@@ -132,7 +132,7 @@ export class Flipper implements IRenderable, IPlayable, IMovable<FlipperState>, 
 		const matRotate = Matrix3D.claim().rotateZMatrix(this.state.angle - degToRad(this.data.startAngle));
 		const matrix = matToOrigin.multiply(matRotate).multiply(matFromOrigin);
 
-		renderApi.applyMatrixToObject(matrix, obj);
+		renderApi.applyMatrixToNode(matrix, obj);
 		Matrix3D.release(matToOrigin, matFromOrigin, matRotate); // matrix and matToOrigin are the same instance
 	}
 
