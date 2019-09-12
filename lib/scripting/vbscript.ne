@@ -138,7 +138,7 @@ ConstOtherVars       -> %comma _ ConstVarNameValue                              
 ConstVarNameValue    -> ExtendedID _ %equals _ ConstExprDef
 
 ConstExprDef         -> %paren_left _ ConstExprDef _ %paren_right                                                                         {% data => data[2] %}
-                      | %unary ConstExprDef                                                                                               {% ppMath.unary %}
+                      | %unary _ ConstExprDef                                                                                             {% ppMath.unary %}
                       | ConstExpr                                                                                                         {% id %}
                      
 SubDecl              -> MethodAccessOpt __ %kw_sub __ ExtendedID _ MethodArgList:? _ NL MethodStmtList _ %kw_end __ %kw_sub NL            {% ppSub.stmt1 %}
@@ -198,7 +198,13 @@ SubCallStmt          -> QualifiedID _ SubSafeExpr:? _ CommaExprList:*           
                       | QualifiedID _ %paren_left _ Expr _ %paren_right                                                                   {% ppSubCall.stmt3 %}
                       | QualifiedID _ %paren_left _ %paren_right                                                                          {% ppSubCall.stmt4 %}
 
-LeftExpr             -> QualifiedID                                                                                                       {% id %}
+LeftExpr             -> QualifiedID _ IndexOrParams:+                                                                                     {% ppHelpers.leftExpr1 %}
+                      | QualifiedID                                                                                                       {% id %}
+
+IndexOrParams        -> %paren_left _ Expr _ CommaExprList:+ _ %paren_right                                                               {% ppHelpers.indexOrParams1 %}
+                      | %paren_left _ CommaExprList:+ _ %paren_right                                                                      {% ppHelpers.indexOrParams2 %}
+                      | %paren_left _ Expr _ %paren_right                                                                                 {% ppHelpers.indexOrParams3 %}
+                      | %paren_left _ %paren_right                                                                                        {% ppHelpers.indexOrParams4 %}
 
 QualifiedID          -> IDDot QualifiedID                                                                                                 {% ppHelpers.qualifiedId %}
                       | ID                                                                                                                {% id %}
@@ -206,7 +212,8 @@ QualifiedID          -> IDDot QualifiedID                                       
 
 ExtendedID           -> ID                                                                                                                {% id %}
 
-CommaExprList        -> %comma _ Expr                                                                                                     {% data => data[2] %}
+CommaExprList        -> %comma _ Expr                                                                                                     {% ppHelpers.commaExprList1 %}
+                      | %comma _                                                                                                          {% ppHelpers.commaExprList2 %}
 
 #========= If Statement
 
@@ -301,7 +308,7 @@ IntDivExpr           -> IntDivExpr _ %int_div _ MultExpr                        
 MultExpr             -> MultExpr _ %mul_div _ UnaryExpr                                                                                   {% ppMath.mult %}
                       | UnaryExpr                                                                                                         {% id %}
 
-UnaryExpr            -> %unary UnaryExpr                                                                                                  {% ppMath.unary %}
+UnaryExpr            -> %unary _ UnaryExpr                                                                                                {% ppMath.unary %}
                       | ExpExpr                                                                                                           {% id %}
 
 ExpExpr              -> Value _ %exponent _ ExpExpr                                                                                       {% ppMath.exp %}

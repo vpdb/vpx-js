@@ -70,3 +70,39 @@ export function methodArgList1(result: [Token, null, Identifier, null, Identifie
 export function methodArgList2(result: [Token, null, Token]): Identifier[] {
 	return [];
 }
+
+export function commaExprList1(result: [Token, null, Expression]) {
+	const expr = result[2];
+	return expr;
+}
+
+export function commaExprList2(result: [Token, null]) {
+	return estree.literal(null);
+}
+
+export function leftExpr1(result: [Identifier, null, Expression[][]]) {
+	const identifier = result[0];
+	const params = result[2];
+	const expressions = ([] as Expression[]).concat(...params);
+	return estree.callExpression(identifier, expressions);
+}
+
+export function indexOrParams1(result: [Token, null, Expression, null, Expression[], null, Token]) {
+	const param = result[2];
+	const otherParams = result[4];
+	return [param, ...otherParams];
+}
+
+export function indexOrParams2(result: [Token, null, Expression[], null, Token]) {
+	const otherParams = result[2];
+	return [estree.literal(null), ...otherParams];
+}
+
+export function indexOrParams3(result: [Token, null, Expression, null, Token]) {
+	const param = result[2];
+	return [param];
+}
+
+export function indexOrParams4(result: [Token, null, Token]) {
+	return [];
+}

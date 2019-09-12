@@ -21,11 +21,11 @@ import { BinaryOperator, Expression, ExpressionStatement, UnaryExpression, Unary
 import { Token } from 'moo';
 import * as estree from './estree';
 
-export function intDiv(result: [Expression, null, Token, null, Expression]): ExpressionStatement {
+export function intDiv(result: [Expression, null, Token, null, Expression]): Expression {
 	const leftExpr = result[0] ? [result[0]] : [];
 	const rightExpr = result[4] ? [result[4]] : [];
 	const mathFloorExpression = estree.memberExpression(estree.identifier('Math'), estree.identifier('floor'));
-	return estree.callExpressionStatement(mathFloorExpression, [
+	return estree.callExpression(mathFloorExpression, [
 		estree.binaryExpression(
 			'/',
 			estree.callExpression(mathFloorExpression, leftExpr),
@@ -40,10 +40,10 @@ export function eqv(result: [Expression, null, Token, null, Expression]): UnaryE
 	return estree.unaryExpression('~', estree.binaryExpression('^', leftExpr, rightExpr));
 }
 
-export function exp(result: [Expression, null, Token, null, Expression]): ExpressionStatement {
+export function exp(result: [Expression, null, Token, null, Expression]): Expression {
 	const leftExpr = result[0];
 	const rightExpr = result[4];
-	return estree.callExpressionStatement(estree.memberExpression(estree.identifier('Math'), estree.identifier('pow')), [
+	return estree.callExpression(estree.memberExpression(estree.identifier('Math'), estree.identifier('pow')), [
 		leftExpr,
 		rightExpr,
 	]);
@@ -92,8 +92,8 @@ export function mult(result: [Expression, null, Token, null, Expression]): Expre
 	return estree.binaryExpression(operator, leftExpr, rightExpr);
 }
 
-export function unary(result: [Token, Expression]): Expression {
+export function unary(result: [Token, null, Expression]): Expression {
 	const operator = result[0].text as UnaryOperator;
-	const expr = result[1];
+	const expr = result[2];
 	return estree.unaryExpression(operator, expr);
 }
