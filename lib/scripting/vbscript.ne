@@ -268,6 +268,7 @@ OtherExprOpt         -> %comma _ Expr                                           
 SubSafeExpr          -> SubSafeValue                                                                                                      {% id %}
 
 SubSafeValue         -> ConstExpr                                                                                                         {% id %}
+                      | LeftExpr                                                                                                          {% id %}
 
 Expr                 -> EqvExpr                                                                                                           {% id %}
 
