@@ -30,7 +30,6 @@ export function stmt(
 		Expression,
 		null,
 		null,
-		null,
 		SwitchCase[][],
 		null,
 		SwitchCase,
@@ -39,21 +38,20 @@ export function stmt(
 		null,
 		Token,
 		null,
-		null,
 	],
 ): SwitchStatement {
 	const discriminant = result[4];
-	const caseStatements = result[8];
-	const caseElseStatement = result[10] || [];
+	const caseStatements = result[7];
+	const caseElseStatement = result[9] || [];
 	const cases = ([] as SwitchCase[]).concat(...caseStatements, caseElseStatement);
 	return estree.switchStatement(discriminant, cases);
 }
 
-export function caseStmt1(result: [Token, null, Expression, null, Expression[], null, null, BlockStatement]): SwitchCase[] {
+export function caseStmt1(result: [Token, null, Expression, null, Expression[], null, BlockStatement]): SwitchCase[] {
 	const test = [result[2]];
 	const otherTests = result[4] || [];
 	const tests = [...test, ...otherTests];
-	const consequent = result[7].body;
+	const consequent = result[6].body;
 	const switchCases = [] as SwitchCase[];
 	tests.forEach((val, key, arr) => {
 		if (Object.is(tests.length - 1, key)) {
@@ -82,8 +80,8 @@ export function caseStmt2(result: [Token, null, Expression, null, Expression[], 
 	return switchCases;
 }
 
-export function caseElseStmt1(result: [Token, null, Token, null, null, BlockStatement]): SwitchCase {
-	const consequent = result[5].body;
+export function caseElseStmt1(result: [Token, null, Token, null, BlockStatement]): SwitchCase {
+	const consequent = result[4].body;
 	return estree.switchCase(null, consequent);
 }
 

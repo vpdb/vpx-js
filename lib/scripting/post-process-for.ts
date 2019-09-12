@@ -39,11 +39,9 @@ export function stmt1(
 		null,
 		Expression,
 		null,
-		null,
 		BlockStatement,
 		null,
 		Token,
-		null,
 		null,
 	],
 ): ForStatement {
@@ -51,7 +49,7 @@ export function stmt1(
 	const init = result[6];
 	const test = result[10];
 	const step = result[14];
-	const body = result[17];
+	const body = result[16];
 	return estree.forStatement(
 		estree.assignmentExpression(identifier, '=', init),
 		estree.conditionalExpression(
@@ -78,18 +76,16 @@ export function stmt2(
 		null,
 		Expression,
 		null,
-		null,
 		BlockStatement,
 		null,
 		Token,
-		null,
 		null,
 	],
 ): ForStatement {
 	const identifier = result[2];
 	const init = result[6];
 	const test = result[10];
-	const body = result[13];
+	const body = result[12];
 	return estree.forStatement(
 		estree.assignmentExpression(identifier, '=', init),
 		estree.binaryExpression('<=', identifier, test),
@@ -99,10 +95,10 @@ export function stmt2(
 }
 
 export function stmt3(
-	result: [Token, null, Token, null, Identifier, null, Token, null, Expression, null, null, BlockStatement],
+	result: [Token, null, Token, null, Identifier, null, Token, null, Expression, null, BlockStatement, null, Token, null],
 ): ForOfStatement {
 	const identifier = result[4];
 	const expression = result[8];
-	const body = result[11];
+	const body = result[10];
 	return estree.forOfStatement(identifier, expression, body);
 }

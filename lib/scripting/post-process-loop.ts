@@ -22,11 +22,11 @@ import { Token } from 'moo';
 import * as estree from './estree';
 
 export function stmt1(
-	result: [Token, null, Token, null, Expression, null, null, BlockStatement, null, Token, null, null],
+	result: [Token, null, Token, null, Expression, null, BlockStatement, null, Token, null],
 ): WhileStatement | DoWhileStatement {
 	const type = result[2].type;
 	const test = result[4];
-	const body = result[7];
+	const body = result[6];
 	if (type === 'kw_while') {
 		return estree.whileStatement(test, body);
 	} else {
@@ -35,10 +35,10 @@ export function stmt1(
 	}
 }
 
-export function stmt2(result: [Token, null, null, BlockStatement, null, Token, null, Token, null, Expression, null, null]) {
-	const type = result[7].type;
-	const body = result[3];
-	const test = result[9];
+export function stmt2(result: [Token, null, BlockStatement, null, Token, null, Token, null, Expression, null]) {
+	const body = result[2];
+	const type = result[6].type;
+	const test = result[8];
 	if (type === 'kw_while') {
 		return estree.doWhileStatement(body, test);
 	} else {
@@ -47,13 +47,13 @@ export function stmt2(result: [Token, null, null, BlockStatement, null, Token, n
 	}
 }
 
-export function stmt3(result: [Token, null, null, BlockStatement, null, Token, null, null]): DoWhileStatement {
-	const body = result[3];
+export function stmt3(result: [Token, null, BlockStatement, null, Token, null]): DoWhileStatement {
+	const body = result[2];
 	return estree.doWhileStatement(body, estree.literal(true));
 }
 
-export function stmt4(result: [Token, null, Expression, null, null, BlockStatement, null, Token, null, null]): WhileStatement {
+export function stmt4(result: [Token, null, Expression, null, BlockStatement, null, Token, null]): WhileStatement {
 	const test = result[2];
-	const body = result[5];
+	const body = result[4];
 	return estree.whileStatement(test, body);
 }
