@@ -68,4 +68,12 @@ describe('The VBScript transpiler - Subcall', () => {
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('BallRelease.Kicker.KickBall(0, -2);');
 	});
+
+	it('should transpile an subcall statement with function call params', () => {
+		const vbs = `PlaySound SoundFX("fx_flipperup",DOFFlippers), 0, .67, AudioPan(RightFlipper), 0.05,0,0,1,AudioFade(RightFlipper)\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('PlaySound(SoundFX(\'fx_flipperup\', DOFFlippers), 0, 0.67, AudioPan(RightFlipper), 0.05, 0, 0, 1, AudioFade(RightFlipper));');
+	});
+
+	
 });
