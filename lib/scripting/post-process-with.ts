@@ -21,9 +21,9 @@ import { BlockStatement, Expression, Statement } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
-export function stmt(result: [Token, null, Expression, null, null, BlockStatement, null, null, null, null]): BlockStatement {
+export function stmt(result: [Token, null, Expression, null, BlockStatement, null, null, null, null]): BlockStatement {
 	const identifier = result[2];
-	const body = result[5];
+	const body = result[4];
 	body.body.forEach(statement => {
 		if (statement.type === 'ExpressionStatement') {
 			if (statement.expression.type === 'AssignmentExpression') {
