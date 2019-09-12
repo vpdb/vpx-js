@@ -36,6 +36,7 @@ import { IRenderApi } from '../../render/irender-api';
 import { Transpiler } from '../../scripting/transpiler';
 import { logger } from '../../util/logger';
 import { Bumper } from '../bumper/bumper';
+import { Collection } from '../collection/collection';
 import { Flipper } from '../flipper/flipper';
 import { Gate } from '../gate/gate';
 import { HitTarget } from '../hit-target/hit-target';
@@ -50,7 +51,7 @@ import { Spinner } from '../spinner/spinner';
 import { Surface } from '../surface/surface';
 import { TextBoxItem } from '../textbox-item';
 import { Texture } from '../texture';
-import { TimerItem } from '../timer-item';
+import { Timer } from '../timer/timer';
 import { Trigger } from '../trigger/trigger';
 import { TableData } from './table-data';
 import { TableExportOptions } from './table-exporter';
@@ -74,6 +75,7 @@ export class Table implements IRenderable {
 	private readonly imageCache: Map<string, IImage> = new Map();
 
 	public readonly textures: { [key: string]: Texture } = {};
+	public readonly collections: { [key: string]: Collection } = {};
 
 	public readonly bumpers: { [key: string]: Bumper } = {};
 	public readonly flippers: { [key: string]: Flipper } = {};
@@ -88,7 +90,7 @@ export class Table implements IRenderable {
 	public readonly spinners: { [key: string]: Spinner } = {};
 	public readonly surfaces: { [key: string]: Surface } = {};
 	public readonly textBoxes: { [key: string]: TextBoxItem } = {};
-	public readonly timers: { [key: string]: TimerItem } = {};
+	public readonly timers: { [key: string]: Timer } = {};
 	public readonly triggers: { [key: string]: Trigger } = {};
 
 	private readonly meshGenerator?: TableMeshGenerator;
@@ -120,6 +122,7 @@ export class Table implements IRenderable {
 		}
 		const items: Array<[any, any]> = [
 			[loadedTable.textures, this.textures],
+			[loadedTable.collections, this.collections],
 			[loadedTable.bumpers, this.bumpers],
 			[loadedTable.flippers, this.flippers],
 			[loadedTable.gates, this.gates],

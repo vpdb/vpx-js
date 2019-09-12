@@ -17,26 +17,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BiffParser } from '../io/biff-parser';
-import { Storage } from '../io/ole-doc';
-import { Vertex2D } from '../math/vertex2d';
-import { ItemData } from './item-data';
+import { BiffParser } from '../../io/biff-parser';
+import { Storage } from '../../io/ole-doc';
+import { ItemData } from '../item-data';
 
-/**
- * VPinball's timers.
- *
- * @see https://github.com/vpinball/vpinball/blob/master/timer.cpp
- */
-export class TimerItem extends ItemData {
+export class CollectionData extends ItemData {
 
-	public vCenter!: Vertex2D;
-	private wzName!: string;
-	private fBackglass!: boolean;
+	public wzName!: string;
+	public itemNames: string[] = [];
+	public fireEvents: boolean = false;
+	public groupEvents: boolean = true;
+	public stopSingleEvents: boolean = false;
 
-	public static async fromStorage(storage: Storage, itemName: string): Promise<TimerItem> {
-		const timerItem = new TimerItem(itemName);
-		await storage.streamFiltered(itemName, 4, BiffParser.stream(timerItem.fromTag.bind(timerItem), {}));
-		return timerItem;
+	public static async fromStorage(storage: Storage, itemName: string): Promise<CollectionData> {
+		const collectionData = new CollectionData(itemName);
+		await storage.streamFiltered(itemName, 0, BiffParser.stream(collectionData.fromTag.bind(collectionData), {}));
+		return collectionData;
 	}
 
 	private constructor(itemName: string) {
@@ -47,15 +43,13 @@ export class TimerItem extends ItemData {
 		return this.wzName;
 	}
 
-	public isVisible(): boolean {
-		return false;
-	}
-
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
 		switch (tag) {
-			case 'VCEN': this.vCenter = Vertex2D.get(buffer); break;
 			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
-			case 'BGLS': this.fBackglass = this.getBool(buffer); break;
+			case 'EVNT': this.fireEvents = this.getBool(buffer); break;
+			case 'SSNG': this.stopSingleEvents = this.getBool(buffer); break;
+			case 'GREL': this.groupEvents = this.getBool(buffer); break;
+			case 'ITEM': this.itemNames.push(this.getWideString(buffer, len)); break;
 			default:
 				this.getUnknownBlock(buffer, tag);
 				break;

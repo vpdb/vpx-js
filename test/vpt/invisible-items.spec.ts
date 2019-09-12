@@ -35,9 +35,9 @@ describe('The VPinball parser for invisible elements', () => {
 	it('should parse a timer item', async () => {
 		const timer = vpt.timers.Timer;
 		expect(timer).to.be.an('object');
-		expect(timer.timer.interval).to.equal(100);
-		expect(timer.vCenter.x).to.equal(-133.5);
-		expect(timer.vCenter.y).to.equal(269);
+		expect(timer.data.timer.interval).to.equal(100);
+		expect(timer.data.vCenter.x).to.equal(-133.5);
+		expect(timer.data.vCenter.y).to.equal(269);
 	});
 
 	it('should parse a plunger item', async () => {
