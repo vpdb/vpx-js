@@ -129,6 +129,6 @@ export interface IPhysicalData {
 }
 
 export class TimerDataRoot {
-	public interval: number = 0;
-	public enabled: boolean = false;
+	public interval: number = 100;
+	public enabled: boolean = true;
 }

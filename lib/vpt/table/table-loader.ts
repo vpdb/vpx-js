@@ -34,10 +34,11 @@ import { Spinner } from '../spinner/spinner';
 import { Surface } from '../surface/surface';
 import { TextBoxItem } from '../textbox-item';
 import { Texture } from '../texture';
-import { TimerItem } from '../timer-item';
+import { Timer } from '../timer/timer';
 import { Trigger } from '../trigger/trigger';
 import { TableLoadOptions } from './table';
 import { TableData } from './table-data';
+import { Collection } from '../collection/collection';
 
 export class TableLoader {
 
@@ -64,6 +65,9 @@ export class TableLoader {
 
 					// load images
 					await this.loadTextures(loadedTable, gameStorage, loadedTable.data.numTextures);
+
+					// load collections
+					await this.loadCollections(loadedTable, gameStorage, loadedTable.data.numCollections);
 				}
 
 				if (opts.loadTableScript) {
@@ -92,17 +96,6 @@ export class TableLoader {
 		try {
 			await this.doc.reopen();
 			return await streamer(this.doc.storage(name));
-		} finally {
-			await this.doc.close();
-		}
-	}
-
-	public async getTableScript(data: TableData): Promise<string> {
-		await this.doc.reopen();
-		try {
-			const gameStorage = this.doc.storage('GameStg');
-			const buffer = await gameStorage.read('GameData', data.scriptPos, data.scriptLen);
-			return buffer.toString();
 		} finally {
 			await this.doc.close();
 		}
@@ -209,7 +202,7 @@ export class TableLoader {
 				}
 
 				case ItemData.TypeTimer: {
-					item = await TimerItem.fromStorage(storage, itemName);
+					item = await Timer.fromStorage(storage, itemName);
 					if (opts.loadInvisibleItems) {
 						loadedTable.timers.push(item);
 					}
@@ -265,6 +258,15 @@ export class TableLoader {
 			}
 		}
 	}
+
+	private async loadCollections(loadedTable: LoadedTable, storage: Storage, numItems: number) {
+		loadedTable.collections = [];
+		for (let i = 0; i < numItems; i++) {
+			const itemName = `Collection${i}`;
+			const collection = await Collection.fromStorage(storage, itemName);
+			loadedTable.collections.push(collection);
+		}
+	}
 }
 
 export interface LoadedTable {
@@ -274,6 +276,7 @@ export interface LoadedTable {
 
 	tableScript?: string;
 	textures?: Texture[];
+	collections?: Collection[];
 
 	surfaces?: Surface[];
 	primitives?: Primitive[];
@@ -290,5 +293,5 @@ export interface LoadedTable {
 	plungers?: Plunger[];
 	textBoxes?: TextBoxItem[];
 
-	timers?: TimerItem[];
+	timers?: Timer[];
 }
