@@ -23,8 +23,8 @@ import { Player } from '../game/player';
 import { Collection } from './collection/collection';
 import { ItemData } from './item-data';
 import { Table } from './table/table';
-import { TimerHit } from './timer/timer-hit';
 import { MAX_TIMER_MSEC_INTERVAL } from './timer/timer-const';
+import { TimerHit } from './timer/timer-hit';
 import { TimerOnOff } from './timer/timer-on-off';
 
 export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
