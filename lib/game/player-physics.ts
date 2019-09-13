@@ -40,10 +40,11 @@ import { BallData } from '../vpt/ball/ball-data';
 import { BallState } from '../vpt/ball/ball-state';
 import { FlipperMover } from '../vpt/flipper/flipper-mover';
 import { Table } from '../vpt/table/table';
-import { MAX_TIMERS_MSEC_OVERALL, TimerOnOff } from '../vpt/timer/timer';
 import { TimerHit } from '../vpt/timer/timer-hit';
 import { Event } from './event';
 import { IBallCreationPosition } from './player';
+import { MAX_TIMERS_MSEC_OVERALL } from '../vpt/timer/timer-const';
+import { TimerOnOff } from '../vpt/timer/timer-on-off';
 
 const SLOW_MO = 1; // the lower, the slower
 const ANIM_FPS = 60;

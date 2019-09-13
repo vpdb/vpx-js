@@ -23,8 +23,9 @@ import { Player } from '../game/player';
 import { Collection } from './collection/collection';
 import { ItemData } from './item-data';
 import { Table } from './table/table';
-import { MAX_TIMER_MSEC_INTERVAL, TimerOnOff } from './timer/timer';
 import { TimerHit } from './timer/timer-hit';
+import { MAX_TIMER_MSEC_INTERVAL } from './timer/timer-const';
+import { TimerOnOff } from './timer/timer-on-off';
 
 export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 
@@ -107,7 +108,7 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 		return cnt;
 	}
 
-	private setTimerEnabled(isEnabled: boolean): void {
+	protected setTimerEnabled(isEnabled: boolean): void {
 		if (isEnabled !== this.data.timer.enabled && this.hitTimer) {
 
 			// to avoid problems with timers dis/enabling themselves, store all the changes in a list
@@ -134,7 +135,7 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 		this.data.timer.enabled = isEnabled;
 	}
 
-	private setTimerInterval(interval: number): void {
+	protected setTimerInterval(interval: number): void {
 		this.data.timer.interval = interval;
 		if (this.hitTimer) {
 			this.hitTimer.interval = interval >= 0 ? Math.max(interval, MAX_TIMER_MSEC_INTERVAL) : -1;
