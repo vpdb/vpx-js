@@ -38,7 +38,6 @@ export class TextBoxItem extends ItemData {
 	public align?: number;
 	public isTransparent: boolean = false;
 	public isDMD: boolean = false;
-	private wzName!: string;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<TextBoxItem> {
 		const textBoxItem = new TextBoxItem(itemName);
@@ -50,10 +49,6 @@ export class TextBoxItem extends ItemData {
 
 	private constructor(itemName: string) {
 		super(itemName);
-	}
-
-	public getName(): string {
-		return this.wzName;
 	}
 
 	public isVisible(): boolean {
@@ -68,13 +63,12 @@ export class TextBoxItem extends ItemData {
 			case 'CLRF': this.fontColor = BiffParser.bgrToRgb(this.getInt(buffer)); break;
 			case 'INSC': this.intensityScale = this.getFloat(buffer); break;
 			case 'TEXT': this.text = this.getString(buffer, len); break;
-			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			case 'ALGN': this.align = this.getInt(buffer); break;
 			case 'TRNS': this.isTransparent = this.getBool(buffer); break;
 			case 'IDMD': this.isDMD = this.getBool(buffer); break;
 			case 'FONT': break; // ignore for now, see BiffParser#L62, it's currently treated as end of storage
 			default:
-				this.getUnknownBlock(buffer, tag);
+				this.getCommonBlock(buffer, tag, len);
 				break;
 		}
 		return 0;

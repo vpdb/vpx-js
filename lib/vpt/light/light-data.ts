@@ -26,7 +26,6 @@ import { Table } from '../table/table';
 import { Light } from './light';
 
 export class LightData extends ItemData {
-	public wzName!: string;
 	public vCenter!: Vertex2D;
 	public falloff: number = 50;
 	public falloffPower: number = 2;
@@ -75,10 +74,6 @@ export class LightData extends ItemData {
 
 	private constructor(itemName: string) {
 		super(itemName);
-	}
-
-	public getName(): string {
-		return this.wzName;
 	}
 
 	/**
@@ -151,7 +146,6 @@ export class LightData extends ItemData {
 			case 'BWTH': this.intensity = this.getFloat(buffer); break;
 			case 'TRMS': this.transmissionScale = this.getFloat(buffer); break;
 			case 'SURF': this.szSurface = this.getString(buffer, len); break;
-			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			case 'BGLS': this.fBackglass = this.getBool(buffer); break;
 			case 'LIDB': this.depthBias = this.getFloat(buffer); break;
 			case 'FASP': this.fadeSpeedUp = this.getFloat(buffer); break;
@@ -165,7 +159,7 @@ export class LightData extends ItemData {
 			case 'BMVA': this.modulateVsAdd = this.getFloat(buffer); break;
 			case 'BHHI': this.bulbHaloHeight = this.getFloat(buffer); break;
 			default:
-				this.getUnknownBlock(buffer, tag);
+				this.getCommonBlock(buffer, tag, len);
 				break;
 		}
 		return 0;

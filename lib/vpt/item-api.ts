@@ -39,6 +39,14 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 	private hitTimer?: TimerHit;
 	private singleEvents: boolean = true;
 
+	get Name() { return this.data.getName(); }
+	set Name(v) { this.data.name = v; }
+	get TimerInterval() { return this.data.timer.interval; }
+	set TimerInterval(v) { this.setTimerInterval(v); }
+	get TimerEnabled() { return this.data.timer.enabled; }
+	set TimerEnabled(v) { this.setTimerEnabled(v); }
+	public UserValue: any;
+
 	protected constructor(data: DATA, events: EventProxy, player: Player, table: Table) {
 		super();
 		this.data = data;
@@ -78,7 +86,28 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 		}
 	}
 
-	protected setTimerEnabled(isEnabled: boolean): void {
+	protected assertNonHdrImage(imageName?: string) {
+		const tex = this.table.getTexture(imageName);
+		if (!tex) {
+			throw new Error(`Texture "${imageName}" not found.`);
+		}
+		if (tex.isHdr()) {
+			throw new Error(`Cannot use a HDR image (.exr/.hdr) here`);
+		}
+	}
+
+	protected ballCountOver(events: EventProxy): number {
+		let cnt = 0;
+		for (const ball of this.player.balls) {
+			if (ball.hit.isRealBall() && ball.hit.vpVolObjs.indexOf(events) >= 0) {
+				++cnt;
+				this.player.getPhysics().activeBall = ball; // set active ball for scriptor
+			}
+		}
+		return cnt;
+	}
+
+	private setTimerEnabled(isEnabled: boolean): void {
 		if (isEnabled !== this.data.timer.enabled && this.hitTimer) {
 
 			// to avoid problems with timers dis/enabling themselves, store all the changes in a list
@@ -105,32 +134,11 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 		this.data.timer.enabled = isEnabled;
 	}
 
-	protected setTimerInterval(interval: number): void {
+	private setTimerInterval(interval: number): void {
 		this.data.timer.interval = interval;
 		if (this.hitTimer) {
 			this.hitTimer.interval = interval >= 0 ? Math.max(interval, MAX_TIMER_MSEC_INTERVAL) : -1;
 			this.hitTimer.nextFire = this.player.getPhysics().timeMsec + this.hitTimer.interval;
 		}
-	}
-
-	protected assertNonHdrImage(imageName?: string) {
-		const tex = this.table.getTexture(imageName);
-		if (!tex) {
-			throw new Error(`Texture "${imageName}" not found.`);
-		}
-		if (tex.isHdr()) {
-			throw new Error(`Cannot use a HDR image (.exr/.hdr) here`);
-		}
-	}
-
-	protected ballCountOver(events: EventProxy): number {
-		let cnt = 0;
-		for (const ball of this.player.balls) {
-			if (ball.hit.isRealBall() && ball.hit.vpVolObjs.indexOf(events) >= 0) {
-				++cnt;
-				this.player.getPhysics().activeBall = ball; // set active ball for scriptor
-			}
-		}
-		return cnt;
 	}
 }

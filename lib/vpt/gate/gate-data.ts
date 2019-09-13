@@ -43,7 +43,6 @@ export class GateData extends ItemData {
 	public szSurface?: string;
 	public twoWay: boolean = false;
 	public vCenter!: Vertex2D;
-	public wzName!: string;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<GateData> {
 		const gateData = new GateData(itemName);
@@ -53,10 +52,6 @@ export class GateData extends ItemData {
 
 	private constructor(itemName: string) {
 		super(itemName);
-	}
-
-	public getName(): string {
-		return this.wzName;
 	}
 
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
@@ -79,7 +74,6 @@ export class GateData extends ItemData {
 			case 'GVSB': this.isVisible = this.getBool(buffer); break;
 			case 'REEN': this.isReflectionEnabled = this.getBool(buffer); break;
 			case 'SURF': this.szSurface = this.getString(buffer, len); break;
-			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			case 'ELAS': this.elasticity = this.getFloat(buffer); break;
 			case 'GAMA': this.angleMax = this.getFloat(buffer); break;
 			case 'GAMI': this.angleMin = this.getFloat(buffer); break;
@@ -87,7 +81,7 @@ export class GateData extends ItemData {
 			case 'AFRC': this.damping = this.getFloat(buffer); break;
 			case 'GGFC': this.gravityFactor = this.getFloat(buffer); break;
 			default:
-				this.getUnknownBlock(buffer, tag);
+				this.getCommonBlock(buffer, tag, len);
 				break;
 		}
 		return 0;

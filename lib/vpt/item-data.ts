@@ -86,25 +86,29 @@ export abstract class ItemData extends BiffParser {
 		return `Unknown type "${type}"`;
 	}
 
+	public timer = new TimerDataRoot();
+	public name!: string;
+	public readonly itemName: string;
 	private pdata?: number;
 	private fLocked?: boolean;
 	private layerIndex?: number;
-	public timer = new TimerDataRoot();
-	public readonly itemName: string;
 
 	protected constructor(itemName: string) {
 		super();
 		this.itemName = itemName;
 	}
 
-	public abstract getName(): string;
+	public getName(): string {
+		return this.name;
+	}
 
 	protected async getData(storage: Storage, itemName: string, offset: number, len: number): Promise<Buffer> {
 		return storage.read(itemName, offset, len);
 	}
 
-	protected getUnknownBlock(buffer: Buffer, tag: string) {
+	protected getCommonBlock(buffer: Buffer, tag: string, len: number) {
 		switch (tag) {
+			case 'NAME': this.name = this.getWideString(buffer, len); break;
 			case 'PIID': this.pdata = this.getInt(buffer); break;
 			case 'LOCK': this.fLocked = this.getBool(buffer); break;
 			case 'LAYR': this.layerIndex = this.getInt(buffer); break;

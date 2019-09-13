@@ -40,7 +40,6 @@ export class PlungerData extends ItemData {
 	public momentumXfer: number = 1;
 	public mechPlunger: boolean = false;
 	public autoPlunger: boolean = false;
-	public wzName!: string;
 	public animFrames?: number;
 	public szMaterial?: string;
 	public szImage?: string;
@@ -67,10 +66,6 @@ export class PlungerData extends ItemData {
 		super(itemName);
 	}
 
-	public getName(): string {
-		return this.wzName;
-	}
-
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
 		switch (tag) {
 			case 'VCEN': this.center = Vertex2D.get(buffer); break;
@@ -86,7 +81,6 @@ export class PlungerData extends ItemData {
 			case 'MOMX': this.momentumXfer = this.getFloat(buffer); break;
 			case 'MECH': this.mechPlunger = this.getBool(buffer); break;
 			case 'APLG': this.autoPlunger = this.getBool(buffer); break;
-			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			case 'TYPE': this.type = this.getInt(buffer); break;
 			case 'ANFR': this.animFrames = this.getInt(buffer); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
@@ -104,7 +98,7 @@ export class PlungerData extends ItemData {
 			case 'SPRL': this.springLoops = this.getFloat(buffer); break;
 			case 'SPRE': this.springEndLoops = this.getFloat(buffer); break;
 			default:
-				this.getUnknownBlock(buffer, tag);
+				this.getCommonBlock(buffer, tag, len);
 				break;
 		}
 		return 0;

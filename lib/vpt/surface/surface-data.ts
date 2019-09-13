@@ -40,7 +40,6 @@ export class SurfaceData extends ItemData implements IPhysicalData {
 	public heightTop: number = 50;
 	/** @deprecated */
 	public inner: boolean = true;
-	public wzName!: string;
 	public displayTexture: boolean = false;
 	public slingshotForce: number = 80;
 	public slingshotThreshold: number = 0;
@@ -79,10 +78,6 @@ export class SurfaceData extends ItemData implements IPhysicalData {
 		super(itemName);
 	}
 
-	public getName(): string {
-		return this.wzName;
-	}
-
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
 		switch (tag) {
 			case 'HTEV': this.hitEvent = this.getBool(buffer); break;
@@ -100,7 +95,6 @@ export class SurfaceData extends ItemData implements IPhysicalData {
 			case 'HTBT': this.heightBottom = this.getFloat(buffer); break;
 			case 'HTTP': this.heightTop = this.getFloat(buffer); break;
 			case 'INNR': this.inner = this.getBool(buffer); break;
-			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			case 'DSPT': this.displayTexture = this.getBool(buffer); break;
 			case 'SLGF': this.slingshotForce = this.getFloat(buffer); break;
 			case 'SLTH': this.slingshotThreshold = this.getFloat(buffer); break;
@@ -116,7 +110,7 @@ export class SurfaceData extends ItemData implements IPhysicalData {
 			case 'REEN': this.isReflectionEnabled = this.getBool(buffer); break;
 			case 'PNTS': break; // never read in vpinball
 			default:
-				this.getUnknownBlock(buffer, tag);
+				this.getCommonBlock(buffer, tag, len);
 				break;
 		}
 		return 0;

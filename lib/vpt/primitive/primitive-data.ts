@@ -71,7 +71,6 @@ export class PrimitiveData extends ItemData implements IPhysicalData {
 	public use3DMesh: boolean = false;
 	public useAsPlayfield: boolean = false;
 
-	public wzName!: string;
 	public sideColor: number = 0x969696;
 	private numIndices!: number;
 	public isReflectionEnabled: boolean = true;
@@ -95,10 +94,6 @@ export class PrimitiveData extends ItemData implements IPhysicalData {
 		super(itemName);
 	}
 
-	public getName() {
-		return this.wzName;
-	}
-
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number, storage: Storage, itemName: string): Promise<number> {
 		switch (tag) {
 			case 'VPOS': this.position = Vertex3D.get(buffer); break;
@@ -115,7 +110,6 @@ export class PrimitiveData extends ItemData implements IPhysicalData {
 			case 'IMAG': this.szImage = this.getString(buffer, len); break;
 			case 'NRMA': this.szNormalMap = this.getString(buffer, len); break;
 			case 'SIDS': this.sides = this.getInt(buffer); break;
-			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
 			case 'SCOL': this.sideColor = this.getInt(buffer); break;
 			case 'TVIS': this.isVisible = this.getBool(buffer); break;
@@ -167,7 +161,7 @@ export class PrimitiveData extends ItemData implements IPhysicalData {
 				break;
 			case 'PIDB': this.depthBias = this.getFloat(buffer); break;
 			default:
-				this.getUnknownBlock(buffer, tag);
+				this.getCommonBlock(buffer, tag, len);
 				break;
 		}
 		return 0;

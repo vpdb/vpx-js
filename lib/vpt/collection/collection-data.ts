@@ -23,7 +23,6 @@ import { ItemData } from '../item-data';
 
 export class CollectionData extends ItemData {
 
-	public wzName!: string;
 	public itemNames: string[] = [];
 	public fireEvents: boolean = false;
 	public groupEvents: boolean = true;
@@ -39,19 +38,14 @@ export class CollectionData extends ItemData {
 		super(itemName);
 	}
 
-	public getName(): string {
-		return this.wzName;
-	}
-
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
 		switch (tag) {
-			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			case 'EVNT': this.fireEvents = this.getBool(buffer); break;
 			case 'SSNG': this.stopSingleEvents = this.getBool(buffer); break;
 			case 'GREL': this.groupEvents = this.getBool(buffer); break;
 			case 'ITEM': this.itemNames.push(this.getWideString(buffer, len)); break;
 			default:
-				this.getUnknownBlock(buffer, tag);
+				this.getCommonBlock(buffer, tag, len);
 				break;
 		}
 		return 0;

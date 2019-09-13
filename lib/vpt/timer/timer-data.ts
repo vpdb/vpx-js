@@ -30,7 +30,6 @@ import { ItemData } from '../item-data';
 export class TimerData extends ItemData {
 
 	public vCenter!: Vertex2D;
-	private wzName!: string;
 	private isBackglass!: boolean;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<TimerData> {
@@ -43,10 +42,6 @@ export class TimerData extends ItemData {
 		super(itemName);
 	}
 
-	public getName(): string {
-		return this.wzName;
-	}
-
 	public isVisible(): boolean {
 		return false;
 	}
@@ -54,10 +49,9 @@ export class TimerData extends ItemData {
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
 		switch (tag) {
 			case 'VCEN': this.vCenter = Vertex2D.get(buffer); break;
-			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			case 'BGLS': this.isBackglass = this.getBool(buffer); break;
 			default:
-				this.getUnknownBlock(buffer, tag);
+				this.getCommonBlock(buffer, tag, len);
 				break;
 		}
 		return 0;
