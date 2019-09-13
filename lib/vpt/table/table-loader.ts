@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { IItem } from '../../game/iitem';
 import { IBinaryReader, OleCompoundDoc, Storage } from '../../io/ole-doc';
 import { logger } from '../../util/logger';
 import { Bumper } from '../bumper/bumper';
@@ -24,6 +25,7 @@ import { Collection } from '../collection/collection';
 import { Flipper } from '../flipper/flipper';
 import { Gate } from '../gate/gate';
 import { HitTarget } from '../hit-target/hit-target';
+import { Item } from '../item';
 import { ItemData } from '../item-data';
 import { Kicker } from '../kicker/kicker';
 import { Light } from '../light/light';
@@ -39,8 +41,6 @@ import { Timer } from '../timer/timer';
 import { Trigger } from '../trigger/trigger';
 import { TableLoadOptions } from './table';
 import { TableData } from './table-data';
-import { IItem } from '../../game/iitem';
-import { Item } from '../item';
 
 export class TableLoader {
 

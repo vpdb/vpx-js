@@ -26,19 +26,15 @@ import { HitTarget } from './hit-target';
 import { HitTargetAnimation } from './hit-target-animation';
 import { HitTargetData } from './hit-target-data';
 
-export class HitTargetApi extends ItemApi {
+export class HitTargetApi extends ItemApi<HitTargetData> {
 
 	private readonly hitTarget: HitTarget;
-	private readonly data: HitTargetData;
 	private readonly animation: HitTargetAnimation;
-	private readonly events: EventProxy;
 
 	constructor(hitTarget: HitTarget, data: HitTargetData, animation: HitTargetAnimation, events: EventProxy, player: Player, table: Table) {
-		super(player, table);
-		this.data = data;
+		super(data, events, player, table);
 		this.hitTarget = hitTarget;
 		this.animation = animation;
-		this.events = events;
 	}
 
 	// from IEditable

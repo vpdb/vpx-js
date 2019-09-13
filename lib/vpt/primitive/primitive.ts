@@ -29,6 +29,7 @@ import { Ball } from '../ball/ball';
 import { Item } from '../item';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
+import { TimerHit } from '../timer/timer-hit';
 import { PrimitiveApi } from './primitive-api';
 import { PrimitiveData } from './primitive-data';
 import { PrimitiveHitGenerator } from './primitive-hit-generator';
@@ -96,6 +97,11 @@ export class Primitive extends Item<PrimitiveData> implements IRenderable, IHitt
 		};
 		this.hits = this.hitGenerator.generateHitObjects(this.getMesh(table), this.events, table);
 		this.api = new PrimitiveApi(this, this.data, this.hits!, this.events, player, table);
+	}
+
+	public getTimers(): TimerHit[] {
+
+		return [];
 	}
 
 	public getApi(): PrimitiveApi {

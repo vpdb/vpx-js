@@ -40,6 +40,9 @@ import { BallData } from '../vpt/ball/ball-data';
 import { BallState } from '../vpt/ball/ball-state';
 import { FlipperMover } from '../vpt/flipper/flipper-mover';
 import { Table } from '../vpt/table/table';
+import { MAX_TIMERS_MSEC_OVERALL, TimerOnOff } from '../vpt/timer/timer';
+import { TimerHit } from '../vpt/timer/timer-hit';
+import { Event } from './event';
 import { IBallCreationPosition } from './player';
 
 const SLOW_MO = 1; // the lower, the slower
@@ -74,6 +77,7 @@ export class PlayerPhysics {
 	private meshAsPlayfield: boolean = false;
 	private hitOcTreeDynamic: HitKD = new HitKD();
 	private hitOcTree: HitQuadtree = new HitQuadtree();
+	private hitTimers: TimerHit[] = [];
 
 	private minPhysLoopTime: number = 0;
 	private lastAnimTimeUsec: number = 0;
@@ -93,6 +97,8 @@ export class PlayerPhysics {
 	private physPeriod: number = 0;
 
 	private activeBallDebug?: Ball;
+	public readonly changedHitTimers: TimerOnOff[] = [];
+	private scriptPeriod: number = 0;
 
 	/**
 	 * Player physics are instantiated in the Player's constructor.
@@ -137,6 +143,12 @@ export class PlayerPhysics {
 				hitObject.calcHitBBox();
 			}
 		}
+
+		// index hit timers
+		for (const scriptable of this.table.getScriptables()) {
+			this.hitTimers.push(...scriptable.getApi().getTimers());
+		}
+
 		this.hitObjects.push(...this.table.getHitShapes()); // these are the table's outer borders
 		this.hitPlayfield = this.table.generatePlayfieldHit();
 		this.hitTopGlass = this.table.generateGlassHit();
@@ -324,12 +336,12 @@ export class PlayerPhysics {
 		}
 //#endif
 
-		//m_script_period = 0;
+		this.scriptPeriod = 0;
 		this.physIterations = 0;
 
 		let firstCycle = true;
 
-		// loop here until current (real) time matches the physics (simulated) time
+			// loop here until current (real) time matches the physics (simulated) time
 		while (this.curPhysicsFrameTime < initialTimeUsec) {
 
 			// Get time in milliseconds for timers
@@ -341,6 +353,52 @@ export class PlayerPhysics {
 			// If the frame is the next thing to happen, update physics to that
 			// point next update acceleration, and continue loop
 			const physicsDiffTime = (this.nextPhysicsFrameTime - this.curPhysicsFrameTime) * (1.0 / DEFAULT_STEPTIME);
+
+			// const curTimeUsec = this.now(); // one could also do this directly in the while loop condition instead (so that the while loop will really match with the current time), but that leads to some stuttering on some heavy frames
+			//
+			// // hung in the physics loop over 200 milliseconds or the number of physics iterations to catch up on is high (i.e. very low/unplayable FPS)
+			// if ((this.now() - initialTimeUsec > 200000) || (this.physIterations > ((this.table.data!.physicsMaxLoops === 0) || (this.table.data!.physicsMaxLoops === 0xFFFFFFFF) ? 0xFFFFFFFF : (this.table.data!.physicsMaxLoops * (10000 / PHYSICS_STEPTIME))))) {
+			// 	// can not keep up to real time
+			// 	this.curPhysicsFrameTime  = initialTimeUsec;                             // skip physics forward ... slip-cycles -> 'slowed' down physics
+			// 	this.nextPhysicsFrameTime = initialTimeUsec + PHYSICS_STEPTIME;
+			// 	break; // go draw frame
+			// }
+			//
+			// // update keys, hid, plumb, nudge, timers, etc
+			// // do the en/disable changes for the timers that piled up
+			// for (const changedHitTimer of this.changedHitTimers) {
+			// 	if (changedHitTimer.enabled) { // add the timer?
+			// 		if (this.hitTimers.indexOf(changedHitTimer.timer) < 0) {
+			// 			this.hitTimers.push(changedHitTimer.timer);
+			// 		}
+			// 	} else { // delete the timer?
+			// 		const idx = this.hitTimers.indexOf(changedHitTimer.timer);
+			// 		if (idx >= 0) {
+			// 			this.hitTimers.splice(idx, 1);
+			// 		}
+			// 	}
+			// }
+			// this.changedHitTimers.length = 0;
+			//
+			// const oldActiveBall = this.activeBall;
+			// this.activeBall = undefined; // No ball is the active ball for timers/key events
+			//
+			// if (this.scriptPeriod <= 1000 * MAX_TIMERS_MSEC_OVERALL) { // if overall script time per frame exceeded, skip
+			// 	const timeCur = (this.curPhysicsFrameTime - this.startTimeUsec) / 1000; // milliseconds
+			//
+			// 	for (const pht of this.hitTimers) {
+			// 		if ((pht.interval >= 0 && pht.nextFire <= timeCur) || pht.interval < 0) {
+			// 			const curNextFire = pht.nextFire;
+			// 			pht.pfe.fireGroupEvent(Event.TimerEventsTimer);
+			// 			// Only add interval if the next fire time hasn't changed since the event was run.
+			// 			if (curNextFire === pht.nextFire) {
+			// 				pht.nextFire += pht.interval;
+			// 			}
+			// 		}
+			// 	}
+			// 	this.scriptPeriod += Math.floor(this.now() - curTimeUsec);
+			// }
+			// this.activeBall = oldActiveBall;
 
 			this.updateVelocities();
 

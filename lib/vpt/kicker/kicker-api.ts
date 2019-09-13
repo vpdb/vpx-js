@@ -27,18 +27,14 @@ import { Table } from '../table/table';
 import { KickerData } from './kicker-data';
 import { KickerHit } from './kicker-hit';
 
-export class KickerApi extends ItemApi {
+export class KickerApi extends ItemApi<KickerData> {
 
-	private readonly data: KickerData;
 	private readonly hit: KickerHit;
-	private readonly events: EventProxy;
 	private readonly ballCreator: IBallCreationPosition;
 
 	constructor(data: KickerData, hit: KickerHit, events: EventProxy, ballCreator: IBallCreationPosition, player: Player, table: Table) {
-		super(player, table);
-		this.data = data;
+		super(data, events, player, table);
 		this.hit = hit;
-		this.events = events;
 		this.ballCreator = ballCreator;
 	}
 
@@ -138,7 +134,7 @@ export class KickerApi extends ItemApi {
 		this.hit.kickXyz(this.table, this.player.getPhysics(), angle, speed, inclination, new Vertex3D(0, 0, 0));
 	}
 
-	public BallCntOver(): number {
-		return super.BallCntOver(this.events);
+	public ballCountOver(): number {
+		return super.ballCountOver(this.events);
 	}
 }

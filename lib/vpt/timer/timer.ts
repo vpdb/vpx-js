@@ -19,17 +19,26 @@
 
 import { EventProxy } from '../../game/event-proxy';
 import { IPlayable } from '../../game/iplayable';
-import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Item } from '../item';
 import { Table } from '../table/table';
-import { TimerApi } from './timer-api';
 import { TimerData } from './timer-data';
+import { TimerHit } from './timer-hit';
 
-export class Timer extends Item<TimerData> implements IPlayable, IScriptable<TimerApi> {
+/**
+ * Amount of msecs to wait (at least) until same timer can be triggered again
+ * (e.g. they can fall behind, if set to > 1, as update cycle is 1000Hz)
+ */
+export const MAX_TIMER_MSEC_INTERVAL = 1;
 
-	private api?: TimerApi;
+/**
+ * Amount of msecs that all timers combined can take per frame (e.g. they can
+ * fall behind, if set to < somelargevalue)
+ */
+export const MAX_TIMERS_MSEC_OVERALL = 5;
+
+export class Timer extends Item<TimerData> implements IPlayable {
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Timer> {
 		const data = await TimerData.fromStorage(storage, itemName);
@@ -42,14 +51,18 @@ export class Timer extends Item<TimerData> implements IPlayable, IScriptable<Tim
 
 	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
-		this.api = new TimerApi(player, table, this.data);
-	}
-
-	public getApi(): TimerApi {
-		return this.api!;
 	}
 
 	public getEventNames(): string[] {
 		return [];
+	}
+}
+
+export class TimerOnOff {
+	public enabled: boolean;
+	public timer: TimerHit;
+	constructor(enabled: boolean, timer: TimerHit) {
+		this.enabled = enabled;
+		this.timer = timer;
 	}
 }
