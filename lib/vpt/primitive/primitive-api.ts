@@ -25,19 +25,15 @@ import { Table } from '../table/table';
 import { Primitive } from './primitive';
 import { PrimitiveData } from './primitive-data';
 
-export class PrimitiveApi extends ItemApi {
+export class PrimitiveApi extends ItemApi<PrimitiveData> {
 
 	private readonly primitive: Primitive;
-	private readonly data: PrimitiveData;
 	private readonly hits: HitObject[];
-	private readonly events: EventProxy;
 
 	constructor(primitive: Primitive, data: PrimitiveData, hits: HitObject[], events: EventProxy, player: Player, table: Table) {
-		super(player, table);
+		super(data, events, player, table);
 		this.primitive = primitive;
-		this.data = data;
 		this.hits = hits;
-		this.events = events;
 	}
 
 	// from IEditable

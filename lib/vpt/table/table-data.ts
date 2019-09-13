@@ -62,7 +62,7 @@ export class TableData extends BiffParser {
 	public nudgeTime?: number;
 	public plungerNormalize!: number;
 	public plungerFilter: boolean = false;
-	public physicsMaxLoops?: number;
+	public physicsMaxLoops: number = 0xFFFFFFFF;
 	public fRenderDecals: boolean = false;
 	public fRenderEMReels: boolean = false;
 	public offset: Vertex2D = new Vertex2D();

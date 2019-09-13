@@ -25,19 +25,15 @@ import { Surface } from './surface';
 import { SurfaceData } from './surface-data';
 import { SurfaceHitGenerator } from './surface-hit-generator';
 
-export class SurfaceApi extends ItemApi {
+export class SurfaceApi extends ItemApi<SurfaceData> {
 
 	private readonly surface: Surface;
-	private readonly data: SurfaceData;
 	private readonly hitGenerator: SurfaceHitGenerator;
-	private readonly events: EventProxy;
 
 	constructor(surface: Surface, data: SurfaceData, hitGenerator: SurfaceHitGenerator, events: EventProxy, player: Player, table: Table) {
-		super(player, table);
+		super(data, events, player, table);
 		this.surface = surface;
-		this.data = data;
 		this.hitGenerator = hitGenerator;
-		this.events = events;
 	}
 
 	// from IEditable

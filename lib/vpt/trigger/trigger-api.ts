@@ -23,15 +23,10 @@ import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { TriggerData } from './trigger-data';
 
-export class TriggerApi extends ItemApi {
-
-	private readonly data: TriggerData;
-	private readonly events: EventProxy;
+export class TriggerApi extends ItemApi<TriggerData> {
 
 	constructor(data: TriggerData, events: EventProxy, player: Player, table: Table) {
-		super(player, table);
-		this.data = data;
-		this.events = events;
+		super(data, events, player, table);
 	}
 
 	// from IEditable
@@ -84,8 +79,8 @@ export class TriggerApi extends ItemApi {
 		return cnt;
 	}
 
-	public BallCntOver(): number {
-		return super.BallCntOver(this.events);
+	public ballCountOver(): number {
+		return super.ballCountOver(this.events);
 	}
 
 	/**

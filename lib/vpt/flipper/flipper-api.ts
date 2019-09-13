@@ -28,21 +28,17 @@ import { FlipperHit } from './flipper-hit';
 import { FlipperMover } from './flipper-mover';
 import { FlipperState } from './flipper-state';
 
-export class FlipperApi extends ItemApi {
+export class FlipperApi extends ItemApi<FlipperData> {
 
-	private readonly data: FlipperData;
 	private readonly state: FlipperState;
 	private readonly hit: FlipperHit;
 	private readonly mover: FlipperMover;
-	private readonly events: EventProxy;
 
 	constructor(data: FlipperData, state: FlipperState, hit: FlipperHit, mover: FlipperMover, events: EventProxy, player: Player, table: Table) {
-		super(player, table);
-		this.data = data;
+		super(data, events, player, table);
 		this.state = state;
 		this.hit = hit;
 		this.mover = mover;
-		this.events = events;
 	}
 	// from IEditable
 	get Name() { return this.data.wzName; }

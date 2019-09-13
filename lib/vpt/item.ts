@@ -19,9 +19,6 @@
 
 import { EventProxy } from '../game/event-proxy';
 import { ItemData } from './item-data';
-import { TimerHit } from './timer/timer-hit';
-
-const MAX_TIMER_MSEC_INTERVAL = 1;
 
 /**
  * This is the base class of all table items.
@@ -30,36 +27,20 @@ export abstract class Item<DATA extends ItemData> {
 
 	protected readonly data: DATA;
 	protected events?: EventProxy;
-	private hitTimer?: TimerHit;
 
 	protected constructor(data: DATA) {
 		this.data = data;
-	}
-
-	public getTimers(): TimerHit[] {
-
-		//TODO this.beginPlay();
-
-		const data = this.getData();
-		const interval = data.timer.interval >= 0 ? Math.max(data.timer.interval, MAX_TIMER_MSEC_INTERVAL) : -1;
-		this.hitTimer = new TimerHit(
-			this.getEventProxy(),
-			interval,
-			interval,
-		);
-
-		return data.timer.enabled ? [this.hitTimer] : [];
 	}
 
 	public getName(): string {
 		return this.data.getName();
 	}
 
-	protected getData(): DATA {
-		return this.data;
-	}
-
 	public getEventProxy(): EventProxy {
 		return this.events!;
+	}
+
+	protected getData(): DATA {
+		return this.data;
 	}
 }

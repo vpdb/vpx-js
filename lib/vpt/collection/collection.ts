@@ -21,12 +21,15 @@ import { Storage } from '../../io/ole-doc';
 import { Item } from '../item';
 import { ItemData } from '../item-data';
 import { CollectionData } from './collection-data';
-import { logger } from '../../util/logger';
 
 export class Collection {
 
 	public readonly data: CollectionData;
 	public readonly items: Array<Item<ItemData>> = [];
+
+	// public props
+	get fireEvents() { return this.data.fireEvents; }
+	get stopSingleEvents() { return this.data.stopSingleEvents; }
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Collection> {
 		const data = await CollectionData.fromStorage(storage, itemName);

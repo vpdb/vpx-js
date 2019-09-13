@@ -22,8 +22,8 @@ import { EventProxy } from '../../game/event-proxy';
 export class TimerHit {
 
 	public readonly pfe: EventProxy;
-	public readonly nextFire: number;
-	public readonly interval: number;
+	public nextFire: number;
+	public interval: number;
 
 	constructor(pfe: EventProxy, nextFire: number, interval: number) {
 		this.pfe = pfe;

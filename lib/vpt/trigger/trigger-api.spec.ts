@@ -77,7 +77,7 @@ describe('The VPinball trigger API', () => {
 		// let it collide
 		player.updatePhysics(800);
 
-		const numBalls = trigger.BallCntOver();
+		const numBalls = trigger.ballCountOver();
 
 		expect(player.balls.length).to.equal(1);
 		expect(numBalls).to.equal(1);

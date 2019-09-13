@@ -18,8 +18,8 @@
  */
 
 import { Table } from '../vpt/table/table';
-import { Player } from './player';
 import { IItem } from './iitem';
+import { Player } from './player';
 
 /**
  * A table element that can interact with the game. This corresponds roughly

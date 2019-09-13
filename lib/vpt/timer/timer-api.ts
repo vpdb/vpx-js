@@ -17,17 +17,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
 import { Player } from '../../game/player';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { TimerData } from './timer-data';
 
-export class TimerApi extends ItemApi {
+export class TimerApi extends ItemApi<TimerData> {
 
-	private readonly data: TimerData;
+	get X() { return this.data.vCenter.x; }
+	set X(v) { this.data.vCenter.x = v; }
+	get Y() { return this.data.vCenter.y; }
+	set Y(v) { this.data.vCenter.y = v; }
 
-	constructor(player: Player, table: Table, data: TimerData) {
-		super(player, table);
-		this.data = data;
+	constructor(data: TimerData, events: EventProxy, player: Player, table: Table) {
+		super(data, events, player, table);
 	}
 }

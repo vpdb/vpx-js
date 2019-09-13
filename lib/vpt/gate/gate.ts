@@ -111,7 +111,7 @@ export class Gate extends Item<GateData> implements IRenderable, IPlayable, IMov
 		this.hitGate = this.hitGenerator.generateGateHit(this.state, this.events, height);
 		this.hitLines = this.hitGenerator.generateLineSegs(this.events, height, tangent);
 		this.hitCircles = this.hitGenerator.generateBracketHits(this.state, this.events, height, tangent);
-		this.api = new GateApi(this.data, this.state, this.getMover(), this.hitGate, this.hitLines.length ? this.hitLines[0] : null, player, table);
+		this.api = new GateApi(this.data, this.events, this.state, this.getMover(), this.hitGate, this.hitLines.length ? this.hitLines[0] : null, player, table);
 	}
 
 	public getHitShapes(): HitObject[] {

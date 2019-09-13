@@ -177,23 +177,23 @@ export class Table {
 	}
 
 	public getPlayables(): IPlayable[] {
-		return Object.values(this.items).filter(isPlayable) as unknown as IPlayable[];
+		return this.getItems().filter(isPlayable) as unknown as IPlayable[];
 	}
 
 	public getMovables(): Array<IMovable<ItemState>> {
-		return Object.values(this.items).filter(isMovable) as unknown as Array<IMovable<ItemState>>;
+		return this.getItems().filter(isMovable) as unknown as Array<IMovable<ItemState>>;
 	}
 
 	public getAnimatables(): Array<IAnimatable<ItemState>> {
-		return Object.values(this.items).filter(isAnimatable) as unknown as  Array<IAnimatable<ItemState>>;
+		return this.getItems().filter(isAnimatable) as unknown as  Array<IAnimatable<ItemState>>;
 	}
 
 	public getScriptables(): Array<IScriptable<any>> {
-		return Object.values(this.items).filter(isScriptable) as unknown as Array<IScriptable<any>>;
+		return this.getItems().filter(isScriptable) as unknown as Array<IScriptable<any>>;
 	}
 
 	public getHittables(): IHittable[] {
-		return Object.values(this.items).filter(isHittable) as unknown as IHittable[];
+		return this.getItems().filter(isHittable) as unknown as IHittable[];
 	}
 
 	public getHitShapes(): HitObject[] {
@@ -383,13 +383,21 @@ export class Table {
 	public setupCollections() {
 		for (const collection of Object.values(this.collections)) {
 			for (const itemName of collection.getItemNames()) {
-				if (!this.items[itemName]) {
-					logger().warn('Non-existant item "%s" in collection "%s", skipping.', itemName, collection.getName());
-				} else {
-					collection.addItem(this.items[itemName]);
+				const tableItem = this.items[itemName];
+				if (!tableItem) {
+					logger().warn('Non-existent item "%s" in collection "%s", skipping.', itemName, collection.getName());
+					break;
+				}
+				collection.addItem(tableItem);
+				if (isScriptable(tableItem)) {
+					tableItem.getApi().addCollection(collection);
 				}
 			}
 		}
+	}
+
+	public getItems(): Array<Item<ItemData>> {
+		return Object.values(this.items);
 	}
 }
 
