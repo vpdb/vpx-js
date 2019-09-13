@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
 import { Player } from '../../game/player';
 import { degToRad, radToDeg } from '../../math/float';
 import { clamp } from '../../math/functions';
@@ -28,7 +29,6 @@ import { GateData } from './gate-data';
 import { GateHit } from './gate-hit';
 import { GateMover } from './gate-mover';
 import { GateState } from './gate-state';
-import { EventProxy } from '../../game/event-proxy';
 
 export class GateApi extends ItemApi<GateData> {
 

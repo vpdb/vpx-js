@@ -19,13 +19,13 @@
 
 import { EventProxy } from '../../game/event-proxy';
 import { IPlayable } from '../../game/iplayable';
+import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Item } from '../item';
 import { Table } from '../table/table';
-import { TimerData } from './timer-data';
-import { IScriptable } from '../../game/iscriptable';
 import { TimerApi } from './timer-api';
+import { TimerData } from './timer-data';
 
 export class Timer extends Item<TimerData> implements IPlayable, IScriptable<TimerApi> {
 
@@ -53,4 +53,4 @@ export class Timer extends Item<TimerData> implements IPlayable, IScriptable<Tim
 		return this.api!;
 	}
 }
-
+
