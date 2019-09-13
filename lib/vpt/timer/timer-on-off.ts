@@ -17,24 +17,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { EventProxy } from '../../game/event-proxy';
-import { Player } from '../../game/player';
-import { ItemApi } from '../item-api';
-import { Table } from '../table/table';
-import { TimerData } from './timer-data';
+import { TimerHit } from './timer-hit';
 
-export class TimerApi extends ItemApi<TimerData> {
+export class TimerOnOff {
+	public enabled: boolean;
+	public timer: TimerHit;
 
-	constructor(data: TimerData, events: EventProxy, player: Player, table: Table) {
-		super(data, events, player, table);
+	constructor(enabled: boolean, timer: TimerHit) {
+		this.enabled = enabled;
+		this.timer = timer;
 	}
-
-	get X() { return this.data.vCenter.x; }
-	set X(v) { this.data.vCenter.x = v; }
-	get Y() { return this.data.vCenter.y; }
-	set Y(v) { this.data.vCenter.y = v; }
-	get Interval() { return this.data.timer.interval; }
-	set Interval(v) { this.setTimerInterval(v); }
-	get Enabled() { return this.data.timer.enabled; }
-	set Enabled(v) { this.setTimerEnabled(v); }
 }
