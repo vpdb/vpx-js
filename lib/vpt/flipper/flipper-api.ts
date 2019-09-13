@@ -40,14 +40,6 @@ export class FlipperApi extends ItemApi<FlipperData> {
 		this.hit = hit;
 		this.mover = mover;
 	}
-	// from IEditable
-	get Name() { return this.data.wzName; }
-	set Name(v) { this.data.wzName = v; }
-	get TimerInterval() { return this.data.timer.interval; }
-	set TimerInterval(v) { this.data.timer.interval = v; }
-	get TimerEnabled() { return this.data.timer.enabled; }
-	set TimerEnabled(v) { this.data.timer.enabled = v; }
-	public UserValue: any;
 
 	// from Flipper
 	get BaseRadius() { return this.data.baseRadius; }

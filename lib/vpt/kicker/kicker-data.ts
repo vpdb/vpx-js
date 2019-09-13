@@ -38,8 +38,6 @@ export class KickerData extends ItemData {
 	public isEnabled: boolean = true;
 	public legacyMode: boolean = false;
 
-	public wzName!: string;
-
 	public static async fromStorage(storage: Storage, itemName: string): Promise<KickerData> {
 		const kickerData = new KickerData(itemName);
 		await storage.streamFiltered(itemName, 4, BiffParser.stream(kickerData.fromTag.bind(kickerData), {}));
@@ -48,10 +46,6 @@ export class KickerData extends ItemData {
 
 	private constructor(itemName: string) {
 		super(itemName);
-	}
-
-	public getName(): string {
-		return this.wzName;
 	}
 
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
@@ -72,11 +66,10 @@ export class KickerData extends ItemData {
 				}
 				break;
 			case 'SURF': this.szSurface = this.getString(buffer, len); break;
-			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			case 'FATH': this.fallThrough = this.getBool(buffer); break;
 			case 'LEMO': this.legacyMode = this.getBool(buffer); break;
 			default:
-				this.getUnknownBlock(buffer, tag);
+				this.getCommonBlock(buffer, tag, len);
 				break;
 		}
 		return 0;

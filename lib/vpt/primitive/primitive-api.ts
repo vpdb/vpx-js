@@ -36,16 +36,6 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 		this.hits = hits;
 	}
 
-	// from IEditable
-	get Name() { return this.data.wzName; }
-	set Name(v) { this.data.wzName = v; }
-	get TimerInterval() { return this.data.timer.interval; }
-	set TimerInterval(v) { this.data.timer.interval = v; }
-	get TimerEnabled() { return this.data.timer.enabled; }
-	set TimerEnabled(v) { this.data.timer.enabled = v; }
-	public UserValue: any;
-
-	// from Primitive
 	get Image() { return this.data.szImage; }
 	set Image(v) { this.assertNonHdrImage(v); this.data.szImage = v; }
 	get NormalMap() { return this.data.szNormalMap; }

@@ -26,8 +26,6 @@ import { Table } from '../table/table';
 
 export class FlipperData extends ItemData {
 
-	public wzName!: string;
-
 	public baseRadius: number = 21.5;
 	public endRadius: number = 13.0;
 	public flipperRadiusMin!: number;
@@ -82,10 +80,6 @@ export class FlipperData extends ItemData {
 		const flipperItem = new FlipperData(itemName);
 		await storage.streamFiltered(itemName, 4, BiffParser.stream(flipperItem.fromTag.bind(flipperItem)));
 		return flipperItem;
-	}
-
-	public getName(): string {
-		return this.wzName;
 	}
 
 	public updatePhysicsSettings(table: Table) {
@@ -176,7 +170,6 @@ export class FlipperData extends ItemData {
 			case 'SURF': this.szSurface = this.getString(buffer, len); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
 			case 'RUMA': this.szRubberMaterial = this.getString(buffer, len); break;
-			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			case 'RTHK': this.rubberThickness = this.getInt(buffer); break;
 			case 'RTHF': this.rubberThickness = this.getFloat(buffer); break;
 			case 'RHGT': this.rubberHeight = this.getInt(buffer); break;
@@ -198,7 +191,7 @@ export class FlipperData extends ItemData {
 			case 'REEN': this.isReflectionEnabled = this.getBool(buffer); break;
 			case 'IMAG': this.szImage = this.getString(buffer, len); break;
 			default:
-				this.getUnknownBlock(buffer, tag);
+				this.getCommonBlock(buffer, tag, len);
 				break;
 		}
 		return 0;

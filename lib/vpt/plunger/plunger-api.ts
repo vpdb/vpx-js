@@ -36,16 +36,6 @@ export class PlungerApi extends ItemApi<PlungerData> {
 		this.ballCreator = ballCreator;
 	}
 
-	// from IEditable
-	get Name() { return this.data.wzName; }
-	set Name(v) { this.data.wzName = v; }
-	get TimerInterval() { return this.data.timer.interval; }
-	set TimerInterval(v) { this.data.timer.interval = v; }
-	get TimerEnabled() { return this.data.timer.enabled; }
-	set TimerEnabled(v) { this.data.timer.enabled = v; }
-	public UserValue: any;
-
-	// from Plunger
 	get X() { return this.data.center.x; }
 	set X(v) { this.data.center.x = v; }
 	get Y() { return this.data.center.y; }

@@ -54,7 +54,6 @@ export class RampData extends ItemData implements IPhysicalData {
 	public wireDiameter: number = f4(8);
 	public wireDistanceX: number = f4(38);
 	public wireDistanceY: number = f4(88);
-	public wzName!: string;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<RampData> {
 		const rampData = new RampData(itemName);
@@ -85,10 +84,6 @@ export class RampData extends ItemData implements IPhysicalData {
 		super(itemName);
 	}
 
-	public getName(): string {
-		return this.wzName;
-	}
-
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
 		switch (tag) {
 			case 'HTBT': this.heightBottom = this.getFloat(buffer); break;
@@ -100,7 +95,6 @@ export class RampData extends ItemData implements IPhysicalData {
 			case 'IMAG': this.szImage = this.getString(buffer, len); break;
 			case 'ALGN': this.imageAlignment = this.getInt(buffer); break;
 			case 'IMGW': this.imageWalls = this.getBool(buffer); break;
-			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			case 'WLHL': this.leftWallHeight = this.getFloat(buffer); break;
 			case 'WLHR': this.rightWallHeight = this.getFloat(buffer); break;
 			case 'WVHL': this.leftWallHeightVisible = this.getFloat(buffer); break;
@@ -121,7 +115,7 @@ export class RampData extends ItemData implements IPhysicalData {
 			case 'OVPH': this.overwritePhysics = this.getBool(buffer); break;
 			case 'PNTS': break;
 			default:
-				this.getUnknownBlock(buffer, tag);
+				this.getCommonBlock(buffer, tag, len);
 				break;
 		}
 		return 0;

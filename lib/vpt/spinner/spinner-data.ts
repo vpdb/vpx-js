@@ -37,7 +37,6 @@ export class SpinnerData extends ItemData {
 	public isVisible: boolean = true;
 	public szImage?: string;
 	public szSurface?: string;
-	private wzName!: string;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<SpinnerData> {
 		const spinnerData = new SpinnerData(itemName);
@@ -47,10 +46,6 @@ export class SpinnerData extends ItemData {
 
 	private constructor(itemName: string) {
 		super(itemName);
-	}
-
-	public getName(): string {
-		return this.wzName;
 	}
 
 	private correctAngles(): this {
@@ -77,9 +72,8 @@ export class SpinnerData extends ItemData {
 			case 'SVIS': this.isVisible = this.getBool(buffer); break;
 			case 'IMGF': this.szImage = this.getString(buffer, len); break;
 			case 'SURF': this.szSurface = this.getString(buffer, len); break;
-			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			default:
-				this.getUnknownBlock(buffer, tag);
+				this.getCommonBlock(buffer, tag, len);
 				break;
 		}
 		return 0;

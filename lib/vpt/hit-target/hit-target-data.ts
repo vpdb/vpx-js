@@ -33,7 +33,6 @@ export class HitTargetData extends ItemData implements IPhysicalData {
 	public dropSpeed: number =  0.5;
 	public isReflectionEnabled: boolean = true;
 	public raiseDelay: number = 100;
-	public wzName!: string;
 	public elasticity!: number;
 	public elasticityFalloff!: number;
 	public friction!: number;
@@ -63,10 +62,6 @@ export class HitTargetData extends ItemData implements IPhysicalData {
 		super(itemName);
 	}
 
-	public getName(): string {
-		return this.wzName;
-	}
-
 	public isDropTarget(): boolean {
 		return this.targetType === HitTarget.TypeDropTargetBeveled
 			|| this.targetType === HitTarget.TypeDropTargetFlatSimple
@@ -80,7 +75,6 @@ export class HitTargetData extends ItemData implements IPhysicalData {
 			case 'ROTZ': this.rotZ = this.getFloat(buffer); break;
 			case 'IMAG': this.szImage = this.getString(buffer, len); break;
 			case 'TRTY': this.targetType = this.getInt(buffer); break;
-			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
 			case 'TVIS': this.isVisible = this.getBool(buffer); break;
 			case 'LEMO': this.legacy = this.getBool(buffer); break;
@@ -101,7 +95,7 @@ export class HitTargetData extends ItemData implements IPhysicalData {
 			case 'MAPH': this.szPhysicsMaterial = this.getString(buffer, len); break;
 			case 'OVPH': this.overwritePhysics = this.getBool(buffer); break;
 			default:
-				this.getUnknownBlock(buffer, tag);
+				this.getCommonBlock(buffer, tag, len);
 				break;
 		}
 		return 0;

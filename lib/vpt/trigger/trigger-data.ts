@@ -42,7 +42,6 @@ export class TriggerData extends ItemData {
 
 	public wireThickness: number = 0;
 	public isReflectionEnabled: boolean = true;
-	public wzName!: string;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<TriggerData> {
 		const triggerData = new TriggerData(itemName);
@@ -67,10 +66,6 @@ export class TriggerData extends ItemData {
 		super(itemName);
 	}
 
-	public getName(): string {
-		return this.wzName;
-	}
-
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
 		switch (tag) {
 			case 'VCEN': this.vCenter = Vertex2D.get(buffer); break;
@@ -87,9 +82,8 @@ export class TriggerData extends ItemData {
 			case 'REEN': this.isReflectionEnabled = this.getBool(buffer); break;
 			case 'SHAP': this.shape = this.getInt(buffer); break;
 			case 'ANSP': this.animSpeed = this.getFloat(buffer); break;
-			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			default:
-				this.getUnknownBlock(buffer, tag);
+				this.getCommonBlock(buffer, tag, len);
 				break;
 		}
 		return 0;

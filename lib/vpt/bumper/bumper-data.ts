@@ -38,7 +38,6 @@ export class BumperData extends ItemData {
 	public orientation: number = 0.0;
 	public ringDropOffset: number = 0.0;
 	public szSurface?: string;
-	public wzName!: string;
 	public isCapVisible: boolean = true;
 	public isBaseVisible: boolean = true;
 	public isRingVisible: boolean = true;
@@ -57,10 +56,6 @@ export class BumperData extends ItemData {
 		super(itemName);
 	}
 
-	public getName(): string {
-		return this.wzName;
-	}
-
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
 		switch (tag) {
 			case 'VCEN': this.vCenter = Vertex2D.get(buffer); break;
@@ -77,7 +72,6 @@ export class BumperData extends ItemData {
 			case 'ORIN': this.orientation = this.getFloat(buffer); break;
 			case 'RDLI': this.ringDropOffset = this.getFloat(buffer); break;
 			case 'SURF': this.szSurface = this.getString(buffer, len); break;
-			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			/* istanbul ignore next: legacy */
 			case 'BVIS':
 				const isVisible = this.getBool(buffer);
@@ -98,7 +92,7 @@ export class BumperData extends ItemData {
 			case 'SKVS': this.isSkirtVisible = this.getBool(buffer); break;
 			case 'REEN': this.isReflectionEnabled = this.getBool(buffer); break;
 			default:
-				this.getUnknownBlock(buffer, tag);
+				this.getCommonBlock(buffer, tag, len);
 				break;
 		}
 		return 0;

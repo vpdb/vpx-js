@@ -25,7 +25,6 @@ import { IPhysicalData, ItemData } from '../item-data';
 
 export class RubberData extends ItemData implements IPhysicalData {
 
-	public wzName!: string;
 	public height: number = f4(25);
 	public hitHeight: number = f4(-1.0);
 	public thickness: number = f4(8);
@@ -67,10 +66,6 @@ export class RubberData extends ItemData implements IPhysicalData {
 		});
 	}
 
-	public getName(): string {
-		return this.wzName;
-	}
-
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
 		switch (tag) {
 			case 'HTTP': this.height = this.getFloat(buffer); break;
@@ -79,7 +74,6 @@ export class RubberData extends ItemData implements IPhysicalData {
 			case 'HTEV': this.hitEvent = this.getBool(buffer); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
 			case 'IMAG': this.szImage = this.getString(buffer, len); break;
-			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
 			case 'ELAS': this.elasticity = this.getFloat(buffer); break;
 			case 'ELFO': this.elasticityFalloff = this.getFloat(buffer); break;
 			case 'RFCT': this.friction = this.getFloat(buffer); break;
@@ -96,7 +90,7 @@ export class RubberData extends ItemData implements IPhysicalData {
 			case 'OVPH': this.overwritePhysics = this.getBool(buffer); break;
 			case 'PNTS': break; // never read in vpinball
 			default:
-				this.getUnknownBlock(buffer, tag);
+				this.getCommonBlock(buffer, tag, len);
 				break;
 		}
 		return 0;
