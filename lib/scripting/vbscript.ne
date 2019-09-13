@@ -112,6 +112,7 @@ const lexer = moo.compile({
 #===============================
 
 Program              -> NL:? GlobalStmt:*                                                                                                 {% ppHelpers.program %}
+                      | _ GlobalStmt:*                                                                                                    {% ppHelpers.program %}
 
 Comment              -> %comment_rem NL                                                                                                   {% ppComment.stmt1 %}
                       | %comment_apostophe NL                                                                                             {% ppComment.stmt2 %}
@@ -167,23 +168,23 @@ Arg                  -> ExtendedID                                              
 BlockStmtList        -> BlockStmt:*                                                                                                       {% ppHelpers.blockStmtList %}
 MethodStmtList       -> MethodStmt:*                                                                                                      {% ppHelpers.methodStmtList %}
 
-GlobalStmt           -> _ Comment                                                                                                         {% data => data[1] %}
-                      | _ OptionExplicit                                                                                                  {% data => data[1] %}
-                      | _ ConstDecl                                                                                                       {% data => data[1] %}
-                      | _ SubDecl                                                                                                         {% data => data[1] %}
-                      | _ FunctionDecl                                                                                                    {% data => data[1] %}
-                      | _ BlockStmt                                                                                                       {% data => data[1] %}
+GlobalStmt           -> Comment                                                                                                           {% id %}
+                      | OptionExplicit                                                                                                    {% id %}
+                      | ConstDecl                                                                                                         {% id %}
+                      | SubDecl                                                                                                           {% id %}
+                      | FunctionDecl                                                                                                      {% id %}
+                      | BlockStmt                                                                                                         {% id %}
 
-MethodStmt           -> _ ConstDecl                                                                                                       {% data => data[1] %}
-                      | _ BlockStmt                                                                                                       {% data => data[1] %}
+MethodStmt           -> ConstDecl                                                                                                         {% id %}
+                      | BlockStmt                                                                                                         {% id %}
 
-BlockStmt            -> _ DimDecl                                                                                                         {% data => data[1] %}
-                      | _ IfStmt                                                                                                          {% data => data[1] %}
-                      | _ WithStmt                                                                                                        {% data => data[1] %}
-                      | _ SelectStmt                                                                                                      {% data => data[1] %}
-                      | _ LoopStmt                                                                                                        {% data => data[1] %}
-                      | _ ForStmt                                                                                                         {% data => data[1] %}
-                      | _ InlineStmt NL                                                                                                   {% data => data[1] %}
+BlockStmt            -> DimDecl                                                                                                           {% id %}
+                      | IfStmt                                                                                                            {% id %}
+                      | WithStmt                                                                                                          {% id %}
+                      | SelectStmt                                                                                                        {% id %}
+                      | LoopStmt                                                                                                          {% id %}
+                      | ForStmt                                                                                                           {% id %}
+                      | InlineStmt NL                                                                                                     {% id %}
                       | NL                                                                                                                {% data => null %}
 
 InlineStmt           -> AssignStmt                                                                                                        {% id %}
@@ -347,7 +348,7 @@ Nothing              -> %kw_nothing                                             
 # Terminals
 #===============================
 
-NL                   -> _ %nl                                                                                                             {% data => null %}
+NL                   -> _ %nl _                                                                                                           {% data => null %}
 
 ID                   -> %identifier                                                                                                       {% ppHelpers.id %}
 IDDot                -> %identifier_dot                                                                                                   {% ppHelpers.id %}
