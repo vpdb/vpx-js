@@ -388,9 +388,9 @@ export class Table {
 					logger().warn('Non-existent item "%s" in collection "%s", skipping.', itemName, collection.getName());
 					break;
 				}
-				collection.addItem(tableItem);
 				if (isScriptable(tableItem)) {
-					tableItem.getApi().addCollection(collection);
+					tableItem.getApi().addCollection(collection, collection.items.length);
+					collection.items.push(tableItem);
 				}
 			}
 		}

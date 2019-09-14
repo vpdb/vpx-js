@@ -35,10 +35,9 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 	protected readonly data: DATA;
 	protected readonly events: EventProxy;
 	protected readonly collections: Collection[] = [];
-	protected readonly eventCollection: Collection[] = [];
+	protected readonly collectionsItemPos: number[] = [];
 
 	private hitTimer?: TimerHit;
-	private singleEvents: boolean = true;
 
 	get Name() { return this.data.getName(); }
 	set Name(v) { this.data.name = v; }
@@ -70,19 +69,23 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 		return this.data.timer.enabled ? [this.hitTimer] : [];
 	}
 
-	public addCollection(collection: Collection) {
+	public addCollection(collection: Collection, pos: number) {
 		this.collections.push(collection);
+		this.collectionsItemPos.push(pos);
 	}
 
 	protected beginPlay(): void {
-		this.eventCollection.length = 0;
-		this.singleEvents = true;
-		for (const col of this.collections) {
+		this.events.eventCollection.length = 0;
+		this.events.eventCollectionItemPos.length = 0;
+		this.events.singleEvents = true;
+		for (let i = 0; i < this.collections.length; i++) {
+			const col = this.collections[i];
 			if (col.fireEvents) {
-				this.eventCollection.push(col);
+				this.events.eventCollection.push(col.getEvents());
+				this.events.eventCollectionItemPos.push(this.collectionsItemPos[i]);
 			}
 			if (col.stopSingleEvents) {
-				this.singleEvents = false;
+				this.events.singleEvents = false;
 			}
 		}
 	}
