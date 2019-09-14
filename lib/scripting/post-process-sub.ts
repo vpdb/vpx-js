@@ -22,7 +22,7 @@ import { Token } from 'moo';
 import * as estree from './estree';
 
 export function stmt1(
-	result: [Token, null, Token, null, Identifier, null, Identifier[], null, BlockStatement, null, Token, null, Token, null],
+	result: [Token, null, Token, null, Identifier, null, Identifier[], null, BlockStatement, Token, null, Token, null],
 ): FunctionDeclaration {
 	const name = result[4];
 	const params = result[6] || [];
@@ -31,7 +31,7 @@ export function stmt1(
 }
 
 export function stmt2(
-	result: [Token, null, Identifier, null, Identifier[], null, BlockStatement, null, Token, null, Token, null],
+	result: [Token, null, Identifier, null, Identifier[], null, BlockStatement, Token, null, Token, null],
 ): FunctionDeclaration {
 	const name = result[2];
 	const params = result[4] || [];
