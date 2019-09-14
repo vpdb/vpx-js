@@ -40,7 +40,6 @@ export function stmt1(
 		Expression,
 		null,
 		BlockStatement,
-		null,
 		Token,
 		null,
 	],
@@ -77,7 +76,6 @@ export function stmt2(
 		Expression,
 		null,
 		BlockStatement,
-		null,
 		Token,
 		null,
 	],
@@ -95,7 +93,7 @@ export function stmt2(
 }
 
 export function stmt3(
-	result: [Token, null, Token, null, Identifier, null, Token, null, Expression, null, BlockStatement, null, Token, null],
+	result: [Token, null, Token, null, Identifier, null, Token, null, Expression, null, BlockStatement, Token, null],
 ): ForOfStatement {
 	const identifier = result[4];
 	const expression = result[8];

@@ -142,11 +142,11 @@ ConstExprDef         -> %paren_left _ ConstExprDef _ %paren_right               
                       | %unary _ ConstExprDef                                                                                             {% ppMath.unary %}
                       | ConstExpr                                                                                                         {% id %}
                      
-SubDecl              -> MethodAccessOpt __ %kw_sub __ ExtendedID _ MethodArgList:? NL MethodStmtList _ %kw_end __ %kw_sub NL              {% ppSub.stmt1 %}
-                      | %kw_sub __ ExtendedID _ MethodArgList:? NL MethodStmtList _ %kw_end __ %kw_sub NL                                 {% ppSub.stmt2 %}
+SubDecl              -> MethodAccessOpt __ %kw_sub __ ExtendedID _ MethodArgList:? NL MethodStmtList %kw_end __ %kw_sub NL                {% ppSub.stmt1 %}
+                      | %kw_sub __ ExtendedID _ MethodArgList:? NL MethodStmtList %kw_end __ %kw_sub NL                                   {% ppSub.stmt2 %}
                  
-FunctionDecl         -> MethodAccessOpt __ %kw_function __ ExtendedID _ MethodArgList:? NL MethodStmtList _ %kw_end __ %kw_function NL    {% ppFunction.stmt1 %}
-                      | %kw_function __ ExtendedID _ MethodArgList:? NL MethodStmtList _ %kw_end __ %kw_function NL                       {% ppFunction.stmt2 %}
+FunctionDecl         -> MethodAccessOpt __ %kw_function __ ExtendedID _ MethodArgList:? NL MethodStmtList %kw_end __ %kw_function NL      {% ppFunction.stmt1 %}
+                      | %kw_function __ ExtendedID _ MethodArgList:? NL MethodStmtList %kw_end __ %kw_function NL                         {% ppFunction.stmt2 %}
 
 MethodAccessOpt      -> %kw_public __ %kw_default                                                                                         {% data => data[0] + ' ' + data[1] %}
                       | AccessModifierOpt                                                                                                 {% id %}
@@ -218,7 +218,7 @@ CommaExprList        -> %comma _ Expr                                           
 
 #========= If Statement
 
-IfStmt               -> %kw_if _ Expr _ %kw_then NL BlockStmtList _ ElseIfStmt:* _ ElseStmt:? _ %kw_end __ %kw_if NL                      {% ppIf.stmt1 %}
+IfStmt               -> %kw_if _ Expr _ %kw_then NL BlockStmtList ElseIfStmt:* ElseStmt:? %kw_end __ %kw_if NL                            {% ppIf.stmt1 %}
                       | %kw_if _ Expr _ %kw_then __ InlineStmt __ %kw_else __ InlineStmt __ %kw_end __ %kw_if NL                          {% ppIf.stmt2 %}
                       | %kw_if _ Expr _ %kw_then __ InlineStmt __ %kw_else __ InlineStmt NL                                               {% ppIf.stmt3 %}
                       | %kw_if _ Expr _ %kw_then __ InlineStmt __ %kw_end __ %kw_if NL                                                    {% ppIf.stmt4 %}
@@ -232,34 +232,32 @@ ElseStmt             -> %kw_else __ InlineStmt NL                               
 
 #========= With Statement
 
-WithStmt             -> %kw_with _ Expr NL BlockStmtList _ %kw_end __ %kw_with NL                                                         {% ppWith.stmt %}
+WithStmt             -> %kw_with _ Expr NL BlockStmtList %kw_end __ %kw_with NL                                                           {% ppWith.stmt %}
 
 #========= Loop Statement
  
-LoopStmt             -> %kw_do __ LoopType _ Expr NL BlockStmtList _ %kw_loop NL                                                          {% ppLoop.stmt1 %}
-                      | %kw_do NL BlockStmtList _ %kw_loop __ LoopType _ Expr NL                                                          {% ppLoop.stmt2 %}
-                      | %kw_do NL BlockStmtList _ %kw_loop NL                                                                             {% ppLoop.stmt3 %}
-                      | %kw_while _ Expr NL BlockStmtList _ %kw_wend NL                                                                   {% ppLoop.stmt4 %}
+LoopStmt             -> %kw_do __ LoopType _ Expr NL BlockStmtList %kw_loop NL                                                            {% ppLoop.stmt1 %}
+                      | %kw_do NL BlockStmtList %kw_loop __ LoopType _ Expr NL                                                            {% ppLoop.stmt2 %}
+                      | %kw_do NL BlockStmtList %kw_loop NL                                                                               {% ppLoop.stmt3 %}
+                      | %kw_while _ Expr NL BlockStmtList %kw_wend NL                                                                     {% ppLoop.stmt4 %}
 
 LoopType             -> %kw_while                                                                                                         {% id %}
                       | %kw_until                                                                                                         {% id %}
 
 #========= For Statement
 
-ForStmt              -> %kw_for _ ExtendedID _ %equals _ Expr _ %kw_to _ Expr _ %kw_step _ Expr NL BlockStmtList _ %kw_next NL            {% ppFor.stmt1 %}
-                      | %kw_for _ ExtendedID _ %equals _ Expr _ %kw_to _ Expr NL BlockStmtList _ %kw_next NL                              {% ppFor.stmt2 %}
-                      | %kw_for __ %kw_each _ ExtendedID _ %kw_in _ Expr NL BlockStmtList _ %kw_next NL                                   {% ppFor.stmt3 %}
+ForStmt              -> %kw_for _ ExtendedID _ %equals _ Expr _ %kw_to _ Expr _ %kw_step _ Expr NL BlockStmtList %kw_next NL              {% ppFor.stmt1 %}
+                      | %kw_for _ ExtendedID _ %equals _ Expr _ %kw_to _ Expr NL BlockStmtList %kw_next NL                                {% ppFor.stmt2 %}
+                      | %kw_for __ %kw_each _ ExtendedID _ %kw_in _ Expr NL BlockStmtList %kw_next NL                                     {% ppFor.stmt3 %}
 
 #========= Select Statement
 
-SelectStmt           -> %kw_select __ %kw_case _ Expr NL _ CaseStmt:* _ CaseElseStmt:? _ %kw_end __ %kw_select NL                         {% ppSelect.stmt %}
+SelectStmt           -> %kw_select __ %kw_case _ Expr NL CaseStmt:* CaseElseStmt:? %kw_end __ %kw_select NL                               {% ppSelect.stmt %}
 
-CaseStmt             -> %kw_case _ Expr _ OtherExprOpt:* NL BlockStmtList                                                                 {% ppSelect.caseStmt1 %}
-                      | %kw_case _ Expr _ OtherExprOpt:* BlockStmtList                                                                    {% ppSelect.caseStmt2 %}
+CaseStmt             -> %kw_case _ Expr _ OtherExprOpt:* BlockStmtList                                                                    {% ppSelect.caseStmt %}
                                                                                                                     
-CaseElseStmt         -> %kw_case __ %kw_else NL BlockStmtList                                                                             {% ppSelect.caseElseStmt1 %}
-                      | %kw_case __ %kw_else BlockStmtList                                                                                {% ppSelect.caseElseStmt2 %}
-
+CaseElseStmt         -> %kw_case __ %kw_else BlockStmtList                                                                                {% ppSelect.caseElseStmt %}
+ 
 OtherExprOpt         -> %comma _ Expr                                                                                                     {% data => data[2] %}
 
 #===============================

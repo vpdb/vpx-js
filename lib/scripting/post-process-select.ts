@@ -29,11 +29,8 @@ export function stmt(
 		null,
 		Expression,
 		null,
-		null,
 		SwitchCase[][],
-		null,
 		SwitchCase,
-		null,
 		Token,
 		null,
 		Token,
@@ -41,29 +38,13 @@ export function stmt(
 	],
 ): SwitchStatement {
 	const discriminant = result[4];
-	const caseStatements = result[7];
-	const caseElseStatement = result[9] || [];
+	const caseStatements = result[6];
+	const caseElseStatement = result[7] || [];
 	const cases = ([] as SwitchCase[]).concat(...caseStatements, caseElseStatement);
 	return estree.switchStatement(discriminant, cases);
 }
 
-export function caseStmt1(result: [Token, null, Expression, null, Expression[], null, BlockStatement]): SwitchCase[] {
-	const test = [result[2]];
-	const otherTests = result[4] || [];
-	const tests = [...test, ...otherTests];
-	const consequent = result[6].body;
-	const switchCases = [] as SwitchCase[];
-	tests.forEach((val, key, arr) => {
-		if (Object.is(tests.length - 1, key)) {
-			switchCases.push(estree.switchCase(val, [...consequent, estree.breakStatement()]));
-		} else {
-			switchCases.push(estree.switchCase(val, []));
-		}
-	});
-	return switchCases;
-}
-
-export function caseStmt2(result: [Token, null, Expression, null, Expression[], BlockStatement]): SwitchCase[] {
+export function caseStmt(result: [Token, null, Expression, null, Expression[], BlockStatement]): SwitchCase[] {
 	const test = [result[2]];
 	const otherTests = result[4] || [];
 	const tests = [...test, ...otherTests];
@@ -80,12 +61,7 @@ export function caseStmt2(result: [Token, null, Expression, null, Expression[], 
 	return switchCases;
 }
 
-export function caseElseStmt1(result: [Token, null, Token, null, BlockStatement]): SwitchCase {
-	const consequent = result[4].body;
-	return estree.switchCase(null, consequent);
-}
-
-export function caseElseStmt2(result: [Token, null, Token, BlockStatement]): SwitchCase {
+export function caseElseStmt(result: [Token, null, Token, BlockStatement]): SwitchCase {
 	const consequent = result[3].body;
 	return estree.switchCase(null, consequent);
 }

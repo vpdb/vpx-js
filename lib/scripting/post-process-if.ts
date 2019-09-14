@@ -21,6 +21,8 @@ import { BlockStatement, Expression, IfStatement, Statement } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
+//IfStmt               -> %kw_if _ Expr _ %kw_then NL BlockStmtList ElseIfStmt:* ElseStmt:? %kw_end __ %kw_if NL                            {% ppIf.stmt1 %}
+
 export function stmt1(
 	result: [
 		Token,
@@ -30,11 +32,8 @@ export function stmt1(
 		Token,
 		null,
 		BlockStatement,
-		null,
 		IfStatement[],
-		null,
 		Statement,
-		null,
 		Token,
 		null,
 		Token,
@@ -43,8 +42,8 @@ export function stmt1(
 ): IfStatement {
 	const test = result[2];
 	const consequent = result[6];
-	const elseIfStatements = result[8];
-	const elseStatement = result[10] ? [result[10]] : [];
+	const elseIfStatements = result[7];
+	const elseStatement = result[8] ? [result[8]] : [];
 	const ifStatement = estree.ifStatement(test, consequent);
 	let prevStatement: Statement = ifStatement;
 	[...elseIfStatements, ...elseStatement].forEach(statement => {
