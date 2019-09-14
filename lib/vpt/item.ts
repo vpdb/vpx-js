@@ -40,7 +40,10 @@ export abstract class Item<DATA extends ItemData> {
 		return this.events!;
 	}
 
-	protected getData(): DATA {
+	/**
+	 * @deprecated Only use in tests!
+	 */
+	public getData(): DATA {
 		return this.data;
 	}
 }
