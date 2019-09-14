@@ -35,19 +35,19 @@ describe('The VPinball collection data', () => {
 		const table = await Table.load(new NodeBinaryReader(three.fixturePath('table-collection.vpx')));
 
 		expect(table.collections.CollectionA).to.be.ok;
-		expect(table.collections.CollectionA.data.fireEvents).to.equal(false);
-		expect(table.collections.CollectionA.data.stopSingleEvents).to.equal(false);
-		expect(table.collections.CollectionA.data.groupEvents).to.equal(true);
-		expect(table.collections.CollectionA.data.itemNames).to.have.lengthOf(2);
-		expect(table.collections.CollectionA.data.itemNames[0]).to.equal('TimerA');
-		expect(table.collections.CollectionA.data.itemNames[1]).to.equal('TimerAB');
+		expect(table.collections.CollectionA.getData().fireEvents).to.equal(false);
+		expect(table.collections.CollectionA.getData().stopSingleEvents).to.equal(false);
+		expect(table.collections.CollectionA.getData().groupEvents).to.equal(true);
+		expect(table.collections.CollectionA.getData().itemNames).to.have.lengthOf(2);
+		expect(table.collections.CollectionA.getData().itemNames[0]).to.equal('TimerA');
+		expect(table.collections.CollectionA.getData().itemNames[1]).to.equal('TimerAB');
 
 		expect(table.collections.CollectionB).to.be.ok;
-		expect(table.collections.CollectionB.data.fireEvents).to.equal(true);
-		expect(table.collections.CollectionB.data.stopSingleEvents).to.equal(true);
-		expect(table.collections.CollectionB.data.groupEvents).to.equal(false);
-		expect(table.collections.CollectionB.data.itemNames).to.have.lengthOf(2);
-		expect(table.collections.CollectionB.data.itemNames[0]).to.equal('TimerB');
-		expect(table.collections.CollectionB.data.itemNames[1]).to.equal('TimerAB');
+		expect(table.collections.CollectionB.getData().fireEvents).to.equal(true);
+		expect(table.collections.CollectionB.getData().stopSingleEvents).to.equal(true);
+		expect(table.collections.CollectionB.getData().groupEvents).to.equal(false);
+		expect(table.collections.CollectionB.getData().itemNames).to.have.lengthOf(2);
+		expect(table.collections.CollectionB.getData().itemNames[0]).to.equal('TimerB');
+		expect(table.collections.CollectionB.getData().itemNames[1]).to.equal('TimerAB');
 	});
 });
