@@ -19,15 +19,37 @@
 
 import { EventProxy } from '../../game/event-proxy';
 import { Player } from '../../game/player';
+import { Item } from '../item';
 import { ItemApi } from '../item-api';
+import { ItemData } from '../item-data';
 import { Table } from '../table/table';
 import { CollectionData } from './collection-data';
 
-export class CollectionApi extends ItemApi<CollectionData> {
+export class CollectionApi extends ItemApi<CollectionData> implements IterableIterator<Item<ItemData>> {
 
-	constructor(data: CollectionData, events: EventProxy, player: Player, table: Table) {
+	private readonly items: Array<Item<ItemData>>;
+	private pointer = 0;
+
+	constructor(data: CollectionData, items: Array<Item<ItemData>>, events: EventProxy, player: Player, table: Table) {
 		super(data, events, player, table);
+		this.items = items;
 	}
 
-	// TODO make iterable
+	public next(): IteratorResult<Item<ItemData>> {
+		if (this.pointer < this.items.length) {
+			return {
+				done: false,
+				value: this.items[this.pointer++],
+			};
+		} else {
+			return {
+				done: true,
+				value: null,
+			};
+		}
+	}
+
+	public [Symbol.iterator](): IterableIterator<Item<ItemData>> {
+		return this;
+	}
 }

@@ -271,6 +271,7 @@ export class TableLoader {
 			const itemName = `Collection${i}`;
 			const collection = await Collection.fromStorage(storage, itemName);
 			loadedTable.collections.push(collection);
+			loadedTable.items[collection.getName()] = collection;
 		}
 	}
 }
