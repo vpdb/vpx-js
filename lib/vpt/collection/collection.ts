@@ -28,11 +28,9 @@ import { Table } from '../table/table';
 import { CollectionApi } from './collection-api';
 import { CollectionData } from './collection-data';
 
-export class Collection implements IPlayable, IScriptable<CollectionApi> {
+export class Collection extends Item<CollectionData> implements IPlayable, IScriptable<CollectionApi> {
 
-	public readonly data: CollectionData;
 	public readonly items: Array<Item<ItemData>> = []; // m_visel
-	private events?: EventProxy;
 	private api?: CollectionApi;
 
 	// public props
@@ -49,12 +47,12 @@ export class Collection implements IPlayable, IScriptable<CollectionApi> {
 	}
 
 	private constructor(data: CollectionData) {
-		this.data = data;
+		super(data);
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
-		this.api = new CollectionApi(this.data, this.events, player, table);
+		this.api = new CollectionApi(this.data, this.items, this.events, player, table);
 	}
 
 	public getItemNames() {
