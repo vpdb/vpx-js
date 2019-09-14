@@ -18,38 +18,16 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
-import { IPlayable } from '../../game/iplayable';
-import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
-import { Storage } from '../../io/ole-doc';
-import { Item } from '../item';
+import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
-import { TimerApi } from './timer-api';
-import { TimerData } from './timer-data';
+import { CollectionData } from './collection-data';
 
-export class Timer extends Item<TimerData> implements IPlayable, IScriptable<TimerApi> {
+export class CollectionApi extends ItemApi<CollectionData> {
 
-	private api?: TimerApi;
-
-	public static async fromStorage(storage: Storage, itemName: string): Promise<Timer> {
-		const data = await TimerData.fromStorage(storage, itemName);
-		return new Timer(data);
+	constructor(data: CollectionData, events: EventProxy, player: Player, table: Table) {
+		super(data, events, player, table);
 	}
 
-	private constructor(data: TimerData) {
-		super(data);
-	}
-
-	public setupPlayer(player: Player, table: Table): void {
-		this.events = new EventProxy(this);
-		this.api = new TimerApi(this.data, this.events, player, table);
-	}
-
-	public getEventNames(): string[] {
-		return ['Init', 'Timer'];
-	}
-
-	public getApi(): TimerApi {
-		return this.api!;
-	}
+	// TODO make iterable
 }

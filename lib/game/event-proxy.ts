@@ -19,10 +19,9 @@
 
 import { HitObject } from '../physics/hit-object';
 import { Ball } from '../vpt/ball/ball';
-import { ItemApi } from '../vpt/item-api';
 import { Event } from './event';
 import { IPlayable } from './iplayable';
-import { IScriptable } from './iscriptable';
+import { isScriptable } from './iscriptable';
 
 export class EventProxy {
 
@@ -30,6 +29,9 @@ export class EventProxy {
 	 * while playing and the ball hits the mesh the hit threshold is updated here
 	 */
 	public currentHitThreshold: number = 0;
+	public singleEvents: boolean = true;
+	public readonly eventCollection: EventProxy[] = [];
+	public readonly eventCollectionItemPos: number[] = [];
 
 	private readonly playable: IPlayable;
 
@@ -50,20 +52,6 @@ export class EventProxy {
 		this.playable = playable;
 	}
 
-	public fireDispID(e: Event, ...params: any[]) {
-		const scriptable = this.playable as IScriptable<any>;
-		if (scriptable.getApi) {
-			scriptable.getApi().emit(getEventName(e), params);
-			//logger().info('[%s] fireDispID(%s)', this.playable.getName(), e);
-		}
-	}
-
-	public fireGroupEvent(e: Event): void {
-		// todo send to collection
-		this.fireDispID(e);
-		//logger().info('[%s] fireGroupEvent(%s)', this.playable.getName(), e);
-	}
-
 	public fireVoidEvent(e: Event) {
 		this.fireDispID(e);
 	}
@@ -72,14 +60,34 @@ export class EventProxy {
 		this.fireDispID(e, params);
 		//logger().info('[%s] fireGroupEvent(%s, %s)', this.playable.getName(), e, data);
 	}
+
+	public fireGroupEvent(e: Event): void {
+
+		for (let i = 0; i < this.eventCollection.length; i++) {
+			this.eventCollection[i].fireVoidEventParm(e, this.eventCollectionItemPos[i]);
+		}
+
+		if (this.singleEvents) {
+			this.fireDispID(e);
+		}
+		//logger().info('[%s] fireGroupEvent(%s)', this.playable.getName(), e);
+	}
+
+	private fireDispID(e: Event, ...params: any[]) {
+		if (isScriptable(this.playable)) {
+			this.playable.getApi().emit(getEventName(e), params);
+			//logger().info('[%s] fireDispID(%s)', this.playable.getName(), e);
+		}
+	}
 }
 
 function getEventName(event: Event): string {
 	switch (event) {
 		case Event.HitEventsHit: return 'Hit';
 		case Event.HitEventsUnhit: return 'Unhit';
-		// case Event.TimerEventsTimer: return 'Timer';
+		case Event.TimerEventsTimer: return 'Timer';
 		case Event.GameEventsInit: return 'Init';
-		default: return 'UnknownEvent';
+		// TODO add remaining
+		default: return 'UnknownEvent' + event;
 	}
 }
