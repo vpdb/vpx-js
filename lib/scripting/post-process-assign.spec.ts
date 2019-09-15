@@ -32,4 +32,10 @@ describe('The VBScript transpiler - Assign', () => {
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('AudioFade = Csng(-Math.pow(-tmp, 10), 20);');
 	});
+
+	it('should transpile a "Set" assignment statement', () => {
+		const vbs = `Set EnableBallControl = 0\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('EnableBallControl = 0;');
+	});
 });

@@ -97,3 +97,58 @@ export function unary(result: [Token, null, Expression]): Expression {
 	const expr = result[2];
 	return estree.unaryExpression(operator, expr);
 }
+
+export function concat(result: [Expression, null, Token, null, Expression]): Expression {
+	const leftExpr = result[0];
+	const operator = result[2].text as BinaryOperator;
+	const rightExpr = result[4];
+	return estree.binaryExpression('+', leftExpr, rightExpr);
+}
+
+export function is(result: [Expression, null, Token, null, Expression]): Expression {
+	const leftExpr = result[0];
+	const rightExpr = result[4];
+	return estree.binaryExpression('==', leftExpr, rightExpr);
+}
+
+export function isNot(result: [Expression, null, Token, null, Token, null, Expression]): Expression {
+	const leftExpr = result[0];
+	const rightExpr = result[6];
+	return estree.binaryExpression('!=', leftExpr, rightExpr);
+}
+
+export function gte(result: [Expression, null, Token, null, Expression]): Expression {
+	const leftExpr = result[0];
+	const rightExpr = result[4];
+	return estree.binaryExpression('>=', leftExpr, rightExpr);
+}
+
+export function lte(result: [Expression, null, Token, null, Expression]): Expression {
+	const leftExpr = result[0];
+	const rightExpr = result[4];
+	return estree.binaryExpression('<=', leftExpr, rightExpr);
+}
+
+export function gt(result: [Expression, null, Token, null, Expression]): Expression {
+	const leftExpr = result[0];
+	const rightExpr = result[4];
+	return estree.binaryExpression('>', leftExpr, rightExpr);
+}
+
+export function lt(result: [Expression, null, Token, null, Expression]): Expression {
+	const leftExpr = result[0];
+	const rightExpr = result[4];
+	return estree.binaryExpression('<', leftExpr, rightExpr);
+}
+
+export function gtlt(result: [Expression, null, Token, null, Expression]): Expression {
+	const leftExpr = result[0];
+	const rightExpr = result[4];
+	return estree.binaryExpression('!=', leftExpr, rightExpr);
+}
+
+export function eq(result: [Expression, null, Token, null, Expression]): Expression {
+	const leftExpr = result[0];
+	const rightExpr = result[4];
+	return estree.binaryExpression('==', leftExpr, rightExpr);
+}
