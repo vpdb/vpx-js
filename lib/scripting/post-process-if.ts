@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BlockStatement, Expression, IfStatement, Statement } from 'estree';
+import { BlockStatement, Comment, Expression, IfStatement, Statement } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
@@ -77,30 +77,43 @@ export function stmt4(result: [Token, null, Expression, null, Token, null, State
 	return estree.ifStatement(test, consequent);
 }
 
-export function stmt5(result: [Token, null, Expression, null, Token, null, Statement, null]): IfStatement {
+export function stmt5(result: [Token, null, Expression, null, Token, null, Statement, Comment]): IfStatement {
 	const test = result[2];
 	const consequent = result[6];
-	return estree.ifStatement(test, consequent);
+	const comment = result[7];
+	const statement = estree.ifStatement(test, consequent);
+	if (comment) {
+		statement.trailingComments = [comment];
+	}
+	return statement;
 }
 
-export function elseIfStmt1(result: [Token, null, Expression, null, Token, null, BlockStatement]): IfStatement {
+export function elseIfStmt1(result: [Token, null, Expression, null, Token, Comment, BlockStatement]): IfStatement {
 	const expr = result[2];
 	const consequent = result[6];
 	return estree.ifStatement(expr, consequent);
 }
 
-export function elseIfStmt2(result: [Token, null, Expression, null, Token, null, Statement, null]): IfStatement {
+export function elseIfStmt2(result: [Token, null, Expression, null, Token, null, Statement, Comment]): IfStatement {
 	const expr = result[2];
 	const consequent = result[6];
 	return estree.ifStatement(expr, consequent);
 }
-
-export function elseStmt1(result: [Token, null, Statement, null]): Statement {
+export function elseStmt1(result: [Token, null, Statement, Comment]): Statement {
 	const statement = result[2];
+	const comment = result[3];
+	if (comment) {
+		statement.trailingComments = [comment];
+	}
 	return statement;
 }
 
-export function elseStmt2(result: [Token, null, BlockStatement]): Statement {
+export function elseStmt2(result: [Token, Comment, BlockStatement]): Statement {
+	const comment = result[1];
 	const statement = result[2];
+	if (comment) {
+		statement.trailingComments = [comment];
+	}
 	return statement;
 }
+

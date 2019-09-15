@@ -17,16 +17,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { EmptyStatement } from 'estree';
-import { Token } from 'moo';
-import * as estree from './estree';
+import { expect } from 'chai';
+import { vbsToJs } from '../../test/script.helper';
 
-export function stmt1(result: [Token, null]): EmptyStatement {
-	const text = result[0].text.substr(3);
-	return estree.emptyStatement([], [estree.comment('Line', text)]);
-}
+describe('The VBScript transpiler - Rem', () => {
+	it('should transpile a "Rem" statement', () => {
+		const vbs = `Rem This is a "test" 'comment'.\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal(';    // This is a "test" \'comment\'.\n');
+	});
 
-export function stmt2(result: [Token, null]): EmptyStatement {
-	const text = result[0].text.substr(1);
-	return estree.emptyStatement([], [estree.comment('Line', text)]);
-}
+	it('should transpile an empty "Rem" statement', () => {
+		const vbs = `Rem\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal(';    //\n');
+	});
+
+	it('should transpile a comment', () => {
+		const vbs = `'This is a "test" 'comment';\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal(';    //This is a "test" \'comment\';\n');
+	});
+});
