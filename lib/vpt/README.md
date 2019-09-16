@@ -1,153 +1,124 @@
-# Visual Pinball Playfield Export
+# Table Elements
 
-VPDB can read the VPX/VPT file format and generate a 3D mesh including 
-materials, textures and lights.
+This folder contains implementations of the playfield items. There are various
+aspects to each item, such as data parsing, mesh generation, collision handling,
+physical movement, animation, scripting, and state management. 
 
-Using [three.js](https://threejs.org/), the mesh can be exported to a standard
-format such as [GLTF](https://www.khronos.org/gltf/), where it then can be 
-loaded into basically any 3D modeller, but more importantly, into the browser.
+The original Visual Pinball source code covers all those aspects in one single
+class per item. Common code is found in parent classes which are extended by
+each item.
 
-This allows VPDB's web application to visualize the entire model of an uploaded 
-table in 3D!
+Unlike C++, JavaScript doesn't support multiple inheritance. Additionally, we 
+try to keep a class focused on one single thing, and keep it as small as 
+possible. This results in a somewhat different structure than the original 
+Visual Pinball source code:
 
-## Import
-
-First, VPDB needs to read the VPX/VPT table file, which is a binary format
-using multiple structures on top of each other:
-
-- The global structure is an [OLE Compound file](https://github.com/libyal/libolecf/blob/master/documentation/OLE%20Compound%20File%20format.asciidoc),
-  used in old versions of Excel. It's organized in "storages", where every 
-  storage can have multiple entries.
-- Each entry is also binary data structured as *BIFF* (also used in Excel).
-  Typically, all game items' parameters are linked to a BIFF tag of a given
-  storage item.
+- Every playfield item gets its own folder
+- There is a *main class* which is referenced by rest of the library. This class 
+  delegates most of its functionality to its *helper classes*.
+- The helper classes are instantiated on-demand. For example, during a GLTF 
+  export, no collision helpers will be created.
+- No globals. If a class needs the player or the table object, it needs to be 
+  passed through the constructor or even better to the method only.
   
-VPDB parses the table file in a somewhat efficient way, i.e. it streams the 
-storage items to a parser which updates the model without having to keep the
-whole table file in memory or read data multiple times. For binary data such as 
-textures we only save the file offset and data length and skip the actual data,
-so parsing is relatively fast.
+## Main Class
 
-Once we have our internal representation of the data, we use the API of
-three.js to create a full 3D model, from where we can do all kinds of neat
-stuff, like export it to GLTF (or more precisely, to GLB, the binary version
-of GLTF).
+The main class of a playfield item is the class interacting with the rest of the
+library. They are named without any suffix, like `Flipper`, `Rubber` and `Ball`.
+They all extend [`Item`](item.ts).
 
-## Export
+You can see what a given playfield item is used for by looking at its interfaces.
 
-When exporting, textures are included in the exported files, but they are first
-run through a PNG crusher and image optimizer, which cuts the size 
-approximately in half. Textures are also streamed from the table file directly,
-so it's the export which takes the most time to complete.
+- `IRenderable` is for table elements that are rendered on the playfield
+- `IHittable` means the ball can collide with it
+- `IMovable<STATE>` indicates there is some physically-based movement
+- `IAnimatable<STATE>` indicates the item somehow animates
+- `IPlayable` is implemented for logic during game play
+- `IScriptable` means the item offers a VBScript API
 
-In order to furthermore reduce the size of the exported model, we apply 
-Google's [Draco compression](https://github.com/google/draco), which gets the
-geometry size down to under 10%.
+The difference between `IMovable` and `IAnimatable` is subtle: While `IMovable` 
+computes its state on the physics loop and thus has a somewhat real-world based
+behavior, `IAnimatable`s are only updated once every frame.
 
-In short, we're able to get a VPX file of 190M down to just over 12M. Average
-size is under 10MB, varying from 1.7M (Robo-War) to 17M (TWD).
+## Helper Classes
 
-A Visual Pinball table consists of many different items. The exporter supports
-all items that are visually rendered on the playfield:
+Some helper classes are available for every table item, some only for a handful.
+The following is a description of patterns and how they relate to the interfaces
+defined above.
 
-### Surfaces
+### Data Classes
 
-Surfaces, or walls, are made of 2D-surfaces with a given height. Materials
-and textures can be applied to the top surface and the side surfaces 
-separately.
+These keep the properties of the `.vpx` file and know how to read them. They
+are *usually* read-only, i.e. changes during gameplay are reflected elsewhere,
+but there are some exceptions (which probably are worth refactoring).
 
-### Flippers
+Most other helpers rely on data classes to do their job, so they are referenced
+a lot. All data classes except `BallData` (which isn't persisted) extend [`ItemData`](item-data.ts).
 
-Flippers contain two meshes, the flipper and the rubber. Both can be 
-textured separately. Many parameters are customizable, such as the start-
-and end radius and the thickness of the rubber.
+### States
 
-### Bumpers
+States contain the *visible state* of a table element, i.e. changes that must be
+taken into account by the renderer. They are typically quite small, e.g. a 
+flipper's state contains only the angle. They all extend [`ItemState`](item-state.ts).
 
-Visual Pinball comes with a standard bumper mesh which contains four separate
-elements:
+States are updated directly in the physics loop. A list of states that have been
+changed since the last retrieval can be retrieved by the `Player` class.
 
-- a base
-- the ring
-- the skirt (or socket)
-- the bumper cap
+### APIs
 
-Materials and textures may be applied to all elements separately.
+Visual Pinball provides an API for both the editor and the VBScript engine to
+interact with playfield elements. The goal of the API helpers is to provide an
+instance that implements that API without being spoiled by internals. 
 
-### Triggers
+Playfield items with an API implement `IScriptable`. The returned API class
+extends [`ItemApi`](item-api.ts).
 
-There are a few trigger meshes that Visual Pinball computes:
+### Mesh Generators
 
-- three different wire triggers
-- a "D" wire trigger (round)
-- a trigger in star shape
-- a trigger in button shape
+Mesh generators provide 3D meshes of the playfield item based on their 
+parameters, i.e. their data. They are usually only used when the table is loaded
+and the 3D model is created.
 
-### Lights
+Mesh generators are called within the main class implementing `IRenderable`. 
+Their interface isn't defined, but they usually return a left-handed version
+of `IRenderable`'s `getMeshes()`.
 
-Apart adding light to the playfield, lights can also render a bulb. A bulb
-consists of two meshes, the socket and the glass bulb containing the wire.
-Both of them have their own material and texture.
+### Hit Generators
 
-### Kickers
+Hit generators create the hit shapes that make the ball collide with the table
+item. The generated shapes are a collection of generic hit objects like circle,
+line, triangle or point.
 
-Kicker holes can look quite sophisticated. There are a few types:
+The `IHittable` interface requires a `getHitShapes()` method, which a hit 
+generator provides.
 
-- two "cup" types
-- two "hole" types
-- a Williams kicker
-- a Gottlieb kicker
+### Hits
 
-### Gates
+Hits or hit objects are item-specific hit shapes. Contrarily to hit generators,
+they provide an instance of their own type. It is however possible to mix both,
+for example the spinner has both its own hit object for dealing with the moving
+plate, as well as a hit generator for the socket.
 
-Gates come with a wire mesh and a bracket mesh. The bracket can be optionally 
-hidden. There are a few types of gates:
+### Movers
 
-- a "normal" and a rectangular wire gate
-- a "normal" and a rectangular plate gate
+Movers are created within the hit object. They are the result of `IMovable` and 
+do a few things:
+ 
+- Calculate the item's transformation and velocity on each physics cycle
+- Provide additional parameters to the hit object's collision calculations
+- Read and update the state depending on the above
+   
+So movers sit deeply in the physics loop, but they can also interact with the
+outside. For example, for moving a flipper, the flipper API would provide a
+`RotateToEnd()` method which would set the solenoid state of the mover to
+`true`, which results in building up the acceleration of the flipper through the
+mover, which results in the flipper's `angle` state to change and hence the 
+renderer applying a different rotation matrix on the object.
+ 
+### Animations
 
-### Spinners
+Animation helpers are the "dumb" version of movers. They basically apply a static
+sequence of transformations which are computed only once per frame (although the
+"transformation" is usually just a state parameter changing).
 
-Spinners are built out of a plate and a bracket, where the latter is optional.
-
-### Ramps
-
-There are two types of ramps: Wire ramps and solid ramps. Solid ramps are 
-flat surfaces along a curve with optional left and right walls, while wire 
-ramps can have one to four wires.
-
-### Primitives
-
-Primitives are 3D meshes imported from third-party modelers. They are usually
-used for toys and non-standard objects, but there are tables that are entirely
-modelled as primitives.
-
-### Rubbers
-
-Rubbers are splines rendered as 3D "tubes". They are always parallel to a given
-surface, and come with an assigned material.
-
-### Hit Targets
-
-Visual Pinball provides several types of hit targets, namely:
-
-- beveled drop targets
-- simple and flat drop targets
-- round and rectangular hit targets
-- both of the above in slim and thick
-
-### Other (non-visible)
-
-There are other elements that we currently ignore, such as:
-
-- Timers
-- Plungers
-- Textboxes
-- Decals
-- Light Centers
-- Drag Point
-- Collections
-- Disp Reels
-- Light Sequences
-- Flasher
-- Counts
+Animation helpers are created by classes which implement `IAnimatable`.

@@ -230,39 +230,6 @@ export class FlipperMover implements MoverObject {
 	// 	return (this.state.angle - this.angleStart) / (this.angleEnd - this.angleStart); // End == Start cannot happen, as handled in ctor
 	// }
 
-	// public setStartAngle(r: number): void {
-	// 	this.angleStart = r;
-	// 	const angleMin = Math.min(this.angleStart, this.angleEnd);
-	// 	const angleMax = Math.max(this.angleStart, this.angleEnd);
-	// 	if (this.state.angle > angleMax) {
-	// 		this.state.angle = angleMax;
-	// 	}
-	// 	if (this.state.angle < angleMin) {
-	// 		this.state.angle = angleMin;
-	// 	}
-	// }
-
-	// public setEndAngle(r: number): void {
-	// 	this.angleEnd = r;
-	// 	const angleMin = Math.min(this.angleStart, this.angleEnd);
-	// 	const angleMax = Math.max(this.angleStart, this.angleEnd);
-	//
-	// 	if (this.state.angle > angleMax) {
-	// 		this.state.angle = angleMax;
-	// 	}
-	// 	if (this.state.angle < angleMin) {
-	// 		this.state.angle = angleMin;
-	// 	}
-	// }
-
-	// public getMass(): number {
-	// 	return 3.0 * this.inertia / (this.flipperRadius * this.flipperRadius); //!! also change if wiring of moment of inertia happens (see ctor)
-	// }
-
-	// public setMass(m: number): void {
-	// 	this.inertia = (1.0 / 3.0) * m * (this.flipperRadius * this.flipperRadius); //!! also change if wiring of moment of inertia happens (see ctor)
-	// }
-
 	public getReturnRatio(): number {
 		return this.doOverridePhysics()
 			? this.data.overrideReturnStrength!
