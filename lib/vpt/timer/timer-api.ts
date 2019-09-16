@@ -34,7 +34,7 @@ export class TimerApi extends ItemApi<TimerData> {
 	get Y() { return this.data.vCenter.y; }
 	set Y(v) { this.data.vCenter.y = v; }
 	get Interval() { return this.data.timer.interval; }
-	set Interval(v) { this.setTimerInterval(v); }
+	set Interval(v) { this._setTimerInterval(v); }
 	get Enabled() { return this.data.timer.enabled; }
-	set Enabled(v) { this.setTimerEnabled(v); }
+	set Enabled(v) { this._setTimerEnabled(v); }
 }

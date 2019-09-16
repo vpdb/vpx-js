@@ -147,7 +147,7 @@ export class PlayerPhysics {
 
 		// index hit timers
 		for (const scriptable of this.table.getScriptables()) {
-			this.hitTimers.push(...scriptable.getApi().getTimers());
+			this.hitTimers.push(...scriptable.getApi()._getTimers());
 		}
 
 		this.hitObjects.push(...this.table.getHitShapes()); // these are the table's outer borders

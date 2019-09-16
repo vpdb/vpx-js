@@ -73,7 +73,7 @@ export class PlungerApi extends ItemApi<PlungerData> {
 	get Material() { return this.data.szMaterial; }
 	set Material(v) { this.data.szMaterial = v; }
 	get Image() { return this.data.szImage; }
-	set Image(v) { this.assertNonHdrImage(v); this.data.szImage = v; }
+	set Image(v) { this._assertNonHdrImage(v); this.data.szImage = v; }
 	get AnimFrames() { return this.data.animFrames; }
 	set AnimFrames(v) { this.data.animFrames = v; }
 	get TipShape() { return this.data.szTipShape; }

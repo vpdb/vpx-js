@@ -22,6 +22,7 @@ import { Player } from '../../game/player';
 import { HitObject } from '../../physics/hit-object';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
+import { TimerHit } from '../timer/timer-hit';
 import { Primitive } from './primitive';
 import { PrimitiveData } from './primitive-data';
 
@@ -37,9 +38,9 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 	}
 
 	get Image() { return this.data.szImage; }
-	set Image(v) { this.assertNonHdrImage(v); this.data.szImage = v; }
+	set Image(v) { this._assertNonHdrImage(v); this.data.szImage = v; }
 	get NormalMap() { return this.data.szNormalMap; }
-	set NormalMap(v) { this.assertNonHdrImage(v); this.data.szNormalMap = v; }
+	set NormalMap(v) { this._assertNonHdrImage(v); this.data.szNormalMap = v; }
 	get Material() { return this.data.szMaterial; }
 	set Material(v) { this.data.szMaterial = v; }
 	get MeshFileName() { return this.data.meshFileName; }
@@ -210,4 +211,8 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 		// vertexBufferRegenerate = true;
 	}
 
+	public _getTimers(): TimerHit[] {
+		this._beginPlay();
+		return [];
+	}
 }

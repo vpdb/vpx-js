@@ -389,7 +389,7 @@ export class Table {
 					break;
 				}
 				if (isScriptable(tableItem)) {
-					tableItem.getApi().addCollection(collection, collection.items.length);
+					tableItem.getApi()._addCollection(collection, collection.items.length);
 					collection.items.push(tableItem);
 				}
 			}

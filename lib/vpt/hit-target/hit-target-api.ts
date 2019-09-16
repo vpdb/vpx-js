@@ -38,7 +38,7 @@ export class HitTargetApi extends ItemApi<HitTargetData> {
 	}
 
 	get Image() { return this.data.szImage; }
-	set Image(v) { this.assertNonHdrImage(v); this.data.szImage = v; }
+	set Image(v) { this._assertNonHdrImage(v); this.data.szImage = v; }
 	get Material() { return this.data.szMaterial; }
 	set Material(v) { this.data.szMaterial = v; }
 	get Visible() { return this.data.isVisible; }

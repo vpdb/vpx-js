@@ -219,7 +219,7 @@ describe('The VPinball kicker API', () => {
 		player.updatePhysics(0);
 		player.updatePhysics(10);
 
-		expect(kicker.ballCountOver()).to.equal(1);
+		expect(kicker._ballCountOver()).to.equal(1);
 	});
 
 });
