@@ -119,18 +119,18 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 					found = true;
 					break;
 				}
-
-				if (!found) {
-					const too = new TimerOnOff(isEnabled, this.hitTimer);
-					this.player.getPhysics().changedHitTimers.push(too);
-				}
-
-				if (isEnabled) {
-					this.hitTimer.nextFire = this.player.getPhysics().timeMsec + this.hitTimer.interval;
-				} else {
-					this.hitTimer.nextFire = 0xFFFFFFFF;
-				} // fakes the disabling of the timer, until it will be catched by the cleanup via m_changed_vht
 			}
+
+			if (!found) {
+				const too = new TimerOnOff(isEnabled, this.hitTimer);
+				this.player.getPhysics().changedHitTimers.push(too);
+			}
+
+			if (isEnabled) {
+				this.hitTimer.nextFire = this.player.getPhysics().timeMsec + this.hitTimer.interval;
+			} else {
+				this.hitTimer.nextFire = 0xFFFFFFFF;
+			} // fakes the disabling of the timer, until it will be catched by the cleanup via m_changed_vht
 		}
 		this.data.timer.enabled = isEnabled;
 	}
