@@ -57,7 +57,7 @@ export class EventProxy {
 	}
 
 	public fireVoidEventParm(e: Event, ...params: any[]): void {
-		this.fireDispID(e, params);
+		this.fireDispID(e, ...params);
 		//logger().info('[%s] fireGroupEvent(%s, %s)', this.playable.getName(), e, data);
 	}
 
@@ -75,7 +75,7 @@ export class EventProxy {
 
 	private fireDispID(e: Event, ...params: any[]) {
 		if (isScriptable(this.playable)) {
-			this.playable.getApi().emit(getEventName(e), params);
+			this.playable.getApi().emit(getEventName(e), ...params);
 			//logger().info('[%s] fireDispID(%s)', this.playable.getName(), e);
 		}
 	}

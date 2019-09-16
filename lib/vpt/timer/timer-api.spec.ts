@@ -77,4 +77,12 @@ describe('The VPinball timer API', () => {
 		expect(eventSpy).to.have.been.calledThrice; // still 3x
 	});
 
+	it('should not exectue a disabled timer', () => {
+		const timer = table.timers.TimerDisabled.getApi();
+		const eventSpy = sinon.spy();
+		timer.on('Timer', eventSpy);
+		player.updatePhysics(120);
+		expect(eventSpy).to.have.been.not.called;
+	});
+
 });

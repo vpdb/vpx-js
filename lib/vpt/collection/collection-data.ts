@@ -25,7 +25,7 @@ export class CollectionData extends ItemData {
 
 	public itemNames: string[] = [];
 	public fireEvents: boolean = false;
-	public groupEvents: boolean = true;
+	public groupElements: boolean = true;
 	public stopSingleEvents: boolean = false;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<CollectionData> {
@@ -42,7 +42,7 @@ export class CollectionData extends ItemData {
 		switch (tag) {
 			case 'EVNT': this.fireEvents = this.getBool(buffer); break;
 			case 'SSNG': this.stopSingleEvents = this.getBool(buffer); break;
-			case 'GREL': this.groupEvents = this.getBool(buffer); break;
+			case 'GREL': this.groupElements = this.getBool(buffer); break;
 			case 'ITEM': this.itemNames.push(this.getWideString(buffer, len)); break;
 			default:
 				this.getCommonBlock(buffer, tag, len);

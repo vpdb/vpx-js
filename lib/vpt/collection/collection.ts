@@ -42,17 +42,13 @@ export class Collection extends Item<CollectionData> implements IPlayable, IScri
 		return new Collection(data);
 	}
 
-	public getName(): string {
-		return this.data.getName();
-	}
-
 	private constructor(data: CollectionData) {
 		super(data);
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
-		this.api = new CollectionApi(this.data, this.items, this.events, player, table);
+		this.api = CollectionApi.getInstance(this.data, this.items, this.events, player, table);
 	}
 
 	public getItemNames() {
