@@ -51,7 +51,7 @@
 		"three": "^0.108.0"
 	},
 	"devDependencies": {
-		"@types/chai": "4.2.1",
+		"@types/chai": "4.2.2",
 		"@types/escodegen": "0.0.6",
 		"@types/estraverse": "0.0.6",
 		"@types/estree": "0.0.39",
