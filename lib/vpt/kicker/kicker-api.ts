@@ -124,7 +124,7 @@ export class KickerApi extends ItemApi<KickerData> {
 		this.hit.kickXyz(this.table, this.player.getPhysics(), angle, speed, inclination, new Vertex3D(0, 0, 0));
 	}
 
-	public ballCountOver(): number {
-		return super.ballCountOver(this.events);
+	public _ballCountOver(): number {
+		return super._ballCountOver(this.events);
 	}
 }

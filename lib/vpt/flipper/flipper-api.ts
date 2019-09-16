@@ -104,7 +104,7 @@ export class FlipperApi extends ItemApi<FlipperData> {
 	get FlipperRadiusMin() { return this.data.flipperRadiusMin; }
 	set FlipperRadiusMin(v) { if (v < 0) { v = 0; } this.data.flipperRadiusMin = v; }
 	get Image() { return this.data.szImage; }
-	set Image(v) { this.assertNonHdrImage(v); this.data.szImage = v; }
+	set Image(v) { this._assertNonHdrImage(v); this.data.szImage = v; }
 	get ReflectionEnabled() { return this.data.isReflectionEnabled; }
 	set ReflectionEnabled(v) { this.data.isReflectionEnabled = v; }
 

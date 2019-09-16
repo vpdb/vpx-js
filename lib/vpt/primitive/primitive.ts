@@ -99,11 +99,6 @@ export class Primitive extends Item<PrimitiveData> implements IRenderable, IHitt
 		this.api = new PrimitiveApi(this, this.data, this.hits!, this.events, player, table);
 	}
 
-	public getTimers(): TimerHit[] {
-
-		return [];
-	}
-
 	public getApi(): PrimitiveApi {
 		return this.api!;
 	}

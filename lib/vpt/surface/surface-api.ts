@@ -79,7 +79,7 @@ export class SurfaceApi extends ItemApi<SurfaceData> {
 	get Visible() { return this.data.isTopBottomVisible; }
 	set Visible(v) { this.data.isTopBottomVisible = v; }
 	get SideImage() { return this.data.szSideImage; }
-	set SideImage(v) { this.assertNonHdrImage(v); this.data.szSideImage = v; }
+	set SideImage(v) { this._assertNonHdrImage(v); this.data.szSideImage = v; }
 	get Disabled() { return this.surface.isDisabled; }
 	set Disabled(v) { this.surface.isDisabled = v; }
 	get SideVisible() { return this.data.isSideVisible; }

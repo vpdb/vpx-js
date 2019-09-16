@@ -69,8 +69,8 @@ export class TriggerApi extends ItemApi<TriggerData> {
 		return cnt;
 	}
 
-	public ballCountOver(): number {
-		return super.ballCountOver(this.events);
+	public _ballCountOver(): number {
+		return super._ballCountOver(this.events);
 	}
 
 	/**

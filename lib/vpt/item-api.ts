@@ -42,9 +42,9 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 	get Name() { return this.data.getName(); }
 	set Name(v) { this.data.name = v; }
 	get TimerInterval() { return this.data.timer.interval; }
-	set TimerInterval(v) { this.setTimerInterval(v); }
+	set TimerInterval(v) { this._setTimerInterval(v); }
 	get TimerEnabled() { return this.data.timer.enabled; }
-	set TimerEnabled(v) { this.setTimerEnabled(v); }
+	set TimerEnabled(v) { this._setTimerEnabled(v); }
 	public UserValue: any;
 
 	protected constructor(data: DATA, events: EventProxy, player: Player, table: Table) {
@@ -55,26 +55,23 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 		this.table = table;
 	}
 
-	public getTimers(): TimerHit[] {
-
-		this.beginPlay();
-
+	public _getTimers(): TimerHit[] {
+		this._beginPlay();
 		const interval = this.data.timer.interval >= 0 ? Math.max(this.data.timer.interval, MAX_TIMER_MSEC_INTERVAL) : -1;
 		this.hitTimer = new TimerHit(
 			this.events,
 			interval,
 			interval,
 		);
-
 		return this.data.timer.enabled ? [this.hitTimer] : [];
 	}
 
-	public addCollection(collection: Collection, pos: number) {
+	public _addCollection(collection: Collection, pos: number) {
 		this.collections.push(collection);
 		this.collectionsItemPos.push(pos);
 	}
 
-	protected beginPlay(): void {
+	protected _beginPlay(): void {
 		this.events.eventCollection.length = 0;
 		this.events.eventCollectionItemPos.length = 0;
 		this.events.singleEvents = true;
@@ -90,7 +87,7 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 		}
 	}
 
-	protected assertNonHdrImage(imageName?: string) {
+	protected _assertNonHdrImage(imageName?: string) {
 		const tex = this.table.getTexture(imageName);
 		if (!tex) {
 			throw new Error(`Texture "${imageName}" not found.`);
@@ -100,7 +97,7 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 		}
 	}
 
-	protected ballCountOver(events: EventProxy): number {
+	protected _ballCountOver(events: EventProxy): number {
 		let cnt = 0;
 		for (const ball of this.player.balls) {
 			if (ball.hit.isRealBall() && ball.hit.vpVolObjs.indexOf(events) >= 0) {
@@ -111,7 +108,7 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 		return cnt;
 	}
 
-	protected setTimerEnabled(isEnabled: boolean): void {
+	protected _setTimerEnabled(isEnabled: boolean): void {
 		if (isEnabled !== this.data.timer.enabled && this.hitTimer) {
 
 			// to avoid problems with timers dis/enabling themselves, store all the changes in a list
@@ -138,7 +135,7 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 		this.data.timer.enabled = isEnabled;
 	}
 
-	protected setTimerInterval(interval: number): void {
+	protected _setTimerInterval(interval: number): void {
 		this.data.timer.interval = interval;
 		if (this.hitTimer) {
 			this.hitTimer.interval = interval >= 0 ? Math.max(interval, MAX_TIMER_MSEC_INTERVAL) : -1;
