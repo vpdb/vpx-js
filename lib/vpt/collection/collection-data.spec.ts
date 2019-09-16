@@ -39,7 +39,7 @@ describe('The VPinball collection data', () => {
 		expect(table.collections.CollectionA).to.be.ok;
 		expect(dataA.fireEvents).to.equal(false);
 		expect(dataA.stopSingleEvents).to.equal(false);
-		expect(dataA.groupEvents).to.equal(true);
+		expect(dataA.groupElements).to.equal(true);
 		expect(dataA.itemNames).to.have.lengthOf(2);
 		expect(dataA.itemNames[0]).to.equal('TimerA');
 		expect(dataA.itemNames[1]).to.equal('TimerAB');
@@ -48,7 +48,7 @@ describe('The VPinball collection data', () => {
 		expect(table.collections.CollectionB).to.be.ok;
 		expect(dataB.fireEvents).to.equal(true);
 		expect(dataB.stopSingleEvents).to.equal(true);
-		expect(dataB.groupEvents).to.equal(false);
+		expect(dataB.groupElements).to.equal(false);
 		expect(dataB.itemNames).to.have.lengthOf(2);
 		expect(dataB.itemNames[0]).to.equal('TimerB');
 		expect(dataB.itemNames[1]).to.equal('TimerAB');
