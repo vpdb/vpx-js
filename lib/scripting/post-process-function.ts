@@ -17,7 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BlockStatement, Comment, FunctionDeclaration, Identifier, Statement } from 'estree';
+import { traverse } from 'estraverse';
+import { BlockStatement, Comment, FunctionDeclaration, Identifier } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
@@ -41,38 +42,16 @@ export function stmt(
 	const params = result[5] || [];
 	const body = result[7];
 	const comments = [...result[6], ...result[11]];
-	processReturnStmts(name, body);
+	traverse(body, {
+		enter: node => {
+			if (node.type === 'ReturnStatement') {
+				node.argument = name;
+			}
+		},
+	});
 	body.body.unshift(estree.variableDeclaration('let', [estree.variableDeclarator(name, estree.literal(null))], []));
 	if (body.body[body.body.length - 1].type !== 'ReturnStatement') {
 		body.body.push(estree.returnStatement(name));
 	}
 	return estree.functionDeclaration(name, params, body, comments);
-}
-
-function processReturnStmts(argument: Identifier, statement: Statement) {
-	if (statement.type === 'ReturnStatement') {
-		statement.argument = argument;
-	} else if (statement.type === 'BlockStatement') {
-		statement.body.forEach(innerStatement => {
-			processReturnStmts(argument, innerStatement);
-		});
-	} else if (statement.type === 'IfStatement') {
-		processReturnStmts(argument, statement.consequent);
-		if (statement.alternate !== null) {
-			processReturnStmts(argument, statement.alternate as Statement);
-		}
-	} else if (statement.type === 'SwitchStatement') {
-		statement.cases.forEach(innerStatement => {
-			innerStatement.consequent.forEach(consequent => {
-				processReturnStmts(argument, consequent);
-			});
-		});
-	} else if (
-		statement.type === 'ForStatement' ||
-		statement.type === 'ForOfStatement' ||
-		statement.type === 'DoWhileStatement' ||
-		statement.type === 'WhileStatement'
-	) {
-		processReturnStmts(argument, statement.body);
-	}
 }
