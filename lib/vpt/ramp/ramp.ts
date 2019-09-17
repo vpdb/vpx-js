@@ -74,6 +74,11 @@ export class Ramp extends Item<RampData> implements IRenderable, IHittable {
 		return this.data.isCollidable;
 	}
 
+	public isTransparent(table: Table): boolean {
+		const material = table.getMaterial(this.data.szMaterial);
+		return !material || material.isOpacityActive;
+	}
+
 	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
 		this.hits = this.hitGenerator.generateHitObjects(table, this.events);
@@ -86,29 +91,34 @@ export class Ramp extends Item<RampData> implements IRenderable, IHittable {
 	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
 		const meshes: Meshes<GEOMETRY> = {};
 		const ramp = this.meshGenerator.getMeshes(table);
+		const isTransparent = this.isTransparent(table);
 
 		if (ramp.wire1) {
 			meshes.wire1 = {
 				mesh: ramp.wire1.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
+				isTransparent,
 			};
 		}
 		if (ramp.wire2) {
 			meshes.wire2 = {
 				mesh: ramp.wire2.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
+				isTransparent,
 			};
 		}
 		if (ramp.wire3) {
 			meshes.wire3 = {
 				mesh: ramp.wire3.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
+				isTransparent,
 			};
 		}
 		if (ramp.wire4) {
 			meshes.wire4 = {
 				mesh: ramp.wire4.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
+				isTransparent,
 			};
 		}
 		if (ramp.floor) {
@@ -116,6 +126,7 @@ export class Ramp extends Item<RampData> implements IRenderable, IHittable {
 				mesh: ramp.floor.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
 				map: table.getTexture(this.data.szImage),
+				isTransparent,
 			};
 		}
 		if (ramp.left) {
@@ -123,6 +134,7 @@ export class Ramp extends Item<RampData> implements IRenderable, IHittable {
 				mesh: ramp.left.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
 				map: table.getTexture(this.data.szImage),
+				isTransparent,
 			};
 		}
 		if (ramp.right) {
@@ -130,6 +142,7 @@ export class Ramp extends Item<RampData> implements IRenderable, IHittable {
 				mesh: ramp.right.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
 				map: table.getTexture(this.data.szImage),
+				isTransparent,
 			};
 		}
 		return meshes;
