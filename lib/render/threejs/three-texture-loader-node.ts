@@ -17,21 +17,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { createReadStream } from 'fs';
 import * as gm from 'gm';
 import { State } from 'gm';
 import * as sharp from 'sharp';
-import { Stream } from 'stream';
 import { NodeImage } from '../../gltf/image.node';
-import { Storage } from '../../io/ole-doc';
 import { logger } from '../../util/logger';
-import { Binary } from '../../vpt/binary';
-import { ITextureImporter } from '../irender-api';
+import { ITextureLoader } from '../irender-api';
 
-export class ThreeTextureConverterNode implements ITextureImporter<NodeImage, sharp.Sharp> {
+export class ThreeTextureLoaderNode implements ITextureLoader<NodeImage> {
 
-	public async loadImage(name: string, data: Buffer): Promise<NodeImage> {
+	public async loadTexture(name: string, data: Buffer): Promise<NodeImage> {
 		try {
-			return this.loadSharpImage(name, sharp(data));
+			return await loadSharpImage(name, sharp(data));
 
 		} catch (err) {
 			logger().warn('[Image.init] Could not read metadata from buffer (%s), using GM to read image.', err.message);
@@ -48,16 +46,12 @@ export class ThreeTextureConverterNode implements ITextureImporter<NodeImage, sh
 					.on('end', () => resolve(Buffer.concat(buffers)))
 					.on('error', reject);
 			});
-			return this.loadSharpImage(name, sharp(gmData), { format, width, height });
+			return await loadSharpImage(name, sharp(gmData), { format, width, height });
 		}
 	}
 
-	public async loadRawImage(src: string, shrp: sharp.Sharp): Promise<NodeImage> {
-		return this.loadSharpImage(src, shrp);
-	}
-
-	public async getRawImage(data: Buffer, width: number, height: number): Promise<sharp.Sharp> {
-		return Promise.resolve(sharp(data, {
+	public async loadRawTexture(name: string, data: Buffer, width: number, height: number): Promise<NodeImage> {
+		return loadSharpImage(name, sharp(data, {
 			raw: {
 				width,
 				height,
@@ -66,33 +60,33 @@ export class ThreeTextureConverterNode implements ITextureImporter<NodeImage, sh
 		}).png());
 	}
 
-	public async streamImage(storage: Storage, storageName?: string, binary?: Binary, localPath?: string): Promise<Buffer> {
-		let strm: Stream;
-		if (localPath) {
-			strm = gm(localPath).stream();
-		} else {
-			strm = storage.stream(storageName!, binary!.pos, binary!.len);
-		}
-		return new Promise<Buffer>((resolve, reject) => {
-			const bufs: Buffer[] = [];
-			/* istanbul ignore if */
-			if (!strm) {
-				return reject(new Error('No such stream "' + storageName + '".'));
-			}
-			strm.on('error', reject);
-			strm.on('data', (buf: Buffer) => bufs.push(buf));
-			strm.on('end', () => resolve(Buffer.concat(bufs)));
-		});
+	public async loadDefaultTexture(name: string, fileName: string): Promise<NodeImage> {
+		return this.loadTexture(name, await stream(fileName));
 	}
 
-	private async loadSharpImage(name: string, shrp: sharp.Sharp, parsedMeta?: { format: string, width: number, height: number }): Promise<NodeImage> {
-		const stats = await shrp.stats();
-		if (parsedMeta) {
-			return new NodeImage(name, parsedMeta.width, parsedMeta.height, parsedMeta.format, stats, shrp);
+}
+
+async function stream(localPath: string): Promise<Buffer> {
+	const strm = createReadStream(localPath);
+	return new Promise<Buffer>((resolve, reject) => {
+		const bufs: Buffer[] = [];
+		/* istanbul ignore if */
+		if (!strm) {
+			return reject(new Error('No such stream "' + localPath + '".'));
 		}
-		const metadata = await shrp.metadata();
-		return new NodeImage(name, metadata.width!, metadata.height!, metadata.format!, stats, shrp);
+		strm.on('error', reject);
+		strm.on('data', (buf: Buffer) => bufs.push(buf));
+		strm.on('end', () => resolve(Buffer.concat(bufs)));
+	});
+}
+
+async function loadSharpImage(name: string, shrp: sharp.Sharp, parsedMeta?: { format: string, width: number, height: number }): Promise<NodeImage> {
+	const stats = await shrp.stats();
+	if (parsedMeta) {
+		return new NodeImage(name, parsedMeta.width, parsedMeta.height, parsedMeta.format, stats, shrp);
 	}
+	const metadata = await shrp.metadata();
+	return new NodeImage(name, metadata.width!, metadata.height!, metadata.format!, stats, shrp);
 }
 
 async function gmIdentify(g: State): Promise<any> {

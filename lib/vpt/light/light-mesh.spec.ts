@@ -35,7 +35,7 @@ describe('The VPinball lights generator', () => {
 	before(async () => {
 		const table = await Table.load(new NodeBinaryReader(three.fixturePath('table-light.vpx')));
 		const exporter = new TableExporter(table);
-		gltf = await three.loadGlb(await exporter.exportGlb({ exportPlayfieldLights: true, applyTextures: false }));
+		gltf = await three.loadGlb(await exporter.exportGlb({ exportPlayfieldLights: true }));
 	});
 
 	it('should generate a static light bulb mesh', async () => {

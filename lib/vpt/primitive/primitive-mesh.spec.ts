@@ -33,7 +33,7 @@ describe('The VPinball primitive generator', () => {
 	before(async () => {
 		const table = await Table.load(new NodeBinaryReader(three.fixturePath('table-primitive.vpx')));
 		const exporter = new TableExporter(table);
-		gltf = await three.loadGlb(await exporter.exportGlb({ applyTextures: false }));
+		gltf = await three.loadGlb(await exporter.exportGlb());
 	});
 
 	it('should generate a simple primitive mesh', async () => {

@@ -21,7 +21,7 @@ import { basename, resolve as resolvePath } from 'path';
 import { LzwReader } from '../gltf/lzw-reader';
 import { BiffParser } from '../io/biff-parser';
 import { Storage } from '../io/ole-doc';
-import { ITextureImporter } from '../render/irender-api';
+import { ITextureLoader } from '../render/irender-api';
 import { logger } from '../util/logger';
 import { Binary } from './binary';
 import { Table } from './table/table';
@@ -83,31 +83,32 @@ export class Texture extends BiffParser {
 	}
 
 	/**
-	 * Returns the image of the texture, as JPG if opaque, or JPEG otherwise.
+	 * Loads the texture for the given renderer.
 	 * @param table
-	 * @param textureImporter
+	 * @param loader
 	 */
-	public async getImage<IMAGE, RAW_IMAGE>(table: Table, textureImporter: ITextureImporter<IMAGE, RAW_IMAGE>): Promise<IMAGE> {
+	public async loadTexture<TEXTURE>(loader: ITextureLoader<TEXTURE>, table: Table): Promise<TEXTURE> {
 
-		let image = table.getImageFromCache<IMAGE>(this.getName());
-		if (image) {
-			return image;
+		let texture = table.getTextureFromCache<TEXTURE>(this.getName());
+		if (texture) {
+			return texture;
 		}
 
 		if (this.isRaw()) {
-			const data = await textureImporter.getRawImage(this.pdsBuffer!.getData(), this.width, this.height);
-			image = await textureImporter.loadRawImage(this.getName(), data, this.width, this.height);
+			texture = await loader.loadRawTexture(this.getName(), this.pdsBuffer!.getData(), this.width, this.height);
+
+		} else if (this.localPath) {
+			texture = await loader.loadDefaultTexture(this.getName(), this.localPath);
 
 		} else {
-			const data = await table.streamStorage<Buffer>('GameStg',
-					storage => textureImporter.streamImage(storage, this.storageName, this.binary, this.localPath));
+			const data = await table.streamStorage<Buffer>('GameStg', storage => this.streamImage(storage, this.storageName, this.binary));
 			if (!data || !data.length) {
 				throw new Error(`Cannot load image data for texture ${this.getName()}`);
 			}
-			image = await textureImporter.loadImage(this.getName(), data, this.width, this.height);
+			texture = await loader.loadTexture(this.getName(), data);
 		}
-		table.addImageToCache(this.getName(), image);
-		return image;
+		table.addTextureToCache(this.getName(), texture);
+		return texture;
 	}
 
 	public isRaw(): boolean {
@@ -116,6 +117,20 @@ export class Texture extends BiffParser {
 
 	public isHdr() {
 		return this.pdsBuffer && this.pdsBuffer.format === BaseTexture.RGB_FP;
+	}
+
+	private async streamImage(storage: Storage, storageName?: string, binary?: Binary): Promise<Buffer> {
+		const strm = storage.stream(storageName!, binary!.pos, binary!.len);
+		return new Promise<Buffer>((resolve, reject) => {
+			const bufs: Buffer[] = [];
+			/* istanbul ignore if */
+			if (!strm) {
+				return reject(new Error('No such stream "' + storageName + '".'));
+			}
+			strm.on('error', reject);
+			strm.on('data', (buf: Buffer) => bufs.push(buf));
+			strm.on('end', () => resolve(Buffer.concat(bufs)));
+		});
 	}
 
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number, storage: Storage, itemName: string): Promise<number> {

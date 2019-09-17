@@ -35,7 +35,7 @@ import { IImage } from '../../gltf/image';
 import { logger } from '../../util/logger';
 import { Table, TableGenerateOptions } from '../../vpt/table/table';
 import { Texture } from '../../vpt/texture';
-import { IRenderApi, MeshConvertOptions } from '../irender-api';
+import { IRenderApi, ITextureLoader, MeshConvertOptions } from '../irender-api';
 import { ThreeMeshGenerator } from './three-mesh-generator';
 
 export class ThreeConverter {
@@ -106,42 +106,37 @@ export class ThreeConverter {
 		}
 
 		if (this.meshConvertOpts.applyTextures) {
+
+			// texture
 			if (obj.map) {
-				material.map = new ThreeTexture();
-				material.map.name = 'texture:' + obj.map.getName();
-				if (await this.loadMap(name, obj.map, material.map, table)) {
-					// FIXME uncomment
-					// if ((material.map.image as IImage).containsTransparency()) {
-					// 	material.transparent = true;
-					// }
+				const map = await this.loadTexture(obj.map, this.meshConvertOpts.applyTextures, table);
+				if (map) {
+					map.name = `texture:${obj.map.getName()}`;
+					material.map = map;
+					// TODO trans check
+					//material.transparent = true;
 					material.needsUpdate = true;
-				} else {
-					logger().warn('[ThreeConverter.getMaterial] Error getting map.');
-					material.map = null;
 				}
 			}
+
+			// normal map
 			if (obj.normalMap) {
-				material.normalMap = new ThreeTexture();
-				material.normalMap.name = 'normal-map:' + obj.normalMap.getName();
-				if (await this.loadMap(name, obj.normalMap, material.normalMap, table)) {
+				const normalMap = await this.loadTexture(obj.normalMap, this.meshConvertOpts.applyTextures, table);
+				if (normalMap) {
+					normalMap.name = `normal-map:${obj.normalMap.getName()}`;
+					material.normalMap = normalMap;
 					material.normalMap.anisotropy = 16;
 					material.needsUpdate = true;
-				} else {
-					material.normalMap = null;
 				}
 			}
-			// todo TEST!
+
+			// emissive map todo TEST!
 			if (obj.material && obj.material.emissiveMap) {
-				material.emissiveMap = new ThreeTexture();
-				material.emissiveMap.name = 'emissive-map:' + obj.material.emissiveMap.getName();
-				if (await this.loadMap(name, obj.material.emissiveMap, material.emissiveMap, table)) {
-					if ((material.emissiveMap.image as IImage).containsTransparency()) {
-						material.transparent = true;
-					}
+				const emissiveMap = await this.loadTexture(obj.material.emissiveMap, this.meshConvertOpts.applyTextures, table);
+				if (emissiveMap) {
+					emissiveMap.name = `emissive-map:${obj.material.emissiveMap.getName()}`;
+					material.emissiveMap = emissiveMap;
 					material.needsUpdate = true;
-				} else {
-					logger().warn('[ThreeConverter.getMaterial] Error getting map.');
-					material.map = null;
 				}
 			}
 		}
@@ -149,17 +144,12 @@ export class ThreeConverter {
 	}
 
 	/* istanbul ignore next: Texture extraction is tested, but applying them to three.js is out of scope. */
-	private async loadMap(name: string, texture: Texture, threeMaterial: ThreeTexture, table: Table): Promise<boolean> {
+	private async loadTexture(texture: Texture, loader: ITextureLoader<ThreeTexture>, table: Table): Promise<ThreeTexture | null> {
 		try {
-			const image = await texture.getImage(table, this.meshConvertOpts.applyTextures!);
-			threeMaterial.image = image;
-			//threeMaterial.format = image.hasTransparency() ? RGBAFormat : RGBFormat;
-			threeMaterial.needsUpdate = true;
-			return true;
+			return await texture.loadTexture(loader, table);
 		} catch (err) {
-			threeMaterial.image = ThreeTexture.DEFAULT_IMAGE;
-			logger().warn('[ThreeConverter.loadMap] Error loading map %s (%s/%s): %s', name, texture.storageName, texture.getName(), err.message);
-			return false;
+			logger().warn('[ThreeConverter.loadTexture] Error loading texture %s (%s/%s): %s', name, texture.storageName, texture.getName(), err.message);
+			return null;
 		}
 	}
 }
