@@ -41,7 +41,8 @@ export function stmt(
 	const name = result[3];
 	const params = result[5] || [];
 	const body = result[7];
-	const comments = [...result[6], ...result[11]];
+	const leadingComments = result[6];
+	const trailingComments = result[11];
 	traverse(body, {
 		enter: node => {
 			if (node.type === 'ReturnStatement') {
@@ -53,5 +54,5 @@ export function stmt(
 	if (body.body[body.body.length - 1].type !== 'ReturnStatement') {
 		body.body.push(estree.returnStatement(name));
 	}
-	return estree.functionDeclaration(name, params, body, comments);
+	return estree.functionDeclaration(name, params, body, leadingComments, trailingComments);
 }

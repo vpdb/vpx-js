@@ -40,6 +40,7 @@ export function stmt(
 	const name = result[3];
 	const params = result[5] || [];
 	const body = result[7];
-	const comments = [...result[6], ...result[11]];
-	return estree.functionDeclaration(name, params, body, comments);
+	const leadingComments = result[6];
+	const trailingComments = result[11];
+	return estree.functionDeclaration(name, params, body, leadingComments, trailingComments);
 }

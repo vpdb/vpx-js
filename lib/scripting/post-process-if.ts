@@ -42,8 +42,9 @@ export function stmt1(
 	const consequent = result[6];
 	const elseIfStatements = result[7];
 	const elseStatement = result[8] ? [result[8]] : [];
-	const comments = [...result[5], ...result[12]];
-	const ifStatement = estree.ifStatement(test, consequent, null, comments);
+	const leadingComments = result[5];
+	const trailingComments = result[12];
+	const ifStatement = estree.ifStatement(test, consequent, null, leadingComments, trailingComments);
 	let prevStatement: Statement = ifStatement;
 	[...elseIfStatements, ...elseStatement].forEach(statement => {
 		(prevStatement as IfStatement).alternate = statement;
@@ -76,7 +77,7 @@ export function stmt2(
 	const consequent = result[6];
 	const alternate = result[10];
 	const comments = result[15];
-	return estree.ifStatement(test, consequent, alternate, comments);
+	return estree.ifStatement(test, consequent, alternate, [], comments);
 }
 
 export function stmt3(
@@ -86,7 +87,7 @@ export function stmt3(
 	const consequent = result[6];
 	const alternate = result[10];
 	const comments = result[11];
-	return estree.ifStatement(test, consequent, alternate, comments);
+	return estree.ifStatement(test, consequent, alternate, [], comments);
 }
 
 export function stmt4(
@@ -95,28 +96,28 @@ export function stmt4(
 	const test = result[2];
 	const consequent = result[6];
 	const comments = result[11];
-	return estree.ifStatement(test, consequent, null, comments);
+	return estree.ifStatement(test, consequent, null, [], comments);
 }
 
 export function stmt5(result: [Token, null, Expression, null, Token, null, Statement, Comment[]]): IfStatement {
 	const test = result[2];
 	const consequent = result[6];
 	const comments = result[7];
-	return estree.ifStatement(test, consequent, null, comments);
+	return estree.ifStatement(test, consequent, null, [], comments);
 }
 
 export function elseIfStmt1(result: [Token, null, Expression, null, Token, Comment[], BlockStatement]): IfStatement {
 	const expr = result[2];
 	const comments = result[5];
 	const consequent = result[6];
-	return estree.ifStatement(expr, consequent, null, comments);
+	return estree.ifStatement(expr, consequent, null, [], comments);
 }
 
 export function elseIfStmt2(result: [Token, null, Expression, null, Token, null, Statement, Comment[]]): IfStatement {
 	const expr = result[2];
 	const consequent = result[6];
 	const comments = result[7];
-	return estree.ifStatement(expr, consequent, null, comments);
+	return estree.ifStatement(expr, consequent, null, [], comments);
 }
 export function elseStmt1(result: [Token, null, Statement, Comment[]]): Statement {
 	const statement = result[2];

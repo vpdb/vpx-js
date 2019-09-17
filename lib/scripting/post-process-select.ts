@@ -41,8 +41,9 @@ export function stmt(
 	const caseStatements = result[6];
 	const caseElseStatement = result[7] || [];
 	const cases = ([] as SwitchCase[]).concat(...caseStatements, caseElseStatement);
-	const comments = [...result[5], ...result[11]];
-	return estree.switchStatement(discriminant, cases, comments);
+	const leadingComments = result[5];
+	const trailingComments = result[11];
+	return estree.switchStatement(discriminant, cases, leadingComments, trailingComments);
 }
 
 export function caseStmt(result: [Token, null, Expression, null, Expression[], BlockStatement]): SwitchCase[] {

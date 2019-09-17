@@ -26,7 +26,8 @@ export function stmt(
 ): BlockStatement {
 	const identifier = result[2];
 	const body = result[4];
-	const comments = [...result[3], ...result[8]];
+	const leadingComments = result[3];
+	const trailingComments = result[8];
 	body.body.forEach(statement => {
 		if (statement.type === 'ExpressionStatement') {
 			if (statement.expression.type === 'AssignmentExpression') {
@@ -39,6 +40,7 @@ export function stmt(
 			}
 		}
 	});
-	body.trailingComments = comments;
+	body.leadingComments = leadingComments;
+	body.trailingComments = trailingComments;
 	return body;
 }
