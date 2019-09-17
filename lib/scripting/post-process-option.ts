@@ -17,12 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { EmptyStatement } from 'estree';
+import { Comment, EmptyStatement } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
-export function explicit(result: [Token, null, Token]): EmptyStatement {
+export function explicit(result: [Token, null, Token, Comment[]]): EmptyStatement {
 	const option = result[0].text;
 	const explicitText = result[2].text;
-	return estree.emptyStatement([], [estree.comment('Line', ' ' + option + ' ' + explicitText)]);
+	const comments = result[3];
+	return estree.emptyStatement([estree.comment('Line', ' ' + option + ' ' + explicitText), ...comments]);
 }

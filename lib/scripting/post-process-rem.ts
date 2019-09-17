@@ -23,5 +23,5 @@ import * as estree from './estree';
 
 export function stmt(result: [Token, null]): EmptyStatement {
 	const text = result[0].text.substr(3);
-	return estree.emptyStatement([], [estree.comment('Line', text)]);
+	return estree.emptyStatement([estree.comment('Line', text)]);
 }

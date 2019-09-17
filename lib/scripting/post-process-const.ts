@@ -17,18 +17,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Expression, Identifier, VariableDeclaration, VariableDeclarator } from 'estree';
+import { Comment, Expression, Identifier, VariableDeclaration, VariableDeclarator } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
-export function stmt1(result: [Token, null, Token, null, VariableDeclarator[]]): VariableDeclaration {
+export function stmt1(result: [Token, null, Token, null, VariableDeclarator[], Comment[]]): VariableDeclaration {
 	const declarations = result[4];
-	return estree.variableDeclaration('const', declarations);
+	const comments = result[5];
+	return estree.variableDeclaration('const', declarations, comments);
 }
 
-export function stmt2(result: [Token, null, VariableDeclarator[]]): VariableDeclaration {
+export function stmt2(result: [Token, null, VariableDeclarator[], Comment[]]): VariableDeclaration {
 	const declarations = result[2];
-	return estree.variableDeclaration('const', declarations);
+	const comments = result[3];
+	return estree.variableDeclaration('const', declarations, comments);
 }
 
 export function constVarList(result: [ConstVarListResult, ConstVarListResult[]]): VariableDeclarator[] {
@@ -38,4 +40,4 @@ export function constVarList(result: [ConstVarListResult, ConstVarListResult[]])
 		return estree.variableDeclarator(declaration[0], declaration[4]);
 	});
 }
-type ConstVarListResult = [Identifier, null, string, null, Expression];
+type ConstVarListResult = [Identifier, null, Token, null, Expression];

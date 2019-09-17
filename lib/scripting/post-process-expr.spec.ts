@@ -102,7 +102,7 @@ describe('The VBScript transpiler - Expressions', () => {
 	it('should transpile a "&" concat expression', () => {
 		const vbs = `EnableBallControl = "ENABLE" & "OFF"\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('EnableBallControl = \'ENABLE\' + \'OFF\';');
+		expect(js).to.equal("EnableBallControl = 'ENABLE' + 'OFF';");
 	});
 
 	it('should transpile a "Is" expression', () => {

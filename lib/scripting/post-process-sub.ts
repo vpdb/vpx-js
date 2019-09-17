@@ -17,15 +17,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BlockStatement, FunctionDeclaration, Identifier } from 'estree';
+import { BlockStatement, Comment, FunctionDeclaration, Identifier, Statement } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
 export function stmt(
-	result: [Token[], Token, null, Identifier, null, Identifier[], null, BlockStatement, Token, null, Token, null],
+	result: [
+		Token[],
+		Token,
+		null,
+		Identifier,
+		null,
+		Identifier[],
+		Comment[],
+		BlockStatement,
+		Token,
+		null,
+		Token,
+		Comment[],
+	],
 ): FunctionDeclaration {
 	const name = result[3];
 	const params = result[5] || [];
 	const body = result[7];
-	return estree.functionDeclaration(name, params, body);
+	const comments = [...result[6], ...result[11]];
+	return estree.functionDeclaration(name, params, body, comments);
 }

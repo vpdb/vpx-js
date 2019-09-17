@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BlockStatement, Expression, SwitchCase, SwitchStatement } from 'estree';
+import { BlockStatement, Comment, Expression, Statement, SwitchCase, SwitchStatement } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
@@ -28,20 +28,21 @@ export function stmt(
 		Token,
 		null,
 		Expression,
-		null,
+		Comment[],
 		SwitchCase[][],
 		SwitchCase,
 		Token,
 		null,
 		Token,
-		null,
+		Comment[],
 	],
 ): SwitchStatement {
 	const discriminant = result[4];
 	const caseStatements = result[6];
 	const caseElseStatement = result[7] || [];
 	const cases = ([] as SwitchCase[]).concat(...caseStatements, caseElseStatement);
-	return estree.switchStatement(discriminant, cases);
+	const comments = [...result[5], ...result[11]];
+	return estree.switchStatement(discriminant, cases, comments);
 }
 
 export function caseStmt(result: [Token, null, Expression, null, Expression[], BlockStatement]): SwitchCase[] {
