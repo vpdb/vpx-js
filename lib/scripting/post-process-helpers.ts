@@ -21,9 +21,9 @@ import { Comment, Expression, Identifier, MemberExpression, Program, Statement }
 import { Token } from 'moo';
 import * as estree from './estree';
 
-export function nl(result: [null, Token, Token, null]): Comment | null {
+export function nl(result: [null, Token, Token, null]): Comment[] {
 	const comment = result[1];
-	return comment ? estree.comment('Line', comment.text.substr(1)) : null;
+	return comment ? [estree.comment('Line', comment.text.substr(1))] : [];
 }
 
 export function program(result: [null, Statement[]]): Program {
@@ -32,18 +32,16 @@ export function program(result: [null, Statement[]]): Program {
 	return estree.program(statements);
 }
 
-export function blockStmt1(result: [Statement, Comment]): Statement {
+export function blockStmt1(result: [Statement, Comment[]]): Statement {
 	const statement = result[0];
-	const comment = result[1];
-	if (comment) {
-		statement.trailingComments = [comment];
-	}
+	const comments = result[1];
+	statement.trailingComments = comments;
 	return statement;
 }
 
-export function blockStmt2(result: [Comment]): Statement | null {
-	const comment = result[0];
-	return comment ? estree.emptyStatement([], [comment]) : null;
+export function blockStmt2(result: [Comment[]]): Statement | null {
+	const comments = result[0];
+	return comments.length > 0 ? estree.emptyStatement(comments) : null;
 }
 
 export function blockStmtList(result: [Statement[]]) {

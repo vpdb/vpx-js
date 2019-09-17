@@ -28,7 +28,9 @@ export function stmt1(result: [Expression, null, Expression, null, Expression[]]
 	return estree.callExpressionStatement(callee, [...firstExpr, ...otherExpr]);
 }
 
-export function stmt2(result: [Expression, null, Token, null, Expression, null, Token, null, Expression[]]): ExpressionStatement {
+export function stmt2(
+	result: [Expression, null, Token, null, Expression, null, Token, null, Expression[]],
+): ExpressionStatement {
 	const callee = result[0];
 	const firstExpr = result[4] ? [result[4]] : [];
 	const otherExpr = result[8] || [];

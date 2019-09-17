@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BlockStatement, Expression, ForOfStatement, ForStatement, Identifier } from 'estree';
+import { BlockStatement, Comment, Expression, ForOfStatement, ForStatement, Identifier, Statement } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
@@ -38,10 +38,10 @@ export function stmt1(
 		Token,
 		null,
 		Expression,
-		null,
+		Comment[],
 		BlockStatement,
 		Token,
-		null,
+		Comment[],
 	],
 ): ForStatement {
 	const identifier = result[2];
@@ -49,6 +49,7 @@ export function stmt1(
 	const test = result[10];
 	const step = result[14];
 	const body = result[16];
+	const comments = [...result[15], ...result[18]];
 	return estree.forStatement(
 		estree.assignmentExpression(identifier, '=', init),
 		estree.conditionalExpression(
@@ -58,6 +59,7 @@ export function stmt1(
 		),
 		estree.assignmentExpression(identifier, '+=', step),
 		body,
+		comments,
 	);
 }
 
@@ -74,29 +76,46 @@ export function stmt2(
 		Token,
 		null,
 		Expression,
-		null,
+		Comment[],
 		BlockStatement,
 		Token,
-		null,
+		Comment[],
 	],
 ): ForStatement {
 	const identifier = result[2];
 	const init = result[6];
 	const test = result[10];
 	const body = result[12];
+	const comments = [...result[11], ...result[14]];
 	return estree.forStatement(
 		estree.assignmentExpression(identifier, '=', init),
 		estree.binaryExpression('<=', identifier, test),
 		estree.assignmentExpression(identifier, '+=', estree.literal(1)),
 		body,
+		comments,
 	);
 }
 
 export function stmt3(
-	result: [Token, null, Token, null, Identifier, null, Token, null, Expression, null, BlockStatement, Token, null],
+	result: [
+		Token,
+		null,
+		Token,
+		null,
+		Identifier,
+		null,
+		Token,
+		null,
+		Expression,
+		Comment[],
+		BlockStatement,
+		Token,
+		Comment[],
+	],
 ): ForOfStatement {
 	const identifier = result[4];
 	const expression = result[8];
 	const body = result[10];
-	return estree.forOfStatement(identifier, expression, body);
+	const comments = [...result[9], ...result[12]];
+	return estree.forOfStatement(identifier, expression, body, comments);
 }

@@ -91,21 +91,23 @@ export function variableDeclarator(id: Identifier, init: Expression | null): Var
 	};
 }
 
-export function functionDeclaration(id: Identifier, params: Identifier[], body: BlockStatement): FunctionDeclaration {
+export function functionDeclaration(id: Identifier, params: Identifier[], body: BlockStatement, trailingComments: Comment[]): FunctionDeclaration {
 	return {
 		type: 'FunctionDeclaration',
 		id,
 		generator: false,
 		params,
 		body,
+		trailingComments,
 	};
 }
 
-export function variableDeclaration(kind: 'var' | 'let' | 'const', declarations: VariableDeclarator[]): VariableDeclaration {
+export function variableDeclaration(kind: 'var' | 'let' | 'const', declarations: VariableDeclarator[], trailingComments: Comment[]): VariableDeclaration {
 	return {
 		type: 'VariableDeclaration',
 		kind,
 		declarations,
+		trailingComments,
 	};
 }
 
@@ -210,55 +212,59 @@ export function callExpressionStatement(callee: Expression, args: Expression[] |
 	};
 }
 
-export function doWhileStatement(body: Statement, test: Expression): DoWhileStatement {
+export function doWhileStatement(body: Statement, test: Expression, trailingComments: Comment[]): DoWhileStatement {
 	return {
 		type: 'DoWhileStatement',
 		body,
 		test,
-	};
-}
-
-export function emptyStatement(leadingComments: Comment[] = [], trailingComments: Comment[] = []): EmptyStatement {
-	return {
-		type: 'EmptyStatement',
-		leadingComments,
 		trailingComments,
 	};
 }
 
-export function forOfStatement(left: VariableDeclaration | Pattern, right: Expression, body: Statement): ForOfStatement {
+export function emptyStatement(trailingComments: Comment[]): EmptyStatement {
+	return {
+		type: 'EmptyStatement',
+		trailingComments,
+	};
+}
+
+export function forOfStatement(left: VariableDeclaration | Pattern, right: Expression, body: Statement, trailingComments: Comment[]): ForOfStatement {
 	return {
 		type: 'ForOfStatement',
 		left,
 		right,
 		body,
+		trailingComments,
 	};
 }
 
-export function forStatement(init: Expression | null, test: Expression | null, update: Expression | null, body: Statement): ForStatement {
+export function forStatement(init: Expression | null, test: Expression | null, update: Expression | null, body: Statement, trailingComments: Comment[]): ForStatement {
 	return {
 		type: 'ForStatement',
 		init,
 		test,
 		update,
 		body,
+		trailingComments,
 	};
 }
 
-export function ifStatement(test: Expression, consequent: Statement, alternate?: Statement | null): IfStatement {
+export function ifStatement(test: Expression, consequent: Statement, alternate: Statement | null, trailingComments: Comment[]): IfStatement {
 	return {
 		type: 'IfStatement',
 		test,
 		consequent,
 		alternate,
+		trailingComments,
 	};
 }
 
-export function switchStatement(discriminant: Expression, cases: SwitchCase[]): SwitchStatement {
+export function switchStatement(discriminant: Expression, cases: SwitchCase[], trailingComments: Comment[]): SwitchStatement {
 	return {
 		type: 'SwitchStatement',
 		discriminant,
 		cases,
+		trailingComments,
 	};
 }
 
@@ -270,10 +276,11 @@ export function switchCase(test: Expression | null, consequent: Statement[]): Sw
 	};
 }
 
-export function whileStatement(test: Expression, body: Statement): WhileStatement {
+export function whileStatement(test: Expression, body: Statement, trailingComments: Comment[]): WhileStatement {
 	return {
 		type: 'WhileStatement',
 		test,
 		body,
+		trailingComments,
 	};
 }

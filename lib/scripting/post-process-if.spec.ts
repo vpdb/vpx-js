@@ -42,13 +42,17 @@ describe('The VBScript transpiler - If', () => {
 	it('should transpile an inline "If/Then...Else...End If" statement', () => {
 		const vbs = `If EnableBallControl = 1 Then EnableBallControl = 0 Else EnableBallControl = 2 End If\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('if (EnableBallControl == 1)\n    EnableBallControl = 0;\nelse\n    EnableBallControl = 2;');
+		expect(js).to.equal(
+			'if (EnableBallControl == 1)\n    EnableBallControl = 0;\nelse\n    EnableBallControl = 2;',
+		);
 	});
 
 	it('should transpile an inline "If/Then...Else" statement', () => {
 		const vbs = `If EnableBallControl = 1 Then EnableBallControl = 0 Else EnableBallControl = 2\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('if (EnableBallControl == 1)\n    EnableBallControl = 0;\nelse\n    EnableBallControl = 2;');
+		expect(js).to.equal(
+			'if (EnableBallControl == 1)\n    EnableBallControl = 0;\nelse\n    EnableBallControl = 2;',
+		);
 	});
 
 	it('should transpile an "If/Then...Else...End If" statement', () => {

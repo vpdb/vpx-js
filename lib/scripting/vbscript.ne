@@ -122,7 +122,7 @@ Program              -> NL:? GlobalStmt:*                                       
 # Rules : Declarations
 #===============================
 
-DimDecl              -> %kw_dim __  DimVarList NL                                                                                         {% ppDim.stmt %}
+DimDecl              -> %kw_dim __ DimVarList NL                                                                                          {% ppDim.stmt %}
 
 DimVarList           -> DimVarName DimOtherVars:*                                                                                         {% ppDim.dimVarList %}
 

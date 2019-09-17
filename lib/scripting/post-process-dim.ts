@@ -17,13 +17,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Identifier, VariableDeclaration, VariableDeclarator } from 'estree';
+import { Comment, Identifier, VariableDeclaration, VariableDeclarator } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
-export function stmt(result: [Token, null, VariableDeclarator[]]): VariableDeclaration {
+export function stmt(result: [Token, null, VariableDeclarator[], Comment[]]): VariableDeclaration {
 	const declarations = result[2];
-	return estree.variableDeclaration('let', declarations);
+	const comments = result[3];
+	return estree.variableDeclaration('let', declarations, comments);
 }
 
 export function dimVarList(result: [Identifier, Identifier[]]): VariableDeclarator[] {
