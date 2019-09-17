@@ -36,23 +36,20 @@ export class BrowserImage implements IImage {
 	}
 }
 
-export async function loadImage(src: string, data: Buffer, width: number, height: number): Promise<IImage | HTMLImageElement> {
-
-	const blob = new Blob([data.buffer], {type: 'image/png'});
-	const url = URL.createObjectURL(blob);
+export async function loadImage(src: string, data: Buffer, width: number, height: number): Promise<HTMLImageElement> {
 	const img = new Image();
-
-	return new Promise((resolve, reject) => {
-		img.onload = () => {
-			const ctx = document.createElement('canvas').getContext('2d')!;
-			ctx.canvas.width = width;
-			ctx.canvas.height = height;
-			ctx.drawImage(img, 0, 0);
-			URL.revokeObjectURL(url);
-			resolve(img);
-		};
-		img.src = url;
-	});
+	const header = data.readUInt16BE(0);
+	let mimeType: string;
+	switch (header) {
+		case 0x8950: mimeType = 'image/png'; break;
+		case 0x4749: mimeType = 'image/gif'; break;
+		case 0x424d: mimeType = 'image/bmp'; break;
+		case 0xffd8: mimeType = 'image/jpg'; break;
+		default: mimeType = 'image/unknown'; break;
+	}
+	const blob = new Blob([data.buffer], {type: mimeType});
+	img.src = URL.createObjectURL(blob);
+	return Promise.resolve(img);
 }
 
 export function getRawImage(data: Buffer, width: number, height: number)  {
