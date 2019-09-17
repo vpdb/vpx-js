@@ -19,6 +19,7 @@
 
 import { EventProxy } from '../game/event-proxy';
 import { ItemData } from './item-data';
+import { Table } from './table/table';
 
 /**
  * This is the base class of all table items.

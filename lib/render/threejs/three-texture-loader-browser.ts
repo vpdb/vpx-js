@@ -29,6 +29,7 @@ export class ThreeTextureLoaderBrowser implements ITextureLoader<ThreeTexture> {
 
 	public loadRawTexture(name: string, data: Buffer, width: number, height: number): Promise<ThreeTexture> {
 		const texture = new DataTexture(data, width, height, RGBAFormat);
+		texture.flipY = true;
 		texture.needsUpdate = true;
 		return Promise.resolve(texture);
 	}

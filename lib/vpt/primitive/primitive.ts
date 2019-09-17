@@ -63,17 +63,24 @@ export class Primitive extends Item<PrimitiveData> implements IRenderable, IHitt
 		return this.data.isVisible;
 	}
 
+	public isTransparent(table: Table): boolean {
+		const material = table.getMaterial(this.data.szMaterial);
+		return !material || material.isOpacityActive;
+	}
+
 	public isCollidable(): boolean {
 		return this.data.isCollidable;
 	}
 
 	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
+		const isTransparent = this.isTransparent(table);
 		return {
 			primitive: {
 				mesh: this.getMesh(table).clone().transform(Matrix3D.RIGHT_HANDED),
 				map: table.getTexture(this.data.szImage),
 				normalMap: table.getTexture(this.data.szNormalMap),
 				material: table.getMaterial(this.data.szMaterial),
+				isTransparent,
 			},
 		};
 	}

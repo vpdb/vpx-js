@@ -73,6 +73,19 @@ export class Surface extends Item<SurfaceData> implements IRenderable, IHittable
 		return this.data.isCollidable;
 	}
 
+	public isTransparent(table: Table): boolean {
+		let result = false;
+		if (this.data.isSideVisible) {
+			const sideMaterial = table.getMaterial(this.data.szSideMaterial);
+			result = !sideMaterial || sideMaterial.isOpacityActive;
+		}
+		if (this.data.isTopBottomVisible) {
+			const topMaterial = table.getMaterial(this.data.szSideMaterial);
+			result = result || !topMaterial || topMaterial.isOpacityActive;
+		}
+		return result;
+	}
+
 	public setDropped(isDropped: boolean): void {
 		if (!this.data.isDroppable) {
 			throw new Error(`Surface "${this.getName()}" is not droppable.`);
@@ -100,11 +113,13 @@ export class Surface extends Item<SurfaceData> implements IRenderable, IHittable
 	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
 		const meshes: Meshes<GEOMETRY> = {};
 		const surface = this.meshGenerator.generateMeshes(this.data, table);
+		const isTransparent = this.isTransparent(table);
 		if (surface.top) {
 			meshes.top = {
 				mesh: surface.top.transform(Matrix3D.RIGHT_HANDED),
 				map: table.getTexture(this.data.szImage),
 				material: table.getMaterial(this.data.szTopMaterial),
+				isTransparent,
 			};
 		}
 
@@ -113,6 +128,7 @@ export class Surface extends Item<SurfaceData> implements IRenderable, IHittable
 				mesh: surface.side.transform(Matrix3D.RIGHT_HANDED),
 				map: table.getTexture(this.data.szSideImage),
 				material: table.getMaterial(this.data.szSideMaterial),
+				isTransparent,
 			};
 		}
 		return meshes;

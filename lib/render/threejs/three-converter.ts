@@ -93,7 +93,6 @@ export class ThreeConverter {
 			material.roughness = Math.max(0, 1 - (materialInfo.roughness / 1.5));
 			material.color = new Color(materialInfo.baseColor);
 			material.opacity = materialInfo.isOpacityActive ? Math.min(1, Math.max(0, materialInfo.opacity)) : 1;
-			material.transparent = materialInfo.isOpacityActive && materialInfo.opacity < 0.98;
 			material.side = DoubleSide;
 
 			if (materialInfo.emissiveIntensity > 0) {
@@ -103,6 +102,7 @@ export class ThreeConverter {
 		}
 
 		if (this.meshConvertOpts.applyTextures) {
+			material.transparent = !!obj.isTransparent;
 
 			// texture
 			if (obj.map) {
@@ -110,8 +110,6 @@ export class ThreeConverter {
 				if (map) {
 					map.name = `texture:${obj.map.getName()}`;
 					material.map = map;
-					// TODO trans check
-					//material.transparent = true;
 					material.needsUpdate = true;
 				}
 			}
