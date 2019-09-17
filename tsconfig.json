@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
-		"target": "es6",
-		"module": "commonjs",
+		"target": "esnext",
+		"module": "esnext",
 		"declaration": true,
 		"declarationMap": true,
 		"outDir": "./dist",
@@ -11,6 +11,7 @@
 	"exclude": [
 		"node_modules",
 		"dist",
-		"test"
+		"test",
+		"**/*.spec.*"
 	]
 }

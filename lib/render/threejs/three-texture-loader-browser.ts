@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { DataTexture, RGBFormat, Texture as ThreeTexture, TextureLoader, TypedArray } from 'three';
+import { DataTexture, RGBAFormat, Texture as ThreeTexture } from 'three';
 import { ITextureLoader } from '../irender-api';
 
 export class ThreeTextureLoaderBrowser implements ITextureLoader<ThreeTexture> {
@@ -28,7 +28,9 @@ export class ThreeTextureLoaderBrowser implements ITextureLoader<ThreeTexture> {
 	}
 
 	public loadRawTexture(name: string, data: Buffer, width: number, height: number): Promise<ThreeTexture> {
-		return Promise.resolve(new DataTexture(data.buffer as TypedArray, width, height, RGBFormat));
+		const texture = new DataTexture(data, width, height, RGBAFormat);
+		texture.needsUpdate = true;
+		return Promise.resolve(texture);
 	}
 
 	public loadTexture(name: string, data: Buffer): Promise<ThreeTexture> {
@@ -47,6 +49,7 @@ export class ThreeTextureLoaderBrowser implements ITextureLoader<ThreeTexture> {
 		const texture = new ThreeTexture();
 		texture.name = `texture:name`;
 		texture.image = img;
+		texture.needsUpdate = true;
 		return Promise.resolve(texture);
 	}
 }

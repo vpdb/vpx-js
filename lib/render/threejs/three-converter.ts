@@ -26,12 +26,9 @@ import {
 	MeshStandardMaterial,
 	Object3D,
 	PointLight,
-	RGBAFormat,
-	RGBFormat,
 	Texture as ThreeTexture,
 } from 'three';
 import { IRenderable, RenderInfo } from '../../game/irenderable';
-import { IImage } from '../../gltf/image';
 import { logger } from '../../util/logger';
 import { Table, TableGenerateOptions } from '../../vpt/table/table';
 import { Texture } from '../../vpt/texture';
