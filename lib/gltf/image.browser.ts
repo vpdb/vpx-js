@@ -1,5 +1,6 @@
 import { Stream } from 'stream';
 import { Binary } from '../vpt/binary';
+import { BmpDecoder } from './bmp/decoder';
 import { IImage } from './image';
 
 export class BrowserImage implements IImage {
@@ -36,7 +37,7 @@ export class BrowserImage implements IImage {
 	}
 }
 
-export async function loadImage(src: string, data: Buffer, width: number, height: number): Promise<HTMLImageElement> {
+export async function loadImage(src: string, data: Buffer): Promise<HTMLImageElement> {
 	const img = new Image();
 	const header = data.readUInt16BE(0);
 	let mimeType: string;
@@ -52,8 +53,9 @@ export async function loadImage(src: string, data: Buffer, width: number, height
 	return Promise.resolve(img);
 }
 
-export function getRawImage(data: Buffer, width: number, height: number)  {
-	return null;
+export async function getRawImage(data: Buffer, width: number, height: number): Promise<ArrayBufferLike> {
+	const decoder = bmpDecode(data, {toRGBA: false});
+	return Promise.resolve(decoder.data);
 }
 
 export async function streamImage(storage: Storage, storageName?: string, binary?: Binary, localPath?: string): Promise<Buffer> {
@@ -74,3 +76,5 @@ export async function streamImage(storage: Storage, storageName?: string, binary
 		strm.on('end', () => resolve(Buffer.concat(bufs)));
 	});
 }
+
+const bmpDecode = (bmpData: Buffer, options?: IDecoderOptions) => new BmpDecoder(bmpData, options);

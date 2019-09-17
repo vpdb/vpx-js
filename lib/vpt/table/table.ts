@@ -74,7 +74,7 @@ export class Table {
 	public readonly items: { [key: string]: Item<ItemData> };
 	public readonly tableScript?: string;
 
-	private readonly imageCache: Map<string, IImage> = new Map();
+	private readonly imageCache: Map<string, any> = new Map();
 
 	public readonly textures: { [key: string]: Texture } = {};
 	public readonly collections: { [key: string]: Collection } = {};
@@ -368,11 +368,11 @@ export class Table {
 		}
 	}
 
-	public getImageFromCache(name: string) {
+	public getImageFromCache<IMAGE>(name: string): IMAGE | null {
 		return this.imageCache.get(name);
 	}
 
-	public addImageToCache(name: string, image: IImage) {
+	public addImageToCache<IMAGE>(name: string, image: IMAGE) {
 		this.imageCache.set(name, image);
 	}
 

@@ -129,7 +129,7 @@ async function gmIdentify(g: State): Promise<any> {
 	});
 }
 
-export async function loadImage(src: string, data: Buffer | sharp.Sharp, width: number, height: number): Promise<IImage> {
+export async function loadImage<IMAGE>(src: string, data: Buffer | sharp.Sharp, width: number, height: number): Promise<NodeImage> {
 
 	let format;
 	let shrp: sharp.Sharp = data instanceof Buffer ? sharp(data) : data;
@@ -161,14 +161,14 @@ export async function loadImage(src: string, data: Buffer | sharp.Sharp, width: 
 	return new NodeImage(src, width, height, format, stats, shrp);
 }
 
-export function getRawImage(data: Buffer, width: number, height: number): sharp.Sharp {
-	return sharp(data, {
+export async function getRawImage(data: Buffer, width: number, height: number): Promise<sharp.Sharp> {
+	return Promise.resolve(sharp(data, {
 		raw: {
 			width,
 			height,
 			channels: 4,
 		},
-	}).png();
+	}).png());
 }
 
 /**

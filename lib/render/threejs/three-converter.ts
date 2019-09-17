@@ -110,6 +110,7 @@ export class ThreeConverter {
 				material.map = new ThreeTexture();
 				material.map.name = 'texture:' + obj.map.getName();
 				if (await this.loadMap(name, obj.map, material.map, table)) {
+					// FIXME uncomment
 					// if ((material.map.image as IImage).containsTransparency()) {
 					// 	material.transparent = true;
 					// }
@@ -150,7 +151,7 @@ export class ThreeConverter {
 	/* istanbul ignore next: Texture extraction is tested, but applying them to three.js is out of scope. */
 	private async loadMap(name: string, texture: Texture, threeMaterial: ThreeTexture, table: Table): Promise<boolean> {
 		try {
-			const image = await texture.getImage(table);
+			const image = await texture.getImage(table, this.meshConvertOpts.applyTextures!);
 			threeMaterial.image = image;
 			//threeMaterial.format = image.hasTransparency() ? RGBAFormat : RGBFormat;
 			threeMaterial.needsUpdate = true;
