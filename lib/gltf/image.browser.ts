@@ -1,3 +1,4 @@
+import { Stream } from 'stream';
 import { Binary } from '../vpt/binary';
 import { IImage } from './image';
 
@@ -35,8 +36,23 @@ export class BrowserImage implements IImage {
 	}
 }
 
-export async function loadImage(src: string, data: Buffer): Promise<IImage> {
-	return Promise.resolve(new BrowserImage());
+export async function loadImage(src: string, data: Buffer, width: number, height: number): Promise<IImage | HTMLImageElement> {
+
+	const blob = new Blob([data.buffer], {type: 'image/png'});
+	const url = URL.createObjectURL(blob);
+	const img = new Image();
+
+	return new Promise((resolve, reject) => {
+		img.onload = () => {
+			const ctx = document.createElement('canvas').getContext('2d')!;
+			ctx.canvas.width = width;
+			ctx.canvas.height = height;
+			ctx.drawImage(img, 0, 0);
+			URL.revokeObjectURL(url);
+			resolve(img);
+		};
+		img.src = url;
+	});
 }
 
 export function getRawImage(data: Buffer, width: number, height: number)  {
@@ -44,5 +60,20 @@ export function getRawImage(data: Buffer, width: number, height: number)  {
 }
 
 export async function streamImage(storage: Storage, storageName?: string, binary?: Binary, localPath?: string): Promise<Buffer> {
-	return Promise.resolve(Buffer.alloc(0));
+	let strm: Stream;
+	if (localPath) {
+		return Promise.resolve(Buffer.alloc(0));
+	} else {
+		strm = storage.stream(storageName!, binary!.pos, binary!.len);
+	}
+	return new Promise<Buffer>((resolve, reject) => {
+		const bufs: Buffer[] = [];
+		/* istanbul ignore if */
+		if (!strm) {
+			return reject(new Error('No such stream "' + storageName + '".'));
+		}
+		strm.on('error', reject);
+		strm.on('data', (buf: Buffer) => bufs.push(buf));
+		strm.on('end', () => resolve(Buffer.concat(bufs)));
+	});
 }

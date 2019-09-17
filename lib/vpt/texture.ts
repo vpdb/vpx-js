@@ -95,14 +95,14 @@ export class Texture extends BiffParser {
 		}
 
 		if (this.isRaw()) {
-			image = await loadImage(this.getName(), getRawImage(this.pdsBuffer!.getData(), this.width, this.height));
+			image = await loadImage(this.getName(), getRawImage(this.pdsBuffer!.getData(), this.width, this.height), this.width, this.height);
 
 		} else {
 			const data = await table.streamStorage<Buffer>('GameStg', storage => streamImage(storage, this.storageName, this.binary, this.localPath));
 			if (!data || !data.length) {
 				throw new Error(`Cannot load image data for texture ${this.getName()}`);
 			}
-			image = await loadImage(this.getName(), data);
+			image = await loadImage(this.getName(), data, this.width, this.height);
 		}
 		table.addImageToCache(this.getName(), image);
 		return image;
