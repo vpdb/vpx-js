@@ -49,7 +49,8 @@ export function stmt1(
 	const test = result[10];
 	const step = result[14];
 	const body = result[16];
-	const comments = [...result[15], ...result[18]];
+	const leadingComments = result[15];
+	const trailingComments = result[18];
 	return estree.forStatement(
 		estree.assignmentExpression(identifier, '=', init),
 		estree.conditionalExpression(
@@ -59,7 +60,8 @@ export function stmt1(
 		),
 		estree.assignmentExpression(identifier, '+=', step),
 		body,
-		comments,
+		leadingComments,
+		trailingComments,
 	);
 }
 
@@ -86,13 +88,15 @@ export function stmt2(
 	const init = result[6];
 	const test = result[10];
 	const body = result[12];
-	const comments = [...result[11], ...result[14]];
+	const leadingComments = result[11];
+	const trailingComments = result[14];
 	return estree.forStatement(
 		estree.assignmentExpression(identifier, '=', init),
 		estree.binaryExpression('<=', identifier, test),
 		estree.assignmentExpression(identifier, '+=', estree.literal(1)),
 		body,
-		comments,
+		leadingComments,
+		trailingComments,
 	);
 }
 
@@ -116,6 +120,7 @@ export function stmt3(
 	const identifier = result[4];
 	const expression = result[8];
 	const body = result[10];
-	const comments = [...result[9], ...result[12]];
-	return estree.forOfStatement(identifier, expression, body, comments);
+	const leadingComments = result[9];
+	const trailingComments = result[12];
+	return estree.forOfStatement(identifier, expression, body, leadingComments, trailingComments);
 }
