@@ -56,6 +56,7 @@ const lexer = moo.compile({
             'kw_then': 'then',
             'kw_elseif': 'elseif',
             'kw_else': 'else',
+            'kw_exit': 'exit',
             'kw_for': 'for',
             'kw_to': 'to',
             'kw_step': 'step',
@@ -191,11 +192,17 @@ BlockStmt            -> RemStmt                                                 
                       | NL                                                                                                                {% ppHelpers.blockStmt2 %}
 
 InlineStmt           -> AssignStmt                                                                                                        {% id %}
+                      | ExitStmt                                                                                                          {% id %}
                       | SubCallStmt                                                                                                       {% id %}
 
 RemStmt              -> %comment_rem NL                                                                                                   {% ppRem.stmt %}
 
 OptionExplicit       -> %kw_option __ %kw_explicit NL                                                                                     {% ppOption.explicit %}
+
+ExitStmt             -> %kw_exit __ %kw_do                                                                                                {% ppHelpers.exitStmt %}
+                      | %kw_exit __ %kw_for                                                                                               {% ppHelpers.exitStmt %}
+                      | %kw_exit __ %kw_function                                                                                          {% ppHelpers.exitStmt %}
+                      | %kw_exit __ %kw_sub                                                                                               {% ppHelpers.exitStmt %}
 
 AssignStmt           -> LeftExpr _ %equals _ Expr                                                                                         {% ppAssign.stmt1 %}
                       | %kw_set __ LeftExpr _ %equals _ Expr                                                                              {% ppAssign.stmt2 %}

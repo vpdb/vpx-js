@@ -41,6 +41,7 @@ import {
 	MemberExpression,
 	Pattern,
 	Program,
+	ReturnStatement,
 	SpreadElement,
 	Statement,
 	Super,
@@ -256,6 +257,13 @@ export function ifStatement(test: Expression, consequent: Statement, alternate: 
 		consequent,
 		alternate,
 		trailingComments,
+	};
+}
+
+export function returnStatement(argument: Expression | null): ReturnStatement {
+	return {
+		type: 'ReturnStatement',
+		argument,
 	};
 }
 

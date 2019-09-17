@@ -41,5 +41,38 @@ export function stmt(
 	const params = result[5] || [];
 	const body = result[7];
 	const comments = [...result[6], ...result[11]];
+	processReturnStmts(name, body);
+	body.body.unshift(estree.variableDeclaration('let', [estree.variableDeclarator(name, estree.literal(null))], []));
+	if (body.body[body.body.length - 1].type !== 'ReturnStatement') {
+		body.body.push(estree.returnStatement(name));
+	}
 	return estree.functionDeclaration(name, params, body, comments);
+}
+
+function processReturnStmts(argument: Identifier, statement: Statement) {
+	if (statement.type === 'ReturnStatement') {
+		statement.argument = argument;
+	} else if (statement.type === 'BlockStatement') {
+		statement.body.forEach(innerStatement => {
+			processReturnStmts(argument, innerStatement);
+		});
+	} else if (statement.type === 'IfStatement') {
+		processReturnStmts(argument, statement.consequent);
+		if (statement.alternate !== null) {
+			processReturnStmts(argument, statement.alternate as Statement);
+		}
+	} else if (statement.type === 'SwitchStatement') {
+		statement.cases.forEach(innerStatement => {
+			innerStatement.consequent.forEach(consequent => {
+				processReturnStmts(argument, consequent);
+			});
+		});
+	} else if (
+		statement.type === 'ForStatement' ||
+		statement.type === 'ForOfStatement' ||
+		statement.type === 'DoWhileStatement' ||
+		statement.type === 'WhileStatement'
+	) {
+		processReturnStmts(argument, statement.body);
+	}
 }
