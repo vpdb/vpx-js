@@ -74,7 +74,7 @@ export class Table {
 	public readonly items: { [key: string]: Item<ItemData> };
 	public readonly tableScript?: string;
 
-	private readonly imageCache: Map<string, any> = new Map();
+	private readonly textureCache: Map<string, any> = new Map();
 
 	public readonly textures: { [key: string]: Texture } = {};
 	public readonly collections: { [key: string]: Collection } = {};
@@ -368,16 +368,16 @@ export class Table {
 		}
 	}
 
-	public getImageFromCache<IMAGE>(name: string): IMAGE | null {
-		return this.imageCache.get(name);
+	public getTextureFromCache<TEXTURE>(name: string): TEXTURE | null {
+		return this.textureCache.get(name);
 	}
 
-	public addImageToCache<IMAGE>(name: string, image: IMAGE) {
-		this.imageCache.set(name, image);
+	public addTextureToCache<TEXTURE>(name: string, image: TEXTURE) {
+		this.textureCache.set(name, image);
 	}
 
-	public clearImageCache() {
-		this.imageCache.clear();
+	public clearTextureCache() {
+		this.textureCache.clear();
 	}
 
 	public setupCollections() {

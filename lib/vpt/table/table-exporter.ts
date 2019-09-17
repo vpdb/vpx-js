@@ -23,6 +23,7 @@ import { MeshConvertOptions } from '../../render/irender-api';
 import { ThreeRenderApi } from '../../render/threejs/three-render-api';
 import { Table, TableGenerateOptions } from './table';
 import { TableMeshGenerator } from './table-mesh-generator';
+import { ThreeTextureLoaderNode } from '../../render/threejs/three-texture-loader-node';
 
 export class TableExporter {
 
@@ -63,7 +64,6 @@ export interface TableExportOptions extends TableGenerateOptions, MeshConvertOpt
 
 const defaultOptions: TableExportOptions = {
 	applyMaterials: true,
-	applyTextures: true,
 	optimizeTextures: false,
 	exportPlayfield: true,
 	exportPrimitives: true,

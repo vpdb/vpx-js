@@ -33,7 +33,7 @@ describe('The VPinball plunger generator', () => {
 	before(async () => {
 		const table = await Table.load(new NodeBinaryReader(three.fixturePath('table-plunger.vpx')));
 		const exporter = new TableExporter(table);
-		gltf = await three.loadGlb(await exporter.exportGlb({ exportPlayfieldLights: true, applyTextures: false }));
+		gltf = await three.loadGlb(await exporter.exportGlb({ exportPlayfieldLights: true }));
 	});
 
 	it('should generate a flat plunger', async () => {

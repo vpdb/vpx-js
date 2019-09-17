@@ -24,6 +24,7 @@ import { NodeBinaryReader } from '../lib/io/binary-reader.node';
 import { TableExporter } from '../lib/vpt/table/table-exporter';
 import { Logger } from '../lib/util/logger';
 import { Table } from '../lib/vpt/table/table';
+import { ThreeTextureLoaderNode } from '../lib/render/threejs/three-texture-loader-node';
 
 (async () => {
 
@@ -35,7 +36,7 @@ import { Table } from '../lib/vpt/table/table';
 		// other options
 		const compressVertices = process.argv.includes('--compress-vertices');
 		const optimizeTextures = !process.argv.includes('--skip-optimize');
-		const applyTextures = !process.argv.includes('--no-textures');
+		const applyTextures = !process.argv.includes('--no-textures') ? new ThreeTextureLoaderNode() : undefined;
 		const applyMaterials = !process.argv.includes('--no-materials');
 		const exportLightBulbLights = !process.argv.includes('--no-lights');
 

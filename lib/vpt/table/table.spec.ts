@@ -39,7 +39,7 @@ describe('The VPinball table generator', () => {
 	before(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-empty.vpx')));
 		const exporter = new TableExporter(table);
-		gltf = await three.loadGlb(await exporter.exportGlb({ applyTextures: false, exportPlayfieldLights: false }));
+		gltf = await three.loadGlb(await exporter.exportGlb({ exportPlayfieldLights: false }));
 	});
 
 	it('should generate the correct playfield mesh', async () => {

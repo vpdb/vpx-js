@@ -117,19 +117,25 @@ export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 	createPointLight(lightData: LightData): POINT_LIGHT;
 }
 
-export interface ITextureImporter<IMAGE, RAW_IMAGE> {
+export interface ITextureLoader<TEXTURE> {
 
-	loadImage(name: string, data: Buffer, width: number, height: number): Promise<IMAGE>;
+	loadTexture(name: string, data: Buffer): Promise<TEXTURE>;
 
-	loadRawImage(name: string, data: RAW_IMAGE, width: number, height: number): Promise<IMAGE>;
+	loadRawTexture(name: string, data: Buffer, width: number, height: number): Promise<TEXTURE>;
 
-	getRawImage(data: Buffer, width: number, height: number): Promise<RAW_IMAGE>;
+	loadDefaultTexture(name: string, fileName: string): Promise<TEXTURE>;
 
-	streamImage(storage: Storage, storageName?: string, binary?: Binary, localPath?: string): Promise<Buffer>;
+	// loadImage(name: string, data: Buffer, width: number, height: number): Promise<IMAGE>;
+	//
+	// loadRawImage(name: string, data: RAW_IMAGE, width: number, height: number): Promise<IMAGE>;
+	//
+	// getRawImage(data: Buffer, width: number, height: number): Promise<RAW_IMAGE>;
+
+	//streamImage(storage: Storage, storageName?: string, binary?: Binary, localPath?: string): Promise<Buffer>;
 }
 
 export interface MeshConvertOptions {
 	applyMaterials?: boolean;
-	applyTextures?: ITextureImporter<any, any>;
+	applyTextures?: ITextureLoader<any>;
 	optimizeTextures?: boolean;
 }
