@@ -22,38 +22,58 @@ import { vbsToJs } from '../../test/script.helper';
 
 describe('The VBScript transpiler - Function', () => {
 	it('should transpile a function with empty params', () => {
-		const vbs = `Function BallRelease_Hit()\nBallRelease.CreateBall\nEnd Function\n`;
+		const vbs = `Function BallRelease_Hit()\nBallRelease_Hit = BallRelease.CreateBall\nEnd Function\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('function BallRelease_Hit() {\n    BallRelease.CreateBall();\n}');
+		expect(js).to.equal(
+			'function BallRelease_Hit() {\n    let BallRelease_Hit = null;\n    BallRelease_Hit = BallRelease.CreateBall;\n    return BallRelease_Hit;\n}',
+		);
 	});
 
 	it('should transpile a function with params', () => {
 		const vbs = `Function BallRelease_Hit(value1, value2, value3)\nBallRelease.CreateBall\nEnd Function\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('function BallRelease_Hit(value1, value2, value3) {\n    BallRelease.CreateBall();\n}');
+		expect(js).to.equal(
+			'function BallRelease_Hit(value1, value2, value3) {\n    let BallRelease_Hit = null;\n    BallRelease.CreateBall();\n    return BallRelease_Hit;\n}',
+		);
+	});
+
+	it('should transpile a function with params and exit', () => {
+		const vbs = `Function MyFunction(value)\nMyFunction = 6\nif value = 5 Then\nMyFunction = 10\nExit Function\nEnd If\nEnd Function\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal(
+			'function MyFunction(value) {\n    let MyFunction = null;\n    MyFunction = 6;\n    if (value == 5) {\n        MyFunction = 10;\n        return MyFunction;\n    }\n    return MyFunction;\n}',
+		);
 	});
 
 	it('should transpile a function with no params', () => {
-		const vbs = `Function BallRelease_Hit\nBallRelease.CreateBall\nEnd Function\n`;
+		const vbs = `Function BallRelease_Hit\nBallRelease_Hit = BallRelease.CreateBall\nEnd Function\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('function BallRelease_Hit() {\n    BallRelease.CreateBall();\n}');
+		expect(js).to.equal(
+			'function BallRelease_Hit() {\n    let BallRelease_Hit = null;\n    BallRelease_Hit = BallRelease.CreateBall;\n    return BallRelease_Hit;\n}',
+		);
 	});
 
 	it('should transpile a "Private" function with empty params', () => {
-		const vbs = `Private Function BallRelease_Hit()\nBallRelease.CreateBall\nEnd Function\n`;
+		const vbs = `Private Function BallRelease_Hit()\nBallRelease_Hit = BallRelease.CreateBall\nEnd Function\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('function BallRelease_Hit() {\n    BallRelease.CreateBall();\n}');
+		expect(js).to.equal(
+			'function BallRelease_Hit() {\n    let BallRelease_Hit = null;\n    BallRelease_Hit = BallRelease.CreateBall;\n    return BallRelease_Hit;\n}',
+		);
 	});
 
 	it('should transpile a "Public" function with empty params', () => {
-		const vbs = `Public Function BallRelease_Hit()\nBallRelease.CreateBall\nEnd Function\n`;
+		const vbs = `Public Function BallRelease_Hit()\nBallRelease_Hit = BallRelease.CreateBall\nEnd Function\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('function BallRelease_Hit() {\n    BallRelease.CreateBall();\n}');
+		expect(js).to.equal(
+			'function BallRelease_Hit() {\n    let BallRelease_Hit = null;\n    BallRelease_Hit = BallRelease.CreateBall;\n    return BallRelease_Hit;\n}',
+		);
 	});
 
 	it('should transpile a "Public Default" function without params', () => {
-		const vbs = `Public Default Function BallRelease_Hit()\nBallRelease.CreateBall\nEnd Function\n`;
+		const vbs = `Public Default Function BallRelease_Hit()\nBallRelease_Hit = BallRelease.CreateBall\nEnd Function\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('function BallRelease_Hit() {\n    BallRelease.CreateBall();\n}');
+		expect(js).to.equal(
+			'function BallRelease_Hit() {\n    let BallRelease_Hit = null;\n    BallRelease_Hit = BallRelease.CreateBall;\n    return BallRelease_Hit;\n}',
+		);
 	});
 });

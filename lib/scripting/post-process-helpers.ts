@@ -56,6 +56,11 @@ export function methodStmtList(result: [Statement[]]) {
 	return estree.blockStatement(statements);
 }
 
+export function exitStmt(result: [Token, null, Token]): Statement {
+	const type = result[2].type;
+	return type === 'kw_do' || type === 'kw_for' ? estree.breakStatement() : estree.returnStatement(null);
+}
+
 export function id(result: [Token]): Identifier {
 	let name = result[0].text.trim();
 
