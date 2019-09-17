@@ -24,7 +24,7 @@ import { Pool } from '../../util/object-pool';
 import { LightData } from '../../vpt/light/light-data';
 import { Mesh } from '../../vpt/mesh';
 import { Table, TableGenerateOptions } from '../../vpt/table/table';
-import { IRenderApi, MeshConvertOptions } from '../irender-api';
+import { IRenderApi, ITextureImporter, MeshConvertOptions } from '../irender-api';
 import { ThreeConverter } from './three-converter';
 import { ThreeLightMeshGenerator } from './three-light-mesh-generator';
 import { ThreeMeshGenerator } from './three-mesh-generator';
@@ -46,7 +46,6 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 	constructor(opts?: MeshConvertOptions) {
 		this.meshConvertOpts = opts || {
 			applyMaterials: false,
-			applyTextures: false,
 			optimizeTextures: false,
 		};
 		this.converter = new ThreeConverter(this.meshConvertOpts);

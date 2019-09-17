@@ -18,11 +18,10 @@
  */
 
 import { basename, resolve as resolvePath } from 'path';
-import { IImage } from '../gltf/image';
 import { LzwReader } from '../gltf/lzw-reader';
 import { BiffParser } from '../io/biff-parser';
 import { Storage } from '../io/ole-doc';
-import { getRawImage, loadImage, streamImage } from '../refs.node';
+import { ITextureImporter } from '../render/irender-api';
 import { logger } from '../util/logger';
 import { Binary } from './binary';
 import { Table } from './table/table';
@@ -86,23 +85,26 @@ export class Texture extends BiffParser {
 	/**
 	 * Returns the image of the texture, as JPG if opaque, or JPEG otherwise.
 	 * @param table
+	 * @param textureImporter
 	 */
-	public async getImage(table: Table): Promise<IImage> {
+	public async getImage<IMAGE, RAW_IMAGE>(table: Table, textureImporter: ITextureImporter<IMAGE, RAW_IMAGE>): Promise<IMAGE> {
 
-		let image = table.getImageFromCache(this.getName());
+		let image = table.getImageFromCache<IMAGE>(this.getName());
 		if (image) {
 			return image;
 		}
 
 		if (this.isRaw()) {
-			image = await loadImage(this.getName(), getRawImage(this.pdsBuffer!.getData(), this.width, this.height), this.width, this.height);
+			const data = await textureImporter.getRawImage(this.pdsBuffer!.getData(), this.width, this.height);
+			image = await textureImporter.loadRawImage(this.getName(), data, this.width, this.height);
 
 		} else {
-			const data = await table.streamStorage<Buffer>('GameStg', storage => streamImage(storage, this.storageName, this.binary, this.localPath));
+			const data = await table.streamStorage<Buffer>('GameStg',
+					storage => textureImporter.streamImage(storage, this.storageName, this.binary, this.localPath));
 			if (!data || !data.length) {
 				throw new Error(`Cannot load image data for texture ${this.getName()}`);
 			}
-			image = await loadImage(this.getName(), data, this.width, this.height);
+			image = await textureImporter.loadImage(this.getName(), data, this.width, this.height);
 		}
 		table.addImageToCache(this.getName(), image);
 		return image;

@@ -18,7 +18,9 @@
  */
 
 import { IRenderable } from '../game/irenderable';
+import { Storage } from '../io/ole-doc';
 import { Matrix3D } from '../math/matrix3d';
+import { Binary } from '../vpt/binary';
 import { LightData } from '../vpt/light/light-data';
 import { Mesh } from '../vpt/mesh';
 import { Table, TableGenerateOptions } from '../vpt/table/table';
@@ -115,8 +117,19 @@ export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 	createPointLight(lightData: LightData): POINT_LIGHT;
 }
 
+export interface ITextureImporter<IMAGE, RAW_IMAGE> {
+
+	loadImage(name: string, data: Buffer, width: number, height: number): Promise<IMAGE>;
+
+	loadRawImage(name: string, data: RAW_IMAGE, width: number, height: number): Promise<IMAGE>;
+
+	getRawImage(data: Buffer, width: number, height: number): Promise<RAW_IMAGE>;
+
+	streamImage(storage: Storage, storageName?: string, binary?: Binary, localPath?: string): Promise<Buffer>;
+}
+
 export interface MeshConvertOptions {
 	applyMaterials?: boolean;
-	applyTextures?: boolean;
+	applyTextures?: ITextureImporter<any, any>;
 	optimizeTextures?: boolean;
 }
