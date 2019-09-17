@@ -110,9 +110,9 @@ export class ThreeConverter {
 				material.map = new ThreeTexture();
 				material.map.name = 'texture:' + obj.map.getName();
 				if (await this.loadMap(name, obj.map, material.map, table)) {
-					if ((material.map.image as IImage).containsTransparency()) {
-						material.transparent = true;
-					}
+					// if ((material.map.image as IImage).containsTransparency()) {
+					// 	material.transparent = true;
+					// }
 					material.needsUpdate = true;
 				} else {
 					logger().warn('[ThreeConverter.getMaterial] Error getting map.');
@@ -152,7 +152,7 @@ export class ThreeConverter {
 		try {
 			const image = await texture.getImage(table);
 			threeMaterial.image = image;
-			threeMaterial.format = image.hasTransparency() ? RGBAFormat : RGBFormat;
+			//threeMaterial.format = image.hasTransparency() ? RGBAFormat : RGBFormat;
 			threeMaterial.needsUpdate = true;
 			return true;
 		} catch (err) {

@@ -129,17 +129,15 @@ async function gmIdentify(g: State): Promise<any> {
 	});
 }
 
-export async function loadImage(src: string, data: Buffer | sharp.Sharp): Promise<IImage> {
+export async function loadImage(src: string, data: Buffer | sharp.Sharp, width: number, height: number): Promise<IImage> {
 
-	let width;
-	let height;
 	let format;
 	let shrp: sharp.Sharp = data instanceof Buffer ? sharp(data) : data;
 
 	try {
 		const metadata = await shrp.metadata();
-		width = metadata.width;
-		height = metadata.height;
+		width = metadata.width!;
+		height = metadata.height!;
 		format = metadata.format;
 
 	} catch (err) {
