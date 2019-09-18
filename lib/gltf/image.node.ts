@@ -26,7 +26,6 @@ import { Stream } from 'stream';
 import { Storage } from '../io/ole-doc';
 import { logger } from '../util/logger';
 import { Binary } from '../vpt/binary';
-import { IImage } from './image';
 
 const PngQuant = require('pngquant');
 
@@ -36,7 +35,7 @@ const PngQuant = require('pngquant');
  * It uses Sharp for reprocessing, crushes PNGs with PngQuant and converts
  * PNGs to JPEGs when no alpha channel is found.
  */
-export class NodeImage implements IImage {
+export class NodeImage {
 
 	private static readonly jpegQuality = 65;
 
@@ -141,7 +140,7 @@ export async function loadImage<IMAGE>(src: string, data: Buffer | sharp.Sharp, 
 		format = metadata.format;
 
 	} catch (err) {
-		logger().warn('[Image.init] Could not read metadata from buffer (%s), using GM to read image.', err.message);
+		logger().warn('[Image.loadImage] Could not read metadata from buffer (%s), using GM to read image.', err.message);
 
 		const g = gm(data);
 		const metadata = await gmIdentify(g);
