@@ -27,6 +27,12 @@ describe('The VBScript transpiler - Const', () => {
 		expect(js).to.equal('const pi = 3.14;');
 	});
 
+	it('should transpile a single "Private" Const declaration', () => {
+		const vbs = `Private Const test = 20\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('const test = 20;');
+	});
+
 	it('should transpile a multiple Const declaration', () => {
 		const vbs = `Const test1 = 3.14, test2 = 4, test3 = -5.2\n`;
 		const js = vbsToJs(vbs);
