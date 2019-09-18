@@ -120,14 +120,14 @@ export class Kicker extends Item<KickerData> implements IRenderable, IHittable, 
 
 	private getTexture(): Texture {
 		switch (this.data.kickerType) {
-			case Kicker.TypeKickerCup: return Texture.fromFilesystem('kickerCup.bmp');
-			case Kicker.TypeKickerWilliams: return Texture.fromFilesystem('kickerWilliams.bmp');
-			case Kicker.TypeKickerGottlieb: return Texture.fromFilesystem('kickerGottlieb.bmp');
-			case Kicker.TypeKickerCup2: return Texture.fromFilesystem('kickerT1.bmp');
-			case Kicker.TypeKickerHole: return Texture.fromFilesystem('kickerHoleWood.bmp');
+			case Kicker.TypeKickerCup: return Texture.fromFilesystem('kickerCup.png');
+			case Kicker.TypeKickerWilliams: return Texture.fromFilesystem('kickerWilliams.png');
+			case Kicker.TypeKickerGottlieb: return Texture.fromFilesystem('kickerGottlieb.png');
+			case Kicker.TypeKickerCup2: return Texture.fromFilesystem('kickerT1.png');
+			case Kicker.TypeKickerHole: return Texture.fromFilesystem('kickerHoleWood.png');
 			case Kicker.TypeKickerHoleSimple:
 			default:
-				return Texture.fromFilesystem('kickerHoleWood.bmp');
+				return Texture.fromFilesystem('kickerHoleWood.png');
 		}
 	}
 

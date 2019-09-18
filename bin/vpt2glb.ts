@@ -53,7 +53,8 @@ import { ThreeTextureLoaderNode } from '../lib/render/threejs/three-texture-load
 		const exportLightBulbs = !process.argv.includes('--no-bulbs');
 		const exportPlayfieldLights = !process.argv.includes('--no-surface-lights');
 		const exportPlayfield = !process.argv.includes('--no-playfield');
-
+		const exportPlungers = !process.argv.includes('--no-plungers');
+		const exportSpinners = !process.argv.includes('--no-spinners');
 
 		// silence logs
 		Logger.setLogger({
@@ -119,6 +120,8 @@ import { ThreeTextureLoaderNode } from '../lib/render/threejs/three-texture-load
 			exportLightBulbs,
 			exportPlayfieldLights,
 			exportPlayfield,
+			exportPlungers,
+			exportSpinners,
 		});
 		const exported = Date.now();
 		writeFileSync(glbPath, glb);

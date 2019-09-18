@@ -17,14 +17,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { DataTexture, RGBAFormat, Texture as ThreeTexture } from 'three';
+import { DataTexture, RGBAFormat, Texture as ThreeTexture, TextureLoader } from 'three';
 import { ITextureLoader } from '../irender-api';
 
-export class ThreeTextureLoaderBrowser implements ITextureLoader<ThreeTexture> {
+const imageMap: { [key: string]: string } = {
+	bumperbase: require('../../../res/maps/bumperbase.png'),
+	bumperCap: require('../../../res/maps/bumperCap.png'),
+	bumperring: require('../../../res/maps/bumperring.png'),
+	bumperskirt: require('../../../res/maps/bumperskirt.png'),
+	kickerCup: require('../../../res/maps/kickerCup.png'),
+	kickerGottlieb: require('../../../res/maps/kickerGottlieb.png'),
+	kickerHoleWood: require('../../../res/maps/kickerHoleWood.png'),
+	kickerT1: require('../../../res/maps/kickerT1.png'),
+	kickerWilliams: require('../../../res/maps/kickerWilliams.png'),
+};
 
+export class ThreeTextureLoaderBrowser implements ITextureLoader<ThreeTexture> {
 	public loadDefaultTexture(name: string, fileName: string): Promise<ThreeTexture> {
-		//return Promise.resolve(new TextureLoader().load(fileName));
-		throw new Error('Not supported');
+		const key = fileName.substr(0, fileName.lastIndexOf('.'));
+		if (!imageMap[key]) {
+			throw new Error('Unknown local texture "' + key + '".');
+		}
+		return Promise.resolve(new TextureLoader().load(imageMap[key]));
 	}
 
 	public loadRawTexture(name: string, data: Buffer, width: number, height: number): Promise<ThreeTexture> {

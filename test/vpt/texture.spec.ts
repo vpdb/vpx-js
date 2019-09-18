@@ -46,16 +46,16 @@ describe('The VPinball texture parser', () => {
 
 	it('should correctly export a png', async() => {
 		const texture = vpt.getTexture('test_pattern_transparent')!;
-		const image = await texture.loadTexture(loader, vpt);
-		const png = await image.getImage(false);
+		const threeTexture = await texture.loadTexture(loader, vpt);
+		const png = await threeTexture.image.getImage(false);
 		const match = await comparePngs(png, testPngTransparent, 10, true);
 		expect(match).to.equal(true);
 	});
 
 	it('should convert an opaque png to jpeg', async () => {
 		const texture = vpt.getTexture('test_pattern_png')!;
-		const image = await texture.loadTexture(loader, vpt);
-		const jpg = await image.getImage(false, 100);
+		const threeTexture = await texture.loadTexture(loader, vpt);
+		const jpg = await threeTexture.image.getImage(false, 100);
 		const png = await sharp(jpg).png().toBuffer();
 		const match = await comparePngs(png, testPng);
 		expect(match).to.equal(true);
@@ -63,8 +63,8 @@ describe('The VPinball texture parser', () => {
 
 	it('should correctly export a jpeg', async () => {
 		const texture = vpt.getTexture('test_pattern_jpg')!;
-		const image = await texture.loadTexture(loader, vpt);
-		const jpg = await image.getImage(false, 100);
+		const threeTexture = await texture.loadTexture(loader, vpt);
+		const jpg = await threeTexture.image.getImage(false, 100);
 		const png = await sharp(jpg).png().toBuffer();
 		const match = await comparePngs(png, testPng);
 		expect(match).to.equal(true);
@@ -72,8 +72,8 @@ describe('The VPinball texture parser', () => {
 
 	it('should correctly export an lzw-compressed bitmap', async () => {
 		const texture = vpt.getTexture('test_pattern_xrgb')!;
-		const image = await texture.loadTexture(loader, vpt);
-		const jpg = await image.getImage(false, 100);
+		const threeTexture = await texture.loadTexture(loader, vpt);
+		const jpg = await threeTexture.image.getImage(false, 100);
 		const png = await sharp(jpg).png().toBuffer();
 		const match = await comparePngs(png, testPng);
 		expect(match).to.equal(true);
@@ -81,8 +81,8 @@ describe('The VPinball texture parser', () => {
 
 	it('should correctly export an lzw-compressed xrgba bitmap', async () => {
 		const texture = vpt.getTexture('test_pattern_argb')!;
-		const image = await texture.loadTexture(loader, vpt);
-		const jpg = await image.getImage(false, 100);
+		const threeTexture = await texture.loadTexture(loader, vpt);
+		const jpg = await threeTexture.image.getImage(false, 100);
 		const png = await sharp(jpg).png().toBuffer();
 		const match = await comparePngs(png, testPng);
 		expect(match).to.equal(true);
@@ -90,9 +90,9 @@ describe('The VPinball texture parser', () => {
 
 	it('should resize an image to power of two', async() => {
 		const texture = vpt.getTexture('test_pattern_png')!;
-		const image = await texture.loadTexture(loader, vpt);
-		image.resize(1024, 512);
-		const jpg = await image.getImage(false, 100);
+		const threeTexture = await texture.loadTexture(loader, vpt);
+		threeTexture.image.resize(1024, 512);
+		const jpg = await threeTexture.image.getImage(false, 100);
 		const png = await sharp(jpg).png().toBuffer();
 		const match = await comparePngs(png, testPngPow2, 20);
 		expect(match).to.equal(true);
@@ -100,8 +100,8 @@ describe('The VPinball texture parser', () => {
 
 	it('should optimize a png', async() => {
 		const texture = vpt.getTexture('test_pattern_transparent')!;
-		const image = await texture.loadTexture(loader, vpt);
-		const png = await image.getImage(true);
+		const threeTexture = await texture.loadTexture(loader, vpt);
+		const png = await threeTexture.image.getImage(true);
 		const match = await comparePngs(png, testPngOptimized, 30, true);
 		//expect(match).to.equal(true); fuck you pngcrush
 	});

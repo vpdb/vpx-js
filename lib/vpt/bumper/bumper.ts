@@ -99,28 +99,28 @@ export class Bumper extends Item<BumperData> implements IRenderable, IHittable, 
 			meshes.base = {
 				mesh: bumper.base.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szBaseMaterial),
-				map: Texture.fromFilesystem('bumperbase.bmp'),
+				map: Texture.fromFilesystem('bumperbase.png'),
 			};
 		}
 		if (bumper.ring) {
 			meshes.ring = {
 				mesh: bumper.ring.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szRingMaterial),
-				map: Texture.fromFilesystem('bumperring.bmp'),
+				map: Texture.fromFilesystem('bumperring.png'),
 			};
 		}
 		if (bumper.skirt) {
 			meshes.skirt = {
 				mesh: bumper.skirt.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szSkirtMaterial),
-				map: Texture.fromFilesystem('bumperskirt.bmp'),
+				map: Texture.fromFilesystem('bumperskirt.png'),
 			};
 		}
 		if (bumper.cap) {
 			meshes.cap = {
 				mesh: bumper.cap.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szCapMaterial),
-				map: Texture.fromFilesystem('bumperCap.bmp'),
+				map: Texture.fromFilesystem('bumperCap.png'),
 			};
 		}
 		return meshes;
