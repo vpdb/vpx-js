@@ -114,15 +114,15 @@ export function variableDeclaration(kind: 'var' | 'let' | 'const', declarations:
 }
 
 export function arrowFunctionExpressionBlock(body: Statement[], params: Pattern[] = []): ArrowFunctionExpression {
-	return arrowFunctionExpression(blockStatement(body), params);
+	return arrowFunctionExpression(false, blockStatement(body), params);
 }
 
-export function arrowFunctionExpression(body: BlockStatement | Expression, params: Pattern[] = []): ArrowFunctionExpression {
+export function arrowFunctionExpression(expression: boolean, body: BlockStatement | Expression, params: Pattern[] = []): ArrowFunctionExpression {
 	return {
 		type: 'ArrowFunctionExpression',
-		expression: false,
-		params,
+		expression,
 		body,
+		params,
 	};
 }
 

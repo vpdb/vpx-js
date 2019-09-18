@@ -76,7 +76,7 @@ export class EventTransformer {
 					),
 					[
 						literal(eventName),
-						arrowFunctionExpression(functionNode.body, functionNode.params),
+						arrowFunctionExpression(false, functionNode.body, functionNode.params),
 					],
 				);
 			},
