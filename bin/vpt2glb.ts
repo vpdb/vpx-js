@@ -127,7 +127,7 @@ import { ThreeTextureLoaderNode } from '../lib/render/threejs/three-texture-load
 			Math.round(glb.length / 100000) / 10, loaded - start, exported - loaded, Date.now() - exported);
 
 	} catch (err) {
-		console.error(`ERROR: ${err.message}`);
+		console.error(err);
 
 	} finally {
 		process.exit();

@@ -48,7 +48,7 @@ export class ThreeTextureLoaderBrowser implements ITextureLoader<ThreeTexture> {
 		const img = new Image();
 		img.src = URL.createObjectURL(blob);
 		const texture = new ThreeTexture();
-		texture.name = `texture:name`;
+		texture.name = `texture:${name}`;
 		texture.image = img;
 		texture.needsUpdate = true;
 		return Promise.resolve(texture);

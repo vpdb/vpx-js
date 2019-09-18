@@ -18,9 +18,7 @@
  */
 
 import { IRenderable } from '../game/irenderable';
-import { Storage } from '../io/ole-doc';
 import { Matrix3D } from '../math/matrix3d';
-import { Binary } from '../vpt/binary';
 import { LightData } from '../vpt/light/light-data';
 import { Mesh } from '../vpt/mesh';
 import { Table, TableGenerateOptions } from '../vpt/table/table';
@@ -119,19 +117,31 @@ export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 
 export interface ITextureLoader<TEXTURE> {
 
+	/**
+	 * Loads a texture coming from an `Image{n}` stream.
+	 *
+	 * @param name Name of the texture
+	 * @param data Binary data
+	 */
 	loadTexture(name: string, data: Buffer): Promise<TEXTURE>;
 
+	/**
+	 * Loads a raw texture coming from the `BITS` tag (pdsBuffer)
+	 *
+	 * @param name Name of the texture
+	 * @param data Binary data
+	 * @param width Image width
+	 * @param height Image height
+	 */
 	loadRawTexture(name: string, data: Buffer, width: number, height: number): Promise<TEXTURE>;
 
+	/**
+	 * Loads a texture shipped by Visual Pinball
+	 *
+	 * @param name Name of the texture
+	 * @param fileName Filename without path
+	 */
 	loadDefaultTexture(name: string, fileName: string): Promise<TEXTURE>;
-
-	// loadImage(name: string, data: Buffer, width: number, height: number): Promise<IMAGE>;
-	//
-	// loadRawImage(name: string, data: RAW_IMAGE, width: number, height: number): Promise<IMAGE>;
-	//
-	// getRawImage(data: Buffer, width: number, height: number): Promise<RAW_IMAGE>;
-
-	//streamImage(storage: Storage, storageName?: string, binary?: Binary, localPath?: string): Promise<Buffer>;
 }
 
 export interface MeshConvertOptions {
