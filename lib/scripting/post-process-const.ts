@@ -21,23 +21,18 @@ import { Comment, Expression, Identifier, VariableDeclaration, VariableDeclarato
 import { Token } from 'moo';
 import * as estree from './estree';
 
-export function stmt1(result: [Token, null, Token, null, VariableDeclarator[], Comment[]]): VariableDeclaration {
-	const declarations = result[4];
+export function stmt(
+	result: [Token, Token, null, VariableDeclarator, VariableDeclarator[], Comment[]],
+): VariableDeclaration {
+	const firstNameValue = result[3];
+	const otherNameValues = result[4];
+	const declarators = [firstNameValue, ...otherNameValues];
 	const comments = result[5];
-	return estree.variableDeclaration('const', declarations, comments);
+	return estree.variableDeclaration('const', declarators, comments);
 }
 
-export function stmt2(result: [Token, null, VariableDeclarator[], Comment[]]): VariableDeclaration {
-	const declarations = result[2];
-	const comments = result[3];
-	return estree.variableDeclaration('const', declarations, comments);
+export function constNameValue(result: [Identifier, null, Token, null, Expression]): VariableDeclarator {
+	const identifier = result[0];
+	const expression = result[4];
+	return estree.variableDeclarator(identifier, expression);
 }
-
-export function constVarList(result: [ConstVarListResult, ConstVarListResult[]]): VariableDeclarator[] {
-	const firstVar = result[0];
-	const otherVars = result[1] || [];
-	return [firstVar, ...otherVars].map(declaration => {
-		return estree.variableDeclarator(declaration[0], declaration[4]);
-	});
-}
-type ConstVarListResult = [Identifier, null, Token, null, Expression];

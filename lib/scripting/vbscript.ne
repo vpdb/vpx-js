@@ -133,14 +133,11 @@ OtherVarsOpt         -> %comma _ VarName                                        
 ArrayRank            -> IntLiteral _ %comma                                                                                               {% id %}
                       | IntLiteral                                                                                                        {% id %}
 
-ConstDecl            -> AccessModifierOpt __ %kw_const __ ConstVarList NL                                                                 {% ppConst.stmt1 %}
-                      | %kw_const __ ConstVarList NL                                                                                      {% ppConst.stmt2 %}
+ConstDecl            -> AccessModifierOpt:? %kw_const __ ConstNameValue OtherConstsOpt:* NL                                               {% ppConst.stmt %}
 
-ConstVarList         -> ConstVarNameValue ConstOtherVars:*                                                                                {% ppConst.constVarList %}
+ConstNameValue       -> ExtendedID _ %equals _ ConstExprDef                                                                               {% ppConst.constNameValue %}
 
-ConstOtherVars       -> %comma _ ConstVarNameValue                                                                                        {% data => data[2] %}
-
-ConstVarNameValue    -> ExtendedID _ %equals _ ConstExprDef
+OtherConstsOpt       -> %comma _ ConstNameValue                                                                                           {% data => data[2] %}
 
 ConstExprDef         -> %paren_left _ ConstExprDef _ %paren_right                                                                         {% data => data[2] %}
                       | %unary _ ConstExprDef                                                                                             {% ppExpr.unary %}

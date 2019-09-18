@@ -31,24 +31,24 @@ export function stmt(result: [Token, null, VariableDeclarator, VariableDeclarato
 
 export function varName(result: [Identifier, null, Token, null, Expression[], null, Token]): VariableDeclarator {
 	const name = result[0];
-	const literals = result[4];
-	let expression: Expression | null = null;
-	literals.reverse().forEach(literal => {
+	const expressions = result[4];
+	let init: Expression | null = null;
+	expressions.reverse().forEach(expression => {
 		const callExpression = estree.callExpression(
 			estree.memberExpression(
 				estree.callExpression(estree.identifier('Array'), [
-					estree.binaryExpression('+', literal, estree.literal(1)),
+					estree.binaryExpression('+', expression, estree.literal(1)),
 				]),
 				estree.identifier('fill'),
 			),
 			[],
 		);
-		expression =
-			expression == null
+		init =
+			init == null
 				? callExpression
 				: estree.callExpression(estree.memberExpression(callExpression, estree.identifier('map')), [
-						estree.arrowFunctionExpression(true, expression),
+						estree.arrowFunctionExpression(true, init),
 				  ]);
 	});
-	return estree.variableDeclarator(name, expression);
+	return estree.variableDeclarator(name, init);
 }
