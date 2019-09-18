@@ -17,20 +17,38 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Comment, Identifier, VariableDeclaration, VariableDeclarator } from 'estree';
+import { Comment, Expression, Identifier, VariableDeclaration, VariableDeclarator } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
-export function stmt(result: [Token, null, VariableDeclarator[], Comment[]]): VariableDeclaration {
-	const declarations = result[2];
-	const comments = result[3];
-	return estree.variableDeclaration('let', declarations, comments);
+export function stmt(result: [Token, null, VariableDeclarator, VariableDeclarator[], Comment[]]): VariableDeclaration {
+	const firstVar = result[2];
+	const otherVars = result[3] || [];
+	const declarators = [firstVar, ...otherVars];
+	const comments = result[4];
+	return estree.variableDeclaration('let', declarators, comments);
 }
 
-export function dimVarList(result: [Identifier, Identifier[]]): VariableDeclarator[] {
-	const firstVar = result[0];
-	const otherVars = result[1] || [];
-	return [firstVar, ...otherVars].map(declaration => {
-		return estree.variableDeclarator(declaration, null); // can't assign values with Dim
+export function varName(result: [Identifier, null, Token, null, Expression[], null, Token]): VariableDeclarator {
+	const name = result[0];
+	const literals = result[4];
+	let expression: Expression | null = null;
+	literals.reverse().forEach(literal => {
+		const callExpression = estree.callExpression(
+			estree.memberExpression(
+				estree.callExpression(estree.identifier('Array'), [
+					estree.binaryExpression('+', literal, estree.literal(1)),
+				]),
+				estree.identifier('fill'),
+			),
+			[],
+		);
+		expression =
+			expression == null
+				? callExpression
+				: estree.callExpression(estree.memberExpression(callExpression, estree.identifier('map')), [
+						estree.arrowFunctionExpression(true, expression),
+				  ]);
 	});
+	return estree.variableDeclarator(name, expression);
 }

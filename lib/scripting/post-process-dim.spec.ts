@@ -28,9 +28,15 @@ describe('The VBScript transpiler - Dim', () => {
 	});
 
 	it('should transpile a multiple variable declaration', () => {
-		const vbs = `    Dim test1, test2, test3\n`;
+		const vbs = `Dim test1, test2, test3\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('let test1, test2, test3;');
+	});
+
+	it('should transpile a multi-dimension variable declaration', () => {
+		const vbs = `Dim myarray(2,4)\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('let myarray = Array(2 + 1).fill().map(() => Array(4 + 1).fill());');
 	});
 
 	it('should transpile a multiple variable declaration with whitespace and new lines', () => {

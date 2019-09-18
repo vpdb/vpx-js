@@ -123,13 +123,15 @@ Program              -> NL:? GlobalStmt:*                                       
 # Rules : Declarations
 #===============================
 
-DimDecl              -> %kw_dim __ DimVarList NL                                                                                          {% ppDim.stmt %}
+VarDecl              -> %kw_dim __ VarName OtherVarsOpt:* NL                                                                              {% ppDim.stmt %}
 
-DimVarList           -> DimVarName DimOtherVars:*                                                                                         {% ppDim.dimVarList %}
+VarName              -> ExtendedID _ %paren_left _ ArrayRank:* _ %paren_right                                                             {% ppDim.varName %}
+                      | ExtendedID                                                                                                        {% id %}
 
-DimVarName           -> ExtendedID                                                                                                        {% id %}
+OtherVarsOpt         -> %comma _ VarName                                                                                                  {% data => data[2] %}
 
-DimOtherVars         -> %comma _ DimVarName                                                                                               {% data => data[2] %}
+ArrayRank            -> IntLiteral _ %comma                                                                                               {% id %}
+                      | IntLiteral                                                                                                        {% id %}
 
 ConstDecl            -> AccessModifierOpt __ %kw_const __ ConstVarList NL                                                                 {% ppConst.stmt1 %}
                       | %kw_const __ ConstVarList NL                                                                                      {% ppConst.stmt2 %}
@@ -182,7 +184,7 @@ MethodStmt           -> ConstDecl                                               
                       | BlockStmt                                                                                                         {% id %}
 
 BlockStmt            -> RemStmt                                                                                                           {% id %}
-                      | DimDecl                                                                                                           {% id %}
+                      | VarDecl                                                                                                           {% id %}
                       | IfStmt                                                                                                            {% id %}
                       | WithStmt                                                                                                          {% id %}
                       | SelectStmt                                                                                                        {% id %}
