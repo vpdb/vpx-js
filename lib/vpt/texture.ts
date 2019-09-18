@@ -40,7 +40,7 @@ export class Texture extends BiffParser {
 
 	public szName!: string;
 	public szInternalName!: string;
-	public szPath?: string;
+	public szPath!: string;
 	public width!: number;
 	public height!: number;
 	public alphaTestValue?: number;
@@ -94,18 +94,19 @@ export class Texture extends BiffParser {
 			return texture;
 		}
 
+		const ext = this.szPath.substr(this.szPath.lastIndexOf('.'));
 		if (this.isRaw()) {
 			texture = await loader.loadRawTexture(this.getName(), this.pdsBuffer!.getData(), this.width, this.height);
 
 		} else if (this.localFileName) {
-			texture = await loader.loadDefaultTexture(this.getName(), this.localFileName);
+			texture = await loader.loadDefaultTexture(this.getName(), ext, this.localFileName);
 
 		} else {
 			const data = await table.streamStorage<Buffer>('GameStg', storage => this.streamImage(storage, this.storageName, this.binary));
 			if (!data || !data.length) {
 				throw new Error(`Cannot load image data for texture ${this.getName()}`);
 			}
-			texture = await loader.loadTexture(this.getName(), data);
+			texture = await loader.loadTexture(this.getName(), ext, data);
 		}
 		table.addTextureToCache(this.getName(), texture);
 		return texture;

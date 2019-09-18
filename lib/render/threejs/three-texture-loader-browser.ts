@@ -34,7 +34,8 @@ const imageMap: { [key: string]: string } = {
 };
 
 export class ThreeTextureLoaderBrowser implements ITextureLoader<ThreeTexture> {
-	public loadDefaultTexture(name: string, fileName: string): Promise<ThreeTexture> {
+
+	public loadDefaultTexture(name: string, ext: string, fileName: string): Promise<ThreeTexture> {
 		const key = fileName.substr(0, fileName.lastIndexOf('.'));
 		if (!imageMap[key]) {
 			throw new Error('Unknown local texture "' + key + '".');
@@ -49,7 +50,7 @@ export class ThreeTextureLoaderBrowser implements ITextureLoader<ThreeTexture> {
 		return Promise.resolve(texture);
 	}
 
-	public loadTexture(name: string, data: Buffer): Promise<ThreeTexture> {
+	public loadTexture(name: string, ext: string, data: Buffer): Promise<ThreeTexture> {
 		const header = data.readUInt16BE(0);
 		let mimeType: string;
 		switch (header) {

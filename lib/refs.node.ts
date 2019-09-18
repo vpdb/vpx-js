@@ -16,6 +16,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+import { FileLoader } from 'three';
+
 export { NodeBinaryReader as BinaryReader } from './io/binary-reader.node';
 export { exportGltf } from './gltf/export-gltf.node';
 export { now } from './util/time.node';
+
+const originalFileLoaderLoad = FileLoader.prototype.load;
+// tslint:disable-next-line:only-arrow-functions
+FileLoader.prototype.load = function(urlOrBuffer: any, onLoad?: (response: string | ArrayBuffer) => void, onProgress?: (request: ProgressEvent) => void, onError?: (event: ErrorEvent) => void) {
+	if (typeof urlOrBuffer === 'string') {
+		return originalFileLoaderLoad(urlOrBuffer, onLoad, onProgress, onError);
+	}
+	if (onLoad) {
+		onLoad(urlOrBuffer);
+	}
+};

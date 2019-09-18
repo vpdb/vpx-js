@@ -121,9 +121,10 @@ export interface ITextureLoader<TEXTURE> {
 	 * Loads a texture coming from an `Image{n}` stream.
 	 *
 	 * @param name Name of the texture
+	 * @param ext Original file extension of the texture, including the dot
 	 * @param data Binary data
 	 */
-	loadTexture(name: string, data: Buffer): Promise<TEXTURE>;
+	loadTexture(name: string, ext: string, data: Buffer): Promise<TEXTURE>;
 
 	/**
 	 * Loads a raw texture coming from the `BITS` tag (pdsBuffer)
@@ -139,9 +140,10 @@ export interface ITextureLoader<TEXTURE> {
 	 * Loads a texture shipped by Visual Pinball
 	 *
 	 * @param name Name of the texture
+	 * @param ext Original file extension of the texture, including the dot
 	 * @param fileName Filename without path
 	 */
-	loadDefaultTexture(name: string, fileName: string): Promise<TEXTURE>;
+	loadDefaultTexture(name: string, ext: string, fileName: string): Promise<TEXTURE>;
 }
 
 export interface MeshConvertOptions {
