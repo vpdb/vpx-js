@@ -30,6 +30,7 @@ const imageMap: { [key: string]: string } = {
 	kickerHoleWood: require('../../../res/maps/kickerHoleWood.png'),
 	kickerT1: require('../../../res/maps/kickerT1.png'),
 	kickerWilliams: require('../../../res/maps/kickerWilliams.png'),
+	ball: require('../../../res/maps/ball.png'),
 };
 
 export class ThreeTextureLoaderBrowser implements ITextureLoader<ThreeTexture> {

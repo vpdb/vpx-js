@@ -27,7 +27,7 @@ import { Texture } from './texture';
  */
 export class Material {
 
-	public szName!: string;
+	public name!: string;
 	/**
 	 *  Wrap/rim lighting factor (0(off)..1(full))
 	 */
@@ -89,7 +89,7 @@ export class Material {
 	public emissiveIntensity: number = 0;
 	public emissiveMap?: Texture;
 
-	//physics
+	// physics
 	public elasticity: number = 0.0;
 	public elasticityFalloff: number = 0.0;
 	public friction: number = 0.0;
@@ -97,7 +97,7 @@ export class Material {
 
 	public static fromSaved(saveMaterial: SaveMaterial): Material {
 		const material = new Material();
-		material.szName = saveMaterial.szName;
+		material.name = saveMaterial.szName;
 		material.baseColor = BiffParser.bgrToRgb(saveMaterial.baseColor);
 		material.glossiness = BiffParser.bgrToRgb(saveMaterial.glossiness);
 		material.clearCoat = BiffParser.bgrToRgb(saveMaterial.clearCoat);
