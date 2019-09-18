@@ -24,7 +24,6 @@ import { IMovable, isMovable } from '../../game/imovable';
 import { IPlayable, isPlayable } from '../../game/iplayable';
 import { Meshes } from '../../game/irenderable';
 import { IScriptable, isScriptable } from '../../game/iscriptable';
-import { IImage } from '../../gltf/image';
 import { IBinaryReader, Storage } from '../../io/ole-doc';
 import { degToRad, f4 } from '../../math/float';
 import { FRect3D } from '../../math/frect3d';
