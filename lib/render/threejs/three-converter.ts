@@ -125,6 +125,17 @@ export class ThreeConverter {
 				}
 			}
 
+			// environment map
+			if (obj.envMap) {
+				const envMap = await this.loadTexture(obj.envMap, this.meshConvertOpts.applyTextures, table);
+				if (envMap) {
+					envMap.name = `env-map:${obj.envMap.getName()}`;
+					material.envMap = envMap;
+					material.envMapIntensity = 1;
+					material.needsUpdate = true;
+				}
+			}
+
 			// emissive map todo TEST!
 			if (obj.material && obj.material.emissiveMap) {
 				const emissiveMap = await this.loadTexture(obj.material.emissiveMap, this.meshConvertOpts.applyTextures, table);

@@ -40,6 +40,7 @@ export interface RenderInfo<GEOMETRY> {
 	geometry?: GEOMETRY;
 	map?: Texture;
 	normalMap?: Texture;
+	envMap?: Texture;
 	material?: Material;
 	isTransparent?: boolean;
 }

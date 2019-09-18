@@ -317,10 +317,10 @@ export class TableData extends BiffParser {
 		}
 		for (let i = 0; i < num; i++) {
 			const savePhysMat = new SavePhysicsMaterial(buffer, i);
-			const material = this.materials.find(m => m.szName === savePhysMat.szName);
+			const material = this.materials.find(m => m.name === savePhysMat.szName);
 			/* istanbul ignore if */
 			if (!material) {
-				throw new Error('Cannot find material "' + savePhysMat.szName + '" in [' + this.materials.map(m => m.szName).join(', ') + '] for updating physics.');
+				throw new Error('Cannot find material "' + savePhysMat.szName + '" in [' + this.materials.map(m => m.name).join(', ') + '] for updating physics.');
 			}
 			material.physUpdate(savePhysMat);
 		}

@@ -27,11 +27,13 @@ import { HitObject } from '../../physics/hit-object';
 import { IRenderApi } from '../../render/irender-api';
 import { Table } from '../table/table';
 import { TableData } from '../table/table-data';
+import { Texture } from '../texture';
 import { BallData } from './ball-data';
 import { BallHit } from './ball-hit';
 import { BallMeshGenerator } from './ball-mesh-generator';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
+import { Material } from '../material';
 
 export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 
@@ -116,7 +118,13 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 	}
 
 	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
-		return { ball: { mesh: this.meshGenerator.getMesh().transform(Matrix3D.RIGHT_HANDED) } };
+		return {
+			ball: {
+				mesh: this.meshGenerator.getMesh().transform(Matrix3D.RIGHT_HANDED),
+				envMap: Texture.fromFilesystem('ball.png'),
+				material: this.getMaterial(),
+			},
+		};
 	}
 
 	/* istanbul ignore next: balls have their own visibility treatment */
@@ -127,5 +135,13 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 	/* istanbul ignore next: balls have their own collidable treatment */
 	public isCollidable(): boolean {
 		return true;
+	}
+
+	private getMaterial(): Material {
+		const material = new Material();
+		material.name = 'ball';
+		material.isMetal = true;
+		material.roughness = 0.4;
+		return material;
 	}
 }

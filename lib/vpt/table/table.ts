@@ -168,7 +168,7 @@ export class Table {
 		if (!this.data) {
 			throw new Error('Table data is not loaded. Load table with tableDataOnly = false.');
 		}
-		return this.data.materials.find(m => m.szName === name);
+		return this.data.materials.find(m => m.name === name);
 	}
 
 	public getBoundingBox(): FRect3D {
