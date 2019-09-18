@@ -83,6 +83,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 	}
 
 	public removeFromParent(group: Group, obj: Object3D | Group): void {
+		/* istanbul ignore next */
 		if (!obj) {
 			return;
 		}
@@ -90,9 +91,11 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 	}
 
 	public applyMatrixToNode(matrix: Matrix3D, obj: Object3D): void {
+		/* istanbul ignore next */
 		if (!obj) {
 			return;
 		}
+		/* istanbul ignore if */
 		if (!obj.matrix) {
 			obj.matrix = new Matrix4();
 		} else {
@@ -110,6 +113,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 	}
 
 	public applyMeshToNode(mesh: Mesh, obj: Object3D): void {
+		/* istanbul ignore next */
 		if (!obj) {
 			return;
 		}

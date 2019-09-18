@@ -18,37 +18,29 @@
  */
 
 import { createReadStream } from 'fs';
-import * as gm from 'gm';
-import { State } from 'gm';
 import { resolve as resolvePath } from 'path';
 import * as sharp from 'sharp';
-import { Texture as ThreeTexture } from 'three';
+import { FileLoader, Texture as ThreeTexture, UnsignedByteType } from 'three';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
 import { NodeImage } from '../../gltf/image.node';
 import { logger } from '../../util/logger';
 import { ITextureLoader } from '../irender-api';
 
 export class ThreeTextureLoaderNode implements ITextureLoader<ThreeTexture> {
 
-	public async loadTexture(name: string, data: Buffer): Promise<ThreeTexture> {
+	public async loadTexture(name: string, ext: string, data: Buffer): Promise<ThreeTexture> {
 		try {
 			return await loadSharpImage(name, sharp(data));
 
 		} catch (err) {
 			logger().warn('[Image.init] Could not read metadata from buffer (%s), using GM to read image.', err.message);
 
-			const g = gm(data);
-			const metadata = await gmIdentify(g);
-			const format = metadata.format.toLowerCase();
-			const width = metadata.size.width;
-			const height = metadata.size.height;
-			const gmData: Buffer = await new Promise((resolve, reject) => {
-				const buffers: Buffer[] = [];
-				g.setFormat('jpeg').stream().on('error', reject)
-					.on('data', (buf: Buffer) => buffers.push(buf as Buffer))
-					.on('end', () => resolve(Buffer.concat(buffers)))
-					.on('error', reject);
-			});
-			return await loadSharpImage(name, sharp(gmData), { format, width, height });
+			if (ext === '.hdr') {
+				return await loadHdrImage(name, data);
+
+			} else {
+				throw err;
+			}
 		}
 	}
 
@@ -62,23 +54,23 @@ export class ThreeTextureLoaderNode implements ITextureLoader<ThreeTexture> {
 		}).png());
 	}
 
-	public async loadDefaultTexture(name: string, fileName: string): Promise<ThreeTexture> {
+	public async loadDefaultTexture(name: string, ext: string, fileName: string): Promise<ThreeTexture> {
 		const filePath = resolvePath(__dirname, '../../..', 'res', 'maps', fileName);
-		return this.loadTexture(name, await stream(filePath));
+		return this.loadTexture(name, ext, await stream(filePath));
 	}
 }
 
 async function stream(localPath: string): Promise<Buffer> {
-	const strm = createReadStream(localPath);
+	const readStream = createReadStream(localPath);
 	return new Promise<Buffer>((resolve, reject) => {
-		const bufs: Buffer[] = [];
+		const buffers: Buffer[] = [];
 		/* istanbul ignore if */
-		if (!strm) {
+		if (!readStream) {
 			return reject(new Error('No such stream "' + localPath + '".'));
 		}
-		strm.on('error', reject);
-		strm.on('data', (buf: Buffer) => bufs.push(buf));
-		strm.on('end', () => resolve(Buffer.concat(bufs)));
+		readStream.on('error', reject);
+		readStream.on('data', (buf: Buffer) => buffers.push(buf));
+		readStream.on('end', () => resolve(Buffer.concat(buffers)));
 	});
 }
 
@@ -98,13 +90,10 @@ async function loadSharpImage(name: string, shrp: sharp.Sharp, parsedMeta?: { fo
 	return texture;
 }
 
-async function gmIdentify(g: State): Promise<any> {
-	return new Promise((resolve, reject) => {
-		g.identify((err, value) => {
-			if (err) {
-				return reject(err);
-			}
-			resolve(value);
-		});
+async function loadHdrImage(name: string, data: Buffer): Promise<ThreeTexture> {
+	return new Promise(resolve => {
+		new RGBELoader()
+			.setDataType(UnsignedByteType) // alt: FloatType, HalfFloatType
+			.load(data as any, texture => resolve(texture));
 	});
 }
