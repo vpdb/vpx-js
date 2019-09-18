@@ -23,7 +23,6 @@ import { MeshConvertOptions } from '../../render/irender-api';
 import { ThreeRenderApi } from '../../render/threejs/three-render-api';
 import { Table, TableGenerateOptions } from './table';
 import { TableMeshGenerator } from './table-mesh-generator';
-import { ThreeTextureLoaderNode } from '../../render/threejs/three-texture-loader-node';
 
 export class TableExporter {
 
@@ -48,7 +47,7 @@ export class TableExporter {
 
 	private async export<T>(opts: TableExportOptions): Promise<T> {
 		// we always use Three.js for GLTF generation
-		const renderApi = new ThreeRenderApi();
+		const renderApi = new ThreeRenderApi(opts);
 		const playfieldGroup = await this.meshGenerator.generateTableNode(renderApi, opts);
 
 		const scene = new Scene();

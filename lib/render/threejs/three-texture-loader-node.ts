@@ -20,14 +20,16 @@
 import { createReadStream } from 'fs';
 import * as gm from 'gm';
 import { State } from 'gm';
+import { resolve as resolvePath } from 'path';
 import * as sharp from 'sharp';
+import { Texture as ThreeTexture } from 'three';
 import { NodeImage } from '../../gltf/image.node';
 import { logger } from '../../util/logger';
 import { ITextureLoader } from '../irender-api';
 
-export class ThreeTextureLoaderNode implements ITextureLoader<NodeImage> {
+export class ThreeTextureLoaderNode implements ITextureLoader<ThreeTexture> {
 
-	public async loadTexture(name: string, data: Buffer): Promise<NodeImage> {
+	public async loadTexture(name: string, data: Buffer): Promise<ThreeTexture> {
 		try {
 			return await loadSharpImage(name, sharp(data));
 
@@ -50,7 +52,7 @@ export class ThreeTextureLoaderNode implements ITextureLoader<NodeImage> {
 		}
 	}
 
-	public async loadRawTexture(name: string, data: Buffer, width: number, height: number): Promise<NodeImage> {
+	public async loadRawTexture(name: string, data: Buffer, width: number, height: number): Promise<ThreeTexture> {
 		return loadSharpImage(name, sharp(data, {
 			raw: {
 				width,
@@ -60,10 +62,10 @@ export class ThreeTextureLoaderNode implements ITextureLoader<NodeImage> {
 		}).png());
 	}
 
-	public async loadDefaultTexture(name: string, fileName: string): Promise<NodeImage> {
-		return this.loadTexture(name, await stream(fileName));
+	public async loadDefaultTexture(name: string, fileName: string): Promise<ThreeTexture> {
+		const filePath = resolvePath(__dirname, '../../..', 'res', 'maps', fileName);
+		return this.loadTexture(name, await stream(filePath));
 	}
-
 }
 
 async function stream(localPath: string): Promise<Buffer> {
@@ -80,13 +82,20 @@ async function stream(localPath: string): Promise<Buffer> {
 	});
 }
 
-async function loadSharpImage(name: string, shrp: sharp.Sharp, parsedMeta?: { format: string, width: number, height: number }): Promise<NodeImage> {
+async function loadSharpImage(name: string, shrp: sharp.Sharp, parsedMeta?: { format: string, width: number, height: number }): Promise<ThreeTexture> {
 	const stats = await shrp.stats();
+	let image: NodeImage;
 	if (parsedMeta) {
-		return new NodeImage(name, parsedMeta.width, parsedMeta.height, parsedMeta.format, stats, shrp);
+		image = new NodeImage(name, parsedMeta.width, parsedMeta.height, parsedMeta.format, stats, shrp);
+	} else {
+		const metadata = await shrp.metadata();
+		image = new NodeImage(name, metadata.width!, metadata.height!, metadata.format!, stats, shrp);
 	}
-	const metadata = await shrp.metadata();
-	return new NodeImage(name, metadata.width!, metadata.height!, metadata.format!, stats, shrp);
+
+	const texture = new ThreeTexture();
+	texture.name = `texture:${name}`;
+	texture.image = image;
+	return texture;
 }
 
 async function gmIdentify(g: State): Promise<any> {

@@ -18,14 +18,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import * as gm from 'gm';
-import { State } from 'gm';
 import * as sharp from 'sharp';
-import { Stream } from 'stream';
-
-import { Storage } from '../io/ole-doc';
 import { logger } from '../util/logger';
-import { Binary } from '../vpt/binary';
 
 const PngQuant = require('pngquant');
 
@@ -115,83 +109,4 @@ export class NodeImage {
 	public containsTransparency(): boolean {
 		return !this.stats.isOpaque;
 	}
-}
-
-async function gmIdentify(g: State): Promise<any> {
-	return new Promise((resolve, reject) => {
-		g.identify((err, value) => {
-			if (err) {
-				return reject(err);
-			}
-			resolve(value);
-		});
-	});
-}
-
-export async function loadImage<IMAGE>(src: string, data: Buffer | sharp.Sharp, width: number, height: number): Promise<NodeImage> {
-
-	let format;
-	let shrp: sharp.Sharp = data instanceof Buffer ? sharp(data) : data;
-
-	try {
-		const metadata = await shrp.metadata();
-		width = metadata.width!;
-		height = metadata.height!;
-		format = metadata.format;
-
-	} catch (err) {
-		logger().warn('[Image.loadImage] Could not read metadata from buffer (%s), using GM to read image.', err.message);
-
-		const g = gm(data);
-		const metadata = await gmIdentify(g);
-		format = metadata.format.toLowerCase();
-		width = metadata.size.width;
-		height = metadata.size.height;
-		const gmData: Buffer = await new Promise((resolve, reject) => {
-			const buffers: Buffer[] = [];
-			g.setFormat('jpeg').stream().on('error', reject)
-				.on('data', (buf: Buffer) => buffers.push(buf as Buffer))
-				.on('end', () => resolve(Buffer.concat(buffers)))
-				.on('error', reject);
-		});
-		shrp = sharp(gmData);
-	}
-	const stats = await shrp.stats();
-	return new NodeImage(src, width, height, format, stats, shrp);
-}
-
-export async function getRawImage(data: Buffer, width: number, height: number): Promise<sharp.Sharp> {
-	return Promise.resolve(sharp(data, {
-		raw: {
-			width,
-			height,
-			channels: 4,
-		},
-	}).png());
-}
-
-/**
- * Streamer function that reads the image data into a buffer.
- * @param storage
- * @param storageName
- * @param binary
- * @param localPath
- */
-export async function streamImage(storage: Storage, storageName?: string, binary?: Binary, localPath?: string): Promise<Buffer> {
-	let strm: Stream;
-	if (localPath) {
-		strm = gm(localPath).stream();
-	} else {
-		strm = storage.stream(storageName!, binary!.pos, binary!.len);
-	}
-	return new Promise<Buffer>((resolve, reject) => {
-		const bufs: Buffer[] = [];
-		/* istanbul ignore if */
-		if (!strm) {
-			return reject(new Error('No such stream "' + storageName + '".'));
-		}
-		strm.on('error', reject);
-		strm.on('data', (buf: Buffer) => bufs.push(buf));
-		strm.on('end', () => resolve(Buffer.concat(bufs)));
-	});
 }

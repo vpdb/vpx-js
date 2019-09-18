@@ -143,7 +143,7 @@ export class ThreeConverter {
 		try {
 			return await texture.loadTexture(loader, table);
 		} catch (err) {
-			logger().warn('[ThreeConverter.loadTexture] Error loading texture %s (%s/%s): %s', name, texture.storageName, texture.getName(), err.message);
+			logger().warn('[ThreeConverter.loadTexture] Error loading texture %s (%s/%s): %s', texture.getName(), texture.storageName, texture.getName(), err.message);
 			return null;
 		}
 	}

@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { basename, resolve as resolvePath } from 'path';
+import { basename } from 'path';
 import { LzwReader } from '../gltf/lzw-reader';
 import { BiffParser } from '../io/biff-parser';
 import { Storage } from '../io/ole-doc';
@@ -35,7 +35,7 @@ import { Table } from './table/table';
  */
 export class Texture extends BiffParser {
 
-	public localPath?: string; // either localPath or storageName is set
+	public localFileName?: string; // either localPath or storageName is set
 	public storageName?: string;
 
 	public szName!: string;
@@ -61,7 +61,7 @@ export class Texture extends BiffParser {
 
 	public static fromFilesystem(resFileName: string): Texture {
 		const texture = new Texture();
-		texture.localPath = resolvePath(__dirname, 'res', resFileName);
+		texture.localFileName = resFileName;
 		return texture;
 	}
 
@@ -79,7 +79,7 @@ export class Texture extends BiffParser {
 	}
 
 	public getName(): string {
-		return this.localPath ? basename(this.localPath) : this.szInternalName.toLowerCase();
+		return this.localFileName ? basename(this.localFileName) : this.szInternalName.toLowerCase();
 	}
 
 	/**
@@ -97,8 +97,8 @@ export class Texture extends BiffParser {
 		if (this.isRaw()) {
 			texture = await loader.loadRawTexture(this.getName(), this.pdsBuffer!.getData(), this.width, this.height);
 
-		} else if (this.localPath) {
-			texture = await loader.loadDefaultTexture(this.getName(), this.localPath);
+		} else if (this.localFileName) {
+			texture = await loader.loadDefaultTexture(this.getName(), this.localFileName);
 
 		} else {
 			const data = await table.streamStorage<Buffer>('GameStg', storage => this.streamImage(storage, this.storageName, this.binary));
