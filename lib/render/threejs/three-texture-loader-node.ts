@@ -22,9 +22,8 @@ import { resolve as resolvePath } from 'path';
 import * as sharp from 'sharp';
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
-import { FloatType, UnsignedByteType } from 'three/src/constants';
-import { Texture as ThreeTexture } from 'three/src/textures/Texture';
 import { NodeImage } from '../../gltf/image.node';
+import { FloatType, Texture as ThreeTexture, UnsignedByteType } from '../../refs.node';
 import { logger } from '../../util/logger';
 import { ITextureLoader } from '../irender-api';
 

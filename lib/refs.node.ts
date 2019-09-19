@@ -21,6 +21,15 @@ const { FileLoader } = require('three/build/three.module');
 export { NodeBinaryReader as BinaryReader } from './io/binary-reader.node';
 export { exportGltf } from './gltf/export-gltf.node';
 export { now } from './util/time.node';
+export {
+	Object3D, Mesh, Box3, Scene, AnimationClip, KeyframeTrack, PropertyBinding, Camera, ClampToEdgeWrapping,
+	DoubleSide, InterpolateDiscrete, InterpolateLinear, LinearFilter, LinearMipMapLinearFilter, LinearMipMapNearestFilter,
+	MirroredRepeatWrapping, NearestFilter, NearestMipMapLinearFilter, NearestMipMapNearestFilter, PixelFormat,
+	RepeatWrapping, TriangleFanDrawMode, TriangleStripDrawMode, BufferAttribute, BufferGeometry, Geometry,
+	InterleavedBufferAttribute, Light, Material, Color, Matrix4, Vector3, Bone, Texture, Math,
+	PointLight, Group, MeshStandardMaterial, Face3, Matrix3, Vector2, Path, Shape, ExtrudeBufferGeometry,
+	Float32BufferAttribute, Line, RGBAFormat, UnsignedByteType, TextureLoader, DataTexture, FloatType, SpotLight,
+} from 'three';
 
 /*
  * Here we patch three.js' file loader to accept buffers directly.
@@ -37,7 +46,7 @@ FileLoader.prototype.load = function(urlOrBuffer: any, onLoad?: (response: strin
 };
 
 /*
- * Node.js TextDecoder polyfille for Node.js v12
+ * Node.js TextDecoder polyfills for Node.js v12
  */
 if (!('TextDecoder' in global)) {
 	(global as any).TextDecoder = require('text-encoding').TextDecoder;

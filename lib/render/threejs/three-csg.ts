@@ -18,14 +18,8 @@
  */
 
 /* tslint:disable */
-import { BufferGeometry } from 'three/src/core/BufferGeometry';
-import { Face3 } from 'three/src/core/Face3';
-import { Geometry } from 'three/src/core/Geometry';
-import { Matrix3 } from 'three/src/math/Matrix3';
-import { Matrix4 } from 'three/src/math/Matrix4';
-import { Vector2 } from 'three/src/math/Vector2';
-import { Vector3 } from 'three/src/math/Vector3';
-import { Mesh } from 'three/src/objects/Mesh';
+
+import { BufferGeometry, Face3, Geometry, Matrix3, Matrix4, Mesh, Vector2, Vector3, } from '../../refs.node';
 
 /**
  * Holds a binary space partition tree representing a 3D solid. Two solids can

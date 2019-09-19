@@ -1,4 +1,4 @@
-import { Scene } from 'three/src/scenes/Scene';
+import { Scene } from '../refs.node';
 
 export function exportGltf(scene: Scene, opts: any, gltfOpts?: any) {
 	throw new Error('not implemented');

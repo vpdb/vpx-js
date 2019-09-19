@@ -18,10 +18,7 @@
  */
 
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
-import { RGBAFormat, UnsignedByteType } from 'three/src/constants';
-import { TextureLoader } from 'three/src/loaders/TextureLoader';
-import { DataTexture } from 'three/src/textures/DataTexture';
-import { Texture as ThreeTexture } from 'three/src/textures/Texture';
+import { DataTexture, RGBAFormat, Texture as ThreeTexture, TextureLoader, UnsignedByteType } from '../../refs.node';
 import { ITextureLoader } from '../irender-api';
 
 const imageMap: { [key: string]: string } = {
