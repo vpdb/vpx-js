@@ -17,16 +17,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { DoubleSide } from 'three/src/constants';
-import { BufferGeometry } from 'three/src/core/BufferGeometry';
-import { Object3D } from 'three/src/core/Object3D';
-import { PointLight } from 'three/src/lights/PointLight';
-import { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
-import { Color } from 'three/src/math/Color';
-import { Group } from 'three/src/objects/Group';
-import { Mesh as ThreeMesh } from 'three/src/objects/Mesh';
-import { Texture as ThreeTexture } from 'three/src/textures/Texture';
 import { IRenderable, RenderInfo } from '../../game/irenderable';
+import {
+	BufferGeometry,
+	Color,
+	DoubleSide,
+	Group,
+	Mesh as ThreeMesh,
+	MeshStandardMaterial,
+	Object3D,
+	PointLight,
+	Texture as ThreeTexture,
+} from '../../refs.node';
 import { logger } from '../../util/logger';
 import { Table, TableGenerateOptions } from '../../vpt/table/table';
 import { Texture } from '../../vpt/texture';

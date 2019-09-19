@@ -19,9 +19,9 @@
 
 import { expect } from 'chai';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
-import { Mesh } from 'three/src/objects/Mesh';
 import { ThreeHelper } from '../../../test/three.helper';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { Mesh } from '../../refs.node';
 import { Table } from './table';
 import { TableExporter } from './table-exporter';
 

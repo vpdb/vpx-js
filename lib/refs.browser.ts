@@ -20,6 +20,45 @@
 export { BrowserBinaryReader as BinaryReader } from './io/binary-reader.browser';
 export { exportGltf } from './gltf/export-gltf.browser';
 export { now } from './util/time.browser';
+export { _Math as Math } from 'three/src/math/Math';
+export { AnimationClip } from 'three/src/animation/AnimationClip';
+export { Bone } from 'three/src/objects/Bone';
+export { Box3 } from 'three/src/math/Box3';
+export { BufferAttribute } from 'three/src/core/BufferAttribute';
+export { BufferGeometry } from 'three/src/core/BufferGeometry';
+export { Camera } from 'three/src/cameras/Camera';
+export { Color } from 'three/src/math/Color';
+export { DataTexture } from 'three/src/textures/DataTexture';
+export { ExtrudeBufferGeometry } from 'three/src/geometries/ExtrudeGeometry';
+export { Face3 } from 'three/src/core/Face3';
+export { Float32BufferAttribute } from 'three/src/core/BufferAttribute';
+export { Geometry } from 'three/src/core/Geometry';
+export { Group } from 'three/src/objects/Group';
+export { InterleavedBufferAttribute } from 'three/src/core/InterleavedBufferAttribute';
+export { KeyframeTrack } from 'three/src/animation/KeyframeTrack';
+export { Light } from 'three/src/lights/Light';
+export { Line } from 'three/src/objects/Line';
+export { Material } from 'three/src/materials/Material';
+export { Matrix3 } from 'three/src/math/Matrix3';
+export { Matrix4 } from 'three/src/math/Matrix4';
+export { Mesh } from 'three/src/objects/Mesh';
+export { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
+export { Object3D } from 'three/src/core/Object3D';
+export { Path } from 'three/src/extras/core/Path';
+export { PointLight } from 'three/src/lights/PointLight';
+export { PropertyBinding } from 'three/src/animation/PropertyBinding';
+export { Scene } from 'three/src/scenes/Scene';
+export { Shape } from 'three/src/extras/core/Shape';
+export { SpotLight } from 'three/src/lights/SpotLight';
+export { Texture } from 'three/src/textures/Texture';
+export { TextureLoader } from 'three/src/loaders/TextureLoader';
+export { Vector2 } from 'three/src/math/Vector2';
+export { Vector3 } from 'three/src/math/Vector3';
+export { ClampToEdgeWrapping, DoubleSide, FloatType, InterpolateDiscrete, InterpolateLinear, LinearFilter,
+	LinearMipMapLinearFilter, LinearMipMapNearestFilter, MirroredRepeatWrapping, NearestFilter,
+	NearestMipMapLinearFilter, NearestMipMapNearestFilter, PixelFormat, RepeatWrapping, RGBAFormat, TriangleFanDrawMode,
+	TriangleStripDrawMode, UnsignedByteType,
+} from 'three/src/constants';
 
 // polyfills
 if (typeof(window) !== 'undefined') {

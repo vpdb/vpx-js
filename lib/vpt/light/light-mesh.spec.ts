@@ -19,9 +19,9 @@
 
 import { expect } from 'chai';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
-import { SpotLight } from 'three/src/lights/SpotLight';
 import { ThreeHelper } from '../../../test/three.helper';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { SpotLight } from '../../refs.node';
 import { Table } from '../table/table';
 import { TableExporter } from '../table/table-exporter';
 

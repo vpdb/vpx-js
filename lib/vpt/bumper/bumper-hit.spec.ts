@@ -20,12 +20,11 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import sinonChai = require('sinon-chai');
-import { Vector3 } from 'three/src/math/Vector3';
-import { Mesh } from 'three/src/objects/Mesh';
 import { createBall } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { Mesh, Vector3 } from '../../refs.node';
 import { ThreeRenderApi } from '../../render/threejs/three-render-api';
 import { Table } from '../table/table';
 import { TableExporter } from '../table/table-exporter';
