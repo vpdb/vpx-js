@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-const { FileLoader } = require('three/build/three.module');
+import { FileLoader } from 'three';
 
 export { NodeBinaryReader as BinaryReader } from './io/binary-reader.node';
 export { exportGltf } from './gltf/export-gltf.node';
@@ -29,6 +29,8 @@ export {
 	InterleavedBufferAttribute, Light, Material, Color, Matrix4, Vector3, Bone, Texture, Math,
 	PointLight, Group, MeshStandardMaterial, Face3, Matrix3, Vector2, Path, Shape, ExtrudeBufferGeometry,
 	Float32BufferAttribute, Line, RGBAFormat, UnsignedByteType, TextureLoader, DataTexture, FloatType, SpotLight,
+	LoadingManager, DataTextureLoader, TextureDataType, DefaultLoadingManager, HalfFloatType, LinearEncoding,
+	RGBEEncoding, RGBEFormat, RGBFormat,
 } from 'three';
 
 /*
