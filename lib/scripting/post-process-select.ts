@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BlockStatement, Expression, Statement, SwitchCase, SwitchStatement } from 'estree';
+import { BlockStatement, Expression, SwitchCase, SwitchStatement } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 

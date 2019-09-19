@@ -25,6 +25,7 @@ import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
 import { IRenderApi } from '../../render/irender-api';
+import { Material } from '../material';
 import { Table } from '../table/table';
 import { TableData } from '../table/table-data';
 import { Texture } from '../texture';
@@ -33,7 +34,6 @@ import { BallHit } from './ball-hit';
 import { BallMeshGenerator } from './ball-mesh-generator';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
-import { Material } from '../material';
 
 export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 

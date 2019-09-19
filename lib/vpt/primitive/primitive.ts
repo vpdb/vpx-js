@@ -29,7 +29,6 @@ import { Ball } from '../ball/ball';
 import { Item } from '../item';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
-import { TimerHit } from '../timer/timer-hit';
 import { PrimitiveApi } from './primitive-api';
 import { PrimitiveData } from './primitive-data';
 import { PrimitiveHitGenerator } from './primitive-hit-generator';

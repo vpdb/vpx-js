@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { IItem } from '../../game/iitem';
 import { IBinaryReader, OleCompoundDoc, Storage } from '../../io/ole-doc';
 import { logger } from '../../util/logger';
 import { Bumper } from '../bumper/bumper';
