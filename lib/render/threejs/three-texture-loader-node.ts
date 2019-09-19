@@ -95,6 +95,6 @@ async function loadHdrImage(name: string, data: Buffer): Promise<ThreeTexture> {
 	return new Promise(resolve => {
 		new RGBELoader()
 			.setDataType(UnsignedByteType) // alt: FloatType, HalfFloatType
-			.load(data as any, texture => resolve(texture));
+			.load(data.buffer as any, texture => resolve(texture));
 	});
 }
