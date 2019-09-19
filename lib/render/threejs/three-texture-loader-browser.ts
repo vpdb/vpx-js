@@ -17,7 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { RGBAFormat } from 'three/src/constants';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
+import { RGBAFormat, UnsignedByteType } from 'three/src/constants';
 import { TextureLoader } from 'three/src/loaders/TextureLoader';
 import { DataTexture } from 'three/src/textures/DataTexture';
 import { Texture as ThreeTexture } from 'three/src/textures/Texture';
@@ -38,7 +39,7 @@ const imageMap: { [key: string]: string } = {
 
 export class ThreeTextureLoaderBrowser implements ITextureLoader<ThreeTexture> {
 
-	public loadDefaultTexture(name: string, ext: string, fileName: string): Promise<ThreeTexture> {
+	public async loadDefaultTexture(name: string, ext: string, fileName: string): Promise<ThreeTexture> {
 		const key = fileName.substr(0, fileName.lastIndexOf('.'));
 		if (!imageMap[key]) {
 			throw new Error('Unknown local texture "' + key + '".');
@@ -46,30 +47,59 @@ export class ThreeTextureLoaderBrowser implements ITextureLoader<ThreeTexture> {
 		return Promise.resolve(new TextureLoader().load(imageMap[key]));
 	}
 
-	public loadRawTexture(name: string, data: Buffer, width: number, height: number): Promise<ThreeTexture> {
+	public async loadRawTexture(name: string, data: Buffer, width: number, height: number): Promise<ThreeTexture> {
 		const texture = new DataTexture(data, width, height, RGBAFormat);
 		texture.flipY = true;
 		texture.needsUpdate = true;
 		return Promise.resolve(texture);
 	}
 
-	public loadTexture(name: string, ext: string, data: Buffer): Promise<ThreeTexture> {
-		const header = data.readUInt16BE(0);
-		let mimeType: string;
-		switch (header) {
-			case 0x8950: mimeType = 'image/png'; break;
-			case 0x4749: mimeType = 'image/gif'; break;
-			case 0x424d: mimeType = 'image/bmp'; break;
-			case 0xffd8: mimeType = 'image/jpg'; break;
-			default: mimeType = 'image/unknown'; break;
+	public async loadTexture(name: string, ext: string, data: Buffer): Promise<ThreeTexture> {
+		const mimeType = getMimeType(data, ext);
+		if (!mimeType) {
+			throw new Error('Unknown image format for texture "' + name + '".');
 		}
-		const blob = new Blob([data.buffer], {type: mimeType});
-		const img = new Image();
-		img.src = URL.createObjectURL(blob);
-		const texture = new ThreeTexture();
+		const objectUrl = URL.createObjectURL(new Blob([data.buffer], {type: mimeType}));
+		const texture = await load(mimeType, objectUrl);
 		texture.name = `texture:${name}`;
-		texture.image = img;
 		texture.needsUpdate = true;
 		return Promise.resolve(texture);
 	}
+}
+
+function getMimeType(data: Buffer, ext: string): string | null {
+	const header = data.readUInt16BE(0);
+	switch (header) {
+		case 0x8950: return 'image/png';
+		case 0x4749: return 'image/gif';
+		case 0x424d: return 'image/bmp';
+		case 0xffd8: return 'image/jpg';
+		default: switch (ext) {
+			case '.hdr': return 'application/octet-stream';
+			case '.exr': return 'image/aces';
+			default: return null;
+		}
+	}
+}
+
+async function load(mimeType: string, objectUrl: string): Promise<ThreeTexture> {
+	if (mimeType === 'application/octet-stream') {
+		return await loadHdrTexture(objectUrl);
+	}
+	return Promise.resolve(loadLdrTexture(objectUrl));
+}
+
+function loadLdrTexture(objectUrl: string): ThreeTexture {
+	const texture = new ThreeTexture();
+	texture.image = new Image();
+	texture.image.src = objectUrl;
+	return texture;
+}
+
+async function loadHdrTexture(objectUrl: string): Promise<ThreeTexture> {
+	return new Promise((resolve, reject) => {
+		new RGBELoader()
+			.setDataType(UnsignedByteType) // alt: FloatType, HalfFloatType
+			.load(objectUrl, texture => resolve(texture), undefined, reject);
+	});
 }
