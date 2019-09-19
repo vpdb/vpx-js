@@ -46,6 +46,7 @@
 		"moo": "^0.5.0",
 		"pngquant": "^3.0.0",
 		"sharp": "^0.23.0",
+		"text-encoding": "^0.7.0",
 		"three": "^0.108.0"
 	},
 	"devDependencies": {
