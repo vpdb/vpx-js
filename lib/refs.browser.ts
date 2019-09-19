@@ -29,6 +29,7 @@ export { BufferGeometry } from 'three/src/core/BufferGeometry';
 export { Camera } from 'three/src/cameras/Camera';
 export { Color } from 'three/src/math/Color';
 export { DataTexture } from 'three/src/textures/DataTexture';
+export { DataTextureLoader } from 'three/src/loaders/DataTextureLoader';
 export { ExtrudeBufferGeometry } from 'three/src/geometries/ExtrudeGeometry';
 export { Face3 } from 'three/src/core/Face3';
 export { Float32BufferAttribute } from 'three/src/core/BufferAttribute';
@@ -38,6 +39,7 @@ export { InterleavedBufferAttribute } from 'three/src/core/InterleavedBufferAttr
 export { KeyframeTrack } from 'three/src/animation/KeyframeTrack';
 export { Light } from 'three/src/lights/Light';
 export { Line } from 'three/src/objects/Line';
+export { LoadingManager, DefaultLoadingManager } from 'three/src/loaders/LoadingManager';
 export { Material } from 'three/src/materials/Material';
 export { Matrix3 } from 'three/src/math/Matrix3';
 export { Matrix4 } from 'three/src/math/Matrix4';
@@ -57,7 +59,8 @@ export { Vector3 } from 'three/src/math/Vector3';
 export { ClampToEdgeWrapping, DoubleSide, FloatType, InterpolateDiscrete, InterpolateLinear, LinearFilter,
 	LinearMipMapLinearFilter, LinearMipMapNearestFilter, MirroredRepeatWrapping, NearestFilter,
 	NearestMipMapLinearFilter, NearestMipMapNearestFilter, PixelFormat, RepeatWrapping, RGBAFormat, TriangleFanDrawMode,
-	TriangleStripDrawMode, UnsignedByteType,
+	TriangleStripDrawMode, UnsignedByteType, TextureDataType, HalfFloatType, LinearEncoding, RGBEEncoding, RGBEFormat,
+	RGBFormat,
 } from 'three/src/constants';
 
 // polyfills

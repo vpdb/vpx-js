@@ -20,12 +20,12 @@
 import { createReadStream } from 'fs';
 import { resolve as resolvePath } from 'path';
 import * as sharp from 'sharp';
-import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader';
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
 import { NodeImage } from '../../gltf/image.node';
 import { FloatType, Texture as ThreeTexture, UnsignedByteType } from '../../refs.node';
 import { logger } from '../../util/logger';
 import { ITextureLoader } from '../irender-api';
+import { EXRLoader } from './vendor/EXRLoader';
+import { RGBELoader } from './vendor/RGBELoader';
 
 export class ThreeTextureLoaderNode implements ITextureLoader<ThreeTexture> {
 
@@ -93,7 +93,7 @@ async function loadHdrImage(name: string, data: Buffer): Promise<ThreeTexture> {
 	return new Promise(resolve => {
 		new RGBELoader()
 			.setDataType(UnsignedByteType) // alt: FloatType, HalfFloatType
-			.load(data.buffer as any, texture => resolve(texture));
+			.load(data.buffer as any, (texture: ThreeTexture) => resolve(texture));
 	});
 }
 
@@ -101,6 +101,6 @@ async function loadExrImage(name: string, data: Buffer): Promise<ThreeTexture> {
 	return new Promise(resolve => {
 		new EXRLoader()
 			.setDataType(FloatType)
-			.load(data.buffer as any, texture => resolve(texture));
+			.load(data.buffer as any, (texture: ThreeTexture) => resolve(texture));
 	});
 }

@@ -17,9 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
 import { DataTexture, RGBAFormat, Texture as ThreeTexture, TextureLoader, UnsignedByteType } from '../../refs.node';
 import { ITextureLoader } from '../irender-api';
+import { RGBELoader } from './vendor/RGBELoader';
 
 const imageMap: { [key: string]: string } = {
 	bumperbase: require('../../../res/maps/bumperbase.png'),

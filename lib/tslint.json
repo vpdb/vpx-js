@@ -1,7 +1,7 @@
 {
 	"extends": "tslint:recommended",
 	"linterOptions": {
-		"exclude": [ "**/*.js", "**/vbscript.ts" ]
+		"exclude": [ "**/*.js", "**/vbscript.ts", "**/vendor/**" ]
 	},
 	"rules": {
 		"quotemark": [ true, "single", "avoid-escape" ],
