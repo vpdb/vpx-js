@@ -27,6 +27,7 @@ import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
 import { Table } from '../../lib/vpt/table/table';
 import { NodeImage } from '../../lib/gltf/image.node';
 import { ThreeTextureLoaderNode } from '../../lib/render/threejs/three-texture-loader-node';
+import { exp } from '../../lib/scripting/post-process-math';
 
 const three = new ThreeHelper();
 const imgDiffTolerance = 7;
@@ -109,7 +110,9 @@ describe('The VPinball texture parser', () => {
 	it('should correctly export HDR environment map', async () => {
 		const texture = vpt.getTexture('test_pattern_hdr')!;
 		const threeTexture = await texture.loadTexture(loader, vpt);
-		const hdr = await threeTexture.image.getImage(false, 100);
+		expect(threeTexture.image.width).to.equal(1024);
+		expect(threeTexture.image.height).to.equal(512);
+		expect(threeTexture.image.data.length).to.equal(2097152);
 	});
 
 });
