@@ -92,7 +92,8 @@
 			"test/**",
 			"lib/**/*.spec.ts",
 			"lib/gltf/gltf-exporter.ts",
-			"lib/util/logger.ts"
+			"lib/util/logger.ts",
+			"lib/render/threejs/vendor/**"
 		],
 		"extension": [
 			".ts"
