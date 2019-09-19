@@ -1,4 +1,4 @@
-import { Scene } from 'three';
+import { Scene } from 'three/src/scenes/Scene';
 import { TableGenerateGltfOptions } from '../vpt/table/table';
 import { TableExportOptions } from '../vpt/table/table-exporter';
 import { GLTFExporter } from './gltf-exporter';

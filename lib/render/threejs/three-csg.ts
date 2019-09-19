@@ -18,7 +18,14 @@
  */
 
 /* tslint:disable */
-import { BufferGeometry, Face3, Geometry, Matrix3, Matrix4, Mesh, Vector2, Vector3 } from 'three';
+import { BufferGeometry } from 'three/src/core/BufferGeometry';
+import { Face3 } from 'three/src/core/Face3';
+import { Geometry } from 'three/src/core/Geometry';
+import { Matrix3 } from 'three/src/math/Matrix3';
+import { Matrix4 } from 'three/src/math/Matrix4';
+import { Vector2 } from 'three/src/math/Vector2';
+import { Vector3 } from 'three/src/math/Vector3';
+import { Mesh } from 'three/src/objects/Mesh';
 
 /**
  * Holds a binary space partition tree representing a 3D solid. Two solids can
@@ -157,13 +164,13 @@ export default class ThreeCsg {
 	 * Construct a CSG solid from a list of `Polygon` instances.
 	 * @param polygons
 	 */
-	static fromPolygons(polygons: Polygon[]): ThreeCsg {
+	public static fromPolygons(polygons: Polygon[]): ThreeCsg {
 		const csg = new ThreeCsg();
 		csg.polygons = polygons;
 		return csg;
 	}
 
-	static fromGeometry(geom: Geometry | BufferGeometry) {
+	public static fromGeometry(geom: Geometry | BufferGeometry) {
 		if ((geom as any).isBufferGeometry) {
 			geom = new Geometry().fromBufferGeometry(geom as BufferGeometry);
 		}
@@ -179,10 +186,10 @@ export default class ThreeCsg {
 			vertices.push(new Vertex(vs[f.c], f.vertexNormals[2] as Vector, geometry.faceVertexUvs[0][i][2]));
 			polys.push(new Polygon(vertices));
 		}
-		return ThreeCsg.fromPolygons(polys)
+		return ThreeCsg.fromPolygons(polys);
 	}
 
-	static fromMesh(mesh: Mesh) {
+	public static fromMesh(mesh: Mesh) {
 
 		const csg = ThreeCsg.fromGeometry(mesh.geometry);
 		ThreeCsg._tmpm3.getNormalMatrix(mesh.matrix);
@@ -197,7 +204,7 @@ export default class ThreeCsg {
 		return csg;
 	}
 
-	static toMesh(csg: ThreeCsg, toMatrix: Matrix4) {
+	public static toMesh(csg: ThreeCsg, toMatrix: Matrix4) {
 		const geom = new Geometry();
 		const ps = csg.polygons;
 		const vs = geom.vertices;
@@ -209,7 +216,7 @@ export default class ThreeCsg {
 			const pvlen = pvs.length;
 
 			for (let j = 0; j < pvlen; j++) {
-				vs.push(new Vector3().copy(pvs[j].pos))
+				vs.push(new Vector3().copy(pvs[j].pos));
 			}
 
 			for (let j = 3; j <= pvlen; j++) {
@@ -226,7 +233,7 @@ export default class ThreeCsg {
 				fuv.push(new Vector2().copy(pvs[j - 1].uv));
 
 				fc.normal = new Vector3().copy(p.plane.normal);
-				geom.faces.push(fc)
+				geom.faces.push(fc);
 			}
 		}
 		const inv = new Matrix4().getInverse(toMatrix);
@@ -288,7 +295,7 @@ class Vector extends Vector3 {
 	}
 
 	public lerp(a: Vector, t: number): this {
-		return this.plus(a.minus(this).times(t))
+		return this.plus(a.minus(this).times(t));
 	}
 
 	public unit(): Vector {
@@ -321,20 +328,20 @@ class Vertex {
 		this.uv = new Vector2(uv.x, uv.y);
 	}
 
-	clone() {
+	public clone() {
 		return new Vertex(this.pos.clone(), this.normal.clone(), this.uv.clone());
 	}
 
 	// Invert all orientation-specific data (e.g. vertex normal). Called when the
 	// orientation of a polygon is flipped.
-	flip() {
+	public flip() {
 		this.normal = this.normal.negated();
 	}
 
 	// Create a new vertex between this vertex and `other` by linearly
 	// interpolating all properties using a parameter of `t`. Subclasses should
 	// override this to interpolate additional properties.
-	interpolate(other: Vertex, t: number) {
+	public interpolate(other: Vertex, t: number) {
 		return new Vertex(this.pos.lerp(other.pos, t), this.normal.lerp(other.normal, t), this.uv.lerp(other.uv, t));
 	}
 }
@@ -349,7 +356,7 @@ class Plane {
 
 	// `Plane.EPSILON` is the tolerance used by `splitPolygon()` to decide if a
 	// point is on the plane.
-	static EPSILON = 1e-5;
+	public static EPSILON = 1e-5;
 
 	constructor(normal: Vector, w: number) {
 		this.normal = normal;
@@ -389,8 +396,8 @@ class Plane {
 		// four classes.
 		let polygonType = 0;
 		const types = [];
-		for (var i = 0; i < polygon.vertices.length; i++) {
-			var t = this.normal.dot(polygon.vertices[i].pos) - this.w;
+		for (let i = 0; i < polygon.vertices.length; i++) {
+			let t = this.normal.dot(polygon.vertices[i].pos) - this.w;
 			const type = (t < -Plane.EPSILON) ? BACK : (t > Plane.EPSILON) ? FRONT : COPLANAR;
 			polygonType |= type;
 			types.push(type);
@@ -416,10 +423,12 @@ class Plane {
 					const tj = types[j];
 					const vi = polygon.vertices[i];
 					const vj = polygon.vertices[j];
-					if (ti != BACK)
+					if (ti != BACK) {
 						f.push(vi);
-					if (ti != FRONT)
+					}
+					if (ti != FRONT) {
 						b.push(ti != BACK ? vi.clone() : vi);
+					}
 					if ((ti | tj) == SPANNING) {
 						const t = (this.w - this.normal.dot(vi.pos)) / this.normal.dot(vj.pos.minus(vi.pos));
 						const v = vi.interpolate(vj, t);
@@ -427,18 +436,20 @@ class Plane {
 						b.push(v.clone());
 					}
 				}
-				if (f.length >= 3)
+				if (f.length >= 3) {
 					front.push(new Polygon(f, polygon.shared));
-				if (b.length >= 3)
+				}
+				if (b.length >= 3) {
 					back.push(new Polygon(b, polygon.shared));
+				}
 				break;
 		}
 	}
 
-	static fromPoints = function (a: Vector, b: Vector, c: Vector): Plane {
+	public static fromPoints = function(a: Vector, b: Vector, c: Vector): Plane {
 		const n = b.minus(a).crossProduct(c.minus(a)).unit();
 		return new Plane(n, n.dot(a));
-	}
+	};
 }
 
 /**
@@ -463,14 +474,14 @@ class Polygon {
 	}
 
 	public clone() {
-		const vertices = this.vertices.map(function (v) {
+		const vertices = this.vertices.map(function(v) {
 			return v.clone();
 		});
 		return new Polygon(vertices, this.shared);
 	}
 
 	public flip() {
-		this.vertices.reverse().map(function (v) {
+		this.vertices.reverse().map(function(v) {
 			v.flip();
 		});
 		this.plane.flip();
@@ -573,10 +584,12 @@ class Node {
 	 */
 	public allPolygons(): Polygon[] {
 		let polygons = this.polygons.slice();
-		if (this.front)
+		if (this.front) {
 			polygons = polygons.concat(this.front.allPolygons());
-		if (this.back)
+		}
+		if (this.back) {
 			polygons = polygons.concat(this.back.allPolygons());
+		}
 		return polygons;
 	}
 

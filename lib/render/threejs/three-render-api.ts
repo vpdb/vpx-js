@@ -17,14 +17,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BufferGeometry, Group, Matrix4, Object3D, PointLight } from 'three';
+import { BufferGeometry } from 'three/src/core/BufferGeometry';
+import { Object3D } from 'three/src/core/Object3D';
+import { PointLight } from 'three/src/lights/PointLight';
+import { Matrix4 } from 'three/src/math/Matrix4';
+import { Group } from 'three/src/objects/Group';
 import { IRenderable } from '../../game/irenderable';
 import { Matrix3D } from '../../math/matrix3d';
 import { Pool } from '../../util/object-pool';
 import { LightData } from '../../vpt/light/light-data';
 import { Mesh } from '../../vpt/mesh';
 import { Table, TableGenerateOptions } from '../../vpt/table/table';
-import { IRenderApi, ITextureLoader, MeshConvertOptions } from '../irender-api';
+import { IRenderApi, MeshConvertOptions } from '../irender-api';
 import { ThreeConverter } from './three-converter';
 import { ThreeLightMeshGenerator } from './three-light-mesh-generator';
 import { ThreeMeshGenerator } from './three-mesh-generator';

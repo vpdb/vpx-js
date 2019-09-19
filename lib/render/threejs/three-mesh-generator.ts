@@ -17,17 +17,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import {
-	BufferGeometry,
-	Float32BufferAttribute,
-	Geometry,
-	Line,
-	Matrix3,
-	Mesh as ThreeMesh,
-	Object3D,
-	Vector2,
-	Vector3,
-} from 'three';
+import { Float32BufferAttribute } from 'three/src/core/BufferAttribute';
+import { BufferGeometry } from 'three/src/core/BufferGeometry';
+import { Geometry } from 'three/src/core/Geometry';
+import { Object3D } from 'three/src/core/Object3D';
+import { Matrix3 } from 'three/src/math/Matrix3';
+import { Vector2 } from 'three/src/math/Vector2';
+import { Vector3 } from 'three/src/math/Vector3';
+import { Line } from 'three/src/objects/Line';
+import { Mesh as ThreeMesh } from 'three/src/objects/Mesh';
 import { Vertex3DNoTex2 } from '../../math/vertex';
 import { logger } from '../../util/logger';
 import { Mesh } from '../../vpt/mesh';
