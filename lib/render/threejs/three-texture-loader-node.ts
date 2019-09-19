@@ -20,7 +20,7 @@
 import { createReadStream } from 'fs';
 import { resolve as resolvePath } from 'path';
 import * as sharp from 'sharp';
-import { FileLoader, Texture as ThreeTexture, UnsignedByteType } from 'three';
+import { Texture as ThreeTexture, UnsignedByteType } from 'three';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
 import { NodeImage } from '../../gltf/image.node';
 import { logger } from '../../util/logger';

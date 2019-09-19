@@ -22,10 +22,21 @@ import { KeyframeTrack } from 'three/src/animation/KeyframeTrack';
 import { PropertyBinding } from 'three/src/animation/PropertyBinding';
 import { Camera } from 'three/src/cameras/Camera';
 import {
-	ClampToEdgeWrapping, DoubleSide, InterpolateDiscrete, InterpolateLinear, LinearFilter,
-	LinearMipMapLinearFilter, LinearMipMapNearestFilter, MirroredRepeatWrapping,
-	NearestFilter, NearestMipMapLinearFilter, NearestMipMapNearestFilter, PixelFormat,
-	RepeatWrapping, TriangleFanDrawMode, TriangleStripDrawMode,
+	ClampToEdgeWrapping,
+	DoubleSide,
+	InterpolateDiscrete,
+	InterpolateLinear,
+	LinearFilter,
+	LinearMipMapLinearFilter,
+	LinearMipMapNearestFilter,
+	MirroredRepeatWrapping,
+	NearestFilter,
+	NearestMipMapLinearFilter,
+	NearestMipMapNearestFilter,
+	PixelFormat,
+	RepeatWrapping,
+	TriangleFanDrawMode,
+	TriangleStripDrawMode,
 } from 'three/src/constants';
 import { BufferAttribute } from 'three/src/core/BufferAttribute';
 import { BufferGeometry } from 'three/src/core/BufferGeometry';

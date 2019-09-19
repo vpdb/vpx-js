@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BinaryOperator, Expression, ExpressionStatement, UnaryExpression, UnaryOperator } from 'estree';
+import { BinaryOperator, Expression, UnaryExpression, UnaryOperator } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 

@@ -22,10 +22,10 @@ import { expect } from 'chai';
 import { ThreeHelper } from '../../../test/three.helper';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
+import { CollectionData } from './collection-data';
 
 /* tslint:disable:no-unused-expression */
 import sinonChai = require('sinon-chai');
-import { CollectionData } from './collection-data';
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
