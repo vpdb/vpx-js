@@ -17,7 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ExtrudeBufferGeometry, Path, Shape, Vector2 } from 'three';
+import { Path } from 'three/src/extras/core/Path';
+import { Shape } from 'three/src/extras/core/Shape';
+import { ExtrudeBufferGeometry } from 'three/src/geometries/ExtrudeGeometry';
+import { Vector2 } from 'three/src/math/Vector2';
 import { SplineVertex } from '../../math/spline-vertex';
 import { LightData } from '../../vpt/light/light-data';
 import { Table } from '../../vpt/table/table';

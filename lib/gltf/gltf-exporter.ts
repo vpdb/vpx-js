@@ -17,42 +17,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { AnimationClip } from 'three/src/animation/AnimationClip';
+import { KeyframeTrack } from 'three/src/animation/KeyframeTrack';
+import { PropertyBinding } from 'three/src/animation/PropertyBinding';
+import { Camera } from 'three/src/cameras/Camera';
 import {
-	AnimationClip,
-	Bone,
-	BufferAttribute,
-	BufferGeometry,
-	Camera,
-	ClampToEdgeWrapping,
-	Color,
-	DoubleSide,
-	Geometry,
-	InterleavedBufferAttribute,
-	InterpolateDiscrete,
-	InterpolateLinear,
-	KeyframeTrack,
-	Light,
-	LinearFilter,
-	LinearMipMapLinearFilter,
-	LinearMipMapNearestFilter,
-	Material,
-	Math as M,
-	Matrix4,
-	Mesh,
-	MirroredRepeatWrapping,
-	NearestFilter,
-	NearestMipMapLinearFilter,
-	NearestMipMapNearestFilter,
-	Object3D,
-	PixelFormat,
-	PropertyBinding,
-	RepeatWrapping,
-	Scene,
-	Texture,
-	TriangleFanDrawMode,
-	TriangleStripDrawMode,
-	Vector3,
-} from 'three';
+	ClampToEdgeWrapping, DoubleSide, InterpolateDiscrete, InterpolateLinear, LinearFilter,
+	LinearMipMapLinearFilter, LinearMipMapNearestFilter, MirroredRepeatWrapping,
+	NearestFilter, NearestMipMapLinearFilter, NearestMipMapNearestFilter, PixelFormat,
+	RepeatWrapping, TriangleFanDrawMode, TriangleStripDrawMode,
+} from 'three/src/constants';
+import { BufferAttribute } from 'three/src/core/BufferAttribute';
+import { BufferGeometry } from 'three/src/core/BufferGeometry';
+import { Geometry } from 'three/src/core/Geometry';
+import { InterleavedBufferAttribute } from 'three/src/core/InterleavedBufferAttribute';
+import { Object3D } from 'three/src/core/Object3D';
+import { Light } from 'three/src/lights/Light';
+import { Material } from 'three/src/materials/Material';
+import { Color } from 'three/src/math/Color';
+import { _Math as M } from 'three/src/math/Math';
+import { Matrix4 } from 'three/src/math/Matrix4';
+import { Vector3 } from 'three/src/math/Vector3';
+import { Bone } from 'three/src/objects/Bone';
+import { Mesh } from 'three/src/objects/Mesh';
+import { Scene } from 'three/src/scenes/Scene';
+import { Texture } from 'three/src/textures/Texture';
+
 import { logger } from '../util/logger';
 import { TableGenerateGltfOptions } from '../vpt/table/table';
 import {

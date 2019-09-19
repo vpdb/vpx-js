@@ -17,7 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { DataTexture, RGBAFormat, Texture as ThreeTexture, TextureLoader } from 'three';
+import { RGBAFormat } from 'three/src/constants';
+import { TextureLoader } from 'three/src/loaders/TextureLoader';
+import { DataTexture } from 'three/src/textures/DataTexture';
+import { Texture as ThreeTexture } from 'three/src/textures/Texture';
 import { ITextureLoader } from '../irender-api';
 
 const imageMap: { [key: string]: string } = {

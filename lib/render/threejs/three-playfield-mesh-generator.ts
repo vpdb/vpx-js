@@ -17,7 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BufferGeometry, ExtrudeBufferGeometry, Shape, Vector2 } from 'three';
+import { BufferGeometry } from 'three/src/core/BufferGeometry';
+import { Shape } from 'three/src/extras/core/Shape';
+import { ExtrudeBufferGeometry } from 'three/src/geometries/ExtrudeGeometry';
+import { Vector2 } from 'three/src/math/Vector2';
 import { Table, TableGenerateOptions } from '../../vpt/table/table';
 
 export class ThreePlayfieldMeshGenerator {
