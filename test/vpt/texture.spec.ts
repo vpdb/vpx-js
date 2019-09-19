@@ -106,7 +106,7 @@ describe('The VPinball texture parser', () => {
 		//expect(match).to.equal(true); fuck you pngcrush
 	});
 
-	it.skip('should correctly export HDR environment map', async () => {
+	it('should correctly export HDR environment map', async () => {
 		const texture = vpt.getTexture('test_pattern_hdr')!;
 		const threeTexture = await texture.loadTexture(loader, vpt);
 		const hdr = await threeTexture.image.getImage(false, 100);

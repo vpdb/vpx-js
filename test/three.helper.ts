@@ -17,7 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Box3, Mesh, Object3D } from 'three';
+import { Object3D } from 'three/src/core/Object3D';
+import { Mesh } from 'three/src/objects/Mesh';
+import { Box3 } from 'three/src/math/Box3';
 import { resolve } from 'path';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
