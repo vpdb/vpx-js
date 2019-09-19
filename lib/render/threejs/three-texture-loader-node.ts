@@ -20,8 +20,9 @@
 import { createReadStream } from 'fs';
 import { resolve as resolvePath } from 'path';
 import * as sharp from 'sharp';
+import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
-import { UnsignedByteType } from 'three/src/constants';
+import { FloatType, UnsignedByteType } from 'three/src/constants';
 import { Texture as ThreeTexture } from 'three/src/textures/Texture';
 import { NodeImage } from '../../gltf/image.node';
 import { logger } from '../../util/logger';
@@ -38,6 +39,9 @@ export class ThreeTextureLoaderNode implements ITextureLoader<ThreeTexture> {
 
 			if (ext === '.hdr') {
 				return await loadHdrImage(name, data);
+
+			} else if (ext === '.exr') {
+				return await loadExrImage(name, data);
 
 			} else {
 				throw err;
@@ -90,6 +94,14 @@ async function loadHdrImage(name: string, data: Buffer): Promise<ThreeTexture> {
 	return new Promise(resolve => {
 		new RGBELoader()
 			.setDataType(UnsignedByteType) // alt: FloatType, HalfFloatType
+			.load(data.buffer as any, texture => resolve(texture));
+	});
+}
+
+async function loadExrImage(name: string, data: Buffer): Promise<ThreeTexture> {
+	return new Promise(resolve => {
+		new EXRLoader()
+			.setDataType(FloatType)
 			.load(data.buffer as any, texture => resolve(texture));
 	});
 }

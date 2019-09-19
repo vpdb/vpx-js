@@ -95,7 +95,7 @@ export class Texture extends BiffParser {
 		}
 
 		const fileName = (this.szPath || this.localFileName)!;
-		const ext = fileName.substr(fileName.lastIndexOf('.'));
+		const ext = fileName.substr(fileName.lastIndexOf('.')).toLowerCase();
 		if (this.isRaw()) {
 			texture = await loader.loadRawTexture(this.getName(), this.pdsBuffer!.getData(), this.width, this.height);
 

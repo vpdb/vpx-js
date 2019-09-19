@@ -108,12 +108,20 @@ describe('The VPinball texture parser', () => {
 		//expect(match).to.equal(true); fuck you pngcrush
 	});
 
-	it('should correctly export HDR environment map', async () => {
+	it('should correctly export a HDR environment map', async () => {
 		const texture = vpt.getTexture('test_pattern_hdr')!;
 		const threeTexture = await texture.loadTexture(loader, vpt);
 		expect(threeTexture.image.width).to.equal(1024);
 		expect(threeTexture.image.height).to.equal(512);
 		expect(threeTexture.image.data.length).to.equal(2097152);
+	});
+
+	it('should correctly export a EXR environment map', async () => {
+		const texture = vpt.getTexture('test_pattern_exr')!;
+		const threeTexture = await texture.loadTexture(loader, vpt);
+		expect(threeTexture.image.width).to.equal(587);
+		expect(threeTexture.image.height).to.equal(675);
+		expect(threeTexture.image.data.length).to.equal(1584900);
 	});
 
 	it('should correctly export a local texture', async () => {
