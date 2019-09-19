@@ -35,3 +35,10 @@ FileLoader.prototype.load = function(urlOrBuffer: any, onLoad?: (response: strin
 		onLoad(urlOrBuffer);
 	}
 };
+
+/*
+ * Node.js TextDecoder polyfille for Node.js v12
+ */
+if (!('TextDecoder' in global)) {
+	(global as any).TextDecoder = require('text-encoding').TextDecoder;
+}
