@@ -185,6 +185,10 @@ export class ThreeHelper {
 		return resolve(__dirname, 'fixtures', filename);
 	}
 
+	public resPath(filename: string): string {
+		return resolve(__dirname, '..', 'res', 'maps', filename);
+	}
+
 	public getBoundingBox(object3D: Object3D): Box3 {
 		let box: Box3 | null = null;
 		object3D.traverse(obj3D => {

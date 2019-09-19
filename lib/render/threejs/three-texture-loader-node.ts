@@ -75,15 +75,10 @@ async function stream(localPath: string): Promise<Buffer> {
 	});
 }
 
-async function loadSharpImage(name: string, shrp: sharp.Sharp, parsedMeta?: { format: string, width: number, height: number }): Promise<ThreeTexture> {
+async function loadSharpImage(name: string, shrp: sharp.Sharp): Promise<ThreeTexture> {
 	const stats = await shrp.stats();
-	let image: NodeImage;
-	if (parsedMeta) {
-		image = new NodeImage(name, parsedMeta.width, parsedMeta.height, parsedMeta.format, stats, shrp);
-	} else {
-		const metadata = await shrp.metadata();
-		image = new NodeImage(name, metadata.width!, metadata.height!, metadata.format!, stats, shrp);
-	}
+	const metadata = await shrp.metadata();
+	const image = new NodeImage(name, metadata.width!, metadata.height!, metadata.format!, stats, shrp);
 
 	const texture = new ThreeTexture();
 	texture.name = `texture:${name}`;

@@ -40,6 +40,7 @@ describe('The VPinball texture parser', () => {
 	const testPngPow2 = readFileSync(three.fixturePath('test_pattern_pow2.png'));
 	const testPngTransparent = readFileSync(three.fixturePath('test_pattern_transparent.png'));
 	const testPngOptimized = readFileSync(three.fixturePath('test_pattern_optimized.png'));
+	const testLocalGottliebKicker = readFileSync(three.resPath('kickerGottlieb.png'));
 
 	before(async () => {
 		vpt = await Table.load(new NodeBinaryReader(three.fixturePath('table-texture.vpx')));
@@ -113,6 +114,19 @@ describe('The VPinball texture parser', () => {
 		expect(threeTexture.image.width).to.equal(1024);
 		expect(threeTexture.image.height).to.equal(512);
 		expect(threeTexture.image.data.length).to.equal(2097152);
+	});
+
+	it('should correctly export a local texture', async () => {
+		const kicker = vpt.kickers.Kicker1;
+		const kickerMeshes = kicker.getMeshes(vpt);
+		const threeTexture = await kickerMeshes.kicker.map!.loadTexture(loader, vpt);
+		expect(threeTexture.image.width).to.equal(256);
+		expect(threeTexture.image.height).to.equal(256);
+
+		const jpg = await threeTexture.image.getImage(false, 100);
+		const png = await sharp(jpg).png().toBuffer();
+		const match = await comparePngs(png, testLocalGottliebKicker);
+		expect(match).to.equal(true);
 	});
 
 });

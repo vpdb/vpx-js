@@ -40,7 +40,7 @@ export class Texture extends BiffParser {
 
 	public szName!: string;
 	public szInternalName!: string;
-	public szPath!: string;
+	public szPath?: string;
 	public width!: number;
 	public height!: number;
 	public alphaTestValue?: number;
@@ -94,7 +94,8 @@ export class Texture extends BiffParser {
 			return texture;
 		}
 
-		const ext = this.szPath.substr(this.szPath.lastIndexOf('.'));
+		const fileName = (this.szPath || this.localFileName)!;
+		const ext = fileName.substr(fileName.lastIndexOf('.'));
 		if (this.isRaw()) {
 			texture = await loader.loadRawTexture(this.getName(), this.pdsBuffer!.getData(), this.width, this.height);
 
