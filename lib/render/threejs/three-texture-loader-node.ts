@@ -20,8 +20,9 @@
 import { createReadStream } from 'fs';
 import { resolve as resolvePath } from 'path';
 import * as sharp from 'sharp';
-import { Texture as ThreeTexture, UnsignedByteType } from 'three';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
+import { UnsignedByteType } from 'three/src/constants';
+import { Texture as ThreeTexture } from 'three/src/textures/Texture';
 import { NodeImage } from '../../gltf/image.node';
 import { logger } from '../../util/logger';
 import { ITextureLoader } from '../irender-api';

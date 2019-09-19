@@ -20,7 +20,7 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import sinonChai = require('sinon-chai');
-import { Mesh } from 'three';
+import { Mesh } from 'three/src/objects/Mesh';
 import { simulateCycles } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
