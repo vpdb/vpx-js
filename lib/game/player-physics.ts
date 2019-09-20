@@ -340,9 +340,7 @@ export class PlayerPhysics {
 		this.scriptPeriod = 0;
 		this.physIterations = 0;
 
-		let firstCycle = true;
-
-			// loop here until current (real) time matches the physics (simulated) time
+		// loop here until current (real) time matches the physics (simulated) time
 		while (this.curPhysicsFrameTime < initialTimeUsec) {
 
 			// Get time in milliseconds for timers
@@ -419,7 +417,6 @@ export class PlayerPhysics {
 			this.curPhysicsFrameTime = this.nextPhysicsFrameTime; // new cycle, on physics frame boundary
 			this.nextPhysicsFrameTime += PHYSICS_STEPTIME;     // advance physics position
 
-			firstCycle = false;
 		} // end while (m_curPhysicsFrameTime < initial_time_usec)
 
 		this.physPeriod = Math.floor(this.now() * 1000) - initialTimeUsec;

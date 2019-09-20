@@ -85,8 +85,8 @@ export class RampHitGenerator {
 				throw new Error(`Unknown ramp type "${this.data.rampType}".`);
 		}
 
-		let pv1: Vertex2D = new Vertex2D();
-		let pv2: Vertex2D = new Vertex2D();
+		let pv1: Vertex2D;
+		let pv2: Vertex2D;
 		let pv3: Vertex2D = new Vertex2D();
 		let pv4: Vertex2D = new Vertex2D();
 		let rgv3D: Vertex3D[];

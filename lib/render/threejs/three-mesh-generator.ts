@@ -236,7 +236,6 @@ export class MeshExporter {
 		let i: number;
 		let l: number;
 		let m: number;
-		const face: string[] = [];
 
 		let nbVertex = 0;
 		let nbNormals = 0;
