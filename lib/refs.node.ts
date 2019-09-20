@@ -39,6 +39,7 @@ export {
 const originalFileLoaderLoad = FileLoader.prototype.load;
 // tslint:disable-next-line:only-arrow-functions
 FileLoader.prototype.load = function(urlOrBuffer: any, onLoad?: (response: string | ArrayBuffer) => void, onProgress?: (request: ProgressEvent) => void, onError?: (event: ErrorEvent) => void) {
+	/* istanbul ignore if: we don't it by url, but this should still work. */
 	if (typeof urlOrBuffer === 'string') {
 		return originalFileLoaderLoad(urlOrBuffer, onLoad, onProgress, onError);
 	}
@@ -49,6 +50,7 @@ FileLoader.prototype.load = function(urlOrBuffer: any, onLoad?: (response: strin
 
 /*
  * Node.js TextDecoder polyfills for Node.js v12
+ * istanbul ignore if
  */
 if (!('TextDecoder' in global)) {
 	(global as any).TextDecoder = require('text-encoding').TextDecoder;
