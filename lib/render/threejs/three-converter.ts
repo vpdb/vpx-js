@@ -38,6 +38,7 @@ import { ThreeMeshGenerator } from './three-mesh-generator';
 export class ThreeConverter {
 
 	private readonly meshConvertOpts: MeshConvertOptions;
+	private readonly meshGenerator = new ThreeMeshGenerator();
 
 	constructor(opts: MeshConvertOptions) {
 		this.meshConvertOpts = opts;
@@ -66,8 +67,7 @@ export class ThreeConverter {
 			geometry = obj.geometry;
 
 		} else if (obj.mesh) {
-			const generator = new ThreeMeshGenerator(obj.mesh);
-			geometry = generator.convertToBufferGeometry();
+			geometry = this.meshGenerator.convertToBufferGeometry(obj.mesh);
 
 		/* istanbul ignore next: Should not happen. */
 		} else {

@@ -30,7 +30,9 @@ import {
 	Vector3,
 } from '../../refs.node';
 import { logger } from '../../util/logger';
+import { Pool } from '../../util/object-pool';
 import { Mesh } from '../../vpt/mesh';
+import { ThreeRenderApi } from './three-render-api';
 
 /**
  * A class that converts the meshes we read from VPinball to Three.js meshes.
@@ -40,18 +42,14 @@ import { Mesh } from '../../vpt/mesh';
  */
 export class ThreeMeshGenerator {
 
-	private mesh: Mesh;
+	private readonly faceVertices: number[][] = [new Array(3), new Array(3), new Array(3)];
 
-	constructor(mesh: Mesh) {
-		this.mesh = mesh;
-	}
+	public convertToBufferGeometry(mesh: Mesh): BufferGeometry {
 
-	public convertToBufferGeometry(): BufferGeometry {
-
-		const state = new ParserState(this.mesh.name);
+		const state = ParserState.claim(mesh.name);
 
 		// vertices, normals, uvs
-		for (const vertex of this.mesh.vertices) {
+		for (const vertex of mesh.vertices) {
 			state.vertices.push(vertex.x, vertex.y, vertex.z);
 			state.normals.push(vertex.nx, vertex.ny, vertex.nz);
 			if (vertex.hasTextureCoordinates()) {
@@ -60,19 +58,24 @@ export class ThreeMeshGenerator {
 		}
 
 		// faces
-		for (let i = 0; i < this.mesh.indices.length; i += 3) {
-			const i1 = this.mesh.indices[i + 2] + 1;
-			const i2 = this.mesh.indices[i + 1] + 1;
-			const i3 = this.mesh.indices[i] + 1;
-			const faceVertices: number[][] = [];
-			faceVertices.push([i1, i1, i1]);
-			faceVertices.push([i2, i2, i2]);
-			faceVertices.push([i3, i3, i3]);
+		for (let i = 0; i < mesh.indices.length; i += 3) {
+			const i1 = mesh.indices[i + 2] + 1;
+			const i2 = mesh.indices[i + 1] + 1;
+			const i3 = mesh.indices[i] + 1;
+			this.faceVertices[0][0] = i1;
+			this.faceVertices[0][1] = i1;
+			this.faceVertices[0][2] = i1;
+			this.faceVertices[1][0] = i2;
+			this.faceVertices[1][1] = i2;
+			this.faceVertices[1][2] = i2;
+			this.faceVertices[2][0] = i3;
+			this.faceVertices[2][1] = i3;
+			this.faceVertices[2][2] = i3;
 
-			const v1 = faceVertices[0];
-			for (let j = 1, jl = faceVertices.length - 1; j < jl; j++) {
-				const v2 = faceVertices[j];
-				const v3 = faceVertices[j + 1];
+			const v1 = this.faceVertices[0];
+			for (let j = 1, jl = this.faceVertices.length - 1; j < jl; j++) {
+				const v2 = this.faceVertices[j];
+				const v3 = this.faceVertices[j + 1];
 				state.addFace(
 					v1[0], v2[0], v3[0],
 					v1[1], v2[1], v3[1],
@@ -84,45 +87,57 @@ export class ThreeMeshGenerator {
 		// create geometry from state
 		const object = state.object;
 		const geometry = object.geometry;
-		const bufferGeometry = new BufferGeometry();
+		const bufferGeometry = ThreeRenderApi.POOL.BufferGeometry.get();
 
-		bufferGeometry.name = this.mesh.name;
-		bufferGeometry.addAttribute('position', new Float32BufferAttribute(geometry.vertices, 3));
+		bufferGeometry.name = mesh.name;
+		bufferGeometry.addAttribute('position', RecyclableFloat32BufferAttribute.claim(geometry.vertices, 3));
 
 		if (geometry.normals.length > 0) {
-			bufferGeometry.addAttribute('normal', new Float32BufferAttribute(geometry.normals, 3));
+			bufferGeometry.addAttribute('normal', RecyclableFloat32BufferAttribute.claim(geometry.normals, 3));
 
 		} else {
 			bufferGeometry.computeVertexNormals();
 		}
 
 		if (geometry.uvs.length > 0) {
-			bufferGeometry.addAttribute('uv', new Float32BufferAttribute(geometry.uvs, 2));
+			bufferGeometry.addAttribute('uv', RecyclableFloat32BufferAttribute.claim(geometry.uvs, 2));
 		}
 
+		ParserState.release(state);
 		return bufferGeometry;
 	}
 }
 
 class ParserState {
 
-	public object: ParserObject;
+	public static readonly POOL = new Pool(ParserState);
+
+	public object!: ParserObject;
 
 	public readonly vertices: number[] = [];
 	public readonly normals: number[] = [];
 	public readonly uvs: number[] = [];
 
-	constructor(name: string) {
+	public static claim(name: string): ParserState {
+		return ParserState.POOL.get().set(name);
+	}
 
-		this.object = {
-			name,
-			geometry: {
-				vertices: [],
-				normals: [],
-				uvs: [],
-			},
-			smooth: true,
-		};
+	public static release(...states: ParserState[]) {
+		for (const state of states) {
+			ParserState.POOL.release(state);
+		}
+	}
+
+	public set(name: string): this {
+		this.object = ParserObject.claim(name);
+		return this;
+	}
+
+	public static reset(state: ParserState): void {
+		state.vertices.length = 0;
+		state.normals.length = 0;
+		state.uvs.length = 0;
+		ParserObject.release(state.object);
 	}
 
 	public addFace(a: number, b: number, c: number, ua: number, ub: number, uc: number, na: number, nb: number, nc: number) {
@@ -142,7 +157,6 @@ class ParserState {
 			ib = this.parseUVIndex(ub, uvLen);
 			ic = this.parseUVIndex(uc, uvLen);
 			this.addUV(ia, ib, ic);
-
 		}
 
 		if (na !== undefined) {
@@ -195,14 +209,84 @@ class ParserState {
 	}
 }
 
-interface ParserObject {
-	name: string;
-	geometry: {
-		vertices: number[];
-		normals: number[];
-		uvs: number[];
+class ParserObject {
+	public static readonly POOL = new Pool(ParserObject);
+	public name!: string;
+	public geometry: { [key: string]: number[] } = {
+		vertices: [],
+		normals: [],
+		uvs: [],
 	};
-	smooth: boolean;
+	public smooth: boolean = false;
+
+	public static claim(name: string): ParserObject {
+		return ParserObject.POOL.get().set(name);
+	}
+
+	public static release(...states: ParserObject[]) {
+		for (const state of states) {
+			ParserObject.POOL.release(state);
+		}
+	}
+
+	public static reset(po: ParserObject): void {
+		po.geometry.vertices.length = 0;
+		po.geometry.normals.length = 0;
+		po.geometry.uvs.length = 0;
+		po.smooth = false;
+	}
+
+	public set(name: string): this {
+		this.name = name;
+		return this;
+	}
+}
+
+export function releaseGeometry(geometry: BufferGeometry) {
+	for (const attrName of Object.keys(geometry.attributes)) {
+		RecyclableFloat32BufferAttribute.release(geometry.attributes[attrName] as any);
+		delete geometry.attributes[attrName];
+	}
+	ThreeRenderApi.POOL.BufferGeometry.release(geometry);
+}
+
+class RecyclableFloat32BufferAttribute extends Float32BufferAttribute {
+
+	public static readonly POOL = new Pool(RecyclableFloat32BufferAttribute);
+	private static readonly ARR = new Float32Array();
+
+	public static claim(array: number[], itemSize: number, normalized?: boolean): RecyclableFloat32BufferAttribute {
+		return RecyclableFloat32BufferAttribute.POOL.get().set(array, itemSize, normalized);
+	}
+
+	public static release(...bas: RecyclableFloat32BufferAttribute[]) {
+		for (const ba of bas) {
+			RecyclableFloat32BufferAttribute.POOL.release(ba);
+		}
+	}
+
+	public set(array: number[], itemSize: number, normalized?: boolean): this {
+
+		if (this.array.length === array.length) {
+			(this.array as any).set(array);
+		} else {
+			this.array = new Float32Array(array);
+		}
+		this.itemSize = itemSize;
+		this.count = array.length / itemSize;
+		this.normalized = normalized === true;
+
+		this.dynamic = false;
+		this.updateRange.offset = 0;
+		this.updateRange.count = -1;
+
+		this.version = 0;
+		return this;
+	}
+
+	constructor() {
+		super(RecyclableFloat32BufferAttribute.ARR, 3);
+	}
 }
 
 /* istanbul ignore next: used for debugging */

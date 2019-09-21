@@ -27,7 +27,7 @@ import { Table, TableGenerateOptions } from '../../vpt/table/table';
 import { IRenderApi, MeshConvertOptions } from '../irender-api';
 import { ThreeConverter } from './three-converter';
 import { ThreeLightMeshGenerator } from './three-light-mesh-generator';
-import { ThreeMeshGenerator } from './three-mesh-generator';
+import { releaseGeometry, ThreeMeshGenerator } from './three-mesh-generator';
 import { ThreePlayfieldMeshGenerator } from './three-playfield-mesh-generator';
 
 export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, PointLight> {
@@ -36,12 +36,14 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 
 	public static POOL = {
 		Matrix4: new Pool<Matrix4>(Matrix4),
+		BufferGeometry: new Pool<BufferGeometry>(BufferGeometry),
 	};
 
 	private readonly converter: ThreeConverter;
 	private readonly meshConvertOpts: MeshConvertOptions;
 	private readonly playfieldGenerator: ThreePlayfieldMeshGenerator;
 	private readonly lightGenerator: ThreeLightMeshGenerator;
+	private readonly meshGenerator = new ThreeMeshGenerator();
 
 	constructor(opts?: MeshConvertOptions) {
 		this.meshConvertOpts = opts || {
@@ -117,9 +119,8 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		if (!obj) {
 			return;
 		}
-		const generator = new ThreeMeshGenerator(mesh);
 		const destGeo = (obj as any).geometry;
-		const srcGeo = generator.convertToBufferGeometry();
+		const srcGeo = this.meshGenerator.convertToBufferGeometry(mesh);
 
 		if (srcGeo.attributes.position.array.length !== destGeo.attributes.position.array.length) {
 			throw new Error(`Trying to apply geometry of ${srcGeo.attributes.position.array.length} positions to ${destGeo.attributes.position.array.length} positions.`);
@@ -128,6 +129,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 			destGeo.attributes.position.array[i] = srcGeo.attributes.position.array[i];
 		}
 		destGeo.attributes.position.needsUpdate = true;
+		releaseGeometry(srcGeo);
 	}
 
 	public async createObjectFromRenderable(renderable: IRenderable, table: Table, opts: TableGenerateOptions): Promise<Group> {
