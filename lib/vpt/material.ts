@@ -171,7 +171,7 @@ export class SavePhysicsMaterial {
 
 	public static size = 48;
 
-	public szName: string;
+	public name: string;
 	public elasticity: number;
 	public elasticityFallOff: number;
 	public friction: number;
@@ -179,7 +179,7 @@ export class SavePhysicsMaterial {
 
 	constructor(buffer: Buffer, i = 0) {
 		const offset = i * SavePhysicsMaterial.size;
-		this.szName = BiffParser.parseNullTerminatedString(buffer.slice(offset, offset + 32));
+		this.name = BiffParser.parseNullTerminatedString(buffer.slice(offset, offset + 32));
 		this.elasticity = buffer.readFloatLE(offset + 32);
 		this.elasticityFallOff = buffer.readFloatLE(offset + 36);
 		this.friction = buffer.readFloatLE(offset + 40);
