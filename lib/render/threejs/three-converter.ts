@@ -34,6 +34,7 @@ import { Table, TableGenerateOptions } from '../../vpt/table/table';
 import { Texture } from '../../vpt/texture';
 import { IRenderApi, ITextureLoader, MeshConvertOptions } from '../irender-api';
 import { ThreeMeshGenerator } from './three-mesh-generator';
+import { ThreeRenderApi } from './three-render-api';
 
 export class ThreeConverter {
 
@@ -78,7 +79,10 @@ export class ThreeConverter {
 		const mesh = new ThreeMesh(geometry, material);
 		mesh.name = (obj.geometry || obj.mesh!).name;
 		mesh.matrixAutoUpdate = false;
-
+		if (ThreeRenderApi.SHADOWS) {
+			mesh.castShadow = true;
+			mesh.receiveShadow = true;
+		}
 		return mesh;
 	}
 

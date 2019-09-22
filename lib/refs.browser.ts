@@ -54,6 +54,7 @@ export { Shape } from 'three/src/extras/core/Shape';
 export { SpotLight } from 'three/src/lights/SpotLight';
 export { Texture } from 'three/src/textures/Texture';
 export { TextureLoader } from 'three/src/loaders/TextureLoader';
+export { PointLightHelper } from 'three/src/helpers/PointLightHelper';
 export { Vector2 } from 'three/src/math/Vector2';
 export { Vector3 } from 'three/src/math/Vector3';
 export { ClampToEdgeWrapping, DoubleSide, FloatType, InterpolateDiscrete, InterpolateLinear, LinearFilter,

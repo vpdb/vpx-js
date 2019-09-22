@@ -19,7 +19,7 @@
 
 import { IRenderable } from '../../game/irenderable';
 import { Matrix3D } from '../../math/matrix3d';
-import { BufferGeometry, Group, Matrix4, Object3D, PointLight } from '../../refs.node';
+import { BufferGeometry, Group, Matrix4, Object3D, PointLight, Vector2 } from '../../refs.node';
 import { Pool } from '../../util/object-pool';
 import { LightData } from '../../vpt/light/light-data';
 import { Mesh } from '../../vpt/mesh';
@@ -33,6 +33,7 @@ import { ThreePlayfieldMeshGenerator } from './three-playfield-mesh-generator';
 export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, PointLight> {
 
 	public static readonly SCALE = 0.05;
+	public static readonly SHADOWS = true;
 
 	public static POOL = {
 		Matrix4: new Pool<Matrix4>(Matrix4),
@@ -71,8 +72,15 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 
 	public createPointLight(lightData: LightData): PointLight {
 		const light = new PointLight(lightData.color, lightData.intensity, lightData.falloff * ThreeRenderApi.SCALE, 2);
-		light.name = 'light:' + lightData.getName();
-		light.position.set(lightData.vCenter.x, lightData.vCenter.y, -17);
+		light.name = `light:${lightData.getName()}`;
+		light.updateMatrixWorld();
+		light.position.set(lightData.vCenter.x, lightData.vCenter.y, -10);
+		if (ThreeRenderApi.SHADOWS) {
+			light.castShadow = true;
+			light.shadow.bias = -0.001;
+			light.shadow.radius = 12;
+			light.shadow.mapSize = new Vector2(512, 512);
+		}
 		return light;
 	}
 

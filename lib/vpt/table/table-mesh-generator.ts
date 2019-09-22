@@ -18,6 +18,7 @@
  */
 
 /* tslint:disable:no-bitwise */
+import { PointLightHelper } from 'three';
 import { IRenderable } from '../../game/irenderable';
 import { IRenderApi } from '../../render/irender-api';
 import { Bumper } from '../bumper/bumper';
@@ -76,10 +77,11 @@ export class TableMeshGenerator {
 		if (opts.exportLightBulbLights) {
 			const lightGroup = renderApi.createParentNode('lights');
 			for (const lightInfo of Object.values(this.table.lights).filter(l => l.isBulbLight())) {
-				const light = renderApi.createPointLight(lightInfo.data);
-				const itemGroup = renderApi.createParentNode(lightInfo.getName());
-				renderApi.addChildToParent(itemGroup, light);
-				renderApi.addChildToParent(lightGroup, itemGroup);
+				const pointLight = renderApi.createPointLight(lightInfo.data);
+				renderApi.addChildToParent(lightGroup, pointLight);
+
+				// FIXME dunno why TF this is necessary to get any light at all
+				renderApi.addChildToParent(lightGroup, new PointLightHelper(pointLight as any, 10, 0xffffff) as any);
 			}
 			renderApi.addChildToParent(tableNode, lightGroup);
 		}

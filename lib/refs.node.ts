@@ -30,7 +30,7 @@ export {
 	PointLight, Group, MeshStandardMaterial, Face3, Matrix3, Vector2, Path, Shape, ExtrudeBufferGeometry,
 	Float32BufferAttribute, Line, RGBAFormat, UnsignedByteType, TextureLoader, DataTexture, FloatType, SpotLight,
 	LoadingManager, DataTextureLoader, TextureDataType, DefaultLoadingManager, HalfFloatType, LinearEncoding,
-	RGBEEncoding, RGBEFormat, RGBFormat,
+	RGBEEncoding, RGBEFormat, RGBFormat, PointLightHelper,
 } from 'three';
 
 /*
