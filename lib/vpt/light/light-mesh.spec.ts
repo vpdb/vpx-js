@@ -61,11 +61,11 @@ describe('The VPinball lights generator', () => {
 	});
 
 	it('should not generate a light with no bulb mesh', async () => {
-		three.expectNoObject(gltf, 'lights', 'NoBulb');
+		three.expectNoObject(gltf, 'lights', 'lightNoBulb');
 	});
 
 	it('should generate a light with default parameters', async () => {
-		const light = three.find<SpotLight>(gltf, 'lights', 'StaticBulb', 'lightStaticBulb');
+		const light = three.find<SpotLight>(gltf, 'lights', 'lightStaticBulb');
 		expect(light.decay).to.equal(2);
 		expect(light.intensity).to.equal(1);
 		expect(light.distance).to.equal(scale * 50);
@@ -75,7 +75,7 @@ describe('The VPinball lights generator', () => {
 	});
 
 	it('should generate a light with custom parameters', async () => {
-		const light = three.find<SpotLight>(gltf, 'lights', 'CustomParams', 'lightCustomParams');
+		const light = three.find<SpotLight>(gltf, 'lights', 'lightCustomParams');
 		expect(light.decay).to.equal(2);
 		expect(Math.round(light.intensity * 1000) / 1000).to.equal(5.2);
 		expect(Math.round(light.distance * 1000) / 1000).to.equal(scale * 64.1);
