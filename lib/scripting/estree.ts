@@ -18,6 +18,7 @@
  */
 
 import {
+	ArrayExpression,
 	ArrowFunctionExpression,
 	AssignmentExpression,
 	AssignmentOperator,
@@ -115,6 +116,13 @@ export function variableDeclaration(kind: 'var' | 'let' | 'const', declarations:
 
 export function arrowFunctionExpressionBlock(body: Statement[], params: Pattern[] = []): ArrowFunctionExpression {
 	return arrowFunctionExpression(false, blockStatement(body), params);
+}
+
+export function arrayExpression(elements: Expression[] | SpreadElement[]): ArrayExpression {
+	return {
+		type: 'ArrayExpression',
+		elements,
+	};
 }
 
 export function arrowFunctionExpression(expression: boolean, body: BlockStatement | Expression, params: Pattern[] = []): ArrowFunctionExpression {
