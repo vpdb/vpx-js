@@ -115,14 +115,14 @@ export class Spinner extends Item<SpinnerData> implements IRenderable, IPlayable
 	}
 
 	/* istanbul ignore next */
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, player: Player): void {
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: SpinnerState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
 
 		const posZ = this.meshGenerator.getZ(table);
 		const matTransToOrigin = Matrix3D.claim().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, posZ);
 		const matRotateToOrigin = Matrix3D.claim().rotateZMatrix(degToRad(-this.data.rotation));
 		const matTransFromOrigin = Matrix3D.claim().setTranslation(this.data.vCenter.x, this.data.vCenter.y, -posZ);
 		const matRotateFromOrigin = Matrix3D.claim().rotateZMatrix(degToRad(this.data.rotation));
-		const matRotateX = Matrix3D.claim().rotateXMatrix(this.state.angle - degToRad(this.data.angleMin));
+		const matRotateX = Matrix3D.claim().rotateXMatrix(state.angle - degToRad(this.data.angleMin));
 
 		const matrix = matTransToOrigin
 			.multiply(matRotateToOrigin)

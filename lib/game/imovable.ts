@@ -30,7 +30,7 @@ export interface IMovable<STATE extends ItemState> extends IPlayable {
 
 	getState(): STATE;
 
-	applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, player: Player, oldState: STATE): void;
+	applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: STATE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: STATE): void;
 }
 
 export function isMovable(arg: any): arg is IMovable<ItemState> {

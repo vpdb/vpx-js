@@ -139,8 +139,8 @@ export class Plunger extends Item<PlungerData> implements IRenderable, IPlayable
 		}
 	}
 
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, player: Player): void {
-		const mesh = this.meshGenerator.generateMeshes(this.state.frame, table);
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: PlungerState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
+		const mesh = this.meshGenerator.generateMeshes(state.frame, table);
 		const rodObj = renderApi.findInGroup(obj, 'rod');
 		if (rodObj) {
 			renderApi.applyMeshToNode(mesh.rod!, rodObj);

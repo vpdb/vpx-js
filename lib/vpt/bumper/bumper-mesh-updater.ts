@@ -38,34 +38,34 @@ export class BumperMeshUpdater {
 		this.meshGenerator = meshGenerator;
 	}
 
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, player: Player, oldState: BumperState) {
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: BumperState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: BumperState) {
 
-		if (this.data.isRingVisible && this.state.ringOffset !== oldState.ringOffset) {
-			this.applyRingState(obj, renderApi);
+		if (this.data.isRingVisible && state.ringOffset !== oldState.ringOffset) {
+			this.applyRingState(obj, state, renderApi);
 		}
-		if (this.data.isSkirtVisible && (this.state.skirtRotX !== oldState.skirtRotX || this.state.skirtRotY !== oldState.skirtRotY)) {
-			this.applySkirtState(obj, renderApi, table);
+		if (this.data.isSkirtVisible && (state.skirtRotX !== oldState.skirtRotX || state.skirtRotY !== oldState.skirtRotY)) {
+			this.applySkirtState(obj, state, renderApi, table);
 		}
 	}
 
-	private applyRingState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>) {
+	private applyRingState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: BumperState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>) {
 		const ringObj = renderApi.findInGroup(obj, `bumper-ring-${this.data.getName()}`);
 		if (ringObj) {
-			const matrix = Matrix3D.claim().setTranslation(0, 0, -this.state.ringOffset);
+			const matrix = Matrix3D.claim().setTranslation(0, 0, -state.ringOffset);
 			renderApi.applyMatrixToNode(matrix, ringObj);
 			Matrix3D.release(matrix);
 		}
 	}
 
 	/* istanbul ignore next: this looks weird. test when sure it's the correct "animation" */
-	private applySkirtState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table) {
+	private applySkirtState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: BumperState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table) {
 		const skirtObj = renderApi.findInGroup(obj, `bumper-socket-${this.data.getName()}`);
 		if (skirtObj) {
 			const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
 			const matToOrigin = Matrix3D.claim().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, -height);
 			const matFromOrigin = Matrix3D.claim().setTranslation(this.data.vCenter.x, this.data.vCenter.y, height);
-			const matRotX = Matrix3D.claim().rotateXMatrix(degToRad(this.state.skirtRotX));
-			const matRotY = Matrix3D.claim().rotateYMatrix(degToRad(this.state.skirtRotY));
+			const matRotX = Matrix3D.claim().rotateXMatrix(degToRad(state.skirtRotX));
+			const matRotY = Matrix3D.claim().rotateYMatrix(degToRad(state.skirtRotY));
 
 			const matrix = matToOrigin.multiply(matRotY).multiply(matRotX).multiply(matFromOrigin);
 

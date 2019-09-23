@@ -128,13 +128,13 @@ export class HitTarget extends Item<HitTargetData> implements IRenderable, IHitt
 		return this.animation!;
 	}
 
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, player: Player): void {
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: HitTargetState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
 		const matTransToOrigin = Matrix3D.claim().setTranslation(-this.data.vPosition.x, -this.data.vPosition.y, -this.data.vPosition.z);
 		const matRotateToOrigin = Matrix3D.claim().rotateZMatrix(degToRad(-this.data.rotZ));
 		const matTransFromOrigin = Matrix3D.claim().setTranslation(this.data.vPosition.x, this.data.vPosition.y, this.data.vPosition.z);
 		const matRotateFromOrigin = Matrix3D.claim().rotateZMatrix(degToRad(this.data.rotZ));
-		const matRotateX = Matrix3D.claim().rotateXMatrix(degToRad(this.state.xRotation));
-		const matTranslateZ = Matrix3D.claim().setTranslation(0, 0, -this.state.zOffset);
+		const matRotateX = Matrix3D.claim().rotateXMatrix(degToRad(state.xRotation));
+		const matTranslateZ = Matrix3D.claim().setTranslation(0, 0, -state.zOffset);
 		const matrix = matTransToOrigin
 			.multiply(matRotateToOrigin)
 			.multiply(matRotateX)

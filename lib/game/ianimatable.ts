@@ -38,7 +38,7 @@ export interface IAnimatable<STATE> extends IPlayable {
 
 	getState(): STATE;
 
-	applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, player: Player, oldState: STATE): void;
+	applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: STATE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: STATE): void;
 }
 
 export interface IAnimation {

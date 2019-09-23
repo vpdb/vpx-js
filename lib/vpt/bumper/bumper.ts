@@ -80,8 +80,8 @@ export class Bumper extends Item<BumperData> implements IRenderable, IHittable, 
 		this.hit = new BumperHit(this.data, this.state, this.animation, this.events, height);
 	}
 
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, player: Player, oldState: BumperState): void {
-		this.meshUpdater.applyState(obj, renderApi, table, player, oldState);
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: BumperState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: BumperState): void {
+		this.meshUpdater.applyState(obj, state, renderApi, table, oldState);
 	}
 
 	public getHitShapes(): HitObject[] {

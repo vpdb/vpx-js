@@ -24,6 +24,7 @@ import { Ball } from '../vpt/ball/ball';
 import { ItemState } from '../vpt/item-state';
 import { Table } from '../vpt/table/table';
 import { PlayerPhysics } from './player-physics';
+import { FlipperState } from '../vpt/flipper/flipper-state';
 
 export class Player extends EventEmitter {
 
