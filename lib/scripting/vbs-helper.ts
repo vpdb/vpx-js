@@ -19,7 +19,7 @@
 
 export class VBSHelper {
 	/**
-	 * Recursive function to create a multidimensional array.
+	 * Recursive function to create a multi-dimension array.
 	 */
 
 	public dim(dimensions: number[], position: number = 0): any[] {
@@ -28,6 +28,46 @@ export class VBSHelper {
 		if (++position < dimensions.length) {
 			for (let index = 0; index < dimension; index++) {
 				array[index] = this.dim(dimensions, position);
+			}
+		}
+		return array;
+	}
+
+	/**
+	 * Function to re-dimension an array and preserve values if requested.
+	 */
+
+	public redim(array: any[], dimensions: number[], preserve: boolean = false): any[] {
+		let tmpArray = array;
+		for (let index = 0; index < dimensions.length - 1; index++) {
+			const dimension = dimensions[index] + 1;
+			if (tmpArray.length !== dimension) {
+				throw new Error('Only last dimension can be changed');
+			}
+			tmpArray = tmpArray[0];
+		}
+		if (!preserve) {
+			return this.dim(dimensions);
+		}
+		return this.redim_resize(array, dimensions);
+	}
+
+	/**
+	 * Recursive helper function to resize a multi-dimension array.
+	 */
+
+	private redim_resize(array: any[], dimensions: number[], position: number = 0): any[] {
+		const dimension = dimensions[position] + 1;
+		if (position === dimensions.length - 1) {
+			if (array.length > dimension) {
+				array.splice(-(array.length - dimension));
+			} else if (array.length < dimension) {
+				array = array.concat(new Array(dimension - array.length).fill(undefined));
+			}
+		}
+		if (++position < dimensions.length) {
+			for (let index = 0; index < dimension; index++) {
+				array[index] = this.redim_resize(array[index], dimensions, position);
 			}
 		}
 		return array;
