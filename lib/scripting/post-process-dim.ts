@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Comment, Expression, Identifier, VariableDeclaration, VariableDeclarator } from 'estree';
+import { ArrayExpression, Comment, Expression, Identifier, VariableDeclaration, VariableDeclarator } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
@@ -31,24 +31,13 @@ export function stmt(result: [Token, null, VariableDeclarator, VariableDeclarato
 
 export function varName(result: [Identifier, null, Token, null, Expression[], null, Token]): VariableDeclarator {
 	const name = result[0];
-	const expressions = result[4];
-	let init: Expression | null = null;
-	expressions.reverse().forEach(expression => {
-		const callExpression = estree.callExpression(
-			estree.memberExpression(
-				estree.callExpression(estree.identifier('Array'), [
-					estree.binaryExpression('+', expression, estree.literal(1)),
-				]),
-				estree.identifier('fill'),
-			),
-			[],
-		);
-		init =
-			init == null
-				? callExpression
-				: estree.callExpression(estree.memberExpression(callExpression, estree.identifier('map')), [
-						estree.arrowFunctionExpression(true, init),
-				  ]);
-	});
-	return estree.variableDeclarator(name, init);
+	const elements = result[4] || [];
+	return estree.variableDeclarator(
+		name,
+		elements.length > 0
+			? estree.callExpression(estree.memberExpression(estree.identifier('vbsHelper'), estree.identifier('dim')), [
+					estree.arrayExpression(elements),
+			  ])
+			: null,
+	);
 }
