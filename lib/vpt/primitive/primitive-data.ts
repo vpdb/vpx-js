@@ -31,6 +31,7 @@ export class PrimitiveData extends ItemData implements IPhysicalData {
 	public compressedAnimationVertices?: number;
 	public compressedVertices?: number;
 	public compressedIndices?: number;
+	private readonly skipMeshes: boolean;
 
 	/**
 	 * The primitive mesh. This is empty if {@link PrimitiveData.use3DMesh}
@@ -83,15 +84,16 @@ export class PrimitiveData extends ItemData implements IPhysicalData {
 	public meshFileName?: string;
 	public depthBias: number = 0;
 
-	public static async fromStorage(storage: Storage, itemName: string): Promise<PrimitiveData> {
-		const primitiveItem = new PrimitiveData(itemName);
+	public static async fromStorage(storage: Storage, itemName: string, skipMeshes: boolean): Promise<PrimitiveData> {
+		const primitiveItem = new PrimitiveData(itemName, skipMeshes);
 		await storage.streamFiltered(itemName, 4, BiffParser
 			.stream((buffer, tag, offset, len) => primitiveItem.fromTag(buffer, tag, offset, len, storage, itemName)));
 		return primitiveItem;
 	}
 
-	private constructor(itemName: string) {
+	private constructor(itemName: string, skipMeshes: boolean) {
 		super(itemName);
+		this.skipMeshes = skipMeshes;
 	}
 
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number, storage: Storage, itemName: string): Promise<number> {
@@ -140,23 +142,35 @@ export class PrimitiveData extends ItemData implements IPhysicalData {
 				break;
 			case 'M3DX': this.mesh.vertices = this.getVertices(buffer, this.numVertices); break;
 			case 'M3AY': this.compressedAnimationVertices = this.getInt(buffer); break;
-			case 'M3AX': this.mesh.animationFrames.push(await this.getAnimatedVertices(await BiffParser.decompress(await this.getData(storage, itemName, offset, len)), this.numVertices)); break;
+			case 'M3AX':
+				if (!this.skipMeshes) {
+					this.mesh.animationFrames.push(await this.getAnimatedVertices(await BiffParser.decompress(await this.getData(storage, itemName, offset, len)), this.numVertices));
+				}
+				break;
 			case 'M3CY': this.compressedVertices = this.getInt(buffer); break;
-			case 'M3CX': this.mesh.vertices = this.getVertices(await BiffParser.decompress(await this.getData(storage, itemName, offset, len)), this.numVertices); break;
+			case 'M3CX':
+				if (!this.skipMeshes) {
+					this.mesh.vertices = this.getVertices(await BiffParser.decompress(await this.getData(storage, itemName, offset, len)), this.numVertices);
+				}
+				break;
 			case 'M3FN': this.numIndices = this.getInt(buffer); break;
 			case 'M3DI':
-				if (this.numVertices > 65535) {
-					this.mesh.indices = this.getUnsignedInt4s(buffer, this.numIndices);
-				} else {
-					this.mesh.indices = this.getUnsignedInt2s(buffer, this.numIndices);
+				if (!this.skipMeshes) {
+					if (this.numVertices > 65535) {
+						this.mesh.indices = this.getUnsignedInt4s(buffer, this.numIndices);
+					} else {
+						this.mesh.indices = this.getUnsignedInt2s(buffer, this.numIndices);
+					}
 				}
 				break;
 			case 'M3CJ': this.compressedIndices = this.getInt(buffer); break;
 			case 'M3CI':
-				if (this.numVertices > 65535) {
-					this.mesh.indices = this.getUnsignedInt4s(await BiffParser.decompress(await this.getData(storage, itemName, offset, len)), this.numIndices);
-				} else {
-					this.mesh.indices = this.getUnsignedInt2s(await BiffParser.decompress(await this.getData(storage, itemName, offset, len)), this.numIndices);
+				if (!this.skipMeshes) {
+					if (this.numVertices > 65535) {
+						this.mesh.indices = this.getUnsignedInt4s(await BiffParser.decompress(await this.getData(storage, itemName, offset, len)), this.numIndices);
+					} else {
+						this.mesh.indices = this.getUnsignedInt2s(await BiffParser.decompress(await this.getData(storage, itemName, offset, len)), this.numIndices);
+					}
 				}
 				break;
 			case 'PIDB': this.depthBias = this.getFloat(buffer); break;

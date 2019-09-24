@@ -431,6 +431,11 @@ export interface TableLoadOptions {
 	 * If set, table script is read
 	 */
 	loadTableScript?: boolean;
+
+	/**
+	 * If set, skips reading primitive mesh data.
+	 */
+	skipMeshes?: boolean;
 }
 
 export interface TableGenerateOptions {

@@ -150,7 +150,7 @@ export class TableLoader {
 			}
 
 			case ItemData.TypePrimitive: {
-				const item = await Primitive.fromStorage(storage, itemName);
+				const item = await Primitive.fromStorage(storage, itemName, opts.skipMeshes === true);
 				loadedTable.primitives!.push(item);
 				return item;
 			}

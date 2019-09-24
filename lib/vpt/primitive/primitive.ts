@@ -47,8 +47,8 @@ export class Primitive extends Item<PrimitiveData> implements IRenderable, IHitt
 	private api?: PrimitiveApi;
 	private hits?: HitObject[];
 
-	public static async fromStorage(storage: Storage, itemName: string): Promise<Primitive> {
-		const data = await PrimitiveData.fromStorage(storage, itemName);
+	public static async fromStorage(storage: Storage, itemName: string, loadMeshes: boolean): Promise<Primitive> {
+		const data = await PrimitiveData.fromStorage(storage, itemName, loadMeshes);
 		return new Primitive(data);
 	}
 
