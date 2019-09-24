@@ -43,6 +43,7 @@ import {
 	Pattern,
 	Program,
 	ReturnStatement,
+	SequenceExpression,
 	SpreadElement,
 	Statement,
 	Super,
@@ -182,23 +183,19 @@ export function memberExpression(object: Expression | Super, property: Expressio
 	};
 }
 
+export function sequenceExpression(expressions: Expression[]): SequenceExpression {
+	return {
+		type: 'SequenceExpression',
+		expressions,
+	};
+}
+
 export function unaryExpression(operator: UnaryOperator, argument: Expression): UnaryExpression {
 	return {
 		type: 'UnaryExpression',
 		operator,
 		prefix: true,
 		argument,
-	};
-}
-
-export function assignmentExpressionStatement(
-	left: Pattern | MemberExpression,
-	operator: AssignmentOperator,
-	right: Expression,
-): ExpressionStatement {
-	return {
-		type: 'ExpressionStatement',
-		expression: assignmentExpression(left, operator, right),
 	};
 }
 
@@ -215,13 +212,6 @@ export function breakStatement(): BreakStatement {
 	};
 }
 
-export function callExpressionStatement(callee: Expression, args: Expression[] | SpreadElement[]): ExpressionStatement {
-	return {
-		type: 'ExpressionStatement',
-		expression: callExpression(callee, args),
-	};
-}
-
 export function doWhileStatement(body: Statement, test: Expression, leadingComments: Comment[], trailingComments: Comment[]): DoWhileStatement {
 	return {
 		type: 'DoWhileStatement',
@@ -232,14 +222,23 @@ export function doWhileStatement(body: Statement, test: Expression, leadingComme
 	};
 }
 
-export function emptyStatement(trailingComments: Comment[]): EmptyStatement {
+export function emptyStatement(trailingComments: Comment[] = []): EmptyStatement {
 	return {
 		type: 'EmptyStatement',
 		trailingComments,
 	};
 }
 
-export function forOfStatement(left: VariableDeclaration | Pattern, right: Expression, body: Statement, leadingComments: Comment[], trailingComments: Comment[]): ForOfStatement {
+export function expressionStatement(expression: Expression, leadingComments: Comment[] = [], trailingComments: Comment[] = []): ExpressionStatement {
+	return {
+		type: 'ExpressionStatement',
+		expression,
+		leadingComments,
+		trailingComments,
+	};
+}
+
+export function forOfStatement(left: VariableDeclaration | Pattern, right: Expression, body: Statement, leadingComments: Comment[] = [], trailingComments: Comment[] = []): ForOfStatement {
 	return {
 		type: 'ForOfStatement',
 		left,
@@ -250,7 +249,7 @@ export function forOfStatement(left: VariableDeclaration | Pattern, right: Expre
 	};
 }
 
-export function forStatement(init: Expression | null, test: Expression | null, update: Expression | null, body: Statement, leadingComments: Comment[], trailingComments: Comment[]): ForStatement {
+export function forStatement(init: Expression | null, test: Expression | null, update: Expression | null, body: Statement, leadingComments: Comment[] = [], trailingComments: Comment[] = []): ForStatement {
 	return {
 		type: 'ForStatement',
 		init,
@@ -262,7 +261,7 @@ export function forStatement(init: Expression | null, test: Expression | null, u
 	};
 }
 
-export function ifStatement(test: Expression, consequent: Statement, alternate: Statement | null, leadingComments: Comment[], trailingComments: Comment[]): IfStatement {
+export function ifStatement(test: Expression, consequent: Statement, alternate: Statement | null, leadingComments: Comment[] = [], trailingComments: Comment[] = []): IfStatement {
 	return {
 		type: 'IfStatement',
 		test,
@@ -280,7 +279,7 @@ export function returnStatement(argument: Expression | null): ReturnStatement {
 	};
 }
 
-export function switchStatement(discriminant: Expression, cases: SwitchCase[], leadingComments: Comment[], trailingComments: Comment[]): SwitchStatement {
+export function switchStatement(discriminant: Expression, cases: SwitchCase[], leadingComments: Comment[] = [], trailingComments: Comment[] = []): SwitchStatement {
 	return {
 		type: 'SwitchStatement',
 		discriminant,
@@ -298,7 +297,7 @@ export function switchCase(test: Expression | null, consequent: Statement[]): Sw
 	};
 }
 
-export function whileStatement(test: Expression, body: Statement, leadingComments: Comment[], trailingComments: Comment[]): WhileStatement {
+export function whileStatement(test: Expression, body: Statement, leadingComments: Comment[] = [], trailingComments: Comment[] = []): WhileStatement {
 	return {
 		type: 'WhileStatement',
 		test,

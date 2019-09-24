@@ -94,7 +94,7 @@ export function methodArgList2(result: [Token, null, Token]): Identifier[] {
 	return [];
 }
 
-export function commaExprList1(result: [Token, null, Expression]) {
+export function commaExprList1(result: [Token, null, Expression, null]) {
 	const expr = result[2];
 	return expr;
 }
@@ -110,13 +110,13 @@ export function leftExpr1(result: [Identifier, null, Expression[][]]) {
 	return estree.callExpression(identifier, expressions);
 }
 
-export function indexOrParams1(result: [Token, null, Expression, null, Expression[], null, Token]) {
+export function indexOrParams1(result: [Token, null, Expression, null, Expression[], Token]) {
 	const param = result[2];
 	const otherParams = result[4];
 	return [param, ...otherParams];
 }
 
-export function indexOrParams2(result: [Token, null, Expression[], null, Token]) {
+export function indexOrParams2(result: [Token, null, Expression[], Token]) {
 	const otherParams = result[2];
 	return [estree.literal(null), ...otherParams];
 }
