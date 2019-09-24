@@ -4,6 +4,7 @@
 const estree = require('./estree');
 
 const ppDim = require('./post-process-dim');
+const ppRedim = require('./post-process-redim');
 const ppConst = require('./post-process-const');
 const ppAssign = require('./post-process-assign');
 const ppSubCall = require('./post-process-subcall');
@@ -39,6 +40,7 @@ const lexer = moo.compile({
             'kw_byref': 'byref',
             'kw_set': 'set',
             'kw_dim': 'dim',
+            'kw_redim': 'redim',
             'kw_const': 'const',
             'kw_select': 'select',
             'kw_true': 'true',
@@ -69,6 +71,7 @@ const lexer = moo.compile({
             'kw_public': 'public',
             'kw_default': 'default',
             'kw_private': 'private',
+            'kw_preserve': 'preserve',
             'kw_nothing': 'nothing',
             'kw_null': 'null',
             'kw_empty': 'empty',
@@ -116,8 +119,7 @@ const lexer = moo.compile({
 # Rules
 #===============================
 
-Program              -> NL:? GlobalStmt:*                                                                                                 {% ppHelpers.program %}
-                      | _ GlobalStmt:*                                                                                                    {% ppHelpers.program %}
+Program              -> _ GlobalStmt:*                                                                                                    {% ppHelpers.program %}
 
 #===============================
 # Rules : Declarations
@@ -181,6 +183,7 @@ MethodStmt           -> ConstDecl                                               
                       | BlockStmt                                                                                                         {% id %}
 
 BlockStmt            -> RemStmt                                                                                                           {% id %}
+                      | RedimStmt                                                                                                         {% id %}
                       | VarDecl                                                                                                           {% id %}
                       | IfStmt                                                                                                            {% id %}
                       | WithStmt                                                                                                          {% id %}
@@ -214,8 +217,8 @@ SubCallStmt          -> QualifiedID _ SubSafeExpr:? _ CommaExprList:*           
 LeftExpr             -> QualifiedID _ IndexOrParams:+                                                                                     {% ppHelpers.leftExpr1 %}
                       | QualifiedID                                                                                                       {% id %}
 
-IndexOrParams        -> %paren_left _ Expr _ CommaExprList:+ _ %paren_right                                                               {% ppHelpers.indexOrParams1 %}
-                      | %paren_left _ CommaExprList:+ _ %paren_right                                                                      {% ppHelpers.indexOrParams2 %}
+IndexOrParams        -> %paren_left _ Expr _ CommaExprList:+ %paren_right                                                                 {% ppHelpers.indexOrParams1 %}
+                      | %paren_left _ CommaExprList:+ %paren_right                                                                        {% ppHelpers.indexOrParams2 %}
                       | %paren_left _ Expr _ %paren_right                                                                                 {% ppHelpers.indexOrParams3 %}
                       | %paren_left _ %paren_right                                                                                        {% ppHelpers.indexOrParams4 %}
 
@@ -225,8 +228,17 @@ QualifiedID          -> IDDot QualifiedID                                       
 
 ExtendedID           -> ID                                                                                                                {% id %}
 
-CommaExprList        -> %comma _ Expr                                                                                                     {% ppHelpers.commaExprList1 %}
+CommaExprList        -> %comma _ Expr _                                                                                                   {% ppHelpers.commaExprList1 %}
                       | %comma _                                                                                                          {% ppHelpers.commaExprList2 %}
+
+#========= Redim Statement
+
+RedimStmt            -> %kw_redim __ RedimDecl OtherRedimOpt:* NL                                                                         {% ppRedim.stmt1 %}
+                      | %kw_redim __ %kw_preserve __ RedimDecl OtherRedimOpt:* NL                                                         {% ppRedim.stmt2 %}
+
+RedimDecl            -> ExtendedID _ %paren_left _ Expr _ CommaExprList:* %paren_right                                                    {% ppRedim.redimDecl %}                   
+
+OtherRedimOpt        -> %comma _ RedimDecl                                                                                                {% data => data[2] %}
 
 #========= If Statement
 

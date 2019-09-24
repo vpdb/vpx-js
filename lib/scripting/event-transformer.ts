@@ -21,7 +21,7 @@ import { replace } from 'estraverse';
 import { FunctionDeclaration, Program } from 'estree';
 import { IScriptable } from '../game/iscriptable';
 import { Table } from '../vpt/table/table';
-import { arrowFunctionExpression, callExpressionStatement, identifier, literal, memberExpression } from './estree';
+import { arrowFunctionExpression, callExpression, expressionStatement, identifier, literal, memberExpression } from './estree';
 
 /**
  * This transforms event subs into proper JavaScript event listeners.
@@ -69,7 +69,7 @@ export class EventTransformer {
 					return node;
 				}
 
-				return callExpressionStatement(
+				return expressionStatement(callExpression(
 					memberExpression(
 						identifier(objName),
 						identifier('on'),
@@ -78,7 +78,7 @@ export class EventTransformer {
 						literal(eventName),
 						arrowFunctionExpression(false, functionNode.body, functionNode.params),
 					],
-				);
+				));
 			},
 		}) as Program;
 	}

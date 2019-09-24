@@ -25,7 +25,8 @@ export function stmt1(result: [Expression, null, Expression, null, Expression[]]
 	const callee = result[0];
 	const firstExpr = result[2] ? [result[2]] : [];
 	const otherExpr = result[4] || [];
-	return estree.callExpressionStatement(callee, [...firstExpr, ...otherExpr]);
+	const exprs = [...firstExpr, ...otherExpr];
+	return estree.expressionStatement(estree.callExpression(callee, exprs));
 }
 
 export function stmt2(
@@ -34,16 +35,17 @@ export function stmt2(
 	const callee = result[0];
 	const firstExpr = result[4] ? [result[4]] : [];
 	const otherExpr = result[8] || [];
-	return estree.callExpressionStatement(callee, [...firstExpr, ...otherExpr]);
+	const exprs = [...firstExpr, ...otherExpr];
+	return estree.expressionStatement(estree.callExpression(callee, exprs));
 }
 
 export function stmt3(result: [Expression, null, Token, null, Expression, null, Token]): ExpressionStatement {
 	const callee = result[0];
-	const firstExpr = result[4] ? [result[4]] : [];
-	return estree.callExpressionStatement(callee, [...firstExpr]);
+	const expr = result[4] ? [result[4]] : [];
+	return estree.expressionStatement(estree.callExpression(callee, [...expr]));
 }
 
 export function stmt4(result: [Expression, null, Token, null, Token]): ExpressionStatement {
 	const callee = result[0];
-	return estree.callExpressionStatement(callee, []);
+	return estree.expressionStatement(estree.callExpression(callee, []));
 }

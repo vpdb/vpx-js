@@ -24,11 +24,11 @@ import * as estree from './estree';
 export function stmt1(result: [MemberExpression, null, Token, null, Expression]): ExpressionStatement {
 	const left = result[0];
 	const right = result[4];
-	return estree.assignmentExpressionStatement(left, '=', right);
+	return estree.expressionStatement(estree.assignmentExpression(left, '=', right));
 }
 
 export function stmt2(result: [Token, null, MemberExpression, null, Token, null, Expression]): ExpressionStatement {
 	const left = result[2];
 	const right = result[6];
-	return estree.assignmentExpressionStatement(left, '=', right);
+	return estree.expressionStatement(estree.assignmentExpression(left, '=', right));
 }

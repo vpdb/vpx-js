@@ -22,7 +22,8 @@ import { Program, Statement } from 'estree';
 import { Table } from '../vpt/table/table';
 import {
 	arrowFunctionExpressionBlock,
-	assignmentExpressionStatement,
+	assignmentExpression,
+	expressionStatement,
 	identifier,
 	memberExpression,
 	program,
@@ -83,7 +84,8 @@ export class ScopeTransformer {
 			enter: node => {
 				if (node.type === 'Program') {
 					return program([
-						assignmentExpressionStatement(
+						expressionStatement(
+						assignmentExpression(
 							globalObjectName
 								? memberExpression(
 										identifier(globalObjectName),
@@ -95,7 +97,7 @@ export class ScopeTransformer {
 								node.body as Statement[],
 								[ identifier(elementObjectName) ],
 							),
-						),
+						)),
 					]);
 				}
 			},
