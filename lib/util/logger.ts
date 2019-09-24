@@ -69,4 +69,30 @@ export interface ILogger {
 	debug(format: any, ...param: any[]): void;
 }
 
+export class Progress implements IProgress {
+	private static instance: IProgress = new Progress();
+
+	public static progress(): IProgress {
+		return Progress.instance;
+	}
+
+	public static setLogger(l: IProgress) {
+		Progress.instance = l;
+	}
+
+	public start(name: string, parent: string | null, format: any, ...param: any[]): void {
+		console.debug.apply(console.log, [ `[progress:${name}] ${format}`, ...param ]);
+	}
+
+	public end(name: string): void {
+	}
+
+}
+
+export interface IProgress {
+	start(name: string, parent: string | null, format: any, ...param: any[]): void;
+	end(name: string): void;
+}
+
 export const logger = Logger.logger;
+export const progress = Progress.progress;
