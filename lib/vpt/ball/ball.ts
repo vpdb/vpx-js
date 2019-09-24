@@ -40,7 +40,7 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 	public readonly state: BallState;
 	public readonly data: BallData;
 	private readonly meshGenerator: BallMeshGenerator;
-	public readonly hit: BallHit;
+	public readonly hit!: BallHit;
 
 	// unique ID for each ball
 	public readonly id: number;
@@ -58,22 +58,26 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 		this.data = data;
 		this.state = state;
 		this.meshGenerator = new BallMeshGenerator(data);
-		this.hit = new BallHit(this, data, state, initialVelocity, tableData);
+		if (initialVelocity) {
+			this.hit = new BallHit(this, data, state, initialVelocity, tableData);
+		}
 	}
 
 	public getName(): string {
 		return `Ball${this.id}`;
 	}
 
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
-		const zHeight = !this.hit.isFrozen ? this.state.pos.z : this.state.pos.z - this.data.radius;
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: BallState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
+		const isFrozen = this.hit && this.hit.isFrozen;
+		const pos: { _x: number, _y: number, _z: number} = state.pos as any;
+		const zHeight = !isFrozen ? pos._z : pos._z - this.data.radius;
 		const orientation = Matrix3D.claim().setEach(
-			this.state.orientation.matrix[0][0], this.state.orientation.matrix[1][0], this.state.orientation.matrix[2][0], 0.0,
-			this.state.orientation.matrix[0][1], this.state.orientation.matrix[1][1], this.state.orientation.matrix[2][1], 0.0,
-			this.state.orientation.matrix[0][2], this.state.orientation.matrix[1][2], this.state.orientation.matrix[2][2], 0.0,
+			state.orientation.matrix[0][0], state.orientation.matrix[1][0], state.orientation.matrix[2][0], 0.0,
+			state.orientation.matrix[0][1], state.orientation.matrix[1][1], state.orientation.matrix[2][1], 0.0,
+			state.orientation.matrix[0][2], state.orientation.matrix[1][2], state.orientation.matrix[2][2], 0.0,
 			0, 0, 0, 1,
 		);
-		const trans = Matrix3D.claim().setTranslation(this.state.pos.x, this.state.pos.y, zHeight);
+		const trans = Matrix3D.claim().setTranslation(pos._x, pos._y, zHeight);
 		const matrix = Matrix3D.claim()
 			.setScaling(this.data.radius, this.data.radius, this.data.radius)
 			.preMultiply(orientation)
@@ -141,6 +145,7 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 		const material = new Material();
 		material.name = 'ball';
 		material.isMetal = true;
+//		material.baseColor = 0x000
 		material.roughness = 0.4;
 		return material;
 	}
