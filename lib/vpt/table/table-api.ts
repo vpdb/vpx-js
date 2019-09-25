@@ -49,8 +49,6 @@ export class TableApi extends ItemApi<TableData> {
 	}
 
 	get FileName() { return this.data.getName(); }
-	get Name() { return this.data.name; }
-	set Name(v) { this.data.name = v; }
 	get MaxSeparation() { return this.data.overwriteGlobalStereo3D ? this.data._3DmaxSeparation : this.global3DMaxSeparation; }
 	set MaxSeparation(v) { if (this.data.overwriteGlobalStereo3D) { this.data._3DmaxSeparation = v; } }
 	get ZPD() { return this.data.overwriteGlobalStereo3D ? this.data._3DZPD : this.global3DZPD; }
@@ -75,7 +73,7 @@ export class TableApi extends ItemApi<TableData> {
 	set PlayfieldMaterial(v) { this.data.szPlayfieldMaterial = v; }
 	get LightAmbient() { return this.data.lightAmbient; }
 	set LightAmbient(v) { this.data.lightAmbient = v; }
-	get Light0Emission() { return undefined; } // TODO https://github.com/vpdb/vpx-js/issues/75
+	get Light0Emission() { return 1; } // TODO https://github.com/vpdb/vpx-js/issues/75
 	set Light0Emission(v) { /* TODO https://github.com/vpdb/vpx-js/issues/75 */}
 	get LightHeight() { return this.data.lightHeight; }
 	set LightHeight(v) { this.data.lightHeight = v; }
@@ -116,8 +114,10 @@ export class TableApi extends ItemApi<TableData> {
 			this.data.userDetailLevel = this.globalDetailLevel;
 		}
 	}
-	get GlobalDayNight() { return this.data.overwriteGlobalStereo3D; }
-	set GlobalDayNight(v) {
+	get GlobalDayNight() { return this.data.overwriteGlobalDayNight; }
+	set GlobalDayNight(v) { this.data.overwriteGlobalDayNight = v; }
+	get GlobalStereo3D() { return this.data.overwriteGlobalStereo3D; }
+	set GlobalStereo3D(v) {
 		this.data.overwriteGlobalStereo3D = v;
 		if (!this.data.overwriteGlobalStereo3D) {
 			this.data._3DmaxSeparation = this.global3DMaxSeparation;
@@ -222,8 +222,8 @@ export class TableApi extends ItemApi<TableData> {
 		}
 		this.data.szEnvImage = v;
 	}
-	get YieldTime() { throw new Error('Not supported in play.'); }
-	set YieldTime(v) { throw new Error('Not supported in play.'); }
+	get YieldTime(): any { throw new Error('Not supported in play.'); }
+	set YieldTime(v: any) { throw new Error('Not supported in play.'); }
 	get EnableAntialiasing() { return this.data.useAA; }
 	set EnableAntialiasing(v) { this.data.useAA = v; }
 	get EnableSSR() { return this.data.useSSR; }
@@ -292,9 +292,20 @@ export class TableApi extends ItemApi<TableData> {
 }
 
 function dequantizeUnsignedPercent(i: number) {
+	/* originally:
+	 *
+	 * enum { N = 100 };
+	 * return precise_divide((float)i, (float)N);
+	 */
 	return Math.min(i / 100, 1);
 }
 
 function quantizeUnsignedPercent(x: number) {
-	return Math.min(x * 101, 100);
+	/* originally:
+	 *
+	 * enum { N = 100, Np1 = 101 };
+	 * assert(x >= 0.f);
+	 * return min((unsigned int)(x * (float)Np1), (unsigned int)N);
+	 */
+	return Math.min(Math.max(0, x) * 100, 100);
 }
