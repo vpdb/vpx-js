@@ -59,6 +59,9 @@ import { TableExportOptions } from './table-exporter';
 import { TableHitGenerator } from './table-hit-generator';
 import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
+import { TableApi } from './table-api';
+import { Player } from '../../game/player';
+import { EventProxy } from '../../game/event-proxy';
 
 /**
  * A Visual Pinball table.
@@ -66,12 +69,14 @@ import { TableMeshGenerator } from './table-mesh-generator';
  * This holds together all table elements of a .vpt/.vpx file. It's also
  * the entry point for parsing the file.
  */
-export class Table {
+export class Table implements IScriptable<TableApi> {
 
 	public readonly data?: TableData;
 	public readonly info?: { [key: string]: string };
 	public readonly items: { [key: string]: Item<ItemData> };
 	public readonly tableScript?: string;
+	private events?: EventProxy;
+	private api?: TableApi;
 
 	private readonly textureCache: Map<string, any> = new Map();
 
@@ -171,12 +176,26 @@ export class Table {
 		return this.data.materials.find(m => m.name === name);
 	}
 
+	public getApi(): TableApi {
+		return this.api!;
+	}
+
+	public getEventNames(): string[] {
+		return [];
+	}
+
+	public setupPlayer(player: Player, table: Table): void {
+		this.events = new EventProxy(this);
+		this.api = new TableApi(this.data!, this.events, player, this);
+	}
+
 	public getBoundingBox(): FRect3D {
 		return new FRect3D(this.data!.left, this.data!.right, this.data!.top, this.data!.bottom, this.getTableHeight(), this.data!.glassHeight);
 	}
 
 	public getPlayables(): IPlayable[] {
-		return this.getItems().filter(isPlayable) as unknown as IPlayable[];
+		const playableItems = this.getItems().filter(isPlayable) as unknown as IPlayable[];
+		return [ ...playableItems, this ];
 	}
 
 	public getMovables(): Array<IMovable<ItemState>> {
@@ -188,7 +207,8 @@ export class Table {
 	}
 
 	public getScriptables(): Array<IScriptable<any>> {
-		return this.getItems().filter(isScriptable) as unknown as Array<IScriptable<any>>;
+		const scriptableItems = this.getItems().filter(isScriptable) as unknown as Array<IScriptable<any>>;
+		return [ ...scriptableItems, this ];
 	}
 
 	public getHittables(): IHittable[] {
@@ -398,6 +418,7 @@ export class Table {
 	public getItems(): Array<Item<ItemData>> {
 		return Object.values(this.items);
 	}
+
 }
 
 function isLoaded(items: any[] | undefined) {
