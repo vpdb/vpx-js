@@ -41,7 +41,6 @@ export class FlipperApi extends ItemApi<FlipperData> {
 		this.mover = mover;
 	}
 
-	// from Flipper
 	get BaseRadius() { return this.data.baseRadius; }
 	set BaseRadius(v) { this.data.baseRadius = v; }
 	get EndRadius() { return this.data.endRadius; }

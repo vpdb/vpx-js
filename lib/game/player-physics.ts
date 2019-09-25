@@ -113,12 +113,12 @@ export class PlayerPhysics {
 	 */
 	public init() {
 		const minSlope = this.table.data!.overridePhysics ? DEFAULT_TABLE_MIN_SLOPE : this.table.data!.angletiltMin!;
-		const maxSlope = this.table.data!.overridePhysics ? DEFAULT_TABLE_MAX_SLOPE : this.table.data!.angletiltMax!;
+		const maxSlope = this.table.data!.overridePhysics ? DEFAULT_TABLE_MAX_SLOPE : this.table.data!.angleTiltMax!;
 		const slope = minSlope + (maxSlope - minSlope) * this.table.data!.globalDifficulty!;
 
 		this.gravity.x = 0;
-		this.gravity.y = Math.sin(degToRad(slope)) * (this.table.data!.overridePhysics ? DEFAULT_TABLE_GRAVITY : this.table.data!.Gravity);
-		this.gravity.z = -Math.cos(degToRad(slope)) * (this.table.data!.overridePhysics ? DEFAULT_TABLE_GRAVITY : this.table.data!.Gravity);
+		this.gravity.y = Math.sin(degToRad(slope)) * (this.table.data!.overridePhysics ? DEFAULT_TABLE_GRAVITY : this.table.data!.gravity);
+		this.gravity.z = -Math.cos(degToRad(slope)) * (this.table.data!.overridePhysics ? DEFAULT_TABLE_GRAVITY : this.table.data!.gravity);
 
 		// [vpx-js added] init animation timers
 		for (const animatable of this.table.getAnimatables()) {
@@ -491,9 +491,9 @@ export class PlayerPhysics {
 		return now() * SLOW_MO;
 	}
 
-	// public setGravity(slopeDeg: number, strength: number): void {
-	// 	this.gravity.x = 0;
-	// 	this.gravity.y = Math.sin(degToRad(slopeDeg)) * strength;
-	// 	this.gravity.z = -Math.cos(degToRad(slopeDeg)) * strength;
-	// }
+	public setGravity(slopeDeg: number, strength: number): void {
+		this.gravity.x = 0;
+		this.gravity.y = Math.sin(degToRad(slopeDeg)) * strength;
+		this.gravity.z = -Math.cos(degToRad(slopeDeg)) * strength;
+	}
 }
