@@ -145,8 +145,8 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 		const material = new Material();
 		material.name = 'ball';
 		material.isMetal = true;
-//		material.baseColor = 0x000
-		material.roughness = 0.4;
+		material.baseColor = 0xffffff;
+		material.roughness = 0.8;
 		return material;
 	}
 }
