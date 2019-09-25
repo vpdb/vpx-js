@@ -91,7 +91,6 @@ export class PlayerPhysics {
 	private fps: number = 0;
 	private fpsAvg: number = 0;
 	private fpsCount: number = 0;
-	private physIterations: number = 0;
 	private curPhysicsFrameTime: number = 0;
 	private nextPhysicsFrameTime: number = 0;
 	private startTimeUsec: number = 0;
@@ -314,7 +313,7 @@ export class PlayerPhysics {
 	 * Call this before rendering each frame.
 	 *
 	 * @param time Absolute time in milliseconds
-	 * @return Absolute time in milliseconds
+	 * @return Number of executed cycles
 	 */
 	public updatePhysics(time?: number): number {
 
@@ -338,14 +337,14 @@ export class PlayerPhysics {
 //#endif
 
 		this.scriptPeriod = 0;
-		this.physIterations = 0;
+		let physIterations = 0;
 
 		// loop here until current (real) time matches the physics (simulated) time
 		while (this.curPhysicsFrameTime < initialTimeUsec) {
 
 			// Get time in milliseconds for timers
 			this.timeMsec = (this.curPhysicsFrameTime - this.startTimeUsec) / 1000;
-			this.physIterations++;
+			physIterations++;
 
 			// Get the time until the next physics tick is done, and get the time
 			// until the next frame is done
@@ -420,7 +419,7 @@ export class PlayerPhysics {
 		} // end while (m_curPhysicsFrameTime < initial_time_usec)
 
 		this.physPeriod = Math.floor(this.now() * 1000) - initialTimeUsec;
-		return initialTimeUsec;
+		return physIterations;
 	}
 
 	public updateVelocities() {
