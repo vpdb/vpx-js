@@ -41,37 +41,37 @@ export class TableHitGenerator {
 		hitObjects.push(new LineSeg(
 			new Vertex2D(this.data.right, this.data.top),
 			new Vertex2D(this.data.right, this.data.bottom),
-			this.data.tableheight,
-			this.data.glassheight,
+			this.data.tableHeight,
+			this.data.glassHeight,
 		));
 
 		hitObjects.push(new LineSeg(
 			new Vertex2D(this.data.left, this.data.bottom),
 			new Vertex2D(this.data.left, this.data.top),
-			this.data.tableheight,
-			this.data.glassheight,
+			this.data.tableHeight,
+			this.data.glassHeight,
 		));
 
 		hitObjects.push(new LineSeg(
 			new Vertex2D(this.data.right, this.data.bottom),
 			new Vertex2D(this.data.left, this.data.bottom),
-			this.data.tableheight,
-			this.data.glassheight,
+			this.data.tableHeight,
+			this.data.glassHeight,
 		));
 
 		hitObjects.push(new LineSeg(
 			new Vertex2D(this.data.left, this.data.top),
 			new Vertex2D(this.data.right, this.data.top),
-			this.data.tableheight,
-			this.data.glassheight,
+			this.data.tableHeight,
+			this.data.glassHeight,
 		));
 
 		// glass
 		const rgv3D: Vertex3D[] = [
-			new Vertex3D(this.data.left, this.data.top, this.data.glassheight),
-			new Vertex3D(this.data.right, this.data.top, this.data.glassheight),
-			new Vertex3D(this.data.right, this.data.bottom, this.data.glassheight),
-			new Vertex3D(this.data.left, this.data.bottom, this.data.glassheight),
+			new Vertex3D(this.data.left, this.data.top, this.data.glassHeight),
+			new Vertex3D(this.data.right, this.data.top, this.data.glassHeight),
+			new Vertex3D(this.data.right, this.data.bottom, this.data.glassHeight),
+			new Vertex3D(this.data.left, this.data.bottom, this.data.glassHeight),
 		];
 		const ph3dpoly = new Hit3DPoly(rgv3D);
 		ph3dpoly.calcHitBBox();

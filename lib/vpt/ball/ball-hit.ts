@@ -132,7 +132,7 @@ export class BallHit extends HitObject {
 		// update defaultZ for ball reflection
 		// if the ball was created by a kicker which is higher than the playfield
 		// the defaultZ must be updated if the ball falls onto the playfield that means the Z value is equal to the radius
-		if (this.state.pos.z === this.data.radius + this.tableData.tableheight) {
+		if (this.state.pos.z === this.data.radius + this.tableData.tableHeight) {
 			this.defaultZ = this.state.pos.z;
 		}
 	}

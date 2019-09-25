@@ -123,6 +123,10 @@ export class Player extends EventEmitter {
 		return this.physics;
 	}
 
+	public setGravity(slopeDeg: number, strength: number) {
+		this.physics.setGravity(slopeDeg, strength);
+	}
+
 	/**
 	 * @deprecated use updatePhysics()
 	 */

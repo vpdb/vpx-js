@@ -172,7 +172,7 @@ export class Table {
 	}
 
 	public getBoundingBox(): FRect3D {
-		return new FRect3D(this.data!.left, this.data!.right, this.data!.top, this.data!.bottom, this.getTableHeight(), this.data!.glassheight);
+		return new FRect3D(this.data!.left, this.data!.right, this.data!.top, this.data!.bottom, this.getTableHeight(), this.data!.glassHeight);
 	}
 
 	public getPlayables(): IPlayable[] {
@@ -200,14 +200,14 @@ export class Table {
 	}
 
 	public generatePlayfieldHit() {
-		return new HitPlane(new Vertex3D(0, 0, 1), this.data!.tableheight)
+		return new HitPlane(new Vertex3D(0, 0, 1), this.data!.tableHeight)
 			.setFriction(this.data!.getFriction())
 			.setElasticity(this.data!.getElasticity(), this.data!.getElasticityFalloff())
 			.setScatter(degToRad(this.data!.getScatter()));
 	}
 
 	public generateGlassHit() {
-		return new HitPlane(new Vertex3D(0, 0, -1), this.data!.glassheight)
+		return new HitPlane(new Vertex3D(0, 0, -1), this.data!.glassHeight)
 			.setElasticity(0.2);
 	}
 
@@ -234,7 +234,7 @@ export class Table {
 		if (!this.data) {
 			throw new Error('Table data is not loaded. Load table with tableDataOnly = false.');
 		}
-		return f4(this.data.BG_scalez[this.data.BG_current_set]) || 1.0;
+		return f4(this.data.bgScaleZ[this.data.bgCurrentSet]) || 1.0;
 	}
 
 	public getDetailLevel() {
@@ -250,7 +250,7 @@ export class Table {
 		if (!this.data) {
 			throw new Error('Table data is not loaded. Load table with tableDataOnly = false.');
 		}
-		return this.data.tableheight;
+		return this.data.tableHeight;
 	}
 
 	public getDimensions(): { width: number, height: number } {
@@ -278,20 +278,20 @@ export class Table {
 			throw new Error('Table data is not loaded. Load table with tableDataOnly = false.');
 		}
 		if (!surface) {
-			return this.data.tableheight;
+			return this.data.tableHeight;
 		}
 
 		if (this.surfaces[surface]) {
-			return f4(this.data.tableheight + this.surfaces[surface].heightTop);
+			return f4(this.data.tableHeight + this.surfaces[surface].heightTop);
 		}
 
 		if (this.ramps[surface]) {
-			return f4(this.data.tableheight + this.ramps[surface].getSurfaceHeight(x, y, this));
+			return f4(this.data.tableHeight + this.ramps[surface].getSurfaceHeight(x, y, this));
 		}
 
 		/* istanbul ignore next */
 		logger().warn('[Table.getSurfaceHeight] Unknown surface %s.', surface);
-		return this.data.tableheight;
+		return this.data.tableHeight;
 	}
 
 	// public async exportGltf(opts?: TableExportOptions): Promise<string> {
