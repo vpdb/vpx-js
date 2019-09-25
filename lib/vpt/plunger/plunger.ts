@@ -96,7 +96,7 @@ export class Plunger extends Item<PlungerData> implements IRenderable, IPlayable
 
 	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
-		this.hit = new PlungerHit(this.data, this.state, this.events, this.meshGenerator.cFrames, player.getPhysics(), table);
+		this.hit = new PlungerHit(this.data, this.state, this.events, this.meshGenerator.cFrames, player, table);
 		this.api = new PlungerApi(this.data, this.hit, this.events, this, player, table);
 	}
 

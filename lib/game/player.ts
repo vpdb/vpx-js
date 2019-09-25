@@ -23,12 +23,38 @@ import { Pool } from '../util/object-pool';
 import { Ball } from '../vpt/ball/ball';
 import { ItemState } from '../vpt/item-state';
 import { Table } from '../vpt/table/table';
+import { AssignKey, DIK_1, DIK_4, DIK_5, DIK_D, DIK_EQUALS, DIK_ESCAPE, DIK_F10, DIK_F11, DIK_LALT, DIK_LCONTROL,
+	DIK_LSHIFT, DIK_MINUS, DIK_O, DIK_Q, DIK_RCONTROL, DIK_RETURN, DIK_RSHIFT, DIK_SLASH, DIK_SPACE, DIK_T, DIK_Z,
+} from './key-code';
 import { PlayerPhysics } from './player-physics';
 
 export class Player extends EventEmitter {
 
 	private readonly table: Table;
 	private readonly physics: PlayerPhysics;
+	private readonly rgKeys: { [key: number]: number } = {
+		[AssignKey.LeftFlipperKey]: DIK_LCONTROL,
+		[AssignKey.RightFlipperKey]:  DIK_RCONTROL,
+		[AssignKey.LeftTiltKey]: DIK_Z,
+		[AssignKey.RightTiltKey]: DIK_SLASH,
+		[AssignKey.CenterTiltKey]: DIK_SPACE,
+		[AssignKey.PlungerKey]: DIK_RETURN,
+		[AssignKey.FrameCount]: DIK_F11,
+		[AssignKey.DBGBalls]: DIK_O,
+		[AssignKey.Debugger]: DIK_D,
+		[AssignKey.AddCreditKey]: DIK_5,
+		[AssignKey.AddCreditKey2]: DIK_4,
+		[AssignKey.StartGameKey]: DIK_1,
+		[AssignKey.MechanicalTilt]: DIK_T,
+		[AssignKey.RightMagnaSave]: DIK_RSHIFT,
+		[AssignKey.LeftMagnaSave]: DIK_LSHIFT,
+		[AssignKey.ExitGame]: DIK_Q,
+		[AssignKey.VolumeUp]: DIK_EQUALS,
+		[AssignKey.VolumeDown]: DIK_MINUS,
+		[AssignKey.LockbarKey]: DIK_LALT,
+		[AssignKey.Enable3D]: DIK_F10,
+		[AssignKey.Escape]: DIK_ESCAPE,
+	};
 
 	get balls() { return this.physics.balls; }
 
@@ -117,6 +143,10 @@ export class Player extends EventEmitter {
 		delete this.currentStates[ball.getName()];
 		delete this.previousStates[ball.getName()];
 		this.emit('ballDestroyed', ball);
+	}
+
+	public getKey(key: AssignKey) {
+		return this.rgKeys[key];
 	}
 
 	public getPhysics(): PlayerPhysics {

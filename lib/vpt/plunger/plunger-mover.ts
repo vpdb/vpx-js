@@ -19,13 +19,14 @@
 
 import { Event } from '../../game/event';
 import { EventProxy } from '../../game/event-proxy';
-import { PlayerPhysics } from '../../game/player-physics';
+import { AssignKey } from '../../game/key-code';
+import { Player } from '../../game/player';
 import { Vertex2D } from '../../math/vertex2d';
 import { HitLineZ } from '../../physics/hit-line-z';
 import { LineSeg } from '../../physics/line-seg';
 import { MoverObject } from '../../physics/mover-object';
 import { logger } from '../../util/logger';
-import { TableData } from '../table/table-data';
+import { TableApi } from '../table/table-api';
 import { Plunger, PlungerConfig } from './plunger';
 import { PlungerData } from './plunger-data';
 import { PlungerState } from './plunger-state';
@@ -35,8 +36,8 @@ export class PlungerMover implements MoverObject {
 	private readonly data: PlungerData;
 	private readonly state: PlungerState;
 	private readonly events: EventProxy;
-	private readonly physics: PlayerPhysics;
-	private readonly tableData: TableData;
+	private readonly player: Player;
+	private readonly tableApi: TableApi;
 
 	/**
 	 * position of the on-screen plunger (left)
@@ -311,13 +312,13 @@ export class PlungerMover implements MoverObject {
 	 */
 	public scatterVelocity: number = 0;
 
-	constructor(config: PlungerConfig, data: PlungerData, state: PlungerState, events: EventProxy, physics: PlayerPhysics, tableData: TableData) {
+	constructor(config: PlungerConfig, data: PlungerData, state: PlungerState, events: EventProxy, player: Player, tableApi: TableApi) {
 
 		this.data = data;
 		this.state = state;
 		this.events = events;
-		this.physics = physics;
-		this.tableData = tableData;
+		this.player = player;
+		this.tableApi = tableApi;
 
 		this.x = config.x;
 		this.x2 = config.x2;
@@ -482,9 +483,7 @@ export class PlungerMover implements MoverObject {
 			// When the timer reaches zero, we'll send the corresponding
 			// KeyUp event and cancel the timer.
 			if (--this.autoFireTimer === 0) {
-				if (this.physics) {
-					//g_pplayer->this.ptable->FireKeyEvent(DISPID_GameEvents_KeyUp, g_pplayer->this.rgKeys[ePlungerKey]);
-				}
+				this.tableApi.fireKeyEvent(Event.GameEventsKeyUp, this.player.getKey(AssignKey.PlungerKey));
 			}
 
 		} else if (autoPlunger && dMech > ReleaseThreshold) {
@@ -521,10 +520,7 @@ export class PlungerMover implements MoverObject {
 			// will allow the script to set ROM switch levels or
 			// perform any other tasks it normally does when the
 			// actual Launch Ball button is pressed.
-			if (this.physics) {
-				// fixme event
-				//g_pplayer->this.ptable->FireKeyEvent(DISPID_GameEvents_KeyDown, g_pplayer->this.rgKeys[ePlungerKey]);
-			}
+			this.tableApi.fireKeyEvent(Event.GameEventsKeyDown, this.player.getKey(AssignKey.PlungerKey));
 
 			// start the timer to send the corresponding KeyUp in 100ms
 			this.autoFireTimer = 101;
@@ -662,7 +658,7 @@ export class PlungerMover implements MoverObject {
 			// runs physics frames at roughly 10x the rate of VP 9, so the time
 			// per frame is about 1/10 the VP 9 time.
 			const plungerFriction = 0.95;
-			const normalize = this.tableData.plungerNormalize / 13.0 / 100.0;
+			const normalize = this.tableApi.PlungerNormalize / 13.0 / 100.0;
 			const dt = 0.1;
 			this.speed *= plungerFriction;
 			this.speed += error * this.frameLen * this.data.mechStrength / this.mass * normalize * dt;
@@ -712,7 +708,7 @@ export class PlungerMover implements MoverObject {
 		// starting distance.  Note that the release motion
 		// is upwards, so the speed is negative.
 		const dx = startPos - this.restPos;
-		const normalize = this.tableData.plungerNormalize / 13.0 / 100.0;
+		const normalize = this.tableApi.PlungerNormalize / 13.0 / 100.0;
 		this.fireSpeed = -this.data.speedFire * dx * this.frameLen / this.mass * normalize;
 
 		// Figure the target stopping position for the

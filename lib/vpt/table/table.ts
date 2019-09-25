@@ -181,7 +181,7 @@ export class Table implements IScriptable<TableApi> {
 	}
 
 	public getEventNames(): string[] {
-		return [];
+		return [ 'Exit', 'Init', 'KeyDown', 'KeyUp', 'MusicDone', 'Paused', 'UnPaused' ];
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
@@ -195,7 +195,7 @@ export class Table implements IScriptable<TableApi> {
 
 	public getPlayables(): IPlayable[] {
 		const playableItems = this.getItems().filter(isPlayable) as unknown as IPlayable[];
-		return [ ...playableItems, this ];
+		return [ this, ...playableItems ];
 	}
 
 	public getMovables(): Array<IMovable<ItemState>> {
@@ -208,7 +208,7 @@ export class Table implements IScriptable<TableApi> {
 
 	public getScriptables(): Array<IScriptable<any>> {
 		const scriptableItems = this.getItems().filter(isScriptable) as unknown as Array<IScriptable<any>>;
-		return [ ...scriptableItems, this ];
+		return [ this, ...scriptableItems ];
 	}
 
 	public getHittables(): IHittable[] {
