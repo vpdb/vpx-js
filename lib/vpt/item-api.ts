@@ -18,6 +18,7 @@
  */
 
 import { EventEmitter } from 'events';
+import { Event } from '../game/event';
 import { EventProxy } from '../game/event-proxy';
 import { Player } from '../game/player';
 import { Collection } from './collection/collection';
@@ -53,6 +54,10 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 		this.events = events;
 		this.player = player;
 		this.table = table;
+	}
+
+	public fireKeyEvent(event: Event, ...args: any[]) {
+		this.events.fireVoidEventParm(event, ...args);
 	}
 
 	public _getTimers(): TimerHit[] {

@@ -263,15 +263,15 @@ export class TableApi extends ItemApi<TableData> {
 	get VersionRevision() { return VP_VERSION_REV; }
 
 	public PlaySound(bstr: string, loopcount: number, volume: number, pan: number, randompitch: number, pitch: number, usesame: boolean, restart: boolean, front_rear_fade: number) {
-		// to implement
+		// TODO implement
 	}
 
 	public GetPredefinedStrings(dispID: number): any {
-		// to implement
+		// TODO implement
 	}
 
 	public GetPredefinedValue(dispID: number): any {
-		// to implement
+		// TODO implement
 	}
 
 	public ImportPhysics(): void {
@@ -283,11 +283,11 @@ export class TableApi extends ItemApi<TableData> {
 	}
 
 	public FireKnocker(count: number): void {
-		// to implement
+		// TODO implement
 	}
 
 	public QuitPlayer(closeType: number): void {
-		// to implement
+		// TODO implement
 	}
 }
 

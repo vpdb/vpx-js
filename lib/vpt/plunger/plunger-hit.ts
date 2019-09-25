@@ -18,6 +18,7 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
+import { Player } from '../../game/player';
 import { PlayerPhysics } from '../../game/player-physics';
 import { CollisionEvent } from '../../physics/collision-event';
 import { C_DISP_GAIN, C_DISP_LIMIT, C_EMBEDDED, C_EMBEDSHOT, C_LOWNORMVEL } from '../../physics/constants';
@@ -34,7 +35,7 @@ export class PlungerHit extends HitObject {
 	private readonly mover: PlungerMover;
 	private readonly data: PlungerData;
 
-	constructor(data: PlungerData, state: PlungerState, events: EventProxy, cFrames: number, physics: PlayerPhysics, table: Table) {
+	constructor(data: PlungerData, state: PlungerState, events: EventProxy, cFrames: number, player: Player, table: Table) {
 		super();
 		const zHeight = table.getSurfaceHeight(data.szSurface, data.center.x, data.center.y);
 		const config: PlungerConfig = {
@@ -51,7 +52,7 @@ export class PlungerHit extends HitObject {
 		this.hitBBox.zhigh = config.zHeight + Plunger.PLUNGER_HEIGHT;
 
 		this.data = data;
-		this.mover = new PlungerMover(config, data, state, events, physics, table.data!);
+		this.mover = new PlungerMover(config, data, state, events, player, table.getApi());
 	}
 
 	public getMoverObject(): PlungerMover {
