@@ -148,3 +148,22 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 		}
 	}
 }
+
+export function dequantizeUnsignedPercent(i: number) {
+	/* originally:
+	 *
+	 * enum { N = 100 };
+	 * return precise_divide((float)i, (float)N);
+	 */
+	return Math.min(i / 100, 1);
+}
+
+export function quantizeUnsignedPercent(x: number) {
+	/* originally:
+	 *
+	 * enum { N = 100, Np1 = 101 };
+	 * assert(x >= 0.f);
+	 * return min((unsigned int)(x * (float)Np1), (unsigned int)N);
+	 */
+	return Math.min(Math.max(0, x) * 100, 100);
+}

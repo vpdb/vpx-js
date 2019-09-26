@@ -18,6 +18,7 @@
  */
 
 export { BrowserBinaryReader as BinaryReader } from './io/binary-reader.browser';
+export { storage } from './io/storage.browser';
 export { exportGltf } from './gltf/export-gltf.browser';
 export { now } from './util/time.browser';
 export { _Math as Math } from 'three/src/math/Math';
