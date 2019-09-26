@@ -41,27 +41,112 @@ export enum AssignKey {
 	Escape,
 	CKeys,
 }
-export const DIK_LSHIFT = 0x2A;
-export const DIK_RSHIFT = 0x36;
-export const DIK_Z = 0x2C;
-export const DIK_SLASH = 0x35;
-export const DIK_SPACE = 0x39;
-export const DIK_RETURN = 0x1C;
-export const DIK_F11 = 0x57;
-export const DIK_O = 0x18;
-export const DIK_D = 0x20;
-export const DIK_5 = 0x06;
-export const DIK_4 = 0x05;
-export const DIK_1 = 0x02;
-export const DIK_T = 0x14;
-export const DIK_RCONTROL = 0x9D;
-export const DIK_LCONTROL = 0x1D;
-export const DIK_Q = 0x10;
-export const DIK_EQUALS = 0x0D;
-export const DIK_MINUS = 0x0C;
-export const DIK_LALT = 0x38;
-export const DIK_F10 = 0x44;
+
 export const DIK_ESCAPE = 0x01;
+export const DIK_1 = 0x02;
+export const DIK_2 = 0x03;
+export const DIK_3 = 0x04;
+export const DIK_4 = 0x05;
+export const DIK_5 = 0x06;
+export const DIK_6 = 0x07;
+export const DIK_7 = 0x08;
+export const DIK_8 = 0x09;
+export const DIK_9 = 0x0A;
+export const DIK_0 = 0x0B;
+export const DIK_MINUS = 0x0C;    /* - on main keyboard */
+export const DIK_EQUALS = 0x0D;
+export const DIK_BACK = 0x0E;    /* backspace */
+export const DIK_TAB = 0x0F;
+export const DIK_Q = 0x10;
+export const DIK_W = 0x11;
+export const DIK_E = 0x12;
+export const DIK_R = 0x13;
+export const DIK_T = 0x14;
+export const DIK_Y = 0x15;
+export const DIK_U = 0x16;
+export const DIK_I = 0x17;
+export const DIK_O = 0x18;
+export const DIK_P = 0x19;
+export const DIK_LBRACKET = 0x1A;
+export const DIK_RBRACKET = 0x1B;
+export const DIK_RETURN = 0x1C;    /* Enter on main keyboard */
+export const DIK_LCONTROL = 0x1D;
+export const DIK_A = 0x1E;
+export const DIK_S = 0x1F;
+export const DIK_D = 0x20;
+export const DIK_F = 0x21;
+export const DIK_G = 0x22;
+export const DIK_H = 0x23;
+export const DIK_J = 0x24;
+export const DIK_K = 0x25;
+export const DIK_L = 0x26;
+export const DIK_SEMICOLON = 0x27;
+export const DIK_APOSTROPHE = 0x28;
+export const DIK_GRAVE = 0x29;    /* accent grave */
+export const DIK_LSHIFT = 0x2A;
+export const DIK_BACKSLASH = 0x2B;
+export const DIK_Z = 0x2C;
+export const DIK_X = 0x2D;
+export const DIK_C = 0x2E;
+export const DIK_V = 0x2F;
+export const DIK_B = 0x30;
+export const DIK_N = 0x31;
+export const DIK_M = 0x32;
+export const DIK_COMMA = 0x33;
+export const DIK_PERIOD = 0x34;    /* . on main keyboard */
+export const DIK_SLASH = 0x35;    /* / on main keyboard */
+export const DIK_RSHIFT = 0x36;
+export const DIK_MULTIPLY = 0x37;    /* * on numeric keypad */
+export const DIK_LALT = 0x38;    /* left Alt */
+export const DIK_SPACE = 0x39;
+export const DIK_CAPITAL = 0x3A;
+export const DIK_F1 = 0x3B;
+export const DIK_F2 = 0x3C;
+export const DIK_F3 = 0x3D;
+export const DIK_F4 = 0x3E;
+export const DIK_F5 = 0x3F;
+export const DIK_F6 = 0x40;
+export const DIK_F7 = 0x41;
+export const DIK_F8 = 0x42;
+export const DIK_F9 = 0x43;
+export const DIK_F10 = 0x44;
+export const DIK_NUMLOCK = 0x45;
+export const DIK_SCROLL = 0x46;    /* Scroll Lock */
+export const DIK_NUMPAD7 = 0x47;
+export const DIK_NUMPAD8 = 0x48;
+export const DIK_NUMPAD9 = 0x49;
+export const DIK_SUBTRACT = 0x4A;    /* - on numeric keypad */
+export const DIK_NUMPAD4 = 0x4B;
+export const DIK_NUMPAD5 = 0x4C;
+export const DIK_NUMPAD6 = 0x4D;
+export const DIK_ADD = 0x4E;    /* + on numeric keypad */
+export const DIK_NUMPAD1 = 0x4F;
+export const DIK_NUMPAD2 = 0x50;
+export const DIK_NUMPAD3 = 0x51;
+export const DIK_NUMPAD0 = 0x52;
+export const DIK_DECIMAL = 0x53;    /* . on numeric keypad */
+export const DIK_F11 = 0x57;
+export const DIK_F12 = 0x58;
+export const DIK_F13 = 0x64;    /*                     (NEC PC98) */
+export const DIK_F14 = 0x65;    /*                     (NEC PC98) */
+export const DIK_F15 = 0x66;    /*                     (NEC PC98) */
+export const DIK_NUMPADENTER = 0x9C;    /* Enter on numeric keypad */
+export const DIK_RCONTROL = 0x9D;
+export const DIK_DIVIDE = 0xB5;
+export const DIK_RALT = 0xB8;    /* right Alt */
+export const DIK_PAUSE = 0xC5;    /* Pause */
+export const DIK_HOME = 0xC7;    /* Home on arrow keypad */
+export const DIK_UP = 0xC8;    /* UpArrow on arrow keypad */
+export const DIK_PRIOR = 0xC9;    /* PgUp on arrow keypad */
+export const DIK_LEFT = 0xCB;    /* LeftArrow on arrow keypad */
+export const DIK_RIGHT = 0xCD;    /* RightArrow on arrow keypad */
+export const DIK_END = 0xCF;    /* End on arrow keypad */
+export const DIK_DOWN = 0xD0;    /* DownArrow on arrow keypad */
+export const DIK_NEXT = 0xD1;    /* PgDn on arrow keypad */
+export const DIK_INSERT = 0xD2;    /* Insert on arrow keypad */
+export const DIK_DELETE = 0xD3;    /* Delete on arrow keypad */
+export const DIK_LWIN = 0xDB;    /* Left Windows key */
+export const DIK_RWIN = 0xDC;    /* Right Windows key */
 
 /**
  * Converts a key-event from the browser to a DirectInput code that is used by
@@ -71,50 +156,56 @@ export const DIK_ESCAPE = 0x01;
  */
 export function keyEventToDirectInputKey(event: KeyboardEvent) {
 	const codeDi = KEY_JS2DI[event.key.toLowerCase()];
-	if (!codeDi) {
-		switch (event.code) {
-			case 'ControlLeft': return DIK_LCONTROL; // DIK_LCONTROL
-			case 'ControlRight': return DIK_RCONTROL; // DIK_RCONTROL
-			case 'ShiftLeft': return DIK_LSHIFT; // DIK_LSHIFT
-			case 'ShiftRight': return DIK_RSHIFT; // DIK_RSHIFT
-			case 'NumpadMultiply': return 0x37; // DIK_MULTIPLY    /* * on numeric keypad */
-			case 'AltLeft': return DIK_LALT; // DIK_LMENU    /* left Alt */
-			case 'AltRight': return 0xB8; // DIK_RMENU    /* right Alt */
-			case 'Numpad7': return 0x47; // DIK_NUMPAD7
-			case 'Numpad8': return 0x48; // DIK_NUMPAD8
-			case 'Numpad9': return 0x49; // DIK_NUMPAD9
-			case 'NumpadSubtract': return 0x4A; // DIK_SUBTRACT    /* - on numeric keypad */
-			case 'Numpad4': return 0x4B; // DIK_NUMPAD4
-			case 'Numpad5': return 0x4C; // DIK_NUMPAD5
-			case 'Numpad6': return 0x4D; // DIK_NUMPAD6
-			case 'NumpadAdd': return 0x4E; // DIK_ADD    /* + on numeric keypad */
-			case 'Numpad1': return 0x4F; // DIK_NUMPAD1
-			case 'Numpad2': return 0x50; // DIK_NUMPAD2
-			case 'Numpad3': return 0x51; // DIK_NUMPAD3
-			case 'Numpad0': return 0x52; // DIK_NUMPAD0
-			case 'NumpadDecimal': return 0x53; // DIK_DECIMAL    /* . on numeric keypad */
-			case 'MetaLeft': return 0xDB; // DIK_LWIN    /* Left Windows key */
-			case 'MetaRight': return 0xDC; // DIK_RWIN    /* Right Windows key */
-		}
-		// main keyboard keys that weren't covered above by numpad
-		switch (event.key.toLowerCase()) {
-			case '1': return DIK_1; // DIK_1
-			case '2': return 0x03; // DIK_2
-			case '3': return 0x04; // DIK_3
-			case '4': return DIK_4; // DIK_4
-			case '5': return DIK_5; // DIK_5
-			case '6': return 0x07; // DIK_6
-			case '7': return 0x08; // DIK_7
-			case '8': return 0x09; // DIK_8
-			case '9': return 0x0A; // DIK_9
-			case '0': return 0x0B; // DIK_0
-			case '-': return DIK_MINUS; // DIK_MINUS    /* - on main keyboard */
-			case '=': return DIK_EQUALS; // DIK_EQUALS
-			case '.': return 0x34; // DIK_PERIOD    /* . on main keyboard */
-			case '/': return DIK_SLASH; // DIK_SLASH    /* / on main keyboard */
-		}
+	if (codeDi) {
+		return codeDi;
 	}
 
+	// first try by code (actual key name)
+	switch (event.code) {
+		case 'ControlLeft': return DIK_LCONTROL;
+		case 'ControlRight': return DIK_RCONTROL;
+		case 'ShiftLeft': return DIK_LSHIFT;
+		case 'ShiftRight': return DIK_RSHIFT;
+		case 'NumpadMultiply': return DIK_MULTIPLY;
+		case 'NumpadDivide': return DIK_DIVIDE;
+		case 'NumpadEnter': return DIK_NUMPADENTER;
+		case 'AltLeft': return DIK_LALT;
+		case 'AltRight': return DIK_RALT;
+		case 'Numpad7': return DIK_NUMPAD7;
+		case 'Numpad8': return DIK_NUMPAD8;
+		case 'Numpad9': return DIK_NUMPAD9;
+		case 'NumpadSubtract': return DIK_SUBTRACT;
+		case 'Numpad4': return DIK_NUMPAD4;
+		case 'Numpad5': return DIK_NUMPAD5;
+		case 'Numpad6': return DIK_NUMPAD6;
+		case 'NumpadAdd': return DIK_ADD;
+		case 'Numpad1': return DIK_NUMPAD1;
+		case 'Numpad2': return DIK_NUMPAD2;
+		case 'Numpad3': return DIK_NUMPAD3;
+		case 'Numpad0': return DIK_NUMPAD0;
+		case 'NumpadDecimal': return DIK_DECIMAL;
+		case 'MetaLeft': return DIK_LWIN;
+		case 'MetaRight': return DIK_RWIN;
+	}
+
+	// main keyboard keys that weren't covered above by numpad
+	switch (event.key.toLowerCase()) {
+		case '1': return DIK_1;
+		case '2': return DIK_2;
+		case '3': return DIK_3;
+		case '4': return DIK_4;
+		case '5': return DIK_5;
+		case '6': return DIK_6;
+		case '7': return DIK_7;
+		case '8': return DIK_8;
+		case '9': return DIK_9;
+		case '0': return DIK_0;
+		case '-': return DIK_MINUS;
+		case '=': return DIK_EQUALS;
+		case '.': return DIK_PERIOD;
+		case '/': return DIK_SLASH;
+		case 'enter': return DIK_RETURN;
+	}
 }
 
 /**
@@ -125,114 +216,113 @@ export function keyEventToDirectInputKey(event: KeyboardEvent) {
  */
 const KEY_JS2DI: { [key: string]: number } = {
 
-	escape: DIK_ESCAPE, // DIK_ESCAPE
-	backspace: 0x0E, // DIK_BACK    /* backspace */
-	tab: 0x0F, // DIK_TAB
-	q: DIK_Q, // DIK_Q
-	w: 0x11, // DIK_W
-	e: 0x12, // DIK_E
-	r: 0x13, // DIK_R
-	t: DIK_T, // DIK_T
-	y: 0x15, // DIK_Y
-	u: 0x16, // DIK_U
-	i: 0x17, // DIK_I
-	o: DIK_O, // DIK_O
-	p: 0x19, // DIK_P
-	'[': 0x1A, // DIK_LBRACKET
-	']': 0x1B, // DIK_RBRACKET
-	enter: DIK_RETURN, // DIK_RETURN    /* Enter on main keyboard */
-	a: 0x1E, // DIK_A
-	s: 0x1F, // DIK_S
-	d: DIK_D, // DIK_D
-	f: 0x21, // DIK_F
-	g: 0x22, // DIK_G
-	h: 0x23, // DIK_H
-	j: 0x24, // DIK_J
-	k: 0x25, // DIK_K
-	l: 0x26, // DIK_L
-	';': 0x27, // DIK_SEMICOLON
-	"'": 0x28, // DIK_APOSTROPHE
-	'`': 0x29, // DIK_GRAVE    /* accent grave */
-	'\\': 0x2B, // DIK_BACKSLASH
-	z: DIK_Z, // DIK_Z
-	x: 0x2D, // DIK_X
-	c: 0x2E, // DIK_C
-	v: 0x2F, // DIK_V
-	b: 0x30, // DIK_B
-	n: 0x31, // DIK_N
-	m: 0x32, // DIK_M
-	',': 0x33, // DIK_COMMA
-	' ': DIK_SPACE, // DIK_SPACE
-	capslock: 0x3A, // DIK_CAPITAL
-	f1: 0x3B, // DIK_F1
-	f2: 0x3C, // DIK_F2
-	f3: 0x3D, // DIK_F3
-	f4: 0x3E, // DIK_F4
-	f5: 0x3F, // DIK_F5
-	f6: 0x40, // DIK_F6
-	f7: 0x41, // DIK_F7
-	f8: 0x42, // DIK_F8
-	f9: 0x43, // DIK_F9
-	f10: DIK_F10, // DIK_F10
-	numlock: 0x45, // DIK_NUMLOCK
-	scrolllock: 0x46, // DIK_SCROLL    /* Scroll Lock */
-	f11: DIK_F11, // DIK_F11
-	f12: 0x58, // DIK_F12
-	f13: 0x64, // DIK_F13    /*                     (NEC PC98) */
-	f14: 0x65, // DIK_F14    /*                     (NEC PC98) */
-	f15: 0x66, // DIK_F15    /*                     (NEC PC98) */
-	pause: 0xC5, // DIK_PAUSE    /* Pause */
-	home: 0xC7, // DIK_HOME    /* Home on arrow keypad */
-	arrowup: 0xC8, // DIK_UP    /* UpArrow on arrow keypad */
-	pageup: 0xC9, // DIK_PRIOR    /* PgUp on arrow keypad */
-	arrowleft: 0xCB, // DIK_LEFT    /* LeftArrow on arrow keypad */
-	arrowright: 0xCD, // DIK_RIGHT    /* RightArrow on arrow keypad */
-	end: 0xCF, // DIK_END    /* End on arrow keypad */
-	arrowdown: 0xD0, // DIK_DOWN    /* DownArrow on arrow keypad */
-	pagedown: 0xD1, // DIK_NEXT    /* PgDn on arrow keypad */
-	insert: 0xD2, // DIK_INSERT    /* Insert on arrow keypad */
-	delete: 0xD3, // DIK_DELETE    /* Delete on arrow keypad */
+	escape: DIK_ESCAPE,
+	backspace: DIK_BACK,
+	tab: DIK_TAB,
+	q: DIK_Q,
+	w: DIK_W,
+	e: DIK_E,
+	r: DIK_R,
+	t: DIK_T,
+	y: DIK_Y,
+	u: DIK_U,
+	i: DIK_I,
+	o: DIK_O,
+	p: DIK_P,
+	'[': DIK_LBRACKET,
+	']': DIK_RBRACKET,
+	a: DIK_A,
+	s: DIK_S,
+	d: DIK_D,
+	f: DIK_F,
+	g: DIK_G,
+	h: DIK_H,
+	j: DIK_J,
+	k: DIK_K,
+	l: DIK_L,
+	';': DIK_SEMICOLON,
+	"'": DIK_APOSTROPHE,
+	'`': DIK_GRAVE,
+	'\\': DIK_BACKSLASH,
+	z: DIK_Z,
+	x: DIK_X,
+	c: DIK_C,
+	v: DIK_V,
+	b: DIK_B,
+	n: DIK_N,
+	m: DIK_M,
+	',': DIK_COMMA,
+	' ': DIK_SPACE,
+	capslock: DIK_CAPITAL,
+	f1: DIK_F1,
+	f2: DIK_F2,
+	f3: DIK_F3,
+	f4: DIK_F4,
+	f5: DIK_F5,
+	f6: DIK_F6,
+	f7: DIK_F7,
+	f8: DIK_F8,
+	f9: DIK_F9,
+	f10: DIK_F10,
+	numlock: DIK_NUMLOCK,
+	scrolllock: DIK_SCROLL,
+	f11: DIK_F11,
+	f12: DIK_F12,
+	f13: DIK_F13,
+	f14: DIK_F14,
+	f15: DIK_F15,
+	pause: DIK_PAUSE,
+	home: DIK_HOME,
+	arrowup: DIK_UP,
+	pageup: DIK_PRIOR,
+	arrowleft: DIK_LEFT,
+	arrowright: DIK_RIGHT,
+	end: DIK_END,
+	arrowdown: DIK_DOWN,
+	pagedown: DIK_NEXT,
+	insert: DIK_INSERT,
+	delete: DIK_DELETE,
 
 	// other DirectInput codes we don't really care about
 	// --------------------------------------------------
-	// 0: 0x56, // DIK_OEM_102    /* <> or \| on RT 102-key keyboard (Non-U.S.) */
-	// 0: 0x70, // DIK_KANA    /* (Japanese keyboard)            */
-	// 0: 0x73, // DIK_ABNT_C1    /* /? on Brazilian keyboard */
-	// 0: 0x79, // DIK_CONVERT    /* (Japanese keyboard)            */
-	// 0: 0x7B, // DIK_NOCONVERT    /* (Japanese keyboard)            */
-	// 0: 0x7D, // DIK_YEN    /* (Japanese keyboard)            */
-	// 0: 0x7E, // DIK_ABNT_C2    /* Numpad . on Brazilian keyboard */
-	// 0: 0x8D, // DIK_NUMPADEQUALS    /* = on numeric keypad (NEC PC98) */
-	// 0: 0x90, // DIK_PREVTRACK    /* Previous Track (DIK_CIRCUMFLEX on Japanese keyboard) */
-	// 0: 0x91, // DIK_AT    /*                     (NEC PC98) */
-	// 0: 0x92, // DIK_COLON    /*                     (NEC PC98) */
-	// 0: 0x93, // DIK_UNDERLINE    /*                     (NEC PC98) */
-	// 0: 0x94, // DIK_KANJI    /* (Japanese keyboard)            */
-	// 0: 0x95, // DIK_STOP    /*                     (NEC PC98) */
-	// 0: 0x96, // DIK_AX    /*                     (Japan AX) */
-	// 0: 0x97, // DIK_UNLABELED    /*                        (J3100) */
-	// 0: 0x99, // DIK_NEXTTRACK    /* Next Track */
-	// 0: 0xA0, // DIK_MUTE    /* Mute */
-	// 0: 0xA1, // DIK_CALCULATOR    /* Calculator */
-	// 0: 0xA2, // DIK_PLAYPAUSE    /* Play / Pause */
-	// 0: 0xA4, // DIK_MEDIASTOP    /* Media Stop */
-	// 0: 0xAE, // DIK_VOLUMEDOWN    /* Volume - */
-	// 0: 0xB0, // DIK_VOLUMEUP    /* Volume + */
-	// 0: 0xB2, // DIK_WEBHOME    /* Web home */
-	// 0: 0xB3, // DIK_NUMPADCOMMA    /* , on numeric keypad (NEC PC98) */
-	// 0: 0xB5, // DIK_DIVIDE    /* / on numeric keypad */
-	// 0: 0xB7, // DIK_SYSRQ
-	// 0: 0xDD, // DIK_APPS    /* AppMenu key */
-	// 0: 0xDE, // DIK_POWER    /* System Power */
-	// 0: 0xDF, // DIK_SLEEP    /* System Sleep */
-	// 0: 0xE3, // DIK_WAKE    /* System Wake */
-	// 0: 0xE5, // DIK_WEBSEARCH    /* Web Search */
-	// 0: 0xE6, // DIK_WEBFAVORITES    /* Web Favorites */
-	// 0: 0xE7, // DIK_WEBREFRESH    /* Web Refresh */
-	// 0: 0xE8, // DIK_WEBSTOP    /* Web Stop */
-	// 0: 0xE9, // DIK_WEBFORWARD    /* Web Forward */
-	// 0: 0xEA, // DIK_WEBBACK    /* Web Back */
-	// 0: 0xEB, // DIK_MYCOMPUTER    /* My Computer */
-	// 0: 0xEC, // DIK_MAIL    /* Mail */
-	// 0: 0xED, // DIK_MEDIASELECT    /* Media Select */
+	// export const DIK_OEM_102 = 0x56;    /* <> or \| on RT 102-key keyboard (Non-U.S.) */
+	// export const DIK_KANA = 0x70;    /* (Japanese keyboard)            */
+	// export const DIK_ABNT_C1 = 0x73;    /* /? on Brazilian keyboard */
+	// export const DIK_CONVERT = 0x79;    /* (Japanese keyboard)            */
+	// export const DIK_NOCONVERT = 0x7B;    /* (Japanese keyboard)            */
+	// export const DIK_YEN = 0x7D;    /* (Japanese keyboard)            */
+	// export const DIK_ABNT_C2 = 0x7E;    /* Numpad . on Brazilian keyboard */
+	// export const DIK_NUMPADEQUALS = 0x8D;    /* = on numeric keypad (NEC PC98) */
+	// export const DIK_PREVTRACK = 0x90;    /* Previous Track (DIK_CIRCUMFLEX on Japanese keyboard) */
+	// export const DIK_AT = 0x91;    /*                     (NEC PC98) */
+	// export const DIK_COLON = 0x92;    /*                     (NEC PC98) */
+	// export const DIK_UNDERLINE = 0x93;    /*                     (NEC PC98) */
+	// export const DIK_KANJI = 0x94;    /* (Japanese keyboard)            */
+	// export const DIK_STOP = 0x95;    /*                     (NEC PC98) */
+	// export const DIK_AX = 0x96;    /*                     (Japan AX) */
+	// export const DIK_UNLABELED = 0x97;    /*                        (J3100) */
+	// export const DIK_NEXTTRACK = 0x99;    /* Next Track */
+	// export const DIK_MUTE = 0xA0;    /* Mute */
+	// export const DIK_CALCULATOR = 0xA1;    /* Calculator */
+	// export const DIK_PLAYPAUSE = 0xA2;    /* Play / Pause */
+	// export const DIK_MEDIASTOP = 0xA4;    /* Media Stop */
+	// export const DIK_VOLUMEDOWN = 0xAE;    /* Volume - */
+	// export const DIK_VOLUMEUP = 0xB0;    /* Volume + */
+	// export const DIK_WEBHOME = 0xB2;    /* Web home */
+	// export const DIK_NUMPADCOMMA = 0xB3;    /* , on numeric keypad (NEC PC98) */
+	// export const DIK_DIVIDE = 0xB5;    /* / on numeric keypad */
+	// export const DIK_SYSRQ = 0xB7;
+	// export const DIK_APPS = 0xDD;    /* AppMenu key */
+	// export const DIK_POWER = 0xDE;    /* System Power */
+	// export const DIK_SLEEP = 0xDF;    /* System Sleep */
+	// export const DIK_WAKE = 0xE3;    /* System Wake */
+	// export const DIK_WEBSEARCH = 0xE5;    /* Web Search */
+	// export const DIK_WEBFAVORITES = 0xE6;    /* Web Favorites */
+	// export const DIK_WEBREFRESH = 0xE7;    /* Web Refresh */
+	// export const DIK_WEBSTOP = 0xE8;    /* Web Stop */
+	// export const DIK_WEBFORWARD = 0xE9;    /* Web Forward */
+	// export const DIK_WEBBACK = 0xEA;    /* Web Back */
+	// export const DIK_MYCOMPUTER = 0xEB;    /* My Computer */
+	// export const DIK_MAIL = 0xEC;    /* Mail */
+	// export const DIK_MEDIASELECT = 0xED;    /* Media Select */
 };

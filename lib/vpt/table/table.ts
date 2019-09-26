@@ -18,12 +18,14 @@
  */
 
 import { Event } from '../../game/event';
+import { EventProxy } from '../../game/event-proxy';
 import { IAnimatable, isAnimatable } from '../../game/ianimatable';
 import { IHittable, isHittable } from '../../game/ihittable';
 import { IMovable, isMovable } from '../../game/imovable';
 import { IPlayable, isPlayable } from '../../game/iplayable';
 import { Meshes } from '../../game/irenderable';
 import { IScriptable, isScriptable } from '../../game/iscriptable';
+import { Player } from '../../game/player';
 import { IBinaryReader, Storage } from '../../io/ole-doc';
 import { degToRad, f4 } from '../../math/float';
 import { FRect3D } from '../../math/frect3d';
@@ -54,14 +56,12 @@ import { TextBoxItem } from '../textbox-item';
 import { Texture } from '../texture';
 import { Timer } from '../timer/timer';
 import { Trigger } from '../trigger/trigger';
+import { TableApi } from './table-api';
 import { TableData } from './table-data';
 import { TableExportOptions } from './table-exporter';
 import { TableHitGenerator } from './table-hit-generator';
 import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
-import { TableApi } from './table-api';
-import { Player } from '../../game/player';
-import { EventProxy } from '../../game/event-proxy';
 
 /**
  * A Visual Pinball table.
