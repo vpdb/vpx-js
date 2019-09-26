@@ -34,7 +34,7 @@ export class Player extends EventEmitter {
 	private readonly physics: PlayerPhysics;
 	private readonly rgKeys: { [key: number]: number } = {
 		[AssignKey.LeftFlipperKey]: DIK_LCONTROL,
-		[AssignKey.RightFlipperKey]:  DIK_RCONTROL,
+		[AssignKey.RightFlipperKey]: DIK_RCONTROL,
 		[AssignKey.LeftTiltKey]: DIK_Z,
 		[AssignKey.RightTiltKey]: DIK_SLASH,
 		[AssignKey.CenterTiltKey]: DIK_SPACE,
@@ -60,6 +60,9 @@ export class Player extends EventEmitter {
 
 	private previousStates: { [key: string]: ItemState } = {};
 	private currentStates: { [key: string]: ItemState } = {};
+
+	public width: number = 0;
+	public height: number = 0;
 
 	constructor(table: Table) {
 		super();
@@ -145,7 +148,19 @@ export class Player extends EventEmitter {
 		this.emit('ballDestroyed', ball);
 	}
 
-	public getKey(key: AssignKey) {
+	public getActiveBall(): Ball | undefined {
+		return this.physics.activeBall;
+	}
+
+	public getGameTime(): number {
+		return this.physics.timeMsec;
+	}
+
+	public getBalls(): Ball[] {
+		return this.physics.balls;
+	}
+
+	public getKey(key: AssignKey): number {
 		return this.rgKeys[key];
 	}
 
@@ -153,8 +168,23 @@ export class Player extends EventEmitter {
 		return this.physics;
 	}
 
-	public setGravity(slopeDeg: number, strength: number) {
+	public setGravity(slopeDeg: number, strength: number): void {
 		this.physics.setGravity(slopeDeg, strength);
+	}
+
+	/**
+	 * Sets the dimensions of the render frame.
+	 *
+	 * The host app should call this whenever resizing happens. If you're
+	 * wondering why we would care about render dimensions in the lib, well,
+	 * the script API exposes it!
+	 *
+	 * @param width Width of the render frame in pixels
+	 * @param height Height of the render frame in pixels
+	 */
+	public setDimensions(width: number, height: number): void {
+		this.width = width;
+		this.height = height;
 	}
 
 	/**

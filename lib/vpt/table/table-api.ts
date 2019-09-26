@@ -27,7 +27,7 @@ import {
 	DEFAULT_TABLE_MIN_SLOPE,
 	GRAVITYCONST,
 } from '../../physics/constants';
-import { ItemApi } from '../item-api';
+import { dequantizeUnsignedPercent, ItemApi, quantizeUnsignedPercent } from '../item-api';
 import { Table } from './table';
 import { TableData } from './table-data';
 
@@ -74,7 +74,7 @@ export class TableApi extends ItemApi<TableData> {
 	get LightAmbient() { return this.data.lightAmbient; }
 	set LightAmbient(v) { this.data.lightAmbient = v; }
 	get Light0Emission() { return 1; } // TODO https://github.com/vpdb/vpx-js/issues/75
-	set Light0Emission(v) { /* TODO https://github.com/vpdb/vpx-js/issues/75 */}
+	set Light0Emission(v) { /* TODO https://github.com/vpdb/vpx-js/issues/75 */ }
 	get LightHeight() { return this.data.lightHeight; }
 	set LightHeight(v) { this.data.lightHeight = v; }
 	get LightRange() { return this.data.lightRange; }
@@ -262,8 +262,8 @@ export class TableApi extends ItemApi<TableData> {
 	get VersionMinor() { return VP_VERSION_MINOR; }
 	get VersionRevision() { return VP_VERSION_REV; }
 
-	public PlaySound(bstr: string, loopcount: number, volume: number, pan: number, randompitch: number, pitch: number, usesame: boolean, restart: boolean, front_rear_fade: number) {
-		// TODO implement
+	public PlaySound(bstr: string, loopcount: number, volume: number, pan: number, randompitch: number, pitch: number, usesame: boolean, restart: boolean, frontRearFade: number) {
+		// TODO implement sound
 	}
 
 	public GetPredefinedStrings(dispID: number): any {
@@ -289,23 +289,4 @@ export class TableApi extends ItemApi<TableData> {
 	public QuitPlayer(closeType: number): void {
 		// TODO implement
 	}
-}
-
-function dequantizeUnsignedPercent(i: number) {
-	/* originally:
-	 *
-	 * enum { N = 100 };
-	 * return precise_divide((float)i, (float)N);
-	 */
-	return Math.min(i / 100, 1);
-}
-
-function quantizeUnsignedPercent(x: number) {
-	/* originally:
-	 *
-	 * enum { N = 100, Np1 = 101 };
-	 * assert(x >= 0.f);
-	 * return min((unsigned int)(x * (float)Np1), (unsigned int)N);
-	 */
-	return Math.min(Math.max(0, x) * 100, 100);
 }

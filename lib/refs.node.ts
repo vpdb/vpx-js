@@ -19,6 +19,7 @@
 import { FileLoader } from 'three';
 
 export { NodeBinaryReader as BinaryReader } from './io/binary-reader.node';
+export { storage } from './io/storage.node';
 export { exportGltf } from './gltf/export-gltf.node';
 export { now } from './util/time.node';
 export {
