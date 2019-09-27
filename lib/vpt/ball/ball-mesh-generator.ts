@@ -17,9 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ballMesh } from '../../../res/meshes/ball-mesh';
 import { Mesh } from '../mesh';
 import { BallData } from './ball-data';
+
+const ballMesh = require('../../../res/meshes/ball-mesh.json');
 
 /**
  * This class creates a ball mesh.
@@ -33,6 +34,6 @@ export class BallMeshGenerator {
 	}
 
 	public getMesh(): Mesh {
-		return ballMesh.clone();
+		return Mesh.fromJson(ballMesh);
 	}
 }

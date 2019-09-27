@@ -17,10 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { triggerButtonMesh } from '../../../res/meshes/trigger-button-mesh';
-import { triggerSimpleMesh } from '../../../res/meshes/trigger-simple-mesh';
-import { triggerStarMesh } from '../../../res/meshes/trigger-star-mesh';
-import { triggerDWireMesh } from '../../../res/meshes/trigger-wire-d-mesh';
 import { degToRad, f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
@@ -29,6 +25,11 @@ import { Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { Trigger } from './trigger';
 import { TriggerData } from './trigger-data';
+
+const triggerButtonMesh = Mesh.fromJson(require('../../../res/meshes/trigger-button-mesh'));
+const triggerSimpleMesh = Mesh.fromJson(require('../../../res/meshes/trigger-simple-mesh'));
+const triggerStarMesh = Mesh.fromJson(require('../../../res/meshes/trigger-star-mesh'));
+const triggerDWireMesh = Mesh.fromJson(require('../../../res/meshes/trigger-wire-d-mesh'));
 
 export class TriggerMeshGenerator {
 

@@ -17,12 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { bulbLightMesh } from '../../../res/meshes/bulb-light-mesh';
-import { bulbSocketMesh } from '../../../res/meshes/bulb-socket-mesh';
 import { IRenderApi } from '../../render/irender-api';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { LightData } from './light-data';
+
+const bulbLightMesh = Mesh.fromJson(require('../../../res/meshes/bulb-light-mesh'));
+const bulbSocketMesh = Mesh.fromJson(require('../../../res/meshes/bulb-socket-mesh'));
 
 export class LightMeshGenerator {
 

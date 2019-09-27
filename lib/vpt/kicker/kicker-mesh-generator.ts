@@ -17,12 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { kickerCupMesh } from '../../../res/meshes/kicker-cup-mesh';
-import { kickerGottliebMesh } from '../../../res/meshes/kicker-gottlieb-mesh';
-import { kickerHoleMesh } from '../../../res/meshes/kicker-hole-mesh';
-import { kickerSimpleHoleMesh } from '../../../res/meshes/kicker-simple-hole-mesh';
-import { kickerT1Mesh } from '../../../res/meshes/kicker-t1-mesh';
-import { kickerWilliamsMesh } from '../../../res/meshes/kicker-williams-mesh';
 import { degToRad, f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
@@ -30,6 +24,13 @@ import { Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { Kicker } from './kicker';
 import { KickerData } from './kicker-data';
+
+const kickerCupMesh = Mesh.fromJson(require('../../../res/meshes/kicker-cup-mesh'));
+const kickerGottliebMesh = Mesh.fromJson(require('../../../res/meshes/kicker-gottlieb-mesh'));
+const kickerHoleMesh = Mesh.fromJson(require('../../../res/meshes/kicker-hole-mesh'));
+const kickerSimpleHoleMesh = Mesh.fromJson(require('../../../res/meshes/kicker-simple-hole-mesh'));
+const kickerT1Mesh = Mesh.fromJson(require('../../../res/meshes/kicker-t1-mesh'));
+const kickerWilliamsMesh = Mesh.fromJson(require('../../../res/meshes/kicker-williams-mesh'));
 
 export class KickerMeshGenerator {
 

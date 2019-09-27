@@ -11,7 +11,7 @@
 	"scripts": {
 		"build": "npm run compile && rimraf dist && tsc && npm run build:cp",
 		"build:watch": "npm run compile && npm run build:cp && tsc --watch",
-		"build:cp": "cp -r res/maps dist/res",
+		"build:cp": "cp -r res/maps dist/res && cp -r res/meshes dist/res",
 		"compile": "nearleyc lib/scripting/vbscript.ne -o lib/scripting/vbscript.ts",
 		"lint": "tslint lib/**/*.ts --format stylish",
 		"test": "npm run compile && nyc mocha"

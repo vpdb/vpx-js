@@ -17,15 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { hitTargetT2Mesh } from '../../../res/meshes/drop-target-t2-mesh';
-import { hitTargetT3Mesh } from '../../../res/meshes/drop-target-t3-mesh';
-import { hitTargetT4Mesh } from '../../../res/meshes/drop-target-t4-mesh';
-import { hitFatTargetRectangleMesh } from '../../../res/meshes/hit-target-fat-rectangle-mesh';
-import { hitFatTargetSquareMesh } from '../../../res/meshes/hit-target-fat-square-mesh';
-import { hitTargetRectangleMesh } from '../../../res/meshes/hit-target-rectangle-mesh';
-import { hitTargetRoundMesh } from '../../../res/meshes/hit-target-round-mesh';
-import { hitTargetT1SlimMesh } from '../../../res/meshes/hit-target-t1-slim-mesh';
-import { hitTargetT2SlimMesh } from '../../../res/meshes/hit-target-t2-slim-mesh';
 import { degToRad, f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
@@ -33,6 +24,16 @@ import { Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { HitTarget } from './hit-target';
 import { HitTargetData } from './hit-target-data';
+
+const hitTargetT2Mesh = Mesh.fromJson(require('../../../res/meshes/drop-target-t2-mesh'));
+const hitTargetT3Mesh = Mesh.fromJson(require('../../../res/meshes/drop-target-t3-mesh'));
+const hitTargetT4Mesh = Mesh.fromJson(require('../../../res/meshes/drop-target-t4-mesh'));
+const hitFatTargetRectangleMesh = Mesh.fromJson(require('../../../res/meshes/hit-target-fat-rectangle-mesh'));
+const hitFatTargetSquareMesh = Mesh.fromJson(require('../../../res/meshes/hit-target-fat-square-mesh'));
+const hitTargetRectangleMesh = Mesh.fromJson(require('../../../res/meshes/hit-target-rectangle-mesh'));
+const hitTargetRoundMesh = Mesh.fromJson(require('../../../res/meshes/hit-target-round-mesh'));
+const hitTargetT1SlimMesh = Mesh.fromJson(require('../../../res/meshes/hit-target-t1-slim-mesh'));
+const hitTargetT2SlimMesh = Mesh.fromJson(require('../../../res/meshes/hit-target-t2-slim-mesh'));
 
 export class HitTargetMeshGenerator {
 

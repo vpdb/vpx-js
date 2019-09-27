@@ -17,12 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { hitTargetT3Mesh } from '../../../res/meshes/drop-target-t3-mesh';
-import { gateBracketMesh } from '../../../res/meshes/gate-bracket-mesh';
-import { gateLongPlateMesh } from '../../../res/meshes/gate-long-plate-mesh';
-import { gatePlateMesh } from '../../../res/meshes/gate-plate-mesh';
-import { gateWireMesh } from '../../../res/meshes/gate-wire-mesh';
-import { gateWireRectangleMesh } from '../../../res/meshes/gate-wire-rectangle-mesh';
 import { degToRad, f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
@@ -31,6 +25,13 @@ import { Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { Gate } from './gate';
 import { GateData } from './gate-data';
+
+const hitTargetT3Mesh = Mesh.fromJson(require('../../../res/meshes/drop-target-t3-mesh'));
+const gateBracketMesh = Mesh.fromJson(require('../../../res/meshes/gate-bracket-mesh'));
+const gateLongPlateMesh = Mesh.fromJson(require('../../../res/meshes/gate-long-plate-mesh'));
+const gatePlateMesh = Mesh.fromJson(require('../../../res/meshes/gate-plate-mesh'));
+const gateWireMesh = Mesh.fromJson(require('../../../res/meshes/gate-wire-mesh'));
+const gateWireRectangleMesh = Mesh.fromJson(require('../../../res/meshes/gate-wire-rectangle-mesh'));
 
 export class GateMeshGenerator {
 

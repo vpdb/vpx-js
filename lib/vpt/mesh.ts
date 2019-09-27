@@ -62,6 +62,10 @@ export class Mesh {
 		return mesh;
 	}
 
+	public static fromJson(meshData: { vertices: number[][], indices: number[] }, name?: string): Mesh {
+		return Mesh.fromArray(meshData.vertices, meshData.indices);
+	}
+
 	/* istanbul ignore next: Only used for debugging */
 	public serializeToObj(description?: string): string {
 
