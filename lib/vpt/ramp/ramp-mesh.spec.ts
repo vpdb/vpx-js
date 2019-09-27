@@ -18,9 +18,9 @@
  */
 
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
-import { Mesh } from '../../refs.node';
 import { ThreeHelper } from '../../../test/three.helper';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { Mesh } from '../../refs.node';
 import { Table } from '../table/table';
 import { TableExporter } from '../table/table-exporter';
 
