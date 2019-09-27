@@ -34,7 +34,7 @@ export class BumperHit extends HitCircle {
 	private readonly events: EventProxy;
 
 	constructor(data: BumperData, state: BumperState, animation: BumperAnimation, events: EventProxy, height: number) {
-		super(data.vCenter, data.radius, height, height + data.heightScale);
+		super(data.center, data.radius, height, height + data.heightScale);
 		this.data = data;
 		this.state = state;
 		this.animation = animation;

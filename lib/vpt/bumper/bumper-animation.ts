@@ -36,7 +36,7 @@ export class BumperAnimation implements IAnimation {
 	private skirtCounter: number = 0;
 
 	public enableSkirtAnimation: boolean = true;
-	public hitEvent: boolean = false;
+	public hitEvent: boolean = false; // m_bumperanim_hitEvent
 	public ballHitPosition: Vertex3D = new Vertex3D();
 
 	constructor(data: BumperData, state: BumperState) {
@@ -118,18 +118,18 @@ export class BumperAnimation implements IAnimation {
 		const SKIRT_TILT = 5.0;
 		const hitX = this.ballHitPosition.x;
 		const hitY = this.ballHitPosition.y;
-		let dy = Math.abs(hitY - this.data.vCenter.y);
+		let dy = Math.abs(hitY - this.data.center.y);
 		if (dy === 0.0) {
 			dy = 0.000001;
 		}
-		const dx = Math.abs(hitX - this.data.vCenter.x);
+		const dx = Math.abs(hitX - this.data.center.x);
 		const skirtA = Math.tan(dx / dy);
 		let rotX = Math.cos(skirtA) * SKIRT_TILT;
 		let rotY = Math.sin(skirtA) * SKIRT_TILT;
-		if (this.data.vCenter.y < hitY) {
+		if (this.data.center.y < hitY) {
 			rotX = -rotX;
 		}
-		if (this.data.vCenter.x > hitX) {
+		if (this.data.center.x > hitX) {
 			rotY = -rotY;
 		}
 		this.state.skirtRotX = rotX;
