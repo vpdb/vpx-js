@@ -47,12 +47,12 @@ export class BumperMeshGenerator {
 
 	public getMeshes(table: Table): BumperMesh {
 		/* istanbul ignore if */
-		if (!this.data.vCenter) {
+		if (!this.data.center) {
 			throw new Error(`Cannot export bumper ${this.data.getName()} without vCenter.`);
 		}
 		const meshes: BumperMesh = {};
 		const matrix = new Matrix3D().rotateZMatrix(degToRad(this.data.orientation));
-		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
+		const height = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y) * table.getScaleZ();
 		if (this.data.isBaseVisible) {
 			meshes.base = this.generateMesh(
 				`bumper-base-${this.data.getName()}`,
@@ -92,8 +92,8 @@ export class BumperMeshGenerator {
 		const generatedMesh = mesh.clone(name);
 		for (const vertex of generatedMesh.vertices) {
 			const vert = Vertex3D.claim(vertex.x, vertex.y, vertex.z).multiplyMatrix(matrix);
-			vertex.x = vert.x + this.data.vCenter.x;
-			vertex.y = vert.y + this.data.vCenter.y;
+			vertex.x = vert.x + this.data.center.x;
+			vertex.y = vert.y + this.data.center.y;
 			vertex.z = zPos(vert.z);
 
 			const normal = Vertex3D.claim(vertex.nx, vertex.ny, vertex.nz).multiplyMatrixNoTranslate(matrix);

@@ -24,7 +24,7 @@ import { ItemData } from '../item-data';
 
 export class BumperData extends ItemData {
 
-	public vCenter!: Vertex2D;
+	public center!: Vertex2D;
 	public radius: number = 45;
 	public szCapMaterial?: string;
 	public szRingMaterial?: string;
@@ -58,7 +58,7 @@ export class BumperData extends ItemData {
 
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
 		switch (tag) {
-			case 'VCEN': this.vCenter = Vertex2D.get(buffer); break;
+			case 'VCEN': this.center = Vertex2D.get(buffer); break;
 			case 'RADI': this.radius = this.getFloat(buffer); break;
 			case 'MATR': this.szCapMaterial = this.getString(buffer, len); break;
 			case 'RIMA': this.szRingMaterial = this.getString(buffer, len); break;

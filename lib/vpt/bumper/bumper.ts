@@ -21,6 +21,7 @@ import { EventProxy } from '../../game/event-proxy';
 import { IAnimatable } from '../../game/ianimatable';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable, Meshes } from '../../game/irenderable';
+import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
@@ -30,6 +31,7 @@ import { Item } from '../item';
 import { Table } from '../table/table';
 import { Texture } from '../texture';
 import { BumperAnimation } from './bumper-animation';
+import { BumperApi } from './bumper-api';
 import { BumperData } from './bumper-data';
 import { BumperHit } from './bumper-hit';
 import { BumperMeshGenerator } from './bumper-mesh-generator';
@@ -41,13 +43,14 @@ import { BumperState } from './bumper-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/bumper.cpp
  */
-export class Bumper extends Item<BumperData> implements IRenderable, IHittable, IAnimatable<BumperState> {
+export class Bumper extends Item<BumperData> implements IRenderable, IHittable, IAnimatable<BumperState>, IScriptable<BumperApi> {
 
 	private readonly meshGenerator: BumperMeshGenerator;
 	private readonly meshUpdater: BumperMeshUpdater;
 	private readonly state: BumperState;
 	private hit?: BumperHit;
 	private animation?: BumperAnimation;
+	private api?: BumperApi;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Bumper> {
 		const data = await BumperData.fromStorage(storage, itemName);
@@ -74,10 +77,19 @@ export class Bumper extends Item<BumperData> implements IRenderable, IHittable, 
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
+		const height = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y);
 		this.events = new EventProxy(this);
 		this.animation = new BumperAnimation(this.data, this.state);
 		this.hit = new BumperHit(this.data, this.state, this.animation, this.events, height);
+		this.api = new BumperApi(this.animation, this.data, this.events, player, table);
+	}
+
+	public getApi(): BumperApi {
+		return this.api!;
+	}
+
+	public getEventNames(): string[] {
+		return [ 'Init', 'Timer', 'Hit' ];
 	}
 
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: BumperState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: BumperState): void {

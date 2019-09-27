@@ -61,9 +61,9 @@ export class BumperMeshUpdater {
 	private applySkirtState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: BumperState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table) {
 		const skirtObj = renderApi.findInGroup(obj, `bumper-socket-${this.data.getName()}`);
 		if (skirtObj) {
-			const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
-			const matToOrigin = Matrix3D.claim().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, -height);
-			const matFromOrigin = Matrix3D.claim().setTranslation(this.data.vCenter.x, this.data.vCenter.y, height);
+			const height = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y) * table.getScaleZ();
+			const matToOrigin = Matrix3D.claim().setTranslation(-this.data.center.x, -this.data.center.y, -height);
+			const matFromOrigin = Matrix3D.claim().setTranslation(this.data.center.x, this.data.center.y, height);
 			const matRotX = Matrix3D.claim().rotateXMatrix(degToRad(state.skirtRotX));
 			const matRotY = Matrix3D.claim().rotateYMatrix(degToRad(state.skirtRotY));
 
