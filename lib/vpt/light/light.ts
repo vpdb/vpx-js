@@ -17,19 +17,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
 import { IRenderable, Meshes } from '../../game/irenderable';
+import { IScriptable } from '../../game/iscriptable';
+import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { IRenderApi } from '../../render/irender-api';
 import { Item } from '../item';
 import { Material } from '../material';
 import { Table } from '../table/table';
+import { LightApi } from './light-api';
 import { LightData } from './light-data';
 import { LightMeshGenerator } from './light-mesh-generator';
-import { IScriptable } from '../../game/iscriptable';
-import { LightApi } from './light-api';
-import { Player } from '../../game/player';
-import { EventProxy } from '../../game/event-proxy';
 
 /**
  * VPinball's lights.
