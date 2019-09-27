@@ -26,17 +26,22 @@ import { Material } from '../material';
 import { Table } from '../table/table';
 import { LightData } from './light-data';
 import { LightMeshGenerator } from './light-mesh-generator';
+import { IScriptable } from '../../game/iscriptable';
+import { LightApi } from './light-api';
+import { Player } from '../../game/player';
+import { EventProxy } from '../../game/event-proxy';
 
 /**
  * VPinball's lights.
  *
  * @see https://github.com/vpinball/vpinball/blob/master/light.cpp
  */
-export class Light extends Item<LightData> implements IRenderable {
+export class Light extends Item<LightData> implements IRenderable, IScriptable<LightApi> {
 
 	public static readonly StateOff = 0;
 	public static readonly StateOn = 1;
 	public static readonly StateBlinking = 2;
+	private api?: LightApi;
 
 	// public getters
 	get color() { return this.data.color; }
@@ -61,6 +66,19 @@ export class Light extends Item<LightData> implements IRenderable {
 
 	public isVisible(table: Table): boolean {
 		return true; // we filter by bulb/playfield light
+	}
+
+	public setupPlayer(player: Player, table: Table): void {
+		this.events = new EventProxy(this);
+		this.api = new LightApi(this.data, this.events, player, table);
+	}
+
+	public getApi(): LightApi {
+		return this.api!;
+	}
+
+	public getEventNames(): string[] {
+		return [ 'Init', 'Timer' ];
 	}
 
 	public getMeshes<NODE, GEOMETRY, POINT_LIGHT>(table: Table, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>): Meshes<GEOMETRY> {
