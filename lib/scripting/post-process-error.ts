@@ -17,13 +17,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Comment, EmptyStatement } from 'estree';
+import { EmptyStatement, Literal } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
-export function stmt(result: [Token, null, Token, Comment[]]): EmptyStatement {
-	const option = result[0].text;
-	const explicitText = result[2].text;
-	const comments = result[3];
-	return estree.emptyStatement([estree.comment('Line', ' ' + option + ' ' + explicitText), ...comments]);
+export function stmt1(result: [Token, null, Token, null, Token, null, Token]): EmptyStatement {
+	const on = result[0].text;
+	const error = result[2].text;
+	const resume = result[4].text;
+	const next = result[6].text;
+	console.log('HERR@');
+	return estree.emptyStatement([estree.comment('Line', ' ' + on + ' ' + error + ' ' + resume + ' ' + next)]);
+}
+
+export function stmt2(result: [Token, null, Token, null, Token, null, Literal]): EmptyStatement {
+	const on = result[0].text;
+	const error = result[2].text;
+	const goto = result[4].text;
+	const literal = result[6].value;
+	return estree.emptyStatement([estree.comment('Line', ' ' + on + ' ' + error + ' ' + goto + ' ' + literal)]);
 }

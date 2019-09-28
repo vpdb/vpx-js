@@ -21,7 +21,7 @@ import { BlockStatement, Comment, FunctionDeclaration, Identifier, Statement } f
 import { Token } from 'moo';
 import * as estree from './estree';
 
-export function stmt(
+export function subDecl1(
 	result: [
 		Token[],
 		Token,
@@ -39,8 +39,32 @@ export function stmt(
 ): FunctionDeclaration {
 	const name = result[3];
 	const params = result[5] || [];
-	const body = result[7];
 	const leadingComments = result[6];
+	const blockStmt = result[7];
 	const trailingComments = result[11];
-	return estree.functionDeclaration(name, params, body, leadingComments, trailingComments);
+	return estree.functionDeclaration(name, params, blockStmt, leadingComments, trailingComments);
+}
+
+export function subDecl2(
+	result: [
+		Token[],
+		Token,
+		null,
+		Identifier,
+		null,
+		Identifier[],
+		null,
+		Statement,
+		null,
+		Token,
+		null,
+		Token,
+		Comment[],
+	],
+): FunctionDeclaration {
+	const name = result[3];
+	const params = result[5] || [];
+	const stmt = result[7];
+	const trailingComments = result[12];
+	return estree.functionDeclaration(name, params, estree.blockStatement([stmt]), [], trailingComments);
 }

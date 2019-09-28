@@ -23,7 +23,7 @@ export class VBSHelper {
 	 */
 
 	public dim(dimensions: number[], position: number = 0): any[] {
-		const dimension = dimensions[position] + 1;
+		const dimension = dimensions && dimensions.length ? dimensions[position] + 1 : 0;
 		const array = new Array(dimension).fill(undefined);
 		if (++position < dimensions.length) {
 			for (let index = 0; index < dimension; index++) {

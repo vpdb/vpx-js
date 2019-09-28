@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BlockStatement, Comment, Expression, ForOfStatement, ForStatement, Identifier, Statement } from 'estree';
+import { BlockStatement, Comment, Expression, ForOfStatement, ForStatement, Identifier } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
@@ -35,8 +35,6 @@ export function stmt1(
 		null,
 		Expression,
 		null,
-		Token,
-		null,
 		Expression,
 		Comment[],
 		BlockStatement,
@@ -47,18 +45,20 @@ export function stmt1(
 	const identifier = result[2];
 	const init = result[6];
 	const test = result[10];
-	const step = result[14];
-	const body = result[16];
-	const leadingComments = result[15];
-	const trailingComments = result[18];
+	const step = result[12];
+	const leadingComments = result[13];
+	const body = result[14];
+	const trailingComments = result[16];
 	return estree.forStatement(
 		estree.assignmentExpression(identifier, '=', init),
-		estree.conditionalExpression(
-			estree.binaryExpression('<', step, estree.literal(0)),
-			estree.binaryExpression('>=', identifier, test),
-			estree.binaryExpression('<=', identifier, test),
-		),
-		estree.assignmentExpression(identifier, '+=', step),
+		step
+			? estree.conditionalExpression(
+					estree.binaryExpression('<', step, estree.literal(0)),
+					estree.binaryExpression('>=', identifier, test),
+					estree.binaryExpression('<=', identifier, test),
+			  )
+			: estree.binaryExpression('<=', identifier, test),
+		estree.assignmentExpression(identifier, '+=', step ? step : estree.literal(1)),
 		body,
 		leadingComments,
 		trailingComments,
@@ -66,41 +66,6 @@ export function stmt1(
 }
 
 export function stmt2(
-	result: [
-		Token,
-		null,
-		Identifier,
-		null,
-		Token,
-		null,
-		Expression,
-		null,
-		Token,
-		null,
-		Expression,
-		Comment[],
-		BlockStatement,
-		Token,
-		Comment[],
-	],
-): ForStatement {
-	const identifier = result[2];
-	const init = result[6];
-	const test = result[10];
-	const body = result[12];
-	const leadingComments = result[11];
-	const trailingComments = result[14];
-	return estree.forStatement(
-		estree.assignmentExpression(identifier, '=', init),
-		estree.binaryExpression('<=', identifier, test),
-		estree.assignmentExpression(identifier, '+=', estree.literal(1)),
-		body,
-		leadingComments,
-		trailingComments,
-	);
-}
-
-export function stmt3(
 	result: [
 		Token,
 		null,
@@ -119,8 +84,13 @@ export function stmt3(
 ): ForOfStatement {
 	const identifier = result[4];
 	const expression = result[8];
-	const body = result[10];
 	const leadingComments = result[9];
+	const body = result[10];
 	const trailingComments = result[12];
 	return estree.forOfStatement(identifier, expression, body, leadingComments, trailingComments);
+}
+
+export function stepOpt(result: [Token, null, Expression]): Expression {
+	const expr = result[2];
+	return expr;
 }

@@ -17,13 +17,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Comment, EmptyStatement } from 'estree';
-import { Token } from 'moo';
-import * as estree from './estree';
+import { expect } from 'chai';
+import { vbsToJs } from '../../test/script.helper';
 
-export function stmt(result: [Token, null, Token, Comment[]]): EmptyStatement {
-	const option = result[0].text;
-	const explicitText = result[2].text;
-	const comments = result[3];
-	return estree.emptyStatement([estree.comment('Line', ' ' + option + ' ' + explicitText), ...comments]);
-}
+describe('The VBScript transpiler - Error', () => {
+	it('should transpile an On Error Resume Next statement', () => {
+		const vbs = `On Error Resume Next\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal(';    // On Error Resume Next\n');
+	});
+});
+
+describe('The VBScript transpiler - Error', () => {
+	it('should transpile an On Error GoTo statement', () => {
+		const vbs = `On Error Goto 1\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal(';    // On Error Goto 1\n');
+	});
+});

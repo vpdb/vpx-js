@@ -17,27 +17,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ArrayExpression, Comment, Expression, Identifier, VariableDeclaration, VariableDeclarator } from 'estree';
+import { Comment, Identifier, Literal, VariableDeclaration, VariableDeclarator } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
-export function stmt(result: [Token, null, VariableDeclarator, VariableDeclarator[], Comment[]]): VariableDeclaration {
+export function varDecl(
+	result: [Token, null, VariableDeclarator, null, VariableDeclarator[], Comment[]],
+): VariableDeclaration {
 	const firstVar = result[2];
-	const otherVars = result[3] || [];
+	const otherVars = result[4] || [];
 	const declarators = [firstVar, ...otherVars];
-	const comments = result[4];
+	const comments = result[5];
 	return estree.variableDeclaration('let', declarators, comments);
 }
 
-export function varName(result: [Identifier, null, Token, null, Expression[], null, Token]): VariableDeclarator {
+export function varName(result: [Identifier, null, Token, null, Literal[], null, Token]): VariableDeclarator {
 	const name = result[0];
-	const elements = result[4] || [];
+	const literals = result[4] || [];
 	return estree.variableDeclarator(
 		name,
-		elements.length > 0
-			? estree.callExpression(estree.memberExpression(estree.identifier('vbsHelper'), estree.identifier('dim')), [
-					estree.arrayExpression(elements),
-			  ])
-			: null,
+		estree.callExpression(estree.memberExpression(estree.identifier('vbsHelper'), estree.identifier('dim')), [
+			estree.arrayExpression(literals),
+		]),
 	);
+}
+
+export function otherVarsOpt(
+	result: [Token, null, VariableDeclarator, null, VariableDeclarator[]],
+): VariableDeclarator[] {
+	const firstVarDecl = result[2];
+	const otherVarDecls = result[4] || [];
+	return [firstVarDecl, ...otherVarDecls];
 }
