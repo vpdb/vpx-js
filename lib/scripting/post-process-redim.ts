@@ -18,24 +18,20 @@
  */
 
 import { traverse } from 'estraverse';
-import { Comment, Expression, Identifier, Statement } from 'estree';
+import { Comment, Expression, Identifier, Statement, VariableDeclarator } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
-export function stmt1(result: [Token, null, Expression, Expression[], Comment[]]): Statement {
-	const firstExpr = result[2];
-	const otherExprs = result[3] || [];
-	const exprs = [firstExpr, ...otherExprs];
-	const comments = result[4];
-	return estree.expressionStatement(estree.sequenceExpression(exprs), [], comments);
+export function stmt1(result: [Token, null, VariableDeclarator[], Comment[]]): Statement {
+	const declarators = result[2];
+	const comments = result[3];
+	return estree.variableDeclaration('let', declarators, comments);
 }
 
-export function stmt2(result: [Token, null, Token, null, Expression, Expression[], Comment[]]): Statement {
-	const firstExpr = result[4];
-	const otherExprs = result[5] || [];
-	const exprs = [firstExpr, ...otherExprs];
-	const comments = result[6];
-	const stmt = estree.expressionStatement(estree.sequenceExpression(exprs), [], comments);
+export function stmt2(result: [Token, null, Token, null, VariableDeclarator[], Comment[]]): Statement {
+	const declarators = result[4];
+	const comments = result[5];
+	const stmt = estree.variableDeclaration('let', declarators, comments);
 	traverse(stmt, {
 		enter: node => {
 			if (node.type === 'CallExpression') {
@@ -52,14 +48,22 @@ export function stmt2(result: [Token, null, Token, null, Expression, Expression[
 	return stmt;
 }
 
-export function redimDecl(result: [Identifier, null, Token, null, Expression, null, Expression[], Token]): Expression {
+export function redimDeclList1(result: [Expression, null, Token, null, Expression[]]): Expression[] {
+	const firstExpr = result[0];
+	const otherExprs = result[4];
+	return [firstExpr, ...otherExprs];
+}
+
+export function redimDeclList2(result: [Expression]): Expression[] {
+	const expr = result[0];
+	return [expr];
+}
+
+export function redimDecl(result: [Identifier, null, Token, null, Expression[], null, Token]): VariableDeclarator {
 	const name = result[0];
-	const firstExpr = result[4];
-	const otherExprs = result[6] || [];
-	const exprs = [firstExpr, ...otherExprs];
-	return estree.assignmentExpression(
+	const exprs = result[4];
+	return estree.variableDeclarator(
 		name,
-		'=',
 		estree.callExpression(estree.memberExpression(estree.identifier('vbsHelper'), estree.identifier('redim')), [
 			name,
 			estree.arrayExpression(exprs),

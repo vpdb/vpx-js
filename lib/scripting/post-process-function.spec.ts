@@ -29,8 +29,24 @@ describe('The VBScript transpiler - Function', () => {
 		);
 	});
 
+	it('should transpile an inline function with empty params', () => {
+		const vbs = `Function BallRelease_Hit() BallRelease_Hit = BallRelease.CreateBall End Function\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal(
+			'function BallRelease_Hit() {\n    let BallRelease_Hit = null;\n    BallRelease_Hit = BallRelease.CreateBall;\n    return BallRelease_Hit;\n}',
+		);
+	});
+
 	it('should transpile a function with params', () => {
 		const vbs = `Function BallRelease_Hit(value1, value2, value3)\nBallRelease.CreateBall\nEnd Function\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal(
+			'function BallRelease_Hit(value1, value2, value3) {\n    let BallRelease_Hit = null;\n    BallRelease.CreateBall();\n    return BallRelease_Hit;\n}',
+		);
+	});
+
+	it('should transpile an inline function with params', () => {
+		const vbs = `Function BallRelease_Hit(value1, value2, value3) BallRelease.CreateBall End Function\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal(
 			'function BallRelease_Hit(value1, value2, value3) {\n    let BallRelease_Hit = null;\n    BallRelease.CreateBall();\n    return BallRelease_Hit;\n}',
@@ -45,8 +61,22 @@ describe('The VBScript transpiler - Function', () => {
 		);
 	});
 
+	it('should transpile a inline function with params and exit', () => {
+		const vbs = `Function MyFunction(value) Exit Function End Function\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('function MyFunction(value) {\n    let MyFunction = null;\n    return MyFunction;\n}');
+	});
+
 	it('should transpile a function with no params', () => {
 		const vbs = `Function BallRelease_Hit\nBallRelease_Hit = BallRelease.CreateBall\nEnd Function\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal(
+			'function BallRelease_Hit() {\n    let BallRelease_Hit = null;\n    BallRelease_Hit = BallRelease.CreateBall;\n    return BallRelease_Hit;\n}',
+		);
+	});
+
+	it('should transpile an inline function with no params', () => {
+		const vbs = `Function BallRelease_Hit BallRelease_Hit = BallRelease.CreateBall End Function\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal(
 			'function BallRelease_Hit() {\n    let BallRelease_Hit = null;\n    BallRelease_Hit = BallRelease.CreateBall;\n    return BallRelease_Hit;\n}',

@@ -18,11 +18,11 @@
  */
 
 import { traverse } from 'estraverse';
-import { BlockStatement, Comment, FunctionDeclaration, Identifier } from 'estree';
+import { BlockStatement, Comment, FunctionDeclaration, Identifier, Statement } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
-export function stmt(
+export function functionDecl1(
 	result: [
 		Token[],
 		Token,
@@ -40,19 +40,54 @@ export function stmt(
 ): FunctionDeclaration {
 	const name = result[3];
 	const params = result[5] || [];
-	const body = result[7];
 	const leadingComments = result[6];
+	const blockStmt = result[7];
 	const trailingComments = result[11];
-	traverse(body, {
+	traverse(blockStmt, {
 		enter: node => {
 			if (node.type === 'ReturnStatement') {
 				node.argument = name;
 			}
 		},
 	});
-	body.body.unshift(estree.variableDeclaration('let', [estree.variableDeclarator(name, estree.literal(null))], []));
-	if (body.body[body.body.length - 1].type !== 'ReturnStatement') {
-		body.body.push(estree.returnStatement(name));
+	blockStmt.body.unshift(
+		estree.variableDeclaration('let', [estree.variableDeclarator(name, estree.literal(null))], []),
+	);
+	if (blockStmt.body[blockStmt.body.length - 1].type !== 'ReturnStatement') {
+		blockStmt.body.push(estree.returnStatement(name));
 	}
-	return estree.functionDeclaration(name, params, body, leadingComments, trailingComments);
+	return estree.functionDeclaration(name, params, blockStmt, leadingComments, trailingComments);
+}
+
+export function functionDecl2(
+	result: [
+		Token[],
+		Token,
+		null,
+		Identifier,
+		null,
+		Identifier[],
+		null,
+		Statement,
+		null,
+		Token,
+		null,
+		Token,
+		Comment[],
+	],
+): FunctionDeclaration {
+	const name = result[3];
+	const params = result[5] || [];
+	const stmt = result[7];
+	const trailingComments = result[12];
+	const blockStmt: BlockStatement = estree.blockStatement([
+		estree.variableDeclaration('let', [estree.variableDeclarator(name, estree.literal(null))], []),
+		stmt,
+	]);
+	if (stmt.type === 'ReturnStatement') {
+		stmt.argument = name;
+	} else {
+		blockStmt.body.push(estree.returnStatement(name));
+	}
+	return estree.functionDeclaration(name, params, blockStmt, [], trailingComments);
 }

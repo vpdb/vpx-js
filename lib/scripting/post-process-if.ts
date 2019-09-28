@@ -22,113 +22,61 @@ import { Token } from 'moo';
 import * as estree from './estree';
 
 export function stmt1(
-	result: [
-		Token,
-		null,
-		Expression,
-		null,
-		Token,
-		Comment[],
-		BlockStatement,
-		IfStatement[],
-		Statement,
-		Token,
-		null,
-		Token,
-		Comment[],
-	],
+	result: [Token, null, Expression, null, Token, Comment[], BlockStatement, Statement, Token, null, Token, Comment[]],
 ): IfStatement {
 	const test = result[2];
 	const consequent = result[6];
-	const elseIfStatements = result[7];
-	const elseStatement = result[8] ? [result[8]] : [];
+	const alternate = result[7];
 	const leadingComments = result[5];
-	const trailingComments = result[12];
-	const ifStatement = estree.ifStatement(test, consequent, null, leadingComments, trailingComments);
-	let prevStatement: Statement = ifStatement;
-	[...elseIfStatements, ...elseStatement].forEach(statement => {
-		(prevStatement as IfStatement).alternate = statement;
-		prevStatement = statement;
-	});
-	return ifStatement;
+	const trailingComments = result[11];
+	return estree.ifStatement(test, consequent, alternate, leadingComments, trailingComments);
 }
 
 export function stmt2(
-	result: [
-		Token,
-		null,
-		Expression,
-		null,
-		Token,
-		null,
-		Statement,
-		null,
-		Token,
-		null,
-		Statement,
-		null,
-		Token,
-		null,
-		Token,
-		Comment[],
-	],
+	result: [Token, null, Expression, null, Token, null, Statement, null, Statement, null, Token, Comment[]],
 ): IfStatement {
 	const test = result[2];
 	const consequent = result[6];
-	const alternate = result[10];
-	const comments = result[15];
-	return estree.ifStatement(test, consequent, alternate, [], comments);
-}
-
-export function stmt3(
-	result: [Token, null, Expression, null, Token, null, Statement, null, Token, null, Statement, Comment[]],
-): IfStatement {
-	const test = result[2];
-	const consequent = result[6];
-	const alternate = result[10];
+	const alternate = result[8];
 	const comments = result[11];
 	return estree.ifStatement(test, consequent, alternate, [], comments);
 }
 
-export function stmt4(
-	result: [Token, null, Expression, null, Token, null, Statement, null, Token, null, Token, Comment[]],
+export function elseStmt1(
+	result: [Token, null, Expression, null, Token, Comment[], BlockStatement, Statement],
 ): IfStatement {
-	const test = result[2];
-	const consequent = result[6];
-	const comments = result[11];
-	return estree.ifStatement(test, consequent, null, [], comments);
-}
-
-export function stmt5(result: [Token, null, Expression, null, Token, null, Statement, Comment[]]): IfStatement {
-	const test = result[2];
-	const consequent = result[6];
-	const comments = result[7];
-	return estree.ifStatement(test, consequent, null, [], comments);
-}
-
-export function elseIfStmt1(result: [Token, null, Expression, null, Token, Comment[], BlockStatement]): IfStatement {
 	const expr = result[2];
 	const comments = result[5];
 	const consequent = result[6];
-	return estree.ifStatement(expr, consequent, null, [], comments);
+	const alternate = result[7];
+	return estree.ifStatement(expr, consequent, alternate, [], comments);
 }
 
-export function elseIfStmt2(result: [Token, null, Expression, null, Token, null, Statement, Comment[]]): IfStatement {
+export function elseStmt2(
+	result: [Token, null, Expression, null, Token, null, Statement, Comment[], Statement],
+): IfStatement {
 	const expr = result[2];
 	const consequent = result[6];
 	const comments = result[7];
-	return estree.ifStatement(expr, consequent, null, [], comments);
-}
-export function elseStmt1(result: [Token, null, Statement, Comment[]]): Statement {
-	const statement = result[2];
-	const comments = result[3];
-	statement.trailingComments = comments;
-	return statement;
+	const alternate = result[8];
+	return estree.ifStatement(expr, consequent, alternate, [], comments);
 }
 
-export function elseStmt2(result: [Token, Comment[], BlockStatement]): Statement {
+export function elseStmt3(result: [Token, null, Statement, Comment[]]): Statement {
+	const stmt = result[2];
+	const comments = result[3];
+	stmt.trailingComments = comments;
+	return stmt;
+}
+
+export function elseStmt4(result: [Token, Comment[], BlockStatement]): Statement {
 	const comments = result[1];
-	const statement = result[2];
-	statement.trailingComments = comments;
-	return statement;
+	const stmt = result[2];
+	stmt.trailingComments = comments;
+	return stmt;
+}
+
+export function elseOpt(result: [Token, null, Statement]): Statement {
+	const stmt = result[2];
+	return stmt;
 }

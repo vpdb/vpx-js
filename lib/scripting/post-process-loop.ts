@@ -32,8 +32,12 @@ export function stmt1(
 	if (type === 'kw_while') {
 		return estree.whileStatement(test, body, leadingComments, trailingComments);
 	} else {
-		body.body.unshift(estree.ifStatement(test, estree.breakStatement(), null));
-		return estree.doWhileStatement(body, estree.literal(true), leadingComments, trailingComments);
+		return estree.doWhileStatement(
+			estree.blockStatement([estree.ifStatement(test, estree.breakStatement(), null), ...body.body]),
+			estree.literal(true),
+			leadingComments,
+			trailingComments,
+		);
 	}
 }
 
@@ -46,8 +50,12 @@ export function stmt2(result: [Token, Comment[], BlockStatement, Token, null, To
 	if (type === 'kw_while') {
 		return estree.doWhileStatement(body, test, leadingComments, trailingComments);
 	} else {
-		body.body.push(estree.ifStatement(test, estree.breakStatement(), null));
-		return estree.doWhileStatement(body, estree.literal(true), leadingComments, trailingComments);
+		return estree.doWhileStatement(
+			estree.blockStatement([...body.body, estree.ifStatement(test, estree.breakStatement(), null)]),
+			estree.literal(true),
+			leadingComments,
+			trailingComments,
+		);
 	}
 }
 

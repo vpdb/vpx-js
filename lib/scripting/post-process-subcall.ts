@@ -17,35 +17,71 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Expression, ExpressionStatement } from 'estree';
+import { EmptyStatement, Expression, ExpressionStatement, Identifier } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
 export function stmt1(result: [Expression, null, Expression, null, Expression[]]): ExpressionStatement {
 	const callee = result[0];
-	const firstExpr = result[2] ? [result[2]] : [];
-	const otherExpr = result[4] || [];
-	const exprs = [...firstExpr, ...otherExpr];
-	return estree.expressionStatement(estree.callExpression(callee, exprs));
+	const firstArg = result[2] ? [result[2]] : [];
+	const otherArgs = result[4] || [];
+	const args = [...firstArg, ...otherArgs];
+	return estree.expressionStatement(estree.callExpression(callee, args));
 }
 
-export function stmt2(
+export function stmt2(result: [Expression, null, Expression]): ExpressionStatement {
+	const callee = result[0];
+	const arg = result[2] ? [result[2]] : [];
+	const args = [...arg];
+	return estree.expressionStatement(estree.callExpression(callee, args));
+}
+
+export function stmt3(
 	result: [Expression, null, Token, null, Expression, null, Token, null, Expression[]],
 ): ExpressionStatement {
 	const callee = result[0];
-	const firstExpr = result[4] ? [result[4]] : [];
-	const otherExpr = result[8] || [];
-	const exprs = [...firstExpr, ...otherExpr];
-	return estree.expressionStatement(estree.callExpression(callee, exprs));
+	const firstArg = result[4];
+	const otherArgs = result[8] || [];
+	const args = [firstArg, ...otherArgs];
+	return estree.expressionStatement(estree.callExpression(callee, args));
 }
 
-export function stmt3(result: [Expression, null, Token, null, Expression, null, Token]): ExpressionStatement {
+export function stmt4(result: [Expression, null, Token, null, Expression, null, Token]): ExpressionStatement {
 	const callee = result[0];
-	const expr = result[4] ? [result[4]] : [];
-	return estree.expressionStatement(estree.callExpression(callee, [...expr]));
+	const arg = result[4];
+	const args = [arg];
+	return estree.expressionStatement(estree.callExpression(callee, args));
 }
 
-export function stmt4(result: [Expression, null, Token, null, Token]): ExpressionStatement {
+export function stmt5(result: [Expression, null, Token, null, Token]): ExpressionStatement {
 	const callee = result[0];
 	return estree.expressionStatement(estree.callExpression(callee, []));
+}
+
+export function stmt6(result: []): EmptyStatement {
+	return estree.emptyStatement();
+}
+
+export function stmt7(result: []): EmptyStatement {
+	return estree.emptyStatement();
+}
+
+export function stmt8(result: []): EmptyStatement {
+	return estree.emptyStatement();
+}
+
+export function stmt9(result: [Expression, null, Expression[], Expression, null, Expression[]]): ExpressionStatement {
+	const callee = result[0];
+	const args = result[2];
+	const expr = result[3];
+	let callExpr = estree.callExpression(callee, args);
+	if (expr.type === 'CallExpression') {
+		if (expr.callee.type === 'MemberExpression') {
+			if (expr.callee.object.type === 'CallExpression') {
+				expr.callee.object.callee = estree.memberExpression(callExpr, expr.callee.object.callee as Identifier);
+				callExpr = expr;
+			}
+		}
+	}
+	return estree.expressionStatement(callExpr);
 }

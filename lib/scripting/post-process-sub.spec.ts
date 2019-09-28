@@ -27,14 +27,32 @@ describe('The VBScript transpiler - Sub', () => {
 		expect(js).to.equal('function BallRelease_Hit() {\n    BallRelease.CreateBall();\n}');
 	});
 
+	it('should transpile an inline sub declaration with empty params', () => {
+		const vbs = `Sub BallRelease_Hit() BallRelease.CreateBall End Sub\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('function BallRelease_Hit() {\n    BallRelease.CreateBall();\n}');
+	});
+
 	it('should transpile a sub declaration with params', () => {
 		const vbs = `Sub BallRelease_Hit(value1, value2, value3)\nBallRelease.CreateBall\nEnd Sub\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('function BallRelease_Hit(value1, value2, value3) {\n    BallRelease.CreateBall();\n}');
 	});
 
+	it('should transpile an inline sub declaration with params', () => {
+		const vbs = `Sub BallRelease_Hit(value1, value2, value3) BallRelease.CreateBall End Sub\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('function BallRelease_Hit(value1, value2, value3) {\n    BallRelease.CreateBall();\n}');
+	});
+
 	it('should transpile a sub declaration with no params', () => {
 		const vbs = `Sub BallRelease_Hit\nBallRelease.CreateBall\nEnd Sub\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('function BallRelease_Hit() {\n    BallRelease.CreateBall();\n}');
+	});
+
+	it('should transpile an inline sub declaration with no params', () => {
+		const vbs = `Sub BallRelease_Hit BallRelease.CreateBall End Sub\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('function BallRelease_Hit() {\n    BallRelease.CreateBall();\n}');
 	});

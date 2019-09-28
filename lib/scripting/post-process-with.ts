@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { traverse } from 'estraverse';
 import { BlockStatement, Comment, Expression, Statement } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
@@ -28,17 +29,19 @@ export function stmt(
 	const body = result[4];
 	const leadingComments = result[3];
 	const trailingComments = result[8];
-	body.body.forEach(statement => {
-		if (statement.type === 'ExpressionStatement') {
-			if (statement.expression.type === 'AssignmentExpression') {
-				if (statement.expression.left.type === 'Identifier') {
-					if (statement.expression.left.name.startsWith('.')) {
-						statement.expression.left.name = statement.expression.left.name.substr(1);
-						statement.expression.left = estree.memberExpression(identifier, statement.expression.left);
+	traverse(body, {
+		enter: node => {
+			if (node.type === 'ExpressionStatement') {
+				if (node.expression.type === 'AssignmentExpression') {
+					if (node.expression.left.type === 'Identifier') {
+						if (node.expression.left.name.startsWith('.')) {
+							node.expression.left.name = node.expression.left.name.substr(1);
+							node.expression.left = estree.memberExpression(identifier, node.expression.left);
+						}
 					}
 				}
 			}
-		}
+		},
 	});
 	body.leadingComments = leadingComments;
 	body.trailingComments = trailingComments;
