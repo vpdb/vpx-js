@@ -17,53 +17,43 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BlockStatement, Comment, Expression, Statement, SwitchCase, SwitchStatement } from 'estree';
+import { BlockStatement, Comment, Expression, SwitchCase, SwitchStatement } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
-export function stmt(
-	result: [
-		Token,
-		null,
-		Token,
-		null,
-		Expression,
-		Comment[],
-		SwitchCase[][],
-		SwitchCase,
-		Token,
-		null,
-		Token,
-		Comment[],
-	],
+export function selectStmt(
+	result: [Token, null, Token, null, Expression, Comment[], SwitchCase[], Token, null, Token, Comment[]],
 ): SwitchStatement {
 	const discriminant = result[4];
 	const caseStatements = result[6];
-	const caseElseStatement = result[7] || [];
-	const cases = ([] as SwitchCase[]).concat(...caseStatements, caseElseStatement);
 	const leadingComments = result[5];
-	const trailingComments = result[11];
-	return estree.switchStatement(discriminant, cases, leadingComments, trailingComments);
+	const trailingComments = result[10];
+	return estree.switchStatement(discriminant, caseStatements, leadingComments, trailingComments);
 }
 
-export function caseStmt(result: [Token, null, Expression, null, Expression[], BlockStatement]): SwitchCase[] {
-	const test = [result[2]];
-	const otherTests = result[4] || [];
-	const tests = [...test, ...otherTests];
-	const consequent = result[5].body;
-	const switchCases = [] as SwitchCase[];
-	tests.forEach((val, key, arr) => {
-		if (Object.is(tests.length - 1, key)) {
-			switchCases.push(estree.switchCase(val, [...consequent, estree.breakStatement()]));
-		} else {
-			switchCases.push(estree.switchCase(val, []));
-		}
-	});
-
-	return switchCases;
+export function caseStmtList1(
+	result: [Token, null, Expression[], Comment[], BlockStatement, SwitchCase[]],
+): SwitchCase[] {
+	const exprs = result[2];
+	const comments = result[3] || [];
+	const blockStmt = result[4];
+	const prevSwitchCases = result[5] || [];
+	const switchCases = [];
+	for (let index = 0; index < exprs.length; index++) {
+		switchCases.push(
+			estree.switchCase(
+				exprs[index],
+				index === exprs.length - 1 ? [...blockStmt.body, estree.breakStatement()] : [],
+				comments,
+				[],
+			),
+		);
+	}
+	return switchCases.concat(prevSwitchCases);
 }
 
-export function caseElseStmt(result: [Token, null, Token, BlockStatement]): SwitchCase {
-	const consequent = result[3].body;
-	return estree.switchCase(null, consequent);
+export function caseStmtList2(result: [Token, null, Token, Comment[], BlockStatement]): SwitchCase[] {
+	const comments = result[3] || [];
+	const blockStmt = result[4];
+	return [estree.switchCase(null, blockStmt.body, comments, [])];
 }

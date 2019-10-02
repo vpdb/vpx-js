@@ -4,23 +4,22 @@
 const estree = require('./estree');
 
 const ppDim = require('./post-process-dim');
-const ppRedim = require('./post-process-redim');
 const ppConst = require('./post-process-const');
-const ppAssign = require('./post-process-assign');
-const ppSubCall = require('./post-process-subcall');
-const ppRem = require('./post-process-rem');
-const ppExpr = require('./post-process-expr');
-const ppLiteral = require('./post-process-literal');
-const ppOption = require('./post-process-option');
-const ppError = require('./post-process-error');
 const ppSub = require('./post-process-sub');
 const ppFunction = require('./post-process-function');
+const ppOption = require('./post-process-option');
+const ppRem = require('./post-process-rem');
 const ppIf = require('./post-process-if');
 const ppWith = require('./post-process-with');
-const ppFor = require('./post-process-for');
-const ppLoop = require('./post-process-loop');
 const ppSelect = require('./post-process-select');
-
+const ppLoop = require('./post-process-loop');
+const ppFor = require('./post-process-for');
+const ppRedim = require('./post-process-redim');
+const ppAssign = require('./post-process-assign');
+const ppSubCall = require('./post-process-subcall');
+const ppError = require('./post-process-error');
+const ppExpr = require('./post-process-expr');
+const ppLiteral = require('./post-process-literal');
 const ppHelpers = require('./post-process-helpers');
 
 const moo = require('moo');
@@ -197,9 +196,8 @@ GlobalStmt           -> OptionExplicit                                          
 MethodStmt           -> ConstDecl                                                                                                         {% id %}
                       | BlockStmt                                                                                                         {% id %}
 
-BlockStmt            -> RemStmt                                                                                                           {% id %}
+BlockStmt            -> VarDecl                                                                                                           {% id %}
                       | RedimStmt                                                                                                         {% id %}
-                      | VarDecl                                                                                                           {% id %}
                       | IfStmt                                                                                                            {% id %}
                       | WithStmt                                                                                                          {% id %}
                       | SelectStmt                                                                                                        {% id %}
@@ -207,6 +205,7 @@ BlockStmt            -> RemStmt                                                 
                       | ForStmt                                                                                                           {% id %}
                       | InlineStmt NL                                                                                                     {% ppHelpers.blockStmt1 %}
                       | NL                                                                                                                {% ppHelpers.blockStmt2 %}
+                      | RemStmt                                                                                                           {% id %}
 
 InlineStmt           -> AssignStmt                                                                                                        {% id %}
                       | SubCallStmt                                                                                                       {% id %}
@@ -325,21 +324,22 @@ LoopType             -> %kw_while                                               
 
 #========= For Statement
 
-ForStmt              -> %kw_for _ ExtendedID _ %equals _ Expr _ %kw_to _ Expr _ StepOpt NL BlockStmtList %kw_next NL                       {% ppFor.stmt1 %}
-                      | %kw_for __ %kw_each _ ExtendedID _ %kw_in _ Expr NL BlockStmtList %kw_next NL                                      {% ppFor.stmt2 %}
+ForStmt              -> %kw_for _ ExtendedID _ %equals _ Expr _ %kw_to _ Expr _ StepOpt NL BlockStmtList %kw_next NL                      {% ppFor.stmt1 %}
+                      | %kw_for __ %kw_each _ ExtendedID _ %kw_in _ Expr NL BlockStmtList %kw_next NL                                     {% ppFor.stmt2 %}
 
-StepOpt              -> %kw_step _ Expr                                                                                                    {% ppFor.stepOpt %}
-                      | null                                                                                                               {% data => null %}
+StepOpt              -> %kw_step _ Expr                                                                                                   {% ppFor.stepOpt %}
+                      | null                                                                                                              {% data => null %}
 
 #========= Select Statement
 
-SelectStmt           -> %kw_select __ %kw_case _ Expr NL CaseStmt:* CaseElseStmt:? %kw_end __ %kw_select NL                               {% ppSelect.stmt %}
+SelectStmt           -> %kw_select __ %kw_case _ Expr NL CaseStmtList %kw_end __ %kw_select NL                                            {% ppSelect.selectStmt %}    
 
-CaseStmt             -> %kw_case _ Expr _ OtherExprOpt:* BlockStmtList                                                                    {% ppSelect.caseStmt %}
-                                                                                                                    
-CaseElseStmt         -> %kw_case __ %kw_else BlockStmtList                                                                                {% ppSelect.caseElseStmt %}
+CaseStmtList         -> %kw_case _ ExprList NLOpt BlockStmtList CaseStmtList                                                              {% ppSelect.caseStmtList1 %}
+                      | %kw_case __ %kw_else NLOpt BlockStmtList                                                                          {% ppSelect.caseStmtList2 %}
+                      | null                                                                                                              {% data => null %}  
  
-OtherExprOpt         -> %comma _ Expr                                                                                                     {% data => data[2] %}
+NLOpt                -> NL                                                                                                                {% id %}   
+                      | null                                                                                                              {% data => null %}
 
 ExprList             -> Expr _ %comma _ ExprList                                                                                          {% ppHelpers.exprList1 %}
                       | Expr                                                                                                              {% ppHelpers.exprList2 %}

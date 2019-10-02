@@ -289,11 +289,13 @@ export function switchStatement(discriminant: Expression, cases: SwitchCase[], l
 	};
 }
 
-export function switchCase(test: Expression | null, consequent: Statement[]): SwitchCase {
+export function switchCase(test: Expression | null, consequent: Statement[], leadingComments: Comment[] = [], trailingComments: Comment[] = []): SwitchCase {
 	return {
 		type: 'SwitchCase',
 		test,
 		consequent,
+		leadingComments,
+		trailingComments,
 	};
 }
 
