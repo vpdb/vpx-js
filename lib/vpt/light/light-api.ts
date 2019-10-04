@@ -39,6 +39,7 @@ export class LightApi extends ItemApi<LightData> {
 	set FalloffPower(v) { this.data.falloffPower = v; }
 	get State() { return this.animation.lockedByLS ? this.data.state : this.animation.realState; }
 	set State(v) {
+		/* istanbul ignore next: No light sequences yet */
 		if (!this.animation.lockedByLS) {
 			this.animation.setState(v, this.player.getPhysics());
 		}
