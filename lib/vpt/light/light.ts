@@ -18,6 +18,7 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
+import { IAnimatable, IAnimation } from '../../game/ianimatable';
 import { IRenderable, Meshes } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
@@ -27,31 +28,35 @@ import { IRenderApi } from '../../render/irender-api';
 import { Item } from '../item';
 import { Material } from '../material';
 import { Table } from '../table/table';
+import { LightAnimation } from './light-animation';
 import { LightApi } from './light-api';
 import { LightData } from './light-data';
 import { LightMeshGenerator } from './light-mesh-generator';
+import { LightState } from './light-state';
 
 /**
  * VPinball's lights.
  *
  * @see https://github.com/vpinball/vpinball/blob/master/light.cpp
  */
-export class Light extends Item<LightData> implements IRenderable, IScriptable<LightApi> {
+export class Light extends Item<LightData> implements IRenderable, IAnimatable<LightState>, IScriptable<LightApi> {
 
 	public static readonly StateOff = 0;
 	public static readonly StateOn = 1;
 	public static readonly StateBlinking = 2;
-	private api?: LightApi;
 
 	// public getters
 	get color() { return this.data.color; }
 	get intensity() { return this.data.intensity; }
 	get falloff() { return this.data.falloff; }
-	get vCenter() { return this.data.vCenter; }
+	get vCenter() { return this.data.center; }
 	get offImage() { return this.data.szOffImage; }
 
 	public readonly data: LightData;
+	private readonly state: LightState;
 	private readonly meshGenerator: LightMeshGenerator;
+	private api?: LightApi;
+	private animation?: LightAnimation;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Light> {
 		const data = await LightData.fromStorage(storage, itemName);
@@ -60,6 +65,7 @@ export class Light extends Item<LightData> implements IRenderable, IScriptable<L
 
 	private constructor(data: LightData) {
 		super(data);
+		this.state = LightState.claim(this.getName(), 0);
 		this.data = data;
 		this.meshGenerator = new LightMeshGenerator(data);
 	}
@@ -70,11 +76,24 @@ export class Light extends Item<LightData> implements IRenderable, IScriptable<L
 
 	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
-		this.api = new LightApi(this.data, this.events, player, table);
+		this.animation = new LightAnimation(this.data, this.state);
+		this.api = new LightApi(this.animation, this.data, this.events, player, table);
 	}
 
 	public getApi(): LightApi {
 		return this.api!;
+	}
+
+	public getAnimation(): IAnimation {
+		return this.animation!;
+	}
+
+	public getState(): LightState {
+		return this.state!;
+	}
+
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: LightState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: LightState): void {
+		// TODO
 	}
 
 	public getEventNames(): string[] {
@@ -159,8 +178,4 @@ export class Light extends Item<LightData> implements IRenderable, IScriptable<L
 	public isPlayfieldLight(table: Table) {
 		return this.data.isPlayfieldLight(table);
 	}
-
-	// public getPath(table: Table) {
-	// 	return this.meshGenerator.getPath(table);
-	// }
 }

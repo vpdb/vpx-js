@@ -80,17 +80,17 @@ export class LightMeshGenerator {
 
 	private getBulbMeshes<GEOMETRY>(table: Table): LightMeshes<GEOMETRY> {
 		const lightMesh = bulbLightMesh.clone(`bulb.light-${this.data.getName()}`);
-		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
+		const height = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y) * table.getScaleZ();
 		for (const vertex of lightMesh.vertices) {
-			vertex.x = vertex.x * this.data.meshRadius + this.data.vCenter.x;
-			vertex.y = vertex.y * this.data.meshRadius + this.data.vCenter.y;
+			vertex.x = vertex.x * this.data.meshRadius + this.data.center.x;
+			vertex.y = vertex.y * this.data.meshRadius + this.data.center.y;
 			vertex.z = vertex.z * this.data.meshRadius * table.getScaleZ() + height;
 		}
 
 		const socketMesh = bulbSocketMesh.clone(`bulb.socket-${this.data.getName()}`);
 		for (const vertex of socketMesh.vertices) {
-			vertex.x = vertex.x * this.data.meshRadius + this.data.vCenter.x;
-			vertex.y = vertex.y * this.data.meshRadius + this.data.vCenter.y;
+			vertex.x = vertex.x * this.data.meshRadius + this.data.center.x;
+			vertex.y = vertex.y * this.data.meshRadius + this.data.center.y;
 			vertex.z = vertex.z * this.data.meshRadius * table.getScaleZ() + height;
 		}
 

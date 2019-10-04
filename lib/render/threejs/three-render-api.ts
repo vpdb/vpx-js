@@ -74,7 +74,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		const light = new PointLight(lightData.color, lightData.intensity, lightData.falloff * ThreeRenderApi.SCALE, 2);
 		light.name = `light:${lightData.getName()}`;
 		light.updateMatrixWorld();
-		light.position.set(lightData.vCenter.x, lightData.vCenter.y, -10);
+		light.position.set(lightData.center.x, lightData.center.y, -10);
 		if (ThreeRenderApi.SHADOWS) {
 			light.castShadow = true;
 			light.shadow.bias = -0.001;
