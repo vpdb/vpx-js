@@ -57,5 +57,47 @@ export class LightApi extends ItemApi<LightData> {
 		this.data.rgBlinkPattern = v || '0';
 		this.animation.restartBlinker(this.player.getPhysics().timeMsec);
 	}
+	get BlinkInterval() { return this.data.blinkInterval; }
+	set BlinkInterval(v) {
+		this.data.blinkInterval = v;
+		this.animation.timeNextBlink = this.player.getPhysics().timeMsec + this.data.blinkInterval;
+	}
+	get Intensity() { return this.data.intensity; }
+	set Intensity(v) { this.data.intensity = Math.max(0, v); this.animation.updateIntensity(); }
+	get TransmissionScale() { return this.data.transmissionScale; }
+	set TransmissionScale(v) { this.data.transmissionScale = Math.max(0, v); }
+	get IntensityScale() { return this.animation.intensityScale; }
+	set IntensityScale(v) { this.animation.intensityScale = v; this.animation.updateIntensity(); }
+	get Surface() { return this.data.szSurface; }
+	set Surface(v) { this.data.szSurface = v; }
+	get Image() { return this.data.szOffImage; }
+	set Image(v) { this.data.szOffImage = v; }
+	get DepthBias() { return this.data.depthBias; }
+	set DepthBias(v) { this.data.depthBias = v; }
+	get FadeSpeedUp() { return this.data.fadeSpeedUp; }
+	set FadeSpeedUp(v) { this.data.fadeSpeedUp = v; }
+	get FadeSpeedDown() { return this.data.fadeSpeedDown; }
+	set FadeSpeedDown(v) { this.data.fadeSpeedDown = v; }
+	get Bulb() { return this.data.bulbLight; }
+	set Bulb(v) { this.data.bulbLight = v; }
+	get ImageMode() { return this.data.imageMode; }
+	set ImageMode(v) { this.data.imageMode = v; }
+	get ShowBulbMesh() { return this.data.showBulbMesh; }
+	set ShowBulbMesh(v) { this.data.showBulbMesh = v; }
+	get StaticBulbMesh() { return this.data.staticBulbMesh; }
+	set StaticBulbMesh(v) { this.data.staticBulbMesh = v; }
+	get ShowReflectionOnBall() { return this.data.showReflectionOnBall; }
+	set ShowReflectionOnBall(v) { this.data.showReflectionOnBall = v; }
+	get ScaleBulbMesh() { return this.data.meshRadius; }
+	set ScaleBulbMesh(v) { this.data.meshRadius = v; }
+	get BulbModulateVsAdd() { return this.data.bulbModulateVsAdd; }
+	set BulbModulateVsAdd(v) { this.data.bulbModulateVsAdd = v; }
+	get BulbHaloHeight() { return this.data.bulbHaloHeight; }
+	set BulbHaloHeight(v) { this.data.bulbHaloHeight = v; }
+	get Visible() { return this.data.isVisible; }
+	set Visible(v) { this.data.isVisible = v; }
 
+	public Duration(startState: number, newVal: number, endState: number) {
+		this.animation.setDuration(startState, newVal, endState, this.player.getPhysics().timeMsec);
+	}
 }

@@ -71,7 +71,7 @@ export class Light extends Item<LightData> implements IRenderable, IAnimatable<L
 	}
 
 	public isVisible(table: Table): boolean {
-		return true; // we filter by bulb/playfield light
+		return this.data.isVisible; // we filter by bulb/playfield light
 	}
 
 	public setupPlayer(player: Player, table: Table): void {

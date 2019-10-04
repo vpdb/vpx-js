@@ -32,14 +32,14 @@ export class LightAnimation implements IAnimation {
 	public realState: number = Light.StateOff;
 	public finalState: number = Light.StateOff;
 	public lockedByLS = false;
+	public timeNextBlink: number = 0;
+	public intensityScale: number = 1;
 
 	private timeMsec: number = 0;
-	private timeNextBlink: number = 0;
 	private timerDurationEndTime: number = 0;
 	private blinkFrame: number = 0;
 	private duration: number = 0;
 	private iBlinkFrame: number = 0;
-	private intensityScale: number = 1;
 
 	constructor(data: LightData, state: LightState) {
 		this.data = data;
@@ -87,11 +87,7 @@ export class LightAnimation implements IAnimation {
 			this.updateBlinker(physics.timeMsec);
 		}
 
-		const isOn = (this.realState === Light.StateBlinking)
-			? (this.data.rgBlinkPattern.substr(this.iBlinkFrame, 1) === '1')
-			: (this.realState !== Light.StateOff);
-
-		if (isOn) {
+		if (this.isOn()) {
 			if (this.state.intensity < this.data.intensity * this.intensityScale) {
 				this.state.intensity += this.data.fadeSpeedUp * diffTimeMsec;
 				if (this.state.intensity > this.data.intensity * this.intensityScale) {
@@ -118,4 +114,30 @@ export class LightAnimation implements IAnimation {
 		}
 	}
 
+	public setDuration(startState: number, newVal: number, endState: number, timeMsec: number) {
+		this.realState = startState;
+		this.duration = newVal;
+		this.finalState = endState;
+		this.timerDurationEndTime = timeMsec + this.duration;
+		if (this.realState === Light.StateBlinking) {
+			this.iBlinkFrame = 0;
+			this.timeNextBlink = timeMsec + this.data.blinkInterval;
+		}
+	}
+
+	public updateIntensity() {
+		if (this.isOn()) {
+			this.state.intensity = this.data.intensity * this.intensityScale;
+		}
+	}
+
+	private isOn(): boolean {
+		return this.realState === Light.StateBlinking
+			? this.isBlinkOn()
+			: this.realState !== Light.StateOff;
+	}
+
+	private isBlinkOn(): boolean {
+		return this.data.rgBlinkPattern.substr(this.iBlinkFrame, 1) === '1';
+	}
 }

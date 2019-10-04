@@ -44,15 +44,17 @@ export class LightData extends ItemData {
 	public depthBias?: number;
 	public fadeSpeedUp: number = 0.2;
 	public fadeSpeedDown: number = 0.2;
-	public BulbLight: boolean = false;
+	public bulbLight: boolean = false;
 	public imageMode: boolean = false;
 	public showBulbMesh: boolean = false;
 	public staticBulbMesh: boolean = false;
 	public showReflectionOnBall: boolean = true;
 	public meshRadius: number = 20;
-	public modulateVsAdd: number = 0.9;
+	public bulbModulateVsAdd: number = 0.9;
 	public bulbHaloHeight: number = 28;
 	public dragPoints: DragPoint[] = [];
+
+	public isVisible: boolean = true; // not in file, but let's still keep in in here.
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<LightData> {
 		const lightData = new LightData(itemName);
@@ -103,7 +105,7 @@ export class LightData extends ItemData {
 	 * @param table
 	 */
 	public isSurfaceLight(table: Table) {
-		if (!this.szOffImage || this.BulbLight) { // in dark knight, we have BulbLight overlays with same texture
+		if (!this.szOffImage || this.bulbLight) { // in dark knight, we have BulbLight overlays with same texture
 			return false;
 		}
 		if (table.getPlayfieldMap()
@@ -151,13 +153,13 @@ export class LightData extends ItemData {
 			case 'LIDB': this.depthBias = this.getFloat(buffer); break;
 			case 'FASP': this.fadeSpeedUp = this.getFloat(buffer); break;
 			case 'FASD': this.fadeSpeedDown = this.getFloat(buffer); break;
-			case 'BULT': this.BulbLight = this.getBool(buffer); break;
+			case 'BULT': this.bulbLight = this.getBool(buffer); break;
 			case 'IMMO': this.imageMode = this.getBool(buffer); break;
 			case 'SHBM': this.showBulbMesh = this.getBool(buffer); break;
 			case 'STBM': this.staticBulbMesh = this.getBool(buffer); break;
 			case 'SHRB': this.showReflectionOnBall = this.getBool(buffer); break;
 			case 'BMSC': this.meshRadius = this.getFloat(buffer); break;
-			case 'BMVA': this.modulateVsAdd = this.getFloat(buffer); break;
+			case 'BMVA': this.bulbModulateVsAdd = this.getFloat(buffer); break;
 			case 'BHHI': this.bulbHaloHeight = this.getFloat(buffer); break;
 			default:
 				this.getCommonBlock(buffer, tag, len);
