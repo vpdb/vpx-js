@@ -26,7 +26,8 @@ import { Table } from '../table/table';
 import { Light } from './light';
 
 export class LightData extends ItemData {
-	public vCenter!: Vertex2D;
+
+	public center!: Vertex2D;
 	public falloff: number = 50;
 	public falloffPower: number = 2;
 	public state: number = Light.StateOff;
@@ -34,12 +35,12 @@ export class LightData extends ItemData {
 	public color2: number = 0xffffff;
 	public szOffImage?: string;
 	public roundLight: boolean = false;
-	public rgblinkpattern?: string;
-	public blinkinterval: number = 125;
+	public rgBlinkPattern: string = '0';
+	public blinkInterval: number = 125;
 	public intensity: number = 1;
 	public transmissionScale: number = 0;
 	public szSurface?: string;
-	public fBackglass: boolean = false;
+	public isBackglass: boolean = false;
 	public depthBias?: number;
 	public fadeSpeedUp: number = 0.2;
 	public fadeSpeedDown: number = 0.2;
@@ -133,7 +134,7 @@ export class LightData extends ItemData {
 
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
 		switch (tag) {
-			case 'VCEN': this.vCenter = Vertex2D.get(buffer); break;
+			case 'VCEN': this.center = Vertex2D.get(buffer); break;
 			case 'RADI': this.falloff = this.getFloat(buffer); break;
 			case 'FAPO': this.falloffPower = this.getFloat(buffer); break;
 			case 'STAT': this.state = this.getInt(buffer); break;
@@ -141,12 +142,12 @@ export class LightData extends ItemData {
 			case 'COL2': this.color2 = BiffParser.bgrToRgb(this.getInt(buffer)); break;
 			case 'IMG1': this.szOffImage = this.getString(buffer, len); break;
 			case 'SHAP': this.roundLight = this.getBool(buffer); break;
-			case 'BPAT': this.rgblinkpattern = this.getString(buffer, len); break;
-			case 'BINT': this.blinkinterval = this.getInt(buffer); break;
+			case 'BPAT': this.rgBlinkPattern = this.getString(buffer, len); break;
+			case 'BINT': this.blinkInterval = this.getInt(buffer); break;
 			case 'BWTH': this.intensity = this.getFloat(buffer); break;
 			case 'TRMS': this.transmissionScale = this.getFloat(buffer); break;
 			case 'SURF': this.szSurface = this.getString(buffer, len); break;
-			case 'BGLS': this.fBackglass = this.getBool(buffer); break;
+			case 'BGLS': this.isBackglass = this.getBool(buffer); break;
 			case 'LIDB': this.depthBias = this.getFloat(buffer); break;
 			case 'FASP': this.fadeSpeedUp = this.getFloat(buffer); break;
 			case 'FASD': this.fadeSpeedDown = this.getFloat(buffer); break;
