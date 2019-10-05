@@ -93,7 +93,7 @@ export class Light extends Item<LightData> implements IRenderable, IAnimatable<L
 	}
 
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: LightState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: LightState): void {
-		// TODO
+		renderApi.applyLighting(state, obj);
 	}
 
 	public getEventNames(): string[] {
