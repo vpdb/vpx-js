@@ -40,6 +40,13 @@ export function stmt(
 						}
 					}
 				}
+			} else if (node.type === 'CallExpression') {
+				if (node.callee.type === 'Identifier') {
+					if (node.callee.name.startsWith('.')) {
+						node.callee.name = node.callee.name.substr(1);
+						node.callee = estree.memberExpression(identifier, node.callee);
+					}
+				}
 			}
 		},
 	});

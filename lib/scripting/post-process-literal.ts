@@ -32,12 +32,14 @@ export function int(result: [Token]): Literal {
 }
 
 export function hex(result: [Token]): Literal {
-	const value = '0x' + result[0].text.slice(2, -1);
+	let value = result[0].text;
+	value = '0x' + value.endsWith('&') ? value.slice(2, -1) : value.slice(2);
 	return estree.literal(parseInt(value, 16), value);
 }
 
 export function oct(result: [Token]): Literal {
-	const value = '0' + result[0].text.slice(1, -1);
+	let value = result[0].text;
+	value = '0' + value.endsWith('&') ? value.slice(1, -1) : value.slice(1);
 	return estree.literal(parseInt(value, 8), value);
 }
 

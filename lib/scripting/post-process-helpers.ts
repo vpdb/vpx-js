@@ -32,18 +32,19 @@ export function nl2(result: [null, Token, null]): Comment[] {
 }
 
 export function program(result: [null, Statement[]]): Program {
-	let statements = result[1] || [];
-	statements = statements.filter(statement => statement) as [Statement];
-	return estree.program(statements);
+	let stmts = result[1] || [];
+	stmts = stmts.filter(stmt => stmt) as [Statement];
+	return estree.program(stmts);
 }
 
 export function blockStmt1(result: [Statement, Comment[]]): Statement {
-	const statement = result[0];
+	const stmt = result[0];
+	const stmtComments = result[0].trailingComments || [];
 	const comments = result[1];
-	if (!statement.trailingComments) {
-		statement.trailingComments = comments;
+	if (stmtComments.length === 0) {
+		stmt.trailingComments = comments;
 	}
-	return statement;
+	return stmt;
 }
 
 export function blockStmt2(result: [Comment[]]): Statement | null {
@@ -52,15 +53,15 @@ export function blockStmt2(result: [Comment[]]): Statement | null {
 }
 
 export function blockStmtList(result: [Statement[]]) {
-	let statements = result[0] || [];
-	statements = statements.filter(statement => statement) as [Statement];
-	return estree.blockStatement(statements);
+	let stmts = result[0] || [];
+	stmts = stmts.filter(stmt => stmt) as [Statement];
+	return estree.blockStatement(stmts);
 }
 
 export function methodStmtList(result: [Statement[]]) {
-	let statements = result[0] || [];
-	statements = statements.filter(statement => statement) as [Statement];
-	return estree.blockStatement(statements);
+	let stmts = result[0] || [];
+	stmts = stmts.filter(stmt => stmt) as [Statement];
+	return estree.blockStatement(stmts);
 }
 
 export function exitStmt(result: [Token, null, Token]): Statement {
