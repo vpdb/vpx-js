@@ -20,10 +20,9 @@
 import { IRenderable } from '../game/irenderable';
 import { Matrix3D } from '../math/matrix3d';
 import { LightData } from '../vpt/light/light-data';
+import { LightState } from '../vpt/light/light-state';
 import { Mesh } from '../vpt/mesh';
 import { Table, TableGenerateOptions } from '../vpt/table/table';
-import { Light } from '../vpt/light/light';
-import { LightState } from '../vpt/light/light-state';
 
 export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 

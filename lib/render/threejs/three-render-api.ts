@@ -22,6 +22,7 @@ import { Matrix3D } from '../../math/matrix3d';
 import { BufferGeometry, Group, Matrix4, Object3D, PointLight, Vector2 } from '../../refs.node';
 import { Pool } from '../../util/object-pool';
 import { LightData } from '../../vpt/light/light-data';
+import { LightState } from '../../vpt/light/light-state';
 import { Mesh } from '../../vpt/mesh';
 import { Table, TableGenerateOptions } from '../../vpt/table/table';
 import { IRenderApi, MeshConvertOptions } from '../irender-api';
@@ -29,7 +30,6 @@ import { ThreeConverter } from './three-converter';
 import { ThreeLightMeshGenerator } from './three-light-mesh-generator';
 import { releaseGeometry, ThreeMeshGenerator } from './three-mesh-generator';
 import { ThreePlayfieldMeshGenerator } from './three-playfield-mesh-generator';
-import { LightState } from '../../vpt/light/light-state';
 
 export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, PointLight> {
 
