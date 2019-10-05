@@ -32,3 +32,11 @@ export function stmt2(result: [Token, null, MemberExpression, null, Token, null,
 	const right = result[6];
 	return estree.expressionStatement(estree.assignmentExpression(left, '=', right));
 }
+
+export function stmt3(
+	result: [Token, null, MemberExpression, null, Token, null, Token, null, Expression],
+): ExpressionStatement {
+	const left = result[2];
+	const right = result[8];
+	return estree.expressionStatement(estree.assignmentExpression(left, '=', right));
+}

@@ -3,6 +3,7 @@
 @{%
 const estree = require('./estree');
 
+const ppField = require('./post-process-field');
 const ppDim = require('./post-process-dim');
 const ppConst = require('./post-process-const');
 const ppSub = require('./post-process-sub');
@@ -63,6 +64,7 @@ const lexer = moo.compile({
             'kw_to': 'to',
             'kw_step': 'step',
             'kw_each': 'each',
+            'kw_new': 'new',
             'kw_in': 'in',    
             'kw_next': 'next',
             'kw_sub': 'sub',
@@ -73,6 +75,8 @@ const lexer = moo.compile({
             'kw_private': 'private',
             'kw_preserve': 'preserve',
             'kw_nothing': 'nothing',
+            'kw_erase': 'erase',
+            'kw_error': 'error',
             'kw_null': 'null',
             'kw_empty': 'empty',
             'kw_while': 'while',
@@ -83,15 +87,14 @@ const lexer = moo.compile({
             'kw_with': 'with',
             'kw_case': 'case',
             'kw_on': 'on',
-            'kw_error': 'error',
             'kw_resume': 'resume',
             'kw_goto': 'goto',
         }),
     },
     float_literal: /[0-9]+\.[0-9]*|\.[0-9]+/,
     int_literal: /[0-9]+/,
-    hex_literal: /&[Hh][0-9A-Fa-f]+&/,
-    oct_literal: /&[0-7]+&/,
+    hex_literal: /&[Hh][0-9A-Fa-f]+&|&[Hh][0-9A-Fa-f]+/,
+    oct_literal: /&[0-7]+&|&[0-7]+/,
     date_literal: /#[\x20-\x22|\x24-\x7e|\xA0]+#/,
     dot_identifier_dot: /\.[a-zA-Z][a-zA-Z0-9_]*\./,
     dot_identifier: /\.[a-zA-Z][a-zA-Z0-9_]*/,
@@ -115,6 +118,7 @@ const lexer = moo.compile({
     int_div: /\\/,
     string_literal: /\"(?:[\x01-\x21|\x23-\xD7FF|\xE000-\xFFEF]|\"\")*\"/,
     ws: /[ \t\v\f]/,
+    ws_cont: /_[ \t\v\f]*\x0d\x0a[ \t\v\f]*|_[ \t\v\f]*[\x0d\x0a][ \t\v\f]*|_[ \t\v\f]*/,
     nl: {match: /\x0d\x0a|[\x0d\x0a:]/, lineBreaks: true},
 });
 
@@ -131,6 +135,19 @@ Program              -> _ GlobalStmt:*                                          
 #===============================
 # Rules : Declarations
 #===============================
+
+FieldDecl            -> %kw_private __ FieldName _ OtherVarsOpt NL                                                                        {% ppField.fieldDecl1 %}
+                      | %kw_public __ FieldName _ OtherVarsOpt NL                                                                         {% ppField.fieldDecl2 %}
+
+FieldName            -> FieldID _ %paren_left _ ArrayRankList _ %paren_right                                                              {% ppField.fieldName %}
+                      | FieldID                                                                                                           {% id %}
+
+FieldID              -> ID                                                                                                                {% id %}
+                      | %kw_default __                                                                                                    {% id %}
+                      | %kw_erase __                                                                                                      {% id %}
+                      | %kw_error __                                                                                                      {% id %}
+                      | %kw_explicit __                                                                                                   {% id %}
+                      | %kw_step __                                                                                                       {% id %}
 
 VarDecl              -> %kw_dim __ VarName _ OtherVarsOpt NL                                                                              {% ppDim.varDecl %}    
 
@@ -188,6 +205,7 @@ BlockStmtList        -> BlockStmt:*                                             
 MethodStmtList       -> MethodStmt:*                                                                                                      {% ppHelpers.methodStmtList %}
 
 GlobalStmt           -> OptionExplicit                                                                                                    {% id %}
+                      | FieldDecl                                                                                                         {% id %}
                       | ConstDecl                                                                                                         {% id %}
                       | SubDecl                                                                                                           {% id %}
                       | FunctionDecl                                                                                                      {% id %}
@@ -226,7 +244,8 @@ ExitStmt             -> %kw_exit __ %kw_do                                      
 
 AssignStmt           -> LeftExpr _ %equals _ Expr                                                                                         {% ppAssign.stmt1 %}
                       | %kw_set __ LeftExpr _ %equals _ Expr                                                                              {% ppAssign.stmt2 %}
- 
+                      | %kw_set __ LeftExpr _ %equals _ %kw_new _ Expr                                                                    {% ppAssign.stmt3 %}
+
 SubCallStmt          -> QualifiedID _ SubSafeExprOpt _ CommaExprList                                                                      {% ppSubCall.stmt1 %}
                       | QualifiedID _ SubSafeExprOpt                                                                                      {% ppSubCall.stmt2 %}
                       | QualifiedID _ %paren_left _ Expr _ %paren_right _ CommaExprList                                                   {% ppSubCall.stmt3 %}
@@ -334,8 +353,8 @@ StepOpt              -> %kw_step _ Expr                                         
 
 SelectStmt           -> %kw_select __ %kw_case _ Expr NL CaseStmtList %kw_end __ %kw_select NL                                            {% ppSelect.selectStmt %}    
 
-CaseStmtList         -> %kw_case _ ExprList NLOpt BlockStmtList CaseStmtList                                                              {% ppSelect.caseStmtList1 %}
-                      | %kw_case __ %kw_else NLOpt BlockStmtList                                                                          {% ppSelect.caseStmtList2 %}
+CaseStmtList         -> %kw_case _ ExprList _ NLOpt BlockStmtList CaseStmtList                                                            {% ppSelect.caseStmtList1 %}
+                      | %kw_case __ %kw_else _ NLOpt BlockStmtList                                                                        {% ppSelect.caseStmtList2 %}
                       | null                                                                                                              {% data => null %}  
  
 NLOpt                -> NL                                                                                                                {% id %}   
@@ -488,4 +507,6 @@ DotID                -> %dot_identifier                                         
 DotIDDot             -> %dot_identifier_dot                                                                                               {% ppHelpers.id %}
 
 _                    -> %ws:*                                                                                                             {% data => null %}
+                      | %ws_cont                                                                                                          {% data => null %}
+
 __                   -> %ws:+                                                                                                             {% data => null %}
