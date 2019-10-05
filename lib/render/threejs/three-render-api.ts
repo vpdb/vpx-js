@@ -29,6 +29,7 @@ import { ThreeConverter } from './three-converter';
 import { ThreeLightMeshGenerator } from './three-light-mesh-generator';
 import { releaseGeometry, ThreeMeshGenerator } from './three-mesh-generator';
 import { ThreePlayfieldMeshGenerator } from './three-playfield-mesh-generator';
+import { LightState } from '../../vpt/light/light-state';
 
 export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, PointLight> {
 
@@ -138,6 +139,14 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		}
 		destGeo.attributes.position.needsUpdate = true;
 		releaseGeometry(srcGeo);
+	}
+
+	public applyLighting(state: LightState, light: PointLight | undefined): void {
+		/* istanbul ignore next */
+		if (!light) {
+			return;
+		}
+		light.intensity = state.intensity;
 	}
 
 	public async createObjectFromRenderable(renderable: IRenderable, table: Table, opts: TableGenerateOptions): Promise<Group> {

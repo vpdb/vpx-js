@@ -22,6 +22,8 @@ import { Matrix3D } from '../math/matrix3d';
 import { LightData } from '../vpt/light/light-data';
 import { Mesh } from '../vpt/mesh';
 import { Table, TableGenerateOptions } from '../vpt/table/table';
+import { Light } from '../vpt/light/light';
+import { LightState } from '../vpt/light/light-state';
 
 export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 
@@ -81,6 +83,14 @@ export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 	 * @param node The node to which the new mesh is applied to.
 	 */
 	applyMeshToNode(mesh: Mesh, node: NODE | undefined): void;
+
+	/**
+	 * Update's a light's parameters.
+	 *
+	 * @param state New light state
+	 * @param node The light node
+	 */
+	applyLighting(state: LightState, node: NODE | undefined): void;
 
 	/**
 	 * Creates a new node based on a renderable.
