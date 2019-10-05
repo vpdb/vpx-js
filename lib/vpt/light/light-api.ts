@@ -98,7 +98,7 @@ export class LightApi extends ItemApi<LightData> {
 	get Visible() { return this.data.isVisible; }
 	set Visible(v) { this.data.isVisible = v; }
 
-	public Duration(startState: number, newVal: number, endState: number) {
-		this.animation.setDuration(startState, newVal, endState, this.player.getPhysics().timeMsec);
+	public Duration(startState: number, duration: number, endState: number) {
+		this.animation.setDuration(startState, duration, endState, this.player.getPhysics().timeMsec);
 	}
 }
