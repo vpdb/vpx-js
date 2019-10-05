@@ -26,7 +26,6 @@ export function stmt1(result: [Token, null, Token, null, Token, null, Token]): E
 	const error = result[2].text;
 	const resume = result[4].text;
 	const next = result[6].text;
-	console.log('HERR@');
 	return estree.emptyStatement([estree.comment('Line', ' ' + on + ' ' + error + ' ' + resume + ' ' + next)]);
 }
 
