@@ -71,7 +71,7 @@ describe('The VPinball light animation', () => {
 		expect(light.getState().intensity).to.equal(0);
 	});
 
-	it('should turn on with duration', () => {
+	it('should go from off to on', () => {
 
 		const light = table.lights.Surface;
 		const api = light.getApi();
@@ -87,10 +87,59 @@ describe('The VPinball light animation', () => {
 		player.updatePhysics(520);
 		expect(light.getState().intensity).to.equal(1);
 
+		player.updatePhysics(650);
+		expect(light.getState().intensity).to.equal(1);
+	});
+
+	it('should go from of to blinking', () => {
+
+		const light = table.lights.Surface;
+		const api = light.getApi();
+
+		api.State = Light.StateOff;
+		api.Intensity = 1;
+
+		player.updatePhysics(0);
+		expect(light.getState().intensity).to.equal(0);
+
+		api.Duration(Light.StateOff, 500, Light.StateBlinking);
+
 		// for (let i = 0; i < 3000; i += 10) {
 		// 	player.updatePhysics(i);
 		// 	console.log('%s %s', i, light.getState().intensity);
 		// }
+
+		player.updatePhysics(520);
+		expect(light.getState().intensity).to.equal(1);
+
+		player.updatePhysics(650);
+		expect(light.getState().intensity).to.equal(0);
+
+		player.updatePhysics(770);
+		expect(light.getState().intensity).to.equal(1);
+	});
+
+	it('should go from blinking to off', () => {
+
+		const light = table.lights.Surface;
+		const api = light.getApi();
+
+		api.State = Light.StateOff;
+		api.Intensity = 1;
+
+		player.updatePhysics(0);
+		expect(light.getState().intensity).to.equal(0);
+
+		api.Duration(Light.StateBlinking, 500, Light.StateOff);
+
+		player.updatePhysics(20);
+		expect(light.getState().intensity).to.equal(1);
+
+		player.updatePhysics(120);
+		expect(light.getState().intensity).to.equal(1);
+
+		player.updatePhysics(130);
+		expect(light.getState().intensity).to.equal(0);
 	});
 
 	it('should blink the correct pattern', async () => {
