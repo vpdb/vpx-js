@@ -43,6 +43,30 @@ describe('The VPinball spinner API', () => {
 		const spinner = table.spinners.Spinner.getApi();
 
 		spinner.Length = 23; expect(spinner.Length).to.equal(23);
+		spinner.Rotation = 15; expect(spinner.Rotation).to.equal(15);
+		spinner.Height = 819; expect(spinner.Height).to.equal(819);
+		spinner.Damping = 0.4; expect(spinner.Damping).to.be.closeTo(0.4, 0.0001);
+		spinner.Damping = 2; expect(spinner.Damping).to.equal(1);
+		spinner.Damping = -1; expect(spinner.Damping).to.equal(0);
+		spinner.Material = 'material'; expect(spinner.Material).to.equal('material');
+		spinner.Image = 'test_pattern'; expect(spinner.Image).to.equal('test_pattern');
+		spinner.X = 223; expect(spinner.X).to.equal(223);
+		spinner.Y = 744; expect(spinner.Y).to.equal(744);
+		spinner.Surface = 'surface'; expect(spinner.Surface).to.equal('surface');
+		spinner.ShowBracket = false; expect(spinner.ShowBracket).to.equal(false);
+		spinner.ShowBracket = true; expect(spinner.ShowBracket).to.equal(true);
+		spinner.AngleMax = 56; expect(spinner.AngleMax).to.equal(56);
+		spinner.AngleMax = 91; expect(spinner.AngleMax).to.equal(90);
+		spinner.AngleMax = -91; expect(spinner.AngleMax).to.equal(90); expect(spinner.AngleMin).to.equal(-90);
+		spinner.AngleMin = -45; expect(spinner.AngleMin).to.equal(-45);
+		spinner.AngleMin = -91; expect(spinner.AngleMin).to.equal(-90);
+		spinner.AngleMin = 91; expect(spinner.AngleMin).to.equal(-90); expect(spinner.AngleMax).to.equal(90);
+		spinner.Elasticity = 1.665; expect(spinner.Elasticity).to.equal(1.665);
+		spinner.Visible = false; expect(spinner.Visible).to.equal(false);
+		spinner.Visible = true; expect(spinner.Visible).to.equal(true);
+		spinner.ReflectionEnabled = false; expect(spinner.ReflectionEnabled).to.equal(false);
+		spinner.ReflectionEnabled = true; expect(spinner.ReflectionEnabled).to.equal(true);
+		expect(spinner.CurrentAngle).to.equal(0);
 	});
 
 });
