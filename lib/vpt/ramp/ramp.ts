@@ -20,6 +20,7 @@
 import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable, Meshes } from '../../game/irenderable';
+import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { f4 } from '../../math/float';
@@ -29,6 +30,7 @@ import { HitObject } from '../../physics/hit-object';
 import { Item } from '../item';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
+import { RampApi } from './ramp-api';
 import { RampData } from './ramp-data';
 import { RampHitGenerator } from './ramp-hit-generator';
 import { RampMeshGenerator } from './ramp-mesh-generator';
@@ -38,7 +40,7 @@ import { RampMeshGenerator } from './ramp-mesh-generator';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/ramp.cpp
  */
-export class Ramp extends Item<RampData> implements IRenderable, IHittable {
+export class Ramp extends Item<RampData> implements IRenderable, IHittable, IScriptable<RampApi> {
 
 	public static RampTypeFlat = 0;
 	public static RampType4Wire = 1;
@@ -54,6 +56,7 @@ export class Ramp extends Item<RampData> implements IRenderable, IHittable {
 	private readonly hitGenerator: RampHitGenerator;
 
 	private hits?: HitObject[];
+	private api?: RampApi;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Ramp> {
 		const data = await RampData.fromStorage(storage, itemName);
@@ -82,6 +85,15 @@ export class Ramp extends Item<RampData> implements IRenderable, IHittable {
 	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
 		this.hits = this.hitGenerator.generateHitObjects(table, this.events);
+		this.api = new RampApi(this.hits, this.data, this.events, player, table);
+	}
+
+	public getApi(): RampApi {
+		return this.api!;
+	}
+
+	public getEventNames(): string[] {
+		return [ 'Init' ];
 	}
 
 	public getHitShapes(): HitObject[] {
