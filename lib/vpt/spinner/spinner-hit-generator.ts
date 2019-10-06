@@ -44,13 +44,13 @@ export class SpinnerHitGenerator {
 
 			return [
 				new HitCircle(
-					new Vertex2D(this.data.vCenter.x + cs * halfLength, this.data.vCenter.y + sn * halfLength),
+					new Vertex2D(this.data.center.x + cs * halfLength, this.data.center.y + sn * halfLength),
 					this.data.length * 0.075,
 					height + this.data.height,
 					height + h,
 				),
 				new HitCircle(
-					new Vertex2D(this.data.vCenter.x - cs * halfLength, this.data.vCenter.y - sn * halfLength),
+					new Vertex2D(this.data.center.x - cs * halfLength, this.data.center.y - sn * halfLength),
 					this.data.length * 0.075,
 					height + this.data.height,
 					height + h,

@@ -22,6 +22,7 @@ import { IHittable } from '../../game/ihittable';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable, Meshes } from '../../game/irenderable';
+import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { degToRad } from '../../math/float';
@@ -33,6 +34,7 @@ import { IRenderApi } from '../../render/irender-api';
 import { FlipperState } from '../flipper/flipper-state';
 import { Item } from '../item';
 import { Table } from '../table/table';
+import { SpinnerApi } from './spinner-api';
 import { SpinnerData } from './spinner-data';
 import { SpinnerHit } from './spinner-hit';
 import { SpinnerHitGenerator } from './spinner-hit-generator';
@@ -44,13 +46,14 @@ import { SpinnerState } from './spinner-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/spinner.cpp
  */
-export class Spinner extends Item<SpinnerData> implements IRenderable, IPlayable, IMovable<FlipperState>, IHittable {
+export class Spinner extends Item<SpinnerData> implements IRenderable, IPlayable, IMovable<FlipperState>, IHittable, IScriptable<SpinnerApi> {
 
 	private readonly meshGenerator: SpinnerMeshGenerator;
 	private readonly state: SpinnerState;
 	private readonly hitGenerator: SpinnerHitGenerator;
 	private hit?: SpinnerHit;
 	private hitCircles: HitCircle[] = [];
+	private api?: SpinnerApi;
 
 	// public props
 	get angleMin() { return this.data.angleMin; }
@@ -96,10 +99,19 @@ export class Spinner extends Item<SpinnerData> implements IRenderable, IPlayable
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
+		const height = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y);
 		this.events = new EventProxy(this);
 		this.hit = new SpinnerHit(this.data, this.state, this.events, height);
 		this.hitCircles = this.hitGenerator.getHitShapes(this.state, height);
+		this.api = new SpinnerApi(this.state, this.hit.getMoverObject(), this.data, this.events, player, table);
+	}
+
+	public getApi(): SpinnerApi {
+		return this.api!;
+	}
+
+	public getEventNames(): string[] {
+		throw [ 'Init', 'LimitBOS', 'LimitEOS', 'Spin', 'Timer' ];
 	}
 
 	public getHitShapes(): HitObject[] {
@@ -118,9 +130,9 @@ export class Spinner extends Item<SpinnerData> implements IRenderable, IPlayable
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: SpinnerState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
 
 		const posZ = this.meshGenerator.getZ(table);
-		const matTransToOrigin = Matrix3D.claim().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, posZ);
+		const matTransToOrigin = Matrix3D.claim().setTranslation(-this.data.center.x, -this.data.center.y, posZ);
 		const matRotateToOrigin = Matrix3D.claim().rotateZMatrix(degToRad(-this.data.rotation));
-		const matTransFromOrigin = Matrix3D.claim().setTranslation(this.data.vCenter.x, this.data.vCenter.y, -posZ);
+		const matTransFromOrigin = Matrix3D.claim().setTranslation(this.data.center.x, this.data.center.y, -posZ);
 		const matRotateFromOrigin = Matrix3D.claim().rotateZMatrix(degToRad(this.data.rotation));
 		const matRotateX = Matrix3D.claim().rotateXMatrix(state.angle - degToRad(this.data.angleMin));
 

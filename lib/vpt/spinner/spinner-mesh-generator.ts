@@ -49,7 +49,7 @@ export class SpinnerMeshGenerator {
 	}
 
 	public getZ(table: Table): number {
-		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
+		const height = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y) * table.getScaleZ();
 		return f4(height + this.data.height);
 	}
 
@@ -67,8 +67,8 @@ export class SpinnerMeshGenerator {
 		const matrix = new Matrix3D().rotateZMatrix(degToRad(this.data.rotation));
 		for (const vertex of mesh.vertices) {
 			const vert = Vertex3D.claim(vertex.x, vertex.y, vertex.z).multiplyMatrix(matrix);
-			vertex.x = f4(vert.x * this.data.length) + this.data.vCenter.x;
-			vertex.y = f4(vert.y * this.data.length) + this.data.vCenter.y;
+			vertex.x = f4(vert.x * this.data.length) + this.data.center.x;
+			vertex.y = f4(vert.y * this.data.length) + this.data.center.y;
 			vertex.z = f4(f4(vert.z * this.data.length) * table.getScaleZ()) + posZ;
 
 			const normal = Vertex3D.claim(vertex.nx, vertex.ny, vertex.nz).multiplyMatrixNoTranslate(matrix);

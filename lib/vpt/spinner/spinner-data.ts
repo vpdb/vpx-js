@@ -24,7 +24,7 @@ import { ItemData } from '../item-data';
 
 export class SpinnerData extends ItemData {
 
-	public vCenter!: Vertex2D;
+	public center!: Vertex2D;
 	public rotation: number = 0;
 	public szMaterial?: string;
 	public showBracket: boolean = true;
@@ -37,6 +37,9 @@ export class SpinnerData extends ItemData {
 	public isVisible: boolean = true;
 	public szImage?: string;
 	public szSurface?: string;
+
+	// not persisted but settable via API
+	public isReflectionEnabled: boolean = true;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<SpinnerData> {
 		const spinnerData = new SpinnerData(itemName);
@@ -59,7 +62,7 @@ export class SpinnerData extends ItemData {
 
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
 		switch (tag) {
-			case 'VCEN': this.vCenter = Vertex2D.get(buffer); break;
+			case 'VCEN': this.center = Vertex2D.get(buffer); break;
 			case 'ROTA': this.rotation = this.getFloat(buffer); break;
 			case 'MATR': this.szMaterial = this.getString(buffer, len); break;
 			case 'SSUP': this.showBracket = this.getBool(buffer); break;

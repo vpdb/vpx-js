@@ -51,12 +51,12 @@ export class SpinnerHit extends HitObject {
 		const cs = Math.cos(radAngle);
 
 		const v1 = new Vertex2D(
-			data.vCenter.x - cs * (halfLength + PHYS_SKIN), // through the edge of the
-			data.vCenter.y - sn * (halfLength + PHYS_SKIN), // spinner
+			data.center.x - cs * (halfLength + PHYS_SKIN), // through the edge of the
+			data.center.y - sn * (halfLength + PHYS_SKIN), // spinner
 		);
 		const v2 = new Vertex2D(
-			data.vCenter.x + cs * (halfLength + PHYS_SKIN), // oversize by the ball radius
-			data.vCenter.y + sn * (halfLength + PHYS_SKIN), // this will prevent clipping
+			data.center.x + cs * (halfLength + PHYS_SKIN), // oversize by the ball radius
+			data.center.y + sn * (halfLength + PHYS_SKIN), // this will prevent clipping
 		);
 		this.lineSegs.push(new LineSeg(v1, v2, height, height + (2.0 * PHYS_SKIN), CollisionType.Spinner));
 		this.lineSegs.push(new LineSeg(v2.clone(), v1.clone(), height, height + (2.0 * PHYS_SKIN), CollisionType.Spinner));
