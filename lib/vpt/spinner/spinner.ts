@@ -111,7 +111,7 @@ export class Spinner extends Item<SpinnerData> implements IRenderable, IPlayable
 	}
 
 	public getEventNames(): string[] {
-		throw [ 'Init', 'LimitBOS', 'LimitEOS', 'Spin', 'Timer' ];
+		return [ 'Init', 'LimitBOS', 'LimitEOS', 'Spin', 'Timer' ];
 	}
 
 	public getHitShapes(): HitObject[] {
