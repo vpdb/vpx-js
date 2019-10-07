@@ -41,10 +41,6 @@ import { LightState } from './light-state';
  */
 export class Light extends Item<LightData> implements IRenderable, IAnimatable<LightState>, IScriptable<LightApi> {
 
-	public static readonly StateOff = 0;
-	public static readonly StateOn = 1;
-	public static readonly StateBlinking = 2;
-
 	// public getters
 	get color() { return this.data.color; }
 	get intensity() { return this.data.intensity; }

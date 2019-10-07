@@ -21,9 +21,9 @@ import { degToRad, f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { logger } from '../../util/logger';
+import { GateType } from '../enums';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
-import { Gate } from './gate';
 import { GateData } from './gate-data';
 
 const hitTargetT3Mesh = Mesh.fromJson(require('../../../res/meshes/drop-target-t3-mesh'));
@@ -59,10 +59,10 @@ export class GateMeshGenerator {
 
 	private getBaseMesh(): Mesh {
 		switch (this.data.gateType) {
-			case Gate.TypeGateWireW: return gateWireMesh.clone(`gate.wire-${this.data.getName()}`);
-			case Gate.TypeGateWireRectangle: return gateWireRectangleMesh.clone(`gate.wire-${this.data.getName()}`);
-			case Gate.TypeGatePlate: return gatePlateMesh.clone(`gate.wire-${this.data.getName()}`);
-			case Gate.TypeGateLongPlate: return gateLongPlateMesh.clone(`gate.wire-${this.data.getName()}`);
+			case GateType.WireW: return gateWireMesh.clone(`gate.wire-${this.data.getName()}`);
+			case GateType.WireRectangle: return gateWireRectangleMesh.clone(`gate.wire-${this.data.getName()}`);
+			case GateType.Plate: return gatePlateMesh.clone(`gate.wire-${this.data.getName()}`);
+			case GateType.LongPlate: return gateLongPlateMesh.clone(`gate.wire-${this.data.getName()}`);
 			/* istanbul ignore next */
 			default:
 				logger().warn('[GateItem.getBaseMesh] Unknown gate type "%s".', this.data.gateType);

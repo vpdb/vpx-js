@@ -20,6 +20,7 @@
 import { degToRad, f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
+import { TargetType } from '../enums';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { HitTarget } from './hit-target';
@@ -84,15 +85,15 @@ export class HitTargetMeshGenerator {
 
 	private getBaseMesh(): Mesh {
 		switch (this.data.targetType) {
-			case HitTarget.TypeDropTargetBeveled: return hitTargetT2Mesh.clone();
-			case HitTarget.TypeDropTargetSimple: return hitTargetT3Mesh.clone();
-			case HitTarget.TypeDropTargetFlatSimple: return hitTargetT4Mesh.clone();
-			case HitTarget.TypeHitTargetRound: return hitTargetRoundMesh.clone();
-			case HitTarget.TypeHitTargetRectangle: return hitTargetRectangleMesh.clone();
-			case HitTarget.TypeHitFatTargetRectangle: return hitFatTargetRectangleMesh.clone();
-			case HitTarget.TypeHitFatTargetSquare: return hitFatTargetSquareMesh.clone();
-			case HitTarget.TypeHitTargetSlim: return hitTargetT1SlimMesh.clone();
-			case HitTarget.TypeHitFatTargetSlim: return hitTargetT2SlimMesh.clone();
+			case TargetType.DropTargetBeveled: return hitTargetT2Mesh.clone();
+			case TargetType.DropTargetSimple: return hitTargetT3Mesh.clone();
+			case TargetType.DropTargetFlatSimple: return hitTargetT4Mesh.clone();
+			case TargetType.HitTargetRound: return hitTargetRoundMesh.clone();
+			case TargetType.HitTargetRectangle: return hitTargetRectangleMesh.clone();
+			case TargetType.HitFatTargetRectangle: return hitFatTargetRectangleMesh.clone();
+			case TargetType.HitFatTargetSquare: return hitFatTargetSquareMesh.clone();
+			case TargetType.HitTargetSlim: return hitTargetT1SlimMesh.clone();
+			case TargetType.HitFatTargetSlim: return hitTargetT2SlimMesh.clone();
 			/* istanbul ignore next: currently all implemented */
 			default: return hitTargetT3Mesh.clone();
 		}

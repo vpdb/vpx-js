@@ -21,6 +21,8 @@ import { IBinaryReader, OleCompoundDoc, Storage } from '../../io/ole-doc';
 import { logger } from '../../util/logger';
 import { Bumper } from '../bumper/bumper';
 import { Collection } from '../collection/collection';
+import { ItemType } from '../enums';
+import { Flasher } from '../flasher/flasher';
 import { Flipper } from '../flipper/flipper';
 import { Gate } from '../gate/gate';
 import { HitTarget } from '../hit-target/hit-target';
@@ -40,7 +42,6 @@ import { Timer } from '../timer/timer';
 import { Trigger } from '../trigger/trigger';
 import { TableLoadOptions } from './table';
 import { TableData } from './table-data';
-import { Flasher } from '../flasher/flasher';
 
 export class TableLoader {
 
@@ -145,85 +146,85 @@ export class TableLoader {
 	private async loadItem(loadedTable: LoadedTable, storage: Storage, itemName: string, itemType: number, opts: TableLoadOptions): Promise<Item<ItemData> | null> {
 		switch (itemType) {
 
-			case ItemData.TypeSurface: {
+			case ItemType.Surface: {
 				const item = await Surface.fromStorage(storage, itemName);
 				loadedTable.surfaces!.push(item);
 				return item;
 			}
 
-			case ItemData.TypePrimitive: {
+			case ItemType.Primitive: {
 				const item = await Primitive.fromStorage(storage, itemName, opts.skipMeshes === true);
 				loadedTable.primitives!.push(item);
 				return item;
 			}
 
-			case ItemData.TypeLight: {
+			case ItemType.Light: {
 				const item = await Light.fromStorage(storage, itemName);
 				loadedTable.lights!.push(item);
 				return item;
 			}
 
-			case ItemData.TypeRubber: {
+			case ItemType.Rubber: {
 				const item = await Rubber.fromStorage(storage, itemName);
 				loadedTable.rubbers!.push(item);
 				return item;
 			}
 
-			case ItemData.TypeFlasher: {
+			case ItemType.Flasher: {
 				const item = await Flasher.fromStorage(storage, itemName);
 				loadedTable.flashers!.push(item);
 				return item;
 			}
 
-			case ItemData.TypeFlipper: {
+			case ItemType.Flipper: {
 				const item = await Flipper.fromStorage(storage, itemName);
 				loadedTable.flippers!.push(item);
 				return item;
 			}
 
-			case ItemData.TypeBumper: {
+			case ItemType.Bumper: {
 				const item = await Bumper.fromStorage(storage, itemName);
 				loadedTable.bumpers!.push(item);
 				return item;
 			}
 
-			case ItemData.TypeRamp: {
+			case ItemType.Ramp: {
 				const item = await Ramp.fromStorage(storage, itemName);
 				loadedTable.ramps!.push(item);
 				return item;
 			}
 
-			case ItemData.TypeHitTarget: {
+			case ItemType.HitTarget: {
 				const item = await HitTarget.fromStorage(storage, itemName);
 				loadedTable.hitTargets!.push(item);
 				return item;
 			}
 
-			case ItemData.TypeGate: {
+			case ItemType.Gate: {
 				const item = await Gate.fromStorage(storage, itemName);
 				loadedTable.gates!.push(item);
 				return item;
 			}
 
-			case ItemData.TypeKicker: {
+			case ItemType.Kicker: {
 				const item = await Kicker.fromStorage(storage, itemName);
 				loadedTable.kickers!.push(item);
 				return item;
 			}
 
-			case ItemData.TypeTrigger: {
+			case ItemType.Trigger: {
 				const item = await Trigger.fromStorage(storage, itemName);
 				loadedTable.triggers!.push(item);
 				return item;
 			}
 
-			case ItemData.TypeSpinner: {
+			case ItemType.Spinner: {
 				const item = await Spinner.fromStorage(storage, itemName);
 				loadedTable.spinners!.push(item);
 				return item;
 			}
 
-			case ItemData.TypeTimer: {
+			case ItemType.Timer: {
 				const item = await Timer.fromStorage(storage, itemName);
 				if (opts.loadInvisibleItems) {
 					loadedTable.timers!.push(item);
@@ -231,13 +232,13 @@ export class TableLoader {
 				return item;
 			}
 
-			case ItemData.TypePlunger: {
+			case ItemType.Plunger: {
 				const item = await Plunger.fromStorage(storage, itemName);
 				loadedTable.plungers!.push(item);
 				return item;
 			}
 
-			case ItemData.TypeTextbox: {
+			case ItemType.Textbox: {
 				const item = await TextBoxItem.fromStorage(storage, itemName);
 				if (opts.loadInvisibleItems) {
 					loadedTable.textBoxes!.push(item);

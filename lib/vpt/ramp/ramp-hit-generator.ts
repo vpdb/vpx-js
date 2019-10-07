@@ -27,8 +27,8 @@ import { HitLineZ } from '../../physics/hit-line-z';
 import { HitObject } from '../../physics/hit-object';
 import { HitTriangle } from '../../physics/hit-triangle';
 import { LineSeg } from '../../physics/line-seg';
+import { RampType } from '../enums';
 import { Table } from '../table/table';
-import { Ramp } from './ramp';
 import { RampData } from './ramp-data';
 import { RampMeshGenerator } from './ramp-mesh-generator';
 
@@ -54,29 +54,29 @@ export class RampHitGenerator {
 		let wallHeightLeft: number;
 
 		switch (this.data.rampType) {
-			case Ramp.RampTypeFlat:
+			case RampType.Flat:
 				wallHeightRight = this.data.rightWallHeight;
 				wallHeightLeft = this.data.leftWallHeight;
 				break;
-			case Ramp.RampType1Wire:
+			case RampType.Wire1:
 				// backwards compatible physics
 				wallHeightRight = 31.0;
 				wallHeightLeft = 31.0;
 				break;
-			case Ramp.RampType2Wire:
+			case RampType.Wire2:
 				// backwards compatible physics
 				wallHeightRight = 31.0;
 				wallHeightLeft = 31.0;
 				break;
-			case Ramp.RampType4Wire:
+			case RampType.Wire4:
 				wallHeightRight = 62.0;
 				wallHeightLeft = 62.0;
 				break;
-			case Ramp.RampType3WireRight:
+			case RampType.Wire3Right:
 				wallHeightRight = 62.0;
 				wallHeightLeft = (6 + 12.5);
 				break;
-			case Ramp.RampType3WireLeft:
+			case RampType.Wire3Left:
 				wallHeightRight = (6 + 12.5);
 				wallHeightLeft = 62.0;
 				break;

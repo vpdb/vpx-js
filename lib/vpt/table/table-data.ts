@@ -22,6 +22,7 @@ import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
 import { Vertex2D } from '../../math/vertex2d';
 import { Vertex3D } from '../../math/vertex3d';
+import { BackgroundType } from '../enums';
 import { ItemData } from '../item-data';
 import { Material, SaveMaterial, SavePhysicsMaterial } from '../material';
 
@@ -31,10 +32,6 @@ import { Material, SaveMaterial, SavePhysicsMaterial } from '../material';
  * @see https://github.com/vpinball/vpinball/blob/master/pintable.cpp
  */
 export class TableData extends ItemData {
-
-	public static BG_DESKTOP = 0;
-	public static BG_FULLSCREEN = 1;
-	public static BG_FSS = 2;
 
 	public static BGI_DESKTOP = 110;
 	public static BGI_FULLSCREEN = 111;
@@ -178,41 +175,41 @@ export class TableData extends ItemData {
 			case 'TOPX': this.top = this.getFloat(buffer); break;
 			case 'RGHT': this.right = this.getFloat(buffer); break;
 			case 'BOTM': this.bottom = this.getFloat(buffer); break;
-			case 'ROTA': this.bgRotation[TableData.BG_DESKTOP] = this.getFloat(buffer); break;
-			case 'LAYB': this.bgLayback[TableData.BG_DESKTOP] = this.getFloat(buffer); break;
-			case 'INCL': this.bgInclination[TableData.BG_DESKTOP] = this.getFloat(buffer); break;
-			case 'FOVX': this.bgFov[TableData.BG_DESKTOP] = this.getFloat(buffer); break;
-			case 'SCLX': this.bgScaleX[TableData.BG_DESKTOP] = this.getFloat(buffer); break;
-			case 'SCLY': this.bgScaleY[TableData.BG_DESKTOP] = this.getFloat(buffer); break;
-			case 'SCLZ': this.bgScaleZ[TableData.BG_DESKTOP] = this.getFloat(buffer); break;
-			case 'XLTX': this.bgXlateX[TableData.BG_DESKTOP] = this.getFloat(buffer); break;
-			case 'XLTY': this.bgXlateY[TableData.BG_DESKTOP] = this.getFloat(buffer); break;
-			case 'XLTZ': this.bgXlateZ[TableData.BG_DESKTOP] = this.getFloat(buffer); break;
-			case 'ROTF': this.bgRotation[TableData.BG_FULLSCREEN] = this.getFloat(buffer); break;
-			case 'LAYF': this.bgLayback[TableData.BG_FULLSCREEN] = this.getFloat(buffer); break;
-			case 'INCF': this.bgInclination[TableData.BG_FULLSCREEN] = this.getFloat(buffer); break;
-			case 'FOVF': this.bgFov[TableData.BG_FULLSCREEN] = this.getFloat(buffer); break;
-			case 'SCFX': this.bgScaleX[TableData.BG_FULLSCREEN] = this.getFloat(buffer); break;
-			case 'SCFY': this.bgScaleY[TableData.BG_FULLSCREEN] = this.getFloat(buffer); break;
-			case 'SCFZ': this.bgScaleZ[TableData.BG_FULLSCREEN] = this.getFloat(buffer); break;
-			case 'XLFX': this.bgXlateX[TableData.BG_FULLSCREEN] = this.getFloat(buffer); break;
-			case 'XLFY': this.bgXlateY[TableData.BG_FULLSCREEN] = this.getFloat(buffer); break;
-			case 'XLFZ': this.bgXlateZ[TableData.BG_FULLSCREEN] = this.getFloat(buffer); break;
-			case 'ROFS': this.bgRotation[TableData.BG_FSS] = this.getFloat(buffer); break;
-			case 'LAFS': this.bgLayback[TableData.BG_FSS] = this.getFloat(buffer); break;
-			case 'INFS': this.bgInclination[TableData.BG_FSS] = this.getFloat(buffer); break;
-			case 'FOFS': this.bgFov[TableData.BG_FSS] = this.getFloat(buffer); break;
-			case 'SCXS': this.bgScaleX[TableData.BG_FSS] = this.getFloat(buffer); break;
-			case 'SCYS': this.bgScaleY[TableData.BG_FSS] = this.getFloat(buffer); break;
-			case 'SCZS': this.bgScaleZ[TableData.BG_FSS] = this.getFloat(buffer); break;
-			case 'XLXS': this.bgXlateX[TableData.BG_FSS] = this.getFloat(buffer); break;
-			case 'XLYS': this.bgXlateY[TableData.BG_FSS] = this.getFloat(buffer); break;
-			case 'XLZS': this.bgXlateZ[TableData.BG_FSS] = this.getFloat(buffer); break;
+			case 'ROTA': this.bgRotation[BackgroundType.Desktop] = this.getFloat(buffer); break;
+			case 'LAYB': this.bgLayback[BackgroundType.Desktop] = this.getFloat(buffer); break;
+			case 'INCL': this.bgInclination[BackgroundType.Desktop] = this.getFloat(buffer); break;
+			case 'FOVX': this.bgFov[BackgroundType.Desktop] = this.getFloat(buffer); break;
+			case 'SCLX': this.bgScaleX[BackgroundType.Desktop] = this.getFloat(buffer); break;
+			case 'SCLY': this.bgScaleY[BackgroundType.Desktop] = this.getFloat(buffer); break;
+			case 'SCLZ': this.bgScaleZ[BackgroundType.Desktop] = this.getFloat(buffer); break;
+			case 'XLTX': this.bgXlateX[BackgroundType.Desktop] = this.getFloat(buffer); break;
+			case 'XLTY': this.bgXlateY[BackgroundType.Desktop] = this.getFloat(buffer); break;
+			case 'XLTZ': this.bgXlateZ[BackgroundType.Desktop] = this.getFloat(buffer); break;
+			case 'ROTF': this.bgRotation[BackgroundType.FS] = this.getFloat(buffer); break;
+			case 'LAYF': this.bgLayback[BackgroundType.FS] = this.getFloat(buffer); break;
+			case 'INCF': this.bgInclination[BackgroundType.FS] = this.getFloat(buffer); break;
+			case 'FOVF': this.bgFov[BackgroundType.FS] = this.getFloat(buffer); break;
+			case 'SCFX': this.bgScaleX[BackgroundType.FS] = this.getFloat(buffer); break;
+			case 'SCFY': this.bgScaleY[BackgroundType.FS] = this.getFloat(buffer); break;
+			case 'SCFZ': this.bgScaleZ[BackgroundType.FS] = this.getFloat(buffer); break;
+			case 'XLFX': this.bgXlateX[BackgroundType.FS] = this.getFloat(buffer); break;
+			case 'XLFY': this.bgXlateY[BackgroundType.FS] = this.getFloat(buffer); break;
+			case 'XLFZ': this.bgXlateZ[BackgroundType.FS] = this.getFloat(buffer); break;
+			case 'ROFS': this.bgRotation[BackgroundType.FSS] = this.getFloat(buffer); break;
+			case 'LAFS': this.bgLayback[BackgroundType.FSS] = this.getFloat(buffer); break;
+			case 'INFS': this.bgInclination[BackgroundType.FSS] = this.getFloat(buffer); break;
+			case 'FOFS': this.bgFov[BackgroundType.FSS] = this.getFloat(buffer); break;
+			case 'SCXS': this.bgScaleX[BackgroundType.FSS] = this.getFloat(buffer); break;
+			case 'SCYS': this.bgScaleY[BackgroundType.FSS] = this.getFloat(buffer); break;
+			case 'SCZS': this.bgScaleZ[BackgroundType.FSS] = this.getFloat(buffer); break;
+			case 'XLXS': this.bgXlateX[BackgroundType.FSS] = this.getFloat(buffer); break;
+			case 'XLYS': this.bgXlateY[BackgroundType.FSS] = this.getFloat(buffer); break;
+			case 'XLZS': this.bgXlateZ[BackgroundType.FSS] = this.getFloat(buffer); break;
 			case 'EFSS':
 				this.bgEnableFss = this.getBool(buffer);
 				/* istanbul ignore if: legacy */
 				if (this.bgEnableFss) {
-					this.bgCurrentSet = TableData.BG_FSS;
+					this.bgCurrentSet = BackgroundType.FSS;
 				}
 				break;
 			case 'ORRP': this.overridePhysics = this.getInt(buffer); break;
@@ -255,9 +252,9 @@ export class TableData extends ItemData {
 				this.scriptLen = len;
 				break;
 			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
-			case 'BIMG': this.bgImage[TableData.BG_DESKTOP] = this.getString(buffer, len); break;
-			case 'BIMF': this.bgImage[TableData.BG_FULLSCREEN] = this.getString(buffer, len); break;
-			case 'BIMS': this.bgImage[TableData.BG_FSS] = this.getString(buffer, len); break;
+			case 'BIMG': this.bgImage[BackgroundType.Desktop] = this.getString(buffer, len); break;
+			case 'BIMF': this.bgImage[BackgroundType.FS] = this.getString(buffer, len); break;
+			case 'BIMS': this.bgImage[BackgroundType.FSS] = this.getString(buffer, len); break;
 			case 'BIMN': this.imageBackdropNightDay = this.getBool(buffer); break;
 			case 'IMCG': this.szImageColorGrade = this.getString(buffer, len); break;
 			case 'EIMG': this.szEnvImage = this.getString(buffer, len); break;

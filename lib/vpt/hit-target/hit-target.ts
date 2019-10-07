@@ -46,16 +46,6 @@ import { HitTargetState } from './hit-target-state';
  */
 export class HitTarget extends Item<HitTargetData> implements IRenderable, IHittable, IAnimatable<HitTargetState>, IScriptable<HitTargetApi> {
 
-	public static TypeDropTargetBeveled = 1;
-	public static TypeDropTargetSimple = 2;
-	public static TypeHitTargetRound = 3;
-	public static TypeHitTargetRectangle = 4;
-	public static TypeHitFatTargetRectangle = 5;
-	public static TypeHitFatTargetSquare = 6;
-	public static TypeDropTargetFlatSimple = 7;
-	public static TypeHitFatTargetSlim = 8;
-	public static TypeHitTargetSlim = 9;
-
 	public static DROP_TARGET_LIMIT = f4(52.0);
 
 	private readonly state: HitTargetState;

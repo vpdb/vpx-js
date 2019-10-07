@@ -37,6 +37,7 @@ import { Transpiler } from '../../scripting/transpiler';
 import { logger } from '../../util/logger';
 import { Bumper } from '../bumper/bumper';
 import { Collection } from '../collection/collection';
+import { Flasher } from '../flasher/flasher';
 import { Flipper } from '../flipper/flipper';
 import { Gate } from '../gate/gate';
 import { HitTarget } from '../hit-target/hit-target';
@@ -62,7 +63,6 @@ import { TableExportOptions } from './table-exporter';
 import { TableHitGenerator } from './table-hit-generator';
 import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
-import { Flasher } from '../flasher/flasher';
 
 /**
  * A Visual Pinball table.

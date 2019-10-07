@@ -49,11 +49,6 @@ import { GateState } from './gate-state';
  */
 export class Gate extends Item<GateData> implements IRenderable, IPlayable, IMovable<GateState>, IHittable, IScriptable<GateApi> {
 
-	public static TypeGateWireW = 1;
-	public static TypeGateWireRectangle = 2;
-	public static TypeGatePlate = 3;
-	public static TypeGateLongPlate = 4;
-
 	private readonly meshGenerator: GateMeshGenerator;
 	private readonly hitGenerator: GateHitGenerator;
 	private readonly state: GateState;

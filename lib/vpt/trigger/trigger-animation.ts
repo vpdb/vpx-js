@@ -19,8 +19,8 @@
 
 import { IAnimation } from '../../game/ianimatable';
 import { PlayerPhysics } from '../../game/player-physics';
+import { TriggerShape } from '../enums';
 import { Table } from '../table/table';
-import { Trigger } from './trigger';
 import { TriggerData } from './trigger-data';
 import { TriggerState } from './trigger-state';
 
@@ -58,14 +58,14 @@ export class TriggerAnimation implements IAnimation {
 		this.timeMsec = physics.timeMsec;
 		const diffTimeMsec = physics.timeMsec - oldTimeMsec;
 
-		let animLimit = this.data.shape === Trigger.ShapeTriggerStar ? this.data.radius * (1.0 / 5.0) : 32.0;
-		if (this.data.shape === Trigger.ShapeTriggerButton) {
+		let animLimit = this.data.shape === TriggerShape.Star ? this.data.radius * (1.0 / 5.0) : 32.0;
+		if (this.data.shape === TriggerShape.Button) {
 			animLimit = this.data.radius * (1.0 / 10.0);
 		}
-		if (this.data.shape === Trigger.ShapeTriggerWireC) {
+		if (this.data.shape === TriggerShape.WireC) {
 			animLimit = 60.0;
 		}
-		if (this.data.shape === Trigger.ShapeTriggerWireD) {
+		if (this.data.shape === TriggerShape.WireD) {
 			animLimit = 25.0;
 		}
 

@@ -23,8 +23,8 @@ import sinonChai = require('sinon-chai');
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { LightStatus } from '../enums';
 import { Table } from '../table/table';
-import { Light } from './light';
 import { LightState } from './light-state';
 
 /* tslint:disable:no-unused-expression */
@@ -45,13 +45,13 @@ describe('The VPinball light animation', () => {
 		const light = table.lights.Surface;
 		const api = light.getApi();
 
-		api.State = Light.StateOff;
+		api.State = LightStatus.Off;
 		api.Intensity = 1;
 
 		player.updatePhysics(0);
 		expect(light.getState().intensity).to.equal(0);
 
-		api.State = Light.StateOn;
+		api.State = LightStatus.On;
 		player.updatePhysics(20);
 		expect(light.getState().intensity).to.equal(1);
 	});
@@ -60,13 +60,13 @@ describe('The VPinball light animation', () => {
 		const light = table.lights.Surface;
 		const api = light.getApi();
 
-		api.State = Light.StateOn;
+		api.State = LightStatus.On;
 		api.Intensity = 1;
 
 		player.updatePhysics(0);
 		expect(light.getState().intensity).to.equal(1);
 
-		api.State = Light.StateOff;
+		api.State = LightStatus.Off;
 		player.updatePhysics(20);
 		expect(light.getState().intensity).to.equal(0);
 	});
@@ -76,13 +76,13 @@ describe('The VPinball light animation', () => {
 		const light = table.lights.Surface;
 		const api = light.getApi();
 
-		api.State = Light.StateOff;
+		api.State = LightStatus.Off;
 		api.Intensity = 1;
 
 		player.updatePhysics(0);
 		expect(light.getState().intensity).to.equal(0);
 
-		api.Duration(Light.StateOff, 500, Light.StateOn);
+		api.Duration(LightStatus.Off, 500, LightStatus.On);
 
 		player.updatePhysics(520);
 		expect(light.getState().intensity).to.equal(1);
@@ -96,13 +96,13 @@ describe('The VPinball light animation', () => {
 		const light = table.lights.Surface;
 		const api = light.getApi();
 
-		api.State = Light.StateOff;
+		api.State = LightStatus.Off;
 		api.Intensity = 1;
 
 		player.updatePhysics(0);
 		expect(light.getState().intensity).to.equal(0);
 
-		api.Duration(Light.StateOff, 500, Light.StateBlinking);
+		api.Duration(LightStatus.Off, 500, LightStatus.Blinking);
 
 		// for (let i = 0; i < 3000; i += 10) {
 		// 	player.updatePhysics(i);
@@ -124,13 +124,13 @@ describe('The VPinball light animation', () => {
 		const light = table.lights.Surface;
 		const api = light.getApi();
 
-		api.State = Light.StateOff;
+		api.State = LightStatus.Off;
 		api.Intensity = 1;
 
 		player.updatePhysics(0);
 		expect(light.getState().intensity).to.equal(0);
 
-		api.Duration(Light.StateBlinking, 500, Light.StateOff);
+		api.Duration(LightStatus.Blinking, 500, LightStatus.Off);
 
 		player.updatePhysics(20);
 		expect(light.getState().intensity).to.equal(1);
@@ -148,7 +148,7 @@ describe('The VPinball light animation', () => {
 
 		api.BlinkPattern = '100110';
 		api.BlinkInterval = 100;
-		api.State = Light.StateBlinking;
+		api.State = LightStatus.Blinking;
 		api.Intensity = 10;
 		api.IntensityScale = 1;
 
@@ -177,7 +177,7 @@ describe('The VPinball light animation', () => {
 
 		api.BlinkPattern = '101';
 		api.BlinkInterval = 100;
-		api.State = Light.StateBlinking;
+		api.State = LightStatus.Blinking;
 		api.Intensity = 10;
 		api.IntensityScale = 1;
 
@@ -212,7 +212,7 @@ describe('The VPinball light animation', () => {
 
 		api.BlinkPattern = '10';
 		api.BlinkInterval = 600;
-		api.State = Light.StateBlinking;
+		api.State = LightStatus.Blinking;
 		api.Intensity = 100;
 		api.IntensityScale = 1;
 		api.FadeSpeedDown = 0.3;
@@ -253,7 +253,7 @@ describe('The VPinball light animation', () => {
 		const light = table.lights.Surface;
 		const api = light.getApi();
 
-		api.State = Light.StateBlinking;
+		api.State = LightStatus.Blinking;
 		player.updatePhysics(200);
 
 		const state = player.popStates().getState<LightState>('Surface').newState;

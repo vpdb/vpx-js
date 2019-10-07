@@ -26,9 +26,9 @@ import { CollisionType } from '../../physics/collision-type';
 import { HitObject } from '../../physics/hit-object';
 import { HitPoint } from '../../physics/hit-point';
 import { HitTriangle } from '../../physics/hit-triangle';
+import { TargetType } from '../enums';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
-import { HitTarget } from './hit-target';
 import { HitTargetData } from './hit-target-data';
 import { HitTargetMeshGenerator } from './hit-target-mesh-generator';
 
@@ -64,10 +64,10 @@ export class HitTargetHitGenerator {
 
 			const rgv3D: Vertex3D[] = [];
 			let hitShapeOffset = 0.18;
-			if (this.data.targetType === HitTarget.TypeDropTargetBeveled) {
+			if (this.data.targetType === TargetType.DropTargetBeveled) {
 				hitShapeOffset = 0.25;
 			}
-			if (this.data.targetType === HitTarget.TypeDropTargetFlatSimple) {
+			if (this.data.targetType === TargetType.DropTargetFlatSimple) {
 				hitShapeOffset = 0.13;
 			}
 
