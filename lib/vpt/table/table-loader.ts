@@ -112,6 +112,7 @@ export class TableLoader {
 		loadedTable.lights = [];
 		loadedTable.rubbers = [];
 		loadedTable.flippers = [];
+		loadedTable.flashers = [];
 		loadedTable.bumpers = [];
 		loadedTable.ramps = [];
 		loadedTable.hitTargets = [];
