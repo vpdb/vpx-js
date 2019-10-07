@@ -40,6 +40,7 @@ import { Timer } from '../timer/timer';
 import { Trigger } from '../trigger/trigger';
 import { TableLoadOptions } from './table';
 import { TableData } from './table-data';
+import { Flasher } from '../flasher/flasher';
 
 export class TableLoader {
 
@@ -167,6 +168,12 @@ export class TableLoader {
 				return item;
 			}
 
+			case ItemData.TypeFlasher: {
+				const item = await Flasher.fromStorage(storage, itemName);
+				loadedTable.flashers!.push(item);
+				return item;
+			}
+
 			case ItemData.TypeFlipper: {
 				const item = await Flipper.fromStorage(storage, itemName);
 				loadedTable.flippers!.push(item);
@@ -288,6 +295,7 @@ export interface LoadedTable {
 	primitives?: Primitive[];
 	rubbers?: Rubber[];
 	flippers?: Flipper[];
+	flashers?: Flasher[];
 	bumpers?: Bumper[];
 	ramps?: Ramp[];
 	lights?: Light[];
