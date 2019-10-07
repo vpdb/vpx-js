@@ -48,7 +48,7 @@
 		"pngquant": "^3.0.0",
 		"sharp": "^0.23.0",
 		"text-encoding": "^0.7.0",
-		"three": "^0.108.0"
+		"three": "^0.109.0"
 	},
 	"devDependencies": {
 		"@types/chai": "4.2.3",
