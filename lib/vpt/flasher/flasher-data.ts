@@ -26,25 +26,28 @@ import { ItemData } from '../item-data';
 
 export class FlasherData extends ItemData {
 
-	private height: number = 50.0;
-	private center: Vertex2D = new Vertex2D();
-	private rotX: number = 0.0;
-	private rotY: number = 0.0;
-	private rotZ: number = 0.0;
-	private color: number = 0xffffff;
-	private szImageA?: string;
-	private szImageB?: string;
-	private alpha: number = 100;
-	private modulateVsAdd: number = 0.9;
-	private isVisible: boolean = true;
-	private addBlend: boolean = false;
-	private isDMD: boolean = false;
-	private displayTexture: boolean = false;
-	private depthBias: number = 0.0;
-	private imageAlignment: number = ImageAlignment.ModeWrap;
-	private filter: number = Filter.Overlay;
-	private filterAmount: number = 100;
+	public height: number = 50.0;
+	public center: Vertex2D = new Vertex2D();
+	public rotX: number = 0.0;
+	public rotY: number = 0.0;
+	public rotZ: number = 0.0;
+	public color: number = 0xffffff;
+	public szImageA?: string;
+	public szImageB?: string;
+	public alpha: number = 100;
+	public modulateVsAdd: number = 0.9;
+	public isVisible: boolean = true;
+	public addBlend: boolean = false;
+	public isDMD: boolean = false;
+	public displayTexture: boolean = false;
+	public depthBias: number = 0.0;
+	public imageAlignment: number = ImageAlignment.ModeWrap;
+	public filter: number = Filter.Overlay;
+	public filterAmount: number = 100;
 	private dragPoints: DragPoint[] = [];
+
+	// non-persisted props
+	public intensityScale: number = 1.0;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<FlasherData> {
 		const flasherData = new FlasherData(itemName);

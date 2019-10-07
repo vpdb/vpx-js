@@ -17,11 +17,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
+import { IScriptable } from '../../game/iscriptable';
+import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Item } from '../item';
+import { Table } from '../table/table';
+import { FlasherApi } from './flasher-api';
 import { FlasherData } from './flasher-data';
 
-export class Flasher extends Item<FlasherData> {
+export class Flasher extends Item<FlasherData> implements IScriptable<FlasherApi> {
+
+	private api?: FlasherApi;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Flasher> {
 		const data = await FlasherData.fromStorage(storage, itemName);
@@ -30,5 +37,18 @@ export class Flasher extends Item<FlasherData> {
 
 	private constructor(data: FlasherData) {
 		super(data);
+	}
+
+	public setupPlayer(player: Player, table: Table): void {
+		this.events = new EventProxy(this);
+		this.api = new FlasherApi(this.data, this.events, player, table);
+	}
+
+	public getApi(): FlasherApi {
+		return this.api!;
+	}
+
+	public getEventNames(): string[] {
+		return [ 'Init', 'Timer' ];
 	}
 }
