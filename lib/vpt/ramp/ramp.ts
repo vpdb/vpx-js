@@ -42,16 +42,6 @@ import { RampMeshGenerator } from './ramp-mesh-generator';
  */
 export class Ramp extends Item<RampData> implements IRenderable, IHittable, IScriptable<RampApi> {
 
-	public static RampTypeFlat = 0;
-	public static RampType4Wire = 1;
-	public static RampType2Wire = 2;
-	public static RampType3WireLeft = 3;
-	public static RampType3WireRight = 4;
-	public static RampType1Wire = 5;
-
-	public static RampImageAlignmentWorld = 0;
-	public static RampImageAlignmentWrap = 1;
-
 	private readonly meshGenerator: RampMeshGenerator;
 	private readonly hitGenerator: RampHitGenerator;
 

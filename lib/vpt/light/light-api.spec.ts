@@ -23,8 +23,8 @@ import sinonChai = require('sinon-chai');
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { LightStatus } from '../enums';
 import { Table } from '../table/table';
-import { Light } from './light';
 
 /* tslint:disable:no-unused-expression */
 chai.use(sinonChai);
@@ -44,9 +44,9 @@ describe('The VPinball light API', () => {
 		const light = table.lights.Surface.getApi();
 		light.Falloff = 23; expect(light.Falloff).to.equal(23);
 		light.FalloffPower = 512; expect(light.FalloffPower).to.equal(512);
-		light.State = Light.StateOn; expect(light.State).to.equal(Light.StateOn);
-		light.State = Light.StateOff; expect(light.State).to.equal(Light.StateOff);
-		light.State = Light.StateBlinking; expect(light.State).to.equal(Light.StateBlinking);
+		light.State = LightStatus.On; expect(light.State).to.equal(LightStatus.On);
+		light.State = LightStatus.Off; expect(light.State).to.equal(LightStatus.Off);
+		light.State = LightStatus.Blinking; expect(light.State).to.equal(LightStatus.Blinking);
 		light.Color = 0x12ff54; expect(light.Color).to.equal(0x12ff54);
 		light.ColorFull = 0x00de23; expect(light.ColorFull).to.equal(0x00de23);
 		light.X = 12; expect(light.X).to.equal(12);

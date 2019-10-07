@@ -21,9 +21,9 @@ import { degToRad, f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { logger } from '../../util/logger';
+import { TriggerShape } from '../enums';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
-import { Trigger } from './trigger';
 import { TriggerData } from './trigger-data';
 
 const triggerButtonMesh = Mesh.fromJson(require('../../../res/meshes/trigger-button-mesh'));
@@ -42,19 +42,19 @@ export class TriggerMeshGenerator {
 	public getMesh(table: Table): Mesh {
 		const baseHeight = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
 
-		let zOffset = (this.data.shape === Trigger.ShapeTriggerButton) ? 5.0 : 0.0;
-		if (this.data.shape === Trigger.ShapeTriggerWireC) {
+		let zOffset = (this.data.shape === TriggerShape.Button) ? 5.0 : 0.0;
+		if (this.data.shape === TriggerShape.WireC) {
 			zOffset = -19.0;
 		}
 
 		const fullMatrix = new Matrix3D();
-		if (this.data.shape === Trigger.ShapeTriggerWireB) {
+		if (this.data.shape === TriggerShape.WireB) {
 			const tempMatrix = new Matrix3D();
 			fullMatrix.rotateXMatrix(degToRad(-23.0));
 			tempMatrix.rotateZMatrix(degToRad(this.data.rotation));
 			fullMatrix.multiply(tempMatrix);
 
-		} else if (this.data.shape === Trigger.ShapeTriggerWireC) {
+		} else if (this.data.shape === TriggerShape.WireC) {
 			const tempMatrix = new Matrix3D();
 			fullMatrix.rotateXMatrix(degToRad(140.0));
 			tempMatrix.rotateZMatrix(degToRad(this.data.rotation));
@@ -70,7 +70,7 @@ export class TriggerMeshGenerator {
 			const vert = Vertex3D.claim(vertex.x, vertex.y, vertex.z).multiplyMatrix(fullMatrix);
 			//fullMatrix.multiplyVector(vert);
 
-			if (this.data.shape === Trigger.ShapeTriggerButton || this.data.shape === Trigger.ShapeTriggerStar) {
+			if (this.data.shape === TriggerShape.Button || this.data.shape === TriggerShape.Star) {
 				vertex.x = f4(vert.x * this.data.radius) + this.data.vCenter.x;
 				vertex.y = f4(vert.y * this.data.radius) + this.data.vCenter.y;
 				vertex.z = f4(f4(f4(vert.z * this.data.radius) * table.getScaleZ()) + baseHeight) + zOffset;
@@ -93,15 +93,15 @@ export class TriggerMeshGenerator {
 	private getBaseMesh(): Mesh {
 		const name = `trigger-${this.data.getName()}`;
 		switch (this.data.shape) {
-			case Trigger.ShapeTriggerWireA:
-			case Trigger.ShapeTriggerWireB:
-			case Trigger.ShapeTriggerWireC:
+			case TriggerShape.WireA:
+			case TriggerShape.WireB:
+			case TriggerShape.WireC:
 				return triggerSimpleMesh.clone(name);
-			case Trigger.ShapeTriggerWireD:
+			case TriggerShape.WireD:
 				return triggerDWireMesh.clone(name);
-			case Trigger.ShapeTriggerButton:
+			case TriggerShape.Button:
 				return triggerButtonMesh.clone(name);
-			case Trigger.ShapeTriggerStar:
+			case TriggerShape.Star:
 				return triggerStarMesh.clone(name);
 			/* istanbul ignore next */
 			default:

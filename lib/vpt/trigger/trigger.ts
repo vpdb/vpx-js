@@ -27,6 +27,7 @@ import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
 import { IRenderApi } from '../../render/irender-api';
+import { TriggerShape } from '../enums';
 import { Item } from '../item';
 import { Table } from '../table/table';
 import { TriggerAnimation } from './trigger-animation';
@@ -43,14 +44,6 @@ import { TriggerState } from './trigger-state';
  * @see https://github.com/vpinball/vpinball/blob/master/trigger.cpp
  */
 export class Trigger extends Item<TriggerData> implements IRenderable, IHittable, IAnimatable<TriggerState>, IScriptable<TriggerApi> {
-
-	public static ShapeTriggerNone = 0;
-	public static ShapeTriggerWireA = 1;
-	public static ShapeTriggerStar = 2;
-	public static ShapeTriggerWireB = 3;
-	public static ShapeTriggerButton = 4;
-	public static ShapeTriggerWireC = 5;
-	public static ShapeTriggerWireD = 6;
 
 	private readonly state: TriggerState;
 	private readonly meshGenerator: TriggerMeshGenerator;
@@ -77,7 +70,7 @@ export class Trigger extends Item<TriggerData> implements IRenderable, IHittable
 	}
 
 	public isVisible(): boolean {
-		return this.data.isVisible && this.data.shape !== Trigger.ShapeTriggerNone;
+		return this.data.isVisible && this.data.shape !== TriggerShape.None;
 	}
 
 	public isCollidable(): boolean {
@@ -96,7 +89,7 @@ export class Trigger extends Item<TriggerData> implements IRenderable, IHittable
 	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
 		this.animation = new TriggerAnimation(this.data, this.state);
-		if (this.data.shape === Trigger.ShapeTriggerStar || this.data.shape === Trigger.ShapeTriggerButton) {
+		if (this.data.shape === TriggerShape.Star || this.data.shape === TriggerShape.Button) {
 			this.hits = [ new TriggerHitCircle(this.data, this.animation, this.events, table) ];
 
 		} else {

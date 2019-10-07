@@ -19,6 +19,7 @@
 
 import { BiffParser } from '../io/biff-parser';
 import { Storage } from '../io/ole-doc';
+import { ItemType } from './enums';
 import { Table } from './table/table';
 
 /**
@@ -28,60 +29,34 @@ import { Table } from './table/table';
  */
 export abstract class ItemData extends BiffParser {
 
-	public static TypeSurface = 0;
-	public static TypeFlipper = 1;
-	public static TypeTimer = 2;
-	public static TypePlunger = 3;
-	public static TypeTextbox = 4;
-	public static TypeBumper = 5;
-	public static TypeTrigger = 6;
-	public static TypeLight = 7;
-	public static TypeKicker = 8;
-	public static TypeDecal = 9;
-	public static TypeGate = 10;
-	public static TypeSpinner = 11;
-	public static TypeRamp = 12;
-	public static TypeTable = 13;
-	public static TypeLightCenter = 14;
-	public static TypeDragPoint = 15;
-	public static TypeCollection = 16;
-	public static TypeDispReel = 17;
-	public static TypeLightSeq = 18;
-	public static TypePrimitive = 19;
-	public static TypeFlasher = 20;
-	public static TypeRubber = 21;
-	public static TypeHitTarget = 22;
-	public static TypeCount = 23;
-	public static TypeInvalid = 0xffffffff;
-
 	/* istanbul ignore next: this is mainly for debugging stuff. */
 	public static getType(type: number): string {
 		switch (type) {
-			case ItemData.TypeSurface: return 'Surface';
-			case ItemData.TypeFlipper: return 'Flipper';
-			case ItemData.TypeTimer: return 'Timer';
-			case ItemData.TypePlunger: return 'Plunger';
-			case ItemData.TypeTextbox: return 'Textbox';
-			case ItemData.TypeBumper: return 'Bumper';
-			case ItemData.TypeTrigger: return 'Trigger';
-			case ItemData.TypeLight: return 'Light';
-			case ItemData.TypeKicker: return 'Kicker';
-			case ItemData.TypeDecal: return 'Decal';
-			case ItemData.TypeGate: return 'Gate';
-			case ItemData.TypeSpinner: return 'Spinner';
-			case ItemData.TypeRamp: return 'Ramp';
-			case ItemData.TypeTable: return 'Table';
-			case ItemData.TypeLightCenter: return 'Light Center';
-			case ItemData.TypeDragPoint: return 'Drag Point';
-			case ItemData.TypeCollection: return 'Collection';
-			case ItemData.TypeDispReel: return 'Reel';
-			case ItemData.TypeLightSeq: return 'Light Sequence';
-			case ItemData.TypePrimitive: return 'Primitive';
-			case ItemData.TypeFlasher: return 'Flasher';
-			case ItemData.TypeRubber: return 'Rubber';
-			case ItemData.TypeHitTarget: return 'Hit Target';
-			case ItemData.TypeCount: return 'Count';
-			case ItemData.TypeInvalid: return 'Invalid';
+			case ItemType.Surface: return 'Surface';
+			case ItemType.Flipper: return 'Flipper';
+			case ItemType.Timer: return 'Timer';
+			case ItemType.Plunger: return 'Plunger';
+			case ItemType.Textbox: return 'Textbox';
+			case ItemType.Bumper: return 'Bumper';
+			case ItemType.Trigger: return 'Trigger';
+			case ItemType.Light: return 'Light';
+			case ItemType.Kicker: return 'Kicker';
+			case ItemType.Decal: return 'Decal';
+			case ItemType.Gate: return 'Gate';
+			case ItemType.Spinner: return 'Spinner';
+			case ItemType.Ramp: return 'Ramp';
+			case ItemType.Table: return 'Table';
+			case ItemType.LightCenter: return 'Light Center';
+			case ItemType.DragPoint: return 'Drag Point';
+			case ItemType.Collection: return 'Collection';
+			case ItemType.DispReel: return 'Reel';
+			case ItemType.LightSeq: return 'Light Sequence';
+			case ItemType.Primitive: return 'Primitive';
+			case ItemType.Flasher: return 'Flasher';
+			case ItemType.Rubber: return 'Rubber';
+			case ItemType.HitTarget: return 'Hit Target';
+			case ItemType.Count: return 'Count';
+			case ItemType.Invalid: return 'Invalid';
 		}
 		return `Unknown type "${type}"`;
 	}

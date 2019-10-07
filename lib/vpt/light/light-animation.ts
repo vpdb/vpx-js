@@ -19,8 +19,8 @@
 
 import { IAnimation } from '../../game/ianimatable';
 import { PlayerPhysics } from '../../game/player-physics';
+import { LightStatus } from '../enums';
 import { Table } from '../table/table';
-import { Light } from './light';
 import { LightData } from './light-data';
 import { LightState } from './light-state';
 
@@ -29,8 +29,8 @@ export class LightAnimation implements IAnimation {
 	private readonly data: LightData;
 	private readonly state: LightState;
 
-	public realState: number = Light.StateOff;
-	public finalState: number = Light.StateOff;
+	public realState: number = LightStatus.Off;
+	public finalState: number = LightStatus.Off;
 	public lockedByLS = false;
 	public timeNextBlink: number = 0;
 	public intensityScale: number = 1;
@@ -54,7 +54,7 @@ export class LightAnimation implements IAnimation {
 		if (newVal !== this.realState) {
 			this.realState = newVal;
 
-			if (this.realState === Light.StateBlinking) {
+			if (this.realState === LightStatus.Blinking) {
 				this.timeNextBlink = physics.timeMsec;     // Start pattern right away // + m_d.m_blinkinterval;
 				this.blinkFrame = 0;                       // reset pattern
 			}
@@ -83,11 +83,11 @@ export class LightAnimation implements IAnimation {
 		if (this.duration > 0 && this.timerDurationEndTime < this.timeMsec) {
 			this.realState = this.finalState;
 			this.duration = 0;
-			if (this.realState === Light.StateBlinking) {
+			if (this.realState === LightStatus.Blinking) {
 				this.restartBlinker(physics.timeMsec);
 			}
 		}
-		if (this.realState === Light.StateBlinking) {
+		if (this.realState === LightStatus.Blinking) {
 			this.updateBlinker(physics.timeMsec);
 		}
 
@@ -123,7 +123,7 @@ export class LightAnimation implements IAnimation {
 		this.duration = duration;
 		this.finalState = endState;
 		this.timerDurationEndTime = timeMsec + this.duration;
-		if (this.realState === Light.StateBlinking) {
+		if (this.realState === LightStatus.Blinking) {
 			this.iBlinkFrame = 0;
 			this.timeNextBlink = timeMsec + this.data.blinkInterval;
 		}
@@ -136,9 +136,9 @@ export class LightAnimation implements IAnimation {
 	}
 
 	private isOn(): boolean {
-		return this.realState === Light.StateBlinking
+		return this.realState === LightStatus.Blinking
 			? this.isBlinkOn()
-			: this.realState !== Light.StateOff;
+			: this.realState !== LightStatus.Off;
 	}
 
 	private isBlinkOn(): boolean {

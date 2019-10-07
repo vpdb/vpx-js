@@ -27,6 +27,7 @@ import {
 	DEFAULT_TABLE_MIN_SLOPE,
 	GRAVITYCONST,
 } from '../../physics/constants';
+import { BackgroundType } from '../enums';
 import { dequantizeUnsignedPercent, ItemApi, quantizeUnsignedPercent } from '../item-api';
 import { Table } from './table';
 import { TableData } from './table-data';
@@ -138,12 +139,12 @@ export class TableApi extends ItemApi<TableData> {
 	set BackdropImageApplyNightDay(v) { this.data.imageBackdropNightDay = v; }
 	get ShowFSS() { return this.data.bgEnableFss; }
 	set ShowFSS(v) { this.data.bgEnableFss = v; }
-	get BackdropImage_DT() { return this.data.bgImage[TableData.BG_DESKTOP]; }
-	set BackdropImage_DT(v) { this.data.bgImage[TableData.BG_DESKTOP] = v; }
-	get BackdropImage_FS() { return this.data.bgImage[TableData.BG_FULLSCREEN]; }
-	set BackdropImage_FS(v) { this.data.bgImage[TableData.BG_FULLSCREEN] = v; }
-	get BackdropImage_FSS() { return this.data.bgImage[TableData.BG_FSS]; }
-	set BackdropImage_FSS(v) { this.data.bgImage[TableData.BG_FSS] = v; }
+	get BackdropImage_DT() { return this.data.bgImage[BackgroundType.Desktop]; }
+	set BackdropImage_DT(v) { this.data.bgImage[BackgroundType.Desktop] = v; }
+	get BackdropImage_FS() { return this.data.bgImage[BackgroundType.FS]; }
+	set BackdropImage_FS(v) { this.data.bgImage[BackgroundType.FS] = v; }
+	get BackdropImage_FSS() { return this.data.bgImage[BackgroundType.FSS]; }
+	set BackdropImage_FSS(v) { this.data.bgImage[BackgroundType.FSS] = v; }
 	get ColorGradeImage() { return this.data.szImageColorGrade; }
 	set ColorGradeImage(v) {
 		const tex = this.table.getTexture(v);
@@ -238,8 +239,8 @@ export class TableApi extends ItemApi<TableData> {
 	set OverridePhysicsFlippers(v) { this.data.overridePhysicsFlipper = v; }
 	get EnableDecals() { return this.data.renderDecals; }
 	set EnableDecals(v) { this.data.renderDecals = v; }
-	get ShowDT() { return this.data.bgCurrentSet === TableData.BG_DESKTOP || this.data.bgCurrentSet === TableData.BG_FSS; }
-	set ShowDT(v) { this.data.bgCurrentSet = v ? (this.data.bgEnableFss ? TableData.BG_FSS : TableData.BG_DESKTOP) : TableData.BG_FULLSCREEN; }
+	get ShowDT() { return this.data.bgCurrentSet === BackgroundType.Desktop || this.data.bgCurrentSet === BackgroundType.FSS; }
+	set ShowDT(v) { this.data.bgCurrentSet = v ? (this.data.bgEnableFss ? BackgroundType.FSS : BackgroundType.Desktop) : BackgroundType.FS; }
 	get ReflectElementsOnPlayfield() { return this.data.reflectElementsOnPlayfield; }
 	set ReflectElementsOnPlayfield(v) { this.data.reflectElementsOnPlayfield = v; }
 	get EnableEMReels() { return this.data.renderEMReels; }

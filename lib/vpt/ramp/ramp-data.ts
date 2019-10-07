@@ -21,8 +21,8 @@ import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
 import { DragPoint } from '../../math/dragpoint';
 import { f4 } from '../../math/float';
+import { ImageAlignment, RampType } from '../enums';
 import { IPhysicalData, ItemData } from '../item-data';
-import { Ramp } from './ramp';
 
 export class RampData extends ItemData implements IPhysicalData {
 
@@ -33,7 +33,7 @@ export class RampData extends ItemData implements IPhysicalData {
 	public hitEvent: boolean = false;
 	public heightBottom: number = 0;
 	public heightTop: number = f4(50);
-	public imageAlignment: number = Ramp.RampImageAlignmentWorld;
+	public imageAlignment: number = ImageAlignment.ModeWorld;
 	public imageWalls: boolean = true;
 	public isCollidable: boolean = true;
 	public isReflectionEnabled: boolean = true;
@@ -41,7 +41,7 @@ export class RampData extends ItemData implements IPhysicalData {
 	public leftWallHeight: number = f4(62);
 	public leftWallHeightVisible: number = f4(30);
 	public overwritePhysics: boolean = true;
-	public rampType: number = Ramp.RampTypeFlat;
+	public rampType: number = RampType.Flat;
 	public rightWallHeight: number = f4(62);
 	public rightWallHeightVisible: number = f4(30);
 	public scatter!: number;
