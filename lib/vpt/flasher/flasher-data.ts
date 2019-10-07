@@ -19,6 +19,7 @@
 
 import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
+import { DragPoint } from '../../math/dragpoint';
 import { Vertex2D } from '../../math/vertex2d';
 import { Filter, ImageAlignment } from '../enums';
 import { ItemData } from '../item-data';
@@ -43,11 +44,24 @@ export class FlasherData extends ItemData {
 	private imageAlignment: number = ImageAlignment.ModeWrap;
 	private filter: number = Filter.Overlay;
 	private filterAmount: number = 100;
+	private dragPoints: DragPoint[] = [];
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<FlasherData> {
 		const flasherData = new FlasherData(itemName);
-		await storage.streamFiltered(itemName, 4, BiffParser.stream(flasherData.fromTag.bind(flasherData), {}));
+		await storage.streamFiltered(itemName, 4, FlasherData.createStreamHandler(flasherData));
 		return flasherData;
+	}
+
+	private static createStreamHandler(flasherData: FlasherData) {
+		return BiffParser.stream(flasherData.fromTag.bind(flasherData), {
+			nestedTags: {
+				DPNT: {
+					onStart: () => new DragPoint(),
+					onTag: dragPoint => dragPoint.fromTag.bind(dragPoint),
+					onEnd: dragPoint => flasherData.dragPoints.push(dragPoint),
+				},
+			},
+		});
 	}
 
 	private constructor(itemName: string) {
