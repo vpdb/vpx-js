@@ -52,7 +52,6 @@ export class Light extends Item<LightData> implements IRenderable, IAnimatable<L
 	get vCenter() { return this.data.center; }
 	get offImage() { return this.data.szOffImage; }
 
-	public readonly data: LightData;
 	private readonly state: LightState;
 	private readonly meshGenerator: LightMeshGenerator;
 	private api?: LightApi;
@@ -66,7 +65,6 @@ export class Light extends Item<LightData> implements IRenderable, IAnimatable<L
 	private constructor(data: LightData) {
 		super(data);
 		this.state = LightState.claim(this.getName(), 0);
-		this.data = data;
 		this.meshGenerator = new LightMeshGenerator(data);
 	}
 
