@@ -62,6 +62,7 @@ import { TableExportOptions } from './table-exporter';
 import { TableHitGenerator } from './table-hit-generator';
 import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
+import { Flasher } from '../flasher/flasher';
 
 /**
  * A Visual Pinball table.
@@ -85,6 +86,7 @@ export class Table implements IScriptable<TableApi> {
 
 	public readonly bumpers: { [key: string]: Bumper } = {};
 	public readonly flippers: { [key: string]: Flipper } = {};
+	public readonly flashers: { [key: string]: Flasher } = {};
 	public readonly gates: { [key: string]: Gate } = {};
 	public readonly hitTargets: { [key: string]: HitTarget } = {};
 	public readonly kickers: { [key: string]: Kicker } = {};
@@ -131,6 +133,7 @@ export class Table implements IScriptable<TableApi> {
 			[loadedTable.collections, this.collections],
 			[loadedTable.bumpers, this.bumpers],
 			[loadedTable.flippers, this.flippers],
+			[loadedTable.flashers, this.flashers],
 			[loadedTable.gates, this.gates],
 			[loadedTable.hitTargets, this.hitTargets],
 			[loadedTable.kickers, this.kickers],
