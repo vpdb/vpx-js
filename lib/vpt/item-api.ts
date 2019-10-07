@@ -48,7 +48,7 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 	set TimerEnabled(v) { this._setTimerEnabled(v); }
 	public UserValue: any;
 
-	protected constructor(data: DATA, events: EventProxy, player: Player, table: Table) {
+	public constructor(data: DATA, events: EventProxy, player: Player, table: Table) {
 		super();
 		this.data = data;
 		this.events = events;
