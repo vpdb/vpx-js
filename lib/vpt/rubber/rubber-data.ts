@@ -37,7 +37,7 @@ export class RubberData extends ItemData implements IPhysicalData {
 	public scatter!: number;
 	public isCollidable: boolean = true;
 	public isVisible: boolean = true;
-	public fReflectionEnabled: boolean = true;
+	public isReflectionEnabled: boolean = true;
 	public staticRendering: boolean = true;
 	public showInEditor: boolean = true;
 	public rotX: number = 0;
@@ -80,7 +80,7 @@ export class RubberData extends ItemData implements IPhysicalData {
 			case 'RSCT': this.scatter = this.getFloat(buffer); break;
 			case 'CLDR': this.isCollidable = this.getBool(buffer); break;
 			case 'RVIS': this.isVisible = this.getBool(buffer); break;
-			case 'REEN': this.fReflectionEnabled = this.getBool(buffer); break;
+			case 'REEN': this.isReflectionEnabled = this.getBool(buffer); break;
 			case 'ESTR': this.staticRendering = this.getBool(buffer); break;
 			case 'ESIE': this.showInEditor = this.getBool(buffer); break;
 			case 'ROTX': this.rotX = this.getFloat(buffer); break;
