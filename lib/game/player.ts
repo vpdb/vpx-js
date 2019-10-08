@@ -129,7 +129,7 @@ export class Player extends EventEmitter {
 	}
 
 	public createBall(ballCreator: IBallCreationPosition, radius = 25, mass = 1): Ball {
-		const ball = this.physics.createBall(ballCreator, radius, mass);
+		const ball = this.physics.createBall(ballCreator, this, radius, mass);
 		this.currentStates[ball.getName()] = ball.getState();
 		this.previousStates[ball.getName()] = ball.getState().clone();
 		this.emit('ballCreated', ball);

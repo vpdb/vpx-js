@@ -60,9 +60,9 @@ export class BallHit extends HitObject {
 	private readonly tableData: TableData;
 
 	public readonly vel: Vertex3D;
-	public readonly invMass: number;
-	public readonly inertia: number;
 	public readonly angularMomentum = new Vertex3D();
+	public invMass: number;
+	public inertia: number;
 	public eventPos = new Vertex3D(-1, -1, -1);
 
 	public angularVelocity = new Vertex3D();
@@ -70,7 +70,7 @@ export class BallHit extends HitObject {
 	private playfieldReflectionStrength: number;
 	private reflectionEnabled: boolean;
 	private forceReflection: boolean;
-	private visible: boolean;
+	public isVisible: boolean;
 
 	private defaultZ: number = 25.0;
 
@@ -103,7 +103,7 @@ export class BallHit extends HitObject {
 		this.playfieldReflectionStrength = 1.0;
 		this.reflectionEnabled = true;
 		this.forceReflection = false;
-		this.visible = true;
+		this.isVisible = true;
 
 		this.coll = new CollisionEvent(ball);
 
@@ -508,5 +508,17 @@ export class BallHit extends HitObject {
 			.addAndRelease(Vertex3D.crossProduct(this.angularVelocity, p2, true)); // centripetal acceleration
 		Vertex3D.release(p2);
 		return acceleration;
+	}
+
+	public setMass(mass: number) {
+		this.data.mass = mass;
+		this.invMass = 1.0 / mass;
+		this.inertia = (2.0 / 5.0) * this.data.radius * this.data.radius * this.data.mass;
+	}
+
+	public setRadius(radius: number) {
+		this.data.radius = radius;
+		this.inertia = (2.0 / 5.0) * this.data.radius * this.data.radius * this.data.mass;
+		this.calcHitBBox();
 	}
 }

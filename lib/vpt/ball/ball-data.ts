@@ -17,14 +17,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-export class BallData {
+import { ItemData } from '../item-data';
 
-	public readonly radius: number;
-	public readonly mass: number;
-	public readonly bulbIntensityScale: number;
-	public readonly color = 0xffffff;
+export class BallData extends ItemData {
+
+	public radius: number;
+	public mass: number;
+	public bulbIntensityScale: number;
+	public color: number = 0xffffff;
+
+	public environmentMap: string = '';
+	public frontDecal: string = '';
+	public decalMode: boolean = false;
+	public isReflectionEnabled: boolean = true;
+	public playfieldReflectionStrength: number = 1.0;
+	public forceReflection: boolean = false;
 
 	constructor(radius: number = 25, mass: number = 1, bulbIntensityScale = 1) {
+		super('Ball');
 		this.radius = radius;
 		this.mass = mass;
 		this.bulbIntensityScale = bulbIntensityScale;
