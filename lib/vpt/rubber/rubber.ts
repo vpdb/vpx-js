@@ -20,12 +20,14 @@
 import { EventProxy } from '../../game/event-proxy';
 import { IHittable } from '../../game/ihittable';
 import { IRenderable, Meshes } from '../../game/irenderable';
+import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
 import { Item } from '../item';
 import { Table } from '../table/table';
+import { RubberApi } from './rubber-api';
 import { RubberData } from './rubber-data';
 import { RubberHitGenerator } from './rubber-hit-generator';
 import { RubberMeshGenerator } from './rubber-mesh-generator';
@@ -35,11 +37,12 @@ import { RubberMeshGenerator } from './rubber-mesh-generator';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/rubber.cpp
  */
-export class Rubber extends Item<RubberData> implements IRenderable, IHittable {
+export class Rubber extends Item<RubberData> implements IRenderable, IHittable, IScriptable<RubberApi> {
 
 	private readonly meshGenerator: RubberMeshGenerator;
 	private hitGenerator: RubberHitGenerator;
 	private hits: HitObject[] = [];
+	private api!: RubberApi;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Rubber> {
 		const data = await RubberData.fromStorage(storage, itemName);
@@ -74,9 +77,18 @@ export class Rubber extends Item<RubberData> implements IRenderable, IHittable {
 	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
 		this.hits = this.hitGenerator.generateHitObjects(this.events, table);
+		this.api = new RubberApi(this.hits, this.data, this.events, player, table);
+	}
+
+	public getApi(): RubberApi {
+		return this.api!;
 	}
 
 	public getHitShapes(): HitObject[] {
 		return this.hits;
+	}
+
+	public getEventNames(): string[] {
+		return [ 'Hit', 'Init', 'Timer' ];
 	}
 }
