@@ -59,6 +59,8 @@ describe('The VPinball rubber API', () => {
 		rubber.EnableStaticRendering = true;
 		rubber.EnableShowInEditor = false; expect(rubber.EnableShowInEditor).to.equal(false);
 		rubber.EnableShowInEditor = true;
+		rubber.ReflectionEnabled = false; expect(rubber.ReflectionEnabled).to.equal(false);
+		rubber.ReflectionEnabled = true;
 		rubber.RotX = 7;
 		rubber.RotY = 124;
 		rubber.RotZ = 34;
@@ -79,6 +81,7 @@ describe('The VPinball rubber API', () => {
 		expect(rubber.Collidable).to.equal(true);
 		expect(rubber.EnableStaticRendering).to.equal(true);
 		expect(rubber.EnableShowInEditor).to.equal(true);
+		expect(rubber.ReflectionEnabled).to.equal(true);
 		expect(rubber.RotX).to.equal(7);
 		expect(rubber.RotY).to.equal(124);
 		expect(rubber.RotZ).to.equal(34);
@@ -99,6 +102,11 @@ describe('The VPinball rubber API', () => {
 
 		rubber.EnableStaticRendering = true;
 		expect(() => rubber.Visible = false).to.throw('Rubber is static! Visible property not supported!');
+	});
+
+	it('should not crash when executing unused APIs', () => {
+		const rubber = table.rubbers.Rubber1.getApi();
+		expect(rubber.InterfaceSupportsErrorInfo({})).to.equal(false);
 	});
 
 });
