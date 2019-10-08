@@ -44,7 +44,7 @@ import { MAX_TIMERS_MSEC_OVERALL } from '../vpt/timer/timer-const';
 import { TimerHit } from '../vpt/timer/timer-hit';
 import { TimerOnOff } from '../vpt/timer/timer-on-off';
 import { Event } from './event';
-import { IBallCreationPosition } from './player';
+import { IBallCreationPosition, Player } from './player';
 
 const SLOW_MO = 1; // the lower, the slower
 const ANIM_FPS = 60;
@@ -428,13 +428,13 @@ export class PlayerPhysics {
 		}
 	}
 
-	public createBall(ballCreator: IBallCreationPosition, radius = 25, mass = 1): Ball {
+	public createBall(ballCreator: IBallCreationPosition, player: Player, radius = 25, mass = 1): Ball {
 
 		const data = new BallData(radius, mass, this.table.data!.defaultBulbIntensityScaleOnBall);
 		const state = BallState.claim(`Ball${Ball.idCounter}`, ballCreator.getBallCreationPosition(this.table));
 		state.pos.z += data.radius;
 
-		const ball = new Ball(data, state, ballCreator.getBallCreationVelocity(this.table), this.table.data!);
+		const ball = new Ball(data, state, ballCreator.getBallCreationVelocity(this.table), player, this.table);
 
 		ballCreator.onBallCreated(this, ball);
 

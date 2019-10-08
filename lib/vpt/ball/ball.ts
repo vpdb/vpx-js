@@ -17,9 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
 import { IMovable } from '../../game/imovable';
 import { IPlayable } from '../../game/iplayable';
 import { IRenderable, Meshes } from '../../game/irenderable';
+import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
@@ -27,23 +29,25 @@ import { HitObject } from '../../physics/hit-object';
 import { IRenderApi } from '../../render/irender-api';
 import { Material } from '../material';
 import { Table } from '../table/table';
-import { TableData } from '../table/table-data';
 import { Texture } from '../texture';
+import { BallApi } from './ball-api';
 import { BallData } from './ball-data';
 import { BallHit } from './ball-hit';
 import { BallMeshGenerator } from './ball-mesh-generator';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
 
-export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
+export class Ball implements IPlayable, IMovable<BallState>, IRenderable, IScriptable<BallApi> {
 
 	public readonly state: BallState;
 	public readonly data: BallData;
+	public readonly hit: BallHit;
 	private readonly meshGenerator: BallMeshGenerator;
-	public readonly hit!: BallHit;
+	private readonly events: EventProxy;
+	private readonly api: BallApi;
 
 	// unique ID for each ball
-	public readonly id: number;
+	public id: number;
 
 	// public props
 	get coll() { return this.hit.coll; }
@@ -53,14 +57,14 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 	// ugly hacks
 	public oldVel: Vertex3D = new Vertex3D();
 
-	constructor(data: BallData, state: BallState, initialVelocity: Vertex3D, tableData: TableData) {
+	constructor(data: BallData, state: BallState, initialVelocity: Vertex3D, player: Player, table: Table) {
 		this.id = Ball.idCounter++;
 		this.data = data;
 		this.state = state;
 		this.meshGenerator = new BallMeshGenerator(data);
-		if (initialVelocity) {
-			this.hit = new BallHit(this, data, state, initialVelocity, tableData);
-		}
+		this.events = new EventProxy(this);
+		this.hit = new BallHit(this, data, state, initialVelocity, table.data!);
+		this.api = new BallApi(this, this.state, this.hit, this.data, this.events, player, table);
 	}
 
 	public getName(): string {
@@ -121,6 +125,10 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 		return [ this.hit ];
 	}
 
+	public getApi(): BallApi {
+		return this.api;
+	}
+
 	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
 		return {
 			ball: {
@@ -148,5 +156,9 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable {
 		material.baseColor = 0xffffff;
 		material.roughness = 0.8;
 		return material;
+	}
+
+	public getEventNames(): string[] {
+		return [];
 	}
 }
