@@ -37,6 +37,7 @@ import { Transpiler } from '../../scripting/transpiler';
 import { logger } from '../../util/logger';
 import { Bumper } from '../bumper/bumper';
 import { Collection } from '../collection/collection';
+import { Decal } from '../decal/decal';
 import { Flasher } from '../flasher/flasher';
 import { Flipper } from '../flipper/flipper';
 import { Gate } from '../gate/gate';
@@ -46,6 +47,7 @@ import { ItemData } from '../item-data';
 import { ItemState } from '../item-state';
 import { Kicker } from '../kicker/kicker';
 import { Light } from '../light/light';
+import { LightSeq } from '../lightseq/lightseq';
 import { Material } from '../material';
 import { Plunger } from '../plunger/plunger';
 import { Primitive } from '../primitive/primitive';
@@ -63,7 +65,6 @@ import { TableExportOptions } from './table-exporter';
 import { TableHitGenerator } from './table-hit-generator';
 import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
-import { Decal } from '../decal/decal';
 
 /**
  * A Visual Pinball table.
@@ -102,6 +103,7 @@ export class Table implements IScriptable<TableApi> {
 	public readonly timers: { [key: string]: Timer } = {};
 	public readonly triggers: { [key: string]: Trigger } = {};
 	public readonly decals: { [key: string]: Decal } = {};
+	public readonly lightSeqs: { [key: string]: LightSeq } = {};
 
 	private readonly meshGenerator?: TableMeshGenerator;
 	private readonly hitGenerator?: TableHitGenerator;
@@ -150,6 +152,7 @@ export class Table implements IScriptable<TableApi> {
 			[loadedTable.timers, this.timers],
 			[loadedTable.triggers, this.triggers],
 			[loadedTable.decals, this.decals],
+			[loadedTable.lightSeqs, this.lightSeqs],
 		];
 		for (const m of mapping) {
 			if (isLoaded(m[0])) {
