@@ -44,6 +44,7 @@ import { TableLoadOptions } from './table';
 import { TableData } from './table-data';
 import { Decal } from '../decal/decal';
 import { LightSeq } from '../lightseq/lightseq';
+import { DispReel } from '../dispreel/dispreel';
 
 export class TableLoader {
 
@@ -128,6 +129,7 @@ export class TableLoader {
 		loadedTable.textBoxes = [];
 		loadedTable.decals = [];
 		loadedTable.lightSeqs = [];
+		loadedTable.dispReels = [];
 
 		// go through all game items
 		for (let i = 0; i < numItems; i++) {
@@ -262,6 +264,12 @@ export class TableLoader {
 				return item;
 			}
 
+			case ItemType.DispReel: {
+				const item = await DispReel.fromStorage(storage, itemName);
+				loadedTable.dispReels!.push(item);
+				return item;
+			}
+
 			default:
 				// ignore the rest for now
 				return null;
@@ -325,5 +333,6 @@ export interface LoadedTable {
 	textBoxes?: Textbox[];
 	decals?: Decal[];
 	lightSeqs?: LightSeq[];
+	dispReels?: DispReel[];
 	timers?: Timer[];
 }
