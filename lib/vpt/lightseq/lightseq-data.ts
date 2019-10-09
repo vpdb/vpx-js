@@ -25,9 +25,9 @@ import { ItemData } from '../item-data';
 export class LightSeqData extends ItemData {
 
 	private v!: Vertex2D;
-	private collection?: string;
-	private center: Vertex2D = new Vertex2D();
-	private updateInterval: number = 25;
+	public collection?: string;
+	public center: Vertex2D = new Vertex2D();
+	public updateInterval: number = 25;
 	private backglass: boolean = false;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<LightSeqData> {
