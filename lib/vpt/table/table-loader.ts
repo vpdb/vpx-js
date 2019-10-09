@@ -43,6 +43,7 @@ import { Trigger } from '../trigger/trigger';
 import { TableLoadOptions } from './table';
 import { TableData } from './table-data';
 import { Decal } from '../decal/decal';
+import { LightSeq } from '../lightseq/lightseq';
 
 export class TableLoader {
 
@@ -126,6 +127,7 @@ export class TableLoader {
 		loadedTable.plungers = [];
 		loadedTable.textBoxes = [];
 		loadedTable.decals = [];
+		loadedTable.lightSeqs = [];
 
 		// go through all game items
 		for (let i = 0; i < numItems; i++) {
@@ -254,6 +256,12 @@ export class TableLoader {
 				return item;
 			}
 
+			case ItemType.LightSeq: {
+				const item = await LightSeq.fromStorage(storage, itemName);
+				loadedTable.lightSeqs!.push(item);
+				return item;
+			}
+
 			default:
 				// ignore the rest for now
 				return null;
@@ -316,6 +324,6 @@ export interface LoadedTable {
 	plungers?: Plunger[];
 	textBoxes?: Textbox[];
 	decals?: Decal[];
-
+	lightSeqs?: LightSeq[];
 	timers?: Timer[];
 }
