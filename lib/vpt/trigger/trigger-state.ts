@@ -41,6 +41,14 @@ export class TriggerState extends ItemState {
 		return TriggerState.claim(this.name, this.heightOffset);
 	}
 
+	public diff(state: TriggerState): TriggerState {
+		const diff = this.clone();
+		if (diff.heightOffset === state.heightOffset) {
+			delete diff.heightOffset;
+		}
+		return diff;
+	}
+
 	public release(): void {
 		TriggerState.POOL.release(this);
 	}

@@ -44,6 +44,14 @@ export class LightState extends ItemState {
 		return LightState.claim(this.name, this.intensity);
 	}
 
+	public diff(state: LightState): LightState {
+		const diff = this.clone();
+		if (diff.intensity === state.intensity) {
+			delete diff.intensity;
+		}
+		return diff;
+	}
+
 	public release(): void {
 		LightState.POOL.release(this);
 	}

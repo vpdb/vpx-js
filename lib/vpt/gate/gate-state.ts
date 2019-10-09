@@ -44,6 +44,14 @@ export class GateState extends ItemState {
 		return GateState.claim(this.name, this.angle);
 	}
 
+	public diff(state: GateState): GateState {
+		const diff = this.clone();
+		if (diff.angle === state.angle) {
+			delete diff.angle;
+		}
+		return diff;
+	}
+
 	public release(): void {
 		GateState.POOL.release(this);
 	}

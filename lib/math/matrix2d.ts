@@ -162,6 +162,12 @@ export class Matrix2D {
 		Vertex3D.release(vX, vY, vZ, vYY);
 	}
 
+	public equals(m: Matrix2D) {
+		return this.matrix[0][0] === m.matrix[0][0] && this.matrix[0][1] === m.matrix[0][1] && this.matrix[0][2] === m.matrix[0][2]
+			&& this.matrix[1][0] === m.matrix[1][0] && this.matrix[1][1] === m.matrix[1][1] && this.matrix[1][2] === m.matrix[1][2]
+			&& this.matrix[2][0] === m.matrix[2][0] && this.matrix[2][1] === m.matrix[2][1] && this.matrix[2][2] === m.matrix[2][2];
+	}
+
 	/* istanbul ignore next: debugging only */
 	public toString() {
 		return `[${Math.round(this.matrix[0][0] * 1000) / 1000}, ${Math.round(this.matrix[0][1] * 1000) / 1000}, ${Math.round(this.matrix[0][2] * 1000) / 1000}]\n` +
