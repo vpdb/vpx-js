@@ -113,3 +113,14 @@ export class TextAlignment {
 	public static readonly Center = 1;
 	public static readonly Right = 2;
 }
+
+export class DecalType {
+	public static readonly Text = 0;
+	public static readonly Image = 1;
+}
+
+export class SizingType {
+	public static readonly AutoSize = 0;
+	public static readonly AutoWidth = 1;
+	public static readonly ManualSize = 2;
+}

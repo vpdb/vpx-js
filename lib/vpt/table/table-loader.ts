@@ -42,6 +42,7 @@ import { Timer } from '../timer/timer';
 import { Trigger } from '../trigger/trigger';
 import { TableLoadOptions } from './table';
 import { TableData } from './table-data';
+import { Decal } from '../decal/decal';
 
 export class TableLoader {
 
@@ -124,6 +125,7 @@ export class TableLoader {
 		loadedTable.timers = [];
 		loadedTable.plungers = [];
 		loadedTable.textBoxes = [];
+		loadedTable.decals = [];
 
 		// go through all game items
 		for (let i = 0; i < numItems; i++) {
@@ -246,6 +248,12 @@ export class TableLoader {
 				return item;
 			}
 
+			case ItemType.Decal: {
+				const item = await Decal.fromStorage(storage, itemName);
+				loadedTable.decals!.push(item);
+				return item;
+			}
+
 			default:
 				// ignore the rest for now
 				return null;
@@ -307,6 +315,7 @@ export interface LoadedTable {
 	spinners?: Spinner[];
 	plungers?: Plunger[];
 	textBoxes?: Textbox[];
+	decals?: Decal[];
 
 	timers?: Timer[];
 }
