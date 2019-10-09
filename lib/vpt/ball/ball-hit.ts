@@ -107,7 +107,9 @@ export class BallHit extends HitObject {
 
 		this.coll = new CollisionEvent(ball);
 
-		this.calcHitBBox();
+		if (initialVelocity) {
+			this.calcHitBBox();
+		}
 
 		this.defaultZ = this.state.pos.z;
 	}

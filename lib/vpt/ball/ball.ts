@@ -63,7 +63,7 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable, IScrip
 		this.state = state;
 		this.meshGenerator = new BallMeshGenerator(data);
 		this.events = new EventProxy(this);
-		this.hit = new BallHit(this, data, state, initialVelocity, table.data!);
+		this.hit = new BallHit(this, this.data, this.state, initialVelocity, table.data!);
 		this.api = new BallApi(this, this.state, this.hit, this.data, this.events, player, table);
 	}
 
