@@ -19,7 +19,7 @@
 
 export abstract class ItemState {
 
-	protected name: string = '';
+	public name: string = '';
 
 	/**
 	 * Clones the state.

@@ -38,6 +38,7 @@ import { FlipperHit } from './flipper-hit';
 import { FlipperMesh } from './flipper-mesh';
 import { FlipperMover } from './flipper-mover';
 import { FlipperState } from './flipper-state';
+import { FlipperUpdater } from './flipper-updater';
 
 /**
  * VPinball's flippers
@@ -49,7 +50,8 @@ export class Flipper extends Item<FlipperData> implements IRenderable, IPlayable
 	private readonly mesh: FlipperMesh;
 	private readonly state: FlipperState;
 	private hit?: FlipperHit;
-	private api!: FlipperApi;
+	private api?: FlipperApi;
+	private updater?: FlipperUpdater;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Flipper> {
 		const data = await FlipperData.fromStorage(storage, itemName);
@@ -59,7 +61,7 @@ export class Flipper extends Item<FlipperData> implements IRenderable, IPlayable
 	public constructor(itemName: string, data: FlipperData) {
 		super(data);
 		this.mesh = new FlipperMesh();
-		this.state = FlipperState.claim(this.getName(), this.data.startAngle);
+		this.state = FlipperState.claim(this.getName(), this.data.startAngle, this.data.center.clone(), this.data.isVisible, this.data.szMaterial, this.data.szImage, this.data.szRubberMaterial);
 	}
 
 	public isVisible(): boolean {
@@ -82,6 +84,7 @@ export class Flipper extends Item<FlipperData> implements IRenderable, IPlayable
 		this.events = new EventProxy(this);
 		this.hit = FlipperHit.getInstance(this.data, this.state, this.events, player.getPhysics(), table);
 		this.api = new FlipperApi(this.data, this.state, this.hit, this.getMover(), this.events, player, table);
+		this.updater = new FlipperUpdater(this.data, this.state);
 	}
 
 	public getApi(): FlipperApi {
@@ -115,18 +118,6 @@ export class Flipper extends Item<FlipperData> implements IRenderable, IPlayable
 		return meshes;
 	}
 
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: FlipperState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
-		const height = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y) * table.getScaleZ();
-
-		const matToOrigin = Matrix3D.claim().setTranslation(-this.data.center.x, -this.data.center.y, -height);
-		const matFromOrigin = Matrix3D.claim().setTranslation(this.data.center.x, this.data.center.y, height);
-		const matRotate = Matrix3D.claim().rotateZMatrix(state.angle - degToRad(this.data.startAngle));
-		const matrix = matToOrigin.multiply(matRotate).multiply(matFromOrigin);
-
-		renderApi.applyMatrixToNode(matrix, obj);
-		Matrix3D.release(matToOrigin, matFromOrigin, matRotate); // matrix and matToOrigin are the same instance
-	}
-
 	public getFlipperData(): FlipperData {
 		return this.data;
 	}
@@ -144,6 +135,10 @@ export class Flipper extends Item<FlipperData> implements IRenderable, IPlayable
 
 	public getEventNames(): string[] {
 		return [ 'Init', 'Timer', 'LimitEOS', 'LimitBOS', 'Hit', 'Collide' ];
+	}
+
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: FlipperState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
+		this.updater!.applyState(obj, state, renderApi, table);
 	}
 }
 

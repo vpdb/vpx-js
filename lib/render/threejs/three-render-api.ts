@@ -30,6 +30,8 @@ import { ThreeConverter } from './three-converter';
 import { ThreeLightMeshGenerator } from './three-light-mesh-generator';
 import { releaseGeometry, ThreeMeshGenerator } from './three-mesh-generator';
 import { ThreePlayfieldMeshGenerator } from './three-playfield-mesh-generator';
+import { Material } from '../../vpt/material';
+import { Texture } from '../../vpt/texture';
 
 export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, PointLight> {
 
@@ -123,6 +125,14 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		ThreeRenderApi.POOL.Matrix4.release(m4);
 	}
 
+	public applyVisibility(isVisible: boolean, obj: Object3D): void {
+		/* istanbul ignore next */
+		if (!obj) {
+			return;
+		}
+		obj.visible = isVisible;
+	}
+
 	public applyMeshToNode(mesh: Mesh, obj: Object3D): void {
 		/* istanbul ignore next */
 		if (!obj) {
@@ -149,6 +159,13 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		light.intensity = state.intensity;
 	}
 
+	public applyMaterial(obj: Object3D, material: Material | undefined, texture: Texture | undefined): void {
+		/* istanbul ignore next */
+		if (!obj) {
+			return;
+		}
+	}
+
 	public async createObjectFromRenderable(renderable: IRenderable, table: Table, opts: TableGenerateOptions): Promise<Group> {
 		return this.converter.createObject(renderable, table, this, opts);
 	}
@@ -160,4 +177,5 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 	public createPlayfieldGeometry(table: Table, opts: TableGenerateOptions): BufferGeometry {
 		return this.playfieldGenerator.createPlayfieldGeometry(table, opts);
 	}
+
 }

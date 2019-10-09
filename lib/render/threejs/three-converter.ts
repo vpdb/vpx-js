@@ -52,13 +52,13 @@ export class ThreeConverter {
 		itemGroup.name = renderable.getName();
 		let obj: RenderInfo<BufferGeometry>;
 		for (obj of Object.values<RenderInfo<BufferGeometry>>(objects)) {
-			const mesh = await this.createMesh(renderable, obj, table);
+			const mesh = await this.createMesh(obj, table);
 			itemGroup.add(mesh);
 		}
 		return itemGroup;
 	}
 
-	private async createMesh(renderable: IRenderable, obj: RenderInfo<BufferGeometry>, table: Table): Promise<ThreeMesh> {
+	private async createMesh(obj: RenderInfo<BufferGeometry>, table: Table): Promise<ThreeMesh> {
 		/* istanbul ignore if */
 		if (!obj.geometry && !obj.mesh) {
 			throw new Error('Mesh export must either provide mesh or geometry.');
@@ -90,9 +90,10 @@ export class ThreeConverter {
 	private async getMaterial(obj: RenderInfo<BufferGeometry>, table: Table): Promise<MeshStandardMaterial> {
 		const material = new MeshStandardMaterial();
 		const name = (obj.geometry || obj.mesh!).name;
-		material.name = `material:${name}`;
+
 		const materialInfo = obj.material;
 		if (materialInfo && this.meshConvertOpts.applyMaterials) {
+			material.name = `material:${materialInfo!.name}`;
 			material.metalness = materialInfo.isMetal ? 1.0 : 0.0;
 			material.roughness = Math.max(0, 1 - (materialInfo.roughness / 1.5));
 			material.color = new Color(materialInfo.baseColor);
@@ -103,6 +104,8 @@ export class ThreeConverter {
 				material.emissive = new Color(materialInfo.emissiveColor);
 				material.emissiveIntensity = materialInfo.emissiveIntensity;
 			}
+		} else {
+			material.name = `material:${name}`;
 		}
 
 		if (this.meshConvertOpts.applyTextures) {

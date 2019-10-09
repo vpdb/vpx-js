@@ -23,6 +23,8 @@ import { LightData } from '../vpt/light/light-data';
 import { LightState } from '../vpt/light/light-state';
 import { Mesh } from '../vpt/mesh';
 import { Table, TableGenerateOptions } from '../vpt/table/table';
+import { Material } from '../vpt/material';
+import { Texture } from '../vpt/texture';
 
 export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 
@@ -90,6 +92,16 @@ export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 	 * @param node The light node
 	 */
 	applyLighting(state: LightState, node: NODE | undefined): void;
+
+	/**
+	 * Toggles visibility of an object.
+	 *
+	 * @param isVisible True if visible, false otherwise
+	 * @param node Object to apply to
+	 */
+	applyVisibility(isVisible: boolean, node: NODE): void;
+
+	applyMaterial(node: NODE, material: Material | undefined, texture: Texture | undefined): void;
 
 	/**
 	 * Creates a new node based on a renderable.

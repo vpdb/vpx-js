@@ -131,6 +131,12 @@ export class Vertex2D implements Vertex {
 		return this.x * pv.x + this.y * pv.y;
 	}
 
+	public equals(v: Vertex2D): boolean {
+		if (!v) {
+			return false;
+		}
+		return this.x === v.x && this.y === v.y;
+	}
 }
 
 export class RenderVertex extends Vertex2D implements IRenderVertex {
