@@ -31,8 +31,8 @@ export class BallState extends ItemState {
 
 	public static readonly POOL = new Pool(BallState);
 
-	public pos: Vertex3D = new Vertex3D();
-	public orientation = new Matrix2D();
+	public pos: Vertex3D = Vertex3D.claim();
+	public orientation = Matrix2D.claim();
 	public isFrozen: boolean = false;
 
 	public constructor() {

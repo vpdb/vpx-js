@@ -51,10 +51,10 @@ export class FlipperApi extends ItemApi<FlipperData> {
 	set EOSTorque(v) { if (!this.data.doOverridePhysics(this.table)) { this.data.torqueDamping = v; } }
 	get EOSTorqueAngle() { return this.data.doOverridePhysics(this.table) ? this.data.overrideTorqueDampingAngle : this.data.torqueDampingAngle; }
 	set EOSTorqueAngle(v) { if (!this.data.doOverridePhysics(this.table)) { this.data.torqueDampingAngle = v; } }
-	get X() { return this.data.center.x; }
-	set X(v) { this.data.center.x = v; }
-	get Y() { return this.data.center.y; }
-	set Y(v) { this.data.center.y = v; }
+	get X() { return this.state.center.x; }
+	set X(v) { this.state.center.x = v; }
+	get Y() { return this.state.center.y; }
+	set Y(v) { this.state.center.y = v; }
 	get Surface() { return this.data.szSurface; }
 	set Surface(v) { this.data.szSurface = v; }
 	set StartAngle(v) { this.data.startAngle = v; this.mover.setStartAngle(degToRad(v)); }
@@ -72,8 +72,8 @@ export class FlipperApi extends ItemApi<FlipperData> {
 		this.data.updatePhysicsSettings(this.table);
 		this.hit.updatePhysicsFromFlipper();
 	}
-	get RubberMaterial() { return this.data.szRubberMaterial; }
-	set RubberMaterial(v) { this.data.szRubberMaterial = v; }
+	get RubberMaterial() { return this.state.rubberMaterial; }
+	set RubberMaterial(v) { this.state.rubberMaterial = v; }
 	get RubberThickness() { return this.data.rubberThickness; }
 	set RubberThickness(v) { this.data.rubberThickness = v; }
 	get RubberWidth() { return this.data.rubberWidth; }
@@ -82,8 +82,8 @@ export class FlipperApi extends ItemApi<FlipperData> {
 	set RubberHeight(v) { this.data.rubberHeight = v; }
 	get Strength() { return this.data.strength; }
 	set Strength(v) { if (!this.data.doOverridePhysics(this.table)) { this.data.strength = v; } }
-	get Visible() { return this.data.isVisible; }
-	set Visible(v) { this.data.isVisible = v; }
+	get Visible() { return this.state.isVisible; }
+	set Visible(v) { this.state.isVisible = v; }
 	get Enabled() { return this.data.isEnabled; }
 	set Enabled(v) { this.data.isEnabled = v; }
 	get Elasticity() { return this.hit.elasticity; }
