@@ -107,3 +107,9 @@ export class BackgroundType {
 	public static readonly FS = 1;
 	public static readonly FSS = 2;
 }
+
+export class TextAlignment {
+	public static readonly Left = 0;
+	public static readonly Center = 1;
+	public static readonly Right = 2;
+}

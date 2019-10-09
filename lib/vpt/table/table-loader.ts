@@ -36,7 +36,7 @@ import { Ramp } from '../ramp/ramp';
 import { Rubber } from '../rubber/rubber';
 import { Spinner } from '../spinner/spinner';
 import { Surface } from '../surface/surface';
-import { TextBoxItem } from '../textbox-item';
+import { Textbox } from '../textbox/textbox';
 import { Texture } from '../texture';
 import { Timer } from '../timer/timer';
 import { Trigger } from '../trigger/trigger';
@@ -239,12 +239,11 @@ export class TableLoader {
 			}
 
 			case ItemType.Textbox: {
-				const item = await TextBoxItem.fromStorage(storage, itemName);
+				const item = await Textbox.fromStorage(storage, itemName);
 				if (opts.loadInvisibleItems) {
 					loadedTable.textBoxes!.push(item);
 				}
-				// fixme!
-				return null;
+				return item;
 			}
 
 			default:
@@ -307,7 +306,7 @@ export interface LoadedTable {
 	triggers?: Trigger[];
 	spinners?: Spinner[];
 	plungers?: Plunger[];
-	textBoxes?: TextBoxItem[];
+	textBoxes?: Textbox[];
 
 	timers?: Timer[];
 }
