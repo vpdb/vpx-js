@@ -394,6 +394,7 @@ export class Table implements IScriptable<TableApi> {
 	}
 
 	public broadcastInit() {
+		this.events!.fireVoidEvent(Event.GameEventsInit);
 		for (const hittable of this.getHittables()) {
 			hittable.getEventProxy().fireVoidEvent(Event.GameEventsInit);
 		}
@@ -412,6 +413,11 @@ export class Table implements IScriptable<TableApi> {
 	}
 
 	public setupCollections() {
+		for (const tableItem of Object.keys(this.items)) {
+			if (isScriptable(tableItem)) {
+				tableItem.getApi()._resetCollections();
+			}
+		}
 		for (const collection of Object.values(this.collections)) {
 			for (const itemName of collection.getItemNames()) {
 				const tableItem = this.items[itemName];
