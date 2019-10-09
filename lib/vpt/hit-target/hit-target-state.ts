@@ -43,6 +43,17 @@ export class HitTargetState extends ItemState {
 		return HitTargetState.claim(this.name, this.zOffset, this.xRotation);
 	}
 
+	public diff(state: HitTargetState): HitTargetState {
+		const diff = this.clone();
+		if (diff.zOffset === state.zOffset) {
+			delete diff.zOffset;
+		}
+		if (diff.xRotation === state.xRotation) {
+			delete diff.xRotation;
+		}
+		return diff;
+	}
+
 	public release(): void {
 		HitTargetState.POOL.release(this);
 	}

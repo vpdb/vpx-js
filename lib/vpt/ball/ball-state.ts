@@ -31,8 +31,8 @@ export class BallState extends ItemState {
 
 	public static readonly POOL = new Pool(BallState);
 
-	public readonly pos: Vertex3D = new Vertex3D();
-	public readonly orientation = new Matrix2D();
+	public pos: Vertex3D = new Vertex3D();
+	public orientation = new Matrix2D();
 
 	public constructor() {
 		super();
@@ -51,7 +51,28 @@ export class BallState extends ItemState {
 		return state;
 	}
 
+	public diff(state: BallState): BallState {
+		const diff = this.clone();
+		if (diff.pos.equals(state.pos)) {
+			Vertex3D.release(diff.pos);
+			delete diff.pos;
+		}
+		if (diff.orientation.equals(state.orientation)) {
+			Matrix2D.release(diff.orientation);
+			delete diff.orientation;
+		}
+		return diff;
+	}
+
 	public release(): void {
+		if (!this.pos) {
+			this.pos = Vertex3D.claim();
+		}
+		if (!this.orientation) {
+			this.orientation = Matrix2D.claim();
+		} else {
+			this.orientation.setIdentity();
+		}
 		BallState.POOL.release(this);
 	}
 
@@ -60,9 +81,6 @@ export class BallState extends ItemState {
 		if (!state) {
 			return false;
 		}
-		return this.pos.x === state.pos.x && this.pos.y === state.pos.y && this.pos.z === state.pos.z
-			&& this.orientation.matrix[0][0] === state.orientation.matrix[0][0] && this.orientation.matrix[0][1] === state.orientation.matrix[0][1] && this.orientation.matrix[0][2] === state.orientation.matrix[0][2]
-			&& this.orientation.matrix[1][0] === state.orientation.matrix[1][0] && this.orientation.matrix[1][1] === state.orientation.matrix[1][1] && this.orientation.matrix[1][2] === state.orientation.matrix[1][2]
-			&& this.orientation.matrix[2][0] === state.orientation.matrix[2][0] && this.orientation.matrix[2][1] === state.orientation.matrix[2][1] && this.orientation.matrix[2][2] === state.orientation.matrix[2][2];
+		return this.pos.equals(state.pos) && this.orientation.equals(state.orientation);
 	}
 }

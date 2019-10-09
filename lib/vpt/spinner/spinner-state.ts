@@ -44,6 +44,14 @@ export class SpinnerState extends ItemState {
 		return SpinnerState.claim(this.name, this.angle);
 	}
 
+	public diff(state: SpinnerState): SpinnerState {
+		const diff = this.clone();
+		if (diff.angle === state.angle) {
+			delete diff.angle;
+		}
+		return diff;
+	}
+
 	public release(): void {
 		SpinnerState.POOL.release(this);
 	}

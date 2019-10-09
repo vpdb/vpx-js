@@ -116,7 +116,7 @@ export class Player extends EventEmitter {
 			const newState = this.currentStates[name];
 			const oldState = this.previousStates[name];
 			if (!newState.equals(oldState)) {
-				changedStates.setState(name, oldState.clone(), newState.clone());
+				changedStates.setState(name, oldState.diff(newState), newState.diff(oldState));
 				this.previousStates[name].release();
 				this.previousStates[name] = newState.clone();
 			}

@@ -75,13 +75,19 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable, IScrip
 		const isFrozen = this.hit && this.hit.isFrozen;
 		const pos: { _x: number, _y: number, _z: number} = state.pos as any;
 		const zHeight = !isFrozen ? pos._z : pos._z - this.data.radius;
-		const orientation = Matrix3D.claim().setEach(
-			state.orientation.matrix[0][0], state.orientation.matrix[1][0], state.orientation.matrix[2][0], 0.0,
-			state.orientation.matrix[0][1], state.orientation.matrix[1][1], state.orientation.matrix[2][1], 0.0,
-			state.orientation.matrix[0][2], state.orientation.matrix[1][2], state.orientation.matrix[2][2], 0.0,
-			0, 0, 0, 1,
-		);
-		const trans = Matrix3D.claim().setTranslation(pos._x, pos._y, zHeight);
+		const orientation = Matrix3D.claim();
+		if (state.orientation) {
+			orientation.setEach(
+				state.orientation.matrix[0][0], state.orientation.matrix[1][0], state.orientation.matrix[2][0], 0.0,
+				state.orientation.matrix[0][1], state.orientation.matrix[1][1], state.orientation.matrix[2][1], 0.0,
+				state.orientation.matrix[0][2], state.orientation.matrix[1][2], state.orientation.matrix[2][2], 0.0,
+				0, 0, 0, 1,
+			);
+		}
+		const trans = Matrix3D.claim();
+		if (state.pos) {
+			trans.setTranslation(pos._x, pos._y, zHeight);
+		}
 		const matrix = Matrix3D.claim()
 			.setScaling(this.data.radius, this.data.radius, this.data.radius)
 			.preMultiply(orientation)

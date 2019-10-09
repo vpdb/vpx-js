@@ -29,6 +29,7 @@ export abstract class ItemState {
 	 */
 	public abstract clone(): ItemState;
 	public abstract equals(state: ItemState): boolean;
+	public abstract diff(state: ItemState): ItemState;
 	public abstract release(): void;
 
 	public getName() {

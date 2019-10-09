@@ -28,7 +28,6 @@ export class BumperState extends ItemState {
 	 * Z-offset of the bumper ring
 	 */
 	public ringOffset: number = 0;
-
 	public skirtRotX: number = 0;
 	public skirtRotY: number = 0;
 
@@ -47,6 +46,20 @@ export class BumperState extends ItemState {
 
 	public clone(): BumperState {
 		return BumperState.claim(this.name, this.ringOffset, this.skirtRotX, this.skirtRotY);
+	}
+
+	public diff(state: BumperState): BumperState {
+		const diff = this.clone();
+		if (diff.ringOffset === state.ringOffset) {
+			delete diff.ringOffset;
+		}
+		if (diff.skirtRotX === state.skirtRotX) {
+			delete diff.skirtRotX;
+		}
+		if (diff.skirtRotY === state.skirtRotY) {
+			delete diff.skirtRotY;
+		}
+		return diff;
 	}
 
 	public release(): void {

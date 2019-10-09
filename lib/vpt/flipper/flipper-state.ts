@@ -44,6 +44,14 @@ export class FlipperState extends ItemState {
 		return FlipperState.claim(this.name, this.angle);
 	}
 
+	public diff(state: FlipperState): FlipperState {
+		const diff = this.clone();
+		if (diff.angle === state.angle) {
+			delete diff.angle;
+		}
+		return diff;
+	}
+
 	public release(): void {
 		FlipperState.POOL.release(this);
 	}

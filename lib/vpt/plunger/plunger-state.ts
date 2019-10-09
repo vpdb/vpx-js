@@ -44,6 +44,14 @@ export class PlungerState extends ItemState {
 		return PlungerState.claim(this.name, this.frame);
 	}
 
+	public diff(state: PlungerState): PlungerState {
+		const diff = this.clone();
+		if (diff.frame === state.frame) {
+			delete diff.frame;
+		}
+		return diff;
+	}
+
 	public release(): void {
 		PlungerState.POOL.release(this);
 	}
