@@ -63,6 +63,7 @@ import { TableExportOptions } from './table-exporter';
 import { TableHitGenerator } from './table-hit-generator';
 import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
+import { Decal } from '../decal/decal';
 
 /**
  * A Visual Pinball table.
@@ -100,6 +101,7 @@ export class Table implements IScriptable<TableApi> {
 	public readonly textboxes: { [key: string]: Textbox } = {};
 	public readonly timers: { [key: string]: Timer } = {};
 	public readonly triggers: { [key: string]: Trigger } = {};
+	public readonly decals: { [key: string]: Decal } = {};
 
 	private readonly meshGenerator?: TableMeshGenerator;
 	private readonly hitGenerator?: TableHitGenerator;
@@ -147,6 +149,7 @@ export class Table implements IScriptable<TableApi> {
 			[loadedTable.textBoxes, this.textboxes],
 			[loadedTable.timers, this.timers],
 			[loadedTable.triggers, this.triggers],
+			[loadedTable.decals, this.decals],
 		];
 		for (const m of mapping) {
 			if (isLoaded(m[0])) {
