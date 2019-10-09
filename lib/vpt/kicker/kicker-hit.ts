@@ -116,10 +116,10 @@ export class KickerHit extends HitCircle {
 
 				if (hitEvent) {
 					if (this.data.fallThrough) {
-						ball.hit.isFrozen = false;
+						ball.state.isFrozen = false;
 
 					} else {
-						ball.hit.isFrozen = true;
+						ball.state.isFrozen = true;
 						ball.hit.vpVolObjs.push(this.obj!); // add kicker to ball's volume set
 						this.ball = ball;
 						this.lastCapturedBall = ball;
@@ -134,7 +134,7 @@ export class KickerHit extends HitCircle {
 						this.obj.fireGroupEvent(Event.HitEventsHit);
 					}
 
-					if (ball.hit.isFrozen || this.data.fallThrough) {  // script may have unfrozen the ball
+					if (ball.state.isFrozen || this.data.fallThrough) {  // script may have unfrozen the ball
 
 						// if ball falls through hole, we fake the collision algo by changing the ball height
 						// in HitTestBasicRadius() the z-position of the ball is checked if it is >= to the hit cylinder
@@ -275,7 +275,7 @@ export class KickerHit extends HitCircle {
 		this.ball.hit.vel.x = Math.sin(angleRad) * speed;
 		this.ball.hit.vel.y = -Math.cos(angleRad) * speed;
 		this.ball.hit.vel.z = speedZ;
-		this.ball.hit.isFrozen = false;
+		this.ball.state.isFrozen = false;
 		this.ball = undefined;
 	}
 
