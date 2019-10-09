@@ -18,6 +18,8 @@ export const DEFAULT_TABLE_MAX_SLOPE = 6.0;
 
 export const HIT_SHAPE_DETAIL_LEVEL = 7.0; // static detail level to approximate ramps and rubbers for the physics/collision code
 
+export const MAX_REELS = 32;
+
 /*
  * NOTE ABOUT VP PHYSICAL UNITS:
  *
