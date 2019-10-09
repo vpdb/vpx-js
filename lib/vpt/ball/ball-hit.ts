@@ -48,7 +48,6 @@ import { BallState } from './ball-state';
  */
 export class BallHit extends HitObject {
 
-	public isFrozen: boolean;
 	public readonly coll: CollisionEvent;
 	public rcHitRadiusSqr: number = 0;
 	public vpVolObjs: EventProxy[] = [];
@@ -98,7 +97,7 @@ export class BallHit extends HitObject {
 		this.invMass = 1.0 / data.mass;
 		this.inertia = (2.0 / 5.0) * data.radius * data.radius * data.mass;
 
-		this.isFrozen = false;
+		this.state.isFrozen = false;
 
 		this.playfieldReflectionStrength = 1.0;
 		this.reflectionEnabled = true;
@@ -245,7 +244,7 @@ export class BallHit extends HitObject {
 
 		// make sure we process each ball/ball collision only once
 		// (but if we are frozen, there won't be a second collision event, so deal with it now!)
-		if ((physics.swapBallCollisionHandling && ball.id >= this.id || !physics.swapBallCollisionHandling && ball.id <= this.id) && !this.isFrozen) {
+		if ((physics.swapBallCollisionHandling && ball.id >= this.id || !physics.swapBallCollisionHandling && ball.id <= this.id) && !this.state.isFrozen) {
 			return;
 		}
 
@@ -282,7 +281,7 @@ export class BallHit extends HitObject {
 			if (eDist > C_DISP_LIMIT) {
 				eDist = C_DISP_LIMIT;		// crossing ramps, delta noise
 			}
-			if (!this.isFrozen) {	// if the hit ball is not frozen
+			if (!this.state.isFrozen) {	// if the hit ball is not frozen
 				eDist *= 0.5;
 			}
 			ball.state.pos.add(normalDist); // push along norm, back to free area
@@ -290,7 +289,7 @@ export class BallHit extends HitObject {
 		}
 
 		eDist = -C_DISP_GAIN * this.coll.hitDistance;	// noisy value .... needs investigation
-		if (!this.isFrozen && eDist > 1.0e-4) {
+		if (!this.state.isFrozen && eDist > 1.0e-4) {
 			if (eDist > C_DISP_LIMIT) {
 				eDist = C_DISP_LIMIT;		// crossing ramps, delta noise
 			}
@@ -300,10 +299,10 @@ export class BallHit extends HitObject {
 		Vertex3D.release(normalDist);
 //#endif
 
-		const myInvMass = this.isFrozen ? 0.0 : this.invMass; // frozen ball has infinite mass
+		const myInvMass = this.state.isFrozen ? 0.0 : this.invMass; // frozen ball has infinite mass
 		const impulse = -(1.0 + 0.8) * dot / (myInvMass + ball.hit.invMass);    // resitution = 0.8
 
-		if (!this.isFrozen) {
+		if (!this.state.isFrozen) {
 			this.vel.subAndRelease(vNormal.clone(true).multiplyScalar(impulse * myInvMass));
 		}
 		ball.hit.vel.addAndRelease(vNormal.clone(true).multiplyScalar(impulse * ball.hit.invMass));

@@ -72,9 +72,12 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable, IScrip
 	}
 
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: BallState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
-		const isFrozen = this.hit && this.hit.isFrozen;
+		if (state.hasOwnProperty('isFrozen')) {
+			this.state.isFrozen = state.isFrozen;
+		}
+
 		const pos: { _x: number, _y: number, _z: number} = state.pos as any;
-		const zHeight = !isFrozen ? pos._z : pos._z - this.data.radius;
+		const zHeight = !this.state.isFrozen ? pos._z : pos._z - this.data.radius;
 		const orientation = Matrix3D.claim();
 		if (state.orientation) {
 			orientation.setEach(

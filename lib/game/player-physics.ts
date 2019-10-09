@@ -194,7 +194,7 @@ export class PlayerPhysics {
 			for (const ball of this.balls) {
 				const ballHit = ball.hit;
 
-				if (!ballHit.isFrozen) {                   // don't play with frozen balls
+				if (!ball.state.isFrozen) {                   // don't play with frozen balls
 
 					ballHit.coll.hitTime = hitTime;        // search upto current hit time
 					ballHit.coll.clear();

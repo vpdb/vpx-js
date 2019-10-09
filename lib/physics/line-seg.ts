@@ -70,7 +70,7 @@ export class LineSeg extends HitObject {
 
 	public hitTestBasic(ball: Ball, dTime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean): number {
 
-		if (!this.isEnabled || ball.hit.isFrozen) {
+		if (!this.isEnabled || ball.state.isFrozen) {
 			return -1.0;
 		}
 

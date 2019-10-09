@@ -59,7 +59,7 @@ export class HitCircle extends HitObject {
 	}
 
 	protected hitTestBasicRadius(ball: Ball, dTime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean): number {
-		if (!this.isEnabled || ball.hit.isFrozen) {
+		if (!this.isEnabled || ball.state.isFrozen) {
 			return -1.0;
 		}
 

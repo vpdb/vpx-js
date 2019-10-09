@@ -33,6 +33,7 @@ export class BallState extends ItemState {
 
 	public pos: Vertex3D = new Vertex3D();
 	public orientation = new Matrix2D();
+	public isFrozen: boolean = false;
 
 	public constructor() {
 		super();
@@ -42,6 +43,7 @@ export class BallState extends ItemState {
 		const state = BallState.POOL.get();
 		state.name = name;
 		state.pos.set(pos);
+		state.isFrozen = false;
 		return state;
 	}
 
@@ -60,6 +62,9 @@ export class BallState extends ItemState {
 		if (diff.orientation.equals(state.orientation)) {
 			Matrix2D.release(diff.orientation);
 			delete diff.orientation;
+		}
+		if (diff.isFrozen === state.isFrozen) {
+			delete diff.isFrozen;
 		}
 		return diff;
 	}
@@ -81,6 +86,8 @@ export class BallState extends ItemState {
 		if (!state) {
 			return false;
 		}
-		return this.pos.equals(state.pos) && this.orientation.equals(state.orientation);
+		return this.pos.equals(state.pos)
+			&& this.orientation.equals(state.orientation)
+			&& this.isFrozen === state.isFrozen;
 	}
 }

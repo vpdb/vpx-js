@@ -41,7 +41,7 @@ export class BallMover implements MoverObject {
 	}
 
 	public updateDisplacements(dtime: number): void {
-		if (!this.hit.isFrozen) {
+		if (!this.state.isFrozen) {
 
 			this.state.pos.addAndRelease(this.hit.vel.clone(true).multiplyScalar(dtime));
 			this.hit.calcHitBBox();
@@ -62,7 +62,7 @@ export class BallMover implements MoverObject {
 	}
 
 	public updateVelocities(physics: PlayerPhysics): void {
-		if (!this.hit.isFrozen) {
+		if (!this.state.isFrozen) {
 
 			if (physics.ballControl && this.id === physics.activeBallBC!.id && physics.bcTarget) {
 				this.hit.vel.x *= 0.5;  // Null out most of the X/Y velocity, want a little bit so the ball can sort of find its way out of obstacles.
