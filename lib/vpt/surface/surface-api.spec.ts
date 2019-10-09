@@ -19,11 +19,14 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import sinonChai = require('sinon-chai');
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
+
+/* tslint:disable:no-unused-expression */
+import sinon = require('sinon');
+import sinonChai = require('sinon-chai');
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
@@ -105,6 +108,15 @@ describe('The VPinball surface API', () => {
 		expect(() => surface.SideImage = 'some-image').to.throw('Texture "some-image" not found.');
 		//expect(() => surface.SideImage = 'hdr').to.throw('Cannot use a HDR image (.exr/.hdr) here');
 		surface.SideImage = 'ldr'; expect(surface.SideImage).to.equal('ldr');
+	});
+
+	it('should trigger an Init event', () => {
+		const surface = table.surfaces.Wall.getApi();
+		const eventSpy = sinon.spy();
+		surface.on('Init', eventSpy);
+		player.init();
+
+		expect(eventSpy).to.have.been.calledOnce;
 	});
 
 	it('should throw an error when dropping a non-droppable wall', () => {

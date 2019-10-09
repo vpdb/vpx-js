@@ -71,6 +71,11 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 		return this.data.timer.enabled ? [this.hitTimer] : [];
 	}
 
+	public _resetCollections() {
+		this.collections.length = 0;
+		this.collectionsItemPos.length = 0;
+	}
+
 	public _addCollection(collection: Collection, pos: number) {
 		this.collections.push(collection);
 		this.collectionsItemPos.push(pos);

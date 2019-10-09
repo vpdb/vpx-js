@@ -83,11 +83,24 @@ export class EventProxy {
 
 function getEventName(event: Event): string {
 	switch (event) {
+		case Event.FlipperEventsCollide: return 'Collide';
+		case Event.GameEventsExit: return 'Exit';
+		case Event.GameEventsInit: return 'Init';
+		case Event.GameEventsKeyDown: return 'KeyDown';
+		case Event.GameEventsKeyUp: return 'KeyUp';
+		case Event.GameEventsMusicDone: return 'MusicDone';
+		case Event.GameEventsPaused: return 'Paused';
+		case Event.GameEventsUnPaused: return 'UnPaused';
 		case Event.HitEventsHit: return 'Hit';
 		case Event.HitEventsUnhit: return 'Unhit';
+		case Event.LightSeqEventsPlayDone: return 'PlayDone';
+		case Event.LimitEventsBOS: return 'LimitBOS';
+		case Event.LimitEventsEOS: return 'LimitEOS';
+		case Event.SpinnerEventsSpin: return 'Spin';
+		case Event.SurfaceEventsSlingshot: return 'Slingshot';
+		case Event.TargetEventsDropped: return 'Dropped';
+		case Event.TargetEventsRaised: return 'Raised';
 		case Event.TimerEventsTimer: return 'Timer';
-		case Event.GameEventsInit: return 'Init';
-		// TODO add remaining
 		default: return 'UnknownEvent' + event;
 	}
 }
