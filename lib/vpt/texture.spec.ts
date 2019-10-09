@@ -17,17 +17,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ThreeHelper } from '../three.helper';
+import { expect } from 'chai';
 import { readFileSync, writeFileSync } from 'fs';
 import { createDiff } from 'looks-same';
-import * as sharp from 'sharp';
-import { expect } from 'chai';
 import looksSame = require('looks-same');
+import * as sharp from 'sharp';
 import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
-import { Table } from '../../lib/vpt/table/table';
-import { NodeImage } from '../../lib/gltf/image.node';
 import { ThreeTextureLoaderNode } from '../../lib/render/threejs/three-texture-loader-node';
-import { exp } from '../../lib/scripting/post-process-math';
+import { Table } from '../../lib/vpt/table/table';
+import { ThreeHelper } from '../../test/three.helper';
 
 const three = new ThreeHelper();
 const imgDiffTolerance = 7;
@@ -46,7 +44,7 @@ describe('The VPinball texture parser', () => {
 		vpt = await Table.load(new NodeBinaryReader(three.fixturePath('table-texture.vpx')));
 	});
 
-	it('should correctly export a png', async() => {
+	it('should correctly export a png', async () => {
 		const texture = vpt.getTexture('test_pattern_transparent')!;
 		const threeTexture = await texture.loadTexture(loader, vpt);
 		const png = await threeTexture.image.getImage(false);
@@ -90,7 +88,7 @@ describe('The VPinball texture parser', () => {
 		expect(match).to.equal(true);
 	});
 
-	it('should resize an image to power of two', async() => {
+	it('should resize an image to power of two', async () => {
 		const texture = vpt.getTexture('test_pattern_png')!;
 		const threeTexture = await texture.loadTexture(loader, vpt);
 		threeTexture.image.resize(1024, 512);
@@ -100,7 +98,7 @@ describe('The VPinball texture parser', () => {
 		expect(match).to.equal(true);
 	});
 
-	it('should optimize a png', async() => {
+	it('should optimize a png', async () => {
 		const texture = vpt.getTexture('test_pattern_transparent')!;
 		const threeTexture = await texture.loadTexture(loader, vpt);
 		const png = await threeTexture.image.getImage(true);
@@ -146,6 +144,7 @@ async function comparePngs(img1: Buffer, img2: Buffer, tolerance = imgDiffTolera
 				return reject(error);
 			}
 			if (debugPrint) {
+				// tslint:disable-next-line:no-console
 				console.log(JSON.stringify(result, null, '  '));
 			}
 			resolve(result.equal);
@@ -154,7 +153,7 @@ async function comparePngs(img1: Buffer, img2: Buffer, tolerance = imgDiffTolera
 }
 
 async function debug(img1: Buffer, img2: Buffer, tolerance = imgDiffTolerance, ignoreAntialiasing = false) {
-	await comparePngs(img1, img2, tolerance, ignoreAntialiasing,true);
+	await comparePngs(img1, img2, tolerance, ignoreAntialiasing, true);
 	await new Promise((resolve, reject) => {
 		createDiff({
 			reference: img1,
@@ -162,10 +161,10 @@ async function debug(img1: Buffer, img2: Buffer, tolerance = imgDiffTolerance, i
 			diff: 'diff.png',
 			highlightColor: '#ff00ff', // color to highlight the differences
 			strict: false,
-			tolerance: tolerance,
+			tolerance,
 			antialiasingTolerance: 0,
-			ignoreAntialiasing: ignoreAntialiasing,
-			ignoreCaret: false
+			ignoreAntialiasing,
+			ignoreCaret: false,
 		}, error => error ? reject(error) : resolve());
 	});
 	writeFileSync('texture.png', img1);

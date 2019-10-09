@@ -116,7 +116,7 @@ describe('The VPinball global API', () => {
 		const api = new GlobalApi(table, player);
 		const elements = api.GetElements();
 		expect(elements.find(e => e.getName() === 'Williams')).to.be.ok;
-		expect(elements).to.have.lengthOf(12);
+		expect(elements).to.have.lengthOf(13);
 	});
 
 	it('should correctly return a playfield element', () => {

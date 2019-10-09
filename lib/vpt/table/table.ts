@@ -53,7 +53,7 @@ import { Ramp } from '../ramp/ramp';
 import { Rubber } from '../rubber/rubber';
 import { Spinner } from '../spinner/spinner';
 import { Surface } from '../surface/surface';
-import { TextBoxItem } from '../textbox-item';
+import { Textbox } from '../textbox/textbox';
 import { Texture } from '../texture';
 import { Timer } from '../timer/timer';
 import { Trigger } from '../trigger/trigger';
@@ -97,7 +97,7 @@ export class Table implements IScriptable<TableApi> {
 	public readonly rubbers: { [key: string]: Rubber } = {};
 	public readonly spinners: { [key: string]: Spinner } = {};
 	public readonly surfaces: { [key: string]: Surface } = {};
-	public readonly textBoxes: { [key: string]: TextBoxItem } = {};
+	public readonly textboxes: { [key: string]: Textbox } = {};
 	public readonly timers: { [key: string]: Timer } = {};
 	public readonly triggers: { [key: string]: Trigger } = {};
 
@@ -144,7 +144,7 @@ export class Table implements IScriptable<TableApi> {
 			[loadedTable.rubbers, this.rubbers],
 			[loadedTable.spinners, this.spinners],
 			[loadedTable.surfaces, this.surfaces],
-			[loadedTable.textBoxes, this.textBoxes],
+			[loadedTable.textBoxes, this.textboxes],
 			[loadedTable.timers, this.timers],
 			[loadedTable.triggers, this.triggers],
 		];
