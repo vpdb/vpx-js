@@ -24,13 +24,13 @@ export class PrimitiveState extends ItemState {
 
 	public static readonly POOL = new Pool(PrimitiveState);
 
-	public material!: string;
+	public material?: string;
 
 	public constructor() {
 		super();
 	}
 
-	public static claim(name: string, material: string, isVisible: boolean): PrimitiveState {
+	public static claim(name: string, material: string | undefined, isVisible: boolean): PrimitiveState {
 		const state = PrimitiveState.POOL.get();
 		state.name = name;
 		state.material = material;

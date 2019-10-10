@@ -33,6 +33,7 @@ import { RubberData } from './rubber-data';
 import { RubberHitGenerator } from './rubber-hit-generator';
 import { RubberMeshGenerator } from './rubber-mesh-generator';
 import { RubberState } from './rubber-state';
+import { RubberUpdater } from './rubber-updater';
 
 /**
  * VPinball's rubber item.
@@ -43,6 +44,7 @@ export class Rubber extends Item<RubberData> implements IRenderable<RubberState>
 
 	private readonly state: RubberState;
 	private readonly meshGenerator: RubberMeshGenerator;
+	private readonly updater: RubberUpdater;
 	private hitGenerator: RubberHitGenerator;
 	private hits: HitObject[] = [];
 	private api!: RubberApi;
@@ -57,6 +59,7 @@ export class Rubber extends Item<RubberData> implements IRenderable<RubberState>
 		this.state = RubberState.claim(data.getName(), data.height, data.hitHeight, data.rotX,  data.rotY, data.rotZ, data.szMaterial!, data.szImage!, data.isVisible);
 		this.meshGenerator = new RubberMeshGenerator(data);
 		this.hitGenerator = new RubberHitGenerator(data, this.meshGenerator);
+		this.updater = new RubberUpdater(this.data, this.state, this.meshGenerator.middlePoint);
 	}
 
 	public isCollidable(): boolean {
@@ -96,7 +99,7 @@ export class Rubber extends Item<RubberData> implements IRenderable<RubberState>
 		return this.state;
 	}
 
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: RubberState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: RubberState): void {
-		// TODO implement
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: RubberState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
+		this.updater.applyState(obj, state, renderApi, table);
 	}
 }
