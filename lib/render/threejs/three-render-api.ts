@@ -34,6 +34,7 @@ import { ThreeMapGenerator } from './three-map-generator';
 import { ThreeMaterialGenerator } from './three-material-generator';
 import { releaseGeometry, ThreeMeshGenerator } from './three-mesh-generator';
 import { ThreePlayfieldMeshGenerator } from './three-playfield-mesh-generator';
+import { MeshStandardMaterial } from 'three';
 
 export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, PointLight> {
 
@@ -169,12 +170,17 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		light.intensity = state.intensity;
 	}
 
-	public applyMaterial(obj: Object3D, material: Material | undefined, texture: Texture | undefined): void {
+	public applyMaterial(obj: Object3D, material?: Material, map?: string, normalMap?: string, envMap?: string, emissiveMap?: string): void {
 		/* istanbul ignore next */
 		if (!obj) {
 			return;
 		}
-
+		const threeMaterial: MeshStandardMaterial = (obj as any).material;
+		this.materialGenerator.applyMaterial(threeMaterial, material);
+		this.materialGenerator.applyMap(threeMaterial, map);
+		this.materialGenerator.applyNormalMap(threeMaterial, normalMap);
+		this.materialGenerator.applyEnvMap(threeMaterial, envMap);
+		this.materialGenerator.applyEmissiveMap(threeMaterial, emissiveMap);
 	}
 
 	public async createObjectFromRenderable(renderable: IRenderable, table: Table, opts: TableGenerateOptions): Promise<Group> {

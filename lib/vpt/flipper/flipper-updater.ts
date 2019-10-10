@@ -36,6 +36,8 @@ export class FlipperUpdater {
 
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: FlipperState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
 
+		console.debug('[Flipper] %s:', state.name, state);
+
 		// update local state
 		Object.assign(this.state, state);
 
@@ -51,9 +53,9 @@ export class FlipperUpdater {
 
 		if (state.material || state.texture) {
 			renderApi.applyMaterial(
-				obj,
+				renderApi.findInGroup(obj, `flipper.base-${state.name}`)!,
 				state.material ? table.getMaterial(state.material) : undefined,
-				state.texture ? table.getTexture(state.texture) : undefined
+				state.texture,
 			);
 		}
 	}
