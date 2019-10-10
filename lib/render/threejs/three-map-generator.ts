@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Texture as ThreeTexture } from 'three';
+import { Texture as ThreeTexture } from '../../refs.node';
 import { logger } from '../../util/logger';
 import { Table } from '../../vpt/table/table';
 import { Texture } from '../../vpt/texture';

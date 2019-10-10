@@ -21,6 +21,8 @@ import { IBinaryReader, OleCompoundDoc, Storage } from '../../io/ole-doc';
 import { logger } from '../../util/logger';
 import { Bumper } from '../bumper/bumper';
 import { Collection } from '../collection/collection';
+import { Decal } from '../decal/decal';
+import { DispReel } from '../dispreel/dispreel';
 import { ItemType } from '../enums';
 import { Flasher } from '../flasher/flasher';
 import { Flipper } from '../flipper/flipper';
@@ -30,6 +32,7 @@ import { Item } from '../item';
 import { ItemData } from '../item-data';
 import { Kicker } from '../kicker/kicker';
 import { Light } from '../light/light';
+import { LightSeq } from '../lightseq/lightseq';
 import { Plunger } from '../plunger/plunger';
 import { Primitive } from '../primitive/primitive';
 import { Ramp } from '../ramp/ramp';
@@ -42,9 +45,6 @@ import { Timer } from '../timer/timer';
 import { Trigger } from '../trigger/trigger';
 import { TableLoadOptions } from './table';
 import { TableData } from './table-data';
-import { Decal } from '../decal/decal';
-import { LightSeq } from '../lightseq/lightseq';
-import { DispReel } from '../dispreel/dispreel';
 
 export class TableLoader {
 

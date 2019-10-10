@@ -18,7 +18,7 @@
  */
 
 import { IRenderable, RenderInfo } from '../../game/irenderable';
-import { BufferGeometry, Group, Mesh as ThreeMesh, Object3D, PointLight, } from '../../refs.node';
+import { BufferGeometry, Group, Mesh as ThreeMesh, Object3D, PointLight } from '../../refs.node';
 import { Table, TableGenerateOptions } from '../../vpt/table/table';
 import { IRenderApi, MeshConvertOptions } from '../irender-api';
 import { ThreeMapGenerator } from './three-map-generator';

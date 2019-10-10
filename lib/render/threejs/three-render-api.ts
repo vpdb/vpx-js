@@ -19,7 +19,7 @@
 
 import { IRenderable } from '../../game/irenderable';
 import { Matrix3D } from '../../math/matrix3d';
-import { BufferGeometry, Group, Matrix4, Object3D, PointLight, Vector2 } from '../../refs.node';
+import { BufferGeometry, Group, Matrix4, MeshStandardMaterial, Object3D, PointLight, Vector2 } from '../../refs.node';
 import { Pool } from '../../util/object-pool';
 import { LightData } from '../../vpt/light/light-data';
 import { LightState } from '../../vpt/light/light-state';
@@ -34,7 +34,6 @@ import { ThreeMapGenerator } from './three-map-generator';
 import { ThreeMaterialGenerator } from './three-material-generator';
 import { releaseGeometry, ThreeMeshGenerator } from './three-mesh-generator';
 import { ThreePlayfieldMeshGenerator } from './three-playfield-mesh-generator';
-import { MeshStandardMaterial } from 'three';
 
 export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, PointLight> {
 
