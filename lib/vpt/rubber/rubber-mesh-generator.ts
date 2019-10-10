@@ -29,7 +29,7 @@ import { RubberData } from './rubber-data';
 
 export class RubberMeshGenerator {
 
-	private middlePoint: Vertex3D = new Vertex3D();
+	public readonly middlePoint: Vertex3D = new Vertex3D();
 	private readonly data: RubberData;
 
 	constructor(data: RubberData) {
