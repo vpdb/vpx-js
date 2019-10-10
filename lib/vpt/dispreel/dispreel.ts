@@ -17,14 +17,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { EventProxy } from '../../game/event-proxy';
+import { IScriptable } from '../../game/iscriptable';
+import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Item } from '../item';
-import { DispReelData } from './dispreel-data';
-import { IScriptable } from '../../game/iscriptable';
-import { DispReelApi } from './dispreel-api';
-import { Player } from '../../game/player';
 import { Table } from '../table/table';
-import { EventProxy } from '../../game/event-proxy';
+import { DispReelApi } from './dispreel-api';
+import { DispReelData } from './dispreel-data';
 
 export class DispReel extends Item<DispReelData> implements IScriptable<DispReelApi> {
 

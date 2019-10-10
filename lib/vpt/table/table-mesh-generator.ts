@@ -18,8 +18,8 @@
  */
 
 /* tslint:disable:no-bitwise */
-import { PointLightHelper } from 'three';
 import { IRenderable } from '../../game/irenderable';
+import { PointLightHelper } from '../../refs.node';
 import { IRenderApi } from '../../render/irender-api';
 import { Bumper } from '../bumper/bumper';
 import { Flipper } from '../flipper/flipper';
