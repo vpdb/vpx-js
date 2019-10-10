@@ -25,20 +25,23 @@ import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
+import { IRenderApi } from '../../render/irender-api';
 import { Item } from '../item';
 import { Table } from '../table/table';
 import { RubberApi } from './rubber-api';
 import { RubberData } from './rubber-data';
 import { RubberHitGenerator } from './rubber-hit-generator';
 import { RubberMeshGenerator } from './rubber-mesh-generator';
+import { RubberState } from './rubber-state';
 
 /**
  * VPinball's rubber item.
  *
  * @see https://github.com/vpinball/vpinball/blob/master/rubber.cpp
  */
-export class Rubber extends Item<RubberData> implements IRenderable, IHittable, IScriptable<RubberApi> {
+export class Rubber extends Item<RubberData> implements IRenderable<RubberState>, IHittable, IScriptable<RubberApi> {
 
+	private readonly state: RubberState;
 	private readonly meshGenerator: RubberMeshGenerator;
 	private hitGenerator: RubberHitGenerator;
 	private hits: HitObject[] = [];
@@ -51,12 +54,9 @@ export class Rubber extends Item<RubberData> implements IRenderable, IHittable, 
 
 	private constructor(data: RubberData) {
 		super(data);
+		this.state = RubberState.claim(data.getName(), data.height, data.hitHeight, data.rotX,  data.rotY, data.rotZ, data.szMaterial!, data.szImage!, data.isVisible);
 		this.meshGenerator = new RubberMeshGenerator(data);
 		this.hitGenerator = new RubberHitGenerator(data, this.meshGenerator);
-	}
-
-	public isVisible(): boolean {
-		return this.data.isVisible;
 	}
 
 	public isCollidable(): boolean {
@@ -77,7 +77,7 @@ export class Rubber extends Item<RubberData> implements IRenderable, IHittable, 
 	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
 		this.hits = this.hitGenerator.generateHitObjects(this.events, table);
-		this.api = new RubberApi(this.hits, this.data, this.events, player, table);
+		this.api = new RubberApi(this.state, this.hits, this.data, this.events, player, table);
 	}
 
 	public getApi(): RubberApi {
@@ -90,5 +90,13 @@ export class Rubber extends Item<RubberData> implements IRenderable, IHittable, 
 
 	public getEventNames(): string[] {
 		return [ 'Hit', 'Init', 'Timer' ];
+	}
+
+	public getState(): RubberState {
+		return this.state;
+	}
+
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: RubberState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: RubberState): void {
+		// TODO implement
 	}
 }

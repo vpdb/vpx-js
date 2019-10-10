@@ -45,7 +45,7 @@ import { FlipperUpdater } from './flipper-updater';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/flipper.cpp
  */
-export class Flipper extends Item<FlipperData> implements IRenderable, IPlayable, IMovable<FlipperState>, IHittable, IScriptable<FlipperApi> {
+export class Flipper extends Item<FlipperData> implements IRenderable<FlipperState>, IPlayable, IMovable, IHittable, IScriptable<FlipperApi> {
 
 	private readonly mesh: FlipperMesh;
 	private readonly state: FlipperState;
@@ -61,12 +61,8 @@ export class Flipper extends Item<FlipperData> implements IRenderable, IPlayable
 	public constructor(itemName: string, data: FlipperData) {
 		super(data);
 		this.mesh = new FlipperMesh();
-		this.state = FlipperState.claim(this.getName(), this.data.startAngle, this.data.center.clone(), this.data.isVisible, this.data.szMaterial, this.data.szImage, this.data.szRubberMaterial);
+		this.state = FlipperState.claim(this.getName(), this.data.startAngle, this.data.center.clone(), this.data.isVisible, this.data.szMaterial!, this.data.szImage!, this.data.szRubberMaterial!);
 		this.updater = new FlipperUpdater(this.data, this.state);
-	}
-
-	public isVisible(): boolean {
-		return this.data.isVisible;
 	}
 
 	public isCollidable(): boolean {

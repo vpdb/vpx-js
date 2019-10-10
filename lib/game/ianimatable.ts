@@ -17,11 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { IRenderApi } from '../render/irender-api';
-import { ItemState } from '../vpt/item-state';
 import { Table } from '../vpt/table/table';
 import { IPlayable } from './iplayable';
-import { Player } from './player';
 import { PlayerPhysics } from './player-physics';
 
 /**
@@ -32,13 +29,9 @@ import { PlayerPhysics } from './player-physics';
  * Classes that implement this interface usually take their code from
  * Visual Pinball's `RenderDynamic()` method.
  */
-export interface IAnimatable<STATE> extends IPlayable {
+export interface IAnimatable extends IPlayable {
 
 	getAnimation(): IAnimation;
-
-	getState(): STATE;
-
-	applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: STATE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: STATE): void;
 }
 
 export interface IAnimation {
@@ -48,6 +41,6 @@ export interface IAnimation {
 	updateAnimation(physics: PlayerPhysics, table: Table): void;
 }
 
-export function isAnimatable(arg: any): arg is IAnimatable<ItemState> {
+export function isAnimatable(arg: any): arg is IAnimatable {
 	return arg.getAnimation !== undefined;
 }

@@ -39,7 +39,7 @@ import { LightState } from './light-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/light.cpp
  */
-export class Light extends Item<LightData> implements IRenderable, IAnimatable<LightState>, IScriptable<LightApi> {
+export class Light extends Item<LightData> implements IRenderable<LightState>, IAnimatable, IScriptable<LightApi> {
 
 	// public getters
 	get color() { return this.data.color; }

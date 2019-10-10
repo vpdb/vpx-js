@@ -27,6 +27,7 @@ import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
+import { IRenderApi } from '../../render/irender-api';
 import { Ball } from '../ball/ball';
 import { Item } from '../item';
 import { FLT_MAX } from '../mesh';
@@ -36,13 +37,14 @@ import { KickerApi } from './kicker-api';
 import { KickerData } from './kicker-data';
 import { KickerHit } from './kicker-hit';
 import { KickerMeshGenerator } from './kicker-mesh-generator';
+import { KickerState } from './kicker-state';
 
 /**
  * VPinball's kickers.
  *
  * @see https://github.com/vpinball/vpinball/blob/master/kicker.cpp
  */
-export class Kicker extends Item<KickerData> implements IRenderable, IHittable, IBallCreationPosition, IScriptable<KickerApi> {
+export class Kicker extends Item<KickerData> implements IRenderable<KickerState>, IHittable, IBallCreationPosition, IScriptable<KickerApi> {
 
 	public static TypeKickerInvisible = 0;
 	public static TypeKickerHole = 1;
@@ -53,6 +55,7 @@ export class Kicker extends Item<KickerData> implements IRenderable, IHittable, 
 	public static TypeKickerCup2 = 6;
 
 	private readonly meshGenerator: KickerMeshGenerator;
+	private readonly state: KickerState;
 	private hit?: KickerHit;
 	private api?: KickerApi;
 
@@ -63,11 +66,8 @@ export class Kicker extends Item<KickerData> implements IRenderable, IHittable, 
 
 	private constructor(data: KickerData) {
 		super(data);
+		this.state = KickerState.claim(data.getName(), data.szMaterial!, data.kickerType !== Kicker.TypeKickerInvisible);
 		this.meshGenerator = new KickerMeshGenerator(data);
-	}
-
-	public isVisible(): boolean {
-		return this.data.kickerType !== Kicker.TypeKickerInvisible;
 	}
 
 	public isCollidable(): boolean {
@@ -97,6 +97,14 @@ export class Kicker extends Item<KickerData> implements IRenderable, IHittable, 
 
 	public getApi(): KickerApi {
 		return this.api!;
+	}
+
+	public getState(): KickerState {
+		return this.state;
+	}
+
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: KickerState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: KickerState): void {
+		// TODO implement
 	}
 
 	public getHitShapes(): HitObject[] {

@@ -23,6 +23,7 @@ import { PointLightHelper } from '../../refs.node';
 import { IRenderApi } from '../../render/irender-api';
 import { Bumper } from '../bumper/bumper';
 import { Flipper } from '../flipper/flipper';
+import { ItemState } from '../item-state';
 import { Primitive } from '../primitive/primitive';
 import { Ramp } from '../ramp/ramp';
 import { Rubber } from '../rubber/rubber';
@@ -66,7 +67,7 @@ export class TableMeshGenerator {
 				continue;
 			}
 			const itemTypeGroup = renderApi.createParentNode(group.name);
-			for (const renderable of group.meshes.filter(i => i.isVisible(this.table))) {
+			for (const renderable of group.meshes) {
 				const itemGroup = await renderApi.createObjectFromRenderable(renderable, this.table, opts);
 				renderApi.addChildToParent(itemTypeGroup, itemGroup);
 			}
@@ -99,7 +100,7 @@ export class TableMeshGenerator {
 
 interface IRenderGroup {
 	name: string;
-	meshes: IRenderable[];
+	meshes: Array<IRenderable<ItemState>>;
 	enabled: boolean;
 }
 

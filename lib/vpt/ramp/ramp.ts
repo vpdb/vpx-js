@@ -27,6 +27,7 @@ import { f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex2D } from '../../math/vertex2d';
 import { HitObject } from '../../physics/hit-object';
+import { IRenderApi } from '../../render/irender-api';
 import { Item } from '../item';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
@@ -34,17 +35,19 @@ import { RampApi } from './ramp-api';
 import { RampData } from './ramp-data';
 import { RampHitGenerator } from './ramp-hit-generator';
 import { RampMeshGenerator } from './ramp-mesh-generator';
+import { RampState } from './ramp-state';
 
 /**
  * VPinball's ramps.
  *
  * @see https://github.com/vpinball/vpinball/blob/master/ramp.cpp
  */
-export class Ramp extends Item<RampData> implements IRenderable, IHittable, IScriptable<RampApi> {
+export class Ramp extends Item<RampData> implements IRenderable<RampState>, IHittable, IScriptable<RampApi> {
 
 	private readonly meshGenerator: RampMeshGenerator;
 	private readonly hitGenerator: RampHitGenerator;
 
+	private readonly state: RampState;
 	private hits?: HitObject[];
 	private api?: RampApi;
 
@@ -55,12 +58,9 @@ export class Ramp extends Item<RampData> implements IRenderable, IHittable, IScr
 
 	private constructor(data: RampData) {
 		super(data);
+		this.state = RampState.claim(data.getName(), data.szMaterial!, data.isVisible && data.widthTop > 0 && data.widthBottom > 0);
 		this.meshGenerator = new RampMeshGenerator(data);
 		this.hitGenerator = new RampHitGenerator(data, this.meshGenerator);
-	}
-
-	public isVisible(): boolean {
-		return this.data.isVisible && this.data.widthTop > 0 && this.data.widthBottom > 0;
 	}
 
 	public isCollidable(): boolean {
@@ -80,6 +80,14 @@ export class Ramp extends Item<RampData> implements IRenderable, IHittable, IScr
 
 	public getApi(): RampApi {
 		return this.api!;
+	}
+
+	public getState(): RampState {
+		return this.state;
+	}
+
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: RampState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: RampState): void {
+		// TODO implement
 	}
 
 	public getEventNames(): string[] {

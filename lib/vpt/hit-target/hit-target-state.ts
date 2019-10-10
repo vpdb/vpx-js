@@ -31,16 +31,17 @@ export class HitTargetState extends ItemState {
 		super();
 	}
 
-	public static claim(name: string, zOffset: number = 0, xRotation = 0): HitTargetState {
+	public static claim(name: string, zOffset: number, xRotation: number, isVisible: boolean): HitTargetState {
 		const state = HitTargetState.POOL.get();
 		state.name = name;
 		state.zOffset = zOffset;
 		state.xRotation = xRotation;
+		state.isVisible = isVisible;
 		return state;
 	}
 
 	public clone(): HitTargetState {
-		return HitTargetState.claim(this.name, this.zOffset, this.xRotation);
+		return HitTargetState.claim(this.name, this.zOffset, this.xRotation, this.isVisible);
 	}
 
 	public diff(state: HitTargetState): HitTargetState {
@@ -50,6 +51,9 @@ export class HitTargetState extends ItemState {
 		}
 		if (diff.xRotation === state.xRotation) {
 			delete diff.xRotation;
+		}
+		if (diff.isVisible === state.isVisible) {
+			delete diff.isVisible;
 		}
 		return diff;
 	}
@@ -63,6 +67,8 @@ export class HitTargetState extends ItemState {
 		if (!state) {
 			return false;
 		}
-		return state.zOffset === this.zOffset && state.xRotation === this.xRotation;
+		return state.zOffset === this.zOffset
+			&& state.xRotation === this.xRotation
+			&& state.isVisible === this.isVisible;
 	}
 }

@@ -35,17 +35,18 @@ export class BumperState extends ItemState {
 		super();
 	}
 
-	public static claim(name: string, ringOffset: number, skirtRotX: number, skirtRotY: number): BumperState {
+	public static claim(name: string, ringOffset: number, skirtRotX: number, skirtRotY: number, isVisible: boolean): BumperState {
 		const state = BumperState.POOL.get();
 		state.name = name;
 		state.ringOffset = ringOffset;
 		state.skirtRotX = skirtRotX;
 		state.skirtRotY = skirtRotY;
+		state.isVisible = isVisible;
 		return state;
 	}
 
 	public clone(): BumperState {
-		return BumperState.claim(this.name, this.ringOffset, this.skirtRotX, this.skirtRotY);
+		return BumperState.claim(this.name, this.ringOffset, this.skirtRotX, this.skirtRotY, this.isVisible);
 	}
 
 	public diff(state: BumperState): BumperState {
@@ -58,6 +59,9 @@ export class BumperState extends ItemState {
 		}
 		if (diff.skirtRotY === state.skirtRotY) {
 			delete diff.skirtRotY;
+		}
+		if (diff.isVisible === state.isVisible) {
+			delete diff.isVisible;
 		}
 		return diff;
 	}

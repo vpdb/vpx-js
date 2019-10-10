@@ -18,17 +18,26 @@
  */
 
 import { IRenderApi } from '../render/irender-api';
+import { ItemState } from '../vpt/item-state';
 import { Material } from '../vpt/material';
 import { Mesh } from '../vpt/mesh';
 import { Table, TableGenerateOptions } from '../vpt/table/table';
 import { Texture } from '../vpt/texture';
+import { IAnimatable } from './ianimatable';
 import { IItem } from './iitem';
 
-export interface IRenderable extends IItem {
+export interface IRenderable<STATE extends ItemState> extends IItem {
 
 	getMeshes<NODE, GEOMETRY, POINT_LIGHT>(table: Table, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, opts: TableGenerateOptions): Meshes<GEOMETRY>;
 
-	isVisible(table: Table): boolean;
+	getState(): STATE;
+
+	applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: STATE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: STATE): void;
+
+}
+
+export function isRenderable(arg: any): arg is IRenderable<ItemState> {
+	return arg.getMeshes !== undefined;
 }
 
 export interface Meshes<GEOMETRY> {

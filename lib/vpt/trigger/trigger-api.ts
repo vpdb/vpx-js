@@ -19,14 +19,19 @@
 
 import { EventProxy } from '../../game/event-proxy';
 import { Player } from '../../game/player';
+import { TriggerShape } from '../enums';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { TriggerData } from './trigger-data';
+import { TriggerState } from './trigger-state';
 
 export class TriggerApi extends ItemApi<TriggerData> {
 
-	constructor(data: TriggerData, events: EventProxy, player: Player, table: Table) {
+	private readonly state: TriggerState;
+
+	constructor(state: TriggerState, data: TriggerData, events: EventProxy, player: Player, table: Table) {
 		super(data, events, player, table);
+		this.state = state;
 	}
 
 	get X() { return this.data.vCenter.x; }
@@ -40,7 +45,10 @@ export class TriggerApi extends ItemApi<TriggerData> {
 	get Enabled() { return this.data.isEnabled; }
 	set Enabled(v) { this.data.isEnabled = v; }
 	get Visible() { return this.data.isVisible; }
-	set Visible(v) { this.data.isVisible = v; }
+	set Visible(v) {
+		this.data.isVisible = v;
+		this.state.isVisible = v && this.data.shape !== TriggerShape.None;
+	}
 	get HitHeight() { return this.data.hitHeight; }
 	set HitHeight(v) { this.data.hitHeight = v; }
 	get Rotation() { return this.data.rotation; }

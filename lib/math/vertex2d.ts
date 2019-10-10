@@ -131,7 +131,7 @@ export class Vertex2D implements Vertex {
 		return this.x * pv.x + this.y * pv.y;
 	}
 
-	public equals(v: Vertex2D): boolean {
+	public equals(v?: Vertex2D): boolean {
 		if (!v) {
 			return false;
 		}

@@ -25,27 +25,30 @@ import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
+import { IRenderApi } from '../../render/irender-api';
 import { Item } from '../item';
 import { Table } from '../table/table';
 import { SurfaceApi } from './surface-api';
 import { SurfaceData } from './surface-data';
 import { SurfaceHitGenerator } from './surface-hit-generator';
 import { SurfaceMeshGenerator } from './surface-mesh-generator';
+import { SurfaceState } from './surface-state';
 
 /**
  * VPinball's surfaces, a.k.a as "walls".
  *
  * @see https://github.com/vpinball/vpinball/blob/master/surface.cpp
  */
-export class Surface extends Item<SurfaceData> implements IRenderable, IHittable, IScriptable<SurfaceApi> {
+export class Surface extends Item<SurfaceData> implements IRenderable<SurfaceState>, IHittable, IScriptable<SurfaceApi> {
 
+	private readonly state: SurfaceState;
 	private readonly itemName: string;
 	private readonly meshGenerator: SurfaceMeshGenerator;
 	private readonly hitGenerator: SurfaceHitGenerator;
 	private hits: HitObject[] = [];
 	private drops: HitObject[] = [];
-	private api?: SurfaceApi;
 
+	private api?: SurfaceApi;
 	public isDropped: boolean = false;
 	public isDisabled: boolean = false;
 
@@ -60,13 +63,10 @@ export class Surface extends Item<SurfaceData> implements IRenderable, IHittable
 
 	public constructor(itemName: string, data: SurfaceData) {
 		super(data);
+		this.state = SurfaceState.claim(data.getName(), data.szTopMaterial!, data.isSideVisible || data.isTopBottomVisible);
 		this.itemName = itemName;
 		this.meshGenerator = new SurfaceMeshGenerator();
 		this.hitGenerator = new SurfaceHitGenerator(this, data);
-	}
-
-	public isVisible(): boolean {
-		return this.data.isSideVisible || this.data.isTopBottomVisible;
 	}
 
 	public isCollidable(): boolean {
@@ -143,6 +143,13 @@ export class Surface extends Item<SurfaceData> implements IRenderable, IHittable
 
 	public getApi(): SurfaceApi {
 		return this.api!;
+	}
+
+	public getState(): SurfaceState {
+		return this.state;
+	}
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: SurfaceState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: SurfaceState): void {
+		// TODO implement
 	}
 
 	public getHitShapes(): HitObject[] {
