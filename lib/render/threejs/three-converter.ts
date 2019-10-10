@@ -47,13 +47,13 @@ export class ThreeConverter {
 		itemGroup.name = renderable.getName();
 		let obj: RenderInfo<BufferGeometry>;
 		for (obj of Object.values<RenderInfo<BufferGeometry>>(objects)) {
-			const mesh = await this.createMesh(obj, table);
+			const mesh = await this.createMesh(obj);
 			itemGroup.add(mesh);
 		}
 		return itemGroup;
 	}
 
-	private async createMesh(obj: RenderInfo<BufferGeometry>, table: Table): Promise<ThreeMesh> {
+	private async createMesh(obj: RenderInfo<BufferGeometry>): Promise<ThreeMesh> {
 		/* istanbul ignore if */
 		if (!obj.geometry && !obj.mesh) {
 			throw new Error('Mesh export must either provide mesh or geometry.');

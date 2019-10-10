@@ -62,8 +62,8 @@ export class FlipperApi extends ItemApi<FlipperData> {
 	set EndAngle(v) { this.data.endAngle = v; this.mover.setEndAngle(degToRad(v)); }
 	get EndAngle() { return this.data.endAngle; }
 	get CurrentAngle() { return radToDeg(this.state.angle); }
-	get Material() { return this.data.szMaterial; }
-	set Material(v) { this.data.szMaterial = v; }
+	get Material() { return this.state.material; }
+	set Material(v) { this.state.material = v; }
 	get Mass() { return this.mover.getMass(); }
 	set Mass(v) { if (!this.data.doOverridePhysics(this.table)) { this.mover.setMass(v); } }
 	get OverridePhysics() { return this.data.overridePhysics; }
@@ -102,8 +102,8 @@ export class FlipperApi extends ItemApi<FlipperData> {
 	set Return(v) { if (!this.data.doOverridePhysics(this.table)) { this.data.return = clamp(v, 0.0, 1.0); } }
 	get FlipperRadiusMin() { return this.data.flipperRadiusMin; }
 	set FlipperRadiusMin(v) { if (v < 0) { v = 0; } this.data.flipperRadiusMin = v; }
-	get Image() { return this.data.szImage; }
-	set Image(v) { this._assertNonHdrImage(v); this.data.szImage = v; }
+	get Image() { return this.state.texture; }
+	set Image(v) { this._assertNonHdrImage(v); this.state.texture = v; }
 	get ReflectionEnabled() { return this.data.isReflectionEnabled; }
 	set ReflectionEnabled(v) { this.data.isReflectionEnabled = v; }
 

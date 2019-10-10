@@ -62,6 +62,7 @@ export class Flipper extends Item<FlipperData> implements IRenderable, IPlayable
 		super(data);
 		this.mesh = new FlipperMesh();
 		this.state = FlipperState.claim(this.getName(), this.data.startAngle, this.data.center.clone(), this.data.isVisible, this.data.szMaterial, this.data.szImage, this.data.szRubberMaterial);
+		this.updater = new FlipperUpdater(this.data, this.state);
 	}
 
 	public isVisible(): boolean {
@@ -84,7 +85,6 @@ export class Flipper extends Item<FlipperData> implements IRenderable, IPlayable
 		this.events = new EventProxy(this);
 		this.hit = FlipperHit.getInstance(this.data, this.state, this.events, player.getPhysics(), table);
 		this.api = new FlipperApi(this.data, this.state, this.hit, this.getMover(), this.events, player, table);
-		this.updater = new FlipperUpdater(this.data, this.state);
 	}
 
 	public getApi(): FlipperApi {
