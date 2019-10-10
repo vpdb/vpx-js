@@ -38,6 +38,7 @@ import { logger } from '../../util/logger';
 import { Bumper } from '../bumper/bumper';
 import { Collection } from '../collection/collection';
 import { Decal } from '../decal/decal';
+import { DispReel } from '../dispreel/dispreel';
 import { Flasher } from '../flasher/flasher';
 import { Flipper } from '../flipper/flipper';
 import { Gate } from '../gate/gate';
@@ -65,7 +66,6 @@ import { TableExportOptions } from './table-exporter';
 import { TableHitGenerator } from './table-hit-generator';
 import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
-import { DispReel } from '../dispreel/dispreel';
 
 /**
  * A Visual Pinball table.
@@ -81,8 +81,6 @@ export class Table implements IScriptable<TableApi> {
 	public readonly tableScript?: string;
 	private events?: EventProxy;
 	private api?: TableApi;
-
-	private readonly textureCache: Map<string, any> = new Map();
 
 	public readonly textures: { [key: string]: Texture } = {};
 	public readonly collections: { [key: string]: Collection } = {};
@@ -374,6 +372,7 @@ export class Table implements IScriptable<TableApi> {
 	 * @param opts Which elements to generate
 	 */
 	public async generateTableNode<NODE, GEOMETRY, POINT_LIGHT>(renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, opts: TableExportOptions = {}): Promise<NODE> {
+		await renderApi.preloadTextures(Object.values(this.textures), this);
 		return await this.meshGenerator!.generateTableNode(renderApi, opts);
 	}
 
@@ -398,18 +397,6 @@ export class Table implements IScriptable<TableApi> {
 		for (const hittable of this.getHittables()) {
 			hittable.getEventProxy().fireVoidEvent(Event.GameEventsInit);
 		}
-	}
-
-	public getTextureFromCache<TEXTURE>(name: string): TEXTURE | null {
-		return this.textureCache.get(name);
-	}
-
-	public addTextureToCache<TEXTURE>(name: string, image: TEXTURE) {
-		this.textureCache.set(name, image);
-	}
-
-	public clearTextureCache() {
-		this.textureCache.clear();
 	}
 
 	public setupCollections() {

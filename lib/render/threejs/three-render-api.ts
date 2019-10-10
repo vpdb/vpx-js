@@ -23,15 +23,16 @@ import { BufferGeometry, Group, Matrix4, Object3D, PointLight, Vector2 } from '.
 import { Pool } from '../../util/object-pool';
 import { LightData } from '../../vpt/light/light-data';
 import { LightState } from '../../vpt/light/light-state';
+import { Material } from '../../vpt/material';
 import { Mesh } from '../../vpt/mesh';
 import { Table, TableGenerateOptions } from '../../vpt/table/table';
+import { Texture } from '../../vpt/texture';
 import { IRenderApi, MeshConvertOptions } from '../irender-api';
 import { ThreeConverter } from './three-converter';
 import { ThreeLightMeshGenerator } from './three-light-mesh-generator';
+import { ThreeMapGenerator } from './three-map-generator';
 import { releaseGeometry, ThreeMeshGenerator } from './three-mesh-generator';
 import { ThreePlayfieldMeshGenerator } from './three-playfield-mesh-generator';
-import { Material } from '../../vpt/material';
-import { Texture } from '../../vpt/texture';
 
 export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, PointLight> {
 
@@ -48,15 +49,21 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 	private readonly playfieldGenerator: ThreePlayfieldMeshGenerator;
 	private readonly lightGenerator: ThreeLightMeshGenerator;
 	private readonly meshGenerator = new ThreeMeshGenerator();
+	private readonly mapGenerator: ThreeMapGenerator;
 
 	constructor(opts?: MeshConvertOptions) {
 		this.meshConvertOpts = opts || {
 			applyMaterials: false,
 			optimizeTextures: false,
 		};
-		this.converter = new ThreeConverter(this.meshConvertOpts);
+		this.mapGenerator = new ThreeMapGenerator(this.meshConvertOpts.applyTextures);
+		this.converter = new ThreeConverter(this.meshGenerator, this.mapGenerator, this.meshConvertOpts);
 		this.playfieldGenerator = new ThreePlayfieldMeshGenerator();
 		this.lightGenerator = new ThreeLightMeshGenerator();
+	}
+
+	public async preloadTextures(textures: Texture[], table: Table): Promise<void> {
+		await this.mapGenerator.loadTextures(textures, table);
 	}
 
 	public transformScene(scene: Group, table: Table): void {
