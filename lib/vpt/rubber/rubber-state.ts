@@ -25,7 +25,6 @@ export class RubberState extends ItemState {
 	public static readonly POOL = new Pool(RubberState);
 
 	public height!: number;
-	public hitHeight!: number;
 	public rotX!: number;
 	public rotY!: number;
 	public rotZ!: number;
@@ -36,11 +35,10 @@ export class RubberState extends ItemState {
 		super();
 	}
 
-	public static claim(name: string, height: number, hitHeight: number, rotX: number, rotY: number, rotZ: number, material: string, texture: string, isVisible: boolean): RubberState {
+	public static claim(name: string, height: number, rotX: number, rotY: number, rotZ: number, material: string, texture: string, isVisible: boolean): RubberState {
 		const state = RubberState.POOL.get();
 		state.name = name;
 		state.height = height;
-		state.hitHeight = hitHeight;
 		state.rotX = rotX;
 		state.rotY = rotY;
 		state.rotZ = rotZ;
@@ -51,16 +49,13 @@ export class RubberState extends ItemState {
 	}
 
 	public clone(): RubberState {
-		return RubberState.claim(this.name, this.height, this.hitHeight, this.rotX, this.rotY, this.rotZ, this.material, this.texture, this.isVisible);
+		return RubberState.claim(this.name, this.height, this.rotX, this.rotY, this.rotZ, this.material, this.texture, this.isVisible);
 	}
 
 	public diff(state: RubberState): RubberState {
 		const diff = this.clone();
 		if (diff.height === state.height) {
 			delete diff.height;
-		}
-		if (diff.hitHeight === state.hitHeight) {
-			delete diff.hitHeight;
 		}
 		if (diff.rotX === state.rotX) {
 			delete diff.rotX;
@@ -93,7 +88,6 @@ export class RubberState extends ItemState {
 			return false;
 		}
 		return state.height === this.height
-			&& state.hitHeight === this.hitHeight
 			&& state.rotX === this.rotX
 			&& state.rotY === this.rotY
 			&& state.rotZ === this.rotZ

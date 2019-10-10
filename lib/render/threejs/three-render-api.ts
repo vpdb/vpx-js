@@ -170,7 +170,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		light.intensity = state.intensity;
 	}
 
-	public applyMaterial(obj: Object3D, material?: Material, map?: string, normalMap?: string, envMap?: string, emissiveMap?: string): void {
+	public applyMaterial(obj?: Object3D, material?: Material, map?: string, normalMap?: string, envMap?: string, emissiveMap?: string): void {
 		/* istanbul ignore next */
 		if (!obj) {
 			return;

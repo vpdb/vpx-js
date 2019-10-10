@@ -38,8 +38,8 @@ export class RubberApi extends ItemApi<RubberData> {
 
 	get Height() { return this.state.height; }
 	set Height(v) { this.state.height = v; }
-	get HitHeight() { return this.state.hitHeight; }
-	set HitHeight(v) { this.state.hitHeight = v; }
+	get HitHeight() { return this.data.hitHeight; }
+	set HitHeight(v) { this.data.hitHeight = v; }
 	get Thickness() { return this.data.thickness; }
 	set Thickness(v) { this.data.thickness = v; }
 	get Material() { return this.state.material; }
