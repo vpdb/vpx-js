@@ -110,7 +110,7 @@ export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 	 */
 	applyVisibility(isVisible: boolean, node: NODE): void;
 
-	applyMaterial(node: NODE, material?: Material, map?: string, normalMap?: string, envMap?: string, emissiveMap?: string): void;
+	applyMaterial(node: NODE | undefined, material?: Material, map?: string, normalMap?: string, envMap?: string, emissiveMap?: string): void;
 
 	/**
 	 * Creates a new node based on a renderable.

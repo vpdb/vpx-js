@@ -29,10 +29,10 @@ They all extend [`Item`](item.ts).
 
 You can see what a given playfield item is used for by looking at its interfaces.
 
-- `IRenderable` is for table elements that are rendered on the playfield
+- `IRenderable<STATE>` is for table elements that are rendered on the playfield
 - `IHittable` means the ball can collide with it
-- `IMovable<STATE>` indicates there is some physically-based movement
-- `IAnimatable<STATE>` indicates the item somehow animates
+- `IMovable` indicates there is some physically-based movement
+- `IAnimatable` indicates the item somehow animates
 - `IPlayable` is implemented for logic during game play
 - `IScriptable` means the item offers a VBScript API
 
@@ -53,16 +53,23 @@ are *usually* read-only, i.e. changes during gameplay are reflected elsewhere,
 but there are some exceptions (which probably are worth refactoring).
 
 Most other helpers rely on data classes to do their job, so they are referenced
-a lot. All data classes except `BallData` (which isn't persisted) extend [`ItemData`](item-data.ts).
+a lot. All data classes except `BallData` (which isn't persisted) extend 
+[`ItemData`](item-data.ts).
 
 ### States
 
 States contain the *visible state* of a table element, i.e. changes that must be
-taken into account by the renderer. They are typically quite small, e.g. a 
-flipper's state contains only the angle. They all extend [`ItemState`](item-state.ts).
+taken into account by the renderer. They are relatively small, if it's a movable
+element it contains the position, as well as visibility, material and textures,
+which be changed during gameplay as well. They all extend 
+[`ItemState`](item-state.ts).
 
-States are updated directly in the physics loop. A list of states that have been
-changed since the last retrieval can be retrieved by the `Player` class.
+States are updated directly in the physics loop or via the script API. A list of
+states that have been changed since the last retrieval can be retrieved by the 
+`Player` class.
+
+Since the state changes in the worker thread and needs to be passed to the main
+thread, the transfer object only contains the changed values of the state.
 
 ### APIs
 
@@ -117,8 +124,17 @@ renderer applying a different rotation matrix on the object.
  
 ### Animations
 
-Animation helpers are the "dumb" version of movers. They basically apply a static
-sequence of transformations which are computed only once per frame (although the
-"transformation" is usually just a state parameter changing).
+Animation helpers are the "dumb" version of movers. They basically apply a 
+static sequence of transformations which are computed only once per frame 
+(although the "transformation" is usually just a state parameter changing).
 
 Animation helpers are created by classes which implement `IAnimatable`.
+
+### Updaters
+
+Updaters receive a new state and apply it to the renderer. They usually update 
+the object's transformation, as well as visibility, material and textures. 
+Sometimes but rarely, they also update the mesh geometry.
+
+In order to do that, they use a provided render adapter which applies the 
+changes to the scene.

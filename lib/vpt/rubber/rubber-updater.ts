@@ -21,46 +21,33 @@ import { degToRad, f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { IRenderApi } from '../../render/irender-api';
+import { ItemUpdater } from '../item-updater';
 import { Table } from '../table/table';
 import { RubberData } from './rubber-data';
 import { RubberState } from './rubber-state';
 
-export class RubberUpdater {
+export class RubberUpdater extends ItemUpdater<RubberState> {
 
 	private readonly data: RubberData;
-	private readonly state: RubberState;
+
 	private readonly middlePoint: Vertex3D;
 
 	constructor(data: RubberData, state: RubberState, middlePoint: Vertex3D) {
+		super(state);
 		this.data = data;
-		this.state = state;
 		this.middlePoint = middlePoint;
 	}
 
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: RubberState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
 
-		console.error(state);
-
 		// update local state
 		Object.assign(this.state, state);
 
-		// visibility
-		if (state.isVisible !== undefined) {
-			renderApi.applyVisibility(this.state.isVisible, obj);
-		}
+		this.applyVisibility(obj, state, renderApi);
+		this.applyMaterial(obj, state.name, state.material, state.texture, renderApi, table);
 
-		// transformations
-		if (state.rotX !== undefined || state.rotY !== undefined || state.rotZ !== undefined) {
+		if (state.rotX !== undefined || state.rotY !== undefined || state.rotZ !== undefined || state.height !== undefined) {
 			this.applyTransformation(obj, renderApi, table);
-		}
-
-		// material
-		if (state.material || state.texture) {
-			renderApi.applyMaterial(
-				renderApi.findInGroup(obj, `rubber-${state.name}`)!,
-				state.material ? table.getMaterial(state.material) : undefined,
-				state.texture,
-			);
 		}
 	}
 
@@ -79,9 +66,9 @@ export class RubberUpdater {
 		rotMatrix.multiply(tempMat);
 
 		const matrix = Matrix3D.claim();
-		tempMat.setTranslation(-this.middlePoint.x, -this.middlePoint.y, -this.middlePoint.z);
+		tempMat.setTranslation(-this.middlePoint.x, -this.middlePoint.y, this.data.height + table.getTableHeight());
 		matrix.multiply(tempMat, rotMatrix);
-		tempMat.setTranslation(this.middlePoint.x, this.middlePoint.y, this.middlePoint.z);
+		tempMat.setTranslation(this.middlePoint.x, this.middlePoint.y, -this.state.height - table.getTableHeight());
 		matrix.multiply(tempMat);
 
 		renderApi.applyMatrixToNode(matrix, obj);

@@ -56,7 +56,7 @@ export class Rubber extends Item<RubberData> implements IRenderable<RubberState>
 
 	private constructor(data: RubberData) {
 		super(data);
-		this.state = RubberState.claim(data.getName(), data.height, data.hitHeight, data.rotX,  data.rotY, data.rotZ, data.szMaterial!, data.szImage!, data.isVisible);
+		this.state = RubberState.claim(data.getName(), data.height, data.rotX,  data.rotY, data.rotZ, data.szMaterial!, data.szImage!, data.isVisible);
 		this.meshGenerator = new RubberMeshGenerator(data);
 		this.hitGenerator = new RubberHitGenerator(data, this.meshGenerator);
 		this.updater = new RubberUpdater(this.data, this.state, this.meshGenerator.middlePoint);
