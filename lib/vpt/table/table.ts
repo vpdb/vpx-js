@@ -23,7 +23,7 @@ import { IAnimatable, isAnimatable } from '../../game/ianimatable';
 import { IHittable, isHittable } from '../../game/ihittable';
 import { IMovable, isMovable } from '../../game/imovable';
 import { IPlayable, isPlayable } from '../../game/iplayable';
-import { Meshes } from '../../game/irenderable';
+import { IRenderable, isRenderable, Meshes } from '../../game/irenderable';
 import { IScriptable, isScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { IBinaryReader, Storage } from '../../io/ole-doc';
@@ -66,6 +66,7 @@ import { TableExportOptions } from './table-exporter';
 import { TableHitGenerator } from './table-hit-generator';
 import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
+import { TableState } from './table-state';
 
 /**
  * A Visual Pinball table.
@@ -73,12 +74,13 @@ import { TableMeshGenerator } from './table-mesh-generator';
  * This holds together all table elements of a .vpt/.vpx file. It's also
  * the entry point for parsing the file.
  */
-export class Table implements IScriptable<TableApi> {
+export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 
 	public readonly data?: TableData;
 	public readonly info?: { [key: string]: string };
 	public readonly items: { [key: string]: Item<ItemData> };
 	public readonly tableScript?: string;
+	private state?: TableState;
 	private events?: EventProxy;
 	private api?: TableApi;
 
@@ -125,6 +127,7 @@ export class Table implements IScriptable<TableApi> {
 			this.data = loadedTable.data;
 			this.meshGenerator = new TableMeshGenerator(this);
 			this.hitGenerator = new TableHitGenerator(loadedTable.data);
+			this.state = TableState.claim(this.data.getName(), this.data.szPlayfieldMaterial, true);
 		}
 		if (loadedTable.info) {
 			this.info = loadedTable.info;
@@ -190,6 +193,14 @@ export class Table implements IScriptable<TableApi> {
 		return this.api!;
 	}
 
+	public getState(): TableState {
+		return this.state!;
+	}
+
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: TableState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: TableState): void {
+		// TODO implement
+	}
+
 	public getEventNames(): string[] {
 		return [ 'Exit', 'Init', 'KeyDown', 'KeyUp', 'MusicDone', 'Paused', 'UnPaused' ];
 	}
@@ -208,12 +219,16 @@ export class Table implements IScriptable<TableApi> {
 		return [ this, ...playableItems ];
 	}
 
-	public getMovables(): Array<IMovable<ItemState>> {
-		return this.getItems().filter(isMovable) as unknown as Array<IMovable<ItemState>>;
+	public getMovables(): IMovable[] {
+		return this.getItems().filter(isMovable) as unknown as IMovable[];
 	}
 
-	public getAnimatables(): Array<IAnimatable<ItemState>> {
-		return this.getItems().filter(isAnimatable) as unknown as  Array<IAnimatable<ItemState>>;
+	public getRenderables(): Array<IRenderable<ItemState>> {
+		return this.getItems().filter(isRenderable) as unknown as Array<IRenderable<ItemState>>;
+	}
+
+	public getAnimatables(): IAnimatable[] {
+		return this.getItems().filter(isAnimatable) as unknown as IAnimatable[];
 	}
 
 	public getScriptables(): Array<IScriptable<any>> {

@@ -20,35 +20,36 @@
 import { Pool } from '../../util/object-pool';
 import { ItemState } from '../item-state';
 
-export class SpinnerState extends ItemState {
+export class PrimitiveState extends ItemState {
 
-	public static readonly POOL = new Pool(SpinnerState);
+	public static readonly POOL = new Pool(PrimitiveState);
 
-	/**
-	 * Angle in rad
-	 */
-	public angle: number = 0;
+	public material!: string;
 
 	public constructor() {
 		super();
 	}
 
-	public static claim(name: string, angle: number, isVisible: boolean): SpinnerState {
-		const state = SpinnerState.POOL.get();
+	public static claim(name: string, material: string, isVisible: boolean): PrimitiveState {
+		const state = PrimitiveState.POOL.get();
 		state.name = name;
-		state.angle = angle;
+		state.material = material;
 		state.isVisible = isVisible;
 		return state;
 	}
 
-	public clone(): SpinnerState {
-		return SpinnerState.claim(this.name, this.angle, this.isVisible);
+	public clone(): PrimitiveState {
+		return PrimitiveState.claim(
+			this.name,
+			this.material,
+			this.isVisible,
+		);
 	}
 
-	public diff(state: SpinnerState): SpinnerState {
+	public diff(state: PrimitiveState): PrimitiveState {
 		const diff = this.clone();
-		if (diff.angle === state.angle) {
-			delete diff.angle;
+		if (diff.material === state.material) {
+			delete diff.material;
 		}
 		if (diff.isVisible === state.isVisible) {
 			delete diff.isVisible;
@@ -57,15 +58,15 @@ export class SpinnerState extends ItemState {
 	}
 
 	public release(): void {
-		SpinnerState.POOL.release(this);
+		PrimitiveState.POOL.release(this);
 	}
 
-	public equals(state: SpinnerState): boolean {
+	public equals(state: PrimitiveState): boolean {
 		/* istanbul ignore if: we don't actually pass empty states. */
 		if (!state) {
 			return false;
 		}
-		return state.angle === this.angle
+		return state.material === this.material
 			&& state.isVisible === this.isVisible;
 	}
 }

@@ -37,7 +37,7 @@ import { BallMeshGenerator } from './ball-mesh-generator';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
 
-export class Ball implements IPlayable, IMovable<BallState>, IRenderable, IScriptable<BallApi> {
+export class Ball implements IPlayable, IMovable, IRenderable<BallState>, IScriptable<BallApi> {
 
 	public readonly state: BallState;
 	public readonly data: BallData;
@@ -146,11 +146,6 @@ export class Ball implements IPlayable, IMovable<BallState>, IRenderable, IScrip
 				material: this.getMaterial(),
 			},
 		};
-	}
-
-	/* istanbul ignore next: balls have their own visibility treatment */
-	public isVisible(table: Table): boolean {
-		return true;
 	}
 
 	/* istanbul ignore next: balls have their own collidable treatment */

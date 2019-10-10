@@ -127,7 +127,8 @@ describe('The VPinball gate mover', () => {
 
 		const poppedState = states.getState<GateState>('WireRectangle').newState;
 
-		expect(gateState).to.eql(poppedState);
+		expect(gateState.name).to.equal(poppedState.name);
+		expect(gateState.angle).to.equal(poppedState.angle);
 		expect(gateState.equals(undefined as unknown as GateState)).to.equal(false);
 	});
 

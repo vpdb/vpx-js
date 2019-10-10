@@ -44,7 +44,7 @@ import { PlungerState } from './plunger-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/plunger.cpp
  */
-export class Plunger extends Item<PlungerData> implements IRenderable, IPlayable, IMovable<PlungerState>, IHittable, IBallCreationPosition, IScriptable<PlungerApi> {
+export class Plunger extends Item<PlungerData> implements IRenderable<PlungerState>, IPlayable, IMovable, IHittable, IBallCreationPosition, IScriptable<PlungerApi> {
 
 	public static PLUNGER_HEIGHT = 50.0;
 
@@ -84,10 +84,6 @@ export class Plunger extends Item<PlungerData> implements IRenderable, IPlayable
 			meshes.flat = { mesh: plunger.flat, material, map };
 		}
 		return meshes;
-	}
-
-	public isVisible(table: Table): boolean {
-		return this.data.isVisible;
 	}
 
 	public isCollidable(): boolean {

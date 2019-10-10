@@ -43,7 +43,7 @@ import { BumperState } from './bumper-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/bumper.cpp
  */
-export class Bumper extends Item<BumperData> implements IRenderable, IHittable, IAnimatable<BumperState>, IScriptable<BumperApi> {
+export class Bumper extends Item<BumperData> implements IRenderable<BumperState>, IHittable, IAnimatable, IScriptable<BumperApi> {
 
 	private readonly meshGenerator: BumperMeshGenerator;
 	private readonly meshUpdater: BumperMeshUpdater;
@@ -59,17 +59,13 @@ export class Bumper extends Item<BumperData> implements IRenderable, IHittable, 
 
 	private constructor(data: BumperData) {
 		super(data);
-		this.state = BumperState.claim(this.getName(), 0, 0, 0);
+		this.state = BumperState.claim(this.getName(), 0, 0, 0, data.isBaseVisible || data.isRingVisible || data.isSkirtVisible || data.isCapVisible);
 		this.meshGenerator = new BumperMeshGenerator(data);
 		this.meshUpdater = new BumperMeshUpdater(this.data, this.state, this.meshGenerator);
 	}
 
 	public getState(): BumperState {
 		return this.state;
-	}
-
-	public isVisible(): boolean {
-		return this.data.isBaseVisible || this.data.isRingVisible || this.data.isSkirtVisible || this.data.isCapVisible;
 	}
 
 	public isCollidable(): boolean {

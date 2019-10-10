@@ -18,21 +18,13 @@
  */
 
 import { MoverObject } from '../physics/mover-object';
-import { IRenderApi } from '../render/irender-api';
-import { ItemState } from '../vpt/item-state';
-import { Table } from '../vpt/table/table';
 import { IPlayable } from './iplayable';
-import { Player } from './player';
 
-export interface IMovable<STATE extends ItemState> extends IPlayable {
+export interface IMovable extends IPlayable {
 
 	getMover(): MoverObject;
-
-	getState(): STATE;
-
-	applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: STATE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: STATE): void;
 }
 
-export function isMovable(arg: any): arg is IMovable<ItemState> {
+export function isMovable(arg: any): arg is IMovable {
 	return arg.getMover !== undefined;
 }

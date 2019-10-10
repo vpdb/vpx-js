@@ -25,6 +25,7 @@ import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
+import { IRenderApi } from '../../render/irender-api';
 import { Ball } from '../ball/ball';
 import { Item } from '../item';
 import { Mesh } from '../mesh';
@@ -33,14 +34,16 @@ import { PrimitiveApi } from './primitive-api';
 import { PrimitiveData } from './primitive-data';
 import { PrimitiveHitGenerator } from './primitive-hit-generator';
 import { PrimitiveMeshGenerator } from './primitive-mesh-generator';
+import { PrimitiveState } from './primitive-state';
 
 /**
  * VPinball's primitive.
  *
  * @see https://github.com/vpinball/vpinball/blob/master/primitive.cpp
  */
-export class Primitive extends Item<PrimitiveData> implements IRenderable, IHittable, IScriptable<PrimitiveApi> {
+export class Primitive extends Item<PrimitiveData> implements IRenderable<PrimitiveState>, IHittable, IScriptable<PrimitiveApi> {
 
+	private readonly state: PrimitiveState;
 	private readonly meshGenerator: PrimitiveMeshGenerator;
 	private readonly hitGenerator: PrimitiveHitGenerator;
 	private mesh?: Mesh;
@@ -54,12 +57,9 @@ export class Primitive extends Item<PrimitiveData> implements IRenderable, IHitt
 
 	private constructor(data: PrimitiveData) {
 		super(data);
+		this.state = PrimitiveState.claim(data.getName(), data.szMaterial!, data.isVisible);
 		this.meshGenerator = new PrimitiveMeshGenerator(data);
 		this.hitGenerator = new PrimitiveHitGenerator(data);
-	}
-
-	public isVisible(): boolean {
-		return this.data.isVisible;
 	}
 
 	public isTransparent(table: Table): boolean {
@@ -107,6 +107,14 @@ export class Primitive extends Item<PrimitiveData> implements IRenderable, IHitt
 
 	public getApi(): PrimitiveApi {
 		return this.api!;
+	}
+
+	public getState(): PrimitiveState {
+		return this.state;
+	}
+
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: PrimitiveState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: PrimitiveState): void {
+		// TODO implement
 	}
 
 	public getHitShapes(): HitObject[] {

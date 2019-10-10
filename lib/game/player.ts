@@ -88,17 +88,9 @@ export class Player extends EventEmitter {
 	}
 
 	private setupStates() {
-
-		// save mover states
-		for (const movable of this.table.getMovables()) {
-			const state = movable.getState() as ItemState;
-			this.currentStates[state.getName()] = state;
-			this.previousStates[state.getName()] = state.clone();
-		}
-
-		// save animation states
-		for (const animatable of this.table.getAnimatables()) {
-			const state = animatable.getState() as ItemState;
+		// save states
+		for (const renderable of this.table.getRenderables()) {
+			const state = renderable.getState() as ItemState;
 			this.currentStates[state.getName()] = state;
 			this.previousStates[state.getName()] = state.clone();
 		}

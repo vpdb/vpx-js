@@ -46,7 +46,7 @@ import { SpinnerState } from './spinner-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/spinner.cpp
  */
-export class Spinner extends Item<SpinnerData> implements IRenderable, IPlayable, IMovable<SpinnerState>, IHittable, IScriptable<SpinnerApi> {
+export class Spinner extends Item<SpinnerData> implements IRenderable<SpinnerState>, IPlayable, IMovable, IHittable, IScriptable<SpinnerApi> {
 
 	private readonly meshGenerator: SpinnerMeshGenerator;
 	private readonly state: SpinnerState;
@@ -66,13 +66,9 @@ export class Spinner extends Item<SpinnerData> implements IRenderable, IPlayable
 
 	constructor(data: SpinnerData) {
 		super(data);
-		this.state = SpinnerState.claim(this.data.getName(), 0);
+		this.state = SpinnerState.claim(this.data.getName(), 0, data.isVisible);
 		this.meshGenerator = new SpinnerMeshGenerator(data);
 		this.hitGenerator = new SpinnerHitGenerator(data);
-	}
-
-	public isVisible(): boolean {
-		return this.data.isVisible;
 	}
 
 	public isCollidable(): boolean {

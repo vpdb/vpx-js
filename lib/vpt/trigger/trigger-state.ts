@@ -30,15 +30,16 @@ export class TriggerState extends ItemState {
 		super();
 	}
 
-	public static claim(name: string, heightOffset: number): TriggerState {
+	public static claim(name: string, heightOffset: number, isVisible: boolean): TriggerState {
 		const state = TriggerState.POOL.get();
 		state.name = name;
 		state.heightOffset = heightOffset;
+		state.isVisible = isVisible;
 		return state;
 	}
 
 	public clone(): TriggerState {
-		return TriggerState.claim(this.name, this.heightOffset);
+		return TriggerState.claim(this.name, this.heightOffset, this.isVisible);
 	}
 
 	public diff(state: TriggerState): TriggerState {

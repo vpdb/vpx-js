@@ -47,7 +47,7 @@ import { GateState } from './gate-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/gate.cpp
  */
-export class Gate extends Item<GateData> implements IRenderable, IPlayable, IMovable<GateState>, IHittable, IScriptable<GateApi> {
+export class Gate extends Item<GateData> implements IRenderable<GateState>, IPlayable, IMovable, IHittable, IScriptable<GateApi> {
 
 	private readonly meshGenerator: GateMeshGenerator;
 	private readonly hitGenerator: GateHitGenerator;
@@ -64,13 +64,9 @@ export class Gate extends Item<GateData> implements IRenderable, IPlayable, IMov
 
 	private constructor(data: GateData) {
 		super(data);
-		this.state = GateState.claim(this.getName(), 0);
+		this.state = GateState.claim(this.getName(), 0, data.isVisible);
 		this.meshGenerator = new GateMeshGenerator(data);
 		this.hitGenerator = new GateHitGenerator(data);
-	}
-
-	public isVisible(): boolean {
-		return this.data.isVisible;
 	}
 
 	public isCollidable(): boolean {

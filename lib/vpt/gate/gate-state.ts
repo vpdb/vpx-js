@@ -33,21 +33,25 @@ export class GateState extends ItemState {
 		super();
 	}
 
-	public static claim(name: string, angle: number): GateState {
+	public static claim(name: string, angle: number, isVisible: boolean): GateState {
 		const state = GateState.POOL.get();
 		state.name = name;
 		state.angle = angle;
+		state.isVisible = isVisible;
 		return state;
 	}
 
 	public clone(): GateState {
-		return GateState.claim(this.name, this.angle);
+		return GateState.claim(this.name, this.angle, this.isVisible);
 	}
 
 	public diff(state: GateState): GateState {
 		const diff = this.clone();
 		if (diff.angle === state.angle) {
 			delete diff.angle;
+		}
+		if (diff.isVisible === state.isVisible) {
+			delete diff.isVisible;
 		}
 		return diff;
 	}
@@ -61,6 +65,7 @@ export class GateState extends ItemState {
 		if (!state) {
 			return false;
 		}
-		return state.angle === this.angle;
+		return state.angle === this.angle
+			&& state.isVisible === this.isVisible;
 	}
 }

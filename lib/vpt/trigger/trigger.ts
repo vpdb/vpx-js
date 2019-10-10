@@ -43,7 +43,7 @@ import { TriggerState } from './trigger-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/trigger.cpp
  */
-export class Trigger extends Item<TriggerData> implements IRenderable, IHittable, IAnimatable<TriggerState>, IScriptable<TriggerApi> {
+export class Trigger extends Item<TriggerData> implements IRenderable<TriggerState>, IHittable, IAnimatable, IScriptable<TriggerApi> {
 
 	private readonly state: TriggerState;
 	private readonly meshGenerator: TriggerMeshGenerator;
@@ -60,17 +60,13 @@ export class Trigger extends Item<TriggerData> implements IRenderable, IHittable
 
 	private constructor(data: TriggerData) {
 		super(data);
-		this.state = TriggerState.claim(data.getName(), 0);
+		this.state = TriggerState.claim(data.getName(), 0, data.isVisible && data.shape !== TriggerShape.None);
 		this.meshGenerator = new TriggerMeshGenerator(data);
 		this.hitGenerator = new TriggerHitGenerator(data);
 	}
 
 	public getState(): TriggerState {
 		return this.state;
-	}
-
-	public isVisible(): boolean {
-		return this.data.isVisible && this.data.shape !== TriggerShape.None;
 	}
 
 	public isCollidable(): boolean {
@@ -95,7 +91,7 @@ export class Trigger extends Item<TriggerData> implements IRenderable, IHittable
 		} else {
 			this.hits = this.hitGenerator.generateHitObjects(this.animation, this.events, table);
 		}
-		this.api = new TriggerApi(this.data, this.events, player, table);
+		this.api = new TriggerApi(this.state, this.data, this.events, player, table);
 	}
 
 	public getApi(): TriggerApi {

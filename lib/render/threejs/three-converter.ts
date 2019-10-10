@@ -19,6 +19,7 @@
 
 import { IRenderable, RenderInfo } from '../../game/irenderable';
 import { BufferGeometry, Group, Mesh as ThreeMesh, Object3D, PointLight } from '../../refs.node';
+import { ItemState } from '../../vpt/item-state';
 import { Table, TableGenerateOptions } from '../../vpt/table/table';
 import { IRenderApi, MeshConvertOptions } from '../irender-api';
 import { ThreeMapGenerator } from './three-map-generator';
@@ -40,11 +41,12 @@ export class ThreeConverter {
 		this.meshConvertOpts = opts;
 	}
 
-	public async createObject(renderable: IRenderable, table: Table, renderApi: IRenderApi<Object3D, BufferGeometry, PointLight>, opts: TableGenerateOptions): Promise<Group> {
+	public async createObject(renderable: IRenderable<ItemState>, table: Table, renderApi: IRenderApi<Object3D, BufferGeometry, PointLight>, opts: TableGenerateOptions): Promise<Group> {
 		const objects = renderable.getMeshes(table, renderApi, opts);
 		const itemGroup = new Group();
 		itemGroup.matrixAutoUpdate = false;
 		itemGroup.name = renderable.getName();
+		itemGroup.visible = renderable.getState().isVisible;
 		let obj: RenderInfo<BufferGeometry>;
 		for (obj of Object.values<RenderInfo<BufferGeometry>>(objects)) {
 			const mesh = await this.createMesh(obj);

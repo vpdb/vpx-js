@@ -36,8 +36,6 @@ export class FlipperUpdater {
 
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: FlipperState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
 
-		console.debug('[Flipper] %s:', state.name, state);
-
 		// update local state
 		Object.assign(this.state, state);
 
@@ -51,6 +49,7 @@ export class FlipperUpdater {
 			this.applyTransformation(obj, renderApi, table);
 		}
 
+		// material
 		if (state.material || state.texture) {
 			renderApi.applyMaterial(
 				renderApi.findInGroup(obj, `flipper.base-${state.name}`)!,
@@ -61,6 +60,7 @@ export class FlipperUpdater {
 	}
 
 	private applyTransformation<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
+
 		const diffX = (this.state.center as any)._x - this.data.center.x;
 		const diffY = (this.state.center as any)._y - this.data.center.y;
 

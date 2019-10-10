@@ -44,7 +44,7 @@ import { HitTargetState } from './hit-target-state';
  *
  * @see https://github.com/vpinball/vpinball/blob/master/hittarget.cpp
  */
-export class HitTarget extends Item<HitTargetData> implements IRenderable, IHittable, IAnimatable<HitTargetState>, IScriptable<HitTargetApi> {
+export class HitTarget extends Item<HitTargetData> implements IRenderable<HitTargetState>, IHittable, IAnimatable, IScriptable<HitTargetApi> {
 
 	public static DROP_TARGET_LIMIT = f4(52.0);
 
@@ -62,13 +62,9 @@ export class HitTarget extends Item<HitTargetData> implements IRenderable, IHitt
 
 	private constructor(data: HitTargetData) {
 		super(data);
-		this.state = HitTargetState.claim(this.data.getName());
+		this.state = HitTargetState.claim(this.data.getName(),  0.0, 0.0, data.isVisible);
 		this.meshGenerator = new HitTargetMeshGenerator(data);
 		this.hitGenerator = new HitTargetHitGenerator(data, this.meshGenerator);
-	}
-
-	public isVisible(): boolean {
-		return this.data.isVisible;
 	}
 
 	public isCollidable(): boolean {

@@ -19,6 +19,7 @@
 
 import { IRenderable } from '../game/irenderable';
 import { Matrix3D } from '../math/matrix3d';
+import { ItemState } from '../vpt/item-state';
 import { LightData } from '../vpt/light/light-data';
 import { LightState } from '../vpt/light/light-state';
 import { Material } from '../vpt/material';
@@ -118,7 +119,7 @@ export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 	 * @param table The table object
 	 * @param opts Options, see {@link TableGenerateOptions}.
 	 */
-	createObjectFromRenderable(renderable: IRenderable, table: Table, opts: TableGenerateOptions): Promise<NODE>;
+	createObjectFromRenderable(renderable: IRenderable<ItemState>, table: Table, opts: TableGenerateOptions): Promise<NODE>;
 
 	/**
 	 * Creates a playfield light geometry.

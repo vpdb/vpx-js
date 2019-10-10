@@ -23,26 +23,29 @@ import { HitObject } from '../../physics/hit-object';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { RubberData } from './rubber-data';
+import { RubberState } from './rubber-state';
 
 export class RubberApi extends ItemApi<RubberData> {
 
+	private readonly state: RubberState;
 	private readonly hits: HitObject[];
 
-	constructor(hits: HitObject[], data: RubberData, events: EventProxy, player: Player, table: Table) {
+	constructor(state: RubberState, hits: HitObject[], data: RubberData, events: EventProxy, player: Player, table: Table) {
 		super(data, events, player, table);
+		this.state = state;
 		this.hits = hits;
 	}
 
-	get Height() { return this.data.height; }
-	set Height(v) { this.data.height = v; }
-	get HitHeight() { return this.data.hitHeight; }
-	set HitHeight(v) { this.data.hitHeight = v; }
+	get Height() { return this.state.height; }
+	set Height(v) { this.state.height = v; }
+	get HitHeight() { return this.state.hitHeight; }
+	set HitHeight(v) { this.state.hitHeight = v; }
 	get Thickness() { return this.data.thickness; }
 	set Thickness(v) { this.data.thickness = v; }
-	get Material() { return this.data.szMaterial; }
-	set Material(v) { this.data.szMaterial = v; }
-	get Image() { return this.data.szImage; }
-	set Image(v) { this._assertNonHdrImage(v); this.data.szImage = v; }
+	get Material() { return this.state.material; }
+	set Material(v) { this.state.material = v; }
+	get Image() { return this.state.texture; }
+	set Image(v) { this._assertNonHdrImage(v); this.state.texture = v; }
 	get HasHitEvent() { return this.data.hitEvent; }
 	set HasHitEvent(v) { this.data.hitEvent = v; }
 	get Elasticity() { return this.data.elasticity; }
@@ -61,12 +64,12 @@ export class RubberApi extends ItemApi<RubberData> {
 			}
 		}
 	}
-	get Visible() { return this.data.isVisible; }
+	get Visible() { return this.state.isVisible; }
 	set Visible(v) {
 		if (this.data.staticRendering) {
 			throw new Error('Rubber is static! Visible property not supported!');
 		}
-		this.data.isVisible = v;
+		this.state.isVisible = v;
 	}
 	get EnableStaticRendering() { return this.data.staticRendering; }
 	set EnableStaticRendering(v) { this.data.staticRendering = v; }
@@ -74,12 +77,12 @@ export class RubberApi extends ItemApi<RubberData> {
 	set EnableShowInEditor(v) { this.data.showInEditor = v; }
 	get ReflectionEnabled() { return this.data.isReflectionEnabled; }
 	set ReflectionEnabled(v) { this.data.isReflectionEnabled = v; }
-	get RotX() { return this.data.rotX; }
-	set RotX(v) { this.data.rotX = v; }
-	get RotY() { return this.data.rotY; }
-	set RotY(v) { this.data.rotY = v; }
-	get RotZ() { return this.data.rotZ; }
-	set RotZ(v) { this.data.rotZ = v; }
+	get RotX() { return this.state.rotX; }
+	set RotX(v) { this.state.rotX = v; }
+	get RotY() { return this.state.rotY; }
+	set RotY(v) { this.state.rotY = v; }
+	get RotZ() { return this.state.rotZ; }
+	set RotZ(v) { this.state.rotZ = v; }
 	get PhysicsMaterial() { return this.data.szPhysicsMaterial; }
 	set PhysicsMaterial(v) { this.data.szPhysicsMaterial = v; }
 	get OverwritePhysics() { return this.data.overwritePhysics; }

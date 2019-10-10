@@ -21,6 +21,7 @@ import { IRenderable } from '../../game/irenderable';
 import { Matrix3D } from '../../math/matrix3d';
 import { BufferGeometry, Group, Matrix4, MeshStandardMaterial, Object3D, PointLight, Vector2 } from '../../refs.node';
 import { Pool } from '../../util/object-pool';
+import { ItemState } from '../../vpt/item-state';
 import { LightData } from '../../vpt/light/light-data';
 import { LightState } from '../../vpt/light/light-state';
 import { Material } from '../../vpt/material';
@@ -182,7 +183,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		this.materialGenerator.applyEmissiveMap(threeMaterial, emissiveMap);
 	}
 
-	public async createObjectFromRenderable(renderable: IRenderable, table: Table, opts: TableGenerateOptions): Promise<Group> {
+	public async createObjectFromRenderable(renderable: IRenderable<ItemState>, table: Table, opts: TableGenerateOptions): Promise<Group> {
 		return this.converter.createObject(renderable, table, this, opts);
 	}
 
