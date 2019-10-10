@@ -27,21 +27,22 @@ import {
 	MeshStandardMaterial,
 	Object3D,
 	PointLight,
-	Texture as ThreeTexture,
 } from '../../refs.node';
-import { logger } from '../../util/logger';
 import { Table, TableGenerateOptions } from '../../vpt/table/table';
-import { Texture } from '../../vpt/texture';
-import { IRenderApi, ITextureLoader, MeshConvertOptions } from '../irender-api';
+import { IRenderApi, MeshConvertOptions } from '../irender-api';
+import { ThreeMapGenerator } from './three-map-generator';
 import { ThreeMeshGenerator } from './three-mesh-generator';
 import { ThreeRenderApi } from './three-render-api';
 
 export class ThreeConverter {
 
+	private readonly meshGenerator: ThreeMeshGenerator;
+	private readonly mapGenerator: ThreeMapGenerator;
 	private readonly meshConvertOpts: MeshConvertOptions;
-	private readonly meshGenerator = new ThreeMeshGenerator();
 
-	constructor(opts: MeshConvertOptions) {
+	constructor(meshGenerator: ThreeMeshGenerator, mapGenerator: ThreeMapGenerator, opts: MeshConvertOptions) {
+		this.meshGenerator = meshGenerator;
+		this.mapGenerator = mapGenerator;
 		this.meshConvertOpts = opts;
 	}
 
@@ -113,7 +114,7 @@ export class ThreeConverter {
 
 			// texture
 			if (obj.map) {
-				const map = await this.loadTexture(obj.map, this.meshConvertOpts.applyTextures, table);
+				const map = this.mapGenerator.getTexture(obj.map.getName());
 				if (map) {
 					map.name = `texture:${obj.map.getName()}`;
 					material.map = map;
@@ -123,7 +124,7 @@ export class ThreeConverter {
 
 			// normal map
 			if (obj.normalMap) {
-				const normalMap = await this.loadTexture(obj.normalMap, this.meshConvertOpts.applyTextures, table);
+				const normalMap = this.mapGenerator.getTexture(obj.normalMap.getName());
 				if (normalMap) {
 					normalMap.name = `normal-map:${obj.normalMap.getName()}`;
 					material.normalMap = normalMap;
@@ -134,7 +135,7 @@ export class ThreeConverter {
 
 			// environment map
 			if (obj.envMap) {
-				const envMap = await this.loadTexture(obj.envMap, this.meshConvertOpts.applyTextures, table);
+				const envMap = this.mapGenerator.getTexture(obj.envMap.getName());
 				if (envMap) {
 					envMap.name = `env-map:${obj.envMap.getName()}`;
 					material.envMap = envMap;
@@ -145,7 +146,7 @@ export class ThreeConverter {
 
 			// emissive map todo TEST!
 			if (obj.material && obj.material.emissiveMap) {
-				const emissiveMap = await this.loadTexture(obj.material.emissiveMap, this.meshConvertOpts.applyTextures, table);
+				const emissiveMap = this.mapGenerator.getTexture(obj.material.emissiveMap.getName());
 				if (emissiveMap) {
 					emissiveMap.name = `emissive-map:${obj.material.emissiveMap.getName()}`;
 					material.emissiveMap = emissiveMap;
@@ -154,15 +155,5 @@ export class ThreeConverter {
 			}
 		}
 		return material;
-	}
-
-	/* istanbul ignore next: Texture extraction is tested, but applying them to three.js is out of scope. */
-	private async loadTexture(texture: Texture, loader: ITextureLoader<ThreeTexture>, table: Table): Promise<ThreeTexture | null> {
-		try {
-			return await texture.loadTexture(loader, table);
-		} catch (err) {
-			logger().warn('[ThreeConverter.loadTexture] Error loading texture %s (%s/%s): %s', texture.getName(), texture.storageName, texture.getName(), err.message);
-			return null;
-		}
 	}
 }

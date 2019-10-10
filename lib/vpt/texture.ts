@@ -88,12 +88,7 @@ export class Texture extends BiffParser {
 	 * @param loader
 	 */
 	public async loadTexture<TEXTURE>(loader: ITextureLoader<TEXTURE>, table: Table): Promise<TEXTURE> {
-
-		let texture = table.getTextureFromCache<TEXTURE>(this.getName());
-		if (texture) {
-			return texture;
-		}
-
+		let texture: TEXTURE;
 		const fileName = (this.szPath || this.localFileName)!;
 		const ext = fileName.substr(fileName.lastIndexOf('.')).toLowerCase();
 		if (this.isRaw()) {
@@ -109,7 +104,6 @@ export class Texture extends BiffParser {
 			}
 			texture = await loader.loadTexture(this.getName(), ext, data);
 		}
-		table.addTextureToCache(this.getName(), texture);
 		return texture;
 	}
 
