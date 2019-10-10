@@ -48,7 +48,11 @@ export class ThreeMapGenerator {
 		logger().debug('[ThreeMapGenerator.loadTextures] Loaded in %sms.', Date.now() - now);
 	}
 
-	public getTexture(name: string): ThreeTexture | undefined {
-		return this.textureCache.get(name);
+	public getTexture(name: string): ThreeTexture {
+		return this.textureCache.get(name)!;
+	}
+
+	public hasTexture(name: string): boolean {
+		return this.textureCache.has(name);
 	}
 }

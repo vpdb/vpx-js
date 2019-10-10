@@ -31,6 +31,7 @@ import { IRenderApi, MeshConvertOptions } from '../irender-api';
 import { ThreeConverter } from './three-converter';
 import { ThreeLightMeshGenerator } from './three-light-mesh-generator';
 import { ThreeMapGenerator } from './three-map-generator';
+import { ThreeMaterialGenerator } from './three-material-generator';
 import { releaseGeometry, ThreeMeshGenerator } from './three-mesh-generator';
 import { ThreePlayfieldMeshGenerator } from './three-playfield-mesh-generator';
 
@@ -50,6 +51,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 	private readonly lightGenerator: ThreeLightMeshGenerator;
 	private readonly meshGenerator = new ThreeMeshGenerator();
 	private readonly mapGenerator: ThreeMapGenerator;
+	private readonly materialGenerator: ThreeMaterialGenerator;
 
 	constructor(opts?: MeshConvertOptions) {
 		this.meshConvertOpts = opts || {
@@ -57,7 +59,8 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 			optimizeTextures: false,
 		};
 		this.mapGenerator = new ThreeMapGenerator(this.meshConvertOpts.applyTextures);
-		this.converter = new ThreeConverter(this.meshGenerator, this.mapGenerator, this.meshConvertOpts);
+		this.materialGenerator = new ThreeMaterialGenerator(this.mapGenerator);
+		this.converter = new ThreeConverter(this.meshGenerator, this.mapGenerator, this.materialGenerator, this.meshConvertOpts);
 		this.playfieldGenerator = new ThreePlayfieldMeshGenerator();
 		this.lightGenerator = new ThreeLightMeshGenerator();
 	}
@@ -171,6 +174,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		if (!obj) {
 			return;
 		}
+
 	}
 
 	public async createObjectFromRenderable(renderable: IRenderable, table: Table, opts: TableGenerateOptions): Promise<Group> {

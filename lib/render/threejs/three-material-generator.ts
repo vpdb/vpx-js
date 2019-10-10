@@ -1,0 +1,111 @@
+/*
+ * VPDB - Virtual Pinball Database
+ * Copyright (C) 2019 freezy <freezy@vpdb.io>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+
+import { RenderInfo } from '../../game/irenderable';
+import { BufferGeometry, Color, DoubleSide, Material as ThreeMaterial, MeshStandardMaterial } from '../../refs.node';
+import { Material } from '../../vpt/material';
+import { MeshConvertOptions } from '../irender-api';
+import { ThreeMapGenerator } from './three-map-generator';
+
+export class ThreeMaterialGenerator {
+
+	private readonly cachedMaterials: { [key: string]: ThreeMaterial } = {};
+
+	private readonly mapGenerator: ThreeMapGenerator;
+
+	constructor(mapGenerator: ThreeMapGenerator) {
+		this.mapGenerator = mapGenerator;
+	}
+
+	public getInitialMaterial(obj: RenderInfo<BufferGeometry>, opts: MeshConvertOptions): ThreeMaterial {
+		const threeMaterial = this.getMaterial(
+			opts.applyMaterials && obj.material ? obj.material : undefined,
+			opts.applyTextures && obj.map ? obj.map.getName() : undefined,
+			opts.applyTextures && obj.normalMap ? obj.normalMap.getName() : undefined,
+			opts.applyTextures && obj.envMap ? obj.envMap.getName() : undefined,
+			opts.applyTextures && obj.material && obj.material.emissiveMap ? obj.material.emissiveMap.getName() : undefined,
+		);
+		threeMaterial.transparent = !!obj.isTransparent;
+		return threeMaterial;
+	}
+
+	public getMaterial(material?: Material, map?: string, normalMap?: string, envMap?: string, emissiveMap?: string): ThreeMaterial {
+
+		const key = this.getKey(material, map, normalMap, envMap, emissiveMap);
+		if (this.cachedMaterials[key]) {
+			return this.cachedMaterials[key];
+		}
+
+		const threeMaterial = new MeshStandardMaterial();
+		if (material) {
+			threeMaterial.name = `material:${material!.name}`;
+			threeMaterial.metalness = material.isMetal ? 1.0 : 0.0;
+			threeMaterial.roughness = Math.max(0, 1 - (material.roughness / 1.5));
+			threeMaterial.color = new Color(material.baseColor);
+			threeMaterial.opacity = material.isOpacityActive ? Math.min(1, Math.max(0, material.opacity)) : 1;
+			threeMaterial.side = DoubleSide;
+
+			if (material.emissiveIntensity > 0) {
+				threeMaterial.emissive = new Color(material.emissiveColor);
+				threeMaterial.emissiveIntensity = material.emissiveIntensity;
+			}
+		}
+
+		// texture
+		if (map && this.mapGenerator.hasTexture(map)) {
+			threeMaterial.map = this.mapGenerator.getTexture(map);
+			threeMaterial.map.name = map;
+			threeMaterial.needsUpdate = true;
+		}
+
+		// normal map
+		if (normalMap && this.mapGenerator.hasTexture(normalMap)) {
+			threeMaterial.normalMap = this.mapGenerator.getTexture(normalMap);
+			threeMaterial.normalMap.name = normalMap;
+			threeMaterial.normalMap.anisotropy = 16;
+			threeMaterial.needsUpdate = true;
+		}
+
+		// environment map
+		if (envMap && this.mapGenerator.hasTexture(envMap)) {
+			threeMaterial.envMap = this.mapGenerator.getTexture(envMap);
+			threeMaterial.envMap.name = envMap;
+			threeMaterial.envMapIntensity = 1;
+			threeMaterial.needsUpdate = true;
+		}
+
+		// emissive map todo TEST!
+		if (emissiveMap && this.mapGenerator.hasTexture(emissiveMap)) {
+			threeMaterial.emissiveMap = this.mapGenerator.getTexture(emissiveMap);
+			threeMaterial.emissiveMap.name = emissiveMap;
+			threeMaterial.needsUpdate = true;
+		}
+
+		this.cachedMaterials[key] = threeMaterial;
+		return threeMaterial;
+	}
+
+	private getKey(material?: Material, map?: string, normalMap?: string, envMap?: string, emissiveMap?: string): string {
+		return (material || 'none') + ':' +
+			(map || 'none') + ':' +
+			(normalMap || 'none') + ':' +
+			(envMap || 'none') + ':' +
+			(emissiveMap || 'none');
+	}
+}

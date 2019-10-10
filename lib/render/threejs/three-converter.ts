@@ -18,19 +18,11 @@
  */
 
 import { IRenderable, RenderInfo } from '../../game/irenderable';
-import {
-	BufferGeometry,
-	Color,
-	DoubleSide,
-	Group,
-	Mesh as ThreeMesh,
-	MeshStandardMaterial,
-	Object3D,
-	PointLight,
-} from '../../refs.node';
+import { BufferGeometry, Group, Mesh as ThreeMesh, Object3D, PointLight, } from '../../refs.node';
 import { Table, TableGenerateOptions } from '../../vpt/table/table';
 import { IRenderApi, MeshConvertOptions } from '../irender-api';
 import { ThreeMapGenerator } from './three-map-generator';
+import { ThreeMaterialGenerator } from './three-material-generator';
 import { ThreeMeshGenerator } from './three-mesh-generator';
 import { ThreeRenderApi } from './three-render-api';
 
@@ -38,11 +30,13 @@ export class ThreeConverter {
 
 	private readonly meshGenerator: ThreeMeshGenerator;
 	private readonly mapGenerator: ThreeMapGenerator;
+	private readonly materialGenerator: ThreeMaterialGenerator;
 	private readonly meshConvertOpts: MeshConvertOptions;
 
-	constructor(meshGenerator: ThreeMeshGenerator, mapGenerator: ThreeMapGenerator, opts: MeshConvertOptions) {
+	constructor(meshGenerator: ThreeMeshGenerator, mapGenerator: ThreeMapGenerator, materialGenerator: ThreeMaterialGenerator, opts: MeshConvertOptions) {
 		this.meshGenerator = meshGenerator;
 		this.mapGenerator = mapGenerator;
+		this.materialGenerator = materialGenerator;
 		this.meshConvertOpts = opts;
 	}
 
@@ -76,7 +70,7 @@ export class ThreeConverter {
 			throw new Error('Either `geometry` or `mesh` must be defined!');
 		}
 
-		const material = await this.getMaterial(obj, table);
+		const material = this.materialGenerator.getInitialMaterial(obj, this.meshConvertOpts);
 		const mesh = new ThreeMesh(geometry, material);
 		mesh.name = (obj.geometry || obj.mesh!).name;
 		mesh.matrixAutoUpdate = false;
@@ -85,75 +79,5 @@ export class ThreeConverter {
 			mesh.receiveShadow = true;
 		}
 		return mesh;
-	}
-
-	/* istanbul ignore next: These are subject to change and are currently untested. */
-	private async getMaterial(obj: RenderInfo<BufferGeometry>, table: Table): Promise<MeshStandardMaterial> {
-		const material = new MeshStandardMaterial();
-		const name = (obj.geometry || obj.mesh!).name;
-
-		const materialInfo = obj.material;
-		if (materialInfo && this.meshConvertOpts.applyMaterials) {
-			material.name = `material:${materialInfo!.name}`;
-			material.metalness = materialInfo.isMetal ? 1.0 : 0.0;
-			material.roughness = Math.max(0, 1 - (materialInfo.roughness / 1.5));
-			material.color = new Color(materialInfo.baseColor);
-			material.opacity = materialInfo.isOpacityActive ? Math.min(1, Math.max(0, materialInfo.opacity)) : 1;
-			material.side = DoubleSide;
-
-			if (materialInfo.emissiveIntensity > 0) {
-				material.emissive = new Color(materialInfo.emissiveColor);
-				material.emissiveIntensity = materialInfo.emissiveIntensity;
-			}
-		} else {
-			material.name = `material:${name}`;
-		}
-
-		if (this.meshConvertOpts.applyTextures) {
-			material.transparent = !!obj.isTransparent;
-
-			// texture
-			if (obj.map) {
-				const map = this.mapGenerator.getTexture(obj.map.getName());
-				if (map) {
-					map.name = `texture:${obj.map.getName()}`;
-					material.map = map;
-					material.needsUpdate = true;
-				}
-			}
-
-			// normal map
-			if (obj.normalMap) {
-				const normalMap = this.mapGenerator.getTexture(obj.normalMap.getName());
-				if (normalMap) {
-					normalMap.name = `normal-map:${obj.normalMap.getName()}`;
-					material.normalMap = normalMap;
-					material.normalMap.anisotropy = 16;
-					material.needsUpdate = true;
-				}
-			}
-
-			// environment map
-			if (obj.envMap) {
-				const envMap = this.mapGenerator.getTexture(obj.envMap.getName());
-				if (envMap) {
-					envMap.name = `env-map:${obj.envMap.getName()}`;
-					material.envMap = envMap;
-					material.envMapIntensity = 1;
-					material.needsUpdate = true;
-				}
-			}
-
-			// emissive map todo TEST!
-			if (obj.material && obj.material.emissiveMap) {
-				const emissiveMap = this.mapGenerator.getTexture(obj.material.emissiveMap.getName());
-				if (emissiveMap) {
-					emissiveMap.name = `emissive-map:${obj.material.emissiveMap.getName()}`;
-					material.emissiveMap = emissiveMap;
-					material.needsUpdate = true;
-				}
-			}
-		}
-		return material;
 	}
 }
