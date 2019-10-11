@@ -35,6 +35,7 @@ import { PrimitiveData } from './primitive-data';
 import { PrimitiveHitGenerator } from './primitive-hit-generator';
 import { PrimitiveMeshGenerator } from './primitive-mesh-generator';
 import { PrimitiveState } from './primitive-state';
+import { PrimitiveUpdater } from './primitive-updater';
 
 /**
  * VPinball's primitive.
@@ -46,6 +47,7 @@ export class Primitive extends Item<PrimitiveData> implements IRenderable<Primit
 	private readonly state: PrimitiveState;
 	private readonly meshGenerator: PrimitiveMeshGenerator;
 	private readonly hitGenerator: PrimitiveHitGenerator;
+	private readonly updater: PrimitiveUpdater;
 	private mesh?: Mesh;
 	private api?: PrimitiveApi;
 	private hits?: HitObject[];
@@ -57,7 +59,8 @@ export class Primitive extends Item<PrimitiveData> implements IRenderable<Primit
 
 	private constructor(data: PrimitiveData) {
 		super(data);
-		this.state = PrimitiveState.claim(data.getName(), data.szMaterial!, data.isVisible);
+		this.state = PrimitiveState.claim(data.getName(), data.szMaterial!, data.szImage, data.szNormalMap, data.isVisible);
+		this.updater = new PrimitiveUpdater(data, this.state);
 		this.meshGenerator = new PrimitiveMeshGenerator(data);
 		this.hitGenerator = new PrimitiveHitGenerator(data);
 	}
@@ -102,7 +105,7 @@ export class Primitive extends Item<PrimitiveData> implements IRenderable<Primit
 			obj.fireHitEvent(ball);
 		};
 		this.hits = this.hitGenerator.generateHitObjects(this.getMesh(table), this.events, table);
-		this.api = new PrimitiveApi(this, this.data, this.hits!, this.events, player, table);
+		this.api = new PrimitiveApi(this, this.state, this.data, this.hits!, this.events, player, table);
 	}
 
 	public getApi(): PrimitiveApi {
