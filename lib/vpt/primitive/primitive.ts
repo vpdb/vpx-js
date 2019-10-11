@@ -59,7 +59,7 @@ export class Primitive extends Item<PrimitiveData> implements IRenderable<Primit
 
 	private constructor(data: PrimitiveData) {
 		super(data);
-		this.state = PrimitiveState.claim(data.getName(), data.szMaterial!, data.szImage, data.szNormalMap, data.isVisible);
+		this.state = PrimitiveState.claimFrom(data.getName(), data.position.clone(true), data.size.clone(true), [...data.rotAndTra], data.szMaterial!, data.szImage, data.szNormalMap, data.isVisible);
 		this.updater = new PrimitiveUpdater(data, this.state);
 		this.meshGenerator = new PrimitiveMeshGenerator(data);
 		this.hitGenerator = new PrimitiveHitGenerator(data);
