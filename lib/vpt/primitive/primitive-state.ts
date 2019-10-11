@@ -25,15 +25,19 @@ export class PrimitiveState extends ItemState {
 	public static readonly POOL = new Pool(PrimitiveState);
 
 	public material?: string;
+	public map?: string;
+	public normalMap?: string;
 
 	public constructor() {
 		super();
 	}
 
-	public static claim(name: string, material: string | undefined, isVisible: boolean): PrimitiveState {
+	public static claim(name: string, material: string | undefined, map: string | undefined, normalMap: string | undefined, isVisible: boolean): PrimitiveState {
 		const state = PrimitiveState.POOL.get();
 		state.name = name;
 		state.material = material;
+		state.map = map;
+		state.normalMap = map;
 		state.isVisible = isVisible;
 		return state;
 	}
@@ -42,6 +46,8 @@ export class PrimitiveState extends ItemState {
 		return PrimitiveState.claim(
 			this.name,
 			this.material,
+			this.map,
+			this.normalMap,
 			this.isVisible,
 		);
 	}
@@ -50,6 +56,12 @@ export class PrimitiveState extends ItemState {
 		const diff = this.clone();
 		if (diff.material === state.material) {
 			delete diff.material;
+		}
+		if (diff.map === state.map) {
+			delete diff.map;
+		}
+		if (diff.normalMap === state.normalMap) {
+			delete diff.normalMap;
 		}
 		if (diff.isVisible === state.isVisible) {
 			delete diff.isVisible;
@@ -67,6 +79,8 @@ export class PrimitiveState extends ItemState {
 			return false;
 		}
 		return state.material === this.material
+			&& state.map === this.map
+			&& state.normalMap === this.normalMap
 			&& state.isVisible === this.isVisible;
 	}
 }

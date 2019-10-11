@@ -25,24 +25,27 @@ import { Table } from '../table/table';
 import { TimerHit } from '../timer/timer-hit';
 import { Primitive } from './primitive';
 import { PrimitiveData } from './primitive-data';
+import { PrimitiveState } from './primitive-state';
 
 export class PrimitiveApi extends ItemApi<PrimitiveData> {
 
 	private readonly primitive: Primitive;
+	private readonly state: PrimitiveState;
 	private readonly hits: HitObject[];
 
-	constructor(primitive: Primitive, data: PrimitiveData, hits: HitObject[], events: EventProxy, player: Player, table: Table) {
+	constructor(primitive: Primitive, state: PrimitiveState, data: PrimitiveData, hits: HitObject[], events: EventProxy, player: Player, table: Table) {
 		super(data, events, player, table);
 		this.primitive = primitive;
+		this.state = state;
 		this.hits = hits;
 	}
 
-	get Image() { return this.data.szImage; }
-	set Image(v) { this._assertNonHdrImage(v); this.data.szImage = v; }
-	get NormalMap() { return this.data.szNormalMap; }
-	set NormalMap(v) { this._assertNonHdrImage(v); this.data.szNormalMap = v; }
-	get Material() { return this.data.szMaterial; }
-	set Material(v) { this.data.szMaterial = v; }
+	get Image() { return this.state.map; }
+	set Image(v) { this._assertNonHdrImage(v); this.state.map = v; }
+	get NormalMap() { return this.state.normalMap; }
+	set NormalMap(v) { this._assertNonHdrImage(v); this.state.normalMap = v; }
+	get Material() { return this.state.material; }
+	set Material(v) { this.state.material = v; }
 	get MeshFileName() { return this.data.meshFileName; }
 	set MeshFileName(v) { this.data.meshFileName = v; }
 	get Sides() { return this.data.sides; }
