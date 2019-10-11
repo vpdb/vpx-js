@@ -34,5 +34,17 @@ export class PrimitiveUpdater extends ItemUpdater<PrimitiveState> {
 
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: PrimitiveState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
 
+		Object.assign(this.state, state);
+
+		this.applyVisibility(obj, state, renderApi);
+		this.applyMaterial(obj, state.name, state.material, state.map, renderApi, table); // TODO normal map
+
+		if (state.position || state.size || state.rotation || state.translation || state.objectRotation) {
+			this.applyTransformation(obj, renderApi, table);
+		}
+	}
+
+	private applyTransformation<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
+
 	}
 }
