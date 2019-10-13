@@ -71,11 +71,11 @@ export class PrimitiveState extends ItemState {
 	public clone(): PrimitiveState {
 		return PrimitiveState.claim(
 			this.name,
-			this.position,
-			this.size,
-			this.rotation,
-			this.translation,
-			this.objectRotation,
+			this.position.clone(true),
+			this.size.clone(true),
+			this.rotation.clone(true),
+			this.translation.clone(true),
+			this.objectRotation.clone(true),
 			this.material,
 			this.map,
 			this.normalMap,
