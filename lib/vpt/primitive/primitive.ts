@@ -117,7 +117,7 @@ export class Primitive extends Item<PrimitiveData> implements IRenderable<Primit
 	}
 
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: PrimitiveState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: PrimitiveState): void {
-		// TODO implement
+		this.updater!.applyState(obj, state, renderApi, table);
 	}
 
 	public getHitShapes(): HitObject[] {

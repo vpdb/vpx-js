@@ -55,8 +55,8 @@ export class FlipperUpdater extends ItemUpdater<FlipperState> {
 
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y) * table.getScaleZ();
 
-		const matToOrigin = Matrix3D.claim().setTranslation(-this.data.center.x, -this.data.center.y, -height);
-		const matFromOrigin = Matrix3D.claim().setTranslation(this.data.center.x, this.data.center.y, height);
+		const matToOrigin = Matrix3D.claim().setTranslation(-this.data.center.x, -this.data.center.y, height);
+		const matFromOrigin = Matrix3D.claim().setTranslation(this.data.center.x, this.data.center.y, -height);
 		const matRotate = Matrix3D.claim().rotateZMatrix(this.state.angle - degToRad(this.data.startAngle));
 		const matTrans = Matrix3D.claim().setTranslation(diffX, diffY, 0);
 		const matrix = matToOrigin.multiply(matRotate).multiply(matFromOrigin).multiply(matTrans);
