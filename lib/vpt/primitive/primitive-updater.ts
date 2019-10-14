@@ -50,55 +50,53 @@ export class PrimitiveUpdater extends ItemUpdater<PrimitiveState> {
 	private applyTransformation<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
 
 		const matToOrigin = Matrix3D.claim().setTranslation(-this.data.position.x, -this.data.position.y, this.data.position.z);
-		const matRotateX = Matrix3D.claim().rotateZMatrix(degToRad(this.state.rotation.x - this.data.rotAndTra[0]));
-		const matRotateY = Matrix3D.claim().rotateZMatrix(degToRad(this.state.rotation.y - this.data.rotAndTra[1]));
-		const matRotateZ = Matrix3D.claim().rotateZMatrix(degToRad(this.state.rotation.z - this.data.rotAndTra[2]));
 		const matFromOrigin = Matrix3D.claim().setTranslation(this.data.position.x, this.data.position.y, -this.data.position.z);
 
 		// scale matrix
-		/*const scaleMatrix = new Matrix3D();
-		scaleMatrix.setScaling(this.data.size.x, this.data.size.y, this.data.size.z);
+		const scaleMatrix = Matrix3D.claim().setScaling(
+			((this.state.size as any)._x / this.data.size.x),
+			((this.state.size as any)._y / this.data.size.y),
+			((this.state.size as any)._z / this.data.size.z),
+		);
+		const scaleMatrixTable = Matrix3D.claim().setScaling(1.0, 1.0, table.getScaleZ());
 
 		// translation matrix
-		const transMatrix = new Matrix3D();
-		transMatrix.setTranslation(this.data.position.x, this.data.position.y, this.data.position.z);
+		const transMatrix = Matrix3D.claim().setTranslation(
+			((this.state.position as any)._x - this.data.position.x),
+			((this.state.position as any)._y - this.data.position.y),
+			((this.state.position as any)._z - this.data.position.z),
+		);
 
 		// translation + rotation matrix
-		const rotTransMatrix = new Matrix3D();
-		rotTransMatrix.setTranslation(this.data.rotAndTra[3], this.data.rotAndTra[4], this.data.rotAndTra[5]);
+		const rotTransMatrix = Matrix3D.claim().setTranslation(
+			((this.state.translation as any)._x - this.data.rotAndTra[3]),
+			((this.state.translation as any)._y - this.data.rotAndTra[4]),
+			((this.state.translation as any)._z - this.data.rotAndTra[5]),
+		);
 
-		const tempMatrix = new Matrix3D();
-		tempMatrix.rotateZMatrix(degToRad(this.data.rotAndTra[2]));
+		const tempMatrix = Matrix3D.claim();
+		tempMatrix.rotateZMatrix(degToRad((this.state.rotation as any)._z - this.data.rotAndTra[2]));
 		rotTransMatrix.multiply(tempMatrix);
-		tempMatrix.rotateYMatrix(degToRad(this.data.rotAndTra[1]));
+		tempMatrix.rotateYMatrix(degToRad((this.state.rotation as any)._y - this.data.rotAndTra[1]));
 		rotTransMatrix.multiply(tempMatrix);
-		tempMatrix.rotateXMatrix(degToRad(this.data.rotAndTra[0]));
-		rotTransMatrix.multiply(tempMatrix);
-
-		tempMatrix.rotateZMatrix(degToRad(this.data.rotAndTra[8]));
-		rotTransMatrix.multiply(tempMatrix);
-		tempMatrix.rotateYMatrix(degToRad(this.data.rotAndTra[7]));
-		rotTransMatrix.multiply(tempMatrix);
-		tempMatrix.rotateXMatrix(degToRad(this.data.rotAndTra[6]));
+		tempMatrix.rotateXMatrix(degToRad((this.state.rotation as any)._x - this.data.rotAndTra[0]));
 		rotTransMatrix.multiply(tempMatrix);
 
-		const fullMatrix = scaleMatrix.clone();
-		fullMatrix.multiply(rotTransMatrix);
-		fullMatrix.multiply(transMatrix);        // fullMatrix = Smatrix * RTmatrix * Tmatrix
-		scaleMatrix.setScaling(1.0, 1.0, table.getScaleZ());
-		fullMatrix.multiply(scaleMatrix);*/
+		tempMatrix.rotateZMatrix(degToRad((this.state.objectRotation as any)._z - this.data.rotAndTra[8]));
+		rotTransMatrix.multiply(tempMatrix);
+		tempMatrix.rotateYMatrix(degToRad((this.state.objectRotation as any)._y - this.data.rotAndTra[7]));
+		rotTransMatrix.multiply(tempMatrix);
+		tempMatrix.rotateXMatrix(degToRad((this.state.objectRotation as any)._x - this.data.rotAndTra[6]));
+		rotTransMatrix.multiply(tempMatrix);
 
 		const matrix = matToOrigin
-			.multiply(matRotateZ)
-			.multiply(matRotateY)
-			.multiply(matRotateX)
+			.multiply(scaleMatrix)
+			.multiply(rotTransMatrix)
+			.multiply(transMatrix)
+			.multiply(scaleMatrixTable)
 			.multiply(matFromOrigin);
 
 		renderApi.applyMatrixToNode(matrix, obj);
-		Matrix3D.release(matToOrigin, matFromOrigin, matRotateX, matRotateY, matRotateZ); // matrix and matToOrigin are the same instance
-
-
-
-
+		Matrix3D.release(matToOrigin, matFromOrigin, scaleMatrix, transMatrix, rotTransMatrix, tempMatrix); // matrix and matToOrigin are the same instance
 	}
 }
