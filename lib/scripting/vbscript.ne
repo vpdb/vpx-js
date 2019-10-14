@@ -31,95 +31,101 @@ const caseInsensitiveKeywords = (defs: object) => {
 };
 
 const lexer = moo.compile({
-    comment_rem: /[Rr][Ee][Mm][ \t\v\f]+[\x01-\x09|\x0b-\x0c|\x0e-\x39|\x3b-\xD7FF|\xE000-\xFFEF]*|[Rr][Ee][Mm]/,
-    comment_apostophe: /[ \t\v\f]*'[\x01-\x09|\x0b-\x0c|\x0e-\x39|\x3b-\xD7FF|\xE000-\xFFEF]*/,
-    identifier_dot: /[a-zA-Z][a-zA-Z0-9_]*\.[ \t\v\f]*/,
-    identifier: {
-        match: /[a-zA-Z][a-zA-Z0-9_]*/,
-        type: caseInsensitiveKeywords({
-            'kw_byval': 'byval',
-            'kw_byref': 'byref',
-            'kw_set': 'set',
-            'kw_dim': 'dim',
-            'kw_redim': 'redim',
-            'kw_const': 'const',
-            'kw_select': 'select',
-            'kw_true': 'true',
-            'kw_false': 'false',
-            'kw_option': 'option',
-            'kw_explicit': 'explicit',
-            'kw_eqv': 'eqv',
-            'kw_xor': 'xor',
-            'kw_or': 'or',
-            'kw_and': 'and',
-            'kw_not': 'not',
-            'kw_mod': 'mod',
-            'kw_is': 'is',
-            'kw_if': 'if',
-            'kw_then': 'then',
-            'kw_elseif': 'elseif',
-            'kw_else': 'else',
-            'kw_exit': 'exit',
-            'kw_for': 'for',
-            'kw_to': 'to',
-            'kw_step': 'step',
-            'kw_each': 'each',
-            'kw_new': 'new',
-            'kw_in': 'in',    
-            'kw_next': 'next',
-            'kw_sub': 'sub',
-            'kw_end': 'end',
-            'kw_function': 'function',
-            'kw_public': 'public',
-            'kw_default': 'default',
-            'kw_private': 'private',
-            'kw_preserve': 'preserve',
-            'kw_nothing': 'nothing',
-            'kw_erase': 'erase',
-            'kw_error': 'error',
-            'kw_null': 'null',
-            'kw_empty': 'empty',
-            'kw_while': 'while',
-            'kw_wend': 'wend',
-            'kw_until': 'until',
-            'kw_loop': 'loop',
-            'kw_do': 'do',
-            'kw_with': 'with',
-            'kw_case': 'case',
-            'kw_on': 'on',
-            'kw_resume': 'resume',
-            'kw_goto': 'goto',
-        }),
-    },
-    float_literal: /[0-9]+\.[0-9]*|\.[0-9]+/,
-    int_literal: /[0-9]+/,
-    hex_literal: /&[Hh][0-9A-Fa-f]+&|&[Hh][0-9A-Fa-f]+/,
-    oct_literal: /&[0-7]+&|&[0-7]+/,
-    date_literal: /#[\x20-\x22|\x24-\x7e|\xA0]+#/,
-    dot_identifier_dot: /\.[a-zA-Z][a-zA-Z0-9_]*\./,
-    dot_identifier: /\.[a-zA-Z][a-zA-Z0-9_]*/,
-    comma: /,/,
-    ampersand: /&/,
-    apostophe: /'/,
-    compare_equals: /==/,
-    compare_gte: />=|=>/,
-    compare_lte: /<=|=</,
-    compare_gtlt: /<>/,
-    compare_gt: />/,
-    compare_lt: /</,
-    paren_left: /\(/,
-    paren_right_dot: /\)\./,
-    paren_right: /\)/,
-    dot: /\./,
-    equals: /=/,
-    exponent: /\^/,
-    unary: /[+-]/,
-    mul_div: /[*\/]/,
-    int_div: /\\/,
-    string_literal: /\"(?:[\x01-\x21|\x23-\xD7FF|\xE000-\xFFEF]|\"\")*\"/,
-    ws: /[ \t\v\f]/,
-    ws_cont: /_[ \t\v\f]*\x0d\x0a[ \t\v\f]*|_[ \t\v\f]*[\x0d\x0a][ \t\v\f]*|_[ \t\v\f]*/,
-    nl: {match: /\x0d\x0a|[\x0d\x0a:]/, lineBreaks: true},
+        comment_apostophe: /[ \t\v\f]*'[\x01-\x09|\x0b-\x0c|\x0e-\x39|\x3b-\xD7FF|\xE000-\xFFEF]*[\x0d\x0a][ \t\v\f\x0d\x0a]*/,
+        comment_rem: /[Rr][Ee][Mm][^A-zA-z0-9][\x01-\x09|\x0b-\x0c|\x0e-\x39|\x3b-\xD7FF|\xE000-\xFFEF]*[\x0d\x0a][ \t\v\f\x0d\x0a]*|[Rr][Ee][Mm][\x0d\x0a][ \t\v\f\x0d\x0a]*/,
+        identifier_dot: /[a-zA-Z][a-zA-Z0-9_]*\.[ \t\v\f]*/,
+        identifier: {
+            match: /[a-zA-Z][a-zA-Z0-9_]*/,
+            type: caseInsensitiveKeywords({
+                'kw_and': 'and',
+                'kw_byval': 'byval',
+                'kw_byref': 'byref',
+                'kw_case': 'case',
+                'kw_call': 'call',
+                'kw_class': 'class',
+                'kw_const': 'const',
+                'kw_default': 'default',
+                'kw_dim': 'dim',
+                'kw_do': 'do',
+                'kw_each': 'each',
+                'kw_else': 'else',
+                'kw_elseif': 'elseif',
+                'kw_empty': 'empty',
+                'kw_end': 'end',
+                'kw_erase': 'erase',
+                'kw_error': 'error',
+                'kw_eqv': 'eqv',   
+                'kw_exit': 'exit',
+                'kw_explicit': 'explicit',
+                'kw_false': 'false',
+                'kw_for': 'for',
+                'kw_function': 'function',
+                'kw_get': 'get',
+                'kw_goto': 'goto',
+                'kw_if': 'if',
+                'kw_in': 'in',   
+                'kw_is': 'is',
+                'kw_let': 'let',
+                'kw_loop': 'loop',
+                'kw_mod': 'mod',
+                'kw_new': 'new',
+                'kw_next': 'next',
+                'kw_not': 'not',
+                'kw_nothing': 'nothing',
+                'kw_null': 'null',
+                'kw_on': 'on',
+                'kw_option': 'option',
+                'kw_or': 'or',
+                'kw_preserve': 'preserve',
+                'kw_private': 'private',
+                'kw_property': 'property',
+                'kw_public': 'public',
+                'kw_redim': 'redim',
+                'kw_resume': 'resume',
+                'kw_select': 'select',
+                'kw_set': 'set',
+                'kw_step': 'step',
+                'kw_sub': 'sub',
+                'kw_then': 'then',
+                'kw_to': 'to',
+                'kw_true': 'true',
+                'kw_until': 'until',
+                'kw_while': 'while',
+                'kw_wend': 'wend',
+                'kw_with': 'with',
+                'kw_xor': 'xor',
+            }),
+        },
+        float_literal: /[0-9]+\.[0-9]*|\.[0-9]+/,
+        int_literal: /[0-9]+/,
+        hex_literal: /&[Hh][0-9A-Fa-f]+&|&[Hh][0-9A-Fa-f]+/,
+        oct_literal: /&[0-7]+&|&[0-7]+/,
+        date_literal: /#[\x20-\x22|\x24-\x7e|\xA0]+#/,
+        dot_identifier_dot: /\.[a-zA-Z][a-zA-Z0-9_]*\./,
+        dot_identifier: /\.[a-zA-Z][a-zA-Z0-9_]*/,
+        comma: /,/,
+        ampersand: /&/,
+        apostophe: /'/,
+        compare_equals: /==/,
+        compare_gte: />=|=>/,
+        compare_lte: /<=|=</,
+        compare_gtlt: /<>/,
+        compare_gt: />/,
+        compare_lt: /</,
+        paren_left: /\(/,
+        paren_right_dot: /\)\./,
+        paren_right: /\)/,
+        dot: /\./,
+        equals: /=/,
+        exponent: /\^/,
+        unary: /[+-]/,
+        mul_div: /[*\/]/,
+        int_div: /\\/,
+        string_literal: /\"(?:[\x01-\x21|\x23-\xD7FF|\xE000-\xFFEF]|\"\")*\"/,
+        ws: /[ \t\v\f]+/,
+        ws_cont: /_[ \t\v\f]*\x0d\x0a[ \t\v\f]*|_[ \t\v\f]*[\x0d\x0a][ \t\v\f]*|_[ \t\v\f]*/,
+        nl: {match: /[ \t\v\f]*\x0d\x0a[ \t\v\f]*|[ \t\v\f]*[\x0d\x0a:][ \t\v\f]*/, lineBreaks: true}
+
 });
 
 %}
@@ -222,16 +228,16 @@ BlockStmt            -> VarDecl                                                 
                       | LoopStmt                                                                                                          {% id %}
                       | ForStmt                                                                                                           {% id %}
                       | InlineStmt NL                                                                                                     {% ppHelpers.blockStmt1 %}
-                      | NL                                                                                                                {% ppHelpers.blockStmt2 %}
                       | RemStmt                                                                                                           {% id %}
+                      | NL                                                                                                                {% ppHelpers.blockStmt2 %}
 
 InlineStmt           -> AssignStmt                                                                                                        {% id %}
                       | SubCallStmt                                                                                                       {% id %}
                       | ErrorStmt                                                                                                         {% id %}
                       | ExitStmt                                                                                                          {% id %}
 
-RemStmt              -> %comment_rem NL                                                                                                   {% ppRem.stmt %}
-
+RemStmt              -> %comment_rem                                                                                                      {% ppRem.stmt %}
+ 
 OptionExplicit       -> %kw_option __ %kw_explicit NL                                                                                     {% ppOption.stmt %}
 
 ErrorStmt            -> %kw_on __ %kw_error __ %kw_resume __ %kw_next                                                                     {% ppError.stmt1 %}
@@ -498,15 +504,16 @@ Nothing              -> %kw_nothing                                             
 # Terminals
 #===============================
 
-NL                   -> %comment_apostophe %nl _                                                                                          {% ppHelpers.nl1 %}
-                      | _ %nl _                                                                                                           {% ppHelpers.nl2 %}
+NL                   -> %comment_apostophe                                                                                                {% ppHelpers.nl %}
+                      | %nl                                                                                                               {% data => null %}
 
 ID                   -> %identifier                                                                                                       {% ppHelpers.id %}
 IDDot                -> %identifier_dot                                                                                                   {% ppHelpers.id %}
 DotID                -> %dot_identifier                                                                                                   {% ppHelpers.id %}
 DotIDDot             -> %dot_identifier_dot                                                                                               {% ppHelpers.id %}
 
-_                    -> %ws:*                                                                                                             {% data => null %}
+_                    -> %ws                                                                                                               {% data => null %}
                       | %ws_cont                                                                                                          {% data => null %}
+                      | null                                                                                                              {% data => null %}
 
-__                   -> %ws:+                                                                                                             {% data => null %}
+__                   -> %ws                                                                                                               {% data => null %}

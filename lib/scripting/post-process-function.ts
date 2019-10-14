@@ -40,9 +40,9 @@ export function functionDecl1(
 ): FunctionDeclaration {
 	const name = result[3];
 	const params = result[5] || [];
-	const leadingComments = result[6];
+	const leadingComments = result[6] || [];
 	const blockStmt = result[7];
-	const trailingComments = result[11];
+	const trailingComments = result[11] || [];
 	traverse(blockStmt, {
 		enter: node => {
 			if (node.type === 'ReturnStatement') {
@@ -79,7 +79,7 @@ export function functionDecl2(
 	const name = result[3];
 	const params = result[5] || [];
 	const stmt = result[7];
-	const trailingComments = result[12];
+	const trailingComments = result[12] || [];
 	const blockStmt: BlockStatement = estree.blockStatement([
 		estree.variableDeclaration('let', [estree.variableDeclarator(name, estree.literal(null))], []),
 		stmt,

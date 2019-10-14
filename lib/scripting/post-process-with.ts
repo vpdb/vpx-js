@@ -27,8 +27,8 @@ export function stmt(
 ): BlockStatement {
 	const identifier = result[2];
 	const body = result[4];
-	const leadingComments = result[3];
-	const trailingComments = result[8];
+	const leadingComments = result[3] || [];
+	const trailingComments = result[8] || [];
 	traverse(body, {
 		enter: node => {
 			if (node.type === 'ExpressionStatement') {

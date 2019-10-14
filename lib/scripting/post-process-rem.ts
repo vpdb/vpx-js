@@ -22,6 +22,6 @@ import { Token } from 'moo';
 import * as estree from './estree';
 
 export function stmt(result: [Token, null]): EmptyStatement {
-	const text = result[0].text.substr(3);
+	const text = result[0].text.substr(3).trimRight();
 	return estree.emptyStatement([estree.comment('Line', text)]);
 }

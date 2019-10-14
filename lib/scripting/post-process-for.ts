@@ -46,9 +46,9 @@ export function stmt1(
 	const init = result[6];
 	const test = result[10];
 	const step = result[12];
-	const leadingComments = result[13];
+	const leadingComments = result[13] || [];
 	const body = result[14];
-	const trailingComments = result[16];
+	const trailingComments = result[16] || [];
 	return estree.forStatement(
 		estree.assignmentExpression(identifier, '=', init),
 		step
@@ -84,9 +84,9 @@ export function stmt2(
 ): ForOfStatement {
 	const identifier = result[4];
 	const expression = result[8];
-	const leadingComments = result[9];
+	const leadingComments = result[9] || [];
 	const body = result[10];
-	const trailingComments = result[12];
+	const trailingComments = result[12] || [];
 	return estree.forOfStatement(identifier, expression, body, leadingComments, trailingComments);
 }
 

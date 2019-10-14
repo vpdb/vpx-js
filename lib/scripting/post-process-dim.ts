@@ -27,7 +27,7 @@ export function varDecl(
 	const firstVar = result[2];
 	const otherVars = result[4] || [];
 	const declarators = [firstVar, ...otherVars];
-	const comments = result[5];
+	const comments = result[5] || [];
 	return estree.variableDeclaration('let', declarators, comments);
 }
 

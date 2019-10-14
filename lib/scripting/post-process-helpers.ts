@@ -17,18 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Comment, Expression, Identifier, MemberExpression, Program, Statement, Literal, CallExpression } from 'estree';
+import { Comment, Expression, Identifier, Literal, MemberExpression, Program, Statement } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
-import { exp } from './post-process-expr';
 
-export function nl1(result: [Token, Token, null]): Comment[] {
+export function nl(result: [Token]): Comment[] {
 	const comment = result[0];
-	return comment ? [estree.comment('Line', comment.text.substr(comment.text.indexOf("'") + 1))] : [];
-}
-
-export function nl2(result: [null, Token, null]): Comment[] {
-	return [];
+	return comment ? [estree.comment('Line', comment.text.substr(comment.text.indexOf("'") + 1).trimRight())] : [];
 }
 
 export function program(result: [null, Statement[]]): Program {
@@ -40,7 +35,7 @@ export function program(result: [null, Statement[]]): Program {
 export function blockStmt1(result: [Statement, Comment[]]): Statement {
 	const stmt = result[0];
 	const stmtComments = result[0].trailingComments || [];
-	const comments = result[1];
+	const comments = result[1] || [];
 	if (stmtComments.length === 0) {
 		stmt.trailingComments = comments;
 	}
@@ -48,7 +43,7 @@ export function blockStmt1(result: [Statement, Comment[]]): Statement {
 }
 
 export function blockStmt2(result: [Comment[]]): Statement | null {
-	const comments = result[0];
+	const comments = result[0] || [];
 	return comments.length > 0 ? estree.emptyStatement(comments) : null;
 }
 
