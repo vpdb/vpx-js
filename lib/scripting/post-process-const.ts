@@ -23,7 +23,7 @@ import * as estree from './estree';
 
 export function constDecl(result: [Token, Token, null, VariableDeclarator[], Comment[]]): VariableDeclaration {
 	const declarators = result[3];
-	const comments = result[4];
+	const comments = result[4] || [];
 	return estree.variableDeclaration('const', declarators, comments);
 }
 

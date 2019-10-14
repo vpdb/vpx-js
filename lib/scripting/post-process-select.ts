@@ -26,8 +26,8 @@ export function selectStmt(
 ): SwitchStatement {
 	const discriminant = result[4];
 	const caseStatements = result[6];
-	const leadingComments = result[5];
-	const trailingComments = result[10];
+	const leadingComments = result[5] || [];
+	const trailingComments = result[10] || [];
 	return estree.switchStatement(discriminant, caseStatements, leadingComments, trailingComments);
 }
 

@@ -27,8 +27,8 @@ export function stmt1(
 	const type = result[2].type;
 	const test = result[4];
 	const body = result[6];
-	const leadingComments = result[5];
-	const trailingComments = result[8];
+	const leadingComments = result[5] || [];
+	const trailingComments = result[8] || [];
 	if (type === 'kw_while') {
 		return estree.whileStatement(test, body, leadingComments, trailingComments);
 	} else {
@@ -45,8 +45,8 @@ export function stmt2(result: [Token, Comment[], BlockStatement, Token, null, To
 	const body = result[2];
 	const type = result[5].type;
 	const test = result[7];
-	const leadingComments = result[1];
-	const trailingComments = result[8];
+	const leadingComments = result[1] || [];
+	const trailingComments = result[8] || [];
 	if (type === 'kw_while') {
 		return estree.doWhileStatement(body, test, leadingComments, trailingComments);
 	} else {
@@ -61,15 +61,15 @@ export function stmt2(result: [Token, Comment[], BlockStatement, Token, null, To
 
 export function stmt3(result: [Token, Comment[], BlockStatement, Token, Comment[]]): DoWhileStatement {
 	const body = result[2];
-	const leadingComments = result[1];
-	const trailingComments = result[4];
+	const leadingComments = result[1] || [];
+	const trailingComments = result[4] || [];
 	return estree.doWhileStatement(body, estree.literal(true), leadingComments, trailingComments);
 }
 
 export function stmt4(result: [Token, null, Expression, Comment[], BlockStatement, Token, Comment[]]): WhileStatement {
 	const test = result[2];
 	const body = result[4];
-	const leadingComments = result[3];
-	const trailingComments = result[6];
+	const leadingComments = result[3] || [];
+	const trailingComments = result[6] || [];
 	return estree.whileStatement(test, body, leadingComments, trailingComments);
 }

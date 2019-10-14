@@ -24,6 +24,6 @@ import * as estree from './estree';
 export function stmt(result: [Token, null, Token, Comment[]]): EmptyStatement {
 	const option = result[0].text;
 	const explicitText = result[2].text;
-	const comments = result[3];
+	const comments = result[3] || [];
 	return estree.emptyStatement([estree.comment('Line', ' ' + option + ' ' + explicitText), ...comments]);
 }

@@ -39,9 +39,9 @@ export function subDecl1(
 ): FunctionDeclaration {
 	const name = result[3];
 	const params = result[5] || [];
-	const leadingComments = result[6];
+	const leadingComments = result[6] || [];
 	const blockStmt = result[7];
-	const trailingComments = result[11];
+	const trailingComments = result[11] || [];
 	return estree.functionDeclaration(name, params, blockStmt, leadingComments, trailingComments);
 }
 
@@ -65,6 +65,6 @@ export function subDecl2(
 	const name = result[3];
 	const params = result[5] || [];
 	const stmt = result[7];
-	const trailingComments = result[12];
+	const trailingComments = result[12] || [];
 	return estree.functionDeclaration(name, params, estree.blockStatement([stmt]), [], trailingComments);
 }

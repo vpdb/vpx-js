@@ -24,13 +24,13 @@ import * as estree from './estree';
 
 export function stmt1(result: [Token, null, VariableDeclarator[], Comment[]]): Statement {
 	const declarators = result[2];
-	const comments = result[3];
+	const comments = result[3] || [];
 	return estree.variableDeclaration('let', declarators, comments);
 }
 
 export function stmt2(result: [Token, null, Token, null, VariableDeclarator[], Comment[]]): Statement {
 	const declarators = result[4];
-	const comments = result[5];
+	const comments = result[5] || [];
 	const stmt = estree.variableDeclaration('let', declarators, comments);
 	traverse(stmt, {
 		enter: node => {
