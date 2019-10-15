@@ -17,72 +17,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Comment, Expression, Identifier, Literal, MemberExpression, Program, Statement } from 'estree';
+import {
+	BlockStatement,
+	Comment,
+	EmptyStatement,
+	Expression,
+	Identifier,
+	Literal,
+	MemberExpression,
+	Program,
+	Statement,
+} from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
-export function nl(result: [Token]): Comment[] {
-	const comment = result[0];
-	return comment ? [estree.comment('Line', comment.text.substr(comment.text.indexOf("'") + 1).trimRight())] : [];
-}
-
-export function program(result: [null, Statement[]]): Program {
-	let stmts = result[1] || [];
-	stmts = stmts.filter(stmt => stmt) as [Statement];
+export function program(result: [Token, Statement[]]): Program {
+	const stmts = result[1];
 	return estree.program(stmts);
-}
-
-export function blockStmt1(result: [Statement, Comment[]]): Statement {
-	const stmt = result[0];
-	const stmtComments = result[0].trailingComments || [];
-	const comments = result[1] || [];
-	if (stmtComments.length === 0) {
-		stmt.trailingComments = comments;
-	}
-	return stmt;
-}
-
-export function blockStmt2(result: [Comment[]]): Statement | null {
-	const comments = result[0] || [];
-	return comments.length > 0 ? estree.emptyStatement(comments) : null;
-}
-
-export function blockStmtList(result: [Statement[]]) {
-	let stmts = result[0] || [];
-	stmts = stmts.filter(stmt => stmt) as [Statement];
-	return estree.blockStatement(stmts);
-}
-
-export function methodStmtList(result: [Statement[]]) {
-	let stmts = result[0] || [];
-	stmts = stmts.filter(stmt => stmt) as [Statement];
-	return estree.blockStatement(stmts);
-}
-
-export function exitStmt(result: [Token, null, Token]): Statement {
-	const type = result[2].type;
-	return type === 'kw_do' || type === 'kw_for' ? estree.breakStatement() : estree.returnStatement(null);
-}
-
-export function id(result: [Token]): Identifier {
-	let name = result[0].text.trim();
-
-	if (name.endsWith('.')) {
-		name = name.slice(0, -1);
-	}
-
-	return estree.identifier(name);
-}
-
-export function exprList1(result: [Expression, null, Token, null, Expression[]]): Expression[] {
-	const firstExpr = result[0];
-	const otherExprs = result[4] || [];
-	return [firstExpr, ...otherExprs];
-}
-
-export function exprList2(result: [Expression]): Expression[] {
-	const expr = result[0];
-	return [expr];
 }
 
 export function arrayRankList1(result: [Literal, null, Token, null, Literal[]]): Literal[] {
@@ -94,6 +45,15 @@ export function arrayRankList1(result: [Literal, null, Token, null, Literal[]]):
 export function arrayRankList2(result: [Literal]): Literal[] {
 	const literal = result[0];
 	return [literal];
+}
+
+export function methodArgList1(result: [Token, null, Identifier[], null, Token]): Identifier[] {
+	const args = result[2] || [];
+	return args;
+}
+
+export function methodArgList2(result: [Token, null, Token]): Identifier[] {
+	return [];
 }
 
 export function argList1(result: [Identifier, null, Token, null, Identifier[]]): Identifier[] {
@@ -117,66 +77,48 @@ export function arg2(result: [[], Identifier]): Identifier {
 	return identifier;
 }
 
-export function qualifiedId1(result: [Expression, Expression]): Expression {
-	const firstId = result[0];
-	const secondId = result[1];
-
-	if (secondId.type === 'MemberExpression') {
-		return estree.memberExpression(
-			estree.memberExpression(firstId, secondId.object as Expression),
-			secondId.property,
-		);
-	} else {
-		return estree.memberExpression(firstId, secondId);
+export function blockStmt(result: [Statement, Comment[]]): Statement {
+	const stmt = result[0];
+	const stmtComments = result[0].trailingComments || [];
+	const comments = result[1] || [];
+	if (stmtComments.length === 0) {
+		stmt.trailingComments = comments;
 	}
+	return stmt;
 }
 
-export function qualifiedId2(result: [Identifier | MemberExpression, Identifier | MemberExpression]): Expression {
-	const firstId = result[0];
-	const secondId = result[1];
-
-	if (secondId.type === 'Identifier') {
-		return estree.memberExpression(firstId, secondId);
-	} else {
-		const expr = secondId as MemberExpression;
-		const object = expr.object as Expression;
-		return estree.memberExpression(estree.memberExpression(firstId, object), expr.property);
-	}
+export function globalStmtList(result: [Statement, Statement[]]): Statement[] {
+	const stmt = result[0];
+	const prevStmts = result[1] || [];
+	return [stmt, ...prevStmts];
 }
 
-export function qualifiedIdTail1(result: [Identifier, Identifier]): Expression {
-	const firstId = result[0];
-	const secondId = result[1];
-	return estree.memberExpression(firstId, secondId);
+export function blockStmtList(result: [Statement, BlockStatement]): BlockStatement {
+	const stmt = result[0];
+	const prevBlockStmt = result[1];
+	return estree.blockStatement(prevBlockStmt != null ? [stmt, ...prevBlockStmt.body] : [stmt]);
 }
 
-export function methodArgList1(result: [Token, null, Identifier[], null, Token]): Identifier[] {
-	const args = result[2] || [];
-	return args;
+export function methodStmtList(result: [Statement, Statement[]]): Statement[] {
+	const stmt = result[0];
+	const prevStmts = result[1] || [];
+	return [stmt, ...prevStmts];
 }
 
-export function methodArgList2(result: [Token, null, Token]): Identifier[] {
-	return [];
+export function exitStmt(result: [Token, null, Token]): Statement {
+	const type = result[2].type;
+	return type === 'kw_do' || type === 'kw_for' ? estree.breakStatement() : estree.returnStatement(null);
 }
 
-export function commaExprList1(result: [Token, null, Expression, null, Expression[]]): Expression[] {
-	const firstExpr = result[2];
-	const otherExprs = result[4];
+export function exprList1(result: [Expression, null, Token, null, Expression[]]): Expression[] {
+	const firstExpr = result[0];
+	const otherExprs = result[4] || [];
 	return [firstExpr, ...otherExprs];
 }
 
-export function commaExprList2(result: [Token, null, Expression[]]): Expression[] {
-	const exprs = result[2];
-	return [estree.literal(null), ...exprs];
-}
-
-export function commaExprList3(result: [Token, null, Expression, null]): Expression[] {
-	const expr = result[2];
+export function exprList2(result: [Expression]): Expression[] {
+	const expr = result[0];
 	return [expr];
-}
-
-export function commaExprList4(result: [Token, null]): Expression[] {
-	return [estree.literal(null)];
 }
 
 export function leftExpr1(result: [Identifier, null, Expression[], Token, Expression]) {
@@ -231,6 +173,39 @@ export function leftExprTail3(result: [Identifier, null, Expression[]]) {
 	const identifier = result[0];
 	const indexOrParams = result[2];
 	return estree.callExpression(identifier, indexOrParams);
+}
+
+export function qualifiedId1(result: [Expression, Expression]): Expression {
+	const firstId = result[0];
+	const secondId = result[1];
+
+	if (secondId.type === 'MemberExpression') {
+		return estree.memberExpression(
+			estree.memberExpression(firstId, secondId.object as Expression),
+			secondId.property,
+		);
+	} else {
+		return estree.memberExpression(firstId, secondId);
+	}
+}
+
+export function qualifiedId2(result: [Identifier | MemberExpression, Identifier | MemberExpression]): Expression {
+	const firstId = result[0];
+	const secondId = result[1];
+
+	if (secondId.type === 'Identifier') {
+		return estree.memberExpression(firstId, secondId);
+	} else {
+		const expr = secondId as MemberExpression;
+		const object = expr.object as Expression;
+		return estree.memberExpression(estree.memberExpression(firstId, object), expr.property);
+	}
+}
+
+export function qualifiedIdTail1(result: [Identifier, Identifier]): Expression {
+	const firstId = result[0];
+	const secondId = result[1];
+	return estree.memberExpression(firstId, secondId);
 }
 
 export function indexOrParamsList1(result: [Expression, null, Token, null, Expression[]]): Expression[] {
@@ -293,4 +268,45 @@ export function indexOrParamsDot3(result: [Token, null, Expression, null, Token]
 
 export function indexOrParamsDot4(result: [Token, null, Token]) {
 	return [];
+}
+
+export function commaExprList1(result: [Token, null, Expression, null, Expression[]]): Expression[] {
+	const firstExpr = result[2];
+	const otherExprs = result[4];
+	return [firstExpr, ...otherExprs];
+}
+
+export function commaExprList2(result: [Token, null, Expression[]]): Expression[] {
+	const exprs = result[2];
+	return [estree.literal(null), ...exprs];
+}
+
+export function commaExprList3(result: [Token, null, Expression, null]): Expression[] {
+	const expr = result[2];
+	return [expr];
+}
+
+export function commaExprList4(result: [Token, null]): Expression[] {
+	return [estree.literal(null)];
+}
+
+export function nl(result: [EmptyStatement]): Comment[] {
+	const stmt = result[0];
+	return stmt.trailingComments ? stmt.trailingComments : [];
+}
+
+export function comment(result: [Token]): EmptyStatement {
+	let text = result[0].text;
+	text = text.substr(text.indexOf("'") + 1).trimRight();
+	return estree.emptyStatement([estree.comment('Line', text)]);
+}
+
+export function id(result: [Token]): Identifier {
+	let name = result[0].text.trim();
+
+	if (name.endsWith('.')) {
+		name = name.slice(0, -1);
+	}
+
+	return estree.identifier(name);
 }

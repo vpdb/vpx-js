@@ -32,28 +32,28 @@ export function selectStmt(
 }
 
 export function caseStmtList1(
-	result: [Token, null, Expression[], null, Comment[], BlockStatement, SwitchCase[]],
+	result: [Token, null, Expression[], Comment[], BlockStatement, SwitchCase[]],
 ): SwitchCase[] {
 	const exprs = result[2];
-	const comments = result[4] || [];
-	const blockStmt = result[5];
-	const prevSwitchCases = result[6] || [];
+	const comments = result[3] || [];
+	const blockStmt = result[4];
+	const prevSwitchCases = result[5] || [];
 	const switchCases = [];
 	for (let index = 0; index < exprs.length; index++) {
-		switchCases.push(
-			estree.switchCase(
-				exprs[index],
-				index === exprs.length - 1 ? [...blockStmt.body, estree.breakStatement()] : [],
-				comments,
-				[],
-			),
-		);
+		const stmts = [];
+		if (index === exprs.length - 1) {
+			if (blockStmt != null) {
+				stmts.push(...blockStmt.body);
+			}
+			stmts.push(estree.breakStatement());
+		}
+		switchCases.push(estree.switchCase(exprs[index], stmts, comments, []));
 	}
 	return switchCases.concat(prevSwitchCases);
 }
 
-export function caseStmtList2(result: [Token, null, Token, null, Comment[], BlockStatement]): SwitchCase[] {
-	const comments = result[4] || [];
-	const blockStmt = result[5];
-	return [estree.switchCase(null, blockStmt.body, comments, [])];
+export function caseStmtList2(result: [Token, null, Token, Comment[], BlockStatement]): SwitchCase[] {
+	const comments = result[3] || [];
+	const blockStmt = result[4];
+	return [estree.switchCase(null, blockStmt != null ? blockStmt.body : [], comments, [])];
 }

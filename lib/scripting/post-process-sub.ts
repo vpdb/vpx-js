@@ -30,7 +30,7 @@ export function subDecl1(
 		null,
 		Identifier[],
 		Comment[],
-		BlockStatement,
+		Statement[],
 		Token,
 		null,
 		Token,
@@ -40,9 +40,9 @@ export function subDecl1(
 	const name = result[3];
 	const params = result[5] || [];
 	const leadingComments = result[6] || [];
-	const blockStmt = result[7];
+	const stmts = result[7];
 	const trailingComments = result[11] || [];
-	return estree.functionDeclaration(name, params, blockStmt, leadingComments, trailingComments);
+	return estree.functionDeclaration(name, params, estree.blockStatement(stmts), leadingComments, trailingComments);
 }
 
 export function subDecl2(
