@@ -69,24 +69,24 @@ export class PrimitiveUpdater extends ItemUpdater<PrimitiveState> {
 
 		// translation + rotation matrix
 		const rotTransMatrix = Matrix3D.claim().setTranslation(
-			((this.state.translation as any)._x - this.data.rotAndTra[3]),
-			((this.state.translation as any)._y - this.data.rotAndTra[4]),
-			((this.state.translation as any)._z - this.data.rotAndTra[5]),
+			((this.state.translation as any)._x - this.data.rotAndTra[3]), // t
+			((this.state.translation as any)._y - this.data.rotAndTra[4]), // z
+			((this.state.translation as any)._z - this.data.rotAndTra[5]), // u
 		);
 
 		const tempMatrix = Matrix3D.claim();
-		tempMatrix.rotateZMatrix(degToRad((this.state.rotation as any)._z - this.data.rotAndTra[2]));
+		tempMatrix.rotateZMatrix(degToRad(this.data.rotAndTra[2] - (this.state.rotation as any)._z)); // r
 		rotTransMatrix.multiply(tempMatrix);
-		tempMatrix.rotateYMatrix(degToRad((this.state.rotation as any)._y - this.data.rotAndTra[1]));
+		tempMatrix.rotateYMatrix(degToRad(this.data.rotAndTra[1] - (this.state.rotation as any)._y)); // e
 		rotTransMatrix.multiply(tempMatrix);
-		tempMatrix.rotateXMatrix(degToRad((this.state.rotation as any)._x - this.data.rotAndTra[0]));
+		tempMatrix.rotateXMatrix(degToRad(this.data.rotAndTra[0] - (this.state.rotation as any)._x)); // w
 		rotTransMatrix.multiply(tempMatrix);
 
-		tempMatrix.rotateZMatrix(degToRad((this.state.objectRotation as any)._z - this.data.rotAndTra[8]));
+		tempMatrix.rotateZMatrix(degToRad((this.state.objectRotation as any)._z - this.data.rotAndTra[8])); // i
 		rotTransMatrix.multiply(tempMatrix);
-		tempMatrix.rotateYMatrix(degToRad((this.state.objectRotation as any)._y - this.data.rotAndTra[7]));
+		tempMatrix.rotateYMatrix(degToRad((this.state.objectRotation as any)._y - this.data.rotAndTra[7])); // o
 		rotTransMatrix.multiply(tempMatrix);
-		tempMatrix.rotateXMatrix(degToRad((this.state.objectRotation as any)._x - this.data.rotAndTra[6]));
+		tempMatrix.rotateXMatrix(degToRad((this.state.objectRotation as any)._x - this.data.rotAndTra[6])); // p
 		rotTransMatrix.multiply(tempMatrix);
 
 		const matrix = matToOrigin
