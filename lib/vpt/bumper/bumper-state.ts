@@ -31,22 +31,43 @@ export class BumperState extends ItemState {
 	public skirtRotX: number = 0;
 	public skirtRotY: number = 0;
 
+	public isCapVisible: boolean = true;
+	public isRingVisible: boolean = true;
+	public isBaseVisible: boolean = true;
+	public isSkirtVisible: boolean = true;
+	public capMaterial?: string;
+	public ringMaterial?: string;
+	public baseMaterial?: string;
+	public skirtMaterial?: string;
+
 	public constructor() {
 		super();
 	}
 
-	public static claim(name: string, ringOffset: number, skirtRotX: number, skirtRotY: number, isVisible: boolean): BumperState {
+	public static claim(name: string, ringOffset: number, skirtRotX: number, skirtRotY: number,
+						isCapVisible: boolean, isRingVisible: boolean, isBaseVisible: boolean, isSkirtVisible: boolean,
+						capMaterial: string | undefined, ringMaterial: string | undefined, baseMaterial: string | undefined, skirtMaterial: string | undefined): BumperState {
 		const state = BumperState.POOL.get();
 		state.name = name;
 		state.ringOffset = ringOffset;
 		state.skirtRotX = skirtRotX;
 		state.skirtRotY = skirtRotY;
-		state.isVisible = isVisible;
+		state.isCapVisible = isCapVisible;
+		state.isRingVisible = isRingVisible;
+		state.isBaseVisible = isBaseVisible;
+		state.isSkirtVisible = isSkirtVisible;
+		state.capMaterial = capMaterial;
+		state.ringMaterial = ringMaterial;
+		state.baseMaterial = baseMaterial;
+		state.skirtMaterial = skirtMaterial;
 		return state;
 	}
 
 	public clone(): BumperState {
-		return BumperState.claim(this.name, this.ringOffset, this.skirtRotX, this.skirtRotY, this.isVisible);
+		return BumperState.claim(this.name, this.ringOffset, this.skirtRotX, this.skirtRotY,
+			this.isCapVisible, this.isRingVisible, this.isBaseVisible, this.isSkirtVisible,
+			this.capMaterial, this.ringMaterial, this.baseMaterial, this.skirtMaterial,
+		);
 	}
 
 	public diff(state: BumperState): BumperState {
@@ -60,8 +81,29 @@ export class BumperState extends ItemState {
 		if (diff.skirtRotY === state.skirtRotY) {
 			delete diff.skirtRotY;
 		}
-		if (diff.isVisible === state.isVisible) {
-			delete diff.isVisible;
+		if (diff.isCapVisible === state.isCapVisible) {
+			delete diff.isCapVisible;
+		}
+		if (diff.isRingVisible === state.isRingVisible) {
+			delete diff.isRingVisible;
+		}
+		if (diff.isBaseVisible === state.isBaseVisible) {
+			delete diff.isBaseVisible;
+		}
+		if (diff.isSkirtVisible === state.isSkirtVisible) {
+			delete diff.isSkirtVisible;
+		}
+		if (diff.capMaterial === state.capMaterial) {
+			delete diff.capMaterial;
+		}
+		if (diff.ringMaterial === state.ringMaterial) {
+			delete diff.ringMaterial;
+		}
+		if (diff.baseMaterial === state.baseMaterial) {
+			delete diff.baseMaterial;
+		}
+		if (diff.skirtMaterial === state.skirtMaterial) {
+			delete diff.skirtMaterial;
 		}
 		return diff;
 	}
@@ -77,6 +119,13 @@ export class BumperState extends ItemState {
 		}
 		return state.ringOffset === this.ringOffset
 			&& state.skirtRotX === this.skirtRotX
-			&& state.skirtRotY === this.skirtRotY;
+			&& state.isCapVisible === this.isCapVisible
+			&& state.isRingVisible === this.isRingVisible
+			&& state.isBaseVisible === this.isBaseVisible
+			&& state.isSkirtVisible === this.isSkirtVisible
+			&& state.capMaterial === this.capMaterial
+			&& state.ringMaterial === this.ringMaterial
+			&& state.baseMaterial === this.baseMaterial
+			&& state.skirtMaterial === this.skirtMaterial;
 	}
 }

@@ -44,7 +44,7 @@ export class RubberUpdater extends ItemUpdater<RubberState> {
 		Object.assign(this.state, state);
 
 		this.applyVisibility(obj, state, renderApi);
-		this.applyMaterial(obj, state.name, state.material, state.texture, renderApi, table);
+		this.applyMaterial(obj, `rubber-${state.name}`, state.material, state.texture, renderApi, table);
 
 		if (state.rotX !== undefined || state.rotY !== undefined || state.rotZ !== undefined || state.height !== undefined) {
 			this.applyTransformation(obj, renderApi, table);

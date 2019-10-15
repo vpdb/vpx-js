@@ -23,13 +23,16 @@ import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { BumperAnimation } from './bumper-animation';
 import { BumperData } from './bumper-data';
+import { BumperState } from './bumper-state';
 
 export class BumperApi extends ItemApi<BumperData> {
 
+	private readonly state: BumperState;
 	private readonly animation: BumperAnimation;
 
-	constructor(animation: BumperAnimation, data: BumperData, events: EventProxy, player: Player, table: Table) {
+	constructor(state: BumperState, animation: BumperAnimation, data: BumperData, events: EventProxy, player: Player, table: Table) {
 		super(data, events, player, table);
+		this.state = state;
 		this.animation = animation;
 	}
 
@@ -49,14 +52,14 @@ export class BumperApi extends ItemApi<BumperData> {
 	set Orientation(v) { this.data.orientation = v; }
 	get Threshold() { return this.data.threshold; }
 	set Threshold(v) { this.data.threshold = v; }
-	get CapMaterial() { return this.data.szCapMaterial; }
-	set CapMaterial(v) { this.data.szCapMaterial = v; }
-	get RingMaterial() { return this.data.szRingMaterial; }
-	set RingMaterial(v) { this.data.szRingMaterial = v; }
-	get BaseMaterial() { return this.data.szBaseMaterial; }
-	set BaseMaterial(v) { this.data.szBaseMaterial = v; }
-	get SkirtMaterial() { return this.data.szSkirtMaterial; }
-	set SkirtMaterial(v) { this.data.szSkirtMaterial = v; }
+	get CapMaterial() { return this.state.capMaterial; }
+	set CapMaterial(v) { this.state.capMaterial = v; }
+	get RingMaterial() { return this.state.ringMaterial; }
+	set RingMaterial(v) { this.state.ringMaterial = v; }
+	get BaseMaterial() { return this.state.baseMaterial; }
+	set BaseMaterial(v) { this.state.baseMaterial = v; }
+	get SkirtMaterial() { return this.state.skirtMaterial; }
+	set SkirtMaterial(v) { this.state.skirtMaterial = v; }
 	get X() { return this.data.center.x; }
 	set X(v) { this.data.center.x = v; }
 	get Y() { return this.data.center.y; }
@@ -67,14 +70,14 @@ export class BumperApi extends ItemApi<BumperData> {
 	set HasHitEvent(v) { this.data.hitEvent = v; }
 	get Collidable() { return this.data.isCollidable; }
 	set Collidable(v) { this.data.isCollidable = v; }
-	get CapVisible() { return this.data.isCapVisible; }
-	set CapVisible(v) { this.data.isCapVisible = v; }
-	get BaseVisible() { return this.data.isBaseVisible; }
-	set BaseVisible(v) { this.data.isBaseVisible = v; }
-	get RingVisible() { return this.data.isRingVisible; }
-	set RingVisible(v) { this.data.isRingVisible = v; }
-	get SkirtVisible() { return this.data.isSkirtVisible; }
-	set SkirtVisible(v) { this.data.isSkirtVisible = v; }
+	get CapVisible() { return this.state.isCapVisible; }
+	set CapVisible(v) { this.state.isCapVisible = v; }
+	get BaseVisible() { return this.state.isBaseVisible; }
+	set BaseVisible(v) { this.state.isBaseVisible = v; }
+	get RingVisible() { return this.state.isRingVisible; }
+	set RingVisible(v) { this.state.isRingVisible = v; }
+	get SkirtVisible() { return this.state.isSkirtVisible; }
+	set SkirtVisible(v) { this.state.isSkirtVisible = v; }
 	get ReflectionEnabled() { return this.data.isReflectionEnabled; }
 	set ReflectionEnabled(v) { this.data.isReflectionEnabled = v; }
 	get EnableSkirtAnimation() { return this.animation.enableSkirtAnimation; }
