@@ -72,7 +72,9 @@ export function elseStmt3(result: [Token, null, Statement, Comment[]]): Statemen
 export function elseStmt4(result: [Token, Comment[], BlockStatement]): Statement {
 	const comments = result[1] || [];
 	const stmt = result[2];
-	stmt.trailingComments = comments;
+	if (stmt != null) {
+		stmt.trailingComments = comments;
+	}
 	return stmt;
 }
 

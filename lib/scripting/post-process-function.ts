@@ -31,7 +31,7 @@ export function functionDecl1(
 		null,
 		Identifier[],
 		Comment[],
-		BlockStatement,
+		Statement[],
 		Token,
 		null,
 		Token,
@@ -41,8 +41,9 @@ export function functionDecl1(
 	const name = result[3];
 	const params = result[5] || [];
 	const leadingComments = result[6] || [];
-	const blockStmt = result[7];
+	const stmts = result[7];
 	const trailingComments = result[11] || [];
+	const blockStmt = estree.blockStatement(stmts);
 	traverse(blockStmt, {
 		enter: node => {
 			if (node.type === 'ReturnStatement') {

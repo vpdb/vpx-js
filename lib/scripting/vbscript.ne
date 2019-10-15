@@ -105,7 +105,6 @@ const lexer = moo.compile({
         dot_identifier: /\.[a-zA-Z][a-zA-Z0-9_]*/,
         comma: /,/,
         ampersand: /&/,
-        apostophe: /'/,
         compare_equals: /==/,
         compare_gte: />=|=>/,
         compare_lte: /<=|=</,
@@ -124,7 +123,7 @@ const lexer = moo.compile({
         string_literal: /\"(?:[\x01-\x21|\x23-\xD7FF|\xE000-\xFFEF]|\"\")*\"/,
         ws: /[ \t\v\f]+/,
         ws_cont: /_[ \t\v\f]*\x0d\x0a[ \t\v\f]*|_[ \t\v\f]*[\x0d\x0a][ \t\v\f]*|_[ \t\v\f]*/,
-        nl: {match: /[ \t\v\f]*\x0d\x0a[ \t\v\f]*|[ \t\v\f]*[\x0d\x0a:][ \t\v\f]*/, lineBreaks: true}
+        nl: {match: /[ \t\v\f]*[\x0d\x0a:][ \t\v\f\x0d\x0a]*/, lineBreaks: true}
 
 });
 
@@ -136,7 +135,7 @@ const lexer = moo.compile({
 # Rules
 #===============================
 
-Program              -> _ GlobalStmt:*                                                                                                    {% ppHelpers.program %}
+Program              -> NLOpt GlobalStmtList                                                                                              {% ppHelpers.program %}
 
 #===============================
 # Rules : Declarations
@@ -207,9 +206,6 @@ ArgModifierOpt       -> %kw_byval __
 # Rules : Statements
 #===============================
 
-BlockStmtList        -> BlockStmt:*                                                                                                       {% ppHelpers.blockStmtList %}
-MethodStmtList       -> MethodStmt:*                                                                                                      {% ppHelpers.methodStmtList %}
-
 GlobalStmt           -> OptionExplicit                                                                                                    {% id %}
                       | FieldDecl                                                                                                         {% id %}
                       | ConstDecl                                                                                                         {% id %}
@@ -227,14 +223,23 @@ BlockStmt            -> VarDecl                                                 
                       | SelectStmt                                                                                                        {% id %}
                       | LoopStmt                                                                                                          {% id %}
                       | ForStmt                                                                                                           {% id %}
-                      | InlineStmt NL                                                                                                     {% ppHelpers.blockStmt1 %}
+                      | InlineStmt NL                                                                                                     {% ppHelpers.blockStmt %}
                       | RemStmt                                                                                                           {% id %}
-                      | NL                                                                                                                {% ppHelpers.blockStmt2 %}
+                      | Comment                                                                                                           {% id %}
 
 InlineStmt           -> AssignStmt                                                                                                        {% id %}
                       | SubCallStmt                                                                                                       {% id %}
                       | ErrorStmt                                                                                                         {% id %}
                       | ExitStmt                                                                                                          {% id %}
+
+GlobalStmtList       -> GlobalStmt GlobalStmtList                                                                                         {% ppHelpers.globalStmtList %}
+                      | null 
+
+MethodStmtList       -> MethodStmt MethodStmtList                                                                                         {% ppHelpers.methodStmtList %}
+                      | null 
+
+BlockStmtList        -> BlockStmt BlockStmtList                                                                                           {% ppHelpers.blockStmtList %}
+                      | null                                                                                                              {% data => null %}
 
 RemStmt              -> %comment_rem                                                                                                      {% ppRem.stmt %}
  
@@ -359,8 +364,8 @@ StepOpt              -> %kw_step _ Expr                                         
 
 SelectStmt           -> %kw_select __ %kw_case _ Expr NL CaseStmtList %kw_end __ %kw_select NL                                            {% ppSelect.selectStmt %}    
 
-CaseStmtList         -> %kw_case _ ExprList _ NLOpt BlockStmtList CaseStmtList                                                            {% ppSelect.caseStmtList1 %}
-                      | %kw_case __ %kw_else _ NLOpt BlockStmtList                                                                        {% ppSelect.caseStmtList2 %}
+CaseStmtList         -> %kw_case _ ExprList NLOpt BlockStmtList CaseStmtList                                                              {% ppSelect.caseStmtList1 %}
+                      | %kw_case __ %kw_else NLOpt BlockStmtList                                                                          {% ppSelect.caseStmtList2 %}
                       | null                                                                                                              {% data => null %}  
  
 NLOpt                -> NL                                                                                                                {% id %}   
@@ -504,8 +509,10 @@ Nothing              -> %kw_nothing                                             
 # Terminals
 #===============================
 
-NL                   -> %comment_apostophe                                                                                                {% ppHelpers.nl %}
+NL                   -> Comment                                                                                                           {% ppHelpers.nl %}
                       | %nl                                                                                                               {% data => null %}
+
+Comment              -> %comment_apostophe                                                                                                {% ppHelpers.comment %}
 
 ID                   -> %identifier                                                                                                       {% ppHelpers.id %}
 IDDot                -> %identifier_dot                                                                                                   {% ppHelpers.id %}
