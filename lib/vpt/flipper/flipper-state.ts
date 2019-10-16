@@ -30,15 +30,15 @@ export class FlipperState extends ItemState {
 	 */
 	public angle: number = 0;
 	public center!: Vertex2D;
-	public material!: string;
-	public texture!: string;
-	public rubberMaterial!: string;
+	public material?: string;
+	public texture?: string;
+	public rubberMaterial?: string;
 
 	public constructor() {
 		super();
 	}
 
-	public static claim(name: string, angle: number, center: Vertex2D, isVisible: boolean, material: string, texture: string, rubberMaterial: string): FlipperState {
+	public static claim(name: string, angle: number, center: Vertex2D, isVisible: boolean, material: string | undefined, texture: string | undefined, rubberMaterial: string | undefined): FlipperState {
 		const state = FlipperState.POOL.get();
 		state.name = name;
 		state.angle = angle;
