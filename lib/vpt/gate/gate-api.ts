@@ -57,14 +57,14 @@ export class GateApi extends ItemApi<GateData> {
 	set Y(v) { this.data.vCenter.y = v; }
 	get Surface() { return this.data.szSurface; }
 	set Surface(v) { this.data.szSurface = v; }
-	get Material() { return this.data.szMaterial; }
-	set Material(v) { this.data.szMaterial = v; }
+	get Material() { return this.state.material; }
+	set Material(v) { this.state.material = v; }
 	get Open() { return this.mover.open; }
 	set Open(v) { this.openGate(v); }
 	get Elasticity() { return this.data.elasticity; }
 	set Elasticity(v) { this.data.elasticity = v; }
-	get ShowBracket() { return this.data.showBracket; }
-	set ShowBracket(v) { this.data.showBracket = v; }
+	get ShowBracket() { return this.state.showBracket; }
+	set ShowBracket(v) { this.state.showBracket = v; }
 	get CloseAngle() { return radToDeg(this.mover.angleMin); }
 	set CloseAngle(v) { this.setCloseAngle(v); }
 	get OpenAngle() { return radToDeg(this.mover.angleMax); }
@@ -77,8 +77,8 @@ export class GateApi extends ItemApi<GateData> {
 	set Damping(v) { this.mover.damping = this.mover.damping = Math.pow(clamp(v, 0, 1), PHYS_FACTOR); }
 	get GravityFactor() { return this.mover.gravityFactor; }
 	set GravityFactor(v) { this.mover.gravityFactor = clamp(v, 0, 1); }
-	get Visible() { return this.mover.isVisible; }
-	set Visible(v) { this.mover.isVisible = v; }
+	get Visible() { return this.state.isVisible; }
+	set Visible(v) { this.state.isVisible = v; }
 	get TwoWay() { return this.data.twoWay; }
 	set TwoWay(v) { this.data.twoWay = v; }
 	get ReflectionEnabled() { return this.data.isReflectionEnabled; }

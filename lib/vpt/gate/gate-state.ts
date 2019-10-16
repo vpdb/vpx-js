@@ -28,27 +28,40 @@ export class GateState extends ItemState {
 	 * Angle in rad
 	 */
 	public angle: number = 0;
+	public material?: string;
+	public showBracket: boolean = true;
 
 	public constructor() {
 		super();
 	}
 
-	public static claim(name: string, angle: number, isVisible: boolean): GateState {
+	public static claim(name: string, angle: number, material: string | undefined, showBracket: boolean, isVisible: boolean): GateState {
 		const state = GateState.POOL.get();
 		state.name = name;
 		state.angle = angle;
+		state.material = material;
+		state.showBracket = showBracket;
 		state.isVisible = isVisible;
 		return state;
 	}
 
 	public clone(): GateState {
-		return GateState.claim(this.name, this.angle, this.isVisible);
+		return GateState.claim(this.name, this.angle, this.material, this.showBracket, this.isVisible);
 	}
 
 	public diff(state: GateState): GateState {
 		const diff = this.clone();
 		if (diff.angle === state.angle) {
 			delete diff.angle;
+		}
+		if (diff.isVisible === state.isVisible) {
+			delete diff.isVisible;
+		}
+		if (diff.material === state.material) {
+			delete diff.material;
+		}
+		if (diff.showBracket === state.showBracket) {
+			delete diff.showBracket;
 		}
 		if (diff.isVisible === state.isVisible) {
 			delete diff.isVisible;
@@ -66,6 +79,8 @@ export class GateState extends ItemState {
 			return false;
 		}
 		return state.angle === this.angle
+			&& state.material === this.material
+			&& state.showBracket === this.showBracket
 			&& state.isVisible === this.isVisible;
 	}
 }
