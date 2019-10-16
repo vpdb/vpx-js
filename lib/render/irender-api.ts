@@ -108,7 +108,7 @@ export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 	 * @param isVisible True if visible, false otherwise
 	 * @param node Object to apply to
 	 */
-	applyVisibility(isVisible: boolean, node: NODE): void;
+	applyVisibility(isVisible: boolean, node: NODE | undefined): void;
 
 	applyMaterial(node: NODE | undefined, material?: Material, map?: string, normalMap?: string, envMap?: string, emissiveMap?: string): void;
 
