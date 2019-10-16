@@ -41,6 +41,7 @@ import { GateHitGenerator } from './gate-hit-generator';
 import { GateMeshGenerator } from './gate-mesh-generator';
 import { GateMover } from './gate-mover';
 import { GateState } from './gate-state';
+import { GateUpdater } from './gate-updater';
 
 /**
  * VPinball's gates.
@@ -52,6 +53,7 @@ export class Gate extends Item<GateData> implements IRenderable<GateState>, IPla
 	private readonly meshGenerator: GateMeshGenerator;
 	private readonly hitGenerator: GateHitGenerator;
 	private readonly state: GateState;
+	private readonly updater: GateUpdater;
 	private api?: GateApi;
 	private hitGate?: GateHit;
 	private hitLines?: LineSeg[];
@@ -64,9 +66,10 @@ export class Gate extends Item<GateData> implements IRenderable<GateState>, IPla
 
 	private constructor(data: GateData) {
 		super(data);
-		this.state = GateState.claim(this.getName(), 0, data.isVisible);
+		this.state = GateState.claim(this.getName(), 0, data.szMaterial, data.showBracket, data.isVisible);
 		this.meshGenerator = new GateMeshGenerator(data);
 		this.hitGenerator = new GateHitGenerator(data);
+		this.updater = new GateUpdater(this.data, this.state);
 	}
 
 	public isCollidable(): boolean {
@@ -123,23 +126,7 @@ export class Gate extends Item<GateData> implements IRenderable<GateState>, IPla
 
 	/* istanbul ignore next */
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: GateState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
-		const posZ = this.data.height;
-		const matTransToOrigin = Matrix3D.claim().setTranslation(-this.data.vCenter.x, -this.data.vCenter.y, posZ);
-		const matRotateToOrigin = Matrix3D.claim().rotateZMatrix(degToRad(-this.data.rotation));
-		const matTransFromOrigin = Matrix3D.claim().setTranslation(this.data.vCenter.x, this.data.vCenter.y, -posZ);
-		const matRotateFromOrigin = Matrix3D.claim().rotateZMatrix(degToRad(this.data.rotation));
-		const matRotateX = Matrix3D.claim().rotateXMatrix(state.angle - degToRad(this.data.angleMin));
-
-		const matrix = matTransToOrigin
-			.multiply(matRotateToOrigin)
-			.multiply(matRotateX)
-			.multiply(matRotateFromOrigin)
-			.multiply(matTransFromOrigin);
-
-		const wireObj = renderApi.findInGroup(obj, `gate.wire-${this.data.getName()}`);
-		renderApi.applyMatrixToNode(matrix, wireObj);
-
-		Matrix3D.release(matTransToOrigin, matRotateToOrigin, matTransFromOrigin, matRotateFromOrigin, matRotateX);
+		this.updater.applyState(obj, state, renderApi, table);
 	}
 
 	public getEventNames(): string[] {

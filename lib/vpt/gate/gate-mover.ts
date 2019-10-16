@@ -38,7 +38,6 @@ export class GateMover implements MoverObject {
 	public friction: number;
 	public damping: number;
 	public gravityFactor: number;
-	public isVisible: boolean;
 	public open: boolean;       // True if the table logic is opening the gate, not just the ball passing through
 	public forcedMove: boolean; // True if the table logic is opening/closing the gate
 
@@ -51,7 +50,6 @@ export class GateMover implements MoverObject {
 		this.angleMax = this.data.angleMax;
 
 		this.friction = this.data.friction;
-		this.isVisible = this.data.isVisible;
 
 		this.state.angle = this.angleMin;
 		this.angleSpeed = 0.0;
