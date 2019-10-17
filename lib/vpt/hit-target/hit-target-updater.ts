@@ -35,7 +35,17 @@ export class HitTargetUpdater extends ItemUpdater<HitTargetState> {
 	}
 
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: HitTargetState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
-		this.applyAnimation(obj, state, renderApi);
+
+		// update local state
+		Object.assign(this.state, state);
+
+		this.applyVisibility(obj, state, renderApi);
+		this.applyMaterial(obj, state.name, state.material, state.texture, renderApi, table);
+
+		// animation
+		if (state.zOffset !== undefined || state.xRotation !== undefined) {
+			this.applyAnimation(obj, state, renderApi);
+		}
 	}
 
 	private applyAnimation<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: HitTargetState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>): void {
