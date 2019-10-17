@@ -38,6 +38,7 @@ import { HitTargetData } from './hit-target-data';
 import { HitTargetHitGenerator } from './hit-target-hit-generator';
 import { HitTargetMeshGenerator } from './hit-target-mesh-generator';
 import { HitTargetState } from './hit-target-state';
+import { HitTargetUpdater } from './hit-target-updater';
 
 /**
  * VPinball's hit- and drop targets.
@@ -51,6 +52,7 @@ export class HitTarget extends Item<HitTargetData> implements IRenderable<HitTar
 	private readonly state: HitTargetState;
 	private readonly meshGenerator: HitTargetMeshGenerator;
 	private readonly hitGenerator: HitTargetHitGenerator;
+	private readonly updater: HitTargetUpdater;
 	private animation?: HitTargetAnimation;
 	private hits?: HitObject[];
 	private api?: HitTargetApi;
@@ -65,6 +67,7 @@ export class HitTarget extends Item<HitTargetData> implements IRenderable<HitTar
 		this.state = HitTargetState.claim(this.data.getName(),  0.0, 0.0, data.isVisible);
 		this.meshGenerator = new HitTargetMeshGenerator(data);
 		this.hitGenerator = new HitTargetHitGenerator(data, this.meshGenerator);
+		this.updater = new HitTargetUpdater(this.data, this.state);
 	}
 
 	public isCollidable(): boolean {
@@ -115,21 +118,7 @@ export class HitTarget extends Item<HitTargetData> implements IRenderable<HitTar
 	}
 
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: HitTargetState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
-		const matTransToOrigin = Matrix3D.claim().setTranslation(-this.data.vPosition.x, -this.data.vPosition.y, -this.data.vPosition.z);
-		const matRotateToOrigin = Matrix3D.claim().rotateZMatrix(degToRad(-this.data.rotZ));
-		const matTransFromOrigin = Matrix3D.claim().setTranslation(this.data.vPosition.x, this.data.vPosition.y, this.data.vPosition.z);
-		const matRotateFromOrigin = Matrix3D.claim().rotateZMatrix(degToRad(this.data.rotZ));
-		const matRotateX = Matrix3D.claim().rotateXMatrix(degToRad(state.xRotation));
-		const matTranslateZ = Matrix3D.claim().setTranslation(0, 0, -state.zOffset);
-		const matrix = matTransToOrigin
-			.multiply(matRotateToOrigin)
-			.multiply(matRotateX)
-			.multiply(matTranslateZ)
-			.multiply(matRotateFromOrigin)
-			.multiply(matTransFromOrigin);
-
-		renderApi.applyMatrixToNode(matrix, obj);
-		Matrix3D.release(matTransToOrigin, matRotateToOrigin, matTransFromOrigin, matRotateFromOrigin, matRotateX, matTranslateZ);
+		this.applyState(obj, state, renderApi, table);
 	}
 
 	public setCollidable(isCollidable: boolean) {
