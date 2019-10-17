@@ -31,8 +31,8 @@ import {
 import { Token } from 'moo';
 import * as estree from './estree';
 
-export function program(result: [Token, Statement[]]): Program {
-	const stmts = result[1];
+export function program(result: [Statement[]]): Program {
+	const stmts = result[0];
 	return estree.program(stmts);
 }
 
@@ -89,20 +89,20 @@ export function blockStmt(result: [Statement, Comment[]]): Statement {
 
 export function globalStmtList(result: [Statement, Statement[]]): Statement[] {
 	const stmt = result[0];
-	const prevStmts = result[1] || [];
-	return [stmt, ...prevStmts];
+	const otherStmts = result[1] || [];
+	return [stmt, ...otherStmts];
 }
 
 export function blockStmtList(result: [Statement, BlockStatement]): BlockStatement {
 	const stmt = result[0];
-	const prevBlockStmt = result[1];
-	return estree.blockStatement(prevBlockStmt != null ? [stmt, ...prevBlockStmt.body] : [stmt]);
+	const otherBlockStmt = result[1];
+	return estree.blockStatement(otherBlockStmt != null ? [stmt, ...otherBlockStmt.body] : [stmt]);
 }
 
 export function methodStmtList(result: [Statement, Statement[]]): Statement[] {
 	const stmt = result[0];
-	const prevStmts = result[1] || [];
-	return [stmt, ...prevStmts];
+	const otherStmts = result[1] || [];
+	return [stmt, ...otherStmts];
 }
 
 export function exitStmt(result: [Token, null, Token]): Statement {
