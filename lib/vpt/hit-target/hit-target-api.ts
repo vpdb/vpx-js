@@ -19,30 +19,35 @@
 
 import { EventProxy } from '../../game/event-proxy';
 import { Player } from '../../game/player';
+import { PlayerPhysics } from '../../game/player-physics';
 import { clamp } from '../../math/functions';
+import { HitObject } from '../../physics/hit-object';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { HitTarget } from './hit-target';
 import { HitTargetAnimation } from './hit-target-animation';
 import { HitTargetData } from './hit-target-data';
+import { HitTargetState } from './hit-target-state';
 
 export class HitTargetApi extends ItemApi<HitTargetData> {
 
-	private readonly hitTarget: HitTarget;
+	private readonly state: HitTargetState;
+	private readonly hits: HitObject[];
 	private readonly animation: HitTargetAnimation;
 
-	constructor(hitTarget: HitTarget, data: HitTargetData, animation: HitTargetAnimation, events: EventProxy, player: Player, table: Table) {
+	constructor(state: HitTargetState, data: HitTargetData, hits: HitObject[], animation: HitTargetAnimation, events: EventProxy, player: Player, table: Table) {
 		super(data, events, player, table);
-		this.hitTarget = hitTarget;
+		this.state = state;
+		this.hits = hits;
 		this.animation = animation;
 	}
 
-	get Image() { return this.data.szImage; }
-	set Image(v) { this._assertNonHdrImage(v); this.data.szImage = v; }
-	get Material() { return this.data.szMaterial; }
-	set Material(v) { this.data.szMaterial = v; }
-	get Visible() { return this.data.isVisible; }
-	set Visible(v) { this.data.isVisible = v; }
+	get Image() { return this.state.texture; }
+	set Image(v) { this._assertNonHdrImage(v); this.state.texture = v; }
+	get Material() { return this.state.material; }
+	set Material(v) { this.state.material = v; }
+	get Visible() { return this.state.isVisible; }
+	set Visible(v) { this.state.isVisible = v; }
 	get X() { return this.data.vPosition.x; }
 	set X(v) { this.data.vPosition.x = v; }
 	get Y() { return this.data.vPosition.y; }
@@ -70,7 +75,7 @@ export class HitTargetApi extends ItemApi<HitTargetData> {
 	get Scatter() { return this.data.scatter; }
 	set Scatter(v) { this.data.scatter = v; }
 	get Collidable() { return this.data.isCollidable; }
-	set Collidable(v) { this.hitTarget.setCollidable(v); }
+	set Collidable(v) { this._setCollidable(v); }
 	get DisableLighting() { return !!this.data.disableLightingTop; }
 	set DisableLighting(v) { this.data.disableLightingTop = v ? 1 : 0; }
 	get BlendDisableLighting() { return this.data.disableLightingTop; }
@@ -82,7 +87,7 @@ export class HitTargetApi extends ItemApi<HitTargetData> {
 	get DropSpeed() { return this.data.dropSpeed; }
 	set DropSpeed(v) { this.data.dropSpeed = v; }
 	get IsDropped() { return this.data.isDropped; }
-	set IsDropped(v) { this.hitTarget.setDropped(v, this.table, this.player.getPhysics()); }
+	set IsDropped(v) { this._setDropped(v, this.table, this.player.getPhysics()); }
 	get LegacyMode() { return this.data.legacy; }
 	set LegacyMode(v) { this.data.legacy = v; }
 	get DrawStyle() { return this.data.targetType; }
@@ -96,4 +101,31 @@ export class HitTargetApi extends ItemApi<HitTargetData> {
 	get HitThreshold() { return this.events.currentHitThreshold; }
 	get RaiseDelay() { return this.data.raiseDelay; }
 	set RaiseDelay(v) { this.data.raiseDelay = v; }
+
+	private _setCollidable(isCollidable: boolean) {
+		if (this.hits && this.hits.length > 0 && this.hits[0].isEnabled !== isCollidable) {
+			for (const hit of this.hits) {     // !! costly
+				hit.isEnabled = isCollidable;  // copy to hit checking on enities composing the object
+			}
+		}
+		this.data.isCollidable = isCollidable;
+	}
+
+	private _setDropped(val: boolean, table: Table, physics: PlayerPhysics) {
+		if (this.data.isDropped !== val && this.animation) {
+			if (val) {
+				this.animation.moveAnimation = true;
+				this.state.zOffset = 0.0;
+				this.animation.moveDown = true;
+
+			} else {
+				this.animation.moveAnimation = true;
+				this.state.zOffset = -HitTarget.DROP_TARGET_LIMIT * table.getScaleZ();
+				this.animation.moveDown = false;
+				this.animation.timeStamp = physics.timeMsec;
+			}
+		} else {
+			this.data.isDropped = val;
+		}
+	}
 }

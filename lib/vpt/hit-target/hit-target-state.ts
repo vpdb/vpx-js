@@ -26,22 +26,26 @@ export class HitTargetState extends ItemState {
 
 	public zOffset: number = 0;
 	public xRotation: number = 0;
+	public material?: string;
+	public texture?: string;
 
 	public constructor() {
 		super();
 	}
 
-	public static claim(name: string, zOffset: number, xRotation: number, isVisible: boolean): HitTargetState {
+	public static claim(name: string, zOffset: number, xRotation: number, material: string | undefined, texture: string | undefined, isVisible: boolean): HitTargetState {
 		const state = HitTargetState.POOL.get();
 		state.name = name;
 		state.zOffset = zOffset;
 		state.xRotation = xRotation;
+		state.material = material;
+		state.texture = texture;
 		state.isVisible = isVisible;
 		return state;
 	}
 
 	public clone(): HitTargetState {
-		return HitTargetState.claim(this.name, this.zOffset, this.xRotation, this.isVisible);
+		return HitTargetState.claim(this.name, this.zOffset, this.xRotation, this.material, this.texture, this.isVisible);
 	}
 
 	public diff(state: HitTargetState): HitTargetState {
@@ -51,6 +55,12 @@ export class HitTargetState extends ItemState {
 		}
 		if (diff.xRotation === state.xRotation) {
 			delete diff.xRotation;
+		}
+		if (diff.material === state.material) {
+			delete diff.material;
+		}
+		if (diff.texture === state.texture) {
+			delete diff.texture;
 		}
 		if (diff.isVisible === state.isVisible) {
 			delete diff.isVisible;
@@ -69,6 +79,8 @@ export class HitTargetState extends ItemState {
 		}
 		return state.zOffset === this.zOffset
 			&& state.xRotation === this.xRotation
+			&& state.material === this.material
+			&& state.texture === this.texture
 			&& state.isVisible === this.isVisible;
 	}
 }

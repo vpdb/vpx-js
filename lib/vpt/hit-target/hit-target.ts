@@ -64,7 +64,7 @@ export class HitTarget extends Item<HitTargetData> implements IRenderable<HitTar
 
 	private constructor(data: HitTargetData) {
 		super(data);
-		this.state = HitTargetState.claim(this.data.getName(),  0.0, 0.0, data.isVisible);
+		this.state = HitTargetState.claim(this.data.getName(),  0.0, 0.0, data.szMaterial, data.szImage, data.isVisible);
 		this.meshGenerator = new HitTargetMeshGenerator(data);
 		this.hitGenerator = new HitTargetHitGenerator(data, this.meshGenerator);
 		this.updater = new HitTargetUpdater(this.data, this.state);
@@ -98,7 +98,7 @@ export class HitTarget extends Item<HitTargetData> implements IRenderable<HitTar
 		};
 		this.animation = new HitTargetAnimation(this.data, this.state, this.events);
 		this.hits = this.hitGenerator.generateHitObjects(this.events, table);
-		this.api = new HitTargetApi(this, this.data, this.animation, this.events, player, table);
+		this.api = new HitTargetApi(this.state, this.data, this.hits, this.animation, this.events, player, table);
 	}
 
 	public getState(): HitTargetState {
@@ -119,33 +119,6 @@ export class HitTarget extends Item<HitTargetData> implements IRenderable<HitTar
 
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: HitTargetState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
 		this.applyState(obj, state, renderApi, table);
-	}
-
-	public setCollidable(isCollidable: boolean) {
-		if (this.hits && this.hits.length > 0 && this.hits[0].isEnabled !== isCollidable) {
-			for (const hit of this.hits) {     // !! costly
-				hit.isEnabled = isCollidable;  // copy to hit checking on enities composing the object
-			}
-		}
-		this.data.isCollidable = isCollidable;
-	}
-
-	public setDropped(val: boolean, table: Table, physics: PlayerPhysics) {
-		if (this.data.isDropped !== val && this.animation) {
-			if (val) {
-				this.animation.moveAnimation = true;
-				this.state.zOffset = 0.0;
-				this.animation.moveDown = true;
-
-			} else {
-				this.animation.moveAnimation = true;
-				this.state.zOffset = -HitTarget.DROP_TARGET_LIMIT * table.getScaleZ();
-				this.animation.moveDown = false;
-				this.animation.timeStamp = physics.timeMsec;
-			}
-		} else {
-			this.data.isDropped = val;
-		}
 	}
 
 	public getEventNames(): string[] {
