@@ -32,10 +32,4 @@ describe('The VBScript transpiler - Rem', () => {
 		const js = vbsToJs(vbs);
 		expect(js).to.equal(';    //\n');
 	});
-
-	it('should transpile a comment', () => {
-		const vbs = `'This is a "test" 'comment';\n`;
-		const js = vbsToJs(vbs);
-		expect(js).to.equal(';    //This is a "test" \'comment\';\n');
-	});
 });

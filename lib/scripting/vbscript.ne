@@ -121,10 +121,9 @@ const lexer = moo.compile({
         mul_div: /[*\/]/,
         int_div: /\\/,
         string_literal: /\"(?:[\x01-\x21|\x23-\xD7FF|\xE000-\xFFEF]|\"\")*\"/,
-        ws: /[ \t\v\f]+/,
-        ws_cont: /_[ \t\v\f]*\x0d\x0a[ \t\v\f]*|_[ \t\v\f]*[\x0d\x0a][ \t\v\f]*|_[ \t\v\f]*/,
-        nl: {match: /[ \t\v\f]*[\x0d\x0a:][ \t\v\f\x0d\x0a]*/, lineBreaks: true}
-
+        whitespace: /[ \t\v\f]+/,
+        whitespace_cont: /_[ \t\v\f]*\x0d\x0a[ \t\v\f]*|_[ \t\v\f]*[\x0d\x0a][ \t\v\f]*|_[ \t\v\f]*/,
+        new_line: {match: /[ \t\v\f]*[\x0d\x0a:][ \t\v\f\x0d\x0a]*/, lineBreaks: true},
 });
 
 %}
@@ -135,7 +134,7 @@ const lexer = moo.compile({
 # Rules
 #===============================
 
-Program              -> NLOpt GlobalStmtList                                                                                              {% ppHelpers.program %}
+Program              -> GlobalStmtList                                                                                                    {% ppHelpers.program %}
 
 #===============================
 # Rules : Declarations
@@ -225,7 +224,7 @@ BlockStmt            -> VarDecl                                                 
                       | ForStmt                                                                                                           {% id %}
                       | InlineStmt NL                                                                                                     {% ppHelpers.blockStmt %}
                       | RemStmt                                                                                                           {% id %}
-                      | Comment                                                                                                           {% id %}
+                      | CommentLine                                                                                                       {% id %}
 
 InlineStmt           -> AssignStmt                                                                                                        {% id %}
                       | SubCallStmt                                                                                                       {% id %}
@@ -509,18 +508,18 @@ Nothing              -> %kw_nothing                                             
 # Terminals
 #===============================
 
-NL                   -> Comment                                                                                                           {% ppHelpers.nl %}
-                      | %nl                                                                                                               {% data => null %}
+NL                   -> CommentLine                                                                                                       {% ppHelpers.nl %}
+                      | %new_line                                                                                                         {% data => null %}
 
-Comment              -> %comment_apostophe                                                                                                {% ppHelpers.comment %}
+CommentLine          -> %comment_apostophe                                                                                                {% ppHelpers.comment %}
 
 ID                   -> %identifier                                                                                                       {% ppHelpers.id %}
 IDDot                -> %identifier_dot                                                                                                   {% ppHelpers.id %}
 DotID                -> %dot_identifier                                                                                                   {% ppHelpers.id %}
 DotIDDot             -> %dot_identifier_dot                                                                                               {% ppHelpers.id %}
 
-_                    -> %ws                                                                                                               {% data => null %}
-                      | %ws_cont                                                                                                          {% data => null %}
+_                    -> %whitespace                                                                                                       {% data => null %}
+                      | %whitespace_cont                                                                                                  {% data => null %}
                       | null                                                                                                              {% data => null %}
 
-__                   -> %ws                                                                                                               {% data => null %}
+__                   -> %whitespace                                                                                                       {% data => null %}
