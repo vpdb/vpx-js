@@ -27,6 +27,8 @@ import {
 	BlockStatement,
 	BreakStatement,
 	CallExpression,
+	ClassBody,
+	ClassDeclaration,
 	Comment,
 	ConditionalExpression,
 	DoWhileStatement,
@@ -36,10 +38,12 @@ import {
 	ForOfStatement,
 	ForStatement,
 	FunctionDeclaration,
+	FunctionExpression,
 	Identifier,
 	IfStatement,
 	Literal,
 	MemberExpression,
+	MethodDefinition,
 	Pattern,
 	Program,
 	ReturnStatement,
@@ -49,6 +53,7 @@ import {
 	Super,
 	SwitchCase,
 	SwitchStatement,
+	ThisExpression,
 	UnaryExpression,
 	UnaryOperator,
 	VariableDeclaration,
@@ -86,11 +91,28 @@ export function literal(value: string | boolean | number | null, raw?: string | 
 	};
 }
 
+export function classBody(body: MethodDefinition[]): ClassBody {
+	return {
+		type: 'ClassBody',
+		body,
+	};
+}
+
 export function variableDeclarator(id: Identifier, init: Expression | null): VariableDeclarator {
 	return {
 		type: 'VariableDeclarator',
 		id,
 		init,
+	};
+}
+
+export function classDeclaration(id: Identifier, body: ClassBody, leadingComments: Comment[], trailingComments: Comment[]): ClassDeclaration {
+	return {
+		type: 'ClassDeclaration',
+		id,
+		body,
+		leadingComments,
+		trailingComments,
 	};
 }
 
@@ -112,6 +134,17 @@ export function variableDeclaration(kind: 'var' | 'let' | 'const', declarations:
 		kind,
 		declarations,
 		trailingComments,
+	};
+}
+
+export function methodDefinition(key: Expression, kind: 'constructor' | 'method' | 'get' | 'set', value: FunctionExpression): MethodDefinition {
+	return {
+		type: 'MethodDefinition',
+		key,
+		kind,
+		value,
+		static: false,
+		computed: false,
 	};
 }
 
@@ -174,6 +207,14 @@ export function conditionalExpression(test: Expression, consequent: Expression, 
 	};
 }
 
+export function functionExpression(body: BlockStatement, params: Pattern[]): FunctionExpression {
+	return {
+		type: 'FunctionExpression',
+		body,
+		params,
+	};
+}
+
 export function memberExpression(object: Expression | Super, property: Expression): MemberExpression {
 	return {
 		type: 'MemberExpression',
@@ -187,6 +228,12 @@ export function sequenceExpression(expressions: Expression[]): SequenceExpressio
 	return {
 		type: 'SequenceExpression',
 		expressions,
+	};
+}
+
+export function thisExpression(): ThisExpression {
+	return {
+		type: 'ThisExpression',
 	};
 }
 
