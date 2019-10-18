@@ -29,6 +29,7 @@ import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
 import { IRenderApi } from '../../render/irender-api';
 import { Ball } from '../ball/ball';
+import { KickerType } from '../enums';
 import { Item } from '../item';
 import { FLT_MAX } from '../mesh';
 import { Table } from '../table/table';
@@ -46,14 +47,6 @@ import { KickerState } from './kicker-state';
  */
 export class Kicker extends Item<KickerData> implements IRenderable<KickerState>, IHittable, IBallCreationPosition, IScriptable<KickerApi> {
 
-	public static TypeKickerInvisible = 0;
-	public static TypeKickerHole = 1;
-	public static TypeKickerCup = 2;
-	public static TypeKickerHoleSimple = 3;
-	public static TypeKickerWilliams = 4;
-	public static TypeKickerGottlieb = 5;
-	public static TypeKickerCup2 = 6;
-
 	private readonly meshGenerator: KickerMeshGenerator;
 	private readonly state: KickerState;
 	private hit?: KickerHit;
@@ -66,7 +59,7 @@ export class Kicker extends Item<KickerData> implements IRenderable<KickerState>
 
 	private constructor(data: KickerData) {
 		super(data);
-		this.state = KickerState.claim(data.getName(), data.szMaterial!, data.kickerType !== Kicker.TypeKickerInvisible);
+		this.state = KickerState.claim(data.getName(), data.szMaterial!, data.kickerType !== KickerType.Invisible);
 		this.meshGenerator = new KickerMeshGenerator(data);
 	}
 
@@ -128,12 +121,12 @@ export class Kicker extends Item<KickerData> implements IRenderable<KickerState>
 
 	private getTexture(): Texture {
 		switch (this.data.kickerType) {
-			case Kicker.TypeKickerCup: return Texture.fromFilesystem('kickerCup.png');
-			case Kicker.TypeKickerWilliams: return Texture.fromFilesystem('kickerWilliams.png');
-			case Kicker.TypeKickerGottlieb: return Texture.fromFilesystem('kickerGottlieb.png');
-			case Kicker.TypeKickerCup2: return Texture.fromFilesystem('kickerT1.png');
-			case Kicker.TypeKickerHole: return Texture.fromFilesystem('kickerHoleWood.png');
-			case Kicker.TypeKickerHoleSimple:
+			case KickerType.Cup: return Texture.fromFilesystem('kickerCup.png');
+			case KickerType.Williams: return Texture.fromFilesystem('kickerWilliams.png');
+			case KickerType.Gottlieb: return Texture.fromFilesystem('kickerGottlieb.png');
+			case KickerType.Cup2: return Texture.fromFilesystem('kickerT1.png');
+			case KickerType.Hole: return Texture.fromFilesystem('kickerHoleWood.png');
+			case KickerType.HoleSimple:
 			default:
 				return Texture.fromFilesystem('kickerHoleWood.png');
 		}

@@ -20,12 +20,12 @@
 import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
 import { Vertex2D } from '../../math/vertex2d';
+import { KickerType } from '../enums';
 import { ItemData } from '../item-data';
-import { Kicker } from './kicker';
 
 export class KickerData extends ItemData {
 
-	public kickerType: number = Kicker.TypeKickerHole;
+	public kickerType: number = KickerType.Hole;
 	public vCenter!: Vertex2D;
 	public radius: number = 25;
 	public scatter: number = 0.0;
@@ -61,8 +61,8 @@ export class KickerData extends ItemData {
 			case 'TYPE':
 				this.kickerType = this.getInt(buffer);
 				/* istanbul ignore if: legacy handling */
-				if (this.kickerType > Kicker.TypeKickerCup2) {
-					this.kickerType = Kicker.TypeKickerInvisible;
+				if (this.kickerType > KickerType.Cup2) {
+					this.kickerType = KickerType.Invisible;
 				}
 				break;
 			case 'SURF': this.szSurface = this.getString(buffer, len); break;
