@@ -50,4 +50,12 @@ describe('The VBScript transpiler - Select', () => {
 			"switch (text) {\ncase 'Saturday':\ncase 'Sunday':\n    weekend = 1;\n    break;\ndefault:\n    weekend = 0;\n}",
 		);
 	});
+
+	it('should transpile a "Select Case/Case...Else...End Select" statement with inline cases', () => {
+		const vbs = `Select Case text\nCase "Saturday", "Sunday" weekend=1\nCase Else weekend=0\nEnd Select\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal(
+			"switch (text) {\ncase 'Saturday':\ncase 'Sunday':\n    weekend = 1;\n    break;\ndefault:\n    weekend = 0;\n}",
+		);
+	});
 });

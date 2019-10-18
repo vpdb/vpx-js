@@ -363,8 +363,8 @@ StepOpt              -> %kw_step _ Expr                                         
 
 SelectStmt           -> %kw_select __ %kw_case _ Expr NL CaseStmtList %kw_end __ %kw_select NL                                            {% ppSelect.selectStmt %}    
 
-CaseStmtList         -> %kw_case _ ExprList NLOpt BlockStmtList CaseStmtList                                                              {% ppSelect.caseStmtList1 %}
-                      | %kw_case __ %kw_else NLOpt BlockStmtList                                                                          {% ppSelect.caseStmtList2 %}
+CaseStmtList         -> %kw_case _ ExprList _ NLOpt BlockStmtList CaseStmtList                                                            {% ppSelect.caseStmtList1 %}
+                      | %kw_case __ %kw_else _ NLOpt BlockStmtList                                                                        {% ppSelect.caseStmtList2 %}
                       | null                                                                                                              {% data => null %}  
  
 NLOpt                -> NL                                                                                                                {% id %}   
