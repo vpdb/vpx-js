@@ -59,7 +59,7 @@ export class Kicker extends Item<KickerData> implements IRenderable<KickerState>
 
 	private constructor(data: KickerData) {
 		super(data);
-		this.state = KickerState.claim(data.getName(), data.szMaterial!, data.kickerType !== KickerType.Invisible);
+		this.state = KickerState.claim(data.getName(), data.kickerType, data.szMaterial);
 		this.meshGenerator = new KickerMeshGenerator(data);
 	}
 
@@ -85,7 +85,7 @@ export class Kicker extends Item<KickerData> implements IRenderable<KickerState>
 
 		this.events = new EventProxy(this);
 		this.hit = new KickerHit(this.data, this.events, table, radius, height); // height of kicker hit cylinder
-		this.api = new KickerApi(this.data, this.hit, this.events, this, player, table);
+		this.api = new KickerApi(this.state, this.data, this.hit, this.events, this, player, table);
 	}
 
 	public getApi(): KickerApi {

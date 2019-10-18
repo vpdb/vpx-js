@@ -18,42 +18,46 @@
  */
 
 import { Pool } from '../../util/object-pool';
+import { KickerType } from '../enums';
 import { ItemState } from '../item-state';
 
 export class KickerState extends ItemState {
 
 	public static readonly POOL = new Pool(KickerState);
 
+	public type!: number;
 	public material?: string;
+
+	get isVisible() { return this.type !== KickerType.Invisible; }
+	set isVisible(v) { /* not used in abstract */ }
 
 	public constructor() {
 		super();
 	}
 
-	public static claim(name: string, material: string | undefined, isVisible: boolean): KickerState {
+	public static claim(name: string, type: number, material: string | undefined): KickerState {
 		const state = KickerState.POOL.get();
 		state.name = name;
+		state.type = type;
 		state.material = material;
-
-		state.isVisible = isVisible;
 		return state;
 	}
 
 	public clone(): KickerState {
 		return KickerState.claim(
 			this.name,
+			this.type,
 			this.material,
-			this.isVisible,
 		);
 	}
 
 	public diff(state: KickerState): KickerState {
 		const diff = this.clone();
+		if (diff.type === state.type) {
+			delete diff.type;
+		}
 		if (diff.material === state.material) {
 			delete diff.material;
-		}
-		if (diff.isVisible === state.isVisible) {
-			delete diff.isVisible;
 		}
 		return diff;
 	}
@@ -67,7 +71,7 @@ export class KickerState extends ItemState {
 		if (!state) {
 			return false;
 		}
-		return state.material === this.material
-			&& state.isVisible === this.isVisible;
+		return state.type === this.type
+			&& state.material === this.material;
 	}
 }
