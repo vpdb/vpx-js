@@ -39,6 +39,7 @@ import { KickerData } from './kicker-data';
 import { KickerHit } from './kicker-hit';
 import { KickerMeshGenerator } from './kicker-mesh-generator';
 import { KickerState } from './kicker-state';
+import { KickerUpdater } from './kicker-updater';
 
 /**
  * VPinball's kickers.
@@ -49,6 +50,7 @@ export class Kicker extends Item<KickerData> implements IRenderable<KickerState>
 
 	private readonly meshGenerator: KickerMeshGenerator;
 	private readonly state: KickerState;
+	private readonly updater: KickerUpdater;
 	private hit?: KickerHit;
 	private api?: KickerApi;
 
@@ -61,6 +63,7 @@ export class Kicker extends Item<KickerData> implements IRenderable<KickerState>
 		super(data);
 		this.state = KickerState.claim(data.getName(), data.kickerType, data.szMaterial);
 		this.meshGenerator = new KickerMeshGenerator(data);
+		this.updater = new KickerUpdater(this.state);
 	}
 
 	public isCollidable(): boolean {
@@ -97,7 +100,7 @@ export class Kicker extends Item<KickerData> implements IRenderable<KickerState>
 	}
 
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: KickerState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: KickerState): void {
-		// TODO implement
+		this.updater.applyState(obj, state, renderApi, table);
 	}
 
 	public getHitShapes(): HitObject[] {
