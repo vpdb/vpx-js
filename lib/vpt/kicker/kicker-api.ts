@@ -26,14 +26,17 @@ import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { KickerData } from './kicker-data';
 import { KickerHit } from './kicker-hit';
+import { KickerState } from './kicker-state';
 
 export class KickerApi extends ItemApi<KickerData> {
 
+	private readonly state: KickerState;
 	private readonly hit: KickerHit;
 	private readonly ballCreator: IBallCreationPosition;
 
-	constructor(data: KickerData, hit: KickerHit, events: EventProxy, ballCreator: IBallCreationPosition, player: Player, table: Table) {
+	constructor(state: KickerState, data: KickerData, hit: KickerHit, events: EventProxy, ballCreator: IBallCreationPosition, player: Player, table: Table) {
 		super(data, events, player, table);
+		this.state = state;
 		this.hit = hit;
 		this.ballCreator = ballCreator;
 	}
@@ -60,10 +63,10 @@ export class KickerApi extends ItemApi<KickerData> {
 	set FallThrough(v) { this.data.fallThrough = v; }
 	get Legacy() { return this.data.legacyMode; }
 	set Legacy(v) { this.data.legacyMode = v; }
-	get DrawStyle() { return this.data.kickerType; }
-	set DrawStyle(v) { this.data.kickerType = v; }
-	get Material() { return this.data.szMaterial; }
-	set Material(v) { this.data.szMaterial = v; }
+	get DrawStyle() { return this.state.type; }
+	set DrawStyle(v) { this.state.type = v; }
+	get Material() { return this.state.material; }
+	set Material(v) { this.state.material = v; }
 
 	get LastCapturedBall(): Ball | null {
 
