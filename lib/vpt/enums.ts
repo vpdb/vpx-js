@@ -102,6 +102,17 @@ export class ItemType {
 	public static readonly Invalid = 0xffffffff;
 }
 
+export class KickerType {
+
+	public static readonly Invisible = 0;
+	public static readonly Hole = 1;
+	public static readonly Cup = 2;
+	public static readonly HoleSimple = 3;
+	public static readonly Williams = 4;
+	public static readonly Gottlieb = 5;
+	public static readonly Cup2 = 6;
+}
+
 export class BackgroundType {
 	public static readonly Desktop = 0;
 	public static readonly FS = 1;

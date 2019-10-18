@@ -24,16 +24,17 @@ export class KickerState extends ItemState {
 
 	public static readonly POOL = new Pool(KickerState);
 
-	public material!: string;
+	public material?: string;
 
 	public constructor() {
 		super();
 	}
 
-	public static claim(name: string, material: string, isVisible: boolean): KickerState {
+	public static claim(name: string, material: string | undefined, isVisible: boolean): KickerState {
 		const state = KickerState.POOL.get();
 		state.name = name;
 		state.material = material;
+
 		state.isVisible = isVisible;
 		return state;
 	}
