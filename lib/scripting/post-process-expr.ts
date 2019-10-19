@@ -69,7 +69,7 @@ export function and(result: [Expression, null, Token, null, Expression]): Expres
 
 export function not(result: [Token, null, Expression]): Expression {
 	const expr = result[2];
-	return estree.unaryExpression('~', expr);
+	return estree.unaryExpression('!', expr);
 }
 
 export function add(result: [Expression, null, Token, null, Expression]): Expression {

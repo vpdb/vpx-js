@@ -46,9 +46,9 @@ describe('The VBScript transpiler - Expressions', () => {
 	});
 
 	it('should transpile a "Not" expression', () => {
-		const vbs = `EnableBallControl = Not 10\n`;
+		const vbs = `EnableBallControl = Not EnableBallControl\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('EnableBallControl = ~10;');
+		expect(js).to.equal('EnableBallControl = !EnableBallControl;');
 	});
 
 	it('should transpile a "+" expression', () => {

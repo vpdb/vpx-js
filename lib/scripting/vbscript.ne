@@ -121,9 +121,9 @@ const lexer = moo.compile({
         mul_div: /[*\/]/,
         int_div: /\\/,
         string_literal: /\"(?:[\x01-\x21|\x23-\xD7FF|\xE000-\xFFEF]|\"\")*\"/,
+        new_line: {match: /[ \t\v\f]*[\x0d\x0a:][ \t\v\f\x0d\x0a]*/, lineBreaks: true},
         whitespace: /[ \t\v\f]+/,
         whitespace_cont: /_[ \t\v\f]*\x0d\x0a[ \t\v\f]*|_[ \t\v\f]*[\x0d\x0a][ \t\v\f]*|_[ \t\v\f]*/,
-        new_line: {match: /[ \t\v\f]*[\x0d\x0a:][ \t\v\f\x0d\x0a]*/, lineBreaks: true},
 });
 
 %}
