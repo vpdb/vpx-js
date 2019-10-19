@@ -1572,6 +1572,7 @@ export class GLTFExporter {
 			this.skins.push(object);
 		}
 
+		let skipNode = false;
 		if (object.children.length > 0) {
 			const children: number[] = [];
 			let i = 0;
@@ -1589,10 +1590,18 @@ export class GLTFExporter {
 
 			if (children.length > 0) {
 				gltfNode.children = children;
+
+			} else {
+				// if empty, don't push if there were invisible children.
+				if (object.children.length > 0) {
+					skipNode = true;
+				}
 			}
 		}
 
-		this.outputJSON.nodes.push(gltfNode);
+		if (!skipNode) {
+			this.outputJSON.nodes.push(gltfNode);
+		}
 
 		const nodeIndex = this.outputJSON.nodes.length - 1;
 		this.nodeMap.set(object, nodeIndex);
