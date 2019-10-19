@@ -20,7 +20,7 @@
 import { generate } from 'escodegen';
 import { Program } from 'estree';
 import { Grammar, Parser } from 'nearley';
-import * as vbsGrammar from '../lib/scripting/vbscript';
+import vbsGrammar from '../lib/scripting/vbscript';
 
 /**
  * A function that transpiles VBScript to JavaScript.
