@@ -35,16 +35,11 @@ export class SpinnerMeshGenerator {
 		this.data = data;
 	}
 
-	public generateMeshes(table: Table): { plate: Mesh, bracket?: Mesh } {
+	public generateMeshes(table: Table): { plate: Mesh, bracket: Mesh } {
 		const posZ = this.getZ(table);
-		if (this.data.showBracket) {
-			return {
-				plate: this.getPlateMesh(table, posZ),
-				bracket: this.getBracketMesh(table, posZ),
-			};
-		}
 		return {
 			plate: this.getPlateMesh(table, posZ),
+			bracket: this.getBracketMesh(table, posZ),
 		};
 	}
 

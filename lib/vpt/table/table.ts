@@ -373,6 +373,7 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 		const geometry = this.meshGenerator!.getPlayfieldMesh(renderApi, opts);
 		return {
 			playfield: {
+				isVisible: true,
 				geometry,
 				material: this.getMaterial(this.data.szPlayfieldMaterial),
 				map: this.getTexture(this.data.szImage),

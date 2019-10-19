@@ -77,6 +77,7 @@ export class HitTarget extends Item<HitTargetData> implements IRenderable<HitTar
 	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
 		return {
 			hitTarget: {
+				isVisible: this.data.isVisible,
 				mesh: this.meshGenerator.getMesh(table).transform(Matrix3D.RIGHT_HANDED),
 				map: table.getTexture(this.data.szImage),
 				material: table.getMaterial(this.data.szMaterial),

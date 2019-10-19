@@ -81,19 +81,18 @@ export class Gate extends Item<GateData> implements IRenderable<GateState>, IPla
 		const gate = this.meshGenerator.getMeshes(table);
 
 		// wire mesh
-		meshes.wire = {
-			mesh: gate.wire.transform(Matrix3D.RIGHT_HANDED),
-			material: table.getMaterial(this.data.szMaterial),
-		};
-
-		// bracket mesh
-		if (gate.bracket) {
-			meshes.bracket = {
+		return {
+			wire: {
+				isVisible: this.data.isVisible,
+				mesh: gate.wire.transform(Matrix3D.RIGHT_HANDED),
+				material: table.getMaterial(this.data.szMaterial),
+			},
+			bracket: {
+				isVisible: this.data.isVisible && this.data.showBracket,
 				mesh: gate.bracket.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
-			};
-		}
-		return meshes;
+			},
+		};
 	}
 
 	public setupPlayer(player: Player, table: Table): void {

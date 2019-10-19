@@ -73,6 +73,7 @@ export class Kicker extends Item<KickerData> implements IRenderable<KickerState>
 	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
 		return {
 			kicker: {
+				isVisible: this.data.kickerType !== KickerType.Invisible,
 				mesh: this.meshGenerator.getMesh(table).transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
 				map: this.getTexture(),

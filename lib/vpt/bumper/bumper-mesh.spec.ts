@@ -31,7 +31,7 @@ describe('The VPinball bumper generator', () => {
 	let gltf: GLTF;
 
 	before(async () => {
-		const table = await Table.load(new NodeBinaryReader(three.fixturePath('table-bumper.vpx')));
+		const table = await Table.load(new NodeBinaryReader(three.fixturePath('table-bumper.vpx')), { loadInvisibleItems: false });
 		const exporter = new TableExporter(table);
 		gltf = await three.loadGlb(await exporter.exportGlb());
 	});

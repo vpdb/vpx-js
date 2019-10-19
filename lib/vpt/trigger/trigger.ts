@@ -76,6 +76,7 @@ export class Trigger extends Item<TriggerData> implements IRenderable<TriggerSta
 	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
 		return {
 			trigger: {
+				isVisible: this.data.isVisible,
 				mesh: this.meshGenerator.getMesh(table).transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
 			},

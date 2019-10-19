@@ -76,6 +76,7 @@ export class ThreeConverter {
 		const mesh = new ThreeMesh(geometry, material);
 		mesh.name = (obj.geometry || obj.mesh!).name;
 		mesh.matrixAutoUpdate = false;
+		mesh.visible = obj.isVisible;
 		if (ThreeRenderApi.SHADOWS) {
 			mesh.castShadow = true;
 			mesh.receiveShadow = true;

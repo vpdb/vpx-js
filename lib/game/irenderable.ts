@@ -45,6 +45,7 @@ export interface Meshes<GEOMETRY> {
 }
 
 export interface RenderInfo<GEOMETRY> {
+	isVisible: boolean;
 	mesh?: Mesh;
 	geometry?: GEOMETRY;
 	map?: Texture;
