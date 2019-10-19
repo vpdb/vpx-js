@@ -24,7 +24,7 @@ import { logger } from '../util/logger';
 import { Table } from '../vpt/table/table';
 import { EventTransformer } from './event-transformer';
 import { ScopeTransformer } from './scope-transformer';
-import * as vbsGrammar from './vbscript';
+import vbsGrammar from './vbscript';
 
 // the table script function
 declare function play(table: { [key: string]: any }): void;
