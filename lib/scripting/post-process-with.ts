@@ -30,21 +30,18 @@ export function stmt(
 	const leadingComments = result[3] || [];
 	const trailingComments = result[8] || [];
 	traverse(body, {
-		enter: node => {
-			if (node.type === 'ExpressionStatement') {
-				if (node.expression.type === 'AssignmentExpression') {
-					if (node.expression.left.type === 'Identifier') {
-						if (node.expression.left.name.startsWith('.')) {
-							node.expression.left.name = node.expression.left.name.substr(1);
-							node.expression.left = estree.memberExpression(identifier, node.expression.left);
+		enter: (node, parentNode) => {
+			if (node.type === 'Identifier') {
+				if (node.name.startsWith('.')) {
+					if (parentNode != null) {
+						node.name = node.name.substr(1);
+						if (parentNode.type === 'AssignmentExpression') {
+							parentNode.left = estree.memberExpression(identifier, parentNode.left as Expression);
+						} else if (parentNode.type === 'CallExpression') {
+							parentNode.callee = estree.memberExpression(identifier, parentNode.callee as Expression);
+						} else if (parentNode.type === 'UnaryExpression') {
+							parentNode.argument = estree.memberExpression(identifier, node);
 						}
-					}
-				}
-			} else if (node.type === 'CallExpression') {
-				if (node.callee.type === 'Identifier') {
-					if (node.callee.name.startsWith('.')) {
-						node.callee.name = node.callee.name.substr(1);
-						node.callee = estree.memberExpression(identifier, node.callee);
 					}
 				}
 			}
