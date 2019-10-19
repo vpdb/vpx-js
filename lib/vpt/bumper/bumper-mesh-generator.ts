@@ -21,7 +21,7 @@ import { degToRad, f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { Mesh } from '../mesh';
-import { Table } from '../table/table';
+import { Table, TableLoadOptions } from '../table/table';
 import { BumperData } from './bumper-data';
 
 const bumperBaseMesh = Mesh.fromJson(require('../../../res/meshes/bumper-base-mesh'));
@@ -51,42 +51,34 @@ export class BumperMeshGenerator {
 		if (!this.data.center) {
 			throw new Error(`Cannot export bumper ${this.data.getName()} without vCenter.`);
 		}
-		const meshes: BumperMesh = {};
 		const matrix = new Matrix3D().rotateZMatrix(degToRad(this.data.orientation));
 		const height = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y) * table.getScaleZ();
-		if (this.data.isBaseVisible) {
-			meshes.base = this.generateMesh(
+		return {
+			base: this.generateMesh(
 				`bumper-base-${this.data.getName()}`,
 				this.scaledBashMesh,
 				matrix,
 				z => f4(z * table.getScaleZ()) + height,
-			);
-		}
-		if (this.data.isRingVisible) {
-			meshes.ring = this.generateMesh(
+			),
+			ring: this.generateMesh(
 				`bumper-ring-${this.data.getName()}`,
 				this.scaledRingMesh,
 				matrix,
 				z => f4(z * table.getScaleZ()) + height,
-			);
-		}
-		if (this.data.isSkirtVisible) {
-			meshes.skirt = this.generateMesh(
+			),
+			skirt: this.generateMesh(
 				`bumper-socket-${this.data.getName()}`,
 				this.scaledSocketMesh,
 				matrix,
 				z => f4(z * table.getScaleZ()) + (height + 5.0),
-			);
-		}
-		if (this.data.isCapVisible) {
-			meshes.cap = this.generateMesh(
+			),
+			cap: this.generateMesh(
 				`bumper-cap-${this.data.getName()}`,
 				this.scaledCapMesh,
 				matrix,
 				z => f4(f4(z + this.data.heightScale) * table.getScaleZ()) + height,
-			);
-		}
-		return meshes;
+			),
+		};
 	}
 
 	private generateMesh(name: string, mesh: Mesh, matrix: Matrix3D, zPos: (z: number) => number): Mesh {
@@ -109,8 +101,8 @@ export class BumperMeshGenerator {
 }
 
 export interface BumperMesh {
-	base?: Mesh;
-	ring?: Mesh;
-	skirt?: Mesh;
-	cap?: Mesh;
+	base: Mesh;
+	ring: Mesh;
+	skirt: Mesh;
+	cap: Mesh;
 }

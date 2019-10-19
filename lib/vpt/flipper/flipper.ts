@@ -99,6 +99,7 @@ export class Flipper extends Item<FlipperData> implements IRenderable<FlipperSta
 
 		// base mesh
 		meshes.base = {
+			isVisible: this.data.isVisible,
 			mesh: flipper.base.transform(matrix),
 			material: table.getMaterial(this.data.szMaterial),
 			map: table.getTexture(this.data.szImage),
@@ -107,6 +108,7 @@ export class Flipper extends Item<FlipperData> implements IRenderable<FlipperSta
 		// rubber mesh
 		if (flipper.rubber) {
 			meshes.rubber = {
+				isVisible: this.data.isVisible,
 				mesh: flipper.rubber.transform(matrix),
 				material: table.getMaterial(this.data.szRubberMaterial),
 			};

@@ -86,7 +86,7 @@ describe('The VPinball bumper API', () => {
 		expect(bumper.getState().ringOffset).to.equal(-8);
 	});
 
-	it('should not animate the bumper when the ring is invisible', () => {
+	it('should also animate the bumper when the ring is invisible', () => {
 		const bumper = table.bumpers.Bumper1;
 
 		bumper.getApi().RingVisible = false;
@@ -95,7 +95,7 @@ describe('The VPinball bumper API', () => {
 		player.updatePhysics(10);
 		expect(bumper.getState().ringOffset).to.equal(0);
 		player.updatePhysics(20);
-		expect(bumper.getState().ringOffset).to.equal(0);
+		expect(bumper.getState().ringOffset).to.equal(-8);
 	});
 
 	it('should not crash when executing unused APIs', () => {

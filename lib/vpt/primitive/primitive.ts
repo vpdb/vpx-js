@@ -78,6 +78,7 @@ export class Primitive extends Item<PrimitiveData> implements IRenderable<Primit
 		const isTransparent = this.isTransparent(table);
 		return {
 			primitive: {
+				isVisible: this.data.isVisible,
 				mesh: this.getMesh(table).clone().transform(Matrix3D.RIGHT_HANDED),
 				map: table.getTexture(this.data.szImage),
 				normalMap: table.getTexture(this.data.szNormalMap),

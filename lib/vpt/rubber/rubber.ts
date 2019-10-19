@@ -70,6 +70,7 @@ export class Rubber extends Item<RubberData> implements IRenderable<RubberState>
 		const mesh = this.meshGenerator.getMeshes(table);
 		return {
 			rubber: {
+				isVisible: this.data.isVisible,
 				mesh: mesh.transform(Matrix3D.RIGHT_HANDED),
 				map: table.getTexture(this.data.szImage),
 				material: table.getMaterial(this.data.szMaterial),

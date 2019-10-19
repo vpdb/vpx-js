@@ -141,6 +141,7 @@ export class Ball implements IPlayable, IMovable, IRenderable<BallState>, IScrip
 	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
 		return {
 			ball: {
+				isVisible: true,
 				mesh: this.meshGenerator.getMesh().transform(Matrix3D.RIGHT_HANDED),
 				envMap: Texture.fromFilesystem('ball.png'),
 				material: this.getMaterial(),

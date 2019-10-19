@@ -79,19 +79,20 @@ export class Spinner extends Item<SpinnerData> implements IRenderable<SpinnerSta
 		const spinner = this.meshGenerator.generateMeshes(table);
 		const meshes: Meshes<GEOMETRY> = {};
 
-		meshes.plate = {
-			mesh: spinner.plate.transform(Matrix3D.RIGHT_HANDED),
-			map: table.getTexture(this.data.szImage),
-			material: table.getMaterial(this.data.szMaterial),
-		};
-		if (spinner.bracket) {
-			meshes.bracket = {
+		return {
+			plate: {
+				isVisible: this.data.isVisible,
+				mesh: spinner.plate.transform(Matrix3D.RIGHT_HANDED),
+				map: table.getTexture(this.data.szImage),
+				material: table.getMaterial(this.data.szMaterial),
+			},
+			bracket: {
+				isVisible: this.data.isVisible && this.data.showBracket,
 				mesh: spinner.bracket.transform(Matrix3D.RIGHT_HANDED),
 				map: table.getTexture(this.data.szImage),
 				material: table.getMaterial(this.data.szMaterial),
-			};
-		}
-		return meshes;
+			},
+		};
 	}
 
 	public setupPlayer(player: Player, table: Table): void {

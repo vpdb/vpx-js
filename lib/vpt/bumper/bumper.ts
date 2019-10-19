@@ -28,7 +28,7 @@ import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
 import { IRenderApi } from '../../render/irender-api';
 import { Item } from '../item';
-import { Table } from '../table/table';
+import { Table, TableGenerateOptions } from '../table/table';
 import { Texture } from '../texture';
 import { BumperAnimation } from './bumper-animation';
 import { BumperApi } from './bumper-api';
@@ -107,36 +107,32 @@ export class Bumper extends Item<BumperData> implements IRenderable<BumperState>
 	}
 
 	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
-		const meshes: Meshes<GEOMETRY> = {};
 		const bumper = this.meshGenerator.getMeshes(table);
-		if (bumper.base) {
-			meshes.base = {
+		return {
+			base: {
+				isVisible: this.data.isBaseVisible,
 				mesh: bumper.base.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szBaseMaterial),
 				map: Texture.fromFilesystem('bumperbase.png'),
-			};
-		}
-		if (bumper.ring) {
-			meshes.ring = {
+			},
+			ring: {
+				isVisible: this.data.isRingVisible,
 				mesh: bumper.ring.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szRingMaterial),
 				map: Texture.fromFilesystem('bumperring.png'),
-			};
-		}
-		if (bumper.skirt) {
-			meshes.skirt = {
+			},
+			skirt: {
+				isVisible: this.data.isSkirtVisible,
 				mesh: bumper.skirt.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szSkirtMaterial),
 				map: Texture.fromFilesystem('bumperskirt.png'),
-			};
-		}
-		if (bumper.cap) {
-			meshes.cap = {
+			},
+			cap: {
+				isVisible: this.data.isCapVisible,
 				mesh: bumper.cap.transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szCapMaterial),
 				map: Texture.fromFilesystem('bumperCap.png'),
-			};
-		}
-		return meshes;
+			},
+		};
 	}
 }

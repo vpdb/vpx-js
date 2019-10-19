@@ -116,6 +116,7 @@ export class Surface extends Item<SurfaceData> implements IRenderable<SurfaceSta
 		const isTransparent = this.isTransparent(table);
 		if (surface.top) {
 			meshes.top = {
+				isVisible: this.data.isTopBottomVisible,
 				mesh: surface.top.transform(Matrix3D.RIGHT_HANDED),
 				map: table.getTexture(this.data.szImage),
 				material: table.getMaterial(this.data.szTopMaterial),
@@ -125,6 +126,7 @@ export class Surface extends Item<SurfaceData> implements IRenderable<SurfaceSta
 
 		if (surface.side) {
 			meshes.side = {
+				isVisible: this.data.isSideVisible,
 				mesh: surface.side.transform(Matrix3D.RIGHT_HANDED),
 				map: table.getTexture(this.data.szSideImage),
 				material: table.getMaterial(this.data.szSideMaterial),

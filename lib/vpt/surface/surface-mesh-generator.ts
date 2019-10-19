@@ -213,10 +213,10 @@ export class SurfaceMeshGenerator {
 		topMesh.vertices = vertsTop[0];
 
 		const meshes: { top?: Mesh, side?: Mesh } = {};
-		if (topMesh.vertices.length > 0 && data.isTopBottomVisible) {
+		if (topMesh.vertices.length > 0) {
 			meshes.top = topMesh;
 		}
-		if (top !== bottom && data.isSideVisible) {
+		if (top !== bottom) {
 			meshes.side = sideMesh;
 		}
 		return meshes;

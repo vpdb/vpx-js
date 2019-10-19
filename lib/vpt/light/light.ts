@@ -101,6 +101,7 @@ export class Light extends Item<LightData> implements IRenderable<LightState>, I
 		if (light.surfaceLight) {
 			return {
 				surfaceLight: {
+					isVisible: this.data.isVisible,
 					geometry: light.surfaceLight,
 					map: table.getTexture(this.data.szOffImage),
 					material: this.getSurfaceMaterial(table),
@@ -126,6 +127,7 @@ export class Light extends Item<LightData> implements IRenderable<LightState>, I
 			lightMaterial.emissiveIntensity = 1;
 
 			meshes.light = {
+				isVisible: this.data.isVisible,
 				mesh: light.light.transform(Matrix3D.RIGHT_HANDED),
 				material: lightMaterial,
 			};
@@ -147,6 +149,7 @@ export class Light extends Item<LightData> implements IRenderable<LightState>, I
 			socketMaterial.clearCoat = 0;
 
 			meshes.socket = {
+				isVisible: this.data.isVisible,
 				mesh: light.socket.transform(Matrix3D.RIGHT_HANDED),
 				material: socketMaterial,
 			};
