@@ -51,10 +51,10 @@ export class GateApi extends ItemApi<GateData> {
 	set Height(v) { this.data.height = v; }
 	get Rotation() { return this.data.rotation; }
 	set Rotation(v) { this.data.rotation = v; }
-	get X() { return this.data.vCenter.x; }
-	set X(v) { this.data.vCenter.x = v; }
-	get Y() { return this.data.vCenter.y; }
-	set Y(v) { this.data.vCenter.y = v; }
+	get X() { return this.data.center.x; }
+	set X(v) { this.data.center.x = v; }
+	get Y() { return this.data.center.y; }
+	set Y(v) { this.data.center.y = v; }
 	get Surface() { return this.data.szSurface; }
 	set Surface(v) { this.data.szSurface = v; }
 	get Material() { return this.state.material; }

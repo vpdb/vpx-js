@@ -47,18 +47,18 @@ export class SpinnerApi extends ItemApi<SpinnerData> {
 	set Height(v) { this.data.height = v; }
 	get Damping() { return Math.pow(this.mover.damping, 1.0 / PHYS_FACTOR); }
 	set Damping(v) { this.mover.damping = Math.pow(clamp(v, 0.0, 1.0), PHYS_FACTOR); }
-	get Material() { return this.data.szMaterial; }
-	set Material(v) { this.data.szMaterial = v; }
-	get Image() { return this.data.szImage; }
-	set Image(v) { this._assertNonHdrImage(v); this.data.szImage = v; }
+	get Material() { return this.state.material; }
+	set Material(v) { this.state.material = v; }
+	get Image() { return this.state.texture; }
+	set Image(v) { this._assertNonHdrImage(v); this.state.texture = v; }
 	get X() { return this.data.center.x; }
 	set X(v) { this.data.center.x = v; }
 	get Y() { return this.data.center.y; }
 	set Y(v) { this.data.center.y = v; }
 	get Surface() { return this.data.szSurface; }
 	set Surface(v) { this.data.szSurface = v; }
-	get ShowBracket() { return this.data.showBracket; }
-	set ShowBracket(v) { this.data.showBracket = v; }
+	get ShowBracket() { return this.state.showBracket; }
+	set ShowBracket(v) { this.state.showBracket = v; }
 	get AngleMax() { return radToDeg(this.mover.angleMax); }
 	set AngleMax(v) {
 		if (this.data.angleMin !== this.data.angleMax) {             // allow only if in limited angle mode
@@ -83,8 +83,8 @@ export class SpinnerApi extends ItemApi<SpinnerData> {
 	}
 	get Elasticity() { return this.mover.elasticity; }
 	set Elasticity(v) { this.mover.elasticity = v; }
-	get Visible() { return this.mover.isVisible; }
-	set Visible(v) { this.mover.isVisible = v; }
+	get Visible() { return this.state.isVisible; }
+	set Visible(v) { this.state.isVisible = v; }
 	get ReflectionEnabled() { return this.data.isReflectionEnabled; }
 	set ReflectionEnabled(v) { this.data.isReflectionEnabled = v; }
 	get CurrentAngle() { return this.state.angle; }

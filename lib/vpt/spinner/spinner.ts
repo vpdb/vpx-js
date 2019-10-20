@@ -40,6 +40,7 @@ import { SpinnerHit } from './spinner-hit';
 import { SpinnerHitGenerator } from './spinner-hit-generator';
 import { SpinnerMeshGenerator } from './spinner-mesh-generator';
 import { SpinnerState } from './spinner-state';
+import { SpinnerUpdater } from './spinner-updater';
 
 /**
  * VPinball's spinners.
@@ -51,6 +52,7 @@ export class Spinner extends Item<SpinnerData> implements IRenderable<SpinnerSta
 	private readonly meshGenerator: SpinnerMeshGenerator;
 	private readonly state: SpinnerState;
 	private readonly hitGenerator: SpinnerHitGenerator;
+	private readonly updater: SpinnerUpdater;
 	private hit?: SpinnerHit;
 	private hitCircles: HitCircle[] = [];
 	private api?: SpinnerApi;
@@ -66,9 +68,10 @@ export class Spinner extends Item<SpinnerData> implements IRenderable<SpinnerSta
 
 	constructor(data: SpinnerData) {
 		super(data);
-		this.state = SpinnerState.claim(this.data.getName(), 0, data.isVisible);
+		this.state = SpinnerState.claim(this.data.getName(), 0, data.szImage, data.szMaterial, data.showBracket, data.isVisible);
 		this.meshGenerator = new SpinnerMeshGenerator(data);
 		this.hitGenerator = new SpinnerHitGenerator(data);
+		this.updater = new SpinnerUpdater(this.state, this.data, this.meshGenerator);
 	}
 
 	public isCollidable(): boolean {
@@ -123,25 +126,7 @@ export class Spinner extends Item<SpinnerData> implements IRenderable<SpinnerSta
 		return this.state;
 	}
 
-	/* istanbul ignore next */
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: SpinnerState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
-
-		const posZ = this.meshGenerator.getZ(table);
-		const matTransToOrigin = Matrix3D.claim().setTranslation(-this.data.center.x, -this.data.center.y, posZ);
-		const matRotateToOrigin = Matrix3D.claim().rotateZMatrix(degToRad(-this.data.rotation));
-		const matTransFromOrigin = Matrix3D.claim().setTranslation(this.data.center.x, this.data.center.y, -posZ);
-		const matRotateFromOrigin = Matrix3D.claim().rotateZMatrix(degToRad(this.data.rotation));
-		const matRotateX = Matrix3D.claim().rotateXMatrix(state.angle - degToRad(this.data.angleMin));
-
-		const matrix = matTransToOrigin
-			.multiply(matRotateToOrigin)
-			.multiply(matRotateX)
-			.multiply(matRotateFromOrigin)
-			.multiply(matTransFromOrigin);
-
-		const plateObj = renderApi.findInGroup(obj, `spinner.plate-${this.getName()}`);
-		renderApi.applyMatrixToNode(matrix, plateObj!);
-
-		Matrix3D.release(matTransToOrigin, matRotateToOrigin, matTransFromOrigin, matRotateFromOrigin, matRotateX);
+		this.updater.applyState(obj, state, renderApi, table);
 	}
 }

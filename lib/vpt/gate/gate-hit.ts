@@ -49,8 +49,8 @@ export class GateHit extends HitObject {
 		const cs = Math.cos(radAngle);
 
 		const lineSeg0 = new LineSeg(
-			new Vertex2D(this.data.vCenter.x - cs * (halfLength + PHYS_SKIN), this.data.vCenter.y - sn * (halfLength + PHYS_SKIN)),
-			new Vertex2D(this.data.vCenter.x + cs * (halfLength + PHYS_SKIN), this.data.vCenter.y + sn * (halfLength + PHYS_SKIN)),
+			new Vertex2D(this.data.center.x - cs * (halfLength + PHYS_SKIN), this.data.center.y - sn * (halfLength + PHYS_SKIN)),
+			new Vertex2D(this.data.center.x + cs * (halfLength + PHYS_SKIN), this.data.center.y + sn * (halfLength + PHYS_SKIN)),
 			height,
 			height + 2.0 * PHYS_SKIN,
 			CollisionType.Gate,

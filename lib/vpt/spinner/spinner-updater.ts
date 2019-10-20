@@ -18,32 +18,33 @@
  */
 
 import { degToRad } from '../../math/float';
-import { Matrix3D } from '../../math/matrix3d';
 import { IRenderApi } from '../../render/irender-api';
 import { ItemUpdater } from '../item-updater';
 import { Table } from '../table/table';
-import { GateData } from './gate-data';
-import { GateState } from './gate-state';
+import { SpinnerData } from './spinner-data';
+import { SpinnerMeshGenerator } from './spinner-mesh-generator';
+import { SpinnerState } from './spinner-state';
 
-export class GateUpdater extends ItemUpdater<GateState> {
+export class SpinnerUpdater extends ItemUpdater<SpinnerState> {
 
-	private readonly data: GateData;
+	private readonly data: SpinnerData;
+	private readonly meshGenerator: SpinnerMeshGenerator;
 
-	constructor(data: GateData, state: GateState) {
+	constructor(state: SpinnerState, data: SpinnerData, meshGenerator: SpinnerMeshGenerator) {
 		super(state);
 		this.data = data;
+		this.meshGenerator = meshGenerator;
 	}
 
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: GateState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
-
+	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: SpinnerState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
 		// update local state
 		Object.assign(this.state, state);
 
 		this.applyVisibility(obj, state, renderApi);
-		this.applyMaterial(obj, state.name, state.material, undefined, renderApi, table);
+		this.applyMaterial(obj, state.name, state.material, state.texture, renderApi, table);
 
 		if (state.showBracket !== undefined) {
-			renderApi.applyVisibility(state.showBracket, renderApi.findInGroup(obj, `gate.bracket-${state.name}`));
+			renderApi.applyVisibility(state.showBracket, renderApi.findInGroup(obj, `spinner.bracket-${state.name}`));
 		}
 
 		if (state.angle !== undefined) {
@@ -51,10 +52,10 @@ export class GateUpdater extends ItemUpdater<GateState> {
 				obj,
 				renderApi,
 				this.data.center,
-				this.data.height,
+				this.meshGenerator.getZ(table),
 				this.data.rotation,
 				state.angle - degToRad(this.data.angleMin),
-				`gate.wire-${this.state.getName()}`,
+				`spinner.plate-${this.state.getName()}`,
 			);
 		}
 	}

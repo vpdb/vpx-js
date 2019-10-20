@@ -28,27 +28,42 @@ export class SpinnerState extends ItemState {
 	 * Angle in rad
 	 */
 	public angle: number = 0;
+	public texture?: string;
+	public material?: string;
+	public showBracket: boolean = true;
 
 	public constructor() {
 		super();
 	}
 
-	public static claim(name: string, angle: number, isVisible: boolean): SpinnerState {
+	public static claim(name: string, angle: number, texture: string | undefined,  material: string | undefined, showBracket: boolean, isVisible: boolean): SpinnerState {
 		const state = SpinnerState.POOL.get();
 		state.name = name;
 		state.angle = angle;
+		state.texture = texture;
+		state.material = material;
+		state.showBracket = showBracket;
 		state.isVisible = isVisible;
 		return state;
 	}
 
 	public clone(): SpinnerState {
-		return SpinnerState.claim(this.name, this.angle, this.isVisible);
+		return SpinnerState.claim(this.name, this.angle, this.texture, this.material, this.showBracket, this.isVisible);
 	}
 
 	public diff(state: SpinnerState): SpinnerState {
 		const diff = this.clone();
 		if (diff.angle === state.angle) {
 			delete diff.angle;
+		}
+		if (diff.texture === state.texture) {
+			delete diff.texture;
+		}
+		if (diff.material === state.material) {
+			delete diff.material;
+		}
+		if (diff.showBracket === state.showBracket) {
+			delete diff.showBracket;
 		}
 		if (diff.isVisible === state.isVisible) {
 			delete diff.isVisible;
@@ -66,6 +81,9 @@ export class SpinnerState extends ItemState {
 			return false;
 		}
 		return state.angle === this.angle
+			&& state.texture === this.texture
+			&& state.material === this.material
+			&& state.showBracket === this.showBracket
 			&& state.isVisible === this.isVisible;
 	}
 }

@@ -42,7 +42,7 @@ export class GateData extends ItemData {
 	public szMaterial?: string;
 	public szSurface?: string;
 	public twoWay: boolean = false;
-	public vCenter!: Vertex2D;
+	public center!: Vertex2D;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<GateData> {
 		const gateData = new GateData(itemName);
@@ -63,7 +63,7 @@ export class GateData extends ItemData {
 					this.gateType = GateType.WireW;
 				}
 				break;
-			case 'VCEN': this.vCenter = Vertex2D.get(buffer); break;
+			case 'VCEN': this.center = Vertex2D.get(buffer); break;
 			case 'LGTH': this.length = this.getFloat(buffer); break;
 			case 'HGTH': this.height = this.getFloat(buffer); break;
 			case 'ROTA': this.rotation = this.getFloat(buffer); break;
