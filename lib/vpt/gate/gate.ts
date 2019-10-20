@@ -96,7 +96,7 @@ export class Gate extends Item<GateData> implements IRenderable<GateState>, IPla
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
+		const height = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y);
 		const radAngle = degToRad(this.data.rotation);
 		const tangent = new Vertex2D(Math.cos(radAngle), Math.sin(radAngle));
 

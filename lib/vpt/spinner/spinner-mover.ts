@@ -36,7 +36,6 @@ export class SpinnerMover implements MoverObject {
 	public angleMin: number;
 	public elasticity: number;
 	public damping: number;
-	public isVisible: boolean;
 
 	constructor(data: SpinnerData, state: SpinnerState, events: EventProxy) {
 		this.data = data;
@@ -50,7 +49,6 @@ export class SpinnerMover implements MoverObject {
 		this.damping = Math.pow(data.damping, PHYS_FACTOR);
 
 		this.elasticity = data.elasticity;
-		this.isVisible = data.isVisible;
 	}
 
 	public updateDisplacements(dTime: number): void {

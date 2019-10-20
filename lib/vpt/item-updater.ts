@@ -20,6 +20,9 @@
 import { IRenderApi } from '../render/irender-api';
 import { ItemState } from './item-state';
 import { Table } from './table/table';
+import { Matrix3D } from '../math/matrix3d';
+import { degToRad } from '../math/float';
+import { Vertex2D } from '../math/vertex2d';
 
 export abstract class ItemUpdater<STATE extends ItemState> {
 
@@ -52,5 +55,24 @@ export abstract class ItemUpdater<STATE extends ItemState> {
 				texture,
 			);
 		}
+	}
+
+	protected applyXRotation<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, center: Vertex2D, posZ: number, rotationZ: number, angle: number, name: string) {
+		const matTransToOrigin = Matrix3D.claim().setTranslation(-center.x, -center.y, posZ);
+		const matRotateToOrigin = Matrix3D.claim().rotateZMatrix(degToRad(-rotationZ));
+		const matTransFromOrigin = Matrix3D.claim().setTranslation(center.x, center.y, -posZ);
+		const matRotateFromOrigin = Matrix3D.claim().rotateZMatrix(degToRad(rotationZ));
+		const matRotateX = Matrix3D.claim().rotateXMatrix(angle);
+
+		const matrix = matTransToOrigin
+			.multiply(matRotateToOrigin)
+			.multiply(matRotateX)
+			.multiply(matRotateFromOrigin)
+			.multiply(matTransFromOrigin);
+
+		const plateObj = renderApi.findInGroup(obj, name);
+		renderApi.applyMatrixToNode(matrix, plateObj!);
+
+		Matrix3D.release(matTransToOrigin, matRotateToOrigin, matTransFromOrigin, matRotateFromOrigin, matRotateX);
 	}
 }
