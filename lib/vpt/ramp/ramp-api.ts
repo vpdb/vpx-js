@@ -23,42 +23,45 @@ import { HitObject } from '../../physics/hit-object';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { RampData } from './ramp-data';
+import { RampState } from './ramp-state';
 
 export class RampApi extends ItemApi<RampData> {
 
 	private readonly hits: HitObject[];
+	private readonly state: RampState;
 
-	constructor(hits: HitObject[], data: RampData, events: EventProxy, player: Player, table: Table) {
+	constructor(state: RampState, hits: HitObject[], data: RampData, events: EventProxy, player: Player, table: Table) {
 		super(data, events, player, table);
 		this.hits = hits;
+		this.state = state;
 	}
 
-	get HeightBottom() { return this.data.heightBottom; }
-	set HeightBottom(v) { this.data.heightBottom = v; }
-	get HeightTop() { return this.data.heightTop; }
-	set HeightTop(v) { this.data.heightTop = v; }
-	get WidthBottom() { return this.data.widthBottom; }
-	set WidthBottom(v) { this.data.widthBottom = v; }
-	get WidthTop() { return this.data.widthTop; }
-	set WidthTop(v) { this.data.widthTop = v; }
-	get Material() { return this.data.szMaterial; }
-	set Material(v) { this.data.szMaterial = v; }
-	get Type() { return this.data.rampType; }
-	set Type(v) { this.data.rampType = v; }
-	get Image() { return this.data.szImage; }
-	set Image(v) { this._assertNonHdrImage(v); this.data.szImage = v; }
-	get ImageAlignment() { return this.data.imageAlignment; }
-	set ImageAlignment(v) { this.data.imageAlignment = v; }
-	get HasWallImage() { return this.data.imageWalls; }
-	set HasWallImage(v) { this.data.imageWalls = v; }
-	get LeftWallHeight() { return this.data.leftWallHeight; }
-	set LeftWallHeight(v) { this.data.leftWallHeight = v; }
-	get RightWallHeight() { return this.data.rightWallHeight; }
-	set RightWallHeight(v) { this.data.rightWallHeight = v; }
-	get VisibleLeftWallHeight() { return this.data.leftWallHeightVisible; }
-	set VisibleLeftWallHeight(v) { this.data.leftWallHeightVisible = v; }
-	get VisibleRightWallHeight() { return this.data.rightWallHeightVisible; }
-	set VisibleRightWallHeight(v) { this.data.rightWallHeightVisible = v; }
+	get HeightBottom() { return this.state.heightBottom; }
+	set HeightBottom(v) { this.state.heightBottom = v; }
+	get HeightTop() { return this.state.heightTop; }
+	set HeightTop(v) { this.state.heightTop = v; }
+	get WidthBottom() { return this.state.widthBottom; }
+	set WidthBottom(v) { this.state.widthBottom = v; }
+	get WidthTop() { return this.state.widthTop; }
+	set WidthTop(v) { this.state.widthTop = v; }
+	get Material() { return this.state.material; }
+	set Material(v) { this.state.material = v; }
+	get Type() { return this.state.type; }
+	set Type(v) { this.state.type = v; }
+	get Image() { return this.state.texture; }
+	set Image(v) { this._assertNonHdrImage(v); this.state.texture = v; }
+	get ImageAlignment() { return this.state.textureAlignment; }
+	set ImageAlignment(v) { this.state.textureAlignment = v; }
+	get HasWallImage() { return this.state.hasWallImage; }
+	set HasWallImage(v) { this.state.hasWallImage = v; }
+	get LeftWallHeight() { return this.state.leftWallHeight; }
+	set LeftWallHeight(v) { this.state.leftWallHeight = v; }
+	get RightWallHeight() { return this.state.rightWallHeight; }
+	set RightWallHeight(v) { this.state.rightWallHeight = v; }
+	get VisibleLeftWallHeight() { return this.state.leftWallHeightVisible; }
+	set VisibleLeftWallHeight(v) { this.state.leftWallHeightVisible = v; }
+	get VisibleRightWallHeight() { return this.state.rightWallHeightVisible; }
+	set VisibleRightWallHeight(v) { this.state.rightWallHeightVisible = v; }
 	get Elasticity() { return this.data.elasticity; }
 	set Elasticity(v) { this.data.elasticity = v; }
 	get Friction() { return this.data.friction; }
@@ -81,8 +84,8 @@ export class RampApi extends ItemApi<RampData> {
 	set Visible(v) { this.data.isVisible = v; }
 	get ReflectionEnabled() { return this.data.isReflectionEnabled; }
 	set ReflectionEnabled(v) { this.data.isReflectionEnabled = v; }
-	get DepthBias() { return this.data.depthBias; }
-	set DepthBias(v) { this.data.depthBias = v; }
+	get DepthBias() { return this.state.depthBias; }
+	set DepthBias(v) { this.state.depthBias = v; }
 	get WireDiameter() { return this.data.wireDiameter; }
 	set WireDiameter(v) { this.data.wireDiameter = v; }
 	get WireDistanceX() { return this.data.wireDistanceX; }
