@@ -47,7 +47,7 @@ export class Transpiler {
 		ast = scopeTransformer.transform(ast, globalFunction, 'items', globalObject);
 		logger().debug('AST:', ast);
 
-		const js = this.generate(ast);
+		const js = '//@ sourceURL=tablescript.js\n' + this.generate(ast);
 		logger().debug(js);
 
 		return js;
