@@ -25,6 +25,10 @@ import { TriggerState } from './trigger-state';
 
 export class TriggerUpdater extends ItemUpdater<TriggerState> {
 
+	constructor(state: TriggerState) {
+		super(state);
+	}
+
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: TriggerState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
 
 		// update local state
@@ -35,7 +39,7 @@ export class TriggerUpdater extends ItemUpdater<TriggerState> {
 		this.applyAnimation(obj, state, renderApi);
 	}
 
-	public applyAnimation<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: TriggerState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>): void {
+	private applyAnimation<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: TriggerState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>): void {
 		if (state.heightOffset !== undefined) {
 			const matrix = Matrix3D.claim().setTranslation(0, 0, -state.heightOffset);
 			renderApi.applyMatrixToNode(matrix, obj);

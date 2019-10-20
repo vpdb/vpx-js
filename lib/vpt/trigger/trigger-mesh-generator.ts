@@ -42,19 +42,19 @@ export class TriggerMeshGenerator {
 	public getMesh(table: Table): Mesh {
 		const baseHeight = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
 
-		let zOffset = (this.data.shape === TriggerShape.Button) ? 5.0 : 0.0;
-		if (this.data.shape === TriggerShape.WireC) {
+		let zOffset = (this.data.shape === TriggerShape.TriggerButton) ? 5.0 : 0.0;
+		if (this.data.shape === TriggerShape.TriggerWireC) {
 			zOffset = -19.0;
 		}
 
 		const fullMatrix = new Matrix3D();
-		if (this.data.shape === TriggerShape.WireB) {
+		if (this.data.shape === TriggerShape.TriggerWireB) {
 			const tempMatrix = new Matrix3D();
 			fullMatrix.rotateXMatrix(degToRad(-23.0));
 			tempMatrix.rotateZMatrix(degToRad(this.data.rotation));
 			fullMatrix.multiply(tempMatrix);
 
-		} else if (this.data.shape === TriggerShape.WireC) {
+		} else if (this.data.shape === TriggerShape.TriggerWireC) {
 			const tempMatrix = new Matrix3D();
 			fullMatrix.rotateXMatrix(degToRad(140.0));
 			tempMatrix.rotateZMatrix(degToRad(this.data.rotation));
@@ -70,7 +70,7 @@ export class TriggerMeshGenerator {
 			const vert = Vertex3D.claim(vertex.x, vertex.y, vertex.z).multiplyMatrix(fullMatrix);
 			//fullMatrix.multiplyVector(vert);
 
-			if (this.data.shape === TriggerShape.Button || this.data.shape === TriggerShape.Star) {
+			if (this.data.shape === TriggerShape.TriggerButton || this.data.shape === TriggerShape.TriggerStar) {
 				vertex.x = f4(vert.x * this.data.radius) + this.data.vCenter.x;
 				vertex.y = f4(vert.y * this.data.radius) + this.data.vCenter.y;
 				vertex.z = f4(f4(f4(vert.z * this.data.radius) * table.getScaleZ()) + baseHeight) + zOffset;
@@ -93,15 +93,15 @@ export class TriggerMeshGenerator {
 	private getBaseMesh(): Mesh {
 		const name = `trigger-${this.data.getName()}`;
 		switch (this.data.shape) {
-			case TriggerShape.WireA:
-			case TriggerShape.WireB:
-			case TriggerShape.WireC:
+			case TriggerShape.TriggerWireA:
+			case TriggerShape.TriggerWireB:
+			case TriggerShape.TriggerWireC:
 				return triggerSimpleMesh.clone(name);
-			case TriggerShape.WireD:
+			case TriggerShape.TriggerWireD:
 				return triggerDWireMesh.clone(name);
-			case TriggerShape.Button:
+			case TriggerShape.TriggerButton:
 				return triggerButtonMesh.clone(name);
-			case TriggerShape.Star:
+			case TriggerShape.TriggerStar:
 				return triggerStarMesh.clone(name);
 			/* istanbul ignore next */
 			default:

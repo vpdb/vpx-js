@@ -58,14 +58,14 @@ export class TriggerAnimation implements IAnimation {
 		this.timeMsec = physics.timeMsec;
 		const diffTimeMsec = physics.timeMsec - oldTimeMsec;
 
-		let animLimit = this.data.shape === TriggerShape.Star ? this.data.radius * (1.0 / 5.0) : 32.0;
-		if (this.data.shape === TriggerShape.Button) {
+		let animLimit = this.data.shape === TriggerShape.TriggerStar ? this.data.radius * (1.0 / 5.0) : 32.0;
+		if (this.data.shape === TriggerShape.TriggerButton) {
 			animLimit = this.data.radius * (1.0 / 10.0);
 		}
-		if (this.data.shape === TriggerShape.WireC) {
+		if (this.data.shape === TriggerShape.TriggerWireC) {
 			animLimit = 60.0;
 		}
-		if (this.data.shape === TriggerShape.WireD) {
+		if (this.data.shape === TriggerShape.TriggerWireD) {
 			animLimit = 25.0;
 		}
 

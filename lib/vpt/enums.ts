@@ -53,13 +53,13 @@ export class GateType {
 }
 
 export class TriggerShape {
-	public static readonly None = 0;
-	public static readonly WireA = 1;
-	public static readonly Star = 2;
-	public static readonly WireB = 3;
-	public static readonly Button = 4;
-	public static readonly WireC = 5;
-	public static readonly WireD = 6;
+	public static readonly TriggerNone = 0;
+	public static readonly TriggerWireA = 1;
+	public static readonly TriggerStar = 2;
+	public static readonly TriggerWireB = 3;
+	public static readonly TriggerButton = 4;
+	public static readonly TriggerWireC = 5;
+	public static readonly TriggerWireD = 6;
 }
 
 export class TargetType {
@@ -135,3 +135,7 @@ export class SizingType {
 	public static readonly AutoWidth = 1;
 	public static readonly ManualSize = 2;
 }
+
+export const apiEnums = {
+	TriggerShape,
+};

@@ -37,7 +37,7 @@ export class TriggerData extends ItemData {
 	public isVisible: boolean = true;
 	public isEnabled: boolean = true;
 	public hitHeight: number = 50;
-	public shape: number = TriggerShape.WireA;
+	public shape: number = TriggerShape.TriggerWireA;
 	public animSpeed: number = 1;
 
 	public wireThickness: number = 0;

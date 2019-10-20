@@ -37,6 +37,7 @@ import { TriggerHitCircle } from './trigger-hit-circle';
 import { TriggerHitGenerator } from './trigger-hit-generator';
 import { TriggerMeshGenerator } from './trigger-mesh-generator';
 import { TriggerState } from './trigger-state';
+import { TriggerUpdater } from './trigger-updater';
 
 /**
  * VPinball's triggers.
@@ -48,6 +49,7 @@ export class Trigger extends Item<TriggerData> implements IRenderable<TriggerSta
 	private readonly state: TriggerState;
 	private readonly meshGenerator: TriggerMeshGenerator;
 	private readonly hitGenerator: TriggerHitGenerator;
+	private readonly updater: TriggerUpdater;
 
 	private api?: TriggerApi;
 	private hits?: HitObject[];
@@ -60,9 +62,10 @@ export class Trigger extends Item<TriggerData> implements IRenderable<TriggerSta
 
 	private constructor(data: TriggerData) {
 		super(data);
-		this.state = TriggerState.claim(data.getName(), 0, data.isVisible && data.shape !== TriggerShape.None);
+		this.state = TriggerState.claim(data.getName(), 0, data.szMaterial, data.isVisible && data.shape !== TriggerShape.TriggerNone);
 		this.meshGenerator = new TriggerMeshGenerator(data);
 		this.hitGenerator = new TriggerHitGenerator(data);
+		this.updater = new TriggerUpdater(this.state);
 	}
 
 	public getState(): TriggerState {
@@ -86,7 +89,7 @@ export class Trigger extends Item<TriggerData> implements IRenderable<TriggerSta
 	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
 		this.animation = new TriggerAnimation(this.data, this.state);
-		if (this.data.shape === TriggerShape.Star || this.data.shape === TriggerShape.Button) {
+		if (this.data.shape === TriggerShape.TriggerStar || this.data.shape === TriggerShape.TriggerButton) {
 			this.hits = [ new TriggerHitCircle(this.data, this.animation, this.events, table) ];
 
 		} else {
@@ -108,7 +111,7 @@ export class Trigger extends Item<TriggerData> implements IRenderable<TriggerSta
 	}
 
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: TriggerState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
-
+		this.updater.applyState(obj, state, renderApi, table);
 	}
 
 	public getEventNames(): string[] {
