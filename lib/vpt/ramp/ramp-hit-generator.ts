@@ -54,29 +54,29 @@ export class RampHitGenerator {
 		let wallHeightLeft: number;
 
 		switch (this.data.rampType) {
-			case RampType.Flat:
+			case RampType.RampTypeFlat:
 				wallHeightRight = this.data.rightWallHeight;
 				wallHeightLeft = this.data.leftWallHeight;
 				break;
-			case RampType.Wire1:
+			case RampType.RampType1Wire:
 				// backwards compatible physics
 				wallHeightRight = 31.0;
 				wallHeightLeft = 31.0;
 				break;
-			case RampType.Wire2:
+			case RampType.RampType2Wire:
 				// backwards compatible physics
 				wallHeightRight = 31.0;
 				wallHeightLeft = 31.0;
 				break;
-			case RampType.Wire4:
+			case RampType.RampType4Wire:
 				wallHeightRight = 62.0;
 				wallHeightLeft = 62.0;
 				break;
-			case RampType.Wire3Right:
+			case RampType.RampType3WireRight:
 				wallHeightRight = 62.0;
 				wallHeightLeft = (6 + 12.5);
 				break;
-			case RampType.Wire3Left:
+			case RampType.RampType3WireLeft:
 				wallHeightRight = (6 + 12.5);
 				wallHeightLeft = 62.0;
 				break;

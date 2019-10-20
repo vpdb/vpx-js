@@ -25,7 +25,7 @@ import { ItemData } from '../item-data';
 
 export class KickerData extends ItemData {
 
-	public kickerType: number = KickerType.Hole;
+	public kickerType: number = KickerType.KickerHole;
 	public vCenter!: Vertex2D;
 	public radius: number = 25;
 	public scatter: number = 0.0;
@@ -61,8 +61,8 @@ export class KickerData extends ItemData {
 			case 'TYPE':
 				this.kickerType = this.getInt(buffer);
 				/* istanbul ignore if: legacy handling */
-				if (this.kickerType > KickerType.Cup2) {
-					this.kickerType = KickerType.Invisible;
+				if (this.kickerType > KickerType.KickerCup2) {
+					this.kickerType = KickerType.KickerInvisible;
 				}
 				break;
 			case 'SURF': this.szSurface = this.getString(buffer, len); break;

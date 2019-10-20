@@ -20,12 +20,12 @@
 import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
 import { Vertex2D } from '../../math/vertex2d';
+import { PlungerType } from '../enums';
 import { ItemData } from '../item-data';
-import { PlungerType } from './plunger';
 
 export class PlungerData extends ItemData {
 
-	public type: PlungerType = PlungerType.Modern;
+	public type: number = PlungerType.PlungerTypeModern;
 	public center!: Vertex2D;
 	public width: number = 25;
 	public height: number = 20;

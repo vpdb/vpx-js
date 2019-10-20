@@ -73,7 +73,7 @@ export class Kicker extends Item<KickerData> implements IRenderable<KickerState>
 	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
 		return {
 			kicker: {
-				isVisible: this.data.kickerType !== KickerType.Invisible,
+				isVisible: this.data.kickerType !== KickerType.KickerInvisible,
 				mesh: this.meshGenerator.getMesh(table).transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
 				map: this.getTexture(),
@@ -125,12 +125,12 @@ export class Kicker extends Item<KickerData> implements IRenderable<KickerState>
 
 	private getTexture(): Texture {
 		switch (this.data.kickerType) {
-			case KickerType.Cup: return Texture.fromFilesystem('kickerCup.png');
-			case KickerType.Williams: return Texture.fromFilesystem('kickerWilliams.png');
-			case KickerType.Gottlieb: return Texture.fromFilesystem('kickerGottlieb.png');
-			case KickerType.Cup2: return Texture.fromFilesystem('kickerT1.png');
-			case KickerType.Hole: return Texture.fromFilesystem('kickerHoleWood.png');
-			case KickerType.HoleSimple:
+			case KickerType.KickerCup: return Texture.fromFilesystem('kickerCup.png');
+			case KickerType.KickerWilliams: return Texture.fromFilesystem('kickerWilliams.png');
+			case KickerType.KickerGottlieb: return Texture.fromFilesystem('kickerGottlieb.png');
+			case KickerType.KickerCup2: return Texture.fromFilesystem('kickerT1.png');
+			case KickerType.KickerHole: return Texture.fromFilesystem('kickerHoleWood.png');
+			case KickerType.KickerHoleSimple:
 			default:
 				return Texture.fromFilesystem('kickerHoleWood.png');
 		}

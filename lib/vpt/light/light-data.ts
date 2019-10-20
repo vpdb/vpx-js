@@ -30,7 +30,7 @@ export class LightData extends ItemData {
 	public center!: Vertex2D;
 	public falloff: number = 50;
 	public falloffPower: number = 2;
-	public state: number = LightStatus.Off;
+	public state: number = LightStatus.LightStateOff;
 	public color: number = 0xffff00;
 	public color2: number = 0xffffff;
 	public szOffImage?: string;

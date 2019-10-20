@@ -51,10 +51,10 @@ export class GateMeshGenerator {
 
 	private getBaseMesh(): Mesh {
 		switch (this.data.gateType) {
-			case GateType.WireW: return gateWireMesh.clone(`gate.wire-${this.data.getName()}`);
-			case GateType.WireRectangle: return gateWireRectangleMesh.clone(`gate.wire-${this.data.getName()}`);
-			case GateType.Plate: return gatePlateMesh.clone(`gate.wire-${this.data.getName()}`);
-			case GateType.LongPlate: return gateLongPlateMesh.clone(`gate.wire-${this.data.getName()}`);
+			case GateType.GateWireW: return gateWireMesh.clone(`gate.wire-${this.data.getName()}`);
+			case GateType.GateWireRectangle: return gateWireRectangleMesh.clone(`gate.wire-${this.data.getName()}`);
+			case GateType.GatePlate: return gatePlateMesh.clone(`gate.wire-${this.data.getName()}`);
+			case GateType.GateLongPlate: return gateLongPlateMesh.clone(`gate.wire-${this.data.getName()}`);
 			/* istanbul ignore next */
 			default:
 				logger().warn('[GateItem.getBaseMesh] Unknown gate type "%s".', this.data.gateType);

@@ -28,7 +28,7 @@ export class KickerState extends ItemState {
 	public type!: number;
 	public material?: string;
 
-	get isVisible() { return this.type !== KickerType.Invisible; }
+	get isVisible() { return this.type !== KickerType.KickerInvisible; }
 	set isVisible(v) { /* not used in abstract */ }
 
 	public constructor() {

@@ -31,7 +31,7 @@ export class TextboxData extends ItemData {
 	public fontColor: number = 0xffffff;
 	public intensityScale: number = 1.0;
 	public text: string = '0';
-	public align: number = TextAlignment.Right;
+	public align: number = TextAlignment.TextAlignRight;
 	public isTransparent: boolean = false;
 	public isDMD: boolean = false;
 
