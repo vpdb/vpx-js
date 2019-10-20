@@ -108,9 +108,7 @@ export class Trigger extends Item<TriggerData> implements IRenderable<TriggerSta
 	}
 
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: TriggerState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
-		const matrix = Matrix3D.claim().setTranslation(0, 0, -state.heightOffset);
-		renderApi.applyMatrixToNode(matrix, obj);
-		Matrix3D.release(matrix);
+
 	}
 
 	public getEventNames(): string[] {
