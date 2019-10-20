@@ -21,9 +21,25 @@ import { expect } from 'chai';
 import { vbsToJs } from '../../test/script.helper';
 
 describe('The VBScript transpiler - With', () => {
-	it('should transpile a "With...End With" statement', () => {
+	it('should transpile a "With...End With" statement with an assignment expression', () => {
 		const vbs = `With x\n.value = 5\n.type = \"TEST\"\nEnd With\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal("{\n    x.value = 5;\n    x.type = 'TEST';\n}");
+	});
+
+	it('should transpile a "With...End With" statement with a call expression', () => {
+		const vbs = `With Controller\nSelect Case keycode\nCase keyReset .Stop\nEnd Select\nEnd With\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal(
+			'{\n    switch (keycode) {\n    case keyReset:\n        Controller.Stop();\n        break;\n    }\n}',
+		);
+	});
+
+	it('should transpile a "With...End With" statement with a unary expression', () => {
+		const vbs = `With Controller\nSelect Case keycode\nCase keyFrame .LockDisplay = Not .LockDisplay\nEnd Select\nEnd With\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal(
+			'{\n    switch (keycode) {\n    case keyFrame:\n        Controller.LockDisplay = !Controller.LockDisplay;\n        break;\n    }\n}',
+		);
 	});
 });
