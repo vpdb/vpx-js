@@ -72,8 +72,8 @@ describe('The VPinball flasher API', () => {
 		flasher.DMD = true; expect(flasher.DMD).to.equal(true);
 		flasher.DMD = false;
 		flasher.DepthBias = 2.6;
-		flasher.ImageAlignment = ImageAlignment.ModeWrap; expect(flasher.ImageAlignment).to.equal(ImageAlignment.ModeWrap);
-		flasher.ImageAlignment = ImageAlignment.ModeWorld;
+		flasher.ImageAlignment = ImageAlignment.ImageAlignTopLeft; expect(flasher.ImageAlignment).to.equal(ImageAlignment.ImageAlignTopLeft);
+		flasher.ImageAlignment = ImageAlignment.ImageAlignWorld;
 
 		expect(flasher.X).to.equal(304);
 		expect(flasher.Y).to.be.closeTo(1.8, 0.0001);
@@ -95,7 +95,7 @@ describe('The VPinball flasher API', () => {
 		expect(flasher.AddBlend).to.equal(false);
 		expect(flasher.DMD).to.equal(false);
 		expect(flasher.DepthBias).to.equal(2.6);
-		expect(flasher.ImageAlignment).to.equal(ImageAlignment.ModeWorld);
+		expect(flasher.ImageAlignment).to.equal(ImageAlignment.ImageAlignWorld);
 	});
 
 	it('should not crash when executing unused APIs', () => {

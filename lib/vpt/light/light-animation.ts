@@ -29,8 +29,8 @@ export class LightAnimation implements IAnimation {
 	private readonly data: LightData;
 	private readonly state: LightState;
 
-	public realState: number = LightStatus.Off;
-	public finalState: number = LightStatus.Off;
+	public realState: number = LightStatus.LightStateOff;
+	public finalState: number = LightStatus.LightStateOff;
 	public lockedByLS = false;
 	public timeNextBlink: number = 0;
 	public intensityScale: number = 1;
@@ -54,7 +54,7 @@ export class LightAnimation implements IAnimation {
 		if (newVal !== this.realState) {
 			this.realState = newVal;
 
-			if (this.realState === LightStatus.Blinking) {
+			if (this.realState === LightStatus.LightStateBlinking) {
 				this.timeNextBlink = physics.timeMsec;     // Start pattern right away // + m_d.m_blinkinterval;
 				this.blinkFrame = 0;                       // reset pattern
 			}
@@ -83,11 +83,11 @@ export class LightAnimation implements IAnimation {
 		if (this.duration > 0 && this.timerDurationEndTime < this.timeMsec) {
 			this.realState = this.finalState;
 			this.duration = 0;
-			if (this.realState === LightStatus.Blinking) {
+			if (this.realState === LightStatus.LightStateBlinking) {
 				this.restartBlinker(physics.timeMsec);
 			}
 		}
-		if (this.realState === LightStatus.Blinking) {
+		if (this.realState === LightStatus.LightStateBlinking) {
 			this.updateBlinker(physics.timeMsec);
 		}
 
@@ -123,7 +123,7 @@ export class LightAnimation implements IAnimation {
 		this.duration = duration;
 		this.finalState = endState;
 		this.timerDurationEndTime = timeMsec + this.duration;
-		if (this.realState === LightStatus.Blinking) {
+		if (this.realState === LightStatus.LightStateBlinking) {
 			this.iBlinkFrame = 0;
 			this.timeNextBlink = timeMsec + this.data.blinkInterval;
 		}
@@ -136,9 +136,9 @@ export class LightAnimation implements IAnimation {
 	}
 
 	private isOn(): boolean {
-		return this.realState === LightStatus.Blinking
+		return this.realState === LightStatus.LightStateBlinking
 			? this.isBlinkOn()
-			: this.realState !== LightStatus.Off;
+			: this.realState !== LightStatus.LightStateOff;
 	}
 
 	private isBlinkOn(): boolean {

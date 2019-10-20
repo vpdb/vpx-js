@@ -49,16 +49,16 @@ export class KickerMeshGenerator {
 		let zOffset = 0.0;
 		let zRot = this.data.orientation;
 		switch (this.data.kickerType) {
-			case KickerType.Cup:
+			case KickerType.KickerCup:
 				zOffset = f4(-0.18);
 				break;
-			case KickerType.Williams:
+			case KickerType.KickerWilliams:
 				zRot = f4(this.data.orientation + 90.0);
 				break;
-			case KickerType.Hole:
+			case KickerType.KickerHole:
 				zRot = 0.0;
 				break;
-			case KickerType.HoleSimple:
+			case KickerType.KickerHoleSimple:
 			default:
 				zRot = 0.0;
 				break;
@@ -86,12 +86,12 @@ export class KickerMeshGenerator {
 	private getBaseMesh(): Mesh {
 		const name = `kicker-${this.data.getName()}`;
 		switch (this.data.kickerType) {
-			case KickerType.Cup: return kickerCupMesh.clone(name);
-			case KickerType.Williams: return kickerWilliamsMesh.clone(name);
-			case KickerType.Gottlieb: return kickerGottliebMesh.clone(name);
-			case KickerType.Cup2: return kickerT1Mesh.clone(name);
-			case KickerType.Hole: return kickerHoleMesh.clone(name);
-			case KickerType.HoleSimple:
+			case KickerType.KickerCup: return kickerCupMesh.clone(name);
+			case KickerType.KickerWilliams: return kickerWilliamsMesh.clone(name);
+			case KickerType.KickerGottlieb: return kickerGottliebMesh.clone(name);
+			case KickerType.KickerCup2: return kickerT1Mesh.clone(name);
+			case KickerType.KickerHole: return kickerHoleMesh.clone(name);
+			case KickerType.KickerHoleSimple:
 			default:
 				return kickerSimpleHoleMesh.clone(name);
 		}

@@ -50,8 +50,8 @@ describe('The VPinball decal API', () => {
 		decal.X = 304;
 		decal.Y = 1.8;
 		decal.Surface = 'surface';
-		decal.Type = DecalType.Image; expect(decal.Type).to.equal(DecalType.Image);
-		decal.Type = DecalType.Text;
+		decal.Type = DecalType.DecalImage; expect(decal.Type).to.equal(DecalType.DecalImage);
+		decal.Type = DecalType.DecalText;
 		decal.Text = 'Text';
 		decal.SizingType = SizingType.AutoSize; expect(decal.SizingType).to.equal(SizingType.AutoSize);
 		decal.SizingType = SizingType.AutoWidth;
@@ -68,7 +68,7 @@ describe('The VPinball decal API', () => {
 		expect(decal.X).to.equal(304);
 		expect(decal.Y).to.be.closeTo(1.8, 0.0001);
 		expect(decal.Surface).to.equal('surface');
-		expect(decal.Type).to.equal(DecalType.Text);
+		expect(decal.Type).to.equal(DecalType.DecalText);
 		expect(decal.Text).to.equal('Text');
 		expect(decal.SizingType).to.equal(SizingType.AutoWidth);
 		expect(decal.FontColor).to.equal(0x913a8d);

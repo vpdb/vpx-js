@@ -50,7 +50,7 @@ describe('The VPinball textbox API', () => {
 		expect(textbox.Y).to.equal(348);
 		expect(textbox.Width).to.equal(100);
 		expect(textbox.Height).to.equal(50);
-		expect(textbox.Alignment).to.equal(TextAlignment.Center);
+		expect(textbox.Alignment).to.equal(TextAlignment.TextAlignCenter);
 		expect(textbox.IsTransparent).to.equal(false);
 	});
 
@@ -65,7 +65,7 @@ describe('The VPinball textbox API', () => {
 		textbox.Width = 14;
 		textbox.Height = 15;
 		textbox.IntensityScale = 33.2;
-		textbox.Alignment = TextAlignment.Left;
+		textbox.Alignment = TextAlignment.TextAlignLeft;
 		textbox.IsTransparent = true; expect(textbox.IsTransparent).to.equal(true);
 		textbox.IsTransparent = false;
 		textbox.DMD = true; expect(textbox.DMD).to.equal(true);
@@ -81,7 +81,7 @@ describe('The VPinball textbox API', () => {
 		expect(textbox.Width).to.equal(14);
 		expect(textbox.Height).to.equal(15);
 		expect(textbox.IntensityScale).to.equal(33.2);
-		expect(textbox.Alignment).to.equal(TextAlignment.Left);
+		expect(textbox.Alignment).to.equal(TextAlignment.TextAlignLeft);
 		expect(textbox.IsTransparent).to.equal(false);
 		expect(textbox.DMD).to.equal(false);
 		expect(textbox.Visible).to.equal(false);

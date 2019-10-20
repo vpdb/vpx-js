@@ -167,12 +167,6 @@ export class Plunger extends Item<PlungerData> implements IRenderable<PlungerSta
 	}
 }
 
-export enum PlungerType {
-	Modern = 1,
-	Flat = 2,
-	Custom = 3,
-}
-
 export interface PlungerConfig {
 	x: number;
 	y: number;

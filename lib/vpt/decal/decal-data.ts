@@ -32,7 +32,7 @@ export class DecalData extends ItemData {
 	public szImage?: string;
 	public szSurface?: string;
 	public text?: string;
-	public decalType: number = DecalType.Image;
+	public decalType: number = DecalType.DecalImage;
 	public sizingType: number = SizingType.ManualSize;
 	public color: number = 0x000000;
 	public szMaterial?: string;
