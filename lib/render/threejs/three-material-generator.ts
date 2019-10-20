@@ -114,7 +114,7 @@ export class ThreeMaterialGenerator {
 	}
 
 	private getKey(material?: Material, map?: string, normalMap?: string, envMap?: string, emissiveMap?: string): string {
-		return (material || 'none') + ':' +
+		return (material ? material.name : 'none') + ':' +
 			(map || 'none') + ':' +
 			(normalMap || 'none') + ':' +
 			(envMap || 'none') + ':' +

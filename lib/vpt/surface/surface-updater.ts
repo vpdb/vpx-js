@@ -27,27 +27,30 @@ import { Matrix3D } from '../../math/matrix3d';
 export class SurfaceUpdater extends ItemUpdater<SurfaceState> {
 
 	private readonly data: SurfaceData;
-	private readonly isDynamic: boolean = false;
+	private isDynamic?: boolean;
+
 
 	constructor(state: SurfaceState, data: SurfaceData, table: Table) {
 		super(state);
 		this.data = data;
-
-		if (this.data.isSideVisible) {
-			const sideMaterial = table.getMaterial(this.data.szSideMaterial);
-			if (sideMaterial && sideMaterial.isOpacityActive) {
-				this.isDynamic = true;
-			}
-		}
-		if (this.data.isTopBottomVisible) {
-			const topMaterial = table.getMaterial(this.data.szTopMaterial);
-			if (topMaterial && topMaterial.isOpacityActive) {
-				this.isDynamic = true;
-			}
-		}
 	}
 
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: SurfaceState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
+
+		if (this.isDynamic === undefined) {
+			if (this.data.isSideVisible) {
+				const sideMaterial = table.getMaterial(this.data.szSideMaterial);
+				if (sideMaterial && sideMaterial.isOpacityActive) {
+					this.isDynamic = true;
+				}
+			}
+			if (this.data.isTopBottomVisible) {
+				const topMaterial = table.getMaterial(this.data.szTopMaterial);
+				if (topMaterial && topMaterial.isOpacityActive) {
+					this.isDynamic = true;
+				}
+			}
+		}
 
 		if (this.data.isDroppable || this.isDynamic) {
 			this.applyTopState(obj, state, renderApi, table);
@@ -57,7 +60,7 @@ export class SurfaceUpdater extends ItemUpdater<SurfaceState> {
 		if (state.isDropped !== undefined) {
 			const matrix = Matrix3D.claim();
 			if (state.isDropped) {
-				matrix.setTranslation(0, 0, this.data.heightTop);
+				matrix.setTranslation(0, 0, this.data.heightTop - 0.01);
 			}
 			renderApi.applyMatrixToNode(matrix, obj);
 			Matrix3D.release(matrix);

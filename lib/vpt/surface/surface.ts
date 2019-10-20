@@ -46,10 +46,10 @@ export class Surface extends Item<SurfaceData> implements IRenderable<SurfaceSta
 	private readonly itemName: string;
 	private readonly meshGenerator: SurfaceMeshGenerator;
 	private readonly hitGenerator: SurfaceHitGenerator;
+	private readonly updater: SurfaceUpdater;
 	private hits: HitObject[] = [];
 	private drops: HitObject[] = [];
 	private api?: SurfaceApi;
-	private updater?: SurfaceUpdater;
 
 	// public getters
 	get heightTop() { return this.data.heightTop; }
@@ -68,6 +68,7 @@ export class Surface extends Item<SurfaceData> implements IRenderable<SurfaceSta
 		this.itemName = itemName;
 		this.meshGenerator = new SurfaceMeshGenerator();
 		this.hitGenerator = new SurfaceHitGenerator(this, data);
+		this.updater = new SurfaceUpdater(this.state, this.data);
 	}
 
 	public isCollidable(): boolean {
@@ -118,7 +119,6 @@ export class Surface extends Item<SurfaceData> implements IRenderable<SurfaceSta
 		this.hits = this.hitGenerator.generateHitObjects(this.events, player.getPhysics(), table);
 		this.drops = this.data.isCollidable ? this.hits : [];
 		this.api = new SurfaceApi(this.state, this.data, this.hits, this.hitGenerator, this.events, player, table);
-		this.updater = new SurfaceUpdater(this.state, this.data, table);
 	}
 
 	public getApi(): SurfaceApi {
