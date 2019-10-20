@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { IRenderable } from '../game/irenderable';
+import { IRenderable, RenderInfo } from '../game/irenderable';
 import { Matrix3D } from '../math/matrix3d';
 import { ItemState } from '../vpt/item-state';
 import { LightData } from '../vpt/light/light-data';
@@ -79,6 +79,12 @@ export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 	removeFromParent(parent: NODE, child: NODE | undefined): void;
 
 	/**
+	 * Removes all children from a parent node
+	 * @param node Parent node
+	 */
+	removeChildren(node: NODE | undefined): void;
+
+	/**
 	 * Applies a matrix transformation to a node.
 	 *
 	 * @param matrix The transformation matrix
@@ -110,6 +116,19 @@ export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 	 */
 	applyVisibility(isVisible: boolean, node: NODE | undefined): void;
 
+	/**
+	 * Applies a material to a node.
+	 *
+	 * If the node is a group node, the material is applied to all children.
+	 * If the node is undefined, nothing is applied.
+	 *
+	 * @param node Node to apply material to
+	 * @param material Material to apply
+	 * @param map Name of the texture, if any
+	 * @param normalMap Name of the normal map, if any
+	 * @param envMap Name of the environment map, if any
+	 * @param emissiveMap Name of the emissive map, if any
+	 */
 	applyMaterial(node: NODE | undefined, material?: Material, map?: string, normalMap?: string, envMap?: string, emissiveMap?: string): void;
 
 	/**
@@ -119,7 +138,14 @@ export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 	 * @param table The table object
 	 * @param opts Options, see {@link TableGenerateOptions}.
 	 */
-	createObjectFromRenderable(renderable: IRenderable<ItemState>, table: Table, opts: TableGenerateOptions): Promise<NODE>;
+	createObjectFromRenderable(renderable: IRenderable<ItemState>, table: Table, opts: TableGenerateOptions): NODE;
+
+	/**
+	 * Creates a new node based on a RenderInfo object.
+	 *
+	 * @param obj RenderInfo
+	 */
+	createMesh(obj: RenderInfo<GEOMETRY>): NODE;
 
 	/**
 	 * Creates a playfield light geometry.

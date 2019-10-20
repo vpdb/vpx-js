@@ -38,7 +38,7 @@ export class TableMeshGenerator {
 		this.table = table;
 	}
 
-	public async generateTableNode<NODE, GEOMETRY, POINT_LIGHT>(renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, opts: TableGenerateOptions = {}): Promise<NODE> {
+	public generateTableNode<NODE, GEOMETRY, POINT_LIGHT>(renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, opts: TableGenerateOptions = {}): NODE {
 
 		opts = Object.assign({}, defaultOptions, opts);
 		const tableNode = renderApi.createParentNode('playfield');
@@ -68,7 +68,7 @@ export class TableMeshGenerator {
 			}
 			const itemTypeGroup = renderApi.createParentNode(group.name);
 			for (const renderable of group.meshes) {
-				const itemGroup = await renderApi.createObjectFromRenderable(renderable, this.table, opts);
+				const itemGroup = renderApi.createObjectFromRenderable(renderable, this.table, opts);
 				renderApi.addChildToParent(itemTypeGroup, itemGroup);
 			}
 			renderApi.addChildToParent(tableNode, itemTypeGroup);

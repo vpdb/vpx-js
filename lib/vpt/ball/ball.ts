@@ -96,7 +96,7 @@ export class Ball implements IPlayable, IMovable, IRenderable<BallState>, IScrip
 	}
 
 	public async addToScene<NODE, GEOMETRY, POINT_LIGHT>(scene: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): Promise<NODE> {
-		const ballMesh = await renderApi.createObjectFromRenderable(this, table, {});
+		const ballMesh = renderApi.createObjectFromRenderable(this, table, {});
 		const playfield = renderApi.findInGroup(scene, 'playfield')!;
 		const ballGroup = renderApi.findInGroup(playfield, 'balls')!;
 		renderApi.addChildToParent(ballGroup, ballMesh);

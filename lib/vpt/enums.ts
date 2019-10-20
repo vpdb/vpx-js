@@ -369,7 +369,7 @@ export class VBVarType {
 	public static readonly vbArray = 8192;
 }
 
-export const apiEnums = {
+export const apiEnums: { [key: string]: any } = {
 	LightState: LightStatus,
 	BackglassIndex,
 	Filters,

@@ -46,12 +46,11 @@ export abstract class ItemUpdater<STATE extends ItemState> {
 		}
 	}
 
-	protected applyMaterial<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, childName: string, material: string | undefined, texture: string | undefined, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table) {
-		// material
+	protected applyMaterial<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, material: string | undefined, texture: string | undefined, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table) {
 		if (material || texture) {
 			renderApi.applyMaterial(
-				renderApi.findInGroup(obj, childName),
-				material ? table.getMaterial(material) : undefined,
+				obj,
+				table.getMaterial(material),
 				texture,
 			);
 		}

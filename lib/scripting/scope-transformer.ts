@@ -20,7 +20,7 @@
 import { replace } from 'estraverse';
 import { Identifier, MemberExpression, Program, Statement } from 'estree';
 import { logger } from '../util/logger';
-import { TriggerShape } from '../vpt/enums';
+import { apiEnums } from '../vpt/enums';
 import { Table } from '../vpt/table/table';
 import {
 	arrowFunctionExpression,
@@ -42,7 +42,6 @@ export class ScopeTransformer {
 
 	private readonly table: Table;
 	private readonly items: { [p: string]: any };
-	private readonly enums: { [key: string]: any } = { TriggerShape };
 
 	constructor(table: Table) {
 		this.table = table;
@@ -78,12 +77,12 @@ export class ScopeTransformer {
 		replace(ast, {
 			enter: (node, parent: any) => {
 				const isFunction = parent && parent.type === 'CallExpression';
-				const isEnumIdentifier = node.type === 'MemberExpression' && node.object.type === 'Identifier' && node.property.type === 'Identifier' && node.object.name in this.enums;
+				const isEnumIdentifier = node.type === 'MemberExpression' && node.object.type === 'Identifier' && node.property.type === 'Identifier' && node.object.name in apiEnums;
 				if (isEnumIdentifier && !isFunction) {
 					const enumNode = node as MemberExpression;
 					const enumObject = enumNode.object as Identifier;
 					const enumProperty = enumNode.property as Identifier;
-					if (this.enums[enumObject.name][enumProperty.name] === undefined) {
+					if (apiEnums[enumObject.name][enumProperty.name] === undefined) {
 						logger().warn(`[scripting] Unknown value "${enumProperty.name}" of enum ${enumObject.name}.`);
 						return node;
 					}

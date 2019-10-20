@@ -65,9 +65,9 @@ export class Ramp extends Item<RampData> implements IRenderable<RampState>, IHit
 			data.leftWallHeightVisible, data.rightWallHeightVisible, data.rampType,
 			data.szMaterial, data.szImage, data.imageAlignment, data.imageWalls,
 			data.depthBias, data.isVisible && data.widthTop > 0 && data.widthBottom > 0);
-		this.meshGenerator = new RampMeshGenerator(data);
+		this.meshGenerator = new RampMeshGenerator(data, this.state);
 		this.hitGenerator = new RampHitGenerator(data, this.meshGenerator);
-		this.updater = new RampUpdater(this.state);
+		this.updater = new RampUpdater(this.state, this.meshGenerator);
 	}
 
 	public isCollidable(): boolean {
@@ -106,70 +106,8 @@ export class Ramp extends Item<RampData> implements IRenderable<RampState>, IHit
 	}
 
 	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
-		const meshes: Meshes<GEOMETRY> = {};
-		const ramp = this.meshGenerator.getMeshes(table);
 		const isTransparent = this.isTransparent(table);
-
-		if (ramp.wire1) {
-			meshes.wire1 = {
-				isVisible: this.data.isVisible,
-				mesh: ramp.wire1.transform(Matrix3D.RIGHT_HANDED),
-				material: table.getMaterial(this.data.szMaterial),
-				isTransparent,
-			};
-		}
-		if (ramp.wire2) {
-			meshes.wire2 = {
-				isVisible: this.data.isVisible,
-				mesh: ramp.wire2.transform(Matrix3D.RIGHT_HANDED),
-				material: table.getMaterial(this.data.szMaterial),
-				isTransparent,
-			};
-		}
-		if (ramp.wire3) {
-			meshes.wire3 = {
-				isVisible: this.data.isVisible,
-				mesh: ramp.wire3.transform(Matrix3D.RIGHT_HANDED),
-				material: table.getMaterial(this.data.szMaterial),
-				isTransparent,
-			};
-		}
-		if (ramp.wire4) {
-			meshes.wire4 = {
-				isVisible: this.data.isVisible,
-				mesh: ramp.wire4.transform(Matrix3D.RIGHT_HANDED),
-				material: table.getMaterial(this.data.szMaterial),
-				isTransparent,
-			};
-		}
-		if (ramp.floor) {
-			meshes.floor = {
-				isVisible: this.data.isVisible,
-				mesh: ramp.floor.transform(Matrix3D.RIGHT_HANDED),
-				material: table.getMaterial(this.data.szMaterial),
-				map: table.getTexture(this.data.szImage),
-				isTransparent,
-			};
-		}
-		if (ramp.left) {
-			meshes.left = {
-				isVisible: this.data.isVisible,
-				mesh: ramp.left.transform(Matrix3D.RIGHT_HANDED),
-				material: table.getMaterial(this.data.szMaterial),
-				map: table.getTexture(this.data.szImage),
-				isTransparent,
-			};
-		}
-		if (ramp.right) {
-			meshes.right = {
-				isVisible: this.data.isVisible,
-				mesh: ramp.right.transform(Matrix3D.RIGHT_HANDED),
-				material: table.getMaterial(this.data.szMaterial),
-				map: table.getTexture(this.data.szImage),
-				isTransparent,
-			};
-		}
-		return meshes;
+		return this.meshGenerator.getMeshes(isTransparent, table);
 	}
 
 	public getSurfaceHeight(x: number, y: number, table: Table) {

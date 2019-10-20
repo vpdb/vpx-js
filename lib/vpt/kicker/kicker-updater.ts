@@ -38,7 +38,7 @@ export class KickerUpdater extends ItemUpdater<KickerState> {
 			renderApi.applyVisibility(this.state.isVisible, obj);
 		}
 
-		this.applyMaterial(obj, state.name, state.material, undefined, renderApi, table);
+		this.applyMaterial(obj, state.material, undefined, renderApi, table);
 	}
 
 }

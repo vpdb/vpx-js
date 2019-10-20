@@ -40,7 +40,7 @@ export class HitTargetUpdater extends ItemUpdater<HitTargetState> {
 		Object.assign(this.state, state);
 
 		this.applyVisibility(obj, state, renderApi);
-		this.applyMaterial(obj, state.name, state.material, state.texture, renderApi, table);
+		this.applyMaterial(obj, state.material, state.texture, renderApi, table);
 
 		// animation
 		if (state.zOffset !== undefined || state.xRotation !== undefined) {

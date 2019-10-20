@@ -40,8 +40,7 @@ export class FlipperUpdater extends ItemUpdater<FlipperState> {
 		Object.assign(this.state, state);
 
 		this.applyVisibility(obj, state, renderApi);
-		this.applyMaterial(obj, state.name, state.material, state.texture, renderApi, table);
-
+		this.applyMaterial(obj, state.material, state.texture, renderApi, table);
 		// transformations
 		if (state.center || state.angle) {
 			this.applyTransformation(obj, renderApi, table);

@@ -17,9 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Meshes } from '../../game/irenderable';
 import { CatmullCurve3D } from '../../math/catmull-curve';
 import { DragPoint } from '../../math/dragpoint';
 import { f4 } from '../../math/float';
+import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3DNoTex2 } from '../../math/vertex';
 import { Vertex2D } from '../../math/vertex2d';
 import { RenderVertex3D, Vertex3D } from '../../math/vertex3d';
@@ -27,23 +29,92 @@ import { RampImageAlignment, RampType } from '../enums';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { RampData } from './ramp-data';
+import { RampState } from './ramp-state';
 
 export class RampMeshGenerator {
 
 	private readonly data: RampData;
+	private readonly state: RampState;
 
-	constructor(data: RampData) {
+	constructor(data: RampData, state: RampState) {
 		this.data = data;
+		this.state = state;
 	}
 
-	public getMeshes(table: Table): RampMeshes {
+	public getMeshes<GEOMETRY>(isTransparent: boolean, table: Table): Meshes<GEOMETRY> {
+		const meshes: Meshes<GEOMETRY> = {};
+		const ramp = this.generateMeshes(table);
+
+		if (ramp.wire1) {
+			meshes.wire1 = {
+				isVisible: this.data.isVisible,
+				mesh: ramp.wire1.transform(Matrix3D.RIGHT_HANDED),
+				material: table.getMaterial(this.data.szMaterial),
+				isTransparent,
+			};
+		}
+		if (ramp.wire2) {
+			meshes.wire2 = {
+				isVisible: this.data.isVisible,
+				mesh: ramp.wire2.transform(Matrix3D.RIGHT_HANDED),
+				material: table.getMaterial(this.data.szMaterial),
+				isTransparent,
+			};
+		}
+		if (ramp.wire3) {
+			meshes.wire3 = {
+				isVisible: this.data.isVisible,
+				mesh: ramp.wire3.transform(Matrix3D.RIGHT_HANDED),
+				material: table.getMaterial(this.data.szMaterial),
+				isTransparent,
+			};
+		}
+		if (ramp.wire4) {
+			meshes.wire4 = {
+				isVisible: this.data.isVisible,
+				mesh: ramp.wire4.transform(Matrix3D.RIGHT_HANDED),
+				material: table.getMaterial(this.data.szMaterial),
+				isTransparent,
+			};
+		}
+		if (ramp.floor) {
+			meshes.floor = {
+				isVisible: this.data.isVisible,
+				mesh: ramp.floor.transform(Matrix3D.RIGHT_HANDED),
+				material: table.getMaterial(this.data.szMaterial),
+				map: table.getTexture(this.data.szImage),
+				isTransparent,
+			};
+		}
+		if (ramp.left) {
+			meshes.left = {
+				isVisible: this.data.isVisible,
+				mesh: ramp.left.transform(Matrix3D.RIGHT_HANDED),
+				material: table.getMaterial(this.data.szMaterial),
+				map: table.getTexture(this.data.szImage),
+				isTransparent,
+			};
+		}
+		if (ramp.right) {
+			meshes.right = {
+				isVisible: this.data.isVisible,
+				mesh: ramp.right.transform(Matrix3D.RIGHT_HANDED),
+				material: table.getMaterial(this.data.szMaterial),
+				map: table.getTexture(this.data.szImage),
+				isTransparent,
+			};
+		}
+		return meshes;
+	}
+
+	public generateMeshes(table: Table): RampMeshes {
 		const meshes: RampMeshes = {};
 		if (!this.isHabitrail()) {
 			return this.generateFlatMesh(table);
 
 		} else {
 			const [wireMeshA, wireMeshB] = this.generateWireMeshes(table);
-			switch (this.data.rampType) {
+			switch (this.state.type) {
 				case RampType.RampType1Wire: {
 					wireMeshA.name = `ramp.wire1-${this.data.getName()}`;
 					meshes.wire1 = wireMeshA;
@@ -93,10 +164,10 @@ export class RampMeshGenerator {
 		const meshes: RampMeshes = {
 			floor: this.generateFlatFloorMesh(table, rv),
 		};
-		if (this.data.leftWallHeightVisible > 0.0) {
+		if (this.state.leftWallHeightVisible > 0.0) {
 			meshes.left = this.generateFlatLeftWall(table, rv);
 		}
-		if (this.data.rightWallHeightVisible > 0.0) {
+		if (this.state.rightWallHeightVisible > 0.0) {
 			meshes.right = this.generateFlatRightWall(table, rv);
 		}
 		return meshes;
@@ -125,8 +196,8 @@ export class RampMeshGenerator {
 			rgv3d2.y = rv.rgvLocal[rampVertex * 2 - i - 1].y;
 			rgv3d2.z = rgv3d1.z;
 
-			if (this.data.szImage) {
-				if (this.data.imageAlignment === RampImageAlignment.ImageModeWorld) {
+			if (this.state.texture) {
+				if (this.state.textureAlignment === RampImageAlignment.ImageModeWorld) {
 					rgv3d1.tu = rgv3d1.x * invTableWidth;
 					rgv3d1.tv = rgv3d1.y * invTableHeight;
 					rgv3d2.tu = rgv3d2.x * invTableWidth;
@@ -186,10 +257,10 @@ export class RampMeshGenerator {
 
 			rgv3d2.x = rgv3d1.x;
 			rgv3d2.y = rgv3d1.y;
-			rgv3d2.z = f4(rgHeight[i] + this.data.leftWallHeightVisible) * table.getScaleZ();
+			rgv3d2.z = f4(rgHeight[i] + this.state.leftWallHeightVisible) * table.getScaleZ();
 
-			if (this.data.szImage && this.data.imageWalls) {
-				if (this.data.imageAlignment === RampImageAlignment.ImageModeWorld) {
+			if (this.state.texture && this.state.hasWallImage) {
+				if (this.state.textureAlignment === RampImageAlignment.ImageModeWorld) {
 					rgv3d1.tu = rgv3d1.x * invTableWidth;
 					rgv3d1.tv = rgv3d1.y * invTableHeight;
 
@@ -245,10 +316,10 @@ export class RampMeshGenerator {
 
 			rgv3d2.x = rv.rgvLocal[i].x;
 			rgv3d2.y = rv.rgvLocal[i].y;
-			rgv3d2.z = f4(rgHeight[i] + this.data.rightWallHeightVisible) * table.getScaleZ();
+			rgv3d2.z = f4(rgHeight[i] + this.state.rightWallHeightVisible) * table.getScaleZ();
 
-			if (this.data.szImage && this.data.imageWalls) {
-				if (this.data.imageAlignment === RampImageAlignment.ImageModeWorld) {
+			if (this.state.texture && this.state.hasWallImage) {
+				if (this.state.textureAlignment === RampImageAlignment.ImageModeWorld) {
 					rgv3d1.tu = rgv3d1.x * invTableWidth;
 					rgv3d1.tv = rgv3d1.y * invTableHeight;
 
@@ -297,7 +368,7 @@ export class RampMeshGenerator {
 		}
 
 		// as solid ramps are rendered into the static buffer, always use maximum precision
-		const mat = table.getMaterial(this.data.szMaterial);
+		const mat = table.getMaterial(this.state.material);
 		if (!mat || !mat.isOpacityActive) {
 			accuracy = f4(12.0); // see above
 		}
@@ -319,7 +390,7 @@ export class RampMeshGenerator {
 		let vertBuffer: Vertex3DNoTex2[] = [];
 		let vertBuffer2: Vertex3DNoTex2[] = [];
 
-		if (this.data.rampType !== RampType.RampType1Wire) {
+		if (this.state.type !== RampType.RampType1Wire) {
 			vertBuffer = this.createWire(numRings, numSegments, rv.rgvLocal, rgheightInit);
 			vertBuffer2 = this.createWire(numRings, numSegments, tmpPoints, rgheightInit);
 		} else {
@@ -367,7 +438,7 @@ export class RampMeshGenerator {
 
 		meshes.push(new Mesh(vertBuffer, indices));
 
-		if (this.data.rampType !== RampType.RampType1Wire) {
+		if (this.state.type !== RampType.RampType1Wire) {
 			meshes.push(new Mesh(vertBuffer2, indices));
 		}
 
@@ -443,8 +514,8 @@ export class RampMeshGenerator {
 		// Compute an approximation to the length of the central curve
 		// by adding up the lengths of the line segments.
 		let totalLength = 0;
-		const bottomHeight = f4(this.data.heightBottom + table.getTableHeight());
-		const topHeight = f4(this.data.heightTop + table.getTableHeight());
+		const bottomHeight = f4(this.state.heightBottom + table.getTableHeight());
+		const topHeight = f4(this.state.heightTop + table.getTableHeight());
 
 		for (let i = 0; i < (cvertex - 1); i++) {
 
@@ -529,7 +600,7 @@ export class RampMeshGenerator {
 			currentLength = f4(currentLength + length);
 
 			const percentage = f4(currentLength / totalLength);
-			let currentWidth = f4(f4(percentage * f4(this.data.widthTop - this.data.widthBottom)) + this.data.widthBottom);
+			let currentWidth = f4(f4(percentage * f4(this.state.widthTop - this.state.widthBottom)) + this.state.widthBottom);
 			ppheight[i] = f4(f4(vmiddle.z + f4(percentage * f4(topHeight - bottomHeight))) + bottomHeight);
 
 			this.assignHeightToControlPoint(vvertex[i], f4(f4(vmiddle.z + f4(percentage * f4(topHeight - bottomHeight))) + bottomHeight));
@@ -537,12 +608,12 @@ export class RampMeshGenerator {
 
 			// only change the width if we want to create vertices for rendering or for the editor
 			// the collision engine uses flat type ramps
-			if (this.isHabitrail() && this.data.rampType !== RampType.RampType1Wire) {
+			if (this.isHabitrail() && this.state.type !== RampType.RampType1Wire) {
 				currentWidth = this.data.wireDistanceX;
 				if (incWidth) {
 					currentWidth = f4(currentWidth + 20.0);
 				}
-			} else if (this.data.rampType === RampType.RampType1Wire) {
+			} else if (this.state.type === RampType.RampType1Wire) {
 				currentWidth = this.data.wireDiameter;
 			}
 
@@ -561,7 +632,7 @@ export class RampMeshGenerator {
 		if (acc !== -1.0) {
 			accuracy = acc; // used for hit shape calculation, always!
 		} else {
-			const mat = table.getMaterial(this.data.szMaterial);
+			const mat = table.getMaterial(this.state.material);
 			if (!mat || !mat.isOpacityActive) {
 				accuracy = 10.0;
 			} else {
@@ -573,11 +644,11 @@ export class RampMeshGenerator {
 	}
 
 	private isHabitrail(): boolean {
-		return this.data.rampType === RampType.RampType4Wire
-			|| this.data.rampType === RampType.RampType1Wire
-			|| this.data.rampType === RampType.RampType2Wire
-			|| this.data.rampType === RampType.RampType3WireLeft
-			|| this.data.rampType === RampType.RampType3WireRight;
+		return this.state.type === RampType.RampType4Wire
+			|| this.state.type === RampType.RampType1Wire
+			|| this.state.type === RampType.RampType2Wire
+			|| this.state.type === RampType.RampType3WireLeft
+			|| this.state.type === RampType.RampType3WireRight;
 	}
 
 	private assignHeightToControlPoint(v: RenderVertex3D, height: number) {

@@ -41,7 +41,7 @@ export class SpinnerUpdater extends ItemUpdater<SpinnerState> {
 		Object.assign(this.state, state);
 
 		this.applyVisibility(obj, state, renderApi);
-		this.applyMaterial(obj, state.name, state.material, state.texture, renderApi, table);
+		this.applyMaterial(obj, state.material, state.texture, renderApi, table);
 
 		if (state.showBracket !== undefined) {
 			renderApi.applyVisibility(state.showBracket, renderApi.findInGroup(obj, `spinner.bracket-${state.name}`));
