@@ -41,7 +41,7 @@ export class ThreeConverter {
 		this.meshConvertOpts = opts;
 	}
 
-	public async createObject(renderable: IRenderable<ItemState>, table: Table, renderApi: IRenderApi<Object3D, BufferGeometry, PointLight>, opts: TableGenerateOptions): Promise<Group> {
+	public createObject(renderable: IRenderable<ItemState>, table: Table, renderApi: IRenderApi<Object3D, BufferGeometry, PointLight>, opts: TableGenerateOptions): Group {
 		const objects = renderable.getMeshes(table, renderApi, opts);
 		const itemGroup = new Group();
 		itemGroup.matrixAutoUpdate = false;
@@ -49,13 +49,13 @@ export class ThreeConverter {
 		itemGroup.visible = renderable.getState().isVisible;
 		let obj: RenderInfo<BufferGeometry>;
 		for (obj of Object.values<RenderInfo<BufferGeometry>>(objects)) {
-			const mesh = await this.createMesh(obj);
+			const mesh = this.createMesh(obj);
 			itemGroup.add(mesh);
 		}
 		return itemGroup;
 	}
 
-	private async createMesh(obj: RenderInfo<BufferGeometry>): Promise<ThreeMesh> {
+	public createMesh(obj: RenderInfo<BufferGeometry>): ThreeMesh {
 		/* istanbul ignore if */
 		if (!obj.geometry && !obj.mesh) {
 			throw new Error('Mesh export must either provide mesh or geometry.');

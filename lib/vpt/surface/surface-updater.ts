@@ -71,7 +71,7 @@ export class SurfaceUpdater extends ItemUpdater<SurfaceState> {
 		if (state.isTopVisible !== undefined) {
 			renderApi.applyVisibility(state.isTopVisible, topObj);
 		}
-		this.applyMaterial(topObj, state.name, state.topMaterial, state.topTexture, renderApi, table);
+		this.applyMaterial(topObj, state.topMaterial, state.topTexture, renderApi, table);
 	}
 
 	public applySideState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: SurfaceState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
@@ -79,6 +79,6 @@ export class SurfaceUpdater extends ItemUpdater<SurfaceState> {
 		if (state.isSideVisible !== undefined) {
 			renderApi.applyVisibility(state.isSideVisible, sideObj);
 		}
-		this.applyMaterial(sideObj, state.name, state.sideMaterial, state.sideTexture, renderApi, table);
+		this.applyMaterial(sideObj, state.sideMaterial, state.sideTexture, renderApi, table);
 	}
 }

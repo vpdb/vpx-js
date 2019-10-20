@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { IRenderable } from '../../game/irenderable';
+import { IRenderable, RenderInfo } from '../../game/irenderable';
 import { Matrix3D } from '../../math/matrix3d';
 import { BufferGeometry, Group, Matrix4, MeshStandardMaterial, Object3D, PointLight, Vector2 } from '../../refs.node';
 import { Pool } from '../../util/object-pool';
@@ -114,6 +114,16 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		group.remove(obj);
 	}
 
+	public removeChildren(node: Object3D | undefined): void {
+		/* istanbul ignore next */
+		if (!node) {
+			return;
+		}
+		if (node.children) {
+			node.remove(...node.children);
+		}
+	}
+
 	public applyMatrixToNode(matrix: Matrix3D, obj: Object3D): void {
 		/* istanbul ignore next */
 		if (!obj) {
@@ -175,16 +185,31 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		if (!obj) {
 			return;
 		}
-		const threeMaterial: MeshStandardMaterial = (obj as any).material;
-		this.materialGenerator.applyMaterial(threeMaterial, material);
-		this.materialGenerator.applyMap(threeMaterial, map);
-		this.materialGenerator.applyNormalMap(threeMaterial, normalMap);
-		this.materialGenerator.applyEnvMap(threeMaterial, envMap);
-		this.materialGenerator.applyEmissiveMap(threeMaterial, emissiveMap);
+		if (obj.children && obj.children.length > 0) {
+			for (const child of obj.children) {
+				const threeMaterial: MeshStandardMaterial = (child as any).material;
+				this.materialGenerator.applyMaterial(threeMaterial, material);
+				this.materialGenerator.applyMap(threeMaterial, map);
+				this.materialGenerator.applyNormalMap(threeMaterial, normalMap);
+				this.materialGenerator.applyEnvMap(threeMaterial, envMap);
+				this.materialGenerator.applyEmissiveMap(threeMaterial, emissiveMap);
+			}
+		} else {
+			const threeMaterial: MeshStandardMaterial = (obj as any).material;
+			this.materialGenerator.applyMaterial(threeMaterial, material);
+			this.materialGenerator.applyMap(threeMaterial, map);
+			this.materialGenerator.applyNormalMap(threeMaterial, normalMap);
+			this.materialGenerator.applyEnvMap(threeMaterial, envMap);
+			this.materialGenerator.applyEmissiveMap(threeMaterial, emissiveMap);
+		}
 	}
 
-	public async createObjectFromRenderable(renderable: IRenderable<ItemState>, table: Table, opts: TableGenerateOptions): Promise<Group> {
+	public createObjectFromRenderable(renderable: IRenderable<ItemState>, table: Table, opts: TableGenerateOptions): Group {
 		return this.converter.createObject(renderable, table, this, opts);
+	}
+
+	public createMesh(obj: RenderInfo<BufferGeometry>): Object3D {
+		return this.converter.createMesh(obj);
 	}
 
 	public createLightGeometry(lightData: LightData, table: Table): BufferGeometry {

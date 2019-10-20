@@ -40,7 +40,7 @@ export class GateUpdater extends ItemUpdater<GateState> {
 		Object.assign(this.state, state);
 
 		this.applyVisibility(obj, state, renderApi);
-		this.applyMaterial(obj, state.name, state.material, undefined, renderApi, table);
+		this.applyMaterial(obj, state.material, undefined, renderApi, table);
 
 		if (state.showBracket !== undefined) {
 			renderApi.applyVisibility(state.showBracket, renderApi.findInGroup(obj, `gate.bracket-${state.name}`));

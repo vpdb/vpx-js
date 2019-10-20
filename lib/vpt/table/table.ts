@@ -389,7 +389,7 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 	 */
 	public async generateTableNode<NODE, GEOMETRY, POINT_LIGHT>(renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, opts: TableExportOptions = {}): Promise<NODE> {
 		await renderApi.preloadTextures(Object.values(this.textures), this);
-		return await this.meshGenerator!.generateTableNode(renderApi, opts);
+		return this.meshGenerator!.generateTableNode(renderApi, opts);
 	}
 
 	public prepareToPlay() {

@@ -47,7 +47,7 @@ export class TableExporter {
 	private async export<T>(opts: TableExportOptions): Promise<T> {
 		// we always use Three.js for GLTF generation
 		const renderApi = new ThreeRenderApi(opts);
-		const playfieldGroup = await this.meshGenerator.generateTableNode(renderApi, opts);
+		const playfieldGroup = this.meshGenerator.generateTableNode(renderApi, opts);
 
 		const scene = new Scene();
 		scene.name = 'table';

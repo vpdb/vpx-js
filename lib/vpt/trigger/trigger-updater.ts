@@ -35,7 +35,7 @@ export class TriggerUpdater extends ItemUpdater<TriggerState> {
 		Object.assign(this.state, state);
 
 		this.applyVisibility(obj, state, renderApi);
-		this.applyMaterial(obj, state.name, state.material, undefined, renderApi, table);
+		this.applyMaterial(obj, state.material, undefined, renderApi, table);
 		this.applyAnimation(obj, state, renderApi);
 	}
 

@@ -39,7 +39,7 @@ export class PrimitiveUpdater extends ItemUpdater<PrimitiveState> {
 		Object.assign(this.state, state);
 
 		this.applyVisibility(obj, state, renderApi);
-		this.applyMaterial(obj, `flipper-${state.name}`, state.material, state.map, renderApi, table); // TODO normal map
+		this.applyMaterial(obj, state.material, state.map, renderApi, table); // TODO normal map
 
 		if (state.position || state.size || state.rotation || state.translation || state.objectRotation) {
 			this.applyTransformation(obj, renderApi, table);

@@ -24,30 +24,31 @@ export class RampState extends ItemState {
 
 	public static readonly POOL = new Pool(RampState);
 
-	public heightBottom?: number;
-	public heightTop?: number;
-	public widthBottom?: number;
-	public widthTop?: number;
+	public type?: number;
+
+	public heightBottom!: number;
+	public heightTop!: number;
+	public widthBottom!: number;
+	public widthTop!: number;
 	public leftWallHeight?: number;
 	public rightWallHeight?: number;
-	public leftWallHeightVisible?: number;
-	public rightWallHeightVisible?: number;
-	public type?: number;
+	public leftWallHeightVisible!: number;
+	public rightWallHeightVisible!: number;
+	public depthBias?: number;
 
 	public material?: string;
 	public texture?: string;
 	public textureAlignment?: number;
 	public hasWallImage?: boolean;
-	public depthBias?: number;
 
 	public constructor() {
 		super();
 	}
 
-	public static claim(name: string, heightBottom: number | undefined, heightTop: number | undefined,
-						widthBottom: number | undefined, widthTop: number | undefined,
+	public static claim(name: string, heightBottom: number, heightTop: number,
+						widthBottom: number, widthTop: number,
 						leftWallHeight: number | undefined, rightWallHeight: number | undefined,
-						leftWallHeightVisible: number | undefined, rightWallHeightVisible: number | undefined,
+						leftWallHeightVisible: number, rightWallHeightVisible: number,
 						type: number | undefined,
 						material: string | undefined, texture: string | undefined, textureAlignment: number | undefined,
 						hasWallImage: boolean | undefined, depthBias: number | undefined, isVisible: boolean): RampState {
