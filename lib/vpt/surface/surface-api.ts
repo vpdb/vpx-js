@@ -19,20 +19,23 @@
 
 import { EventProxy } from '../../game/event-proxy';
 import { Player } from '../../game/player';
+import { HitObject } from '../../physics/hit-object';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
-import { Surface } from './surface';
 import { SurfaceData } from './surface-data';
 import { SurfaceHitGenerator } from './surface-hit-generator';
+import { SurfaceState } from './surface-state';
 
 export class SurfaceApi extends ItemApi<SurfaceData> {
 
-	private readonly surface: Surface;
 	private readonly hitGenerator: SurfaceHitGenerator;
+	private readonly state: SurfaceState;
+	private readonly hits: HitObject[];
 
-	constructor(surface: Surface, data: SurfaceData, hitGenerator: SurfaceHitGenerator, events: EventProxy, player: Player, table: Table) {
+	constructor(state: SurfaceState, data: SurfaceData, hits: HitObject[], hitGenerator: SurfaceHitGenerator, events: EventProxy, player: Player, table: Table) {
 		super(data, events, player, table);
-		this.surface = surface;
+		this.state = state;
+		this.hits = hits;
 		this.hitGenerator = hitGenerator;
 	}
 
@@ -64,8 +67,8 @@ export class SurfaceApi extends ItemApi<SurfaceData> {
 	set FlipbookAnimation(v) { this.data.isFlipbook = v; }
 	get IsBottomSolid() { return this.data.isBottomSolid; }
 	set IsBottomSolid(v) { this.data.isBottomSolid = v; }
-	get IsDropped() { return this.surface.isDropped; }
-	set IsDropped(v) { this.surface.setDropped(v); }
+	get IsDropped() { return this.state.isDropped; }
+	set IsDropped(v) { this._setDropped(v); }
 	get DisplayTexture() { return this.data.displayTexture; }
 	set DisplayTexture(v) { this.data.displayTexture = v; }
 	get SlingshotStrength() { return this.data.slingshotForce; }
@@ -80,12 +83,12 @@ export class SurfaceApi extends ItemApi<SurfaceData> {
 	set Visible(v) { this.data.isTopBottomVisible = v; }
 	get SideImage() { return this.data.szSideImage; }
 	set SideImage(v) { this._assertNonHdrImage(v); this.data.szSideImage = v; }
-	get Disabled() { return this.surface.isDisabled; }
-	set Disabled(v) { this.surface.isDisabled = v; }
-	get SideVisible() { return this.data.isSideVisible; }
+	get Disabled() { return this.data.isDisabled; }
+	set Disabled(v) { this.data.isDisabled = v; }
+	get SideVisible() { return this.state.isSideVisible; }
 	set SideVisible(v) { this.data.isSideVisible = v; }
 	get Collidable() { return this.data.isCollidable; }
-	set Collidable(v) { this.surface.setCollidable(v); }
+	set Collidable(v) { this._setCollidable(v); }
 	get SlingshotThreshold() { return this.data.slingshotThreshold; }
 	set SlingshotThreshold(v) { this.data.slingshotThreshold = v; }
 	get SlingshotAnimation() { return this.data.slingshotAnimation; }
@@ -102,6 +105,30 @@ export class SurfaceApi extends ItemApi<SurfaceData> {
 	public PlaySlingshotHit() {
 		for (const slingLine of this.hitGenerator.lineSling) {
 			slingLine.doHitEvent = true;
+		}
+	}
+
+	private _setDropped(isDropped: boolean): void {
+		if (!this.data.isDroppable) {
+			throw new Error(`Surface "${this.Name}" is not droppable.`);
+		}
+		if (this.state.isDropped !== isDropped) {
+			this.state.isDropped = isDropped;
+			const b = !this.state.isDropped && this.data.isCollidable;
+			if (this.hits.length > 0 && this.hits[0].isEnabled !== b) {
+				for (const drop of this.hits) { // !! costly
+					drop.setEnabled(b); // disable hit on entities composing the object
+				}
+			}
+		}
+	}
+
+	private _setCollidable(isCollidable: boolean) {
+		const b = this.data.isDroppable ? (isCollidable && !this.state.isDropped) : isCollidable;
+		if (this.hits.length > 0 && this.hits[0].isEnabled !== b) {
+			for (const hit of this.hits) { // !! costly
+				hit.isEnabled = b; // copy to hit checking on enities composing the object
+			}
 		}
 	}
 }

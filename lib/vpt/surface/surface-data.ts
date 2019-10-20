@@ -55,6 +55,9 @@ export class SurfaceData extends ItemData implements IPhysicalData {
 	public isReflectionEnabled: boolean = true;
 	public dragPoints: DragPoint[] = [];
 
+	// non-persisted
+	public isDisabled = false;
+
 	public static async fromStorage(storage: Storage, itemName: string): Promise<SurfaceData> {
 		const surfaceData = new SurfaceData(itemName);
 		await storage.streamFiltered(itemName, 4, SurfaceData.createStreamHandler(surfaceData));

@@ -33,6 +33,7 @@ import { SurfaceData } from './surface-data';
 import { SurfaceHitGenerator } from './surface-hit-generator';
 import { SurfaceMeshGenerator } from './surface-mesh-generator';
 import { SurfaceState } from './surface-state';
+import { SurfaceUpdater } from './surface-updater';
 
 /**
  * VPinball's surfaces, a.k.a as "walls".
@@ -47,10 +48,8 @@ export class Surface extends Item<SurfaceData> implements IRenderable<SurfaceSta
 	private readonly hitGenerator: SurfaceHitGenerator;
 	private hits: HitObject[] = [];
 	private drops: HitObject[] = [];
-
 	private api?: SurfaceApi;
-	public isDropped: boolean = false;
-	public isDisabled: boolean = false;
+	private updater?: SurfaceUpdater;
 
 	// public getters
 	get heightTop() { return this.data.heightTop; }
@@ -63,7 +62,7 @@ export class Surface extends Item<SurfaceData> implements IRenderable<SurfaceSta
 
 	public constructor(itemName: string, data: SurfaceData) {
 		super(data);
-		this.state = SurfaceState.claim(data.getName(), data.heightTop,
+		this.state = SurfaceState.claim(data.getName(), false,
 			data.isTopBottomVisible, data.szTopMaterial, data.szImage,
 			data.isSideVisible, data.szSideMaterial, data.szSideImage);
 		this.itemName = itemName;
@@ -86,30 +85,6 @@ export class Surface extends Item<SurfaceData> implements IRenderable<SurfaceSta
 			result = result || !topMaterial || topMaterial.isOpacityActive;
 		}
 		return result;
-	}
-
-	public setDropped(isDropped: boolean): void {
-		if (!this.data.isDroppable) {
-			throw new Error(`Surface "${this.getName()}" is not droppable.`);
-		}
-		if (this.isDropped !== isDropped) {
-			this.isDropped = isDropped;
-			const b = !this.isDropped && this.data.isCollidable;
-			if (this.drops.length > 0 && this.drops[0].isEnabled !== b) {
-				for (const drop of this.drops) { // !! costly
-					drop.setEnabled(b); // disable hit on entities composing the object
-				}
-			}
-		}
-	}
-
-	public setCollidable(isCollidable: boolean) {
-		const b = this.data.isDroppable ? (isCollidable && !this.isDropped) : isCollidable;
-		if (this.hits.length > 0 && this.hits[0].isEnabled !== b) {
-			for (const hit of this.hits) { // !! costly
-				hit.isEnabled = b; // copy to hit checking on enities composing the object
-			}
-		}
 	}
 
 	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
@@ -142,7 +117,8 @@ export class Surface extends Item<SurfaceData> implements IRenderable<SurfaceSta
 		this.events = new EventProxy(this);
 		this.hits = this.hitGenerator.generateHitObjects(this.events, player.getPhysics(), table);
 		this.drops = this.data.isCollidable ? this.hits : [];
-		this.api = new SurfaceApi(this, this.data, this.hitGenerator, this.events, player, table);
+		this.api = new SurfaceApi(this.state, this.data, this.hits, this.hitGenerator, this.events, player, table);
+		this.updater = new SurfaceUpdater(this.state, this.data, table);
 	}
 
 	public getApi(): SurfaceApi {
@@ -153,7 +129,7 @@ export class Surface extends Item<SurfaceData> implements IRenderable<SurfaceSta
 		return this.state;
 	}
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: SurfaceState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: SurfaceState): void {
-		// TODO implement
+		this.updater!.applyState(obj, state, renderApi, table);
 	}
 
 	public getHitShapes(): HitObject[] {
