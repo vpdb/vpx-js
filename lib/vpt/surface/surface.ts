@@ -63,7 +63,9 @@ export class Surface extends Item<SurfaceData> implements IRenderable<SurfaceSta
 
 	public constructor(itemName: string, data: SurfaceData) {
 		super(data);
-		this.state = SurfaceState.claim(data.getName(), data.szTopMaterial!, data.isSideVisible || data.isTopBottomVisible);
+		this.state = SurfaceState.claim(data.getName(), data.heightTop,
+			data.isTopBottomVisible, data.szTopMaterial, data.szImage,
+			data.isSideVisible, data.szSideMaterial, data.szSideImage);
 		this.itemName = itemName;
 		this.meshGenerator = new SurfaceMeshGenerator();
 		this.hitGenerator = new SurfaceHitGenerator(this, data);
