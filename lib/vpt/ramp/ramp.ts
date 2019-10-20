@@ -36,6 +36,7 @@ import { RampData } from './ramp-data';
 import { RampHitGenerator } from './ramp-hit-generator';
 import { RampMeshGenerator } from './ramp-mesh-generator';
 import { RampState } from './ramp-state';
+import { RampUpdater } from './ramp-updater';
 
 /**
  * VPinball's ramps.
@@ -48,6 +49,7 @@ export class Ramp extends Item<RampData> implements IRenderable<RampState>, IHit
 	private readonly hitGenerator: RampHitGenerator;
 
 	private readonly state: RampState;
+	private readonly updater: RampUpdater;
 	private hits?: HitObject[];
 	private api?: RampApi;
 
@@ -58,9 +60,14 @@ export class Ramp extends Item<RampData> implements IRenderable<RampState>, IHit
 
 	private constructor(data: RampData) {
 		super(data);
-		this.state = RampState.claim(data.getName(), data.szMaterial!, data.isVisible && data.widthTop > 0 && data.widthBottom > 0);
+		this.state = RampState.claim(data.getName(), data.heightBottom,
+			data.heightTop, data.widthBottom, data.widthTop, data.leftWallHeight, data.rightWallHeight,
+			data.leftWallHeightVisible, data.rightWallHeightVisible, data.rampType,
+			data.szMaterial, data.szImage, data.imageAlignment, data.imageWalls,
+			data.depthBias, data.isVisible && data.widthTop > 0 && data.widthBottom > 0);
 		this.meshGenerator = new RampMeshGenerator(data);
 		this.hitGenerator = new RampHitGenerator(data, this.meshGenerator);
+		this.updater = new RampUpdater(this.state);
 	}
 
 	public isCollidable(): boolean {
@@ -75,7 +82,7 @@ export class Ramp extends Item<RampData> implements IRenderable<RampState>, IHit
 	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
 		this.hits = this.hitGenerator.generateHitObjects(table, this.events);
-		this.api = new RampApi(this.hits, this.data, this.events, player, table);
+		this.api = new RampApi(this.state, this.hits, this.data, this.events, player, table);
 	}
 
 	public getApi(): RampApi {
@@ -87,7 +94,7 @@ export class Ramp extends Item<RampData> implements IRenderable<RampState>, IHit
 	}
 
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: RampState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: RampState): void {
-		// TODO implement
+		this.updater.applyState(obj, state, renderApi, table);
 	}
 
 	public getEventNames(): string[] {
