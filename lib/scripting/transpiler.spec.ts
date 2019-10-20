@@ -43,7 +43,7 @@ describe('The VBScript transpiler', () => {
 		const vbs = `Dim test\n`;
 		const transpiler = new Transpiler(table);
 		const js = transpiler.transpile(vbs, 'runTableScript');
-		expect(js).to.equal(`runTableScript = items => {\n    let test;\n};`);
+		expect(js).to.equal(`runTableScript = (items, enums) => {\n    let test;\n};`);
 	});
 
 	it('should wrap everything into a function of an object', () => {
@@ -51,7 +51,7 @@ describe('The VBScript transpiler', () => {
 		const vbs = `Dim test\n`;
 		const transpiler = new Transpiler(table);
 		const js = transpiler.transpile(vbs, 'runTableScript', 'window');
-		expect(js).to.equal(`window.runTableScript = items => {\n    let test;\n};`);
+		expect(js).to.equal(`window.runTableScript = (items, enums) => {\n    let test;\n};`);
 	});
 
 	it('should wrap everything into a function of an object', () => {
@@ -59,7 +59,7 @@ describe('The VBScript transpiler', () => {
 		const vbs = `Dim test\n`;
 		const transpiler = new Transpiler(table);
 		const js = transpiler.transpile(vbs, 'runTableScript', 'window');
-		expect(js).to.equal(`window.runTableScript = items => {\n    let test;\n};`);
+		expect(js).to.equal(`window.runTableScript = (items, enums) => {\n    let test;\n};`);
 	});
 
 	it('should execute the table script', () => {

@@ -48,7 +48,7 @@ export class Transpiler {
 		ast = scopeTransformer.transform(ast, globalFunction, 'items', 'enums', globalObject);
 		logger().debug('AST:', ast);
 
-		const js = '//@ sourceURL=tablescript.js\n' + this.generate(ast);
+		const js = this.generate(ast);
 		logger().debug(js);
 
 		return js;
@@ -60,7 +60,7 @@ export class Transpiler {
 		const js = this.transpile(vbs, 'play', globalObject);
 
 		// tslint:disable-next-line:no-eval
-		eval(js);
+		eval('//@ sourceURL=tablescript.js\n' + js);
 		play(this.table.getElementApis(), apiEnums);
 	}
 

@@ -40,29 +40,43 @@ describe('The scripting scope transformer', () => {
 	it('should wrap everything into a function', () => {
 
 		const vbs = `Dim test\n`;
-		const js = transform(vbs, 'tableScript', 'items', table);
-		expect(js).to.equal(`window.tableScript = items => {\n    let test;\n};`);
+		const js = transform(vbs, 'tableScript', 'items', 'enums', table);
+		expect(js).to.equal(`window.tableScript = (items, enums) => {\n    let test;\n};`);
 	});
 
 	it('should convert global to local variable if object exists', () => {
 
 		const vbs = `WireRectangle.SomeFunct\n`;
-		const js = transform(vbs, 'tableScript', 'items', table);
-		expect(js).to.equal(`window.tableScript = items => {\n    items.WireRectangle.SomeFunct();\n};`);
+		const js = transform(vbs, 'tableScript', 'items', 'enums', table);
+		expect(js).to.equal(`window.tableScript = (items, enums) => {\n    items.WireRectangle.SomeFunct();\n};`);
 	});
 
 	it('should not convert global to local if object does not exist', () => {
 
 		const vbs = `NoExisto.SomeFunct\n`;
-		const js = transform(vbs, 'tableScript', 'items', table);
-		expect(js).to.equal(`window.tableScript = items => {\n    NoExisto.SomeFunct();\n};`);
+		const js = transform(vbs, 'tableScript', 'items', 'enums', table);
+		expect(js).to.equal(`window.tableScript = (items, enums) => {\n    NoExisto.SomeFunct();\n};`);
+	});
+
+	it('should not convert a function into an enum', () => {
+
+		const vbs = `TriggerShape.TriggerButton\n`;
+		const js = transform(vbs, 'tableScript', 'items', 'enums', table);
+		expect(js).to.equal(`window.tableScript = (items, enums) => {\n    TriggerShape.TriggerButton();\n};`);
+	});
+
+	it('should convert an enum if enum exists', () => {
+
+		const vbs = `x = TriggerShape.TriggerButton\n`;
+		const js = transform(vbs, 'tableScript', 'items', 'enums', table);
+		expect(js).to.equal(`window.tableScript = (items, enums) => {\n    x = enums.TriggerShape.TriggerButton;\n};`);
 	});
 
 });
 
-function transform(vbs: string, fctName: string, paramName: string, table: Table): string {
+function transform(vbs: string, fctName: string, paramName: string, enumName: string, table: Table): string {
 	const ast = vbsToAst(vbs);
 	const scopeTransformer = new ScopeTransformer(table);
-	const eventAst = scopeTransformer.transform(ast, fctName, paramName,  'window');
+	const eventAst = scopeTransformer.transform(ast, fctName, paramName, enumName, 'window');
 	return astToVbs(eventAst);
 }

@@ -86,7 +86,7 @@ export class SurfaceApi extends ItemApi<SurfaceData> {
 	get Disabled() { return this.data.isDisabled; }
 	set Disabled(v) { this.data.isDisabled = v; }
 	get SideVisible() { return this.state.isSideVisible; }
-	set SideVisible(v) { this.data.isSideVisible = v; }
+	set SideVisible(v) { this.state.isSideVisible = v; }
 	get Collidable() { return this.data.isCollidable; }
 	set Collidable(v) { this._setCollidable(v); }
 	get SlingshotThreshold() { return this.data.slingshotThreshold; }
