@@ -24,34 +24,34 @@ export class SurfaceState extends ItemState {
 
 	public static readonly POOL = new Pool(SurfaceState);
 
-	public heightTop!: number;
+	public isDropped: boolean = false;
 
-	public topVisible: boolean = true;
+	public isTopVisible: boolean = true;
 	public topMaterial?: string;
 	public topTexture?: string;
 
-	public sideVisible: boolean = true;
+	public isSideVisible: boolean = true;
 	public sideMaterial?: string;
 	public sideTexture?: string;
 
-	get isVisible() { return this.topVisible || this.sideVisible; }
+	get isVisible() { return this.isTopVisible || this.isSideVisible; }
 	set isVisible(v) { /* not used in abstract */ }
 
 	public constructor() {
 		super();
 	}
 
-	public static claim(name: string, heightTop: number,
-						topVisible: boolean, topMaterial: string | undefined, topTexture: string | undefined,
-						sideVisible: boolean, sideMaterial: string | undefined, sideTexture: string | undefined): SurfaceState {
+	public static claim(name: string, isDropped: boolean,
+						isTopVisible: boolean, topMaterial: string | undefined, topTexture: string | undefined,
+						isSideVisible: boolean, sideMaterial: string | undefined, sideTexture: string | undefined): SurfaceState {
 
 		const state = SurfaceState.POOL.get();
 		state.name = name;
-		state.heightTop = heightTop;
-		state.topVisible = topVisible;
+		state.isDropped = isDropped;
+		state.isTopVisible = isTopVisible;
 		state.topMaterial = topMaterial;
 		state.topTexture = topTexture;
-		state.sideVisible = sideVisible;
+		state.isSideVisible = isSideVisible;
 		state.sideMaterial = sideMaterial;
 		state.sideTexture = sideTexture;
 		return state;
@@ -60,11 +60,11 @@ export class SurfaceState extends ItemState {
 	public clone(): SurfaceState {
 		return SurfaceState.claim(
 			this.name,
-			this.heightTop,
-			this.topVisible,
+			this.isDropped,
+			this.isTopVisible,
 			this.topMaterial,
 			this.topTexture,
-			this.sideVisible,
+			this.isSideVisible,
 			this.sideMaterial,
 			this.sideTexture,
 		);
@@ -72,11 +72,11 @@ export class SurfaceState extends ItemState {
 
 	public diff(state: SurfaceState): SurfaceState {
 		const diff = this.clone();
-		if (diff.heightTop === state.heightTop) {
-			delete diff.heightTop;
+		if (diff.isDropped === state.isDropped) {
+			delete diff.isDropped;
 		}
-		if (diff.topVisible === state.topVisible) {
-			delete diff.topVisible;
+		if (diff.isTopVisible === state.isTopVisible) {
+			delete diff.isTopVisible;
 		}
 		if (diff.topMaterial === state.topMaterial) {
 			delete diff.topMaterial;
@@ -84,8 +84,8 @@ export class SurfaceState extends ItemState {
 		if (diff.topTexture === state.topTexture) {
 			delete diff.topTexture;
 		}
-		if (diff.sideVisible === state.sideVisible) {
-			delete diff.sideVisible;
+		if (diff.isSideVisible === state.isSideVisible) {
+			delete diff.isSideVisible;
 		}
 		if (diff.sideMaterial === state.sideMaterial) {
 			delete diff.sideMaterial;
@@ -105,11 +105,11 @@ export class SurfaceState extends ItemState {
 		if (!state) {
 			return false;
 		}
-		return state.heightTop === this.heightTop
-			&& state.topVisible === this.topVisible
+		return state.isDropped === this.isDropped
+			&& state.isTopVisible === this.isTopVisible
 			&& state.topMaterial === this.topMaterial
 			&& state.topTexture === this.topTexture
-			&& state.sideVisible === this.sideVisible
+			&& state.isSideVisible === this.isSideVisible
 			&& state.sideMaterial === this.sideMaterial
 			&& state.sideTexture === this.sideTexture;
 	}

@@ -20,6 +20,11 @@
 import { PlayerPhysics } from '../game/player-physics';
 import { AnimObject } from './anim-object';
 
+/**
+ * Slingshot animations are only visible when the ball hit the slingshot
+ * segment of a surface. They look ugly and I don't think they are used
+ * in any tables today. Thus, they aren't currently implemented.
+ */
 export class SlingshotAnimObject implements AnimObject {
 	/**
 	 * Time at which to pull in slingshot, Zero means the slingshot is currently reset

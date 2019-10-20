@@ -51,7 +51,7 @@ export class LineSegSlingshot extends LineSeg {
 		const dot = coll.hitNormal.dot(coll.ball.hit.vel);                    // normal velocity to slingshot
 		const threshold = (dot <= -this.surfaceData.slingshotThreshold);       // normal greater than threshold?
 
-		if (!this.surface.isDisabled && threshold) {                           // enabled and if velocity greater than threshold level
+		if (!this.surfaceData.isDisabled && threshold) {                           // enabled and if velocity greater than threshold level
 			const len = (this.v2.x - this.v1.x) * hitNormal.y - (this.v2.y - this.v1.y) * hitNormal.x; // length of segment, Unit TAN points from V1 to V2
 
 			const vHitPoint = Vertex2D.claim(
@@ -76,7 +76,7 @@ export class LineSegSlingshot extends LineSeg {
 
 		ball.hit.collide3DWall(hitNormal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 
-		if (this.obj && this.fe && !this.surface.isDisabled && this.threshold) {
+		if (this.obj && this.fe && !this.surfaceData.isDisabled && this.threshold) {
 			// is this the same place as last event? if same then ignore it
 			const eventPos = ball.hit.eventPos.clone(true);
 			const distLs = eventPos.sub(ball.state.pos).lengthSq();

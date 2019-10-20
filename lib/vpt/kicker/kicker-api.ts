@@ -47,8 +47,8 @@ export class KickerApi extends ItemApi<KickerData> {
 	set Y(v) { this.data.vCenter.y = v; }
 	get Surface() { return this.data.szSurface; }
 	set Surface(v) { this.data.szSurface = v; }
-	get Enabled() { return this.data.isEnabled; }
-	set Enabled(v) { this.data.isEnabled = v; }
+	get Enabled() { return this.hit.isEnabled; }
+	set Enabled(v) { this.hit.isEnabled = v; }
 	get Scatter() { return this.data.scatter; }
 	set Scatter(v) { this.data.scatter = v; }
 	get HitAccuracy() { return this.data.hitAccuracy; }
