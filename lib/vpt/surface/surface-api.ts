@@ -79,8 +79,8 @@ export class SurfaceApi extends ItemApi<SurfaceData> {
 	set Friction(v) { this.data.friction = v; }
 	get Scatter() { return this.data.scatter; }
 	set Scatter(v) { this.data.scatter = v; }
-	get Visible() { return this.data.isTopBottomVisible; }
-	set Visible(v) { this.data.isTopBottomVisible = v; }
+	get Visible() { return this.state.isTopVisible; }
+	set Visible(v) { this.state.isTopVisible = v; }
 	get SideImage() { return this.data.szSideImage; }
 	set SideImage(v) { this._assertNonHdrImage(v); this.data.szSideImage = v; }
 	get Disabled() { return this.data.isDisabled; }
