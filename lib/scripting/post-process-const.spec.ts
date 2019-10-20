@@ -62,4 +62,10 @@ describe('The VBScript transpiler - Const', () => {
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('const test1 = 39, test2 = 47;');
 	});
+
+	it('should transpile a Const declaration with literal in parenthesis', () => {
+		const vbs = `Const test1 = (5)\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('const test1 = 5;');
+	});
 });
