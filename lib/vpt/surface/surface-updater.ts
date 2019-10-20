@@ -17,20 +17,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Matrix3D } from '../../math/matrix3d';
 import { IRenderApi } from '../../render/irender-api';
 import { ItemUpdater } from '../item-updater';
 import { Table } from '../table/table';
 import { SurfaceData } from './surface-data';
 import { SurfaceState } from './surface-state';
-import { Matrix3D } from '../../math/matrix3d';
 
 export class SurfaceUpdater extends ItemUpdater<SurfaceState> {
 
 	private readonly data: SurfaceData;
 	private isDynamic?: boolean;
 
-
-	constructor(state: SurfaceState, data: SurfaceData, table: Table) {
+	constructor(state: SurfaceState, data: SurfaceData) {
 		super(state);
 		this.data = data;
 	}
