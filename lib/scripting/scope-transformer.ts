@@ -19,6 +19,7 @@
 
 import { replace } from 'estraverse';
 import { Program, Statement } from 'estree';
+import { TriggerShape } from '../vpt/enums';
 import { Table } from '../vpt/table/table';
 import {
 	arrowFunctionExpression,
@@ -40,25 +41,25 @@ export class ScopeTransformer {
 
 	private readonly table: Table;
 	private readonly items: { [p: string]: any };
+	private readonly enums = { TriggerShape };
 
 	constructor(table: Table) {
 		this.table = table;
 		this.items = table.getElementApis();
 	}
 
-	public transform(ast: Program, mainFunctionName: string, elementObjectName: string, globalObjectName?: string): Program {
-		return this.wrap(this.replaceElementObjectNames(ast, elementObjectName), mainFunctionName, elementObjectName, globalObjectName);
+	public transform(ast: Program, mainFunctionName: string, elementObjectName: string, enumObjectName: string, globalObjectName?: string): Program {
+		this.replaceElementObjectNames(ast, elementObjectName);
+		this.replaceEnumObjectNames(ast, enumObjectName);
+		return this.wrap(ast, mainFunctionName, elementObjectName, enumObjectName, globalObjectName);
 	}
 
 	/**
 	 * Replaces global variables that refer to table elements by a member
 	 * expression given by an object name.
-	 *
-	 * @param ast Original AST
-	 * @param elementObjectName The name of the object that contains all table elements.
 	 */
-	public replaceElementObjectNames(ast: Program, elementObjectName: string): Program {
-		return replace(ast, {
+	public replaceElementObjectNames(ast: Program, elementObjectName: string): void {
+		replace(ast, {
 			enter: (node, parent: any) => {
 				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === elementObjectName;
 				if (!alreadyReplaced && node.type === 'Identifier' && node.name in this.items) {
@@ -69,7 +70,26 @@ export class ScopeTransformer {
 				}
 				return node;
 			},
-		}) as Program;
+		});
+	}
+
+	public replaceEnumObjectNames(ast: Program, enumObjectName: string): void {
+		replace(ast, {
+			enter: (node, parent: any) => {
+				if ((node as any).name === 'TriggerShape') {
+					//debugger;
+				}
+				const isObject = parent.object && parent.object === node; // must be separate object (TriggerShape.xxx vs Trigger01.TriggerShape)
+				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === enumObjectName;
+				if (isObject && !alreadyReplaced && node.type === 'Identifier' && node.name in this.enums) {
+					return memberExpression(
+						identifier(enumObjectName),
+						identifier(node.name),
+					);
+				}
+				return node;
+			},
+		});
 	}
 
 	/**
@@ -78,27 +98,28 @@ export class ScopeTransformer {
 	 * @param ast Original AST
 	 * @param mainFunctionName Name of the function to wrap the code into
 	 * @param elementObjectName Name of the function parameter containing all table elements
+	 * @param enumObjectName Name of the function parameter containing all enums
 	 * @param globalObjectName Name of the global object the function will be added too. If not specified it'll be a global function.
 	 */
-	public wrap(ast: Program, mainFunctionName: string, elementObjectName: string, globalObjectName?: string): Program {
+	public wrap(ast: Program, mainFunctionName: string, elementObjectName: string, enumObjectName: string, globalObjectName?: string): Program {
 		return replace(ast, {
 			enter: node => {
 				if (node.type === 'Program') {
 					return program([
 						expressionStatement(
-						assignmentExpression(
-							globalObjectName
-								? memberExpression(
-										identifier(globalObjectName),
-										identifier(mainFunctionName),
+							assignmentExpression(
+								globalObjectName
+									? memberExpression(
+									identifier(globalObjectName),
+									identifier(mainFunctionName),
 									)
-								: identifier(mainFunctionName),
-							'=',
-							arrowFunctionExpression(false,
-								blockStatement(node.body as Statement[]),
-								[ identifier(elementObjectName) ],
-							),
-						)),
+									: identifier(mainFunctionName),
+								'=',
+								arrowFunctionExpression(false,
+									blockStatement(node.body as Statement[]),
+									[ identifier(elementObjectName), identifier(enumObjectName) ],
+								),
+							)),
 					]);
 				}
 			},

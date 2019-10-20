@@ -21,13 +21,14 @@ import { generate } from 'escodegen';
 import { Program } from 'estree';
 import { Grammar, Parser } from 'nearley';
 import { logger } from '../util/logger';
+import { apiEnums } from '../vpt/enums';
 import { Table } from '../vpt/table/table';
 import { EventTransformer } from './event-transformer';
 import { ScopeTransformer } from './scope-transformer';
 import vbsGrammar from './vbscript';
 
 // the table script function
-declare function play(table: { [key: string]: any }): void;
+declare function play(table: { [key: string]: any }, enums: any): void;
 
 export class Transpiler {
 
@@ -44,7 +45,7 @@ export class Transpiler {
 		const eventTransformer = new EventTransformer(this.table);
 
 		ast = eventTransformer.transform(ast);
-		ast = scopeTransformer.transform(ast, globalFunction, 'items', globalObject);
+		ast = scopeTransformer.transform(ast, globalFunction, 'items', 'enums', globalObject);
 		logger().debug('AST:', ast);
 
 		const js = '//@ sourceURL=tablescript.js\n' + this.generate(ast);
@@ -60,7 +61,7 @@ export class Transpiler {
 
 		// tslint:disable-next-line:no-eval
 		eval(js);
-		play(this.table.getElementApis());
+		play(this.table.getElementApis(), apiEnums);
 	}
 
 	private parse(vbs: string): Program {
