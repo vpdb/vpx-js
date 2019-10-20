@@ -18,7 +18,8 @@
  */
 
 import { replace } from 'estraverse';
-import { Program, Statement } from 'estree';
+import { Identifier, MemberExpression, Program, Statement } from 'estree';
+import { logger } from '../util/logger';
 import { TriggerShape } from '../vpt/enums';
 import { Table } from '../vpt/table/table';
 import {
@@ -41,7 +42,7 @@ export class ScopeTransformer {
 
 	private readonly table: Table;
 	private readonly items: { [p: string]: any };
-	private readonly enums = { TriggerShape };
+	private readonly enums: { [key: string]: any } = { TriggerShape };
 
 	constructor(table: Table) {
 		this.table = table;
@@ -76,15 +77,19 @@ export class ScopeTransformer {
 	public replaceEnumObjectNames(ast: Program, enumObjectName: string): void {
 		replace(ast, {
 			enter: (node, parent: any) => {
-				if ((node as any).name === 'TriggerShape') {
-					//debugger;
-				}
-				const isObject = parent.object && parent.object === node; // must be separate object (TriggerShape.xxx vs Trigger01.TriggerShape)
-				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === enumObjectName;
-				if (isObject && !alreadyReplaced && node.type === 'Identifier' && node.name in this.enums) {
-					return memberExpression(
+				const isFunction = parent && parent.type === 'CallExpression';
+				const isEnumIdentifier = node.type === 'MemberExpression' && node.object.type === 'Identifier' && node.property.type === 'Identifier' && node.object.name in this.enums;
+				if (isEnumIdentifier && !isFunction) {
+					const enumNode = node as MemberExpression;
+					const enumObject = enumNode.object as Identifier;
+					const enumProperty = enumNode.property as Identifier;
+					if (this.enums[enumObject.name][enumProperty.name] === undefined) {
+						logger().warn(`[scripting] Unknown value "${enumProperty.name}" of enum ${enumObject.name}.`);
+						return node;
+					}
+					enumNode.object = memberExpression(
 						identifier(enumObjectName),
-						identifier(node.name),
+						identifier(enumObject.name),
 					);
 				}
 				return node;
