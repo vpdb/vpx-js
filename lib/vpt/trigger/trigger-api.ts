@@ -45,7 +45,10 @@ export class TriggerApi extends ItemApi<TriggerData> {
 	get Enabled() { return this.data.isEnabled; }
 	set Enabled(v) { this.data.isEnabled = v; }
 	get Visible() { return this.state.isVisible; }
-	set Visible(v) { this.state.isVisible = v && this.data.shape !== TriggerShape.None; }
+	set Visible(v) {
+		this.data.isVisible = v;
+		this.state.isVisible = v && this.data.shape !== TriggerShape.TriggerNone;
+	}
 	get HitHeight() { return this.data.hitHeight; }
 	set HitHeight(v) { this.data.hitHeight = v; }
 	get Rotation() { return this.data.rotation; }
@@ -59,7 +62,7 @@ export class TriggerApi extends ItemApi<TriggerData> {
 	get TriggerShape() { return this.data.shape; }
 	set TriggerShape(v) {
 		this.data.shape = v;
-		this.state.isVisible = this.state.isVisible && v !== TriggerShape.None;
+		this.state.isVisible = this.data.isVisible && v !== TriggerShape.TriggerNone;
 	}
 	get ReflectionEnabled() { return this.data.isReflectionEnabled; }
 	set ReflectionEnabled(v) { this.data.isReflectionEnabled = v; }
