@@ -52,13 +52,13 @@ describe('The VBScript transpiler - Const', () => {
 	});
 
 	it('should transpile a Const declaration with hexadecimal values', () => {
-		const vbs = `Const test1 = &H0A&, test2 = &H0D&\n`;
+		const vbs = `Const test1 = &H0A&, test2 = &H0D\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('const test1 = 10, test2 = 13;');
 	});
 
 	it('should transpile a Const declaration with octal values', () => {
-		const vbs = `Const test1 = &47&, test2 = &57&\n`;
+		const vbs = `Const test1 = &47&, test2 = &57\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('const test1 = 39, test2 = 47;');
 	});
