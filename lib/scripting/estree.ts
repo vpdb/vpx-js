@@ -27,8 +27,6 @@ import {
 	BlockStatement,
 	BreakStatement,
 	CallExpression,
-	ClassBody,
-	ClassDeclaration,
 	Comment,
 	ConditionalExpression,
 	DoWhileStatement,
@@ -43,18 +41,15 @@ import {
 	IfStatement,
 	Literal,
 	MemberExpression,
-	MethodDefinition,
 	NewExpression,
 	Pattern,
 	Program,
 	ReturnStatement,
-	SequenceExpression,
 	SpreadElement,
 	Statement,
 	Super,
 	SwitchCase,
 	SwitchStatement,
-	ThisExpression,
 	UnaryExpression,
 	UnaryOperator,
 	VariableDeclaration,
@@ -92,28 +87,11 @@ export function literal(value: string | boolean | number | null, raw?: string | 
 	};
 }
 
-export function classBody(body: MethodDefinition[]): ClassBody {
-	return {
-		type: 'ClassBody',
-		body,
-	};
-}
-
 export function variableDeclarator(id: Identifier, init: Expression | null): VariableDeclarator {
 	return {
 		type: 'VariableDeclarator',
 		id,
 		init,
-	};
-}
-
-export function classDeclaration(id: Identifier, body: ClassBody, leadingComments: Comment[], trailingComments: Comment[]): ClassDeclaration {
-	return {
-		type: 'ClassDeclaration',
-		id,
-		body,
-		leadingComments,
-		trailingComments,
 	};
 }
 
@@ -136,21 +114,6 @@ export function variableDeclaration(kind: 'var' | 'let' | 'const', declarations:
 		declarations,
 		trailingComments,
 	};
-}
-
-export function methodDefinition(key: Expression, kind: 'constructor' | 'method' | 'get' | 'set', value: FunctionExpression): MethodDefinition {
-	return {
-		type: 'MethodDefinition',
-		key,
-		kind,
-		value,
-		static: false,
-		computed: false,
-	};
-}
-
-export function arrowFunctionExpressionBlock(body: Statement[], params: Pattern[] = []): ArrowFunctionExpression {
-	return arrowFunctionExpression(false, blockStatement(body), params);
 }
 
 export function arrayExpression(elements: Expression[] | SpreadElement[]): ArrayExpression {
@@ -230,19 +193,6 @@ export function newExpression(callee: Expression | Super, args: Expression[] | S
 		type: 'NewExpression',
 		callee,
 		arguments: args,
-	};
-}
-
-export function sequenceExpression(expressions: Expression[]): SequenceExpression {
-	return {
-		type: 'SequenceExpression',
-		expressions,
-	};
-}
-
-export function thisExpression(): ThisExpression {
-	return {
-		type: 'ThisExpression',
 	};
 }
 

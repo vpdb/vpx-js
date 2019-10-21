@@ -21,8 +21,9 @@ import { replace } from 'estraverse';
 import { Program, Statement } from 'estree';
 import { Table } from '../vpt/table/table';
 import {
-	arrowFunctionExpressionBlock,
+	arrowFunctionExpression,
 	assignmentExpression,
+	blockStatement,
 	expressionStatement,
 	identifier,
 	memberExpression,
@@ -93,8 +94,8 @@ export class ScopeTransformer {
 									)
 								: identifier(mainFunctionName),
 							'=',
-							arrowFunctionExpressionBlock(
-								node.body as Statement[],
+							arrowFunctionExpression(false,
+								blockStatement(node.body as Statement[]),
 								[ identifier(elementObjectName) ],
 							),
 						)),
