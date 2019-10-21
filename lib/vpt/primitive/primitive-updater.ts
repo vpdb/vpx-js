@@ -61,38 +61,38 @@ export class PrimitiveUpdater extends ItemUpdater<PrimitiveState> {
 
 		// translation matrix
 		const transMatrix = Matrix3D.claim().setTranslation(
-			((this.state.position as any)._x - this.data.position.x),
-			((this.state.position as any)._y - this.data.position.y),
+			-((this.state.position as any)._x - this.data.position.x),
+			-((this.state.position as any)._y - this.data.position.y),
 			((this.state.position as any)._z - this.data.position.z),
 		);
 
 		// translation + rotation matrix
 		const rotTransMatrix = Matrix3D.claim().setTranslation(
-			((this.state.translation as any)._x - this.data.rotAndTra[3]), // t
-			((this.state.translation as any)._y - this.data.rotAndTra[4]), // z
-			((this.state.translation as any)._z - this.data.rotAndTra[5]), // u
+			-(this.data.rotAndTra[3] - (this.state.translation as any)._x), // t
+			-(this.data.rotAndTra[4] - (this.state.translation as any)._y), // z
+			(this.data.rotAndTra[5] - (this.state.translation as any)._z), // u
 		);
 
 		const tempMatrix = Matrix3D.claim();
-		tempMatrix.rotateZMatrix(degToRad(this.data.rotAndTra[2] - (this.state.rotation as any)._z)); // r
+		tempMatrix.rotateZMatrix(degToRad(-(this.data.rotAndTra[2] - (this.state.rotation as any)._z))); // r
 		rotTransMatrix.multiply(tempMatrix);
 		tempMatrix.rotateYMatrix(degToRad(this.data.rotAndTra[1] - (this.state.rotation as any)._y)); // e
 		rotTransMatrix.multiply(tempMatrix);
 		tempMatrix.rotateXMatrix(degToRad(this.data.rotAndTra[0] - (this.state.rotation as any)._x)); // w
 		rotTransMatrix.multiply(tempMatrix);
 
-		tempMatrix.rotateZMatrix(degToRad((this.state.objectRotation as any)._z - this.data.rotAndTra[8])); // i
+		tempMatrix.rotateZMatrix(degToRad(-(this.data.rotAndTra[8] - (this.state.objectRotation as any)._z))); // i
 		rotTransMatrix.multiply(tempMatrix);
-		tempMatrix.rotateYMatrix(degToRad((this.state.objectRotation as any)._y - this.data.rotAndTra[7])); // o
+		tempMatrix.rotateYMatrix(degToRad(this.data.rotAndTra[7] - (this.state.objectRotation as any)._y)); // o
 		rotTransMatrix.multiply(tempMatrix);
-		tempMatrix.rotateXMatrix(degToRad((this.state.objectRotation as any)._x - this.data.rotAndTra[6])); // p
+		tempMatrix.rotateXMatrix(degToRad(this.data.rotAndTra[6] - (this.state.objectRotation as any)._x)); // p
 		rotTransMatrix.multiply(tempMatrix);
 
 		const matrix = matToOrigin
-			.multiply(scaleMatrix)
+			// .multiply(scaleMatrix)
 			.multiply(rotTransMatrix)
 			.multiply(transMatrix)
-			.multiply(scaleMatrixTable)
+			// .multiply(scaleMatrixTable)
 			.multiply(matFromOrigin);
 
 		renderApi.applyMatrixToNode(matrix, obj);
