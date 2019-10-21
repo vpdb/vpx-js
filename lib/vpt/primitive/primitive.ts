@@ -25,7 +25,6 @@ import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
-import { IRenderApi } from '../../render/irender-api';
 import { Ball } from '../ball/ball';
 import { Item } from '../item';
 import { Mesh } from '../mesh';
@@ -117,8 +116,8 @@ export class Primitive extends Item<PrimitiveData> implements IRenderable<Primit
 		return this.state;
 	}
 
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: PrimitiveState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: PrimitiveState): void {
-		this.updater!.applyState(obj, state, renderApi, table);
+	public getUpdater(): PrimitiveUpdater {
+		return this.updater;
 	}
 
 	public getHitShapes(): HitObject[] {

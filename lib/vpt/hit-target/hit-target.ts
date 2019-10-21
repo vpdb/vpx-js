@@ -23,12 +23,10 @@ import { IHittable } from '../../game/ihittable';
 import { IRenderable, Meshes } from '../../game/irenderable';
 import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
-import { PlayerPhysics } from '../../game/player-physics';
 import { Storage } from '../../io/ole-doc';
-import { degToRad, f4 } from '../../math/float';
+import { f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
-import { IRenderApi } from '../../render/irender-api';
 import { Ball } from '../ball/ball';
 import { Item } from '../item';
 import { Table } from '../table/table';
@@ -118,8 +116,8 @@ export class HitTarget extends Item<HitTargetData> implements IRenderable<HitTar
 		return this.animation!;
 	}
 
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: HitTargetState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
-		this.applyState(obj, state, renderApi, table);
+	public getUpdater(): HitTargetUpdater {
+		return this.updater;
 	}
 
 	public getEventNames(): string[] {

@@ -67,6 +67,7 @@ import { TableHitGenerator } from './table-hit-generator';
 import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
 import { TableState } from './table-state';
+import { TableUpdater } from './table-updater';
 
 /**
  * A Visual Pinball table.
@@ -83,6 +84,7 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 	private state?: TableState;
 	private events?: EventProxy;
 	private api?: TableApi;
+	private updater?: TableUpdater;
 
 	public readonly textures: { [key: string]: Texture } = {};
 	public readonly collections: { [key: string]: Collection } = {};
@@ -128,6 +130,7 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 			this.meshGenerator = new TableMeshGenerator(this);
 			this.hitGenerator = new TableHitGenerator(loadedTable.data);
 			this.state = TableState.claim(this.data.getName(), this.data.szPlayfieldMaterial, true);
+			this.updater = new TableUpdater(this.state);
 		}
 		if (loadedTable.info) {
 			this.info = loadedTable.info;
@@ -197,8 +200,8 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 		return this.state!;
 	}
 
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: TableState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: TableState): void {
-		// TODO implement
+	public getUpdater(): TableUpdater {
+		return this.updater!;
 	}
 
 	public getEventNames(): string[] {

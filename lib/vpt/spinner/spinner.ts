@@ -126,7 +126,7 @@ export class Spinner extends Item<SpinnerData> implements IRenderable<SpinnerSta
 		return this.state;
 	}
 
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: SpinnerState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
-		this.updater.applyState(obj, state, renderApi, table);
+	public getUpdater(): SpinnerUpdater {
+		return this.updater;
 	}
 }

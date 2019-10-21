@@ -39,6 +39,7 @@ import { FlipperMesh } from './flipper-mesh';
 import { FlipperMover } from './flipper-mover';
 import { FlipperState } from './flipper-state';
 import { FlipperUpdater } from './flipper-updater';
+import { SpinnerUpdater } from '../spinner/spinner-updater';
 
 /**
  * VPinball's flippers
@@ -49,9 +50,9 @@ export class Flipper extends Item<FlipperData> implements IRenderable<FlipperSta
 
 	private readonly mesh: FlipperMesh;
 	private readonly state: FlipperState;
+	private readonly updater: FlipperUpdater;
 	private hit?: FlipperHit;
 	private api?: FlipperApi;
-	private updater?: FlipperUpdater;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Flipper> {
 		const data = await FlipperData.fromStorage(storage, itemName);
@@ -135,8 +136,8 @@ export class Flipper extends Item<FlipperData> implements IRenderable<FlipperSta
 		return [ 'Init', 'Timer', 'LimitEOS', 'LimitBOS', 'Hit', 'Collide' ];
 	}
 
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: FlipperState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
-		this.updater!.applyState(obj, state, renderApi, table);
+	public getUpdater(): FlipperUpdater {
+		return this.updater;
 	}
 }
 

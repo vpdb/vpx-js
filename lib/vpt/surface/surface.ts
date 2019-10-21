@@ -25,7 +25,6 @@ import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
-import { IRenderApi } from '../../render/irender-api';
 import { Item } from '../item';
 import { Table } from '../table/table';
 import { SurfaceApi } from './surface-api';
@@ -128,8 +127,9 @@ export class Surface extends Item<SurfaceData> implements IRenderable<SurfaceSta
 	public getState(): SurfaceState {
 		return this.state;
 	}
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: SurfaceState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: SurfaceState): void {
-		this.updater!.applyState(obj, state, renderApi, table);
+
+	public getUpdater(): SurfaceUpdater {
+		return this.updater;
 	}
 
 	public getHitShapes(): HitObject[] {

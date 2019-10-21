@@ -100,7 +100,7 @@ export class Rubber extends Item<RubberData> implements IRenderable<RubberState>
 		return this.state;
 	}
 
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: RubberState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
-		this.updater.applyState(obj, state, renderApi, table);
+	public getUpdater(): RubberUpdater {
+		return this.updater;
 	}
 }

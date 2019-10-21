@@ -33,6 +33,7 @@ import { LightApi } from './light-api';
 import { LightData } from './light-data';
 import { LightMeshGenerator } from './light-mesh-generator';
 import { LightState } from './light-state';
+import { LightUpdater } from './light-updater';
 
 /**
  * VPinball's lights.
@@ -51,6 +52,7 @@ export class Light extends Item<LightData> implements IRenderable<LightState>, I
 	public readonly data: LightData;
 	private readonly state: LightState;
 	private readonly meshGenerator: LightMeshGenerator;
+	private readonly updater: LightUpdater;
 	private api?: LightApi;
 	private animation?: LightAnimation;
 
@@ -64,6 +66,7 @@ export class Light extends Item<LightData> implements IRenderable<LightState>, I
 		this.state = LightState.claim(this.getName(), 0);
 		this.data = data;
 		this.meshGenerator = new LightMeshGenerator(data);
+		this.updater = new LightUpdater(this.state);
 	}
 
 	public isVisible(table: Table): boolean {
@@ -88,8 +91,8 @@ export class Light extends Item<LightData> implements IRenderable<LightState>, I
 		return this.state!;
 	}
 
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: LightState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: LightState): void {
-		renderApi.applyLighting(state, obj);
+	public getUpdater(): LightUpdater {
+		return this.updater;
 	}
 
 	public getEventNames(): string[] {

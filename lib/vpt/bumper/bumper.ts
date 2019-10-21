@@ -26,16 +26,14 @@ import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
-import { IRenderApi } from '../../render/irender-api';
 import { Item } from '../item';
-import { Table, TableGenerateOptions } from '../table/table';
+import { Table } from '../table/table';
 import { Texture } from '../texture';
 import { BumperAnimation } from './bumper-animation';
 import { BumperApi } from './bumper-api';
 import { BumperData } from './bumper-data';
 import { BumperHit } from './bumper-hit';
 import { BumperMeshGenerator } from './bumper-mesh-generator';
-import { BumperMeshUpdater } from './bumper-mesh-updater';
 import { BumperState } from './bumper-state';
 import { BumperUpdater } from './bumper-updater';
 
@@ -47,7 +45,6 @@ import { BumperUpdater } from './bumper-updater';
 export class Bumper extends Item<BumperData> implements IRenderable<BumperState>, IHittable, IAnimatable, IScriptable<BumperApi> {
 
 	private readonly meshGenerator: BumperMeshGenerator;
-	private readonly meshUpdater: BumperMeshUpdater;
 	private readonly state: BumperState;
 	private readonly updater: BumperUpdater;
 	private hit?: BumperHit;
@@ -65,8 +62,7 @@ export class Bumper extends Item<BumperData> implements IRenderable<BumperState>
 			data.isCapVisible, data.isRingVisible, data.isBaseVisible, data.isSkirtVisible,
 			data.szCapMaterial, data.szRingMaterial, data.szBaseMaterial, data.szSkirtMaterial);
 		this.meshGenerator = new BumperMeshGenerator(data);
-		this.meshUpdater = new BumperMeshUpdater(this.data, this.state, this.meshGenerator);
-		this.updater = new BumperUpdater(this.state);
+		this.updater = new BumperUpdater(this.state, this.data);
 	}
 
 	public getState(): BumperState {
@@ -93,9 +89,8 @@ export class Bumper extends Item<BumperData> implements IRenderable<BumperState>
 		return [ 'Init', 'Timer', 'Hit' ];
 	}
 
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: BumperState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: BumperState): void {
-		this.meshUpdater.applyState(obj, state, renderApi, table, oldState);
-		this.updater.applyState(obj, state, renderApi, table);
+	public getUpdater(): BumperUpdater {
+		return this.updater;
 	}
 
 	public getHitShapes(): HitObject[] {

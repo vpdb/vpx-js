@@ -26,7 +26,6 @@ import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
-import { IRenderApi } from '../../render/irender-api';
 import { TriggerShape } from '../enums';
 import { Item } from '../item';
 import { Table } from '../table/table';
@@ -110,8 +109,8 @@ export class Trigger extends Item<TriggerData> implements IRenderable<TriggerSta
 		return this.animation!;
 	}
 
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: TriggerState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
-		this.updater.applyState(obj, state, renderApi, table);
+	public getUpdater(): TriggerUpdater {
+		return this.updater;
 	}
 
 	public getEventNames(): string[] {
