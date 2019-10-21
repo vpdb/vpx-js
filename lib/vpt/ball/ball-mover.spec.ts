@@ -125,12 +125,12 @@ describe('The VPinball ball physics', () => {
 
 		// position ball
 		player.updatePhysics(0);
-		ball.applyState(ballObj, ball.getState(), renderApi, table);
+		ball.getUpdater().applyState(ballObj, ball.getState(), renderApi, table);
 		ballObj.getWorldPosition(startPos);
 
 		// let ball roll some
 		player.updatePhysics(100);
-		ball.applyState(ballObj, ball.getState(), renderApi, table);
+		ball.getUpdater().applyState(ballObj, ball.getState(), renderApi, table);
 		ballObj.getWorldPosition(endPos);
 
 		expect(startPos.y).to.be.below(endPos.y);
