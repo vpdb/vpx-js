@@ -63,14 +63,14 @@ export class PrimitiveUpdater extends ItemUpdater<PrimitiveState> {
 		const transMatrix = Matrix3D.claim().setTranslation(
 			-((this.state.position as any)._x - this.data.position.x),
 			-((this.state.position as any)._y - this.data.position.y),
-			((this.state.position as any)._z - this.data.position.z),
+			(this.state.position as any)._z - this.data.position.z,
 		);
 
 		// translation + rotation matrix
 		const rotTransMatrix = Matrix3D.claim().setTranslation(
 			-(this.data.rotAndTra[3] - (this.state.translation as any)._x), // t
 			-(this.data.rotAndTra[4] - (this.state.translation as any)._y), // z
-			(this.data.rotAndTra[5] - (this.state.translation as any)._z), // u
+			this.data.rotAndTra[5] - (this.state.translation as any)._z, // u
 		);
 
 		const tempMatrix = Matrix3D.claim();
@@ -89,10 +89,10 @@ export class PrimitiveUpdater extends ItemUpdater<PrimitiveState> {
 		rotTransMatrix.multiply(tempMatrix);
 
 		const matrix = matToOrigin
-			// .multiply(scaleMatrix)
+			.multiply(scaleMatrix)
 			.multiply(rotTransMatrix)
 			.multiply(transMatrix)
-			// .multiply(scaleMatrixTable)
+			.multiply(scaleMatrixTable)
 			.multiply(matFromOrigin);
 
 		renderApi.applyMatrixToNode(matrix, obj);
