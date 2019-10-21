@@ -81,10 +81,10 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 	public readonly info?: { [key: string]: string };
 	public readonly items: { [key: string]: Item<ItemData> };
 	public readonly tableScript?: string;
-	private state?: TableState;
+	private readonly state?: TableState;
+	private readonly updater?: TableUpdater;
 	private events?: EventProxy;
 	private api?: TableApi;
-	private updater?: TableUpdater;
 
 	public readonly textures: { [key: string]: Texture } = {};
 	public readonly collections: { [key: string]: Collection } = {};
@@ -122,7 +122,7 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 		return new Table(tableLoader, await tableLoader.load(reader, opts));
 	}
 
-	private constructor(loader: TableLoader, loadedTable: LoadedTable) {
+	public constructor(loader: TableLoader, loadedTable: LoadedTable) {
 		this.loader = loader;
 		this.items = loadedTable.items;
 		if (loadedTable.data) {

@@ -145,7 +145,7 @@ export class TableData extends ItemData {
 		return tableData;
 	}
 
-	private constructor(itemName: string) {
+	public constructor(itemName: string) {
 		super(itemName);
 	}
 

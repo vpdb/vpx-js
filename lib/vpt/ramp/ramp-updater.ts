@@ -39,11 +39,6 @@ export class RampUpdater extends ItemUpdater<RampState> {
 		// update local state
 		Object.assign(this.state, state);
 
-		const material = table.getMaterial(this.state.material);
-		if (!material || !material.isOpacityActive) {
-			return;
-		}
-
 		this.applyVisibility(obj, state, renderApi);
 		this.applyMaterial(obj, state.material, state.texture, renderApi, table);
 
