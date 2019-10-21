@@ -44,6 +44,7 @@ import {
 	Literal,
 	MemberExpression,
 	MethodDefinition,
+	NewExpression,
 	Pattern,
 	Program,
 	ReturnStatement,
@@ -221,6 +222,14 @@ export function memberExpression(object: Expression | Super, property: Expressio
 		object,
 		property,
 		computed: false,
+	};
+}
+
+export function newExpression(callee: Expression | Super, args: Expression[] | SpreadElement[]): NewExpression {
+	return {
+		type: 'NewExpression',
+		callee,
+		arguments: args,
 	};
 }
 
