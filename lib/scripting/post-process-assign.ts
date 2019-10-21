@@ -38,5 +38,5 @@ export function stmt3(
 ): ExpressionStatement {
 	const left = result[2];
 	const right = result[8];
-	return estree.expressionStatement(estree.assignmentExpression(left, '=', right));
+	return estree.expressionStatement(estree.assignmentExpression(left, '=', estree.newExpression(right, [])));
 }

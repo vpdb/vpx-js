@@ -38,4 +38,10 @@ describe('The VBScript transpiler - Assign', () => {
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = 0;');
 	});
+
+	it('should transpile a "New" object assignment statement', () => {
+		const vbs = `Set vpmDips = New cvpmDips\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('vpmDips = new cvpmDips();');
+	});
 });

@@ -31,17 +31,15 @@ export function stmt(
 	const trailingComments = result[8] || [];
 	traverse(body, {
 		enter: (node, parentNode) => {
-			if (node.type === 'Identifier') {
-				if (node.name.startsWith('.')) {
-					if (parentNode != null) {
-						node.name = node.name.substr(1);
-						if (parentNode.type === 'AssignmentExpression') {
-							parentNode.left = estree.memberExpression(identifier, parentNode.left as Expression);
-						} else if (parentNode.type === 'CallExpression') {
-							parentNode.callee = estree.memberExpression(identifier, parentNode.callee as Expression);
-						} else if (parentNode.type === 'UnaryExpression') {
-							parentNode.argument = estree.memberExpression(identifier, node);
-						}
+			if (node.type === 'Identifier' && node.name.startsWith('.')) {
+				if (parentNode != null) {
+					node.name = node.name.substr(1);
+					if (parentNode.type === 'AssignmentExpression') {
+						parentNode.left = estree.memberExpression(identifier, parentNode.left as Expression);
+					} else if (parentNode.type === 'CallExpression') {
+						parentNode.callee = estree.memberExpression(identifier, parentNode.callee as Expression);
+					} else if (parentNode.type === 'UnaryExpression') {
+						parentNode.argument = estree.memberExpression(identifier, node);
 					}
 				}
 			}
