@@ -33,13 +33,21 @@ export function int(result: [Token]): Literal {
 
 export function hex(result: [Token]): Literal {
 	let value = result[0].text;
-	value = '0x' + value.endsWith('&') ? value.slice(2, -1) : value.slice(2);
+	value = value.substr(2);
+	if (value.endsWith('&')) {
+		value = value.slice(0, -1);
+	}
+	value = '0x' + value;
 	return estree.literal(parseInt(value, 16), value);
 }
 
 export function oct(result: [Token]): Literal {
 	let value = result[0].text;
-	value = '0' + value.endsWith('&') ? value.slice(1, -1) : value.slice(1);
+	value = value.substr(1);
+	if (value.endsWith('&')) {
+		value = value.slice(0, -1);
+	}
+	value = '0' + value;
 	return estree.literal(parseInt(value, 8), value);
 }
 
