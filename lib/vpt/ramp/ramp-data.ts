@@ -80,7 +80,7 @@ export class RampData extends ItemData implements IPhysicalData {
 		});
 	}
 
-	private constructor(itemName: string) {
+	public constructor(itemName: string) {
 		super(itemName);
 	}
 

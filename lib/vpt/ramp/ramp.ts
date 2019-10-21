@@ -56,7 +56,7 @@ export class Ramp extends Item<RampData> implements IRenderable<RampState>, IHit
 		return new Ramp(data);
 	}
 
-	private constructor(data: RampData) {
+	public constructor(data: RampData) {
 		super(data);
 		this.state = RampState.claim(data.getName(), data.heightBottom,
 			data.heightTop, data.widthBottom, data.widthTop, data.leftWallHeight, data.rightWallHeight,
