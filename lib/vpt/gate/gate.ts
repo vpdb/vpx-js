@@ -123,9 +123,8 @@ export class Gate extends Item<GateData> implements IRenderable<GateState>, IPla
 		return this.api!;
 	}
 
-	/* istanbul ignore next */
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: GateState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
-		this.updater.applyState(obj, state, renderApi, table);
+	public getUpdater(): GateUpdater {
+		return this.updater;
 	}
 
 	public getEventNames(): string[] {

@@ -19,11 +19,11 @@
 
 import { IRenderApi } from '../render/irender-api';
 import { ItemState } from '../vpt/item-state';
+import { ItemUpdater } from '../vpt/item-updater';
 import { Material } from '../vpt/material';
 import { Mesh } from '../vpt/mesh';
 import { Table, TableGenerateOptions } from '../vpt/table/table';
 import { Texture } from '../vpt/texture';
-import { IAnimatable } from './ianimatable';
 import { IItem } from './iitem';
 
 export interface IRenderable<STATE extends ItemState> extends IItem {
@@ -32,8 +32,7 @@ export interface IRenderable<STATE extends ItemState> extends IItem {
 
 	getState(): STATE;
 
-	applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: STATE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: STATE): void;
-
+	getUpdater(): ItemUpdater<STATE>;
 }
 
 export function isRenderable(arg: any): arg is IRenderable<ItemState> {

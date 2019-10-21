@@ -28,7 +28,6 @@ import { PlayerPhysics } from '../../game/player-physics';
 import { Storage } from '../../io/ole-doc';
 import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
-import { IRenderApi } from '../../render/irender-api';
 import { Ball } from '../ball/ball';
 import { Item } from '../item';
 import { Table } from '../table/table';
@@ -38,6 +37,7 @@ import { PlungerHit } from './plunger-hit';
 import { PlungerMeshGenerator } from './plunger-mesh-generator';
 import { PlungerMover } from './plunger-mover';
 import { PlungerState } from './plunger-state';
+import { PlungerUpdater } from './plunger-updater';
 
 /**
  * VPinball's plunger.
@@ -50,6 +50,7 @@ export class Plunger extends Item<PlungerData> implements IRenderable<PlungerSta
 
 	private readonly meshGenerator: PlungerMeshGenerator;
 	private readonly state: PlungerState;
+	private readonly updater: PlungerUpdater;
 	private api?: PlungerApi;
 	private hit?: PlungerHit;
 
@@ -62,6 +63,7 @@ export class Plunger extends Item<PlungerData> implements IRenderable<PlungerSta
 		super(data);
 		this.meshGenerator = new PlungerMeshGenerator(data);
 		this.state = PlungerState.claim(this.getName(), 0);
+		this.updater = new PlungerUpdater(this.state, this.meshGenerator);
 	}
 
 	public getState(): PlungerState {
@@ -135,16 +137,8 @@ export class Plunger extends Item<PlungerData> implements IRenderable<PlungerSta
 		}
 	}
 
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: PlungerState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
-		const mesh = this.meshGenerator.generateMeshes(state.frame, table);
-		const rodObj = renderApi.findInGroup(obj, 'rod');
-		if (rodObj) {
-			renderApi.applyMeshToNode(mesh.rod!, rodObj);
-		}
-		const springObj = renderApi.findInGroup(obj, 'spring');
-		if (springObj) {
-			renderApi.applyMeshToNode(mesh.spring!, springObj);
-		}
+	public getUpdater(): PlungerUpdater {
+		return this.updater;
 	}
 
 	public getBallCreationPosition(table: Table): Vertex3D {

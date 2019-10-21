@@ -27,7 +27,6 @@ import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
-import { IRenderApi } from '../../render/irender-api';
 import { Ball } from '../ball/ball';
 import { KickerType } from '../enums';
 import { Item } from '../item';
@@ -100,8 +99,8 @@ export class Kicker extends Item<KickerData> implements IRenderable<KickerState>
 		return this.state;
 	}
 
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: KickerState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table, oldState: KickerState): void {
-		this.updater.applyState(obj, state, renderApi, table);
+	public getUpdater(): KickerUpdater {
+		return this.updater;
 	}
 
 	public getHitShapes(): HitObject[] {

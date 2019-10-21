@@ -36,6 +36,7 @@ import { BallHit } from './ball-hit';
 import { BallMeshGenerator } from './ball-mesh-generator';
 import { BallMover } from './ball-mover';
 import { BallState } from './ball-state';
+import { BallUpdater } from './ball-updater';
 
 export class Ball implements IPlayable, IMovable, IRenderable<BallState>, IScriptable<BallApi> {
 
@@ -45,6 +46,7 @@ export class Ball implements IPlayable, IMovable, IRenderable<BallState>, IScrip
 	private readonly meshGenerator: BallMeshGenerator;
 	private readonly events: EventProxy;
 	private readonly api: BallApi;
+	private readonly updater: BallUpdater;
 
 	// unique ID for each ball
 	public id: number;
@@ -65,34 +67,15 @@ export class Ball implements IPlayable, IMovable, IRenderable<BallState>, IScrip
 		this.events = new EventProxy(this);
 		this.hit = new BallHit(this, this.data, this.state, initialVelocity, table.data!);
 		this.api = new BallApi(this, this.state, this.hit, this.data, this.events, player, table);
+		this.updater = new BallUpdater(this.state, this.data);
 	}
 
 	public getName(): string {
 		return `Ball${this.id}`;
 	}
 
-	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: BallState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
-
-		// update local state
-		Object.assign(this.state, state);
-
-		const pos: { _x: number, _y: number, _z: number} = this.state.pos as any;
-		const zHeight = !this.state.isFrozen ? pos._z : pos._z - this.data.radius;
-		const orientation = Matrix3D.claim().setEach(
-			this.state.orientation.matrix[0][0], this.state.orientation.matrix[1][0], this.state.orientation.matrix[2][0], 0.0,
-			this.state.orientation.matrix[0][1], this.state.orientation.matrix[1][1], this.state.orientation.matrix[2][1], 0.0,
-			this.state.orientation.matrix[0][2], this.state.orientation.matrix[1][2], this.state.orientation.matrix[2][2], 0.0,
-			0, 0, 0, 1,
-		);
-		const trans = Matrix3D.claim().setTranslation(pos._x, pos._y, zHeight);
-		const matrix = Matrix3D.claim()
-			.setScaling(this.data.radius, this.data.radius, this.data.radius)
-			.preMultiply(orientation)
-			.multiply(trans)
-			.toRightHanded();
-
-		renderApi.applyMatrixToNode(matrix, obj);
-		Matrix3D.release(orientation, trans, matrix);
+	public getUpdater(): BallUpdater {
+		return this.updater;
 	}
 
 	public async addToScene<NODE, GEOMETRY, POINT_LIGHT>(scene: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): Promise<NODE> {
