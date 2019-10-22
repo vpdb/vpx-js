@@ -19,26 +19,23 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import sinonChai = require('sinon-chai');
+import { TableBuilder } from '../../../test/table-builder';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
+import { PrimitiveState } from './primitive-state';
 
-chai.use(sinonChai);
+/* tslint:disable:no-unused-expression */
+chai.use(require('sinon-chai'));
 const three = new ThreeHelper();
 
 describe('The VPinball primitive API', () => {
 
-	let table: Table;
-	let player: Player;
-
-	beforeEach(async () => {
-		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-primitive.vpx')));
-		player = new Player(table).init();
-	});
-
 	it('should correctly read and write the properties', async () => {
+
+		const table = await Table.load(new NodeBinaryReader(three.fixturePath('table-primitive.vpx')));
+		new Player(table).init();
 		const primitive = table.primitives.Cube.getApi();
 
 		primitive.Image = 'p1-beachwood'; expect(primitive.Image).to.equal('p1-beachwood');
@@ -111,6 +108,49 @@ describe('The VPinball primitive API', () => {
 		primitive.TimerEnabled = true; expect(primitive.TimerEnabled).to.equal(true);
 		primitive.UserValue = 'uzzrrrrvaluuuue'; expect(primitive.UserValue).to.equal('uzzrrrrvaluuuue');
 
+	});
+
+	it('should update the state when static rendering is disabled', () => {
+		const table = new TableBuilder()
+			.addMaterial('mat')
+			.addPrimitive('p', { staticRendering: false })
+			.build();
+
+		const player = new Player(table).init();
+		const primitive = table.primitives.p;
+
+		primitive.getApi().Material = 'mat';
+		primitive.getApi().Size_X = 22;
+		primitive.getApi().Size_Y = 23;
+		primitive.getApi().Size_Z = 24;
+		primitive.getApi().RotX = 32;
+		primitive.getApi().RotY = 33;
+		primitive.getApi().RotZ = 34;
+		primitive.getApi().TransX = 42;
+		primitive.getApi().TransY = 43;
+		primitive.getApi().TransZ = 44;
+		primitive.getApi().ObjRotX = 54;
+		primitive.getApi().ObjRotY = 55;
+		primitive.getApi().ObjRotZ = 56;
+
+		const states = player.popStates();
+		const state = states.getState<PrimitiveState>('p');
+
+		expect(state.material).to.equal('mat');
+		expect(state.size.x).to.equal(22);
+		expect(state.size.y).to.equal(23);
+		expect(state.size.z).to.equal(24);
+		expect(state.rotation.x).to.equal(32);
+		expect(state.rotation.y).to.equal(33);
+		expect(state.rotation.z).to.equal(34);
+		expect(state.translation.x).to.equal(42);
+		expect(state.translation.y).to.equal(43);
+		expect(state.translation.z).to.equal(44);
+		expect(state.objectRotation.x).to.equal(54);
+		expect(state.objectRotation.y).to.equal(55);
+		expect(state.objectRotation.z).to.equal(56);
+
+		state.release();
 	});
 
 });
