@@ -111,7 +111,7 @@ describe('The VPinball flipper physics', () => {
 		const flipperState = flipper.getState();
 		const states = player.popStates();
 
-		const poppedState = states.getState<FlipperState>('FlipperR').newState;
+		const poppedState = states.getState<FlipperState>('FlipperR');
 
 		expect(flipperState.name).to.eql(poppedState.name);
 		expect(flipperState.angle).to.eql(poppedState.angle);

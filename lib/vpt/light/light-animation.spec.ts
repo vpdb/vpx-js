@@ -256,7 +256,7 @@ describe('The VPinball light animation', () => {
 		api.State = LightStatus.LightStateBlinking;
 		player.updatePhysics(200);
 
-		const state = player.popStates().getState<LightState>('Surface').newState;
+		const state = player.popStates().getState<LightState>('Surface');
 		expect(state.intensity).to.equal(table.lights.Surface.getState().intensity);
 	});
 

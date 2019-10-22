@@ -112,4 +112,5 @@ describe('The VPinball primitive API', () => {
 		primitive.UserValue = 'uzzrrrrvaluuuue'; expect(primitive.UserValue).to.equal('uzzrrrrvaluuuue');
 
 	});
+
 });

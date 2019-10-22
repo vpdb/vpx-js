@@ -103,7 +103,7 @@ describe('The VPinball spinner collision', () => {
 		player.updatePhysics(0);
 		player.updatePhysics(160);
 
-		const state = player.popStates().getState<SpinnerState>('Transformed').newState;
+		const state = player.popStates().getState<SpinnerState>('Transformed');
 		expect(state.angle).to.equal(spinner.getState().angle);
 	});
 

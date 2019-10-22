@@ -125,7 +125,7 @@ describe('The VPinball gate mover', () => {
 		const gateState = gate.getState();
 		const states = player.popStates();
 
-		const poppedState = states.getState<GateState>('WireRectangle').newState;
+		const poppedState = states.getState<GateState>('WireRectangle');
 
 		expect(gateState.name).to.equal(poppedState.name);
 		expect(gateState.angle).to.equal(poppedState.angle);
