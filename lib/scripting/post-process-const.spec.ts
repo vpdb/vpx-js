@@ -34,33 +34,9 @@ describe('The VBScript transpiler - Const', () => {
 	});
 
 	it('should transpile a multiple Const declaration', () => {
-		const vbs = `Const test1 = 3.14, test2 = 4, test3 = -5.2\n`;
+		const vbs = `Const test1 = 3.14, test2 = 4, test3 = -5.2, test4 = True, test5 = "STRING"\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('const test1 = 3.14, test2 = 4, test3 = -5.2;');
-	});
-
-	it('should transpile a Const declaration with string values', () => {
-		const vbs = `Const test1 = "STRING", test2 = """QUOTES""", test3 = "'APOSTROPHE'"\n`;
-		const js = vbsToJs(vbs);
-		expect(js).to.equal("const test1 = 'STRING', test2 = '\"QUOTES\"', test3 = '\\'APOSTROPHE\\'';");
-	});
-
-	it('should transpile a Const declaration with boolean values', () => {
-		const vbs = `Const test1 = True, test2 = False, test3 = true, test4 = false\n`;
-		const js = vbsToJs(vbs);
-		expect(js).to.equal('const test1 = true, test2 = false, test3 = true, test4 = false;');
-	});
-
-	it('should transpile a Const declaration with hexadecimal values', () => {
-		const vbs = `Const test1 = &H0A&, test2 = &H0D\n`;
-		const js = vbsToJs(vbs);
-		expect(js).to.equal('const test1 = 10, test2 = 13;');
-	});
-
-	it('should transpile a Const declaration with octal values', () => {
-		const vbs = `Const test1 = &47&, test2 = &57\n`;
-		const js = vbsToJs(vbs);
-		expect(js).to.equal('const test1 = 39, test2 = 47;');
+		expect(js).to.equal("const test1 = 3.14, test2 = 4, test3 = -5.2, test4 = true, test5 = 'STRING';");
 	});
 
 	it('should transpile a Const declaration with literal in parenthesis', () => {

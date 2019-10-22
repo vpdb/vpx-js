@@ -20,7 +20,7 @@ const ppAssign = require('./post-process-assign');
 const ppSubCall = require('./post-process-subcall');
 const ppError = require('./post-process-error');
 const ppExpr = require('./post-process-expr');
-const ppLiteral = require('./post-process-literal');
+const ppLiterals = require('./post-process-literals');
 const ppHelpers = require('./post-process-helpers');
 
 const moo = require('moo');
@@ -487,22 +487,22 @@ ConstExpr            -> BoolLiteral                                             
                       | DateLiteral                                                                                                       {% id %}
                       | Nothing                                                                                                           {% id %}
 
-BoolLiteral          -> %kw_true                                                                                                          {% ppLiteral.bool %}
-                      | %kw_false                                                                                                         {% ppLiteral.bool %}
+BoolLiteral          -> %kw_true                                                                                                          {% ppLiterals.bool %}
+                      | %kw_false                                                                                                         {% ppLiterals.bool %}
 
-IntLiteral           -> %int_literal                                                                                                      {% ppLiteral.int %}
-                      | %hex_literal                                                                                                      {% ppLiteral.hex %}
-                      | %oct_literal                                                                                                      {% ppLiteral.oct %}
+IntLiteral           -> %int_literal                                                                                                      {% ppLiterals.int %}
+                      | %hex_literal                                                                                                      {% ppLiterals.hex %}
+                      | %oct_literal                                                                                                      {% ppLiterals.oct %}
 
-FloatLiteral         -> %float_literal                                                                                                    {% ppLiteral.float %}
+FloatLiteral         -> %float_literal                                                                                                    {% ppLiterals.float %}
 
-StringLiteral        -> %string_literal                                                                                                   {% ppLiteral.string %}
+StringLiteral        -> %string_literal                                                                                                   {% ppLiterals.string %}
 
-DateLiteral          -> %date_literal                                                                                                     {% ppLiteral.date %}
+DateLiteral          -> %date_literal                                                                                                     {% ppLiterals.date %}
 
-Nothing              -> %kw_nothing                                                                                                       {% ppLiteral.nothing %}
-                      | %kw_null                                                                                                          {% ppLiteral.nothing %}
-                      | %kw_empty                                                                                                         {% ppLiteral.nothing %}
+Nothing              -> %kw_nothing                                                                                                       {% ppLiterals.nothing %}
+                      | %kw_null                                                                                                          {% ppLiterals.nothing %}
+                      | %kw_empty                                                                                                         {% ppLiterals.nothing %}
 
 #===============================
 # Terminals
