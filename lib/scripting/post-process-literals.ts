@@ -17,13 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Literal } from 'estree';
+import { Literal, NewExpression } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
 export function bool(result: [Token]): Literal {
-	const value = result[0].type === 'kw_true';
-	return estree.literal(value);
+	const value = result[0].type;
+	return estree.literal(value === 'kw_true');
 }
 
 export function int(result: [Token]): Literal {
@@ -66,9 +66,9 @@ export function string(result: [Token]): Literal {
 	return estree.literal(value);
 }
 
-export function date(result: [Token]): Literal {
+export function date(result: [Token]): NewExpression {
 	const value = result[0].text.slice(1, -1);
-	return estree.literal(value);
+	return estree.newExpression(estree.identifier('Date'), [estree.literal(value)]);
 }
 
 export function nothing(result: [Token]): Literal {

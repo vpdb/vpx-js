@@ -39,6 +39,12 @@ describe('The VBScript transpiler - Subcall', () => {
 		expect(js).to.equal('BallRelease.CreateBall();');
 	});
 
+	it('should transpile an object.property subcall statement without params with parenthesis', () => {
+		const vbs = `BallRelease.CreateBall()\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('BallRelease.CreateBall();');
+	});
+
 	it('should transpile an object.property subcall statement with params', () => {
 		const vbs = `BallRelease.KickBall 0, -2\n`;
 		const js = vbsToJs(vbs);
