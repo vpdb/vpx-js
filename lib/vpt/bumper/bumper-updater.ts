@@ -41,35 +41,7 @@ export class BumperUpdater extends ItemUpdater<BumperState> {
 		Object.assign(this.state, state);
 
 		this.applyAnimationState(obj, state, renderApi, table);
-
-		if (state.baseMaterial || state.isBaseVisible !== undefined) {
-			const child = renderApi.findInGroup(obj, `bumper-base-${state.name}`)!;
-			const material = table.getMaterial(this.state.baseMaterial);
-			if (material && material.isOpacityActive) {
-				this.applyChild(child, state.isBaseVisible, material, renderApi);
-			}
-		}
-		if (state.capMaterial || state.isCapVisible !== undefined) {
-			const child = renderApi.findInGroup(obj, `bumper-cap-${state.name}`)!;
-			const material = table.getMaterial(this.state.capMaterial);
-			if (material && material.isOpacityActive) {
-				this.applyChild(child, state.isCapVisible, material, renderApi);
-			}
-		}
-		if (state.ringMaterial || state.isRingVisible !== undefined) {
-			const child = renderApi.findInGroup(obj, `bumper-ring-${state.name}`)!;
-			const material = table.getMaterial(this.state.ringMaterial);
-			if (material && material.isOpacityActive) {
-				this.applyChild(child, state.isRingVisible, material, renderApi);
-			}
-		}
-		if (state.skirtMaterial || state.isSkirtVisible !== undefined) {
-			const child = renderApi.findInGroup(obj, `bumper-socket-${state.name}`)!;
-			const material = table.getMaterial(this.state.skirtMaterial);
-			if (material && material.isOpacityActive) {
-				this.applyChild(child, state.isSkirtVisible, material, renderApi);
-			}
-		}
+		this.applyChildren(obj, state, renderApi, table);
 	}
 
 	private applyAnimationState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: BumperState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table) {
@@ -108,7 +80,26 @@ export class BumperUpdater extends ItemUpdater<BumperState> {
 		}
 	}
 
-	private applyChild<NODE, GEOMETRY, POINT_LIGHT>(child: NODE, isVisible: boolean | undefined, material: Material, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>): void {
+	private applyChildren<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: BumperState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
+		if (state.baseMaterial || state.isBaseVisible !== undefined) {
+			const child = renderApi.findInGroup(obj, `bumper-base-${state.name}`)!;
+			this.applyChild(child, state.isBaseVisible, table.getMaterial(this.state.baseMaterial), renderApi);
+		}
+		if (state.capMaterial || state.isCapVisible !== undefined) {
+			const child = renderApi.findInGroup(obj, `bumper-cap-${state.name}`)!;
+			this.applyChild(child, state.isCapVisible, table.getMaterial(this.state.capMaterial), renderApi);
+		}
+		if (state.ringMaterial || state.isRingVisible !== undefined) {
+			const child = renderApi.findInGroup(obj, `bumper-ring-${state.name}`)!;
+			this.applyChild(child, state.isRingVisible, table.getMaterial(this.state.ringMaterial), renderApi);
+		}
+		if (state.skirtMaterial || state.isSkirtVisible !== undefined) {
+			const child = renderApi.findInGroup(obj, `bumper-socket-${state.name}`)!;
+			this.applyChild(child, state.isSkirtVisible, table.getMaterial(this.state.skirtMaterial), renderApi);
+		}
+	}
+
+	private applyChild<NODE, GEOMETRY, POINT_LIGHT>(child: NODE, isVisible: boolean | undefined, material: Material | undefined, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>): void {
 
 		// visibility
 		if (isVisible !== undefined) {
@@ -116,8 +107,6 @@ export class BumperUpdater extends ItemUpdater<BumperState> {
 		}
 
 		// material
-		if (material) {
-			renderApi.applyMaterial(child, material);
-		}
+		renderApi.applyMaterial(child, material);
 	}
 }

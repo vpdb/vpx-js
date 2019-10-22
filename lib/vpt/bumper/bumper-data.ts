@@ -52,7 +52,7 @@ export class BumperData extends ItemData {
 		return bumperData;
 	}
 
-	private constructor(itemName: string) {
+	public constructor(itemName: string) {
 		super(itemName);
 	}
 
