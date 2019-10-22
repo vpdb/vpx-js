@@ -108,7 +108,7 @@ export class Player extends EventEmitter {
 			const newState = this.currentStates[name];
 			const oldState = this.previousStates[name];
 			if (!newState.equals(oldState)) {
-				changedStates.setState(name, oldState.diff(newState), newState.diff(oldState));
+				changedStates.setState(name, newState.diff(oldState));
 				this.previousStates[name].release();
 				this.previousStates[name] = newState.clone();
 			}
@@ -207,7 +207,7 @@ export class ChangedStates<STATE extends ItemState = ItemState> {
 
 	public static readonly POOL = new Pool(ChangedStates);
 
-	public changedStates: { [key: string]: ChangedState<STATE> } = {};
+	public changedStates: { [key: string]: STATE } = {};
 
 	get keys() { return Object.keys(this.changedStates); }
 	get states() { return Object.values(this.changedStates); }
@@ -216,12 +216,12 @@ export class ChangedStates<STATE extends ItemState = ItemState> {
 		return ChangedStates.POOL.get();
 	}
 
-	public setState(name: string, oldState: STATE, newState: STATE): void {
-		this.changedStates[name] = ChangedState.claim<STATE>(oldState, newState);
+	public setState(name: string, state: STATE): void {
+		this.changedStates[name] = state;
 	}
 
-	public getState<S extends STATE>(name: string): ChangedState<S> {
-		return this.changedStates[name] as ChangedState<S>;
+	public getState<S extends STATE>(name: string): S {
+		return this.changedStates[name] as S;
 	}
 
 	public release(): void {
@@ -230,29 +230,5 @@ export class ChangedStates<STATE extends ItemState = ItemState> {
 			delete this.changedStates[name];
 		}
 		ChangedStates.POOL.release(this);
-	}
-}
-
-export class ChangedState<STATE extends ItemState> {
-
-	public static readonly POOL = new Pool(ChangedState);
-
-	public oldState!: STATE;
-	public newState!: STATE;
-
-	public static claim<S extends ItemState>(oldState: S, newState: S): ChangedState<S> {
-		return (ChangedState.POOL.get() as ChangedState<S>).set(oldState, newState);
-	}
-
-	public set(oldState: STATE, newState: STATE): this {
-		this.oldState = oldState;
-		this.newState = newState;
-		return this;
-	}
-
-	public release(): void {
-		this.oldState.release();
-		this.newState.release();
-		ChangedState.POOL.release(this);
 	}
 }

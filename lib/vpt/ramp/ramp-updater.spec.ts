@@ -59,8 +59,8 @@ describe('The VPinball ramp updater', () => {
 		table.ramps.ramp2.getApi().Visible = false;
 		const states = player.popStates();
 
-		expect(states.getState<RampState>('ramp2').newState.isVisible).to.equal(false);
-		states.getState<RampState>('ramp2').newState.release();
+		expect(states.getState<RampState>('ramp2').isVisible).to.equal(false);
+		states.getState<RampState>('ramp2').release();
 	});
 
 	it('should apply visibility', async () => {

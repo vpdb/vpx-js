@@ -141,7 +141,7 @@ describe('The VPinball hit target collision', () => {
 		dropTarget.IsDropped = true;
 
 		player.updatePhysics(200);
-		const state = player.popStates().getState<HitTargetState>('DropTargetBeveled').newState;
+		const state = player.popStates().getState<HitTargetState>('DropTargetBeveled');
 		expect(state.zOffset).to.equal(table.hitTargets.DropTargetBeveled.getState().zOffset);
 	});
 });

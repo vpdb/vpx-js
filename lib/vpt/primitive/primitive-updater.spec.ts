@@ -56,10 +56,8 @@ describe('The VPinball primitive updater', () => {
 	it('should update visibility when static rendering is disabled', () => {
 		table.primitives.pDynamic.getApi().Visible = false;
 		const states = player.popStates();
-		const s = states.getState<PrimitiveState>('pDynamic');
-		expect(s.newState.isVisible).to.equal(false);
-		s.newState.release();
-		s.oldState.release();
+		expect(states.getState<PrimitiveState>('pDynamic').isVisible).to.equal(false);
+		states.getState<PrimitiveState>('pDynamic').release();
 	});
 
 	it('should update the material', () => {
