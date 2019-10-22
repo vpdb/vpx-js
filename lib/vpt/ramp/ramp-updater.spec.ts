@@ -25,6 +25,7 @@ import { TestRenderApi } from '../../../test/test-render-api';
 import { Player } from '../../game/player';
 import { Table } from '../table/table';
 import { RampState } from './ramp-state';
+import { RampType } from '../enums';
 
 /* tslint:disable:no-unused-expression */
 chai.use(require('sinon-chai'));
@@ -39,8 +40,9 @@ describe('The VPinball ramp updater', () => {
 		table = new TableBuilder()
 			.addMaterial('opaque', { isOpacityActive: false })
 			.addMaterial('transparent', { isOpacityActive: true })
-			.addRamp('ramp1', { szMaterial: 'opaque' })
-			.addRamp('ramp2', { szMaterial: 'transparent' })
+			.addRamp('ramp1', { szMaterial: 'opaque', rampType: RampType.RampTypeFlat })
+			.addRamp('ramp2', { szMaterial: 'transparent', rampType: RampType.RampTypeFlat })
+			.addRamp('ramp3', { szMaterial: 'transparent', rampType: RampType.RampType4Wire })
 			.build();
 
 		// init player
@@ -59,13 +61,34 @@ describe('The VPinball ramp updater', () => {
 		expect(states.getState<RampState>('ramp2').newState.isVisible).to.equal(false);
 	});
 
-	it.skip('should apply visibility', async () => {
-
+	it('should apply visibility', async () => {
 		const renderApi = new TestRenderApi();
-		const applyVisibility = sinon.spy(renderApi.applyVisibility);
-
+		sinon.spy(renderApi, 'applyVisibility');
 		table.ramps.ramp2.getUpdater().applyState(null, { isVisible: true } as RampState, renderApi, table);
-		expect(applyVisibility).to.have.been.calledOnceWith(true);
+		expect(renderApi.applyVisibility).to.have.been.calledOnceWith(true);
+	});
+
+	it('should update the flat mesh', async () => {
+		const renderApi = new TestRenderApi();
+		sinon.spy(renderApi, 'applyMeshToNode');
+		table.ramps.ramp2.getUpdater().applyState(null, { heightTop: 500 } as RampState, renderApi, table);
+		expect(renderApi.applyMeshToNode).to.have.been.callCount(3);
+	});
+
+	it('should update the wire mesh', async () => {
+		const renderApi = new TestRenderApi();
+		sinon.spy(renderApi, 'applyMeshToNode');
+		table.ramps.ramp3.getUpdater().applyState(null, { heightTop: 500 } as RampState, renderApi, table);
+		expect(renderApi.applyMeshToNode).to.have.been.callCount(4);
+	});
+
+	it('should replace a mesh', async () => {
+		const renderApi = new TestRenderApi();
+		sinon.spy(renderApi, 'removeChildren');
+		sinon.spy(renderApi, 'addChildToParent');
+		table.ramps.ramp2.getUpdater().applyState(null, { type: RampType.RampType2Wire } as RampState, renderApi, table);
+		expect(renderApi.removeChildren).to.have.been.calledOnce;
+		expect(renderApi.addChildToParent).to.have.been.calledTwice;
 	});
 
 });

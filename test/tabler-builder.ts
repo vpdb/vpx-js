@@ -4,6 +4,8 @@ import { RampData } from '../lib/vpt/ramp/ramp-data';
 import { Ramp } from '../lib/vpt/ramp/ramp';
 import { LoadedTable, TableLoader } from '../lib/vpt/table/table-loader';
 import { Table } from '../lib/vpt/table/table';
+import { DragPoint } from '../lib/math/dragpoint';
+import { Vertex3D } from '../lib/math/vertex3d';
 
 export class TableBuilder {
 
@@ -26,6 +28,11 @@ export class TableBuilder {
 	public addRamp(name: string, attrs: any = {}): this {
 		const data = new RampData(`GameItem${this.gameItem++}`);
 		data.name = name;
+		const dp1 = new DragPoint();
+		const dp2 = new DragPoint();
+		dp1.vertex = new Vertex3D(500, 500, 50);
+		dp2.vertex = new Vertex3D(700, 700, 50);
+		data.dragPoints = [ dp1, dp2 ];
 		Object.assign(data, attrs);
 		const ramp = new Ramp(data);
 
