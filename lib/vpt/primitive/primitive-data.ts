@@ -53,7 +53,7 @@ export class PrimitiveData extends ItemData implements IPhysicalData {
 	public szPhysicsMaterial?: string;
 
 	public sides!: number;
-	public isVisible: boolean = false;
+	public isVisible: boolean = true;
 	public drawTexturesInside: boolean = false;
 	public hitEvent: boolean = false;
 	public threshold!: number;
@@ -91,7 +91,7 @@ export class PrimitiveData extends ItemData implements IPhysicalData {
 		return primitiveItem;
 	}
 
-	private constructor(itemName: string, skipMeshes: boolean) {
+	public constructor(itemName: string, skipMeshes: boolean) {
 		super(itemName);
 		this.skipMeshes = skipMeshes;
 	}

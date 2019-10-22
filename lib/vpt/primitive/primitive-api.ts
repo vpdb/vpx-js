@@ -32,20 +32,39 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 	private readonly primitive: Primitive;
 	private readonly state: PrimitiveState;
 	private readonly hits: HitObject[];
+	private readonly staticRendering: boolean;
 
 	constructor(primitive: Primitive, state: PrimitiveState, data: PrimitiveData, hits: HitObject[], events: EventProxy, player: Player, table: Table) {
 		super(data, events, player, table);
 		this.primitive = primitive;
 		this.state = state;
 		this.hits = hits;
+		this.staticRendering = data.staticRendering;
 	}
 
-	get Image() { return this.state.map; }
-	set Image(v) { this._assertNonHdrImage(v); this.state.map = v; }
-	get NormalMap() { return this.state.normalMap; }
-	set NormalMap(v) { this._assertNonHdrImage(v); this.state.normalMap = v; }
-	get Material() { return this.state.material; }
-	set Material(v) { this.state.material = v; }
+	get Image() { return this.data.szImage; }
+	set Image(v) {
+		this._assertNonHdrImage(v);
+		if (!this.staticRendering) {
+			this.state.map = v;
+		}
+		this.data.szImage = v;
+	}
+	get NormalMap() { return this.data.szNormalMap; }
+	set NormalMap(v) {
+		this._assertNonHdrImage(v);
+		if (!this.staticRendering) {
+			this.state.normalMap = v;
+		}
+		this.data.szNormalMap = v;
+	}
+	get Material() { return this.data.szMaterial; }
+	set Material(v) {
+		if (!this.staticRendering) {
+			this.state.material = v;
+		}
+		this.data.szMaterial = v;
+	}
 	get MeshFileName() { return this.data.meshFileName; }
 	set MeshFileName(v) { this.data.meshFileName = v; }
 	get Sides() { return this.data.sides; }
@@ -53,7 +72,12 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 	get SideColor() { return this.data.sideColor; }
 	set SideColor(v) { this.data.sideColor = v; }
 	get Visible() { return this.data.isVisible; }
-	set Visible(v) { this.data.isVisible = v; }
+	set Visible(v) {
+		if (!this.staticRendering) {
+			this.state.isVisible = v;
+		}
+		this.data.isVisible = v;
+	}
 	get DrawTexturesInside() { return this.data.drawTexturesInside; } // TODO test
 	set DrawTexturesInside(v) { this.data.drawTexturesInside = v; }
 	get X() { return this.data.position.x; }
@@ -62,48 +86,108 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 	set Y(v) { this.data.position.y = v; }
 	get Z() { return this.data.position.z; }
 	set Z(v) { this.data.position.z = v; }
-	get Size_X() { return this.state.size.x; } // TODO make sure it doesn't conflict with event callbacks
-	set Size_X(v) { this.state.size.x = v; }
-	get Size_Y() { return this.state.size.y; }
-	set Size_Y(v) { this.state.size.y = v; }
-	get Size_Z() { return this.state.size.z; }
-	set Size_Z(v) { this.state.size.z = v; }
+	get Size_X() { return this.data.size.x; } // TODO make sure it doesn't conflict with event callbacks
+	set Size_X(v) {
+		if (!this.staticRendering) {
+			this.state.size.x = v;
+		}
+		this.data.size.x = v;
+	}
+	get Size_Y() { return this.data.size.y; }
+	set Size_Y(v) {
+		if (!this.staticRendering) {
+			this.state.size.y = v;
+		}
+		this.data.size.y = v;
+	}
+	get Size_Z() { return this.data.size.z; }
+	set Size_Z(v) {
+		if (!this.staticRendering) {
+			this.state.size.z = v;
+		}
+		this.data.size.z = v;
+	}
 	get RotAndTra0() { return this.RotX; }
 	set RotAndTra0(v) { this.RotX = v; }
-	get RotX() { return this.state.rotation.x; }
-	set RotX(v) { this.state.rotation.x = v; }
+	get RotX() { return this.data.rotAndTra[0]; }
+	set RotX(v) {
+		if (!this.staticRendering) {
+			this.state.rotation.x = v;
+		}
+		this.data.rotAndTra[0] = v;
+	}
 	get RotAndTra1() { return this.RotY; }
 	set RotAndTra1(v) { this.RotY = v; }
-	get RotY() { return this.state.rotation.y; }
-	set RotY(v) { this.state.rotation.y = v; }
+	get RotY() { return this.data.rotAndTra[1]; }
+	set RotY(v) {
+		if (!this.staticRendering) {
+			this.state.rotation.y = v;
+		}
+		this.data.rotAndTra[1] = v;
+	}
 	get RotAndTra2() { return this.RotZ; }
 	set RotAndTra2(v) { this.RotZ = v; }
-	get RotZ() { return this.state.rotation.z; }
-	set RotZ(v) { this.state.rotation.z = v; }
+	get RotZ() { return this.data.rotAndTra[2]; }
+	set RotZ(v) {
+		if (!this.staticRendering) {
+			this.state.rotation.z = v;
+		}
+		this.data.rotAndTra[2] = v;
+	}
 	get RotAndTra3() { return this.TransX; }
 	set RotAndTra3(v) { this.TransX = v; }
-	get TransX() { return this.state.translation.x; }
-	set TransX(v) { this.state.translation.x = v; }
+	get TransX() { return this.data.rotAndTra[3]; }
+	set TransX(v) {
+		if (!this.staticRendering) {
+			this.state.translation.x = v;
+		}
+		this.data.rotAndTra[3] = v;
+	}
 	get RotAndTra4() { return this.TransY; }
 	set RotAndTra4(v) { this.TransY = v; }
-	get TransY() { return this.state.translation.y; }
-	set TransY(v) { this.state.translation.y = v; }
+	get TransY() { return this.data.rotAndTra[4]; }
+	set TransY(v) {
+		if (!this.staticRendering) {
+			this.state.translation.y = v;
+		}
+		this.data.rotAndTra[4] = v;
+	}
 	get RotAndTra5() { return this.TransZ; }
 	set RotAndTra5(v) { this.TransZ = v; }
-	get TransZ() { return this.state.translation.z; }
-	set TransZ(v) { this.state.translation.z = v; }
+	get TransZ() { return this.data.rotAndTra[5]; }
+	set TransZ(v) {
+		if (!this.staticRendering) {
+			this.state.translation.z = v;
+		}
+		this.data.rotAndTra[5] = v;
+	}
 	get RotAndTra6() { return this.ObjRotX; }
 	set RotAndTra6(v) { this.ObjRotX = v; }
-	get ObjRotX() { return this.state.objectRotation.x; }
-	set ObjRotX(v) { this.state.objectRotation.x = v; }
+	get ObjRotX() { return this.data.rotAndTra[6]; }
+	set ObjRotX(v) {
+		if (!this.staticRendering) {
+			this.state.objectRotation.x = v;
+		}
+		this.data.rotAndTra[6] = v;
+	}
 	get RotAndTra7() { return this.ObjRotY; }
 	set RotAndTra7(v) { this.ObjRotY = v; }
-	get ObjRotY() { return this.state.objectRotation.y; }
-	set ObjRotY(v) { this.state.objectRotation.y = v; }
+	get ObjRotY() { return this.data.rotAndTra[7]; }
+	set ObjRotY(v) {
+		if (!this.staticRendering) {
+			this.state.objectRotation.y = v;
+		}
+		this.data.rotAndTra[7] = v;
+	}
 	get RotAndTra8() { return this.ObjRotZ; }
 	set RotAndTra8(v) { this.ObjRotZ = v; }
-	get ObjRotZ() { return this.state.objectRotation.z; }
-	set ObjRotZ(v) { this.state.objectRotation.z = v; }
+	get ObjRotZ() { return this.data.rotAndTra[8]; }
+	set ObjRotZ(v) {
+		if (!this.staticRendering) {
+			this.state.objectRotation.z = v;
+		}
+		this.data.rotAndTra[8] = v;
+	}
 	get EdgeFactorUI() { return this.data.edgeFactorUI; }
 	set EdgeFactorUI(v) { this.data.edgeFactorUI = v; }
 	get CollisionReductionFactor() { return this.data.collisionReductionFactor; }

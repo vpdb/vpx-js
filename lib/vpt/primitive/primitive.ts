@@ -56,7 +56,7 @@ export class Primitive extends Item<PrimitiveData> implements IRenderable<Primit
 		return new Primitive(data);
 	}
 
-	private constructor(data: PrimitiveData) {
+	public constructor(data: PrimitiveData) {
 		super(data);
 		this.state = PrimitiveState.claimFrom(data.getName(), data.position.clone(true), data.size.clone(true), [...data.rotAndTra], data.szMaterial!, data.szImage, data.szNormalMap, data.isVisible);
 		this.updater = new PrimitiveUpdater(data, this.state);

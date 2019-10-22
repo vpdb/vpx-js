@@ -20,12 +20,12 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import { TableBuilder } from '../../../test/tabler-builder';
+import { TableBuilder } from '../../../test/table-builder';
 import { TestRenderApi } from '../../../test/test-render-api';
 import { Player } from '../../game/player';
+import { RampType } from '../enums';
 import { Table } from '../table/table';
 import { RampState } from './ramp-state';
-import { RampType } from '../enums';
 
 /* tslint:disable:no-unused-expression */
 chai.use(require('sinon-chai'));
@@ -58,7 +58,9 @@ describe('The VPinball ramp updater', () => {
 	it('should update visibility when opacity is active', async () => {
 		table.ramps.ramp2.getApi().Visible = false;
 		const states = player.popStates();
+
 		expect(states.getState<RampState>('ramp2').newState.isVisible).to.equal(false);
+		states.getState<RampState>('ramp2').newState.release();
 	});
 
 	it('should apply visibility', async () => {
