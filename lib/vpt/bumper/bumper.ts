@@ -56,7 +56,7 @@ export class Bumper extends Item<BumperData> implements IRenderable<BumperState>
 		return new Bumper(data);
 	}
 
-	private constructor(data: BumperData) {
+	public constructor(data: BumperData) {
 		super(data);
 		this.state = BumperState.claim(this.getName(), 0, 0, 0,
 			data.isCapVisible, data.isRingVisible, data.isBaseVisible, data.isSkirtVisible,

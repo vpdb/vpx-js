@@ -27,6 +27,9 @@ import { DragPoint } from '../lib/math/dragpoint';
 import { Vertex3D } from '../lib/math/vertex3d';
 import { PrimitiveData } from '../lib/vpt/primitive/primitive-data';
 import { Primitive } from '../lib/vpt/primitive/primitive';
+import { BumperData } from '../lib/vpt/bumper/bumper-data';
+import { Vertex2D } from '../lib/math/vertex2d';
+import { Bumper } from '../lib/vpt/bumper/bumper';
 
 export class TableBuilder {
 
@@ -58,6 +61,21 @@ export class TableBuilder {
 			this.table.primitives = [];
 		}
 		this.table.primitives.push(primitive);
+		return this;
+	}
+
+	public addBumper(name: string, attrs: any = {}): this {
+		const data = new BumperData(`GameItem${this.gameItem++}`);
+		data.name = name;
+		data.center = new Vertex2D(500, 500);
+		Object.assign(data, attrs);
+
+		const bumper = new Bumper(data);
+		this.table.items[name] = bumper;
+		if (!this.table.bumpers) {
+			this.table.bumpers = [];
+		}
+		this.table.bumpers.push(bumper);
 		return this;
 	}
 
