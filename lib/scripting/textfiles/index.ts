@@ -17,12 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-export class Stdlib {
+import { controller } from './controller.vbs';
 
-	get Err() { return null; }
-
-	public ExecuteGlobal(script: string) {
-		console.log(script);
-	}
-
-}
+export const textFiles: { [key: string]: string } = {
+	'controller.vbs': controller,
+};
