@@ -19,11 +19,13 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
+import { TableBuilder } from '../../../test/table-builder';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
-import { ImageAlignment } from '../enums';
+import { ImageAlignment, RampType } from '../enums';
 import { Table } from '../table/table';
+import { RampState } from './ramp-state';
 
 /* tslint:disable:no-unused-expression */
 chai.use(require('sinon-chai'));
@@ -31,15 +33,9 @@ const three = new ThreeHelper();
 
 describe('The VPinball ramp API', () => {
 
-	let table: Table;
-	let player: Player;
-
-	beforeEach(async () => {
-		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-ramp.vpx')));
-		player = new Player(table).init();
-	});
-
 	it('should correctly read and write the properties', async () => {
+		const table = await Table.load(new NodeBinaryReader(three.fixturePath('table-ramp.vpx')));
+		new Player(table).init();
 		const ramp = table.ramps.Flat.getApi();
 
 		ramp.HeightBottom = 23;
@@ -106,8 +102,57 @@ describe('The VPinball ramp API', () => {
 		expect(ramp.OverwritePhysics).to.equal(true);
 	});
 
+	it('should update the state when static rendering is disabled', () => {
+		const table = new TableBuilder()
+			.addMaterial('mat', { isOpacityActive: true })
+			.addMaterial('mat2')
+			.addRamp('ramp', { szMaterial: 'mat' })
+			.build();
+
+		const player = new Player(table).init();
+		const ramp = table.ramps.ramp.getApi();
+
+		ramp.HeightBottom = 6;
+		ramp.HeightTop = 54;
+		ramp.WidthBottom = 89;
+		ramp.WidthTop = 32;
+		ramp.Material = 'mat2';
+		ramp.Type = RampType.RampType1Wire;
+		ramp.ImageAlignment = ImageAlignment.ImageAlignTopLeft;
+		ramp.HasWallImage = false;
+		ramp.LeftWallHeight = 3;
+		ramp.RightWallHeight = 5;
+		ramp.VisibleLeftWallHeight = 3;
+		ramp.VisibleRightWallHeight = 6;
+		ramp.DepthBias = 3;
+		ramp.Visible = false;
+
+		const states = player.popStates();
+		const state = states.getState<RampState>('ramp');
+
+		expect(state.heightBottom).to.equal(6);
+		expect(state.heightTop).to.equal(54);
+		expect(state.widthBottom).to.equal(89);
+		expect(state.widthTop).to.equal(32);
+		expect(state.material).to.equal('mat2');
+		expect(state.type).to.equal(RampType.RampType1Wire);
+		expect(state.textureAlignment).to.equal(ImageAlignment.ImageAlignTopLeft);
+		expect(state.hasWallImage).to.equal(false);
+		expect(state.leftWallHeight).to.equal(3);
+		expect(state.rightWallHeight).to.equal(5);
+		expect(state.leftWallHeightVisible).to.equal(3);
+		expect(state.rightWallHeightVisible).to.equal(6);
+		expect(state.depthBias).to.equal(3);
+		expect(state.isVisible).to.equal(false);
+	});
+
 	it('should not crash when executing unused APIs', () => {
-		const ramp = table.ramps.Flat.getApi();
+		const table = new TableBuilder()
+			.addMaterial('mat')
+			.addRamp('ramp')
+			.build();
+		new Player(table).init();
+		const ramp = table.ramps.ramp.getApi();
 		expect(ramp.InterfaceSupportsErrorInfo({})).to.equal(false);
 	});
 
