@@ -23,8 +23,8 @@ import { Grammar, Parser } from 'nearley';
 import { logger } from '../util/logger';
 import { apiEnums } from '../vpt/enums';
 import { Table } from '../vpt/table/table';
-import { EventTransformer } from './event-transformer';
-import { ScopeTransformer } from './scope-transformer';
+import { EventTransformer } from './transformer/event-transformer';
+import { ScopeTransformer } from './transformer/scope-transformer';
 import vbsGrammar from './vbscript';
 
 // the table script function
