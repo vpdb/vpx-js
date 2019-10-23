@@ -27,9 +27,10 @@ import { Stdlib } from './stdlib';
 import { EventTransformer } from './transformer/event-transformer';
 import { ScopeTransformer } from './transformer/scope-transformer';
 import vbsGrammar from './vbscript';
+import { VBSHelper } from './vbs-helper';
 
 // the table script function
-declare function play(table: { [key: string]: any }, enums: any, stdlib: Stdlib): void;
+declare function play(table: { [key: string]: any }, enums: any, stdlib: Stdlib, vbsHelper: VBSHelper): void;
 
 export class Transpiler {
 
@@ -62,7 +63,7 @@ export class Transpiler {
 
 		// tslint:disable-next-line:no-eval
 		eval('//@ sourceURL=tablescript.js\n' + js);
-		play(this.table.getElementApis(), apiEnums, new Stdlib());
+		play(this.table.getElementApis(), apiEnums, new Stdlib(), new VBSHelper());
 	}
 
 	private parse(vbs: string): Program {

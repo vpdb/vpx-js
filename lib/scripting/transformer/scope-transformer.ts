@@ -140,7 +140,7 @@ export class ScopeTransformer {
 								'=',
 								arrowFunctionExpression(false,
 									blockStatement(node.body as Statement[]),
-									[ identifier(elementObjectName), identifier(enumObjectName), identifier(stdlibObjectName) ],
+									[ identifier(elementObjectName), identifier(enumObjectName), identifier(stdlibObjectName), identifier('vbsHelper') ],
 								),
 							)),
 					]);
