@@ -41,7 +41,7 @@ export class RampApi extends ItemApi<RampData> {
 
 	get HeightBottom() { return this.data.heightBottom; }
 	set HeightBottom(v) {
-		if (!this.isDynamic) {
+		if (this.isDynamic) {
 			this.state.heightBottom = v;
 		}
 		this.data.heightBottom = v;
