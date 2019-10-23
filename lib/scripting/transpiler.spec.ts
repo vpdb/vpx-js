@@ -26,6 +26,7 @@ import { Transpiler } from './transpiler';
 
 import * as sinon from 'sinon';
 import { Player } from '../game/player';
+import { ScopeTransformer } from './transformer/scope-transformer';
 
 chai.use(require('sinon-chai'));
 
@@ -46,7 +47,7 @@ describe('The VBScript transpiler', () => {
 		const vbs = `Dim test\n`;
 		const transpiler = new Transpiler(table, player);
 		const js = transpiler.transpile(vbs, 'runTableScript');
-		expect(js).to.equal(`runTableScript = (items, enums, global, stdlib, vbsHelper) => {\n    let test;\n};`);
+		expect(js).to.equal(`runTableScript = (${ScopeTransformer.ITEMS_NAME}, ${ScopeTransformer.ENUMS_NAME}, ${ScopeTransformer.GLOBAL_NAME}, ${ScopeTransformer.STDLIB_NAME}, ${ScopeTransformer.VBSHELPER_NAME}) => {\n    let test;\n};`);
 	});
 
 	it('should wrap everything into a function of an object', () => {
@@ -54,7 +55,7 @@ describe('The VBScript transpiler', () => {
 		const vbs = `Dim test\n`;
 		const transpiler = new Transpiler(table, player);
 		const js = transpiler.transpile(vbs, 'runTableScript', 'window');
-		expect(js).to.equal(`window.runTableScript = (items, enums, global, stdlib, vbsHelper) => {\n    let test;\n};`);
+		expect(js).to.equal(`window.runTableScript = (${ScopeTransformer.ITEMS_NAME}, ${ScopeTransformer.ENUMS_NAME}, ${ScopeTransformer.GLOBAL_NAME}, ${ScopeTransformer.STDLIB_NAME}, ${ScopeTransformer.VBSHELPER_NAME}) => {\n    let test;\n};`);
 	});
 
 	it('should wrap everything into a function of an object', () => {
@@ -62,7 +63,7 @@ describe('The VBScript transpiler', () => {
 		const vbs = `Dim test\n`;
 		const transpiler = new Transpiler(table, player);
 		const js = transpiler.transpile(vbs, 'runTableScript', 'window');
-		expect(js).to.equal(`window.runTableScript = (items, enums, global, stdlib, vbsHelper) => {\n    let test;\n};`);
+		expect(js).to.equal(`window.runTableScript = (${ScopeTransformer.ITEMS_NAME}, ${ScopeTransformer.ENUMS_NAME}, ${ScopeTransformer.GLOBAL_NAME}, ${ScopeTransformer.STDLIB_NAME}, ${ScopeTransformer.VBSHELPER_NAME}) => {\n    let test;\n};`);
 	});
 
 	it('should execute the table script', () => {
