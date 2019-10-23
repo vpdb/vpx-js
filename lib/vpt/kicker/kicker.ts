@@ -58,7 +58,7 @@ export class Kicker extends Item<KickerData> implements IRenderable<KickerState>
 		return new Kicker(data);
 	}
 
-	private constructor(data: KickerData) {
+	public constructor(data: KickerData) {
 		super(data);
 		this.state = KickerState.claim(data.getName(), data.kickerType, data.szMaterial);
 		this.meshGenerator = new KickerMeshGenerator(data);
@@ -81,7 +81,7 @@ export class Kicker extends Item<KickerData> implements IRenderable<KickerState>
 	}
 
 	public setupPlayer(player: Player, table: Table): void {
-		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
+		const height = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y) * table.getScaleZ();
 
 		// reduce the hit circle radius because only the inner circle of the kicker should start a hit event
 		const radius = this.data.radius * (this.data.legacyMode ? (this.data.fallThrough ? 0.75 : 0.6) : 1);
@@ -108,7 +108,7 @@ export class Kicker extends Item<KickerData> implements IRenderable<KickerState>
 	}
 
 	public getBallCreationPosition(table: Table): Vertex3D {
-		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
+		const height = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y);
 		return new Vertex3D(this.hit!.center.x, this.hit!.center.y, height);
 	}
 

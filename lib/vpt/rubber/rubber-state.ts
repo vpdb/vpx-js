@@ -28,14 +28,14 @@ export class RubberState extends ItemState {
 	public rotX!: number;
 	public rotY!: number;
 	public rotZ!: number;
-	public material!: string;
-	public texture!: string;
+	public material?: string;
+	public texture?: string;
 
 	public constructor() {
 		super();
 	}
 
-	public static claim(name: string, height: number, rotX: number, rotY: number, rotZ: number, material: string, texture: string, isVisible: boolean): RubberState {
+	public static claim(name: string, height: number, rotX: number, rotY: number, rotZ: number, material: string | undefined, texture: string | undefined, isVisible: boolean): RubberState {
 		const state = RubberState.POOL.get();
 		state.name = name;
 		state.height = height;

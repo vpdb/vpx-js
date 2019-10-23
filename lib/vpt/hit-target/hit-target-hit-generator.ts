@@ -79,9 +79,9 @@ export class HitTargetHitGenerator {
 				vert.z *= this.data.vSize.z;
 				vert.multiplyMatrix(fullMatrix);
 				rgv3D.push(new Vertex3D(
-					vert.x + this.data.vPosition.x,
-					vert.y + this.data.vPosition.y,
-					vert.z * table.getScaleZ() + this.data.vPosition.z + table.getTableHeight(),
+					vert.x + this.data.position.x,
+					vert.y + this.data.position.y,
+					vert.z * table.getScaleZ() + this.data.position.z + table.getTableHeight(),
 				));
 			}
 

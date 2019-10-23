@@ -83,7 +83,7 @@ export class SpinnerApi extends ItemApi<SpinnerData> {
 	}
 	get Elasticity() { return this.mover.elasticity; }
 	set Elasticity(v) { this.mover.elasticity = v; }
-	get Visible() { return this.state.isVisible; }
+	get Visible() { return this.state.isVisible; } // TODO check if isOpacticyActivated must be true as well
 	set Visible(v) { this.state.isVisible = v; }
 	get ReflectionEnabled() { return this.data.isReflectionEnabled; }
 	set ReflectionEnabled(v) { this.data.isReflectionEnabled = v; }

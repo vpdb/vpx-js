@@ -19,7 +19,7 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import * as sinon from 'sinon';
+import { spy } from 'sinon';
 import { TableBuilder } from '../../../test/table-builder';
 import { TestRenderApi } from '../../../test/test-render-api';
 import { Player } from '../../game/player';
@@ -65,29 +65,29 @@ describe('The VPinball ramp updater', () => {
 
 	it('should apply visibility', async () => {
 		const renderApi = new TestRenderApi();
-		sinon.spy(renderApi, 'applyVisibility');
+		spy(renderApi, 'applyVisibility');
 		table.ramps.ramp2.getUpdater().applyState(null, { isVisible: true } as RampState, renderApi, table);
 		expect(renderApi.applyVisibility).to.have.been.calledOnceWith(true);
 	});
 
 	it('should update the flat mesh', async () => {
 		const renderApi = new TestRenderApi();
-		sinon.spy(renderApi, 'applyMeshToNode');
+		spy(renderApi, 'applyMeshToNode');
 		table.ramps.ramp2.getUpdater().applyState(null, { heightTop: 500 } as RampState, renderApi, table);
 		expect(renderApi.applyMeshToNode).to.have.been.callCount(3);
 	});
 
 	it('should update the wire mesh', async () => {
 		const renderApi = new TestRenderApi();
-		sinon.spy(renderApi, 'applyMeshToNode');
+		spy(renderApi, 'applyMeshToNode');
 		table.ramps.ramp3.getUpdater().applyState(null, { heightTop: 500 } as RampState, renderApi, table);
 		expect(renderApi.applyMeshToNode).to.have.been.callCount(4);
 	});
 
 	it('should replace a mesh', async () => {
 		const renderApi = new TestRenderApi();
-		sinon.spy(renderApi, 'removeChildren');
-		sinon.spy(renderApi, 'addChildToParent');
+		spy(renderApi, 'removeChildren');
+		spy(renderApi, 'addChildToParent');
 		table.ramps.ramp2.getUpdater().applyState(null, { type: RampType.RampType2Wire } as RampState, renderApi, table);
 		expect(renderApi.removeChildren).to.have.been.calledOnce;
 		expect(renderApi.addChildToParent).to.have.been.calledTwice;

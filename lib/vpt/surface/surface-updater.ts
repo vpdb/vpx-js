@@ -27,7 +27,6 @@ import { SurfaceState } from './surface-state';
 export class SurfaceUpdater extends ItemUpdater<SurfaceState> {
 
 	private readonly data: SurfaceData;
-	private isDynamic?: boolean;
 
 	constructor(state: SurfaceState, data: SurfaceData) {
 		super(state);
@@ -36,26 +35,12 @@ export class SurfaceUpdater extends ItemUpdater<SurfaceState> {
 
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: SurfaceState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
 
-		if (this.isDynamic === undefined) {
-			if (this.data.isSideVisible) {
-				const sideMaterial = table.getMaterial(this.data.szSideMaterial);
-				if (sideMaterial && sideMaterial.isOpacityActive) {
-					this.isDynamic = true;
-				}
-			}
-			if (this.data.isTopBottomVisible) {
-				const topMaterial = table.getMaterial(this.data.szTopMaterial);
-				if (topMaterial && topMaterial.isOpacityActive) {
-					this.isDynamic = true;
-				}
-			}
-		}
+		this.applyDropState(obj, state, renderApi);
+		this.applySideState(obj, state, renderApi, table);
+		this.applyTopState(obj, state, renderApi, table);
+	}
 
-		if (this.data.isDroppable || this.isDynamic) {
-			this.applyTopState(obj, state, renderApi, table);
-			this.applySideState(obj, state, renderApi, table);
-		}
-
+	private applyDropState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: SurfaceState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>): void {
 		if (state.isDropped !== undefined) {
 			const matrix = Matrix3D.claim();
 			if (state.isDropped) {
@@ -66,7 +51,7 @@ export class SurfaceUpdater extends ItemUpdater<SurfaceState> {
 		}
 	}
 
-	public applyTopState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: SurfaceState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
+	private applyTopState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: SurfaceState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
 		const topObj = renderApi.findInGroup(obj, `surface.top-${this.state.getName()}`);
 		if (state.isTopVisible !== undefined) {
 			renderApi.applyVisibility(state.isTopVisible, topObj);
@@ -74,7 +59,7 @@ export class SurfaceUpdater extends ItemUpdater<SurfaceState> {
 		this.applyMaterial(topObj, state.topMaterial, state.topTexture, renderApi, table);
 	}
 
-	public applySideState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: SurfaceState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
+	private applySideState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: SurfaceState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
 		const sideObj = renderApi.findInGroup(obj, `surface.side-${this.state.getName()}`);
 		if (state.isSideVisible !== undefined) {
 			renderApi.applyVisibility(state.isSideVisible, sideObj);

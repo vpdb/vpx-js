@@ -44,7 +44,7 @@ export class KickerHit extends HitCircle {
 	public obj: EventProxy;
 
 	constructor(data: KickerData, events: EventProxy, table: Table, radius: number, height: number) {
-		super(data.vCenter.clone(), radius, height, height + data.hitHeight);
+		super(data.center.clone(), radius, height, height + data.hitHeight);
 		this.data = data;
 
 		if (!this.data.legacyMode) {
@@ -52,8 +52,8 @@ export class KickerHit extends HitCircle {
 			for (let t = 0; t < kickerHitVertices.length; t++) {
 				// find the right normal by calculating the distance from current ball position to vertex of the kicker mesh
 				const vPos = new Vertex3D(kickerHitVertices[t].x, kickerHitVertices[t].y, kickerHitVertices[t].z);
-				vPos.x = vPos.x * rad + this.data.vCenter.x;
-				vPos.y = vPos.y * rad + this.data.vCenter.y;
+				vPos.x = vPos.x * rad + this.data.center.x;
+				vPos.y = vPos.y * rad + this.data.center.y;
 				vPos.z = vPos.z * rad * table.getScaleZ() + height;
 				this.hitMesh[t] = vPos;
 			}

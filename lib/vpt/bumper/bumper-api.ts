@@ -29,10 +29,10 @@ export class BumperApi extends ItemApi<BumperData> {
 
 	private readonly state: BumperState;
 	private readonly animation: BumperAnimation;
-	private readonly isBaseActive: boolean;
-	private readonly isCapActive: boolean;
-	private readonly isRingActive: boolean;
-	private readonly isSkirtActive: boolean;
+	private readonly isBaseDynamic: boolean;
+	private readonly isCapDynamic: boolean;
+	private readonly isRingDynamic: boolean;
+	private readonly isSkirtDynamic: boolean;
 
 	constructor(state: BumperState, animation: BumperAnimation, data: BumperData, events: EventProxy, player: Player, table: Table) {
 		super(data, events, player, table);
@@ -42,10 +42,10 @@ export class BumperApi extends ItemApi<BumperData> {
 		const capMaterial = table.getMaterial(data.szCapMaterial);
 		const ringMaterial = table.getMaterial(data.szRingMaterial);
 		const skirtMaterial = table.getMaterial(data.szSkirtMaterial);
-		this.isBaseActive = !baseMaterial || baseMaterial.isOpacityActive;
-		this.isCapActive = !capMaterial || capMaterial.isOpacityActive;
-		this.isRingActive = !ringMaterial || ringMaterial.isOpacityActive;
-		this.isSkirtActive = !skirtMaterial || skirtMaterial.isOpacityActive;
+		this.isBaseDynamic = !!baseMaterial && baseMaterial.isOpacityActive;
+		this.isCapDynamic = !!capMaterial && capMaterial.isOpacityActive;
+		this.isRingDynamic = !!ringMaterial && ringMaterial.isOpacityActive;
+		this.isSkirtDynamic = !!skirtMaterial && skirtMaterial.isOpacityActive;
 	}
 
 	get Radius() { return this.data.radius; }
@@ -66,28 +66,28 @@ export class BumperApi extends ItemApi<BumperData> {
 	set Threshold(v) { this.data.threshold = v; }
 	get CapMaterial() { return this.data.szCapMaterial; }
 	set CapMaterial(v) {
-		if (this.isCapActive) {
+		if (this.isCapDynamic) {
 			this.state.capMaterial = v;
 		}
 		this.data.szCapMaterial = v;
 	}
 	get RingMaterial() { return this.data.szRingMaterial; }
 	set RingMaterial(v) {
-		if (this.isRingActive) {
+		if (this.isRingDynamic) {
 			this.state.ringMaterial = v;
 		}
 		this.data.szRingMaterial = v;
 	}
 	get BaseMaterial() { return this.data.szBaseMaterial; }
 	set BaseMaterial(v) {
-		if (this.isBaseActive) {
+		if (this.isBaseDynamic) {
 			this.state.baseMaterial = v;
 		}
 		this.data.szBaseMaterial = v;
 	}
 	get SkirtMaterial() { return this.data.szSkirtMaterial; }
 	set SkirtMaterial(v) {
-		if (this.isSkirtActive) {
+		if (this.isSkirtDynamic) {
 			this.state.skirtMaterial = v;
 		}
 		this.data.szSkirtMaterial = v;
@@ -104,28 +104,28 @@ export class BumperApi extends ItemApi<BumperData> {
 	set Collidable(v) { this.data.isCollidable = v; }
 	get CapVisible() { return this.data.isCapVisible; }
 	set CapVisible(v) {
-		if (this.isCapActive) {
+		if (this.isCapDynamic) {
 			this.state.isCapVisible = v;
 		}
 		this.data.isCapVisible = v;
 	}
 	get BaseVisible() { return this.data.isBaseVisible; }
 	set BaseVisible(v) {
-		if (this.isBaseActive) {
+		if (this.isBaseDynamic) {
 			this.state.isBaseVisible = v;
 		}
 		this.data.isBaseVisible = v;
 	}
 	get RingVisible() { return this.data.isRingVisible; }
 	set RingVisible(v) {
-		if (this.isRingActive) {
+		if (this.isRingDynamic) {
 			this.state.isRingVisible = v;
 		}
 		this.data.isRingVisible = v;
 	}
 	get SkirtVisible() { return this.data.isSkirtVisible; }
 	set SkirtVisible(v) {
-		if (this.isSkirtActive) {
+		if (this.isSkirtDynamic) {
 			this.state.isSkirtVisible = v;
 		}
 		this.data.isSkirtVisible = v;

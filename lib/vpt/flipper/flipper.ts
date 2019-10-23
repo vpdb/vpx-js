@@ -56,10 +56,10 @@ export class Flipper extends Item<FlipperData> implements IRenderable<FlipperSta
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Flipper> {
 		const data = await FlipperData.fromStorage(storage, itemName);
-		return new Flipper(itemName, data);
+		return new Flipper(data);
 	}
 
-	public constructor(itemName: string, data: FlipperData) {
+	public constructor(data: FlipperData) {
 		super(data);
 		this.mesh = new FlipperMesh();
 		this.state = FlipperState.claim(this.getName(), this.data.startAngle, this.data.center.clone(), this.data.isVisible, this.data.szMaterial!, this.data.szImage!, this.data.szRubberMaterial!);

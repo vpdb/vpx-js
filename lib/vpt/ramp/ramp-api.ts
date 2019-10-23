@@ -29,54 +29,54 @@ export class RampApi extends ItemApi<RampData> {
 
 	private readonly hits: HitObject[];
 	private readonly state: RampState;
-	private readonly isOpacityActive: boolean;
+	private readonly isDynamic: boolean;
 
 	constructor(state: RampState, hits: HitObject[], data: RampData, events: EventProxy, player: Player, table: Table) {
 		super(data, events, player, table);
 		this.hits = hits;
 		this.state = state;
 		const material = table.getMaterial(data.szMaterial);
-		this.isOpacityActive = !material || material.isOpacityActive;
+		this.isDynamic = !!material && material.isOpacityActive;
 	}
 
 	get HeightBottom() { return this.data.heightBottom; }
 	set HeightBottom(v) {
-		if (this.isOpacityActive) {
+		if (!this.isDynamic) {
 			this.state.heightBottom = v;
 		}
 		this.data.heightBottom = v;
 	}
 	get HeightTop() { return this.data.heightTop; }
 	set HeightTop(v) {
-		if (this.isOpacityActive) {
+		if (this.isDynamic) {
 			this.state.heightTop = v;
 		}
 		this.data.heightTop = v;
 	}
 	get WidthBottom() { return this.data.widthBottom; }
 	set WidthBottom(v) {
-		if (this.isOpacityActive) {
+		if (this.isDynamic) {
 			this.state.widthBottom = v;
 		}
 		this.data.widthBottom = v;
 	}
 	get WidthTop() { return this.data.widthTop; }
 	set WidthTop(v) {
-		if (this.isOpacityActive) {
+		if (this.isDynamic) {
 			this.state.widthTop = v;
 		}
 		this.data.widthTop = v;
 	}
 	get Material() { return this.data.szMaterial; }
 	set Material(v) {
-		if (this.isOpacityActive) {
+		if (this.isDynamic) {
 			this.state.material = v;
 		}
 		this.data.szMaterial = v;
 	}
 	get Type() { return this.data.rampType; }
 	set Type(v) {
-		if (this.isOpacityActive) {
+		if (this.isDynamic) {
 			this.state.type = v;
 		}
 		this.data.rampType = v;
@@ -84,49 +84,49 @@ export class RampApi extends ItemApi<RampData> {
 	get Image() { return this.data.szImage; }
 	set Image(v) {
 		this._assertNonHdrImage(v);
-		if (this.isOpacityActive) {
+		if (this.isDynamic) {
 			this.state.texture = v;
 		}
 		this.data.szImage = v;
 	}
 	get ImageAlignment() { return this.data.imageAlignment; }
 	set ImageAlignment(v) {
-		if (this.isOpacityActive) {
+		if (this.isDynamic) {
 			this.state.textureAlignment = v;
 		}
 		this.data.imageAlignment = v;
 	}
 	get HasWallImage() { return this.data.imageWalls; }
 	set HasWallImage(v) {
-		if (this.isOpacityActive) {
+		if (this.isDynamic) {
 			this.state.hasWallImage = v;
 		}
 		this.data.imageWalls = v;
 	}
 	get LeftWallHeight() { return this.data.leftWallHeight; }
 	set LeftWallHeight(v) {
-		if (this.isOpacityActive) {
+		if (this.isDynamic) {
 			this.state.leftWallHeight = v;
 		}
 		this.data.leftWallHeight = v;
 	}
 	get RightWallHeight() { return this.data.rightWallHeight; }
 	set RightWallHeight(v) {
-		if (this.isOpacityActive) {
+		if (this.isDynamic) {
 			this.state.rightWallHeight = v;
 		}
 		this.data.rightWallHeight = v;
 	}
 	get VisibleLeftWallHeight() { return this.data.leftWallHeightVisible; }
 	set VisibleLeftWallHeight(v) {
-		if (this.isOpacityActive) {
+		if (this.isDynamic) {
 			this.state.leftWallHeightVisible = v;
 		}
 		this.data.leftWallHeightVisible = v;
 	}
 	get VisibleRightWallHeight() { return this.data.rightWallHeightVisible; }
 	set VisibleRightWallHeight(v) {
-		if (this.isOpacityActive) {
+		if (this.isDynamic) {
 			this.state.rightWallHeightVisible = v;
 		}
 		this.data.rightWallHeightVisible = v;
@@ -151,7 +151,7 @@ export class RampApi extends ItemApi<RampData> {
 	set Threshold(v) { this.data.threshold = v; }
 	get Visible() { return this.data.isVisible; }
 	set Visible(v) {
-		if (this.isOpacityActive) {
+		if (this.isDynamic) {
 			this.state.isVisible = v;
 		}
 		this.data.isVisible = v;
@@ -160,7 +160,7 @@ export class RampApi extends ItemApi<RampData> {
 	set ReflectionEnabled(v) { this.data.isReflectionEnabled = v; }
 	get DepthBias() { return this.data.depthBias; }
 	set DepthBias(v) {
-		if (this.isOpacityActive) {
+		if (this.isDynamic) {
 			this.state.depthBias = v;
 		}
 		this.data.depthBias = v;

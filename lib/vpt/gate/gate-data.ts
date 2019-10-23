@@ -50,7 +50,7 @@ export class GateData extends ItemData {
 		return gateData;
 	}
 
-	private constructor(itemName: string) {
+	public constructor(itemName: string) {
 		super(itemName);
 	}
 

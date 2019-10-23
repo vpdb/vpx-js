@@ -32,20 +32,20 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 	private readonly primitive: Primitive;
 	private readonly state: PrimitiveState;
 	private readonly hits: HitObject[];
-	private readonly staticRendering: boolean;
+	private readonly isDynamic: boolean;
 
 	constructor(primitive: Primitive, state: PrimitiveState, data: PrimitiveData, hits: HitObject[], events: EventProxy, player: Player, table: Table) {
 		super(data, events, player, table);
 		this.primitive = primitive;
 		this.state = state;
 		this.hits = hits;
-		this.staticRendering = data.staticRendering;
+		this.isDynamic = !data.staticRendering;
 	}
 
 	get Image() { return this.data.szImage; }
 	set Image(v) {
 		this._assertNonHdrImage(v);
-		if (!this.staticRendering) {
+		if (this.isDynamic) {
 			this.state.map = v;
 		}
 		this.data.szImage = v;
@@ -53,14 +53,14 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 	get NormalMap() { return this.data.szNormalMap; }
 	set NormalMap(v) {
 		this._assertNonHdrImage(v);
-		if (!this.staticRendering) {
+		if (this.isDynamic) {
 			this.state.normalMap = v;
 		}
 		this.data.szNormalMap = v;
 	}
 	get Material() { return this.data.szMaterial; }
 	set Material(v) {
-		if (!this.staticRendering) {
+		if (this.isDynamic) {
 			this.state.material = v;
 		}
 		this.data.szMaterial = v;
@@ -73,7 +73,7 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 	set SideColor(v) { this.data.sideColor = v; }
 	get Visible() { return this.data.isVisible; }
 	set Visible(v) {
-		if (!this.staticRendering) {
+		if (this.isDynamic) {
 			this.state.isVisible = v;
 		}
 		this.data.isVisible = v;
@@ -88,21 +88,21 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 	set Z(v) { this.data.position.z = v; }
 	get Size_X() { return this.data.size.x; } // TODO make sure it doesn't conflict with event callbacks
 	set Size_X(v) {
-		if (!this.staticRendering) {
+		if (this.isDynamic) {
 			this.state.size.x = v;
 		}
 		this.data.size.x = v;
 	}
 	get Size_Y() { return this.data.size.y; }
 	set Size_Y(v) {
-		if (!this.staticRendering) {
+		if (this.isDynamic) {
 			this.state.size.y = v;
 		}
 		this.data.size.y = v;
 	}
 	get Size_Z() { return this.data.size.z; }
 	set Size_Z(v) {
-		if (!this.staticRendering) {
+		if (this.isDynamic) {
 			this.state.size.z = v;
 		}
 		this.data.size.z = v;
@@ -111,7 +111,7 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 	set RotAndTra0(v) { this.RotX = v; }
 	get RotX() { return this.data.rotAndTra[0]; }
 	set RotX(v) {
-		if (!this.staticRendering) {
+		if (this.isDynamic) {
 			this.state.rotation.x = v;
 		}
 		this.data.rotAndTra[0] = v;
@@ -120,7 +120,7 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 	set RotAndTra1(v) { this.RotY = v; }
 	get RotY() { return this.data.rotAndTra[1]; }
 	set RotY(v) {
-		if (!this.staticRendering) {
+		if (this.isDynamic) {
 			this.state.rotation.y = v;
 		}
 		this.data.rotAndTra[1] = v;
@@ -129,7 +129,7 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 	set RotAndTra2(v) { this.RotZ = v; }
 	get RotZ() { return this.data.rotAndTra[2]; }
 	set RotZ(v) {
-		if (!this.staticRendering) {
+		if (this.isDynamic) {
 			this.state.rotation.z = v;
 		}
 		this.data.rotAndTra[2] = v;
@@ -138,7 +138,7 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 	set RotAndTra3(v) { this.TransX = v; }
 	get TransX() { return this.data.rotAndTra[3]; }
 	set TransX(v) {
-		if (!this.staticRendering) {
+		if (this.isDynamic) {
 			this.state.translation.x = v;
 		}
 		this.data.rotAndTra[3] = v;
@@ -147,7 +147,7 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 	set RotAndTra4(v) { this.TransY = v; }
 	get TransY() { return this.data.rotAndTra[4]; }
 	set TransY(v) {
-		if (!this.staticRendering) {
+		if (this.isDynamic) {
 			this.state.translation.y = v;
 		}
 		this.data.rotAndTra[4] = v;
@@ -156,7 +156,7 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 	set RotAndTra5(v) { this.TransZ = v; }
 	get TransZ() { return this.data.rotAndTra[5]; }
 	set TransZ(v) {
-		if (!this.staticRendering) {
+		if (this.isDynamic) {
 			this.state.translation.z = v;
 		}
 		this.data.rotAndTra[5] = v;
@@ -165,7 +165,7 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 	set RotAndTra6(v) { this.ObjRotX = v; }
 	get ObjRotX() { return this.data.rotAndTra[6]; }
 	set ObjRotX(v) {
-		if (!this.staticRendering) {
+		if (this.isDynamic) {
 			this.state.objectRotation.x = v;
 		}
 		this.data.rotAndTra[6] = v;
@@ -174,7 +174,7 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 	set RotAndTra7(v) { this.ObjRotY = v; }
 	get ObjRotY() { return this.data.rotAndTra[7]; }
 	set ObjRotY(v) {
-		if (!this.staticRendering) {
+		if (this.isDynamic) {
 			this.state.objectRotation.y = v;
 		}
 		this.data.rotAndTra[7] = v;
@@ -183,7 +183,7 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 	set RotAndTra8(v) { this.ObjRotZ = v; }
 	get ObjRotZ() { return this.data.rotAndTra[8]; }
 	set ObjRotZ(v) {
-		if (!this.staticRendering) {
+		if (this.isDynamic) {
 			this.state.objectRotation.z = v;
 		}
 		this.data.rotAndTra[8] = v;

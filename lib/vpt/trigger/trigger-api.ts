@@ -34,10 +34,10 @@ export class TriggerApi extends ItemApi<TriggerData> {
 		this.state = state;
 	}
 
-	get X() { return this.data.vCenter.x; }
-	set X(v) { this.data.vCenter.x = v; }
-	get Y() { return this.data.vCenter.y; }
-	set Y(v) { this.data.vCenter.y = v; }
+	get X() { return this.data.center.x; }
+	set X(v) { this.data.center.x = v; }
+	get Y() { return this.data.center.y; }
+	set Y(v) { this.data.center.y = v; }
 	get Radius() { return this.data.radius; }
 	set Radius(v) { this.data.radius = v; }
 	get Surface() { return this.data.szSurface; }

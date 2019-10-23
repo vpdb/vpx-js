@@ -26,7 +26,7 @@ import { ItemData } from '../item-data';
 export class KickerData extends ItemData {
 
 	public kickerType: number = KickerType.KickerHole;
-	public vCenter!: Vertex2D;
+	public center!: Vertex2D;
 	public radius: number = 25;
 	public scatter: number = 0.0;
 	public hitAccuracy: number = 0.7;
@@ -44,13 +44,13 @@ export class KickerData extends ItemData {
 		return kickerData;
 	}
 
-	private constructor(itemName: string) {
+	public constructor(itemName: string) {
 		super(itemName);
 	}
 
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
 		switch (tag) {
-			case 'VCEN': this.vCenter = Vertex2D.get(buffer); break;
+			case 'VCEN': this.center = Vertex2D.get(buffer); break;
 			case 'RADI': this.radius = this.getFloat(buffer); break;
 			case 'KSCT': this.scatter = this.getFloat(buffer); break;
 			case 'KHAC': this.hitAccuracy = this.getFloat(buffer); break;

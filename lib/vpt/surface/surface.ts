@@ -42,7 +42,6 @@ import { SurfaceUpdater } from './surface-updater';
 export class Surface extends Item<SurfaceData> implements IRenderable<SurfaceState>, IHittable, IScriptable<SurfaceApi> {
 
 	private readonly state: SurfaceState;
-	private readonly itemName: string;
 	private readonly meshGenerator: SurfaceMeshGenerator;
 	private readonly hitGenerator: SurfaceHitGenerator;
 	private readonly updater: SurfaceUpdater;
@@ -56,15 +55,14 @@ export class Surface extends Item<SurfaceData> implements IRenderable<SurfaceSta
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<Surface> {
 		const data = await SurfaceData.fromStorage(storage, itemName);
-		return new Surface(itemName, data);
+		return new Surface(data);
 	}
 
-	public constructor(itemName: string, data: SurfaceData) {
+	public constructor(data: SurfaceData) {
 		super(data);
 		this.state = SurfaceState.claim(data.getName(), false,
 			data.isTopBottomVisible, data.szTopMaterial, data.szImage,
 			data.isSideVisible, data.szSideMaterial, data.szSideImage);
-		this.itemName = itemName;
 		this.meshGenerator = new SurfaceMeshGenerator();
 		this.hitGenerator = new SurfaceHitGenerator(this, data);
 		this.updater = new SurfaceUpdater(this.state, this.data);

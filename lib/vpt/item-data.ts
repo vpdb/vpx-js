@@ -68,7 +68,7 @@ export abstract class ItemData extends BiffParser {
 	private fLocked?: boolean;
 	private layerIndex?: number;
 
-	protected constructor(itemName: string) {
+	public constructor(itemName: string) {
 		super();
 		this.itemName = itemName;
 	}

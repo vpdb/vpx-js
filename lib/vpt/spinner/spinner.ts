@@ -66,7 +66,7 @@ export class Spinner extends Item<SpinnerData> implements IRenderable<SpinnerSta
 		return new Spinner(data);
 	}
 
-	constructor(data: SpinnerData) {
+	public constructor(data: SpinnerData) {
 		super(data);
 		this.state = SpinnerState.claim(this.data.getName(), 0, data.szImage, data.szMaterial, data.showBracket, data.isVisible);
 		this.meshGenerator = new SpinnerMeshGenerator(data);

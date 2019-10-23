@@ -59,7 +59,7 @@ export class Trigger extends Item<TriggerData> implements IRenderable<TriggerSta
 		return new Trigger(data);
 	}
 
-	private constructor(data: TriggerData) {
+	public constructor(data: TriggerData) {
 		super(data);
 		this.state = TriggerState.claim(data.getName(), 0, data.szMaterial, data.isVisible && data.shape !== TriggerShape.TriggerNone);
 		this.meshGenerator = new TriggerMeshGenerator(data);

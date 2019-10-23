@@ -27,7 +27,7 @@ import { ItemData } from '../item-data';
 export class TriggerData extends ItemData {
 
 	public dragPoints: DragPoint[] = [];
-	public vCenter!: Vertex2D;
+	public center!: Vertex2D;
 	public radius: number = 25;
 	public rotation: number = 0;
 	public scaleX: number = 1;
@@ -62,13 +62,13 @@ export class TriggerData extends ItemData {
 		});
 	}
 
-	private constructor(itemName: string) {
+	public constructor(itemName: string) {
 		super(itemName);
 	}
 
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
 		switch (tag) {
-			case 'VCEN': this.vCenter = Vertex2D.get(buffer); break;
+			case 'VCEN': this.center = Vertex2D.get(buffer); break;
 			case 'RADI': this.radius = this.getFloat(buffer); break;
 			case 'ROTA': this.rotation = this.getFloat(buffer); break;
 			case 'WITI': this.wireThickness = this.getFloat(buffer); break;
