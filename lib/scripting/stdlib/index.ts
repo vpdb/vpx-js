@@ -25,8 +25,4 @@ export class Stdlib {
 
 	}
 
-	public GetTextFile(path: string) {
-
-	}
-
 }
