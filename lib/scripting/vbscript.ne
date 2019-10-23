@@ -3,25 +3,25 @@
 @{%
 const estree = require('./estree');
 
-const ppField = require('./post-process-field');
-const ppDim = require('./post-process-dim');
-const ppConst = require('./post-process-const');
-const ppSub = require('./post-process-sub');
-const ppFunction = require('./post-process-function');
-const ppOption = require('./post-process-option');
-const ppRem = require('./post-process-rem');
-const ppIf = require('./post-process-if');
-const ppWith = require('./post-process-with');
-const ppSelect = require('./post-process-select');
-const ppLoop = require('./post-process-loop');
-const ppFor = require('./post-process-for');
-const ppRedim = require('./post-process-redim');
-const ppAssign = require('./post-process-assign');
-const ppSubCall = require('./post-process-subcall');
-const ppError = require('./post-process-error');
-const ppExpr = require('./post-process-expr');
-const ppLiterals = require('./post-process-literals');
-const ppHelpers = require('./post-process-helpers');
+const ppField = require('./post-process/field');
+const ppDim = require('./post-process/dim');
+const ppConst = require('./post-process/const');
+const ppSub = require('./post-process/sub');
+const ppFunction = require('./post-process/function');
+const ppOption = require('./post-process/option');
+const ppRem = require('./post-process/rem');
+const ppIf = require('./post-process/if');
+const ppWith = require('./post-process/with');
+const ppSelect = require('./post-process/select');
+const ppLoop = require('./post-process/loop');
+const ppFor = require('./post-process/for');
+const ppRedim = require('./post-process/redim');
+const ppAssign = require('./post-process/assign');
+const ppSubCall = require('./post-process/subcall');
+const ppError = require('./post-process/error');
+const ppExpr = require('./post-process/expr');
+const ppLiterals = require('./post-process/literals');
+const ppHelpers = require('./post-process/helpers');
 
 const moo = require('moo');
 
@@ -54,7 +54,7 @@ const lexer = moo.compile({
                 'kw_end': 'end',
                 'kw_erase': 'erase',
                 'kw_error': 'error',
-                'kw_eqv': 'eqv',   
+                'kw_eqv': 'eqv',
                 'kw_exit': 'exit',
                 'kw_explicit': 'explicit',
                 'kw_false': 'false',
@@ -63,7 +63,7 @@ const lexer = moo.compile({
                 'kw_get': 'get',
                 'kw_goto': 'goto',
                 'kw_if': 'if',
-                'kw_in': 'in',   
+                'kw_in': 'in',
                 'kw_is': 'is',
                 'kw_let': 'let',
                 'kw_loop': 'loop',
@@ -153,16 +153,16 @@ FieldID              -> ID                                                      
                       | %kw_explicit __                                                                                                   {% id %}
                       | %kw_step __                                                                                                       {% id %}
 
-VarDecl              -> %kw_dim __ VarName _ OtherVarsOpt NL                                                                              {% ppDim.varDecl %}    
+VarDecl              -> %kw_dim __ VarName _ OtherVarsOpt NL                                                                              {% ppDim.varDecl %}
 
-VarName              -> ExtendedID _ %paren_left _ ArrayRankList _ %paren_right                                                           {% ppDim.varName %}   
-                      | ExtendedID                                                                                                        {% id %} 
+VarName              -> ExtendedID _ %paren_left _ ArrayRankList _ %paren_right                                                           {% ppDim.varName %}
+                      | ExtendedID                                                                                                        {% id %}
 
-OtherVarsOpt         -> %comma _ VarName _ OtherVarsOpt                                                                                   {% ppDim.otherVarsOpt %}                                                  
+OtherVarsOpt         -> %comma _ VarName _ OtherVarsOpt                                                                                   {% ppDim.otherVarsOpt %}
                       | null                                                                                                              {% data => null %}
 
-ArrayRankList        -> IntLiteral _ %comma _ ArrayRankList                                                                               {% ppHelpers.arrayRankList1 %}  
-                      | IntLiteral                                                                                                        {% ppHelpers.arrayRankList2 %} 
+ArrayRankList        -> IntLiteral _ %comma _ ArrayRankList                                                                               {% ppHelpers.arrayRankList1 %}
+                      | IntLiteral                                                                                                        {% ppHelpers.arrayRankList2 %}
                       | null                                                                                                              {% data => null %}
 
 ConstDecl            -> AccessModifierOpt %kw_const __ ConstList NL                                                                       {% ppConst.constDecl %}
@@ -187,12 +187,12 @@ AccessModifierOpt    -> %kw_public __                                           
                       | %kw_private __                                                                                                    {% id %}
                       | null                                                                                                              {% data => null %}
 
-MethodArgList        -> %paren_left _ ArgList _ %paren_right                                                                              {% ppHelpers.methodArgList1 %}         
+MethodArgList        -> %paren_left _ ArgList _ %paren_right                                                                              {% ppHelpers.methodArgList1 %}
                       | %paren_left _ %paren_right                                                                                        {% ppHelpers.methodArgList2 %}
                       | null                                                                                                              {% data => null %}
 
-ArgList              -> Arg _ %comma _ ArgList                                                                                            {% ppHelpers.argList1 %}  
-                      | Arg                                                                                                               {% ppHelpers.argList2 %}                                                                                           
+ArgList              -> Arg _ %comma _ ArgList                                                                                            {% ppHelpers.argList1 %}
+                      | Arg                                                                                                               {% ppHelpers.argList2 %}
 
 Arg                  -> ArgModifierOpt ExtendedID _ %paren_left _ %paren_right                                                            {% ppHelpers.arg1 %}
                       | ArgModifierOpt ExtendedID                                                                                         {% ppHelpers.arg2 %}
@@ -232,16 +232,16 @@ InlineStmt           -> AssignStmt                                              
                       | ExitStmt                                                                                                          {% id %}
 
 GlobalStmtList       -> GlobalStmt GlobalStmtList                                                                                         {% ppHelpers.globalStmtList %}
-                      | null 
+                      | null
 
 MethodStmtList       -> MethodStmt MethodStmtList                                                                                         {% ppHelpers.methodStmtList %}
-                      | null 
+                      | null
 
 BlockStmtList        -> BlockStmt BlockStmtList                                                                                           {% ppHelpers.blockStmtList %}
                       | null                                                                                                              {% data => null %}
 
 RemStmt              -> %comment_rem                                                                                                      {% ppRem.stmt %}
- 
+
 OptionExplicit       -> %kw_option __ %kw_explicit NL                                                                                     {% ppOption.stmt %}
 
 ErrorStmt            -> %kw_on __ %kw_error __ %kw_resume __ %kw_next                                                                     {% ppError.stmt1 %}
@@ -268,7 +268,7 @@ SubCallStmt          -> QualifiedID _ SubSafeExprOpt _ CommaExprList            
 
 SubSafeExprOpt       -> SubSafeExpr                                                                                                       {% id %}
                       | null                                                                                                              {% data => null %}
- 
+
 LeftExpr             -> QualifiedID _ IndexOrParamsList %dot LeftExprTail                                                                 {% ppHelpers.leftExpr1 %}
                       | QualifiedID _ IndexOrParamsListDot LeftExprTail                                                                   {% ppHelpers.leftExpr2 %}
                       | QualifiedID _ IndexOrParamsList                                                                                   {% ppHelpers.leftExpr3 %}
@@ -335,14 +335,14 @@ ElseOpt              -> %kw_else __ InlineStmt                                  
                       | null                                                                                                              {% data => null %}
 
 EndIfOpt             -> %kw_end __ %kw_if
-                      | null                                                                                                              {% data => null %}            
+                      | null                                                                                                              {% data => null %}
 
 #========= With Statement
 
 WithStmt             -> %kw_with _ Expr NL BlockStmtList %kw_end __ %kw_with NL                                                           {% ppWith.stmt %}
 
 #========= Loop Statement
- 
+
 LoopStmt             -> %kw_do __ LoopType _ Expr NL BlockStmtList %kw_loop NL                                                            {% ppLoop.stmt1 %}
                       | %kw_do NL BlockStmtList %kw_loop __ LoopType _ Expr NL                                                            {% ppLoop.stmt2 %}
                       | %kw_do NL BlockStmtList %kw_loop NL                                                                               {% ppLoop.stmt3 %}
@@ -361,13 +361,13 @@ StepOpt              -> %kw_step _ Expr                                         
 
 #========= Select Statement
 
-SelectStmt           -> %kw_select __ %kw_case _ Expr NL CaseStmtList %kw_end __ %kw_select NL                                            {% ppSelect.selectStmt %}    
+SelectStmt           -> %kw_select __ %kw_case _ Expr NL CaseStmtList %kw_end __ %kw_select NL                                            {% ppSelect.selectStmt %}
 
 CaseStmtList         -> %kw_case _ ExprList _ NLOpt BlockStmtList CaseStmtList                                                            {% ppSelect.caseStmtList1 %}
                       | %kw_case __ %kw_else _ NLOpt BlockStmtList                                                                        {% ppSelect.caseStmtList2 %}
-                      | null                                                                                                              {% data => null %}  
- 
-NLOpt                -> NL                                                                                                                {% id %}   
+                      | null                                                                                                              {% data => null %}
+
+NLOpt                -> NL                                                                                                                {% id %}
                       | null                                                                                                              {% data => null %}
 
 ExprList             -> Expr _ %comma _ ExprList                                                                                          {% ppHelpers.exprList1 %}
