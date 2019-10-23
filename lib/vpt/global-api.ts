@@ -20,12 +20,12 @@
 import { AssignKey } from '../game/key-code';
 import { Player } from '../game/player';
 import { now, storage } from '../refs.node';
+import { textFiles } from '../scripting/textfiles';
+import { logger } from '../util/logger';
 import { Ball } from './ball/ball';
 import { Item } from './item';
 import { ItemData } from './item-data';
 import { Table } from './table/table';
-import { textFiles } from '../scripting/textfiles';
-import { logger } from '../util/logger';
 
 export class GlobalApi {
 

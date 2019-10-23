@@ -19,7 +19,6 @@
 
 import { replace } from 'estraverse';
 import { CallExpression, Identifier, MemberExpression, Program, Statement } from 'estree';
-import { Player } from '../../game/player';
 import { logger } from '../../util/logger';
 import { apiEnums } from '../../vpt/enums';
 import { GlobalApi } from '../../vpt/global-api';
@@ -45,22 +44,18 @@ export class ScopeTransformer {
 
 	private readonly table: Table;
 	private readonly items: { [p: string]: any };
-	private readonly stdlib = new Stdlib();
-	private readonly globalApi: GlobalApi;
-
 	public static ITEMS_NAME = '__items';
 	public static ENUMS_NAME = '__enums';
 	public static GLOBAL_NAME = '__global';
 	public static STDLIB_NAME = '__stdlib';
-	public static VBSHELPER_NAME = 'vbsHelper';
+	public static VBSHELPER_NAME = '__vbsHelper';
 
-	constructor(table: Table, player: Player) {
+	constructor(table: Table) {
 		this.table = table;
 		this.items = table.getElementApis();
-		this.globalApi = new GlobalApi(table, player);
 	}
 
-	public transform(ast: Program, mainFunctionName: string, globalObjectName?: string): Program {
+	public transform(ast: Program, mainFunctionName?: string, globalObjectName?: string): Program {
 		this.replaceElementObjectNames(ast);
 		this.replaceEnumObjectNames(ast);
 		this.replaceStdlibNames(ast);
@@ -114,7 +109,7 @@ export class ScopeTransformer {
 		replace(ast, {
 			enter: (node, parent: any) => {
 				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === ScopeTransformer.GLOBAL_NAME;
-				if (!alreadyReplaced && node.type === 'Identifier' && node.name in this.globalApi) {
+				if (!alreadyReplaced && node.type === 'Identifier' && node.name in GlobalApi.prototype) {
 					return memberExpression(
 						identifier(ScopeTransformer.GLOBAL_NAME),
 						identifier(node.name),
@@ -129,7 +124,7 @@ export class ScopeTransformer {
 		replace(ast, {
 			enter: (node, parent: any) => {
 				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === ScopeTransformer.STDLIB_NAME;
-				if (!alreadyReplaced && node.type === 'Identifier' && node.name in this.stdlib) {
+				if (!alreadyReplaced && node.type === 'Identifier' && node.name in Stdlib.prototype) {
 					return memberExpression(
 						identifier(ScopeTransformer.STDLIB_NAME),
 						identifier(node.name),
@@ -147,7 +142,10 @@ export class ScopeTransformer {
 	 * @param mainFunctionName Name of the function to wrap the code into
 	 * @param globalObjectName Name of the global object the function will be added too. If not specified it'll be a global function.
 	 */
-	public wrap(ast: Program, mainFunctionName: string, globalObjectName?: string): Program {
+	public wrap(ast: Program, mainFunctionName?: string, globalObjectName?: string): Program {
+		if (!mainFunctionName) {
+			return ast;
+		}
 		return replace(ast, {
 			enter: node => {
 				if (node.type === 'Program') {

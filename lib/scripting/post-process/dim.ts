@@ -20,6 +20,7 @@
 import { Comment, Identifier, Literal, VariableDeclaration, VariableDeclarator } from 'estree';
 import { Token } from 'moo';
 import * as estree from '../estree';
+import { ScopeTransformer } from '../transformer/scope-transformer';
 
 export function varDecl(
 	result: [Token, null, VariableDeclarator, null, VariableDeclarator[], Comment[]],
@@ -36,7 +37,7 @@ export function varName1(result: [Identifier, null, Token, null, Literal[], null
 	const literals = result[4] || [];
 	return estree.variableDeclarator(
 		identifier,
-		estree.callExpression(estree.memberExpression(estree.identifier('vbsHelper'), estree.identifier('dim')), [
+		estree.callExpression(estree.memberExpression(estree.identifier(ScopeTransformer.VBSHELPER_NAME), estree.identifier('dim')), [
 			estree.arrayExpression(literals),
 		]),
 	);

@@ -44,10 +44,10 @@ export class Transpiler {
 		this.player = player;
 	}
 
-	public transpile(vbs: string, globalFunction: string, globalObject?: string) {
+	public transpile(vbs: string, globalFunction?: string, globalObject?: string) {
 		logger().debug(vbs);
 		let ast = this.parse(vbs + '\n');
-		const scopeTransformer = new ScopeTransformer(this.table, this.player);
+		const scopeTransformer = new ScopeTransformer(this.table);
 		const eventTransformer = new EventTransformer(this.table);
 
 		ast = eventTransformer.transform(ast);
@@ -67,7 +67,13 @@ export class Transpiler {
 
 		// tslint:disable-next-line:no-eval
 		eval('//@ sourceURL=tablescript.js\n' + js);
-		play(this.table.getElementApis(), apiEnums, new GlobalApi(this.table, this.player), new Stdlib(), new VBSHelper());
+		play(this.table.getElementApis(), apiEnums, new GlobalApi(this.table, this.player), new Stdlib(this), new VBSHelper());
+	}
+
+	public executeGlobal(vbs: string) {
+		const js = this.transpile(vbs);
+		// tslint:disable-next-line:no-eval
+		eval('//@ sourceURL=controller.js\n' + js);
 	}
 
 	private parse(vbs: string): Program {

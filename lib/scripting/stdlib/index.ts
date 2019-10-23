@@ -17,11 +17,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Transpiler } from '../transpiler';
+
 export class Stdlib {
+
+	private readonly transpiler: Transpiler;
+
+	constructor(transpiler: Transpiler) {
+		this.transpiler = transpiler;
+	}
 
 	get Err() { return null; }
 
 	public ExecuteGlobal(script: string) {
+		this.transpiler.executeGlobal(script);
 	}
 
 }
