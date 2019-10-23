@@ -24,6 +24,8 @@ import { Ball } from './ball/ball';
 import { Item } from './item';
 import { ItemData } from './item-data';
 import { Table } from './table/table';
+import { textFiles } from '../scripting/textfiles';
+import { logger } from '../util/logger';
 
 export class GlobalApi {
 
@@ -72,7 +74,10 @@ export class GlobalApi {
 	get VersionRevision() { return this.table.getApi().VersionRevision; }
 
 	public GetTextFile(fileName: string): string {
-		// TODO implement
+		if (textFiles[fileName]) {
+			return textFiles[fileName];
+		}
+		logger().warn('[GetTextFile] Cannot find text file %s.', fileName);
 		return '';
 	}
 

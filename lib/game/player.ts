@@ -76,7 +76,7 @@ export class Player extends EventEmitter {
 		this.table.setupCollections();
 		this.physics.init();
 		this.table.prepareToPlay();
-		this.table.runTableScript();
+		this.table.runTableScript(this);
 		this.table.broadcastInit();
 		return this;
 	}

@@ -401,12 +401,12 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 		}
 	}
 
-	public runTableScript() {
+	public runTableScript(player: Player) {
 		if (!this.tableScript) {
 			logger().warn('Table script is not loaded!');
 			return;
 		}
-		const transpiler = new Transpiler(this);
+		const transpiler = new Transpiler(this, player);
 		transpiler.execute(this.tableScript);
 		logger().info('Table script loaded, transpiled and executed.');
 	}
