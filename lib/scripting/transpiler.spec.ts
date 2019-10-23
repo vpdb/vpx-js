@@ -25,6 +25,7 @@ import { Table } from '../vpt/table/table';
 import { Transpiler } from './transpiler';
 
 import * as sinon from 'sinon';
+import { Player } from '../game/player';
 
 chai.use(require('sinon-chai'));
 
@@ -33,33 +34,35 @@ describe('The VBScript transpiler', () => {
 
 	const three = new ThreeHelper();
 	let table: Table;
+	let player: Player;
 
 	before(async () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-gate.vpx')));
+		player = new Player(table);
 	});
 
 	it('should wrap everything into a global function', () => {
 
 		const vbs = `Dim test\n`;
-		const transpiler = new Transpiler(table);
+		const transpiler = new Transpiler(table, player);
 		const js = transpiler.transpile(vbs, 'runTableScript');
-		expect(js).to.equal(`runTableScript = (items, enums) => {\n    let test;\n};`);
+		expect(js).to.equal(`runTableScript = (items, enums, global, stdlib, vbsHelper) => {\n    let test;\n};`);
 	});
 
 	it('should wrap everything into a function of an object', () => {
 
 		const vbs = `Dim test\n`;
-		const transpiler = new Transpiler(table);
+		const transpiler = new Transpiler(table, player);
 		const js = transpiler.transpile(vbs, 'runTableScript', 'window');
-		expect(js).to.equal(`window.runTableScript = (items, enums) => {\n    let test;\n};`);
+		expect(js).to.equal(`window.runTableScript = (items, enums, global, stdlib, vbsHelper) => {\n    let test;\n};`);
 	});
 
 	it('should wrap everything into a function of an object', () => {
 
 		const vbs = `Dim test\n`;
-		const transpiler = new Transpiler(table);
+		const transpiler = new Transpiler(table, player);
 		const js = transpiler.transpile(vbs, 'runTableScript', 'window');
-		expect(js).to.equal(`window.runTableScript = (items, enums) => {\n    let test;\n};`);
+		expect(js).to.equal(`window.runTableScript = (items, enums, global, stdlib, vbsHelper) => {\n    let test;\n};`);
 	});
 
 	it('should execute the table script', () => {
@@ -68,7 +71,7 @@ describe('The VBScript transpiler', () => {
 		(global as any).Spy = Spy;
 
 		const vbs = `Spy\n`;                                 // that's our spy, in VBScript!
-		const transpiler = new Transpiler(table);
+		const transpiler = new Transpiler(table, player);
 		transpiler.execute(vbs, 'global');       // this should execute the spy
 
 		expect(Spy).to.have.been.calledOnce;

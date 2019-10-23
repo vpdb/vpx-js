@@ -22,7 +22,6 @@ export class Stdlib {
 	get Err() { return null; }
 
 	public ExecuteGlobal(script: string) {
-		console.log(script);
 	}
 
 }
