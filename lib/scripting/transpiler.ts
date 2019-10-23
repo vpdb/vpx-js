@@ -51,7 +51,7 @@ export class Transpiler {
 		const eventTransformer = new EventTransformer(this.table);
 
 		ast = eventTransformer.transform(ast);
-		ast = scopeTransformer.transform(ast, globalFunction, 'items', 'enums', 'global', 'stdlib', globalObject);
+		ast = scopeTransformer.transform(ast, globalFunction, globalObject);
 		logger().debug('AST:', ast);
 
 		const js = this.generate(ast);

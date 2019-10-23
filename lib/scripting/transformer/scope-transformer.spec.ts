@@ -41,44 +41,44 @@ describe('The scripting scope transformer', () => {
 	it('should wrap everything into a function', () => {
 
 		const vbs = `Dim test\n`;
-		const js = transform(vbs, 'tableScript', 'items', 'enums', 'api', 'stdlib', table);
-		expect(js).to.equal(`window.tableScript = (items, enums, api, stdlib, vbsHelper) => {\n    let test;\n};`);
+		const js = transform(vbs, 'tableScript', table);
+		expect(js).to.equal(`window.tableScript = (${ScopeTransformer.ITEMS_NAME}, ${ScopeTransformer.ENUMS_NAME}, ${ScopeTransformer.GLOBAL_NAME}, ${ScopeTransformer.STDLIB_NAME}, ${ScopeTransformer.VBSHELPER_NAME}) => {\n    let test;\n};`);
 	});
 
 	it('should convert global to local variable if object exists', () => {
 
 		const vbs = `WireRectangle.SomeFunct\n`;
-		const js = transform(vbs, 'tableScript', 'items', 'enums', 'api', 'stdlib', table);
-		expect(js).to.equal(`window.tableScript = (items, enums, api, stdlib, vbsHelper) => {\n    items.WireRectangle.SomeFunct();\n};`);
+		const js = transform(vbs, 'tableScript', table);
+		expect(js).to.equal(`window.tableScript = (${ScopeTransformer.ITEMS_NAME}, ${ScopeTransformer.ENUMS_NAME}, ${ScopeTransformer.GLOBAL_NAME}, ${ScopeTransformer.STDLIB_NAME}, ${ScopeTransformer.VBSHELPER_NAME}) => {\n    ${ScopeTransformer.ITEMS_NAME}.WireRectangle.SomeFunct();\n};`);
 	});
 
 	it('should not convert global to local if object does not exist', () => {
 
 		const vbs = `NoExisto.SomeFunct\n`;
-		const js = transform(vbs, 'tableScript', 'items', 'enums', 'api', 'stdlib', table);
-		expect(js).to.equal(`window.tableScript = (items, enums, api, stdlib, vbsHelper) => {\n    NoExisto.SomeFunct();\n};`);
+		const js = transform(vbs, 'tableScript', table);
+		expect(js).to.equal(`window.tableScript = (${ScopeTransformer.ITEMS_NAME}, ${ScopeTransformer.ENUMS_NAME}, ${ScopeTransformer.GLOBAL_NAME}, ${ScopeTransformer.STDLIB_NAME}, ${ScopeTransformer.VBSHELPER_NAME}) => {\n    NoExisto.SomeFunct();\n};`);
 	});
 
 	it('should not convert a function into an enum', () => {
 
 		const vbs = `TriggerShape.TriggerButton\n`;
-		const js = transform(vbs, 'tableScript', 'items', 'enums', 'api', 'stdlib', table);
-		expect(js).to.equal(`window.tableScript = (items, enums, api, stdlib, vbsHelper) => {\n    TriggerShape.TriggerButton();\n};`);
+		const js = transform(vbs, 'tableScript', table);
+		expect(js).to.equal(`window.tableScript = (${ScopeTransformer.ITEMS_NAME}, ${ScopeTransformer.ENUMS_NAME}, ${ScopeTransformer.GLOBAL_NAME}, ${ScopeTransformer.STDLIB_NAME}, ${ScopeTransformer.VBSHELPER_NAME}) => {\n    TriggerShape.TriggerButton();\n};`);
 	});
 
 	it('should convert an enum if enum exists', () => {
 
 		const vbs = `x = TriggerShape.TriggerButton\n`;
-		const js = transform(vbs, 'tableScript', 'items', 'enums', 'api', 'stdlib', table);
-		expect(js).to.equal(`window.tableScript = (items, enums, api, stdlib, vbsHelper) => {\n    x = enums.TriggerShape.TriggerButton;\n};`);
+		const js = transform(vbs, 'tableScript', table);
+		expect(js).to.equal(`window.tableScript = (${ScopeTransformer.ITEMS_NAME}, ${ScopeTransformer.ENUMS_NAME}, ${ScopeTransformer.GLOBAL_NAME}, ${ScopeTransformer.STDLIB_NAME}, ${ScopeTransformer.VBSHELPER_NAME}) => {\n    x = ${ScopeTransformer.ENUMS_NAME}.TriggerShape.TriggerButton;\n};`);
 	});
 
 });
 
-function transform(vbs: string, fctName: string, paramName: string, enumName: string, apiName: string, stdlibName: string, table: Table): string {
+function transform(vbs: string, fctName: string, table: Table): string {
 	const player = new Player(table);
 	const ast = vbsToAst(vbs);
 	const scopeTransformer = new ScopeTransformer(table, player);
-	const eventAst = scopeTransformer.transform(ast, fctName, paramName, enumName, apiName, stdlibName, 'window');
+	const eventAst = scopeTransformer.transform(ast, fctName, 'window');
 	return astToVbs(eventAst);
 }
