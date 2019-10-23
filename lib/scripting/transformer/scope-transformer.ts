@@ -19,8 +19,10 @@
 
 import { replace } from 'estraverse';
 import { CallExpression, Identifier, MemberExpression, Program, Statement } from 'estree';
+import { Player } from '../../game/player';
 import { logger } from '../../util/logger';
 import { apiEnums } from '../../vpt/enums';
+import { GlobalApi } from '../../vpt/global-api';
 import { Table } from '../../vpt/table/table';
 import {
 	arrowFunctionExpression,
@@ -44,17 +46,20 @@ export class ScopeTransformer {
 	private readonly table: Table;
 	private readonly items: { [p: string]: any };
 	private readonly stdlib = new Stdlib();
+	private readonly globalApi: GlobalApi;
 
-	constructor(table: Table) {
+	constructor(table: Table, player: Player) {
 		this.table = table;
 		this.items = table.getElementApis();
+		this.globalApi = new GlobalApi(table, player);
 	}
 
-	public transform(ast: Program, mainFunctionName: string, elementObjectName: string, enumObjectName: string, stdlibObjectName: string, globalObjectName?: string): Program {
+	public transform(ast: Program, mainFunctionName: string, elementObjectName: string, enumObjectName: string, globalApiObjectName: string, stdlibObjectName: string, globalObjectName?: string): Program {
 		this.replaceElementObjectNames(ast, elementObjectName);
 		this.replaceEnumObjectNames(ast, enumObjectName);
 		this.replaceStdlibNames(ast, stdlibObjectName);
-		return this.wrap(ast, mainFunctionName, elementObjectName, enumObjectName, stdlibObjectName, globalObjectName);
+		this.replaceGlobalApiNames(ast, globalApiObjectName);
+		return this.wrap(ast, mainFunctionName, elementObjectName, enumObjectName, globalApiObjectName, stdlibObjectName, globalObjectName);
 	}
 
 	/**
@@ -99,6 +104,21 @@ export class ScopeTransformer {
 		});
 	}
 
+	public replaceGlobalApiNames(ast: Program, globalApiObjectName: string): void {
+		replace(ast, {
+			enter: (node, parent: any) => {
+				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === globalApiObjectName;
+				if (!alreadyReplaced && node.type === 'Identifier' && node.name in this.globalApi) {
+					return memberExpression(
+						identifier(globalApiObjectName),
+						identifier(node.name),
+					);
+				}
+				return node;
+			},
+		});
+	}
+
 	public replaceStdlibNames(ast: Program, stdlibObjectName: string): void {
 		replace(ast, {
 			enter: (node, parent: any) => {
@@ -121,10 +141,11 @@ export class ScopeTransformer {
 	 * @param mainFunctionName Name of the function to wrap the code into
 	 * @param elementObjectName Name of the function parameter containing all table elements
 	 * @param enumObjectName Name of the function parameter containing all enums
+	 * @param globalApiObjectName Name of the function parameter implementing the global API
 	 * @param stdlibObjectName Name of the object that implements VBScript's Standard Library
 	 * @param globalObjectName Name of the global object the function will be added too. If not specified it'll be a global function.
 	 */
-	public wrap(ast: Program, mainFunctionName: string, elementObjectName: string, enumObjectName: string, stdlibObjectName: string, globalObjectName?: string): Program {
+	public wrap(ast: Program, mainFunctionName: string, elementObjectName: string, enumObjectName: string, globalApiObjectName: string, stdlibObjectName: string, globalObjectName?: string): Program {
 		return replace(ast, {
 			enter: node => {
 				if (node.type === 'Program') {
@@ -140,7 +161,7 @@ export class ScopeTransformer {
 								'=',
 								arrowFunctionExpression(false,
 									blockStatement(node.body as Statement[]),
-									[ identifier(elementObjectName), identifier(enumObjectName), identifier(stdlibObjectName), identifier('vbsHelper') ],
+									[ identifier(elementObjectName), identifier(enumObjectName), identifier(globalApiObjectName), identifier(stdlibObjectName), identifier('vbsHelper') ],
 								),
 							)),
 					]);

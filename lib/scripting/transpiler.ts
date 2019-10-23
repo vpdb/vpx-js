@@ -20,34 +20,38 @@
 import { generate } from 'escodegen';
 import { Program } from 'estree';
 import { Grammar, Parser } from 'nearley';
+import { Player } from '../game/player';
 import { logger } from '../util/logger';
 import { apiEnums } from '../vpt/enums';
+import { GlobalApi } from '../vpt/global-api';
 import { Table } from '../vpt/table/table';
 import { Stdlib } from './stdlib';
 import { EventTransformer } from './transformer/event-transformer';
 import { ScopeTransformer } from './transformer/scope-transformer';
-import vbsGrammar from './vbscript';
 import { VBSHelper } from './vbs-helper';
+import vbsGrammar from './vbscript';
 
 // the table script function
-declare function play(table: { [key: string]: any }, enums: any, stdlib: Stdlib, vbsHelper: VBSHelper): void;
+declare function play(table: { [key: string]: any }, enums: any, globalApi: GlobalApi, stdlib: Stdlib, vbsHelper: VBSHelper): void;
 
 export class Transpiler {
 
 	private readonly table: Table;
+	private readonly player: Player;
 
-	constructor(table: Table) {
+	constructor(table: Table, player: Player) {
 		this.table = table;
+		this.player = player;
 	}
 
 	public transpile(vbs: string, globalFunction: string, globalObject?: string) {
 		logger().debug(vbs);
 		let ast = this.parse(vbs + '\n');
-		const scopeTransformer = new ScopeTransformer(this.table);
+		const scopeTransformer = new ScopeTransformer(this.table, this.player);
 		const eventTransformer = new EventTransformer(this.table);
 
 		ast = eventTransformer.transform(ast);
-		ast = scopeTransformer.transform(ast, globalFunction, 'items', 'enums', 'stdlib', globalObject);
+		ast = scopeTransformer.transform(ast, globalFunction, 'items', 'enums', 'global', 'stdlib', globalObject);
 		logger().debug('AST:', ast);
 
 		const js = this.generate(ast);
@@ -63,7 +67,7 @@ export class Transpiler {
 
 		// tslint:disable-next-line:no-eval
 		eval('//@ sourceURL=tablescript.js\n' + js);
-		play(this.table.getElementApis(), apiEnums, new Stdlib(), new VBSHelper());
+		play(this.table.getElementApis(), apiEnums, new GlobalApi(this.table, this.player), new Stdlib(), new VBSHelper());
 	}
 
 	private parse(vbs: string): Program {
