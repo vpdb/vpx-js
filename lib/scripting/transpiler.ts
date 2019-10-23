@@ -67,7 +67,7 @@ export class Transpiler {
 
 		// tslint:disable-next-line:no-eval
 		eval('//@ sourceURL=tablescript.js\n' + js);
-		play(this.table.getElementApis(), apiEnums, new GlobalApi(this.table, this.player), new Stdlib(this), new VBSHelper());
+		play(this.table.getElementApis(), apiEnums, new GlobalApi(this.table, this.player), new Stdlib(), new VBSHelper(this));
 	}
 
 	public executeGlobal(vbs: string) {

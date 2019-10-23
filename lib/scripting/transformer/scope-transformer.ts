@@ -18,7 +18,7 @@
  */
 
 import { replace } from 'estraverse';
-import { CallExpression, Identifier, MemberExpression, Program, Statement } from 'estree';
+import { CallExpression, Expression, Identifier, MemberExpression, Program, Statement } from 'estree';
 import { logger } from '../../util/logger';
 import { apiEnums } from '../../vpt/enums';
 import { GlobalApi } from '../../vpt/global-api';
@@ -26,7 +26,7 @@ import { Table } from '../../vpt/table/table';
 import {
 	arrowFunctionExpression,
 	assignmentExpression,
-	blockStatement,
+	blockStatement, callExpression,
 	expressionStatement,
 	identifier,
 	memberExpression,
@@ -60,6 +60,7 @@ export class ScopeTransformer {
 		this.replaceEnumObjectNames(ast);
 		this.replaceStdlibNames(ast);
 		this.replaceGlobalApiNames(ast);
+		this.replaceExecuteGlobal(ast);
 		return this.wrap(ast, mainFunctionName, globalObjectName);
 	}
 
@@ -129,6 +130,37 @@ export class ScopeTransformer {
 						identifier(ScopeTransformer.STDLIB_NAME),
 						identifier(node.name),
 					);
+				}
+				return node;
+			},
+		});
+	}
+
+	/**
+	 * The `eval()` command can't be wrapped into a function, because it messes
+	 * up the execution context. So we transpile and execute directly.
+	 *
+	 * Example:
+	 *    ExecuteGlobal GetTextFile("controller.vbs")
+	 * becomes:
+	 *    eval(__vbsHelper.transpileInline(__global.GetTextFile('controller.vbs')));
+	 *
+	 * @param ast
+	 */
+	public replaceExecuteGlobal(ast: Program): void {
+		replace(ast, {
+			enter: (node, parent: any) => {
+				if (node.type === 'CallExpression') {
+					if (node.callee.type === 'Identifier' && node.callee.name === 'ExecuteGlobal') {
+						node.callee.name = 'eval';
+						node.arguments[0] = callExpression(
+							memberExpression(
+								identifier(ScopeTransformer.VBSHELPER_NAME),
+								identifier('transpileInline'),
+							),
+							[ node.arguments[0] as Expression ],
+						);
+					}
 				}
 				return node;
 			},

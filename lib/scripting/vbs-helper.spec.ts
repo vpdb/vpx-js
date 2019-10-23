@@ -19,13 +19,17 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
+import { TableBuilder } from '../../test/table-builder';
+import { Player } from '../game/player';
+import { Transpiler } from './transpiler';
 import { VBSHelper } from './vbs-helper';
 
 chai.use(require('sinon-chai'));
 
 /* tslint:disable:no-unused-expression */
 describe('The scripting VBS Helper', () => {
-	const vbsHelper = new VBSHelper();
+	const table = new TableBuilder().build();
+	const vbsHelper = new VBSHelper(new Transpiler(table, new Player(table)));
 
 	it('should create a one-dimension array', () => {
 		const js = vbsHelper.dim([100]);
