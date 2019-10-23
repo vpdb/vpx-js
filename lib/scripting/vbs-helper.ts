@@ -17,7 +17,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Transpiler } from './transpiler';
+
 export class VBSHelper {
+
+	private readonly transpiler: Transpiler;
+	private transpileCount = 0;
+
+	constructor(transpiler: Transpiler) {
+		this.transpiler = transpiler;
+	}
+
 	/**
 	 * Recursive function to create a multi-dimension array.
 	 */
@@ -50,6 +60,10 @@ export class VBSHelper {
 			return this.dim(dimensions);
 		}
 		return this.redim_resize(array, dimensions);
+	}
+
+	public transpileInline(vbs: string) {
+		return `//@ sourceURL=inline${this.transpileCount++}.js\n${this.transpiler.transpile(vbs)}`;
 	}
 
 	/**
