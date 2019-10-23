@@ -19,6 +19,7 @@
 
 import { expect } from 'chai';
 import { vbsToJs } from '../../../test/script.helper';
+import { ScopeTransformer } from '../transformer/scope-transformer';
 
 describe('The VBScript transpiler - Field', () => {
 	it('should transpile a "Private" field', () => {
@@ -36,6 +37,6 @@ describe('The VBScript transpiler - Field', () => {
 	it('should transpile a "Public" field', () => {
 		const vbs = `Public test1(1,2,3)\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('let test1 = vbsHelper.dim([\n    1,\n    2,\n    3\n]);');
+		expect(js).to.equal(`let test1 = ${ScopeTransformer.VBSHELPER_NAME}.dim([\n    1,\n    2,\n    3\n]);`);
 	});
 });

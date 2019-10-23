@@ -76,9 +76,8 @@ describe('The scripting scope transformer', () => {
 });
 
 function transform(vbs: string, fctName: string, table: Table): string {
-	const player = new Player(table);
 	const ast = vbsToAst(vbs);
-	const scopeTransformer = new ScopeTransformer(table, player);
+	const scopeTransformer = new ScopeTransformer(table);
 	const eventAst = scopeTransformer.transform(ast, fctName, 'window');
 	return astToVbs(eventAst);
 }

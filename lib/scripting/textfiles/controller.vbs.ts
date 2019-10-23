@@ -1,5 +1,4 @@
-export const controller = `
-'***Controller.vbs version 1.2***'
+export const controller = `'***Controller.vbs version 1.2***'
 '
 'by arngrim
 '
@@ -105,7 +104,7 @@ export const controller = `
 '  DOF(DOFevent, State)
 '
 
-Const directory = "HKEY_CURRENT_USER\SOFTWARE\Visual Pinball\Controller\"
+Const directory = "HKEY_CURRENT_USER\\SOFTWARE\\Visual Pinball\\Controller\\"
 Dim objShell
 Dim PopupMessage
 Dim B2SController
@@ -160,7 +159,11 @@ End Sub
 Sub LoadVPinMAME
 	Set Controller = CreateObject("VPinMAME.Controller")
 	If Err Then MsgBox "Can't load VPinMAME." & vbNewLine & Err.Description
-	If VPMver > "" Then If Controller.Version < VPMver Or Err Then MsgBox "VPinMAME ver " & VPMver & " required."
+	If VPMver > "" Then 
+		If Controller.Version < VPMver Or Err Then 
+			MsgBox "VPinMAME ver " & VPMver & " required."
+		End If
+	End If		
 	If VPinMAMEDriverVer < VBSver Or Err Then MsgBox VBSFile & " ver " & VBSver & " or higher required."
 	On Error Goto 0
 End Sub

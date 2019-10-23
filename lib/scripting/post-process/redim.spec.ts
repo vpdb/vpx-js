@@ -19,37 +19,38 @@
 
 import { expect } from 'chai';
 import { vbsToJs } from '../../../test/script.helper';
+import { ScopeTransformer } from '../transformer/scope-transformer';
 
 describe('The VBScript transpiler - Redim', () => {
 	it('should transpile a one-dimension redim', () => {
 		const vbs = `Redim myarray(2)\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('let myarray = vbsHelper.redim(myarray, [2]);');
+		expect(js).to.equal(`let myarray = ${ScopeTransformer.VBSHELPER_NAME}.redim(myarray, [2]);`);
 	});
 
 	it('should transpile a one-dimension redim with preserve', () => {
 		const vbs = `Redim Preserve myarray(2)\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('let myarray = vbsHelper.redim(myarray, [2], true);');
+		expect(js).to.equal(`let myarray = ${ScopeTransformer.VBSHELPER_NAME}.redim(myarray, [2], true);`);
 	});
 
 	it('should transpile a multi-dimension redim', () => {
 		const vbs = `Redim myarray(2,4,3)\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('let myarray = vbsHelper.redim(myarray, [\n    2,\n    4,\n    3\n]);');
+		expect(js).to.equal(`let myarray = ${ScopeTransformer.VBSHELPER_NAME}.redim(myarray, [\n    2,\n    4,\n    3\n]);`);
 	});
 
 	it('should transpile a multi-dimension redim with preserve', () => {
 		const vbs = `Redim Preserve myarray(2,4,3)\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('let myarray = vbsHelper.redim(myarray, [\n    2,\n    4,\n    3\n], true);');
+		expect(js).to.equal(`let myarray = ${ScopeTransformer.VBSHELPER_NAME}.redim(myarray, [\n    2,\n    4,\n    3\n], true);`);
 	});
 
 	it('should transpile a redim with multiple arrays', () => {
 		const vbs = `Redim myarray(2,4,3), myarray2(100)\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal(
-			'let myarray = vbsHelper.redim(myarray, [\n        2,\n        4,\n        3\n    ]), myarray2 = vbsHelper.redim(myarray2, [100]);',
+			`let myarray = ${ScopeTransformer.VBSHELPER_NAME}.redim(myarray, [\n        2,\n        4,\n        3\n    ]), myarray2 = ${ScopeTransformer.VBSHELPER_NAME}.redim(myarray2, [100]);`,
 		);
 	});
 
@@ -57,7 +58,7 @@ describe('The VBScript transpiler - Redim', () => {
 		const vbs = `Redim Preserve myarray(2,4,3), myarray2(100)\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal(
-			'let myarray = vbsHelper.redim(myarray, [\n        2,\n        4,\n        3\n    ], true), myarray2 = vbsHelper.redim(myarray2, [100], true);',
+			`let myarray = ${ScopeTransformer.VBSHELPER_NAME}.redim(myarray, [\n        2,\n        4,\n        3\n    ], true), myarray2 = ${ScopeTransformer.VBSHELPER_NAME}.redim(myarray2, [100], true);`,
 		);
 	});
 });
