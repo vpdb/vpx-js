@@ -82,4 +82,10 @@ describe('The VBScript transpiler - Subcall', () => {
 			"PlaySound(SoundFX('fx_flipperup', DOFFlippers), 0, 0.67, AudioPan(RightFlipper), 0.05, 0, 0, 1, AudioFade(RightFlipper));",
 		);
 	});
+
+	it('should transpile multiple object subcalls', () => {
+		const vbs = `a.b(1,2).c(3)(4).d(3,  5)\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('a.b(1, 2).c(3, 4).d(3, 5);');
+	});
 });

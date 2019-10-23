@@ -17,7 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { EmptyStatement, Expression, ExpressionStatement, Identifier } from 'estree';
+import { replace, VisitorOption } from 'estraverse';
+import { EmptyStatement, Expression, ExpressionStatement, Identifier, CallExpression } from 'estree';
 import { Token } from 'moo';
 import * as estree from './estree';
 
@@ -58,30 +59,32 @@ export function stmt5(result: [Expression, null, Token, null, Token]): Expressio
 	return estree.expressionStatement(estree.callExpression(callee, []));
 }
 
-export function stmt6(result: []): EmptyStatement {
-	return estree.emptyStatement();
-}
-
-export function stmt7(result: []): EmptyStatement {
-	return estree.emptyStatement();
-}
-
-export function stmt8(result: []): EmptyStatement {
-	return estree.emptyStatement();
-}
-
 export function stmt9(result: [Expression, null, Expression[], Expression, null, Expression[]]): ExpressionStatement {
 	const callee = result[0];
 	const args = result[2];
-	const expr = result[3];
-	let callExpr = estree.callExpression(callee, args);
-	if (expr.type === 'CallExpression') {
-		if (expr.callee.type === 'MemberExpression') {
-			if (expr.callee.object.type === 'CallExpression') {
-				expr.callee.object.callee = estree.memberExpression(callExpr, expr.callee.object.callee as Identifier);
-				callExpr = expr;
+	const leftExprTail = { ...result[3] };
+	const subSafeExpr = result[5];
+	const callExpr = estree.callExpression(callee, args) as Expression;
+	let stop = false;
+	replace(leftExprTail, {
+		enter: node => {
+			if (stop) {
+				return VisitorOption.Break;
 			}
-		}
-	}
-	return estree.expressionStatement(callExpr);
+		},
+		leave: node => {
+			if (stop) {
+				return VisitorOption.Break;
+			}
+			if (node.type === 'CallExpression') {
+				stop = true;
+				node = estree.callExpression(
+					estree.memberExpression(callExpr, node.callee as Expression),
+					node.arguments as Expression[],
+				);
+				return node;
+			}
+		},
+	});
+	return estree.expressionStatement(leftExprTail);
 }

@@ -128,18 +128,20 @@ export function leftExpr1(result: [Identifier, null, Expression[], Token, Expres
 	return estree.memberExpression(estree.callExpression(identifier, indexOrParams), expr);
 }
 
-export function leftExpr2(result: [Identifier, null, Expression[], Expression]): Expression {
+export function leftExpr2(result: [Expression, null, Expression[], Expression]): Expression | null {
 	const identifier = result[0];
 	const indexOrParamsDot = result[2];
-	const expr = result[3];
-	let callExpr = estree.callExpression(identifier, indexOrParamsDot);
-	if (expr.type === 'CallExpression') {
-		callExpr = estree.callExpression(
-			estree.memberExpression(callExpr, expr.callee as Identifier),
-			expr.arguments as Expression[],
+	const leftExprTail = result[3];
+	const callExpr = estree.callExpression(identifier, indexOrParamsDot);
+	if (leftExprTail.type === 'Identifier') {
+		return estree.memberExpression(callExpr, leftExprTail);
+	} else if (leftExprTail.type === 'CallExpression') {
+		return estree.callExpression(
+			estree.memberExpression(callExpr, leftExprTail.callee as Identifier),
+			leftExprTail.arguments as Expression[],
 		);
 	}
-	return callExpr;
+	return null;
 }
 
 export function leftExpr3(result: [Identifier, null, Expression[]]) {
@@ -152,18 +154,25 @@ export function leftExprTail1(result: [Identifier, null, Expression[], Token, Ex
 	const identifier = result[0];
 	const indexOrParams = result[2];
 	const expr = result[4];
-	return estree.memberExpression(estree.callExpression(identifier, indexOrParams), expr);
-}
-
-export function leftExprTail2(result: [Identifier, null, Expression[], Expression]) {
-	const identifier = result[0];
-	const indexOrParams = result[2];
-	const expr = result[3];
 	let callExpr = estree.callExpression(identifier, indexOrParams);
 	if (expr.type === 'CallExpression') {
 		callExpr = estree.callExpression(
 			estree.memberExpression(callExpr, expr.callee as Identifier),
 			expr.arguments as Expression[],
+		);
+	}
+	return callExpr;
+}
+
+export function leftExprTail2(result: [Identifier, null, Expression[], Expression]) {
+	const identifier = result[0];
+	const indexOrParams = result[2];
+	const leftExprTail = result[3];
+	let callExpr = estree.callExpression(identifier, indexOrParams);
+	if (leftExprTail.type === 'CallExpression') {
+		callExpr = estree.callExpression(
+			estree.memberExpression(callExpr, leftExprTail.callee as Identifier),
+			leftExprTail.arguments as Expression[],
 		);
 	}
 	return callExpr;
@@ -178,7 +187,6 @@ export function leftExprTail3(result: [Identifier, null, Expression[]]) {
 export function qualifiedId1(result: [Expression, Expression]): Expression {
 	const firstId = result[0];
 	const secondId = result[1];
-
 	if (secondId.type === 'MemberExpression') {
 		return estree.memberExpression(
 			estree.memberExpression(firstId, secondId.object as Expression),
@@ -192,7 +200,6 @@ export function qualifiedId1(result: [Expression, Expression]): Expression {
 export function qualifiedId2(result: [Identifier | MemberExpression, Identifier | MemberExpression]): Expression {
 	const firstId = result[0];
 	const secondId = result[1];
-
 	if (secondId.type === 'Identifier') {
 		return estree.memberExpression(firstId, secondId);
 	} else {
@@ -208,26 +215,15 @@ export function qualifiedIdTail1(result: [Identifier, Identifier]): Expression {
 	return estree.memberExpression(firstId, secondId);
 }
 
-export function indexOrParamsList1(result: [Expression, null, Token, null, Expression[]]): Expression[] {
+export function indexOrParamsList1(result: [Expression[], Expression[]]): Expression[] {
 	const firstExpr = result[0];
-	const otherExprs = result[4];
-	return [firstExpr, ...otherExprs];
+	const otherExprs = result[1];
+	return [...firstExpr, ...otherExprs];
 }
 
 export function indexOrParamsList2(result: [Expression[]]): Expression[] {
-	const exprs = result[0];
-	return exprs;
-}
-
-export function indexOrParamsListDot1(result: [Expression, null, Token, null, Expression[]]): Expression[] {
-	const firstExpr = result[0];
-	const otherExprs = result[4];
-	return [firstExpr, ...otherExprs];
-}
-
-export function indexOrParamsListDot2(result: [Expression[]]): Expression[] {
 	const expr = result[0];
-	return expr;
+	return [...expr];
 }
 
 export function indexOrParams1(result: [Token, null, Expression, null, Expression[], Token]) {
@@ -248,6 +244,17 @@ export function indexOrParams3(result: [Token, null, Expression, null, Token]) {
 
 export function indexOrParams4(result: [Token, null, Token]) {
 	return [];
+}
+
+export function indexOrParamsListDot1(result: [Expression[], Expression[]]): Expression[] {
+	const firstExpr = result[0];
+	const otherExprs = result[1];
+	return [...firstExpr, ...otherExprs];
+}
+
+export function indexOrParamsListDot2(result: [Expression[]]): Expression[] {
+	const expr = result[0];
+	return [...expr];
 }
 
 export function indexOrParamsDot1(result: [Token, null, Expression, null, Expression[], Token]) {
