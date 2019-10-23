@@ -34,7 +34,7 @@ export class TriggerHitCircle extends HitCircle {
 	private readonly animation: TriggerAnimation;
 
 	constructor(data: TriggerData, animation: TriggerAnimation, events: EventProxy, table: Table) {
-		super(data.vCenter, data.radius, table.getSurfaceHeight(data.szSurface, data.vCenter.x, data.vCenter.y), table.getSurfaceHeight(data.szSurface, data.vCenter.x, data.vCenter.y) + data.hitHeight);
+		super(data.center, data.radius, table.getSurfaceHeight(data.szSurface, data.center.x, data.center.y), table.getSurfaceHeight(data.szSurface, data.center.x, data.center.y) + data.hitHeight);
 		this.animation = animation;
 		this.isEnabled = data.isEnabled;
 		this.objType = CollisionType.Trigger;

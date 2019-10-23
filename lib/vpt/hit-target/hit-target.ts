@@ -60,7 +60,7 @@ export class HitTarget extends Item<HitTargetData> implements IRenderable<HitTar
 		return new HitTarget(data);
 	}
 
-	private constructor(data: HitTargetData) {
+	public constructor(data: HitTargetData) {
 		super(data);
 		this.state = HitTargetState.claim(this.data.getName(),  0.0, 0.0, data.szMaterial, data.szImage, data.isVisible);
 		this.meshGenerator = new HitTargetMeshGenerator(data);

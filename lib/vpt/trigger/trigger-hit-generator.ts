@@ -42,7 +42,7 @@ export class TriggerHitGenerator {
 	public generateHitObjects(animation: TriggerAnimation, events: EventProxy, table: Table): HitObject[] {
 
 		const hitObjects: HitObject[] = [];
-		const height = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y);
+		const height = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y);
 		const vVertex: RenderVertex[] = DragPoint.getRgVertex<RenderVertex>(this.data.dragPoints, () => new RenderVertex(), CatmullCurve2D.fromVertex2D as any);
 
 		const count = vVertex.length;

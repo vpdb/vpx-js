@@ -64,7 +64,7 @@ export class Gate extends Item<GateData> implements IRenderable<GateState>, IPla
 		return new Gate(data);
 	}
 
-	private constructor(data: GateData) {
+	public constructor(data: GateData) {
 		super(data);
 		this.state = GateState.claim(this.getName(), 0, data.szMaterial, data.showBracket, data.isVisible);
 		this.meshGenerator = new GateMeshGenerator(data);

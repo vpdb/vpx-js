@@ -19,14 +19,14 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import sinonChai = require('sinon-chai');
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { ImageAlignment } from '../enums';
 import { Table } from '../table/table';
 
 /* tslint:disable:no-unused-expression */
-chai.use(sinonChai);
+chai.use(require('sinon-chai'));
 const three = new ThreeHelper();
 
 describe('The VPinball ramp API', () => {
@@ -42,40 +42,68 @@ describe('The VPinball ramp API', () => {
 	it('should correctly read and write the properties', async () => {
 		const ramp = table.ramps.Flat.getApi();
 
-		ramp.HeightBottom = 23; expect(ramp.HeightBottom).to.equal(23);
-		ramp.HeightTop = 523; expect(ramp.HeightTop).to.equal(523);
-		ramp.WidthBottom = 226; expect(ramp.WidthBottom).to.equal(226);
-		ramp.WidthTop = 854; expect(ramp.WidthTop).to.equal(854);
-		ramp.Material = 'maathos'; expect(ramp.Material).to.equal('maathos');
-		ramp.Type = 5; expect(ramp.Type).to.equal(5);
-		ramp.Image = 'test_pattern'; expect(ramp.Image).to.equal('test_pattern');
-		ramp.ImageAlignment = 0; expect(ramp.ImageAlignment).to.equal(0);
-		ramp.ImageAlignment = 1; expect(ramp.ImageAlignment).to.equal(1);
+		ramp.HeightBottom = 23;
+		ramp.HeightTop = 523;
+		ramp.WidthBottom = 226;
+		ramp.WidthTop = 854;
+		ramp.Material = 'maathos';
+		ramp.Type = 5;
+		ramp.Image = 'test_pattern';
+		ramp.ImageAlignment = ImageAlignment.ImageAlignWorld; expect(ramp.ImageAlignment).to.equal(0);
+		ramp.ImageAlignment = ImageAlignment.ImageAlignTopLeft;
 		ramp.HasWallImage = false; expect(ramp.HasWallImage).to.equal(false);
-		ramp.HasWallImage = true; expect(ramp.HasWallImage).to.equal(true);
-		ramp.LeftWallHeight = 3.221; expect(ramp.LeftWallHeight).to.equal(3.221);
-		ramp.RightWallHeight = 5.3984; expect(ramp.RightWallHeight).to.equal(5.3984);
-		ramp.VisibleLeftWallHeight = 3.22; expect(ramp.VisibleLeftWallHeight).to.equal(3.22);
-		ramp.VisibleRightWallHeight = 6.237; expect(ramp.VisibleRightWallHeight).to.equal(6.237);
-		ramp.Elasticity = 0.339; expect(ramp.Elasticity).to.equal(0.339);
-		ramp.Friction = 2.554; expect(ramp.Friction).to.equal(2.554);
-		ramp.Scatter = 83.45; expect(ramp.Scatter).to.equal(83.45);
+		ramp.HasWallImage = true;
+		ramp.LeftWallHeight = 3.221;
+		ramp.RightWallHeight = 5.3984;
+		ramp.VisibleLeftWallHeight = 3.22;
+		ramp.VisibleRightWallHeight = 6.237;
+		ramp.Elasticity = 0.339;
+		ramp.Friction = 2.554;
+		ramp.Scatter = 83.45;
 		ramp.Collidable = false; expect(ramp.Collidable).to.equal(false);
-		ramp.Collidable = true; expect(ramp.Collidable).to.equal(true);
+		ramp.Collidable = true;
 		ramp.HasHitEvent = false; expect(ramp.HasHitEvent).to.equal(false);
-		ramp.HasHitEvent = true; expect(ramp.HasHitEvent).to.equal(true);
-		ramp.Threshold = 1.003; expect(ramp.Threshold).to.equal(1.003);
+		ramp.HasHitEvent = true;
+		ramp.Threshold = 1.003;
 		ramp.Visible = false; expect(ramp.Visible).to.equal(false);
-		ramp.Visible = true; expect(ramp.Visible).to.equal(true);
+		ramp.Visible = true;
 		ramp.ReflectionEnabled = false; expect(ramp.ReflectionEnabled).to.equal(false);
-		ramp.ReflectionEnabled = true; expect(ramp.ReflectionEnabled).to.equal(true);
-		ramp.DepthBias = 2.332; expect(ramp.DepthBias).to.equal(2.332);
-		ramp.WireDiameter = 12; expect(ramp.WireDiameter).to.equal(12);
-		ramp.WireDistanceX = 1.2; expect(ramp.WireDistanceX).to.equal(1.2);
-		ramp.WireDistanceY = 3.2; expect(ramp.WireDistanceY).to.equal(3.2);
-		ramp.PhysicsMaterial = 'physmat'; expect(ramp.PhysicsMaterial).to.equal('physmat');
+		ramp.ReflectionEnabled = true;
+		ramp.DepthBias = 2.332;
+		ramp.WireDiameter = 12;
+		ramp.WireDistanceX = 1.2;
+		ramp.WireDistanceY = 3.2;
+		ramp.PhysicsMaterial = 'physmat';
 		ramp.OverwritePhysics = false; expect(ramp.OverwritePhysics).to.equal(false);
-		ramp.OverwritePhysics = true; expect(ramp.OverwritePhysics).to.equal(true);
+		ramp.OverwritePhysics = true;
+
+		expect(ramp.HeightBottom).to.equal(23);
+		expect(ramp.HeightTop).to.equal(523);
+		expect(ramp.WidthBottom).to.equal(226);
+		expect(ramp.WidthTop).to.equal(854);
+		expect(ramp.Material).to.equal('maathos');
+		expect(ramp.Type).to.equal(5);
+		expect(ramp.Image).to.equal('test_pattern');
+		expect(ramp.ImageAlignment).to.equal(1);
+		expect(ramp.HasWallImage).to.equal(true);
+		expect(ramp.LeftWallHeight).to.equal(3.221);
+		expect(ramp.RightWallHeight).to.equal(5.3984);
+		expect(ramp.VisibleLeftWallHeight).to.equal(3.22);
+		expect(ramp.VisibleRightWallHeight).to.equal(6.237);
+		expect(ramp.Elasticity).to.equal(0.339);
+		expect(ramp.Friction).to.equal(2.554);
+		expect(ramp.Scatter).to.equal(83.45);
+		expect(ramp.Collidable).to.equal(true);
+		expect(ramp.HasHitEvent).to.equal(true);
+		expect(ramp.Threshold).to.equal(1.003);
+		expect(ramp.Visible).to.equal(true);
+		expect(ramp.ReflectionEnabled).to.equal(true);
+		expect(ramp.DepthBias).to.equal(2.332);
+		expect(ramp.WireDiameter).to.equal(12);
+		expect(ramp.WireDistanceX).to.equal(1.2);
+		expect(ramp.WireDistanceY).to.equal(3.2);
+		expect(ramp.PhysicsMaterial).to.equal('physmat');
+		expect(ramp.OverwritePhysics).to.equal(true);
 	});
 
 	it('should not crash when executing unused APIs', () => {

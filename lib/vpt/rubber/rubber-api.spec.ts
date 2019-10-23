@@ -89,21 +89,6 @@ describe('The VPinball rubber API', () => {
 		expect(rubber.OverwritePhysics).to.equal(true);
 	});
 
-	it('should toggle visibility', () => {
-
-		const rubber = table.rubbers.Rubber1.getApi();
-		rubber.EnableStaticRendering = false;
-
-		rubber.Visible = false;
-		expect(rubber.Visible).to.equal(false);
-
-		rubber.Visible = true;
-		expect(rubber.Visible).to.equal(true);
-
-		rubber.EnableStaticRendering = true;
-		expect(() => rubber.Visible = false).to.throw('Rubber is static! Visible property not supported!');
-	});
-
 	it('should not crash when executing unused APIs', () => {
 		const rubber = table.rubbers.Rubber1.getApi();
 		expect(rubber.InterfaceSupportsErrorInfo({})).to.equal(false);

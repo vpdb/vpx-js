@@ -68,9 +68,9 @@ export class HitTargetMeshGenerator {
 			vert.z *= this.data.vSize.z;
 			vert.multiplyMatrix(fullMatrix);
 
-			vertex.x = f4(vert.x + this.data.vPosition.x);
-			vertex.y = f4(vert.y + this.data.vPosition.y);
-			vertex.z = f4(f4(f4(vert.z * table.getScaleZ()) + this.data.vPosition.z) + table.getTableHeight()) + dropOffset;
+			vertex.x = f4(vert.x + this.data.position.x);
+			vertex.y = f4(vert.y + this.data.position.y);
+			vertex.z = f4(f4(f4(vert.z * table.getScaleZ()) + this.data.position.z) + table.getTableHeight()) + dropOffset;
 
 			const normal = Vertex3D.claim(vertex.nx, vertex.ny, vertex.nz).multiplyMatrixNoTranslate(fullMatrix);
 			vertex.nx = normal.x;

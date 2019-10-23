@@ -50,9 +50,9 @@ export class HitTargetUpdater extends ItemUpdater<HitTargetState> {
 
 	private applyAnimation<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: HitTargetState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>): void {
 
-		const matTransToOrigin = Matrix3D.claim().setTranslation(-this.data.vPosition.x, -this.data.vPosition.y, -this.data.vPosition.z);
+		const matTransToOrigin = Matrix3D.claim().setTranslation(-this.data.position.x, -this.data.position.y, -this.data.position.z);
 		const matRotateToOrigin = Matrix3D.claim().rotateZMatrix(degToRad(-this.data.rotZ));
-		const matTransFromOrigin = Matrix3D.claim().setTranslation(this.data.vPosition.x, this.data.vPosition.y, this.data.vPosition.z);
+		const matTransFromOrigin = Matrix3D.claim().setTranslation(this.data.position.x, this.data.position.y, this.data.position.z);
 		const matRotateFromOrigin = Matrix3D.claim().rotateZMatrix(degToRad(this.data.rotZ));
 		const matRotateX = Matrix3D.claim().rotateXMatrix(degToRad(state.xRotation));
 		const matTranslateZ = Matrix3D.claim().setTranslation(0, 0, -state.zOffset);

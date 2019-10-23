@@ -49,7 +49,7 @@ export class HitTargetData extends ItemData implements IPhysicalData {
 	public targetType: number = TargetType.DropTargetSimple;
 	public threshold: number = 2.0;
 	public useHitEvent: boolean = true;
-	public vPosition: Vertex3D = new Vertex3D();
+	public position: Vertex3D = new Vertex3D();
 	public vSize: Vertex3D = new Vertex3D(32, 32, 32);
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<HitTargetData> {
@@ -58,7 +58,7 @@ export class HitTargetData extends ItemData implements IPhysicalData {
 		return hitTargetData;
 	}
 
-	private constructor(itemName: string) {
+	public constructor(itemName: string) {
 		super(itemName);
 	}
 
@@ -70,7 +70,7 @@ export class HitTargetData extends ItemData implements IPhysicalData {
 
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
 		switch (tag) {
-			case 'VPOS': this.vPosition = Vertex3D.get(buffer); break;
+			case 'VPOS': this.position = Vertex3D.get(buffer); break;
 			case 'VSIZ': this.vSize = Vertex3D.get(buffer); break;
 			case 'ROTZ': this.rotZ = this.getFloat(buffer); break;
 			case 'IMAG': this.szImage = this.getString(buffer, len); break;
@@ -102,6 +102,6 @@ export class HitTargetData extends ItemData implements IPhysicalData {
 	}
 
 	public getPositionZ(z: number, table: Table) {
-		return f4(f4(f4(z * table.getScaleZ()) + this.vPosition.z) + table.getTableHeight());
+		return f4(f4(f4(z * table.getScaleZ()) + this.position.z) + table.getTableHeight());
 	}
 }

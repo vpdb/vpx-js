@@ -41,7 +41,7 @@ export class KickerMeshGenerator {
 	}
 
 	public getMesh(table: Table): Mesh {
-		const baseHeight = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
+		const baseHeight = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y) * table.getScaleZ();
 		return this.generateMesh(table, baseHeight);
 	}
 
@@ -69,8 +69,8 @@ export class KickerMeshGenerator {
 		const mesh = this.getBaseMesh();
 		for (const vertex of mesh.vertices) {
 			const vert = Vertex3D.claim(vertex.x, vertex.y, vertex.z + zOffset).multiplyMatrix(fullMatrix);
-			vertex.x = f4(vert.x * this.data.radius) + this.data.vCenter.x;
-			vertex.y = f4(vert.y * this.data.radius) + this.data.vCenter.y;
+			vertex.x = f4(vert.x * this.data.radius) + this.data.center.x;
+			vertex.y = f4(vert.y * this.data.radius) + this.data.center.y;
 			vertex.z = f4(f4(vert.z * this.data.radius) * table.getScaleZ()) + baseHeight;
 
 			const normal = Vertex3D.claim(vertex.nx, vertex.ny, vertex.nz).multiplyMatrixNoTranslate(fullMatrix);

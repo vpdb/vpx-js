@@ -31,12 +31,26 @@ export class SurfaceApi extends ItemApi<SurfaceData> {
 	private readonly hitGenerator: SurfaceHitGenerator;
 	private readonly state: SurfaceState;
 	private readonly hits: HitObject[];
+	private readonly isDynamic: boolean = false;
 
 	constructor(state: SurfaceState, data: SurfaceData, hits: HitObject[], hitGenerator: SurfaceHitGenerator, events: EventProxy, player: Player, table: Table) {
 		super(data, events, player, table);
 		this.state = state;
 		this.hits = hits;
 		this.hitGenerator = hitGenerator;
+		this.isDynamic = this.data.isDroppable;
+		if (!this.isDynamic && this.data.isSideVisible) {
+			const sideMaterial = table.getMaterial(this.data.szSideMaterial);
+			if (sideMaterial && sideMaterial.isOpacityActive) {
+				this.isDynamic = true;
+			}
+		}
+		if (!this.isDynamic && this.data.isTopBottomVisible) {
+			const topMaterial = table.getMaterial(this.data.szTopMaterial);
+			if (topMaterial && topMaterial.isOpacityActive) {
+				this.isDynamic = true;
+			}
+		}
 	}
 
 	get HasHitEvent() { return this.data.hitEvent; }
@@ -44,9 +58,19 @@ export class SurfaceApi extends ItemApi<SurfaceData> {
 	get Threshold() { return this.data.threshold; }
 	set Threshold(v) { this.data.threshold = v; }
 	get Image() { return this.data.szImage; }
-	set Image(v) { this.data.szImage = v; }
+	set Image(v) {
+		if (this.isDynamic) {
+			this.state.topTexture = v;
+		}
+		this.data.szImage = v;
+	}
 	get SideMaterial() { return this.data.szSideMaterial; }
-	set SideMaterial(v) { this.data.szSideMaterial = v; }
+	set SideMaterial(v) {
+		if (this.isDynamic) {
+			this.state.sideMaterial = v;
+		}
+		this.data.szSideMaterial = v;
+	}
 	get SlingshotMaterial() { return this.data.szSlingShotMaterial; }
 	set SlingshotMaterial(v) { this.data.szSlingShotMaterial = v; }
 	/** @deprecated */
@@ -56,7 +80,12 @@ export class SurfaceApi extends ItemApi<SurfaceData> {
 	get HeightTop() { return this.data.heightTop; }
 	set HeightTop(v) { this.data.heightTop = v; }
 	get TopMaterial() { return this.data.szTopMaterial; }
-	set TopMaterial(v) { this.data.szTopMaterial = v; }
+	set TopMaterial(v) {
+		if (this.isDynamic) {
+			this.state.topMaterial = v;
+		}
+		this.data.szTopMaterial = v;
+	}
 	get PhysicsMaterial() { return this.data.szPhysicsMaterial; }
 	set PhysicsMaterial(v) { this.data.szPhysicsMaterial = v; }
 	get OverwritePhysics() { return this.data.overwritePhysics; }
@@ -79,14 +108,30 @@ export class SurfaceApi extends ItemApi<SurfaceData> {
 	set Friction(v) { this.data.friction = v; }
 	get Scatter() { return this.data.scatter; }
 	set Scatter(v) { this.data.scatter = v; }
-	get Visible() { return this.state.isTopVisible; }
-	set Visible(v) { this.state.isTopVisible = v; }
+	get Visible() { return this.data.isTopBottomVisible; }
+	set Visible(v) {
+		if (this.isDynamic) {
+			this.state.isTopVisible = v;
+		}
+		this.data.isTopBottomVisible = v;
+	}
 	get SideImage() { return this.data.szSideImage; }
-	set SideImage(v) { this._assertNonHdrImage(v); this.data.szSideImage = v; }
+	set SideImage(v) {
+		this._assertNonHdrImage(v);
+		if (this.isDynamic) {
+			this.state.sideTexture = v;
+		}
+		this.data.szSideImage = v;
+	}
 	get Disabled() { return this.data.isDisabled; }
 	set Disabled(v) { this.data.isDisabled = v; }
-	get SideVisible() { return this.state.isSideVisible; }
-	set SideVisible(v) { this.state.isSideVisible = v; }
+	get SideVisible() { return this.data.isSideVisible; }
+	set SideVisible(v) {
+		if (this.isDynamic) {
+			this.state.isSideVisible = v;
+		}
+		this.data.isSideVisible = v;
+	}
 	get Collidable() { return this.data.isCollidable; }
 	set Collidable(v) { this._setCollidable(v); }
 	get SlingshotThreshold() { return this.data.slingshotThreshold; }

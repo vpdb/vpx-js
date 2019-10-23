@@ -48,12 +48,12 @@ export class HitTargetApi extends ItemApi<HitTargetData> {
 	set Material(v) { this.state.material = v; }
 	get Visible() { return this.state.isVisible; }
 	set Visible(v) { this.state.isVisible = v; }
-	get X() { return this.data.vPosition.x; }
-	set X(v) { this.data.vPosition.x = v; }
-	get Y() { return this.data.vPosition.y; }
-	set Y(v) { this.data.vPosition.y = v; }
-	get Z() { return this.data.vPosition.z; }
-	set Z(v) { this.data.vPosition.z = v; }
+	get X() { return this.data.position.x; }
+	set X(v) { this.data.position.x = v; }
+	get Y() { return this.data.position.y; }
+	set Y(v) { this.data.position.y = v; }
+	get Z() { return this.data.position.z; }
+	set Z(v) { this.data.position.z = v; }
 	get ScaleX() { return this.data.vSize.x; }
 	set ScaleX(v) { this.data.vSize.x = v; }
 	get ScaleY() { return this.data.vSize.y; }

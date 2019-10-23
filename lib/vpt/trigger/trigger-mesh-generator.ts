@@ -40,7 +40,7 @@ export class TriggerMeshGenerator {
 	}
 
 	public getMesh(table: Table): Mesh {
-		const baseHeight = table.getSurfaceHeight(this.data.szSurface, this.data.vCenter.x, this.data.vCenter.y) * table.getScaleZ();
+		const baseHeight = table.getSurfaceHeight(this.data.szSurface, this.data.center.x, this.data.center.y) * table.getScaleZ();
 
 		let zOffset = (this.data.shape === TriggerShape.TriggerButton) ? 5.0 : 0.0;
 		if (this.data.shape === TriggerShape.TriggerWireC) {
@@ -71,12 +71,12 @@ export class TriggerMeshGenerator {
 			//fullMatrix.multiplyVector(vert);
 
 			if (this.data.shape === TriggerShape.TriggerButton || this.data.shape === TriggerShape.TriggerStar) {
-				vertex.x = f4(vert.x * this.data.radius) + this.data.vCenter.x;
-				vertex.y = f4(vert.y * this.data.radius) + this.data.vCenter.y;
+				vertex.x = f4(vert.x * this.data.radius) + this.data.center.x;
+				vertex.y = f4(vert.y * this.data.radius) + this.data.center.y;
 				vertex.z = f4(f4(f4(vert.z * this.data.radius) * table.getScaleZ()) + baseHeight) + zOffset;
 			} else {
-				vertex.x = f4(vert.x * this.data.scaleX) + this.data.vCenter.x;
-				vertex.y = f4(vert.y * this.data.scaleY) + this.data.vCenter.y;
+				vertex.x = f4(vert.x * this.data.scaleX) + this.data.center.x;
+				vertex.y = f4(vert.y * this.data.scaleY) + this.data.center.y;
 				vertex.z = f4(f4(vert.z * table.getScaleZ()) + baseHeight) + zOffset;
 			}
 

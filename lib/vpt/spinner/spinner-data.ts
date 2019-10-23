@@ -47,7 +47,7 @@ export class SpinnerData extends ItemData {
 		return spinnerData.correctAngles();
 	}
 
-	private constructor(itemName: string) {
+	public constructor(itemName: string) {
 		super(itemName);
 	}
 
