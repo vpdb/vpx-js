@@ -44,4 +44,22 @@ describe('The VBScript transpiler - Assign', () => {
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('vpmDips = new cvpmDips();');
 	});
+
+	it('should transpile an assignment statement with left indexed parameters', () => {
+		const vbs = `J(2,3,9,4) = X\nJ(2,3,9)(4) = X\nJ(2)(3)(9)(4) = X\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('J(2, 3, 9, 4) = X;\nJ(2, 3, 9, 4) = X;\nJ(2, 3, 9, 4) = X;');
+	});
+
+	it('should transpile an assignment statement with right indexed parameters', () => {
+		const vbs = `X = J(2,3,9,4)\nX = J(2,3,9)(4)\nX = J(2)(3)(9)(4)\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('X = J(2, 3, 9, 4);\nX = J(2, 3, 9, 4);\nX = J(2, 3, 9, 4);');
+	});
+
+	it('should transpile an assignment statement with right indexed parameters', () => {
+		const vbs = `J(,,,4,) = X\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal('J(null, null, null, 4, null) = X;');
+	});
 });

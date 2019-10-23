@@ -21,13 +21,6 @@ import { Comment, Identifier, Literal, VariableDeclaration, VariableDeclarator }
 import { Token } from 'moo';
 import * as estree from './estree';
 
-/*FieldDecl            -> %kw_private __ FieldName _ OtherVarsOpt NL                                                                        {% ppField.fieldDecl1 %}
-                      | %kw_public __ FieldName _ OtherVarsOpt NL                                                                         {% ppField.fieldDecl2 %}
-
-FieldName            -> FieldID _ %paren_left _ ArrayRankList _ %paren_right                                                              {% ppField.fieldName %}
-                      | FieldID                                                                                                           {% id %}
-*/
-
 export function fieldDecl1(
 	result: [Token, null, VariableDeclarator, null, VariableDeclarator[], Comment[]],
 ): VariableDeclaration {

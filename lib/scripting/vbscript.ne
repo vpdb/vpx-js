@@ -261,9 +261,9 @@ SubCallStmt          -> QualifiedID _ SubSafeExprOpt _ CommaExprList            
                       | QualifiedID _ %paren_left _ Expr _ %paren_right _ CommaExprList                                                   {% ppSubCall.stmt3 %}
                       | QualifiedID _ %paren_left _ Expr _ %paren_right                                                                   {% ppSubCall.stmt4 %}
                       | QualifiedID _ %paren_left _ %paren_right                                                                          {% ppSubCall.stmt5 %}
-                      | QualifiedID _ IndexOrParamsList %dot LeftExprTail _ SubSafeExprOpt _ CommaExprList                                {% ppSubCall.stmt6 %}
-                      | QualifiedID _ IndexOrParamsListDot LeftExprTail _ SubSafeExprOpt _ CommaExprList                                  {% ppSubCall.stmt7 %}
-                      | QualifiedID _ IndexOrParamsList %dot LeftExprTail _ SubSafeExprOpt                                                {% ppSubCall.stmt8 %}
+#                     | QualifiedID _ IndexOrParamsList %dot LeftExprTail _ SubSafeExprOpt _ CommaExprList                                {% ppSubCall.stmt6 %}
+#                     | QualifiedID _ IndexOrParamsListDot LeftExprTail _ SubSafeExprOpt _ CommaExprList                                  {% ppSubCall.stmt7 %}
+#                     | QualifiedID _ IndexOrParamsList %dot LeftExprTail _ SubSafeExprOpt                                                {% ppSubCall.stmt8 %}
                       | QualifiedID _ IndexOrParamsListDot LeftExprTail _ SubSafeExprOpt                                                  {% ppSubCall.stmt9 %}
 
 SubSafeExprOpt       -> SubSafeExpr                                                                                                       {% id %}
