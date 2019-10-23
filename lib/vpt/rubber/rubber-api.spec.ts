@@ -19,27 +19,22 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import sinonChai = require('sinon-chai');
+import { TableBuilder } from '../../../test/table-builder';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
+import { RubberState } from './rubber-state';
 
 /* tslint:disable:no-unused-expression */
-chai.use(sinonChai);
+chai.use(require('sinon-chai'));
 const three = new ThreeHelper();
 
 describe('The VPinball rubber API', () => {
 
-	let table: Table;
-	let player: Player;
-
-	beforeEach(async () => {
-		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-rubber.vpx')));
-		player = new Player(table).init();
-	});
-
 	it('should correctly read and write the properties', async () => {
+		const table = await Table.load(new NodeBinaryReader(three.fixturePath('table-rubber.vpx')));
+		new Player(table).init();
 		const rubber = table.rubbers.Rubber1.getApi();
 
 		rubber.Height = 74;
@@ -67,6 +62,8 @@ describe('The VPinball rubber API', () => {
 		rubber.PhysicsMaterial = 'PhysicsMaterial';
 		rubber.OverwritePhysics = false; expect(rubber.OverwritePhysics).to.equal(false);
 		rubber.OverwritePhysics = true;
+		rubber.Visible = false; expect(rubber.Visible).to.equal(false);
+		rubber.Visible = true;
 
 		expect(rubber.Height).to.equal(74);
 		expect(rubber.HitHeight).to.equal(51);
@@ -87,10 +84,42 @@ describe('The VPinball rubber API', () => {
 		expect(rubber.RotZ).to.equal(34);
 		expect(rubber.PhysicsMaterial).to.equal('PhysicsMaterial');
 		expect(rubber.OverwritePhysics).to.equal(true);
+		expect(rubber.Visible).to.equal(true);
+	});
+
+	it('should update the state when static rendering is disabled', () => {
+		const table = new TableBuilder()
+			.addMaterial('mat')
+			.addRubber('rubber', { staticRendering: false })
+			.build();
+
+		const player = new Player(table).init();
+		const rubber = table.rubbers.rubber.getApi();
+
+		rubber.Height = 2;
+		rubber.Material = 'mat';
+		rubber.RotX = 5;
+		rubber.RotY = 3;
+		rubber.RotZ = 4;
+
+		const states = player.popStates();
+		const state = states.getState<RubberState>('rubber');
+
+		expect(state.height).to.equal(2);
+		expect(state.material).to.equal('mat');
+		expect(state.rotX).to.equal(5);
+		expect(state.rotY).to.equal(3);
+		expect(state.rotZ).to.equal(4);
 	});
 
 	it('should not crash when executing unused APIs', () => {
-		const rubber = table.rubbers.Rubber1.getApi();
+		const table = new TableBuilder()
+			.addMaterial('mat', { isOpacityActive: true })
+			.addMaterial('mat2')
+			.addRubber('rubber')
+			.build();
+		new Player(table).init();
+		const rubber = table.rubbers.rubber.getApi();
 		expect(rubber.InterfaceSupportsErrorInfo({})).to.equal(false);
 	});
 
