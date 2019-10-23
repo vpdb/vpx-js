@@ -18,7 +18,7 @@
  */
 
 import { replace } from 'estraverse';
-import { Identifier, MemberExpression, Program, Statement } from 'estree';
+import { CallExpression, Identifier, MemberExpression, Program, Statement } from 'estree';
 import { logger } from '../../util/logger';
 import { apiEnums } from '../../vpt/enums';
 import { Table } from '../../vpt/table/table';
@@ -31,6 +31,7 @@ import {
 	memberExpression,
 	program,
 } from '../estree';
+import { Stdlib } from '../stdlib';
 
 /**
  * This wraps the table script into a function where its globals are replaced
@@ -42,16 +43,18 @@ export class ScopeTransformer {
 
 	private readonly table: Table;
 	private readonly items: { [p: string]: any };
+	private readonly stdlib = new Stdlib();
 
 	constructor(table: Table) {
 		this.table = table;
 		this.items = table.getElementApis();
 	}
 
-	public transform(ast: Program, mainFunctionName: string, elementObjectName: string, enumObjectName: string, globalObjectName?: string): Program {
+	public transform(ast: Program, mainFunctionName: string, elementObjectName: string, enumObjectName: string, stdlibObjectName: string, globalObjectName?: string): Program {
 		this.replaceElementObjectNames(ast, elementObjectName);
 		this.replaceEnumObjectNames(ast, enumObjectName);
-		return this.wrap(ast, mainFunctionName, elementObjectName, enumObjectName, globalObjectName);
+		this.replaceStdlibNames(ast, stdlibObjectName);
+		return this.wrap(ast, mainFunctionName, elementObjectName, enumObjectName, stdlibObjectName, globalObjectName);
 	}
 
 	/**
@@ -96,6 +99,21 @@ export class ScopeTransformer {
 		});
 	}
 
+	public replaceStdlibNames(ast: Program, stdlibObjectName: string): void {
+		replace(ast, {
+			enter: (node, parent: any) => {
+				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === stdlibObjectName;
+				if (!alreadyReplaced && node.type === 'Identifier' && node.name in this.stdlib) {
+					return memberExpression(
+						identifier(stdlibObjectName),
+						identifier(node.name),
+					);
+				}
+				return node;
+			},
+		});
+	}
+
 	/**
 	 * Wraps the table script into a function.
 	 *
@@ -103,9 +121,10 @@ export class ScopeTransformer {
 	 * @param mainFunctionName Name of the function to wrap the code into
 	 * @param elementObjectName Name of the function parameter containing all table elements
 	 * @param enumObjectName Name of the function parameter containing all enums
+	 * @param stdlibObjectName Name of the object that implements VBScript's Standard Library
 	 * @param globalObjectName Name of the global object the function will be added too. If not specified it'll be a global function.
 	 */
-	public wrap(ast: Program, mainFunctionName: string, elementObjectName: string, enumObjectName: string, globalObjectName?: string): Program {
+	public wrap(ast: Program, mainFunctionName: string, elementObjectName: string, enumObjectName: string, stdlibObjectName: string, globalObjectName?: string): Program {
 		return replace(ast, {
 			enter: node => {
 				if (node.type === 'Program') {
@@ -114,14 +133,14 @@ export class ScopeTransformer {
 							assignmentExpression(
 								globalObjectName
 									? memberExpression(
-									identifier(globalObjectName),
-									identifier(mainFunctionName),
+										identifier(globalObjectName),
+										identifier(mainFunctionName),
 									)
 									: identifier(mainFunctionName),
 								'=',
 								arrowFunctionExpression(false,
 									blockStatement(node.body as Statement[]),
-									[ identifier(elementObjectName), identifier(enumObjectName) ],
+									[ identifier(elementObjectName), identifier(enumObjectName), identifier(stdlibObjectName) ],
 								),
 							)),
 					]);
