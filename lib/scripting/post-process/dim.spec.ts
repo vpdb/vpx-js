@@ -19,7 +19,7 @@
 
 import { expect } from 'chai';
 import { vbsToJs } from '../../../test/script.helper';
-import { ScopeTransformer } from '../transformer/scope-transformer';
+import { ReferenceTransformer } from '../transformer/reference-transformer';
 
 describe('The VBScript transpiler - Dim', () => {
 	it('should transpile a single variable declaration', () => {
@@ -37,26 +37,26 @@ describe('The VBScript transpiler - Dim', () => {
 	it('should transpile an empty dimension variable declaration', () => {
 		const vbs = `Dim myarray()\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal(`let myarray = ${ScopeTransformer.VBSHELPER_NAME}.dim([]);`);
+		expect(js).to.equal(`let myarray = ${ReferenceTransformer.VBSHELPER_NAME}.dim([]);`);
 	});
 
 	it('should transpile a one-dimension variable declaration', () => {
 		const vbs = `Dim myarray(200)\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal(`let myarray = ${ScopeTransformer.VBSHELPER_NAME}.dim([200]);`);
+		expect(js).to.equal(`let myarray = ${ReferenceTransformer.VBSHELPER_NAME}.dim([200]);`);
 	});
 
 	it('should transpile a multi-dimension variable declaration', () => {
 		const vbs = `Dim myarray(2,4,3)\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal(`let myarray = ${ScopeTransformer.VBSHELPER_NAME}.dim([\n    2,\n    4,\n    3\n]);`);
+		expect(js).to.equal(`let myarray = ${ReferenceTransformer.VBSHELPER_NAME}.dim([\n    2,\n    4,\n    3\n]);`);
 	});
 
 	it('should transpile multiple multi-dimension variable declaration', () => {
 		const vbs = `Dim myarray(2,4,3), myarray2(3,4)\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal(
-			`let myarray = ${ScopeTransformer.VBSHELPER_NAME}.dim([\n        2,\n        4,\n        3\n    ]), myarray2 = ${ScopeTransformer.VBSHELPER_NAME}.dim([\n        3,\n        4\n    ]);`,
+			`let myarray = ${ReferenceTransformer.VBSHELPER_NAME}.dim([\n        2,\n        4,\n        3\n    ]), myarray2 = ${ReferenceTransformer.VBSHELPER_NAME}.dim([\n        3,\n        4\n    ]);`,
 		);
 	});
 });
