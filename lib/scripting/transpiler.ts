@@ -34,6 +34,8 @@ import { WrapTransformer } from './transformer/wrap-transformer';
 import { VBSHelper } from './vbs-helper';
 import vbsGrammar from './vbscript';
 
+//self.escodegen = require('escodegen');
+
 // the table script function
 declare function play(scope: any, table: { [key: string]: any }, enums: any, globalApi: GlobalApi, stdlib: Stdlib, vbsHelper: VBSHelper): void;
 
