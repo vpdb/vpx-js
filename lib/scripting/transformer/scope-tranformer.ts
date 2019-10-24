@@ -99,7 +99,6 @@ export class ScopeTransformer extends Transformer {
 							functionExpression(
 								node.body,
 								node.params,
-								node.id!,
 							),
 						);
 					}

@@ -61,7 +61,6 @@ describe('The VBScript transpiler', () => {
 	it('should execute the table script', () => {
 
 		const Spy = sinon.spy();
-
 		const vbs = `Spy\n`;                                 // that's our spy, in VBScript!
 		const transpiler = new Transpiler(table, player);
 		transpiler.execute(vbs, 'global', { Spy });       // this should execute the spy
