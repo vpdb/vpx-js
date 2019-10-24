@@ -18,8 +18,15 @@
  */
 
 import { replace, traverse } from 'estraverse';
-import { Identifier, MemberExpression, Program, VariableDeclaration } from 'estree';
-import { assignmentExpression, expressionStatement, identifier, literal, memberExpression } from '../estree';
+import { Expression, ExpressionStatement, Identifier, Program, VariableDeclaration } from 'estree';
+import {
+	assignmentExpression,
+	expressionStatement,
+	functionExpression,
+	identifier,
+	literal,
+	memberExpression,
+} from '../estree';
 import { Transformer } from './transformer';
 
 const { analyze } = require('escope');
@@ -36,7 +43,6 @@ export class ScopeTransformer extends Transformer {
 	}
 
 	public transform(): Program {
-
 		this.addScope();
 		this.replaceDeclarations();
 		this.replaceUsages();
@@ -47,10 +53,10 @@ export class ScopeTransformer extends Transformer {
 		let currentScope = this.rootScope;
 		traverse(this.ast, {
 			enter: node => {
+				(node as any).__scope = currentScope;
 				if (/Function/.test(node.type)) {
 					currentScope = this.scopeManager.acquire(node);
 				}
-				(node as any).__scope = currentScope;
 			},
 			leave: node => {
 				if (/Function/.test(node.type)) {
@@ -62,28 +68,40 @@ export class ScopeTransformer extends Transformer {
 
 	private replaceDeclarations(): void {
 		replace(this.ast, {
-			enter: node => {
-				if (node.type === 'VariableDeclaration') {
-					const declarationNode = node as VariableDeclaration;
-					if ((node as any).__scope === this.rootScope) {
+			enter: (node, parent) => {
+				const isLoopVarDecl = parent && /^For.*Statement$/.test(parent.type);
+				const isRootScope = (node as any).__scope === this.rootScope;
+				if (isRootScope) {
+
+					// variables
+					if (node.type === 'VariableDeclaration' && !isLoopVarDecl) {
+						const declarationNode = node as VariableDeclaration;
 						const nodes = [];
 						for (const declaration of declarationNode.declarations as any[]) {
-							const newNode = expressionStatement(
-								assignmentExpression(
-									memberExpression(
-										identifier(Transformer.SCOPE_NAME),
-										identifier(declaration.id ? declaration.id.name : declaration.name), // fixme
-									),
-									'=',
-									declaration.init || literal(null),
-								),
-							);
-							nodes.push(newNode);
+							if (declaration.id && !declaration.id.name) {
+								debugger;
+							}
+							nodes.push(this.wrapAssignment(
+								identifier(declaration.id ? declaration.id.name : declaration.name), // fixme
+								declaration.init || literal(null),
+							));
 						}
 						return {
 							type: 'Program',
 							body: nodes,
 						} as Program;
+					}
+
+					// function declarations
+					if (node.type === 'FunctionDeclaration') {
+						return this.wrapAssignment(
+							node.id!,
+							functionExpression(
+								node.body,
+								node.params,
+								node.id!,
+							),
+						);
 					}
 				}
 				return node;
@@ -93,19 +111,36 @@ export class ScopeTransformer extends Transformer {
 
 	private replaceUsages() {
 		replace(this.ast, {
-			enter: (node, parent) => {
-				if (parent && !['FunctionDeclaration' , 'MemberExpression', 'ClassDeclaration'].includes(parent.type) && node.type === 'Identifier') {
+			enter: (node, parent: any) => {
+
+				if (node.type === 'Identifier') {
 					const varScope = this.findScope(node.name, (node as any).__scope);
-					if (varScope === this.rootScope) {
-						return memberExpression(
-							identifier(Transformer.SCOPE_NAME),
-							identifier(node.name),
-						);
+					const inRootScope = !varScope || varScope === this.rootScope; // !varScope because we can't find the declaration, in which case it's part of an external file, where we assume it was declared in the root scope.
+					if (!this.isKnown(node, parent) && inRootScope) {
+						if (parent && !['FunctionDeclaration', 'ClassDeclaration'].includes(parent.type)) {
+							return memberExpression(
+								identifier(Transformer.SCOPE_NAME),
+								identifier(node.name),
+							);
+						}
 					}
 				}
 				return node;
 			},
 		});
+	}
+
+	private wrapAssignment(left: Expression, right: Expression): ExpressionStatement {
+		return expressionStatement(
+			assignmentExpression(
+				memberExpression(
+					identifier(Transformer.SCOPE_NAME),
+					left,
+				),
+				'=',
+				right,
+			),
+		);
 	}
 
 	private findScope(name: string, currentScope: any): any {

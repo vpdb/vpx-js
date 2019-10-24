@@ -159,8 +159,8 @@ End Sub
 Sub LoadVPinMAME
 	Set Controller = CreateObject("VPinMAME.Controller")
 	If Err Then MsgBox "Can't load VPinMAME." & vbNewLine & Err.Description
-	If VPMver > "" Then 
-		If Controller.Version < VPMver Or Err Then 
+	If VPMver > "" Then
+		If Controller.Version < VPMver Or Err Then
 			MsgBox "VPinMAME ver " & VPMver & " required."
 		End If
 	End If		

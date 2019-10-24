@@ -173,11 +173,12 @@ export function conditionalExpression(test: Expression, consequent: Expression, 
 	};
 }
 
-export function functionExpression(body: BlockStatement, params: Pattern[]): FunctionExpression {
+export function functionExpression(body: BlockStatement, params: Pattern[], id?: Identifier): FunctionExpression {
 	return {
 		type: 'FunctionExpression',
 		body,
 		params,
+		id,
 	};
 }
 

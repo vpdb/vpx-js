@@ -23,7 +23,7 @@ import { logger } from '../../util/logger';
 import { apiEnums } from '../../vpt/enums';
 import { GlobalApi } from '../../vpt/global-api';
 import { Table } from '../../vpt/table/table';
-import { callExpression, identifier, memberExpression, } from '../estree';
+import { callExpression, identifier, memberExpression } from '../estree';
 import { Stdlib } from '../stdlib';
 import { Transformer } from './transformer';
 
@@ -113,7 +113,7 @@ export class ReferenceTransformer extends Transformer {
 		replace(ast, {
 			enter: (node, parent: any) => {
 				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === Transformer.GLOBAL_NAME;
-				if (!alreadyReplaced && node.type === 'Identifier' && node.name in GlobalApi.prototype) {
+				if (!this.isKnown(node, parent) && node.type === 'Identifier' && node.name in GlobalApi.prototype) {
 					return memberExpression(
 						identifier(Transformer.GLOBAL_NAME),
 						identifier(node.name),
@@ -128,7 +128,7 @@ export class ReferenceTransformer extends Transformer {
 		replace(ast, {
 			enter: (node, parent: any) => {
 				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === Transformer.STDLIB_NAME;
-				if (!alreadyReplaced && node.type === 'Identifier' && node.name in Stdlib.prototype) {
+				if (!this.isKnown(node, parent) && node.type === 'Identifier' && node.name in Stdlib.prototype) {
 					return memberExpression(
 						identifier(Transformer.STDLIB_NAME),
 						identifier(node.name),
