@@ -24,6 +24,7 @@ import { ThreeHelper } from '../../../test/three.helper';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../../vpt/table/table';
 import { ReferenceTransformer } from './reference-transformer';
+import { Transformer } from './transformer';
 
 chai.use(require('sinon-chai'));
 
@@ -40,7 +41,7 @@ describe('The scripting reference transformer', () => {
 	it('should convert global to local variable if object exists', () => {
 		const vbs = `WireRectangle.SomeFunct\n`;
 		const js = transform(vbs, table);
-		expect(js).to.equal(`${ReferenceTransformer.ITEMS_NAME}.WireRectangle.SomeFunct();`);
+		expect(js).to.equal(`${Transformer.ITEMS_NAME}.WireRectangle.SomeFunct();`);
 	});
 
 	it('should not convert global to local if object does not exist', () => {
@@ -58,13 +59,13 @@ describe('The scripting reference transformer', () => {
 	it('should convert an enum if enum exists', () => {
 		const vbs = `x = TriggerShape.TriggerButton\n`;
 		const js = transform(vbs, table);
-		expect(js).to.equal(`x = ${ReferenceTransformer.ENUMS_NAME}.TriggerShape.TriggerButton;`);
+		expect(js).to.equal(`x = ${Transformer.ENUMS_NAME}.TriggerShape.TriggerButton;`);
 	});
 
 	it('should convert a global function if exists', () => {
 		const vbs = `PlaySound "test"\n`;
 		const js = transform(vbs, table);
-		expect(js).to.equal(`${ReferenceTransformer.GLOBAL_NAME}.PlaySound('test');`);
+		expect(js).to.equal(`${Transformer.GLOBAL_NAME}.PlaySound('test');`);
 	});
 
 });

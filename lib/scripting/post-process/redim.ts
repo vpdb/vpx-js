@@ -21,7 +21,7 @@ import { traverse } from 'estraverse';
 import { Comment, Expression, Identifier, Statement, VariableDeclarator } from 'estree';
 import { Token } from 'moo';
 import * as estree from '../estree';
-import { ReferenceTransformer } from '../transformer/reference-transformer';
+import { Transformer } from '../transformer/transformer';
 
 export function stmt1(result: [Token, null, VariableDeclarator[], Comment[]]): Statement {
 	const declarators = result[2];
@@ -65,7 +65,7 @@ export function redimDecl(result: [Identifier, null, Token, null, Expression[], 
 	const exprs = result[4];
 	return estree.variableDeclarator(
 		name,
-		estree.callExpression(estree.memberExpression(estree.identifier(ReferenceTransformer.VBSHELPER_NAME), estree.identifier('redim')), [
+		estree.callExpression(estree.memberExpression(estree.identifier(Transformer.VBSHELPER_NAME), estree.identifier('redim')), [
 			name,
 			estree.arrayExpression(exprs),
 		]),
