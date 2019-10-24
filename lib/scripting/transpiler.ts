@@ -29,6 +29,7 @@ import { Stdlib } from './stdlib';
 import { CleanupTransformer } from './transformer/cleanup-transformer';
 import { EventTransformer } from './transformer/event-transformer';
 import { ReferenceTransformer } from './transformer/reference-transformer';
+import { ScopeTransformer } from './transformer/scope-tranformer';
 import { WrapTransformer } from './transformer/wrap-transformer';
 import { VBSHelper } from './vbs-helper';
 import vbsGrammar from './vbscript';
@@ -53,7 +54,7 @@ export class Transpiler {
 		ast = new CleanupTransformer(ast).transform();
 		ast = new EventTransformer(ast, this.table).transform();
 		ast = new ReferenceTransformer(ast, this.table).transform();
-		//ast = new ScopeTransformer(ast).transform();
+		ast = new ScopeTransformer(ast).transform();
 		ast = new WrapTransformer(ast).transform(globalFunction, globalObject);
 
 		logger().debug('AST:', ast);
@@ -63,14 +64,14 @@ export class Transpiler {
 		return js;
 	}
 
-	public execute(vbs: string, globalObject?: string) {
+	public execute(vbs: string, globalObject?: string, globalScope: any = {}) {
 
 		globalObject = globalObject || (typeof window !== 'undefined' ? 'window' : (typeof self !== 'undefined' ? 'self' : 'global'));
 		const js = this.transpile(vbs, 'play', globalObject);
 
 		// tslint:disable-next-line:no-eval
 		eval('//@ sourceURL=tablescript.js\n' + js);
-		play({}, this.table.getElementApis(), apiEnums, new GlobalApi(this.table, this.player), new Stdlib(), new VBSHelper(this));
+		play(globalScope, this.table.getElementApis(), apiEnums, new GlobalApi(this.table, this.player), new Stdlib(), new VBSHelper(this));
 	}
 
 	private parse(vbs: string): Program {
