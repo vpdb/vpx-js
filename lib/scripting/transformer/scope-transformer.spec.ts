@@ -1,0 +1,85 @@
+/*
+ * VPDB - Virtual Pinball Database
+ * Copyright (C) 2019 freezy <freezy@vpdb.io>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+
+import * as chai from 'chai';
+import { expect } from 'chai';
+import { astToVbs, vbsToAst } from '../../../test/script.helper';
+import { ScopeTransformer } from './scope-tranformer';
+import { Transformer } from './transformer';
+
+chai.use(require('sinon-chai'));
+
+/* tslint:disable:no-unused-expression */
+describe('The scripting scope transformer', () => {
+
+	it('should add the scope to a top-level variable declaration', () => {
+		const vbs = `Dim x\n`;
+		const js = transform(vbs);
+		expect(js).to.equal(`${Transformer.SCOPE_NAME}.x = null;`);
+	});
+
+	it('should add the scope to a top-level variable assignment', () => {
+		const vbs = `x = 10\n`;
+		const js = transform(vbs);
+		expect(js).to.equal(`${Transformer.SCOPE_NAME}.x = 10;`);
+	});
+
+	it('should add the scope to a member assignment', () => {
+		const vbs = `obj.prop = 10\n`;
+		const js = transform(vbs);
+		expect(js).to.equal(`${Transformer.SCOPE_NAME}.obj.prop = 10;`);
+	});
+
+	it('should add the scope to a member function call', () => {
+		const vbs = `obj.prop.func\n`;
+		const js = transform(vbs);
+		expect(js).to.equal(`${Transformer.SCOPE_NAME}.obj.prop.func();`);
+	});
+
+	it('should add the scope to a function call', () => {
+		const vbs = `func\n`;
+		const js = transform(vbs);
+		expect(js).to.equal(`${Transformer.SCOPE_NAME}.func();`);
+	});
+
+	it('should add the scope to a function call', () => {
+		const vbs = `BallShadow(b).visible = 0\n`;
+		const js = transform(vbs);
+		expect(js).to.equal(`${Transformer.SCOPE_NAME}.BallShadow(${Transformer.SCOPE_NAME}.b).visible = 0;`);
+	});
+
+	// it('should add the scope to an object of a function call', () => {
+	// 	const vbs = `func().prop\n`;
+	// 	const js = transform(vbs);
+	// 	expect(js).to.equal(`${Transformer.SCOPE_NAME}.func().prop;`);
+	// });
+
+	it('should not add the scope to a function-level variable assignment', () => {
+		const vbs = `Sub X\n	Dim x\nEnd Sub`;
+		const js = transform(vbs);
+		expect(js).to.equal(`${Transformer.SCOPE_NAME}.X = function () {\n    let x;\n};`);
+	});
+
+});
+
+function transform(vbs: string): string {
+	const ast = vbsToAst(vbs);
+	const eventAst = new ScopeTransformer(ast).transform();
+	return astToVbs(eventAst);
+}

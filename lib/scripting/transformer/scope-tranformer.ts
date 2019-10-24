@@ -78,9 +78,6 @@ export class ScopeTransformer extends Transformer {
 						const declarationNode = node as VariableDeclaration;
 						const nodes = [];
 						for (const declaration of declarationNode.declarations as any[]) {
-							if (declaration.id && !declaration.id.name) {
-								debugger;
-							}
 							nodes.push(this.wrapAssignment(
 								identifier(declaration.id ? declaration.id.name : declaration.name), // fixme
 								declaration.init || literal(null),

@@ -86,4 +86,8 @@ export class VBSHelper {
 		}
 		return array;
 	}
+
+	public setOrCall(obj: any, param: number) {
+		return Array.isArray(obj) ? obj[param] : obj(param);
+	}
 }

@@ -37,9 +37,12 @@ export function varName1(result: [Identifier, null, Token, null, Literal[], null
 	const literals = result[4] || [];
 	return estree.variableDeclarator(
 		identifier,
-		estree.callExpression(estree.memberExpression(estree.identifier(Transformer.VBSHELPER_NAME), estree.identifier('dim')), [
-			estree.arrayExpression(literals),
-		]),
+		estree.callExpression(
+			estree.memberExpression(
+				estree.identifier(Transformer.VBSHELPER_NAME),
+				estree.identifier('dim'),
+			), [ estree.arrayExpression(literals) ],
+		),
 	);
 }
 
