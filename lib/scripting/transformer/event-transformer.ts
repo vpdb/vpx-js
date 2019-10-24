@@ -27,26 +27,28 @@ import {
 	expressionStatement,
 	identifier,
 	literal,
-	memberExpression
+	memberExpression,
 } from '../estree';
+import { Transformer } from './transformer';
 
 /**
  * This transforms event subs into proper JavaScript event listeners.
  *
  * Example: `function Plunger_Init() {}` would become: `Plunger.on('Init', () => {})`.
  */
-export class EventTransformer {
+export class EventTransformer extends Transformer {
 
 	private readonly table: Table;
 	private readonly items: { [p: string]: IScriptable<any> };
 
-	constructor(table: Table) {
+	constructor(ast: Program, table: Table) {
+		super(ast);
 		this.table = table;
 		this.items = table.getElements();
 	}
 
-	public transform(ast: Program): Program {
-		return replace(ast, {
+	public transform(): Program {
+		return replace(this.ast, {
 			enter: (node, parent: any) => {
 
 				// must be a function

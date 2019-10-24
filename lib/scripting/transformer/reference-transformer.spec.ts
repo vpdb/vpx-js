@@ -21,7 +21,6 @@ import * as chai from 'chai';
 import { expect } from 'chai';
 import { astToVbs, vbsToAst } from '../../../test/script.helper';
 import { ThreeHelper } from '../../../test/three.helper';
-import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../../vpt/table/table';
 import { ReferenceTransformer } from './reference-transformer';
@@ -38,46 +37,41 @@ describe('The scripting reference transformer', () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-gate.vpx')));
 	});
 
-	it('should wrap everything into a function', () => {
-
-		const vbs = `Dim test\n`;
-		const js = transform(vbs, 'tableScript', table);
-		expect(js).to.equal(`window.tableScript = (${ReferenceTransformer.ITEMS_NAME}, ${ReferenceTransformer.ENUMS_NAME}, ${ReferenceTransformer.GLOBAL_NAME}, ${ReferenceTransformer.STDLIB_NAME}, ${ReferenceTransformer.VBSHELPER_NAME}) => {\n    let test;\n};`);
-	});
-
 	it('should convert global to local variable if object exists', () => {
-
 		const vbs = `WireRectangle.SomeFunct\n`;
-		const js = transform(vbs, 'tableScript', table);
-		expect(js).to.equal(`window.tableScript = (${ReferenceTransformer.ITEMS_NAME}, ${ReferenceTransformer.ENUMS_NAME}, ${ReferenceTransformer.GLOBAL_NAME}, ${ReferenceTransformer.STDLIB_NAME}, ${ReferenceTransformer.VBSHELPER_NAME}) => {\n    ${ReferenceTransformer.ITEMS_NAME}.WireRectangle.SomeFunct();\n};`);
+		const js = transform(vbs, table);
+		expect(js).to.equal(`${ReferenceTransformer.ITEMS_NAME}.WireRectangle.SomeFunct();`);
 	});
 
 	it('should not convert global to local if object does not exist', () => {
-
 		const vbs = `NoExisto.SomeFunct\n`;
-		const js = transform(vbs, 'tableScript', table);
-		expect(js).to.equal(`window.tableScript = (${ReferenceTransformer.ITEMS_NAME}, ${ReferenceTransformer.ENUMS_NAME}, ${ReferenceTransformer.GLOBAL_NAME}, ${ReferenceTransformer.STDLIB_NAME}, ${ReferenceTransformer.VBSHELPER_NAME}) => {\n    NoExisto.SomeFunct();\n};`);
+		const js = transform(vbs, table);
+		expect(js).to.equal(`NoExisto.SomeFunct();`);
 	});
 
 	it('should not convert a function into an enum', () => {
-
 		const vbs = `TriggerShape.TriggerButton\n`;
-		const js = transform(vbs, 'tableScript', table);
-		expect(js).to.equal(`window.tableScript = (${ReferenceTransformer.ITEMS_NAME}, ${ReferenceTransformer.ENUMS_NAME}, ${ReferenceTransformer.GLOBAL_NAME}, ${ReferenceTransformer.STDLIB_NAME}, ${ReferenceTransformer.VBSHELPER_NAME}) => {\n    TriggerShape.TriggerButton();\n};`);
+		const js = transform(vbs, table);
+		expect(js).to.equal(`TriggerShape.TriggerButton();`);
 	});
 
 	it('should convert an enum if enum exists', () => {
-
 		const vbs = `x = TriggerShape.TriggerButton\n`;
-		const js = transform(vbs, 'tableScript', table);
-		expect(js).to.equal(`window.tableScript = (${ReferenceTransformer.ITEMS_NAME}, ${ReferenceTransformer.ENUMS_NAME}, ${ReferenceTransformer.GLOBAL_NAME}, ${ReferenceTransformer.STDLIB_NAME}, ${ReferenceTransformer.VBSHELPER_NAME}) => {\n    x = ${ReferenceTransformer.ENUMS_NAME}.TriggerShape.TriggerButton;\n};`);
+		const js = transform(vbs, table);
+		expect(js).to.equal(`x = ${ReferenceTransformer.ENUMS_NAME}.TriggerShape.TriggerButton;`);
+	});
+
+	it('should convert a global function if exists', () => {
+		const vbs = `PlaySound "test"\n`;
+		const js = transform(vbs, table);
+		expect(js).to.equal(`${ReferenceTransformer.GLOBAL_NAME}.PlaySound('test');`);
 	});
 
 });
 
-function transform(vbs: string, fctName: string, table: Table): string {
+function transform(vbs: string, table: Table): string {
 	const ast = vbsToAst(vbs);
-	const scopeTransformer = new ReferenceTransformer(table);
-	const eventAst = scopeTransformer.transform(ast, fctName, 'window');
+	const scopeTransformer = new ReferenceTransformer(ast, table);
+	const eventAst = scopeTransformer.transform();
 	return astToVbs(eventAst);
 }

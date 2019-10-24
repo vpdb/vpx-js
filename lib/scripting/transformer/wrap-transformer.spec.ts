@@ -23,12 +23,13 @@ import { astToVbs, vbsToAst } from '../../../test/script.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../../vpt/table/table';
-import { EventTransformer } from './event-transformer';
+import { ReferenceTransformer } from './reference-transformer';
+import { WrapTransformer } from './wrap-transformer';
 
 chai.use(require('sinon-chai'));
 
 /* tslint:disable:no-unused-expression */
-describe('The scripting event transformer', () => {
+describe('The scripting wrap transformer', () => {
 
 	const three = new ThreeHelper();
 	let table: Table;
@@ -37,35 +38,16 @@ describe('The scripting event transformer', () => {
 		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-gate.vpx')));
 	});
 
-	it('should transform a valid event on a valid item', () => {
-		const vbs = `Sub WireRectangle_Init()\nBallRelease.CreateBall\nEnd Sub\n`;
-		const js = transform(vbs, table);
-		expect(js).to.equal(`WireRectangle.on('Init', () => {\n    BallRelease.CreateBall();\n});`);
+	it('should wrap everything into a function', () => {
+		const vbs = `Dim test\n`;
+		const js = transform(vbs, 'tableScript', table);
+		expect(js).to.equal(`window.tableScript = (${ReferenceTransformer.SCOPE_NAME}, ${ReferenceTransformer.ITEMS_NAME}, ${ReferenceTransformer.ENUMS_NAME}, ${ReferenceTransformer.GLOBAL_NAME}, ${ReferenceTransformer.STDLIB_NAME}, ${ReferenceTransformer.VBSHELPER_NAME}) => {\n    let test;\n};`);
 	});
-
-	it('should not transform an invalid event on a valid item', () => {
-		const vbs = `Sub WireRectangle_DuhDah()\nBallRelease.CreateBall\nEnd Sub\n`;
-		const js = transform(vbs, table);
-		expect(js).to.equal(`function WireRectangle_DuhDah() {\n    BallRelease.CreateBall();\n}`);
-	});
-
-	it('should not transform a valid event on an invalid item', () => {
-		const vbs = `Sub DoesntExist_Init()\nBallRelease.CreateBall\nEnd Sub\n`;
-		const js = transform(vbs, table);
-		expect(js).to.equal(`function DoesntExist_Init() {\n    BallRelease.CreateBall();\n}`);
-	});
-
-	it('should not transform a non-event sub', () => {
-		const vbs = `Sub MySub()\nBallRelease.CreateBall\nEnd Sub\n`;
-		const js = transform(vbs, table);
-		expect(js).to.equal(`function MySub() {\n    BallRelease.CreateBall();\n}`);
-	});
-
 });
 
-function transform(vbs: string, table: Table): string {
+function transform(vbs: string, fctName: string, table: Table): string {
 	const ast = vbsToAst(vbs);
-	const eventTransformer = new EventTransformer(ast, table);
-	const eventAst = eventTransformer.transform();
+	const scriptTransformer = new WrapTransformer(ast);
+	const eventAst = scriptTransformer.transform(fctName, 'window');
 	return astToVbs(eventAst);
 }
