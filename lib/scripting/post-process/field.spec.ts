@@ -19,7 +19,7 @@
 
 import { expect } from 'chai';
 import { vbsToJs } from '../../../test/script.helper';
-import { ReferenceTransformer } from '../transformer/reference-transformer';
+import { Transformer } from '../transformer/transformer';
 
 describe('The VBScript transpiler - Field', () => {
 	it('should transpile a "Private" field', () => {
@@ -37,6 +37,6 @@ describe('The VBScript transpiler - Field', () => {
 	it('should transpile a "Public" field', () => {
 		const vbs = `Public test1(1,2,3)\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal(`let test1 = ${ReferenceTransformer.VBSHELPER_NAME}.dim([\n    1,\n    2,\n    3\n]);`);
+		expect(js).to.equal(`let test1 = ${Transformer.VBSHELPER_NAME}.dim([\n    1,\n    2,\n    3\n]);`);
 	});
 });

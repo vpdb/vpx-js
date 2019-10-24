@@ -74,10 +74,10 @@ export class ReferenceTransformer extends Transformer {
 	public replaceElementObjectNames(ast: Program): void {
 		replace(ast, {
 			enter: (node, parent: any) => {
-				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === ReferenceTransformer.ITEMS_NAME;
+				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === Transformer.ITEMS_NAME;
 				if (!alreadyReplaced && node.type === 'Identifier' && node.name in this.items) {
 					return memberExpression(
-						identifier(ReferenceTransformer.ITEMS_NAME),
+						identifier(Transformer.ITEMS_NAME),
 						identifier(node.name),
 					);
 				}
@@ -100,7 +100,7 @@ export class ReferenceTransformer extends Transformer {
 						return node;
 					}
 					enumNode.object = memberExpression(
-						identifier(ReferenceTransformer.ENUMS_NAME),
+						identifier(Transformer.ENUMS_NAME),
 						identifier(enumObject.name),
 					);
 				}
@@ -112,10 +112,10 @@ export class ReferenceTransformer extends Transformer {
 	public replaceGlobalApiNames(ast: Program): void {
 		replace(ast, {
 			enter: (node, parent: any) => {
-				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === ReferenceTransformer.GLOBAL_NAME;
+				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === Transformer.GLOBAL_NAME;
 				if (!alreadyReplaced && node.type === 'Identifier' && node.name in GlobalApi.prototype) {
 					return memberExpression(
-						identifier(ReferenceTransformer.GLOBAL_NAME),
+						identifier(Transformer.GLOBAL_NAME),
 						identifier(node.name),
 					);
 				}
@@ -127,10 +127,10 @@ export class ReferenceTransformer extends Transformer {
 	public replaceStdlibNames(ast: Program): void {
 		replace(ast, {
 			enter: (node, parent: any) => {
-				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === ReferenceTransformer.STDLIB_NAME;
+				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === Transformer.STDLIB_NAME;
 				if (!alreadyReplaced && node.type === 'Identifier' && node.name in Stdlib.prototype) {
 					return memberExpression(
-						identifier(ReferenceTransformer.STDLIB_NAME),
+						identifier(Transformer.STDLIB_NAME),
 						identifier(node.name),
 					);
 				}
@@ -158,7 +158,7 @@ export class ReferenceTransformer extends Transformer {
 						node.callee.name = 'eval';
 						node.arguments[0] = callExpression(
 							memberExpression(
-								identifier(ReferenceTransformer.VBSHELPER_NAME),
+								identifier(Transformer.VBSHELPER_NAME),
 								identifier('transpileInline'),
 							),
 							[ node.arguments[0] as Expression ],

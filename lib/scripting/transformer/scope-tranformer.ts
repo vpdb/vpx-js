@@ -21,6 +21,7 @@ import { replace, traverse } from 'estraverse';
 import { Identifier, MemberExpression, Program, VariableDeclaration } from 'estree';
 import { assignmentExpression, expressionStatement, identifier, literal, memberExpression } from '../estree';
 import { Transformer } from './transformer';
+
 const { analyze } = require('escope');
 
 export class ScopeTransformer extends Transformer {
@@ -97,7 +98,7 @@ export class ScopeTransformer extends Transformer {
 					const varScope = this.findScope(node.name, (node as any).__scope);
 					if (varScope === this.rootScope) {
 						return memberExpression(
-							identifier(ScopeTransformer.SCOPE_NAME),
+							identifier(Transformer.SCOPE_NAME),
 							identifier(node.name),
 						);
 					}
