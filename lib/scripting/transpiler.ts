@@ -27,7 +27,7 @@ import { GlobalApi } from '../vpt/global-api';
 import { Table } from '../vpt/table/table';
 import { Stdlib } from './stdlib';
 import { EventTransformer } from './transformer/event-transformer';
-import { ScopeTransformer } from './transformer/scope-transformer';
+import { ReferenceTransformer } from './transformer/reference-transformer';
 import { VBSHelper } from './vbs-helper';
 import vbsGrammar from './vbscript';
 
@@ -47,7 +47,7 @@ export class Transpiler {
 	public transpile(vbs: string, globalFunction?: string, globalObject?: string) {
 		logger().debug(vbs);
 		let ast = this.parse(vbs + '\n');
-		const scopeTransformer = new ScopeTransformer(this.table);
+		const scopeTransformer = new ReferenceTransformer(this.table);
 		const eventTransformer = new EventTransformer(this.table);
 
 		ast = eventTransformer.transform(ast);

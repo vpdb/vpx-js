@@ -35,12 +35,26 @@ import {
 import { Stdlib } from '../stdlib';
 
 /**
- * This wraps the table script into a function where its globals are replaced
- * by locals provided through the function parameters.
+ * In the Visual Pinball table script, everything is global. In JavaScript we
+ * decided to properly manage the scope in order not to pollute the global
+ * namespace.
  *
- * Example: `BallRelease.CreateBall()` would become `function play(items) { items.BallRelease.CreateBall() }`.
+ * This transformer wraps the table script into a function, and provides
+ * reference to the following objects:
+ *   - items: all table elements, key is name, value is the API implementation
+ *   - enums: enum values used in Visual Pinball
+ *   - global: reference to the global API
+ *   - stdlib: the VBScript Standard Library implemented in JavaScript
+ *   - vbsHelper: a bunch of utils for VBScript syntax not available in JavaScript
+ * The transformer then goes through all identifiers and changes the reference to
+ * the provided objects if available.
+ *
+ * Examples:
+ *   - `BallRelease.CreateBall()` would become `__items.BallRelease.CreateBall()`.
+ *   - `ImageAlignment.ImageAlignWorld` would become `__enums.ImageAlignment.ImageAlignWorld`.
+ *   - `PlaySound()` would become `__global.PlaySound()`.
  */
-export class ScopeTransformer {
+export class ReferenceTransformer {
 
 	private readonly table: Table;
 	private readonly items: { [p: string]: any };
@@ -71,10 +85,10 @@ export class ScopeTransformer {
 	public replaceElementObjectNames(ast: Program): void {
 		replace(ast, {
 			enter: (node, parent: any) => {
-				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === ScopeTransformer.ITEMS_NAME;
+				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === ReferenceTransformer.ITEMS_NAME;
 				if (!alreadyReplaced && node.type === 'Identifier' && node.name in this.items) {
 					return memberExpression(
-						identifier(ScopeTransformer.ITEMS_NAME),
+						identifier(ReferenceTransformer.ITEMS_NAME),
 						identifier(node.name),
 					);
 				}
@@ -97,7 +111,7 @@ export class ScopeTransformer {
 						return node;
 					}
 					enumNode.object = memberExpression(
-						identifier(ScopeTransformer.ENUMS_NAME),
+						identifier(ReferenceTransformer.ENUMS_NAME),
 						identifier(enumObject.name),
 					);
 				}
@@ -109,10 +123,10 @@ export class ScopeTransformer {
 	public replaceGlobalApiNames(ast: Program): void {
 		replace(ast, {
 			enter: (node, parent: any) => {
-				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === ScopeTransformer.GLOBAL_NAME;
+				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === ReferenceTransformer.GLOBAL_NAME;
 				if (!alreadyReplaced && node.type === 'Identifier' && node.name in GlobalApi.prototype) {
 					return memberExpression(
-						identifier(ScopeTransformer.GLOBAL_NAME),
+						identifier(ReferenceTransformer.GLOBAL_NAME),
 						identifier(node.name),
 					);
 				}
@@ -124,10 +138,10 @@ export class ScopeTransformer {
 	public replaceStdlibNames(ast: Program): void {
 		replace(ast, {
 			enter: (node, parent: any) => {
-				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === ScopeTransformer.STDLIB_NAME;
+				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === ReferenceTransformer.STDLIB_NAME;
 				if (!alreadyReplaced && node.type === 'Identifier' && node.name in Stdlib.prototype) {
 					return memberExpression(
-						identifier(ScopeTransformer.STDLIB_NAME),
+						identifier(ReferenceTransformer.STDLIB_NAME),
 						identifier(node.name),
 					);
 				}
@@ -155,7 +169,7 @@ export class ScopeTransformer {
 						node.callee.name = 'eval';
 						node.arguments[0] = callExpression(
 							memberExpression(
-								identifier(ScopeTransformer.VBSHELPER_NAME),
+								identifier(ReferenceTransformer.VBSHELPER_NAME),
 								identifier('transpileInline'),
 							),
 							[ node.arguments[0] as Expression ],
@@ -193,7 +207,7 @@ export class ScopeTransformer {
 								'=',
 								arrowFunctionExpression(false,
 									blockStatement(node.body as Statement[]),
-									[ identifier(ScopeTransformer.ITEMS_NAME), identifier(ScopeTransformer.ENUMS_NAME), identifier(ScopeTransformer.GLOBAL_NAME), identifier(ScopeTransformer.STDLIB_NAME), identifier(ScopeTransformer.VBSHELPER_NAME) ],
+									[ identifier(ReferenceTransformer.ITEMS_NAME), identifier(ReferenceTransformer.ENUMS_NAME), identifier(ReferenceTransformer.GLOBAL_NAME), identifier(ReferenceTransformer.STDLIB_NAME), identifier(ReferenceTransformer.VBSHELPER_NAME) ],
 								),
 							)),
 					]);
