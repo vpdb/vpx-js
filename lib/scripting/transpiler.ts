@@ -26,13 +26,15 @@ import { apiEnums } from '../vpt/enums';
 import { GlobalApi } from '../vpt/global-api';
 import { Table } from '../vpt/table/table';
 import { Stdlib } from './stdlib';
+import { CleanupTransformer } from './transformer/cleanup-transformer';
 import { EventTransformer } from './transformer/event-transformer';
 import { ReferenceTransformer } from './transformer/reference-transformer';
+import { WrapTransformer } from './transformer/wrap-transformer';
 import { VBSHelper } from './vbs-helper';
 import vbsGrammar from './vbscript';
 
 // the table script function
-declare function play(table: { [key: string]: any }, enums: any, globalApi: GlobalApi, stdlib: Stdlib, vbsHelper: VBSHelper): void;
+declare function play(scope: any, table: { [key: string]: any }, enums: any, globalApi: GlobalApi, stdlib: Stdlib, vbsHelper: VBSHelper): void;
 
 export class Transpiler {
 
@@ -45,15 +47,16 @@ export class Transpiler {
 	}
 
 	public transpile(vbs: string, globalFunction?: string, globalObject?: string) {
+
 		logger().debug(vbs);
 		let ast = this.parse(vbs + '\n');
-		const scopeTransformer = new ReferenceTransformer(this.table);
-		const eventTransformer = new EventTransformer(this.table);
+		ast = new CleanupTransformer(ast).transform();
+		ast = new EventTransformer(ast, this.table).transform();
+		ast = new ReferenceTransformer(ast, this.table).transform();
+		//ast = new ScopeTransformer(ast).transform();
+		ast = new WrapTransformer(ast).transform(globalFunction, globalObject);
 
-		ast = eventTransformer.transform(ast);
-		ast = scopeTransformer.transform(ast, globalFunction, globalObject);
 		logger().debug('AST:', ast);
-
 		const js = this.generate(ast);
 		logger().debug(js);
 
@@ -67,13 +70,7 @@ export class Transpiler {
 
 		// tslint:disable-next-line:no-eval
 		eval('//@ sourceURL=tablescript.js\n' + js);
-		play(this.table.getElementApis(), apiEnums, new GlobalApi(this.table, this.player), new Stdlib(), new VBSHelper(this));
-	}
-
-	public executeGlobal(vbs: string) {
-		const js = this.transpile(vbs);
-		// tslint:disable-next-line:no-eval
-		eval('//@ sourceURL=controller.js\n' + js);
+		play({}, this.table.getElementApis(), apiEnums, new GlobalApi(this.table, this.player), new Stdlib(), new VBSHelper(this));
 	}
 
 	private parse(vbs: string): Program {

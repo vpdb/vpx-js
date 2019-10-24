@@ -18,21 +18,14 @@
  */
 
 import { replace } from 'estraverse';
-import { CallExpression, Expression, Identifier, MemberExpression, Program, Statement } from 'estree';
+import { CallExpression, Expression, Identifier, MemberExpression, Program } from 'estree';
 import { logger } from '../../util/logger';
 import { apiEnums } from '../../vpt/enums';
 import { GlobalApi } from '../../vpt/global-api';
 import { Table } from '../../vpt/table/table';
-import {
-	arrowFunctionExpression,
-	assignmentExpression,
-	blockStatement, callExpression,
-	expressionStatement,
-	identifier,
-	memberExpression,
-	program,
-} from '../estree';
+import { callExpression, identifier, memberExpression, } from '../estree';
 import { Stdlib } from '../stdlib';
+import { Transformer } from './transformer';
 
 /**
  * In the Visual Pinball table script, everything is global. In JavaScript we
@@ -54,28 +47,24 @@ import { Stdlib } from '../stdlib';
  *   - `ImageAlignment.ImageAlignWorld` would become `__enums.ImageAlignment.ImageAlignWorld`.
  *   - `PlaySound()` would become `__global.PlaySound()`.
  */
-export class ReferenceTransformer {
+export class ReferenceTransformer extends Transformer {
 
 	private readonly table: Table;
 	private readonly items: { [p: string]: any };
-	public static ITEMS_NAME = '__items';
-	public static ENUMS_NAME = '__enums';
-	public static GLOBAL_NAME = '__global';
-	public static STDLIB_NAME = '__stdlib';
-	public static VBSHELPER_NAME = '__vbsHelper';
 
-	constructor(table: Table) {
+	constructor(ast: Program, table: Table) {
+		super(ast);
 		this.table = table;
 		this.items = table.getElementApis();
 	}
 
-	public transform(ast: Program, mainFunctionName?: string, globalObjectName?: string): Program {
-		this.replaceElementObjectNames(ast);
-		this.replaceEnumObjectNames(ast);
-		this.replaceStdlibNames(ast);
-		this.replaceGlobalApiNames(ast);
-		this.replaceExecuteGlobal(ast);
-		return this.wrap(ast, mainFunctionName, globalObjectName);
+	public transform(): Program {
+		this.replaceElementObjectNames(this.ast);
+		this.replaceEnumObjectNames(this.ast);
+		this.replaceStdlibNames(this.ast);
+		this.replaceGlobalApiNames(this.ast);
+		this.replaceExecuteGlobal(this.ast);
+		return this.ast;
 	}
 
 	/**
@@ -179,40 +168,5 @@ export class ReferenceTransformer {
 				return node;
 			},
 		});
-	}
-
-	/**
-	 * Wraps the table script into a function.
-	 *
-	 * @param ast Original AST
-	 * @param mainFunctionName Name of the function to wrap the code into
-	 * @param globalObjectName Name of the global object the function will be added too. If not specified it'll be a global function.
-	 */
-	public wrap(ast: Program, mainFunctionName?: string, globalObjectName?: string): Program {
-		if (!mainFunctionName) {
-			return ast;
-		}
-		return replace(ast, {
-			enter: node => {
-				if (node.type === 'Program') {
-					return program([
-						expressionStatement(
-							assignmentExpression(
-								globalObjectName
-									? memberExpression(
-										identifier(globalObjectName),
-										identifier(mainFunctionName),
-									)
-									: identifier(mainFunctionName),
-								'=',
-								arrowFunctionExpression(false,
-									blockStatement(node.body as Statement[]),
-									[ identifier(ReferenceTransformer.ITEMS_NAME), identifier(ReferenceTransformer.ENUMS_NAME), identifier(ReferenceTransformer.GLOBAL_NAME), identifier(ReferenceTransformer.STDLIB_NAME), identifier(ReferenceTransformer.VBSHELPER_NAME) ],
-								),
-							)),
-					]);
-				}
-			},
-		}) as Program;
 	}
 }
