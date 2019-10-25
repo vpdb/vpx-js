@@ -24,22 +24,27 @@ import * as estree from '../estree';
 export function varDecl(
 	result: [Token, null, VariableDeclarator, null, VariableDeclarator[], Comment[]],
 ): VariableDeclaration {
-	const firstVar = result[2];
-	const otherVars = result[4] || [];
-	const declarators = [firstVar, ...otherVars];
+	const firstVarDecl = result[2];
+	const otherVarDecls = result[4] || [];
 	const comments = result[5] || [];
+	const declarators = [firstVarDecl, ...otherVarDecls];
 	return estree.variableDeclaration('let', declarators, comments);
 }
 
-export function varName(result: [Identifier, null, Token, null, Literal[], null, Token]): VariableDeclarator {
-	const name = result[0];
+export function varName1(result: [Identifier, null, Token, null, Literal[], null, Token]): VariableDeclarator {
+	const identifier = result[0];
 	const literals = result[4] || [];
 	return estree.variableDeclarator(
-		name,
+		identifier,
 		estree.callExpression(estree.memberExpression(estree.identifier('vbsHelper'), estree.identifier('dim')), [
 			estree.arrayExpression(literals),
 		]),
 	);
+}
+
+export function varName2(result: [Identifier]): VariableDeclarator {
+	const identifier = result[0];
+	return estree.variableDeclarator(identifier, null);
 }
 
 export function otherVarsOpt(

@@ -31,15 +31,15 @@ export function constList1(
 	result: [Identifier, null, Token, null, Expression, null, Token, null, VariableDeclarator[]],
 ): VariableDeclarator[] {
 	const identifier = result[0];
-	const expression = result[4];
+	const expr = result[4];
 	const otherVarDecl = result[8] || [];
-	return [estree.variableDeclarator(identifier, expression), ...otherVarDecl];
+	return [estree.variableDeclarator(identifier, expr), ...otherVarDecl];
 }
 
 export function constList2(result: [Identifier, null, Token, null, Expression]): VariableDeclarator[] {
 	const identifier = result[0];
-	const expression = result[4];
-	return [estree.variableDeclarator(identifier, expression)];
+	const expr = result[4];
+	return [estree.variableDeclarator(identifier, expr)];
 }
 
 export function constExprDef1(result: [Token, null, Expression, null, Token]): Expression {
