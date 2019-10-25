@@ -18,7 +18,15 @@
  */
 
 import { replace, traverse } from 'estraverse';
-import { Expression, ExpressionStatement, Identifier, Program, VariableDeclaration } from 'estree';
+import {
+	BaseNode,
+	Expression,
+	ExpressionStatement,
+	Identifier,
+	MemberExpression,
+	Program,
+	VariableDeclaration
+} from 'estree';
 import {
 	assignmentExpression,
 	expressionStatement,
@@ -108,15 +116,14 @@ export class ScopeTransformer extends Transformer {
 	private replaceUsages() {
 		replace(this.ast, {
 			enter: (node, parent: any) => {
-
 				if (node.type === 'Identifier') {
-					const varScope = this.findScope(node.name, (node as any).__scope);
+					const varScope = this.findScope(this.getVarName(node, parent), (node as any).__scope);
 					const inRootScope = !varScope || varScope === this.rootScope; // !varScope because we can't find the declaration, in which case it's part of an external file, where we assume it was declared in the root scope.
 					if (!this.isKnown(node, parent) && inRootScope) {
 						if (parent && !['FunctionDeclaration', 'ClassDeclaration'].includes(parent.type)) {
 							return memberExpression(
 								identifier(Transformer.SCOPE_NAME),
-								identifier(node.name),
+								node,
 							);
 						}
 					}
@@ -137,6 +144,13 @@ export class ScopeTransformer extends Transformer {
 				right,
 			),
 		);
+	}
+
+	private getVarName(node: any, parent: any): string {
+		if (parent && parent.type === 'MemberExpression') {
+			return this.getTopMemberName(parent);
+		}
+		return node.name;
 	}
 
 	private findScope(name: string, currentScope: any): any {

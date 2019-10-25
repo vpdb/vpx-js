@@ -64,11 +64,17 @@ describe('The scripting scope transformer', () => {
 		expect(js).to.equal(`${Transformer.SCOPE_NAME}.BallShadow(${Transformer.SCOPE_NAME}.b).visible = 0;`);
 	});
 
-	// it('should add the scope to an object of a function call', () => {
-	// 	const vbs = `func().prop\n`;
-	// 	const js = transform(vbs);
-	// 	expect(js).to.equal(`${Transformer.SCOPE_NAME}.func().prop;`);
-	// });
+	it('should add the scope to a member prop in a loop call', () => {
+		const vbs = `For each xx in GI:xx.State = 1: Next\n`;
+		const js = transform(vbs);
+		expect(js).to.equal(`for (${Transformer.SCOPE_NAME}.xx of ${Transformer.SCOPE_NAME}.GI) {\n    ${Transformer.SCOPE_NAME}.xx.State = 1;\n}`);
+	});
+
+	it('should not the scope to a member call in a function', () => {
+		const vbs = `Function AudioPan(tableobj)\nDim tmp\ntmp = tableobj.x * 2 / table1.width-1\nEnd Function`;
+		const js = transform(vbs);
+		expect(js).to.equal(`__scope.AudioPan = function (tableobj) {\n    let AudioPan = null;\n    let tmp;\n    tmp = tableobj.x * 2 / __scope.table1.width - 1;\n    return AudioPan;\n};`);
+	});
 
 	it('should not add the scope to a function-level variable assignment', () => {
 		const vbs = `Sub X\n	Dim x\nEnd Sub`;

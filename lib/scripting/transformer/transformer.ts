@@ -46,7 +46,7 @@ export class Transformer {
 		].includes(this.getTopMemberName(parent as MemberExpression));
 	}
 
-	private getTopMemberName(node: MemberExpression): string {
+	protected getTopMemberName(node: any): string {
 		const obj = node.object as any;
 		if (obj.type === 'MemberExpression') {
 			return this.getTopMemberName(obj);
