@@ -83,6 +83,13 @@ export class ReferenceTransformer extends Transformer {
 				if (!alreadyReplaced && node.type === 'Identifier') {
 					const elementName = this.table.getElementApiName(node.name);
 					if (elementName) {
+						// patch property
+						if (parent.property.name) {
+							const propName = this.items[elementName]._getPropertyName(parent.property.name);
+							if (propName) {
+								parent.property.name = propName;
+							}
+						}
 						return memberExpression(
 							identifier(Transformer.ITEMS_NAME),
 							identifier(elementName),
@@ -120,7 +127,6 @@ export class ReferenceTransformer extends Transformer {
 	public replaceGlobalApiNames(ast: Program): void {
 		replace(ast, {
 			enter: (node, parent: any) => {
-				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === Transformer.GLOBAL_NAME;
 				if (!this.isKnown(node, parent) && node.type === 'Identifier') {
 					const name =  this.globalApi._getPropertyName(node.name);
 					if (name) {
@@ -138,10 +144,16 @@ export class ReferenceTransformer extends Transformer {
 	public replaceStdlibNames(ast: Program): void {
 		replace(ast, {
 			enter: (node, parent: any) => {
-				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === Transformer.STDLIB_NAME;
 				if (!this.isKnown(node, parent) && node.type === 'Identifier') {
 					const name = this.stdlib._getPropertyName(node.name);
 					if (name) {
+						// patch property
+						if (parent.property && parent.property.name) {
+							const propName = (this.stdlib as any)[name]._getPropertyName(parent.property.name);
+							if (propName) {
+								parent.property.name = propName;
+							}
+						}
 						return memberExpression(
 							identifier(Transformer.STDLIB_NAME),
 							identifier(name),

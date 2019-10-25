@@ -20,8 +20,8 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import { astToVbs, vbsToAst } from '../../../test/script.helper';
-import { ThreeHelper } from '../../../test/three.helper';
-import { NodeBinaryReader } from '../../io/binary-reader.node';
+import { TableBuilder } from '../../../test/table-builder';
+import { Player } from '../../game/player';
 import { Table } from '../../vpt/table/table';
 import { ReferenceTransformer } from './reference-transformer';
 import { Transformer } from './transformer';
@@ -31,48 +31,79 @@ chai.use(require('sinon-chai'));
 /* tslint:disable:no-unused-expression */
 describe('The scripting reference transformer', () => {
 
-	const three = new ThreeHelper();
 	let table: Table;
+	let player: Player;
 
 	before(async () => {
-		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-gate.vpx')));
+		table = new TableBuilder().addFlipper('Flipper').build();
+		player = new Player(table);
 	});
 
 	it('should convert global to local variable if object exists', () => {
-		const vbs = `WireRectangle.SomeFunct\n`;
-		const js = transform(vbs, table);
-		expect(js).to.equal(`${Transformer.ITEMS_NAME}.WireRectangle.SomeFunct();`);
+		const vbs = `Flipper.SomeFunct\n`;
+		const js = transform(vbs, table, player);
+		expect(js).to.equal(`${Transformer.ITEMS_NAME}.Flipper.SomeFunct();`);
 	});
 
 	it('should not convert global to local if object does not exist', () => {
 		const vbs = `NoExisto.SomeFunct\n`;
-		const js = transform(vbs, table);
+		const js = transform(vbs, table, player);
 		expect(js).to.equal(`NoExisto.SomeFunct();`);
 	});
 
 	it('should not convert a function into an enum', () => {
 		const vbs = `TriggerShape.TriggerButton\n`;
-		const js = transform(vbs, table);
+		const js = transform(vbs, table, player);
 		expect(js).to.equal(`TriggerShape.TriggerButton();`);
 	});
 
 	it('should convert an enum if enum exists', () => {
 		const vbs = `x = TriggerShape.TriggerButton\n`;
-		const js = transform(vbs, table);
+		const js = transform(vbs, table, player);
 		expect(js).to.equal(`x = ${Transformer.ENUMS_NAME}.TriggerShape.TriggerButton;`);
 	});
 
 	it('should convert a global function if exists', () => {
 		const vbs = `PlaySound "test"\n`;
-		const js = transform(vbs, table);
+		const js = transform(vbs, table, player);
 		expect(js).to.equal(`${Transformer.GLOBAL_NAME}.PlaySound('test');`);
+	});
+
+	it('should convert a global function to correct case', () => {
+		const vbs = `plaYSoUND "test"\n`;
+		const js = transform(vbs, table, player);
+		expect(js).to.equal(`${Transformer.GLOBAL_NAME}.PlaySound('test');`);
+	});
+
+	it('should convert a table element to correct case', () => {
+		const vbs = `fliPpeR.Length = 100\n`;
+		const js = transform(vbs, table, player);
+		expect(js).to.equal(`${Transformer.ITEMS_NAME}.Flipper.Length = 100;`);
+	});
+
+	it('should convert a table element property to correct case', () => {
+		const vbs = `Flipper.lEnGTh = 100\n`;
+		const js = transform(vbs, table, player);
+		expect(js).to.equal(`${Transformer.ITEMS_NAME}.Flipper.Length = 100;`);
+	});
+
+	it('should convert a stdlib call to correct case', () => {
+		const vbs = `x = INT(1.2)\n`;
+		const js = transform(vbs, table, player);
+		expect(js).to.equal(`x = ${Transformer.VBSHELPER_NAME}.setOrCall(${Transformer.STDLIB_NAME}.Int, 1.2);`);
+	});
+
+	it('should convert a stdlib property call to correct case', () => {
+		const vbs = `x = Math.PoW(12)\n`;
+		const js = transform(vbs, table, player);
+		expect(js).to.equal(`x = ${Transformer.VBSHELPER_NAME}.setOrCall(${Transformer.STDLIB_NAME}.Math.pow, 12);`);
 	});
 
 });
 
-function transform(vbs: string, table: Table): string {
+function transform(vbs: string, table: Table, player: Player): string {
 	const ast = vbsToAst(vbs);
-	const scopeTransformer = new ReferenceTransformer(ast, table);
+	const scopeTransformer = new ReferenceTransformer(ast, table, player);
 	const eventAst = scopeTransformer.transform();
 	return astToVbs(eventAst);
 }

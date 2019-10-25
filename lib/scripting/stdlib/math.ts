@@ -21,7 +21,7 @@ import { VbsApi } from '../vbs-api';
 
 export class VbsMath extends VbsApi {
 
-	public static pow(x: number, y: number) {
+	public pow(x: number, y: number) {
 		return Math.pow(x, y);
 	}
 

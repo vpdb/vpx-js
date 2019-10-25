@@ -23,9 +23,11 @@ import { VbsMath } from './math';
 
 export class Stdlib extends VbsApi {
 
+	private readonly math = new VbsMath();
+
 	get Err() { return null; }
 
-	get Math() { return VbsMath; }
+	get Math() { return this.math; }
 
 	public Csng(n: number) {
 		return f4(n);
