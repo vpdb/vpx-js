@@ -70,6 +70,10 @@ export class FlasherApi extends ItemApi<FlasherData> {
 	public InterfaceSupportsErrorInfo(riid: any): boolean {
 		return false;
 	}
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(FlasherApi.prototype);
+	}
 }
 
 function filterToName(filter: number): string {

@@ -101,4 +101,8 @@ export class LightApi extends ItemApi<LightData> {
 	public Duration(startState: number, duration: number, endState: number) {
 		this.animation.setDuration(startState, duration, endState, this.player.getPhysics().timeMsec);
 	}
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(LightApi.prototype);
+	}
 }

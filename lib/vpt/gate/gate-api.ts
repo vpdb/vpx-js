@@ -220,4 +220,8 @@ export class GateApi extends ItemApi<GateData> {
 			}
 		}
 	}
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(GateApi.prototype);
+	}
 }

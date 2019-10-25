@@ -130,4 +130,8 @@ export class KickerApi extends ItemApi<KickerData> {
 	public _ballCountOver(): number {
 		return super._ballCountOver(this.events);
 	}
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(KickerApi.prototype);
+	}
 }

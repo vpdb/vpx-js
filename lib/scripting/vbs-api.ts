@@ -17,29 +17,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { f4 } from '../../math/float';
-import { VbsApi } from '../vbs-api';
-import { VbsMath } from './math';
+export abstract class VbsApi {
 
-export class Stdlib extends VbsApi {
+	private propertyMap?: { [key: string]: string };
 
-	get Err() { return null; }
+	protected abstract _getPropertyNames(): string[];
 
-	get Math() { return VbsMath; }
-
-	public Csng(n: number) {
-		return f4(n);
-	}
-
-	public Int(n: number) {
-		return Math.floor(n);
-	}
-
-	public Sqr(n: number) {
-		return Math.sqrt(n);
-	}
-
-	protected _getPropertyNames(): string[] {
-		return Object.getOwnPropertyNames(Stdlib.prototype);
+	public _getPropertyName(vbScriptName: string): string {
+		if (!this.propertyMap) {
+			this.propertyMap = {};
+			for (const name of this._getPropertyNames()) {
+				this.propertyMap[name.toLowerCase()] = name;
+			}
+		}
+		return this.propertyMap[vbScriptName.toLowerCase()];
 	}
 }

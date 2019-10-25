@@ -302,4 +302,8 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 		this._beginPlay();
 		return [];
 	}
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(PrimitiveApi.prototype);
+	}
 }

@@ -90,4 +90,8 @@ export class TriggerApi extends ItemApi<TriggerData> {
 	public InterfaceSupportsErrorInfo(riid: any): boolean {
 		return false;
 	}
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(TriggerApi.prototype);
+	}
 }

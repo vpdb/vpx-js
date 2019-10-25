@@ -156,6 +156,10 @@ export class PlungerApi extends ItemApi<PlungerData> {
 	public InterfaceSupportsErrorInfo(riid: any): boolean {
 		return false;
 	}
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(PlungerApi.prototype);
+	}
 }
 
 function saturate(n: number) {

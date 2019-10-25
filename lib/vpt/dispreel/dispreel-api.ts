@@ -94,4 +94,8 @@ export class DispReelApi extends ItemApi<DispReelData> {
 	public SpinReel(reelNumber: number, pulseCount: number): void {
 		// TODO implement
 	}
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(DispReelApi.prototype);
+	}
 }

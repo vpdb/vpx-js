@@ -290,4 +290,8 @@ export class TableApi extends ItemApi<TableData> {
 	public QuitPlayer(closeType: number): void {
 		// TODO implement
 	}
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(TableApi.prototype);
+	}
 }

@@ -145,4 +145,8 @@ export class BumperApi extends ItemApi<BumperData> {
 	public InterfaceSupportsErrorInfo(riid: any): boolean {
 		return false;
 	}
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(BumperApi.prototype);
+	}
 }

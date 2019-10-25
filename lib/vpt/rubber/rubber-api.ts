@@ -127,4 +127,8 @@ export class RubberApi extends ItemApi<RubberData> {
 	public InterfaceSupportsErrorInfo(riid: any): boolean {
 		return false;
 	}
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(RubberApi.prototype);
+	}
 }

@@ -37,4 +37,8 @@ export class TimerApi extends ItemApi<TimerData> {
 	set Interval(v) { this._setTimerInterval(v); }
 	get Enabled() { return this.data.timer.enabled; }
 	set Enabled(v) { this._setTimerEnabled(v); }
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(TimerApi.prototype);
+	}
 }
