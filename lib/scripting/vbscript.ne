@@ -155,8 +155,8 @@ FieldID              -> ID                                                      
 
 VarDecl              -> %kw_dim __ VarName _ OtherVarsOpt NL                                                                              {% ppDim.varDecl %}
 
-VarName              -> ExtendedID _ %paren_left _ ArrayRankList _ %paren_right                                                           {% ppDim.varName %}
-                      | ExtendedID                                                                                                        {% id %}
+VarName              -> ExtendedID _ %paren_left _ ArrayRankList _ %paren_right                                                           {% ppDim.varName1 %}
+                      | ExtendedID                                                                                                        {% ppDim.varName2 %}
 
 OtherVarsOpt         -> %comma _ VarName _ OtherVarsOpt                                                                                   {% ppDim.otherVarsOpt %}
                       | null                                                                                                              {% data => null %}
