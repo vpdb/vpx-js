@@ -41,7 +41,8 @@ export function varName1(result: [Identifier, null, Token, null, Literal[], null
 			estree.memberExpression(
 				estree.identifier(Transformer.VBSHELPER_NAME),
 				estree.identifier('dim'),
-			), [ estree.arrayExpression(literals) ],
+			),
+			[ estree.arrayExpression(literals) ],
 		),
 	);
 }

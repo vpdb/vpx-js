@@ -18,18 +18,19 @@
  */
 
 import {
-	BlockStatement,
+	BlockStatement, CallExpression,
 	Comment,
 	EmptyStatement,
 	Expression,
 	Identifier,
 	Literal,
 	MemberExpression,
-	Program,
+	Program, SpreadElement,
 	Statement,
 } from 'estree';
 import { Token } from 'moo';
 import * as estree from '../estree';
+import { Transformer } from '../transformer/transformer';
 
 export function program(result: [Statement[]]): Program {
 	const stmts = result[0];
@@ -144,10 +145,14 @@ export function leftExpr2(result: [Expression, null, Expression[], Expression]):
 	return null;
 }
 
-export function leftExpr3(result: [Identifier, null, Expression[]]) {
+export function leftExpr3(result: [Identifier, null, Expression[]]): CallExpression {
 	const identifier = result[0];
 	const indexOrParams = result[2];
-	return estree.callExpression(identifier, indexOrParams);
+	if (indexOrParams && indexOrParams.length === 1) {
+		return setOrCall(identifier, indexOrParams[0]);
+	} else {
+		return estree.callExpression(identifier, indexOrParams);
+	}
 }
 
 export function leftExprTail1(result: [Identifier, null, Expression[], Token, Expression]): Expression {
@@ -314,6 +319,18 @@ export function id(result: [Token]): Identifier {
 	if (name.endsWith('.')) {
 		name = name.slice(0, -1);
 	}
-
 	return estree.identifier(name);
+}
+
+export function setOrCall(callee: Identifier, arg: Expression): CallExpression {
+	return estree.callExpression(
+		estree.memberExpression(
+			estree.identifier(Transformer.VBSHELPER_NAME),
+			estree.identifier('setOrCall'),
+		),
+		[
+			callee,
+			arg,
+		],
+	);
 }

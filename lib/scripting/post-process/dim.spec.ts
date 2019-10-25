@@ -59,4 +59,12 @@ describe('The VBScript transpiler - Dim', () => {
 			`let myarray = ${Transformer.VBSHELPER_NAME}.dim([\n        2,\n        4,\n        3\n    ]), myarray2 = ${Transformer.VBSHELPER_NAME}.dim([\n        3,\n        4\n    ]);`,
 		);
 	});
+
+	it('should use the helper to access one-arg calls', () => {
+		const vbs = `If (DOFeffects(Effect)=1) Then\nSoundFX = ""\nEnd If\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal(
+			`if (${Transformer.VBSHELPER_NAME}.setOrCall(DOFeffects, Effect) == 1) {\n    SoundFX = '';\n}`,
+		);
+	});
 });
