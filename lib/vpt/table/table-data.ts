@@ -89,7 +89,7 @@ export class TableData extends ItemData {
 	public numCollections!: number;
 	public scriptPos!: number;
 	public scriptLen!: number;
-	public wzName!: string;
+	public name!: string;
 	public Light: LightSource[] = [ new LightSource() ];
 	public bgImage: string[] = [];
 	public imageBackdropNightDay: boolean = false;
@@ -150,7 +150,7 @@ export class TableData extends ItemData {
 	}
 
 	public getName(): string {
-		return this.wzName;
+		return this.name;
 	}
 
 	public getFriction(): number {
@@ -251,7 +251,7 @@ export class TableData extends ItemData {
 				this.scriptPos = offset;
 				this.scriptLen = len;
 				break;
-			case 'NAME': this.wzName = this.getWideString(buffer, len); break;
+			case 'NAME': this.name = this.getWideString(buffer, len); break;
 			case 'BIMG': this.bgImage[BackglassIndex.DESKTOP] = this.getString(buffer, len); break;
 			case 'BIMF': this.bgImage[BackglassIndex.FULLSCREEN] = this.getString(buffer, len); break;
 			case 'BIMS': this.bgImage[BackglassIndex.FULL_SINGLE_SCREEN] = this.getString(buffer, len); break;

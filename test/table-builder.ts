@@ -52,9 +52,11 @@ export class TableBuilder {
 	private readonly table: LoadedTable = { items: {} };
 
 	private gameItem = 0;
+	private static tableItem = 0;
 
 	public constructor() {
 		this.table.data = new TableData(`GameItem${this.gameItem++}`);
+		this.table.data.name = `Table${TableBuilder.tableItem++}`;
 	}
 
 	public addBumper(name: string, attrs: any = {}): this {
