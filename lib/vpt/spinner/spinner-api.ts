@@ -88,6 +88,10 @@ export class SpinnerApi extends ItemApi<SpinnerData> {
 	get ReflectionEnabled() { return this.data.isReflectionEnabled; }
 	set ReflectionEnabled(v) { this.data.isReflectionEnabled = v; }
 	get CurrentAngle() { return this.state.angle; }
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(SpinnerApi.prototype);
+	}
 }
 
 function clampAngleToRad(angle: number, angleMin: number, angleMax: number): number {

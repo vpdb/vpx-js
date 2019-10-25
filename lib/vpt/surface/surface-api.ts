@@ -176,4 +176,8 @@ export class SurfaceApi extends ItemApi<SurfaceData> {
 			}
 		}
 	}
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(SurfaceApi.prototype);
+	}
 }

@@ -92,4 +92,8 @@ export class BallApi extends ItemApi<BallData> {
 		this.player.destroyBall(this.ball);
 		return 1;
 	}
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(BallApi.prototype);
+	}
 }

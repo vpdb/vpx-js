@@ -38,4 +38,8 @@ export class LightSeqApi extends ItemApi<LightSeqData> {
 	public StopPlay(): void {
 		// TODO implement
 	}
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(LightSeqApi.prototype);
+	}
 }

@@ -37,8 +37,11 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 	protected readonly events: EventProxy;
 	protected readonly collections: Collection[] = [];
 	protected readonly collectionsItemPos: number[] = [];
+	private propertyMap?: { [key: string]: string };
 
 	private hitTimer?: TimerHit;
+
+	protected abstract _getPropertyNames(): string[];
 
 	get Name() { return this.data.getName(); }
 	set Name(v) { this.data.name = v; }
@@ -79,6 +82,16 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 	public _addCollection(collection: Collection, pos: number) {
 		this.collections.push(collection);
 		this.collectionsItemPos.push(pos);
+	}
+
+	public _getPropertyName(vbScriptName: string): string {
+		if (!this.propertyMap) {
+			this.propertyMap = {};
+			for (const name of this._getPropertyNames()) {
+				this.propertyMap[name.toLowerCase()] = name;
+			}
+		}
+		return this.propertyMap[vbScriptName.toLowerCase()];
 	}
 
 	protected _beginPlay(): void {

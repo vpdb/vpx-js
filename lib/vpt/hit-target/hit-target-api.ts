@@ -128,4 +128,8 @@ export class HitTargetApi extends ItemApi<HitTargetData> {
 			this.data.isDropped = val;
 		}
 	}
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(HitTargetApi.prototype);
+	}
 }

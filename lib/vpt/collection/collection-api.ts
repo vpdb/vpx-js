@@ -100,4 +100,8 @@ export class CollectionApi extends ItemApi<CollectionData> implements IterableIt
 	public [Symbol.iterator](): IterableIterator<Item<ItemData>> {
 		return this;
 	}
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(CollectionApi.prototype);
+	}
 }

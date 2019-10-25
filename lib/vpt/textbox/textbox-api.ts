@@ -61,4 +61,8 @@ export class TextboxApi extends ItemApi<TextboxData> {
 	public InterfaceSupportsErrorInfo(riid: any): boolean {
 		return false;
 	}
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(TextboxApi.prototype);
+	}
 }

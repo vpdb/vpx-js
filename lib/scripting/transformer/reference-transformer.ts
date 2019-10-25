@@ -19,6 +19,7 @@
 
 import { replace } from 'estraverse';
 import { CallExpression, Expression, Identifier, MemberExpression, Program } from 'estree';
+import { Player } from '../../game/player';
 import { logger } from '../../util/logger';
 import { apiEnums } from '../../vpt/enums';
 import { GlobalApi } from '../../vpt/global-api';
@@ -51,11 +52,15 @@ export class ReferenceTransformer extends Transformer {
 
 	private readonly table: Table;
 	private readonly items: { [p: string]: any };
+	private readonly globalApi: GlobalApi;
+	private readonly stdlib: Stdlib;
 
-	constructor(ast: Program, table: Table) {
+	constructor(ast: Program, table: Table, player: Player) {
 		super(ast);
 		this.table = table;
 		this.items = table.getElementApis();
+		this.globalApi = new GlobalApi(table, player);
+		this.stdlib = new Stdlib();
 	}
 
 	public transform(): Program {
@@ -75,11 +80,14 @@ export class ReferenceTransformer extends Transformer {
 		replace(ast, {
 			enter: (node, parent: any) => {
 				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === Transformer.ITEMS_NAME;
-				if (!alreadyReplaced && node.type === 'Identifier' && node.name in this.items) {
-					return memberExpression(
-						identifier(Transformer.ITEMS_NAME),
-						identifier(node.name),
-					);
+				if (!alreadyReplaced && node.type === 'Identifier') {
+					const elementName = this.table.getElementApiName(node.name);
+					if (elementName) {
+						return memberExpression(
+							identifier(Transformer.ITEMS_NAME),
+							identifier(elementName),
+						);
+					}
 				}
 				return node;
 			},
@@ -113,11 +121,14 @@ export class ReferenceTransformer extends Transformer {
 		replace(ast, {
 			enter: (node, parent: any) => {
 				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === Transformer.GLOBAL_NAME;
-				if (!this.isKnown(node, parent) && node.type === 'Identifier' && node.name in GlobalApi.prototype) {
-					return memberExpression(
-						identifier(Transformer.GLOBAL_NAME),
-						identifier(node.name),
-					);
+				if (!this.isKnown(node, parent) && node.type === 'Identifier') {
+					const name =  this.globalApi._getPropertyName(node.name);
+					if (name) {
+						return memberExpression(
+							identifier(Transformer.GLOBAL_NAME),
+							identifier(name),
+						);
+					}
 				}
 				return node;
 			},
@@ -128,11 +139,14 @@ export class ReferenceTransformer extends Transformer {
 		replace(ast, {
 			enter: (node, parent: any) => {
 				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === Transformer.STDLIB_NAME;
-				if (!this.isKnown(node, parent) && node.type === 'Identifier' && node.name in Stdlib.prototype) {
-					return memberExpression(
-						identifier(Transformer.STDLIB_NAME),
-						identifier(node.name),
-					);
+				if (!this.isKnown(node, parent) && node.type === 'Identifier') {
+					const name = this.stdlib._getPropertyName(node.name);
+					if (name) {
+						return memberExpression(
+							identifier(Transformer.STDLIB_NAME),
+							identifier(name),
+						);
+					}
 				}
 				return node;
 			},

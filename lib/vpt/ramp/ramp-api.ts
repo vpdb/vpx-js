@@ -182,4 +182,8 @@ export class RampApi extends ItemApi<RampData> {
 	public InterfaceSupportsErrorInfo(riid: any): boolean {
 		return false;
 	}
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(RampApi.prototype);
+	}
 }

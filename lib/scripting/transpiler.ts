@@ -55,7 +55,7 @@ export class Transpiler {
 		let ast = this.parse(vbs + '\n');
 		ast = new CleanupTransformer(ast).transform();
 		ast = new EventTransformer(ast, this.table).transform();
-		ast = new ReferenceTransformer(ast, this.table).transform();
+		ast = new ReferenceTransformer(ast, this.table, this.player).transform();
 		ast = new ScopeTransformer(ast).transform();
 		ast = new WrapTransformer(ast).transform(globalFunction, globalObject);
 

@@ -130,4 +130,7 @@ export class FlipperApi extends ItemApi<FlipperData> {
 		return false;
 	}
 
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(FlipperApi.prototype);
+	}
 }

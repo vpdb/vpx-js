@@ -85,6 +85,7 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 	private readonly updater?: TableUpdater;
 	private events?: EventProxy;
 	private api?: TableApi;
+	private itemIndex?: { [key: string]: string };
 
 	public readonly textures: { [key: string]: Texture } = {};
 	public readonly collections: { [key: string]: Collection } = {};
@@ -266,6 +267,16 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 			apis[element.getName()] = element.getApi();
 		}
 		return apis;
+	}
+
+	public getElementApiName(vbsName: string): string {
+		if (!this.itemIndex) {
+			this.itemIndex = {};
+			for (const element of this.getScriptables()) {
+				this.itemIndex[element.getName().toLowerCase()] = element.getName();
+			}
+		}
+		return this.itemIndex[vbsName.toLowerCase()];
 	}
 
 	public getElements(): { [key: string]: IScriptable<any> } {

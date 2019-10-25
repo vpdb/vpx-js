@@ -21,18 +21,20 @@ import { AssignKey } from '../game/key-code';
 import { Player } from '../game/player';
 import { now, storage } from '../refs.node';
 import { textFiles } from '../scripting/textfiles';
+import { VbsApi } from '../scripting/vbs-api';
 import { logger } from '../util/logger';
 import { Ball } from './ball/ball';
 import { Item } from './item';
 import { ItemData } from './item-data';
 import { Table } from './table/table';
 
-export class GlobalApi {
+export class GlobalApi extends VbsApi {
 
 	private readonly table: Table;
 	private readonly player: Player;
 
 	constructor(table: Table, player: Player) {
+		super();
 		this.table = table;
 		this.player = player;
 	}
@@ -172,4 +174,7 @@ export class GlobalApi {
 		// still no idea
 	}
 
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(GlobalApi.prototype);
+	}
 }

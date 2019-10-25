@@ -51,4 +51,7 @@ export class DecalApi extends ItemApi<DecalData> {
 	get HasVerticalText() { return this.data.verticalText; }
 	set HasVerticalText(v) { this.data.verticalText = v; }
 
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(DecalApi.prototype);
+	}
 }
