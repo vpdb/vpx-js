@@ -20,7 +20,7 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import { astToVbs, vbsToAst } from '../../../test/script.helper';
-import { ScopeTransformer } from './scope-tranformer';
+import { ScopeTransformer } from './scope-transformer';
 import { Transformer } from './transformer';
 
 chai.use(require('sinon-chai'));

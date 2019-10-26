@@ -29,7 +29,7 @@ import { Stdlib } from './stdlib';
 import { CleanupTransformer } from './transformer/cleanup-transformer';
 import { EventTransformer } from './transformer/event-transformer';
 import { ReferenceTransformer } from './transformer/reference-transformer';
-import { ScopeTransformer } from './transformer/scope-tranformer';
+import { ScopeTransformer } from './transformer/scope-transformer';
 import { WrapTransformer } from './transformer/wrap-transformer';
 import { VBSHelper } from './vbs-helper';
 import vbsGrammar from './vbscript';
@@ -73,7 +73,7 @@ export class Transpiler {
 
 		// tslint:disable-next-line:no-eval
 		eval('//@ sourceURL=tablescript.js\n' + js);
-		play(globalScope, this.table.getElementApis(), new EnumsApi(), new GlobalApi(this.table, this.player), new Stdlib(), new VBSHelper(this));
+		play(new Proxy(globalScope, new ScopeHandler()), this.table.getElementApis(), new EnumsApi(), new GlobalApi(this.table, this.player), new Stdlib(), new VBSHelper(this));
 	}
 
 	private parse(vbs: string): Program {
@@ -89,5 +89,34 @@ export class Transpiler {
 
 	private generate(ast: Program): string {
 		return generate(ast);
+	}
+}
+
+class ScopeHandler implements ProxyHandler<any> {
+
+	// tslint:disable-next-line:variable-name
+	private readonly __props: { [key: string]: string | number | symbol } = {};
+
+	public get(target: any, name: string | number | symbol, receiver: any): any {
+		const normName = typeof name === 'string' ? name.toLowerCase() : name.toString();
+		let realName = name;
+		if (!this.__props[normName]) {
+			this.__props[normName] = realName;
+		} else {
+			realName = this.__props[normName];
+		}
+		return target[realName];
+	}
+
+	public set(target: any, name: string | number | symbol, value: any, receiver: any): boolean {
+		const normName = typeof name === 'string' ? name.toLowerCase() : name.toString();
+		let realName = name;
+		if (!this.__props[normName]) {
+			this.__props[normName] = realName;
+		} else {
+			realName = this.__props[normName];
+		}
+		target[realName] = value;
+		return true;
 	}
 }
