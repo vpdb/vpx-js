@@ -58,13 +58,13 @@ export function xor(result: [Expression, null, Token, null, Expression]): Expres
 export function or(result: [Expression, null, Token, null, Expression]): Expression {
 	const leftExpr = result[0];
 	const rightExpr = result[4];
-	return estree.binaryExpression('|', leftExpr, rightExpr);
+	return estree.logicalExpression('||', leftExpr, rightExpr);
 }
 
 export function and(result: [Expression, null, Token, null, Expression]): Expression {
 	const leftExpr = result[0];
 	const rightExpr = result[4];
-	return estree.binaryExpression('&', leftExpr, rightExpr);
+	return estree.logicalExpression('&&', leftExpr, rightExpr);
 }
 
 export function not(result: [Token, null, Expression]): Expression {
