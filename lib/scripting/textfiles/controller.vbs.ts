@@ -163,7 +163,7 @@ Sub LoadVPinMAME
 		If Controller.Version < VPMver Or Err Then
 			MsgBox "VPinMAME ver " & VPMver & " required."
 		End If
-	End If		
+	End If
 	If VPinMAMEDriverVer < VBSver Or Err Then MsgBox VBSFile & " ver " & VBSver & " or higher required."
 	On Error Goto 0
 End Sub

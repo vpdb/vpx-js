@@ -29,7 +29,6 @@ import { degToRad } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex2D } from '../../math/vertex2d';
 import { HitObject } from '../../physics/hit-object';
-import { IRenderApi } from '../../render/irender-api';
 import { Item } from '../item';
 import { Table } from '../table/table';
 import { FlipperApi } from './flipper-api';
@@ -39,7 +38,6 @@ import { FlipperMesh } from './flipper-mesh';
 import { FlipperMover } from './flipper-mover';
 import { FlipperState } from './flipper-state';
 import { FlipperUpdater } from './flipper-updater';
-import { SpinnerUpdater } from '../spinner/spinner-updater';
 
 /**
  * VPinball's flippers

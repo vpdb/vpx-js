@@ -23,8 +23,29 @@ import { Pool } from '../util/object-pool';
 import { Ball } from '../vpt/ball/ball';
 import { ItemState } from '../vpt/item-state';
 import { Table } from '../vpt/table/table';
-import { AssignKey, DIK_1, DIK_4, DIK_5, DIK_D, DIK_EQUALS, DIK_ESCAPE, DIK_F10, DIK_F11, DIK_LALT, DIK_LCONTROL,
-	DIK_LSHIFT, DIK_MINUS, DIK_O, DIK_Q, DIK_RCONTROL, DIK_RETURN, DIK_RSHIFT, DIK_SLASH, DIK_SPACE, DIK_T, DIK_Z,
+import {
+	AssignKey,
+	DIK_1,
+	DIK_4,
+	DIK_5,
+	DIK_D,
+	DIK_EQUALS,
+	DIK_ESCAPE,
+	DIK_F10,
+	DIK_F11,
+	DIK_LALT,
+	DIK_LCONTROL,
+	DIK_LSHIFT,
+	DIK_MINUS,
+	DIK_O,
+	DIK_Q,
+	DIK_RCONTROL,
+	DIK_RETURN,
+	DIK_RSHIFT,
+	DIK_SLASH,
+	DIK_SPACE,
+	DIK_T,
+	DIK_Z,
 } from './key-code';
 import { PlayerPhysics } from './player-physics';
 

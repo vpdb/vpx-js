@@ -1,9 +1,4 @@
-import {
-	LoadingManager,
-	DataTextureLoader,
-	TextureDataType,
-	PixelFormat
-} from '../../../refs.node';
+import { DataTextureLoader, LoadingManager, PixelFormat, TextureDataType } from '../../../refs.node';
 
 export interface EXR {
 	header: object;

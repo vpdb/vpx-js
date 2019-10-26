@@ -31,7 +31,6 @@ import { Vertex2D } from '../../math/vertex2d';
 import { HitCircle } from '../../physics/hit-circle';
 import { HitObject } from '../../physics/hit-object';
 import { LineSeg } from '../../physics/line-seg';
-import { IRenderApi } from '../../render/irender-api';
 import { Item } from '../item';
 import { Table } from '../table/table';
 import { GateApi } from './gate-api';

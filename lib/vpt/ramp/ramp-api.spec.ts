@@ -23,7 +23,7 @@ import { TableBuilder } from '../../../test/table-builder';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
-import { Enums, ImageAlignment, RampType } from '../enums';
+import { Enums } from '../enums';
 import { Table } from '../table/table';
 import { RampState } from './ramp-state';
 

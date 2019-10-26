@@ -19,7 +19,7 @@
 
 import { EventProxy } from '../../game/event-proxy';
 import { Player } from '../../game/player';
-import { Enums, TriggerShape } from '../enums';
+import { Enums } from '../enums';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { TriggerData } from './trigger-data';

@@ -19,7 +19,7 @@
 
 import { IAnimation } from '../../game/ianimatable';
 import { PlayerPhysics } from '../../game/player-physics';
-import { Enums, LightStatus } from '../enums';
+import { Enums } from '../enums';
 import { Table } from '../table/table';
 import { LightData } from './light-data';
 import { LightState } from './light-state';

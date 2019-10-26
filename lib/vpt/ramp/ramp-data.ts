@@ -21,7 +21,7 @@ import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
 import { DragPoint } from '../../math/dragpoint';
 import { f4 } from '../../math/float';
-import { Enums, RampImageAlignment, RampType } from '../enums';
+import { Enums } from '../enums';
 import { IPhysicalData, ItemData } from '../item-data';
 
 export class RampData extends ItemData implements IPhysicalData {

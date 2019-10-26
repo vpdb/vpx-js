@@ -26,7 +26,7 @@ import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
-import { Enums, TriggerShape } from '../enums';
+import { Enums } from '../enums';
 import { Item } from '../item';
 import { Table } from '../table/table';
 import { TriggerAnimation } from './trigger-animation';

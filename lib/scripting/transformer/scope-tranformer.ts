@@ -18,15 +18,7 @@
  */
 
 import { replace, traverse } from 'estraverse';
-import {
-	BaseNode,
-	Expression,
-	ExpressionStatement,
-	Identifier,
-	MemberExpression,
-	Program,
-	VariableDeclaration
-} from 'estree';
+import { Expression, ExpressionStatement, Identifier, MemberExpression, Program, VariableDeclaration } from 'estree';
 import {
 	assignmentExpression,
 	expressionStatement,

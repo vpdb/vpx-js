@@ -18,7 +18,6 @@
  */
 
 import { degToRad } from '../../math/float';
-import { Matrix3D } from '../../math/matrix3d';
 import { IRenderApi } from '../../render/irender-api';
 import { ItemUpdater } from '../item-updater';
 import { Table } from '../table/table';

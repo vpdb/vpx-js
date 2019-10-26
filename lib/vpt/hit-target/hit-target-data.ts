@@ -21,7 +21,7 @@ import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
 import { f4 } from '../../math/float';
 import { Vertex3D } from '../../math/vertex3d';
-import { Enums, TargetType } from '../enums';
+import { Enums } from '../enums';
 import { IPhysicalData, ItemData } from '../item-data';
 import { Table } from '../table/table';
 

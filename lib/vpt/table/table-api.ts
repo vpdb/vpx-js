@@ -27,7 +27,7 @@ import {
 	DEFAULT_TABLE_MIN_SLOPE,
 	GRAVITYCONST,
 } from '../../physics/constants';
-import { BackglassIndex, Enums } from '../enums';
+import { Enums } from '../enums';
 import { dequantizeUnsignedPercent, ItemApi, quantizeUnsignedPercent } from '../item-api';
 import { Table } from './table';
 import { TableData } from './table-data';

@@ -21,7 +21,7 @@ import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
 import { DragPoint } from '../../math/dragpoint';
 import { Vertex2D } from '../../math/vertex2d';
-import { Enums, TriggerShape } from '../enums';
+import { Enums } from '../enums';
 import { ItemData } from '../item-data';
 
 export class TriggerData extends ItemData {
