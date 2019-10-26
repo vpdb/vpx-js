@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Matrix3D } from '../../math/matrix3d';
 import { IRenderApi } from '../../render/irender-api';
 import { ItemUpdater } from '../item-updater';
 import { Table } from '../table/table';
-import { BallState } from './ball-state';
-import { Matrix3D } from '../../math/matrix3d';
 import { BallData } from './ball-data';
+import { BallState } from './ball-state';
 
 export class BallUpdater extends ItemUpdater<BallState> {
 

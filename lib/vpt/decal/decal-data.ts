@@ -20,7 +20,7 @@
 import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
 import { Vertex2D } from '../../math/vertex2d';
-import { DecalType, Enums, SizingType } from '../enums';
+import { Enums } from '../enums';
 import { ItemData } from '../item-data';
 
 export class DecalData extends ItemData {

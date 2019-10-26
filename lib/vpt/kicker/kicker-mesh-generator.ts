@@ -20,7 +20,7 @@
 import { degToRad, f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
-import { Enums, KickerType } from '../enums';
+import { Enums } from '../enums';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { KickerData } from './kicker-data';

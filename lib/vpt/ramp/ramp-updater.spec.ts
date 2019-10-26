@@ -23,7 +23,7 @@ import { spy } from 'sinon';
 import { TableBuilder } from '../../../test/table-builder';
 import { TestRenderApi } from '../../../test/test-render-api';
 import { Player } from '../../game/player';
-import { Enums, RampType } from '../enums';
+import { Enums } from '../enums';
 import { Table } from '../table/table';
 import { RampState } from './ramp-state';
 

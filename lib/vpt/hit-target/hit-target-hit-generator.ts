@@ -26,7 +26,7 @@ import { CollisionType } from '../../physics/collision-type';
 import { HitObject } from '../../physics/hit-object';
 import { HitPoint } from '../../physics/hit-point';
 import { HitTriangle } from '../../physics/hit-triangle';
-import { Enums, TargetType } from '../enums';
+import { Enums } from '../enums';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { HitTargetData } from './hit-target-data';

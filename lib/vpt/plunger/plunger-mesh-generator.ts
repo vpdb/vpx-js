@@ -19,7 +19,7 @@
 
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3DNoTex2 } from '../../math/vertex';
-import { Enums, PlungerType } from '../enums';
+import { Enums } from '../enums';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { PlungerData } from './plunger-data';

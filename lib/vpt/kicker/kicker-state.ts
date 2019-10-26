@@ -18,7 +18,7 @@
  */
 
 import { Pool } from '../../util/object-pool';
-import { Enums, KickerType } from '../enums';
+import { Enums } from '../enums';
 import { ItemState } from '../item-state';
 
 export class KickerState extends ItemState {

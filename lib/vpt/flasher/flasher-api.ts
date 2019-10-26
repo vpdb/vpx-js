@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Enums, Filters } from '../enums';
+import { Enums } from '../enums';
 import { ItemApi } from '../item-api';
 import { FlasherData } from './flasher-data';
 

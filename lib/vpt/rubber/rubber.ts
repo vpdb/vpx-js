@@ -25,7 +25,6 @@ import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
-import { IRenderApi } from '../../render/irender-api';
 import { Item } from '../item';
 import { Table } from '../table/table';
 import { RubberApi } from './rubber-api';

@@ -27,7 +27,7 @@ import { HitLineZ } from '../../physics/hit-line-z';
 import { HitObject } from '../../physics/hit-object';
 import { HitTriangle } from '../../physics/hit-triangle';
 import { LineSeg } from '../../physics/line-seg';
-import { Enums, RampType } from '../enums';
+import { Enums } from '../enums';
 import { Table } from '../table/table';
 import { RampData } from './ramp-data';
 import { RampMeshGenerator } from './ramp-mesh-generator';

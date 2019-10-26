@@ -23,7 +23,6 @@ import sinonChai = require('sinon-chai');
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
-import { DecalType, ImageAlignment, SizingType } from '../enums';
 import { Table } from '../table/table';
 
 /* tslint:disable:no-unused-expression */

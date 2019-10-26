@@ -19,7 +19,7 @@
 
 import { IAnimation } from '../../game/ianimatable';
 import { PlayerPhysics } from '../../game/player-physics';
-import { Enums, TriggerShape } from '../enums';
+import { Enums } from '../enums';
 import { Table } from '../table/table';
 import { TriggerData } from './trigger-data';
 import { TriggerState } from './trigger-state';

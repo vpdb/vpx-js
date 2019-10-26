@@ -20,7 +20,7 @@
 import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
 import { Vertex2D } from '../../math/vertex2d';
-import { Enums, GateType } from '../enums';
+import { Enums } from '../enums';
 import { ItemData } from '../item-data';
 
 export class GateData extends ItemData {

@@ -25,7 +25,7 @@ import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3DNoTex2 } from '../../math/vertex';
 import { Vertex2D } from '../../math/vertex2d';
 import { RenderVertex3D, Vertex3D } from '../../math/vertex3d';
-import { Enums, RampImageAlignment, RampType } from '../enums';
+import { Enums } from '../enums';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { RampData } from './ramp-data';

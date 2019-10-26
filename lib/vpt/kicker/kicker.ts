@@ -28,7 +28,7 @@ import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
-import { Enums, KickerType } from '../enums';
+import { Enums } from '../enums';
 import { Item } from '../item';
 import { FLT_MAX } from '../mesh';
 import { Table } from '../table/table';

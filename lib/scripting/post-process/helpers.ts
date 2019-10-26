@@ -18,14 +18,15 @@
  */
 
 import {
-	BlockStatement, CallExpression,
+	BlockStatement,
+	CallExpression,
 	Comment,
 	EmptyStatement,
 	Expression,
 	Identifier,
 	Literal,
 	MemberExpression,
-	Program, SpreadElement,
+	Program,
 	Statement,
 } from 'estree';
 import { Token } from 'moo';

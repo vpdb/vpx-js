@@ -23,7 +23,7 @@ import sinonChai = require('sinon-chai');
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
-import { Enums, LightStatus } from '../enums';
+import { Enums } from '../enums';
 import { Table } from '../table/table';
 import { LightState } from './light-state';
 
