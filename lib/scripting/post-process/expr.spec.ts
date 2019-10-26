@@ -34,15 +34,15 @@ describe('The VBScript transpiler - Expressions', () => {
 	});
 
 	it('should transpile a "Or" expression', () => {
-		const vbs = `EnableBallControl = 10 Or 8\n`;
+		const vbs = `If test = 5 Or Err Then test = 6\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('EnableBallControl = 10 | 8;');
+		expect(js).to.equal('if (test == 5 || Err)\n    test = 6;');
 	});
 
 	it('should transpile a "And" expression', () => {
-		const vbs = `EnableBallControl = 10 And 8\n`;
+		const vbs = `If test = 5 And Err Then test = 6`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal('EnableBallControl = 10 & 8;');
+		expect(js).to.equal('if (test == 5 && Err)\n    test = 6;');
 	});
 
 	it('should transpile a "Not" expression', () => {

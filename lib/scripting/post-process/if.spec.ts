@@ -84,4 +84,12 @@ describe('The VBScript transpiler - If', () => {
 		const js = vbsToJs(vbs);
 		expect(js).to.equal('if (x == 1) {\n    x = 2;\n} else if (x == 3)\n    x = 4;\nelse\n    x = 5;');
 	});
+
+	it('should transpile multiple inline "If/Then" statement', () => {
+		const vbs = `If VPMver > "" Then If Controller.Version < VPMver Or Err Then MsgBox "VPinMAME ver " & VPMver & " required."\n`;
+		const js = vbsToJs(vbs);
+		expect(js).to.equal(
+			"if (VPMver > '')\n    if (Controller.Version < VPMver || Err)\n        MsgBox('VPinMAME ver ' + VPMver + ' required.');",
+		);
+	});
 });

@@ -21,7 +21,7 @@ import { BlockStatement, Comment, Expression, IfStatement, Statement } from 'est
 import { Token } from 'moo';
 import * as estree from '../estree';
 
-export function stmt1(
+export function stmt(
 	result: [Token, null, Expression, null, Token, Comment[], BlockStatement, Statement, Token, null, Token, Comment[]],
 ): IfStatement {
 	const test = result[2];
@@ -32,14 +32,13 @@ export function stmt1(
 	return estree.ifStatement(test, consequent, alternate, leadingComments, trailingComments);
 }
 
-export function stmt2(
-	result: [Token, null, Expression, null, Token, null, Statement, null, Statement, null, Token, Comment[]],
+export function stmtInline(
+	result: [Token, null, Expression, null, Token, null, Statement, null, Statement, null, Token],
 ): IfStatement {
 	const test = result[2];
 	const consequent = result[6];
 	const alternate = result[8];
-	const comments = result[11] || [];
-	return estree.ifStatement(test, consequent, alternate, [], comments);
+	return estree.ifStatement(test, consequent, alternate, [], []);
 }
 
 export function elseStmt1(

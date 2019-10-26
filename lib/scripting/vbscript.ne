@@ -230,6 +230,7 @@ InlineStmt           -> AssignStmt                                              
                       | SubCallStmt                                                                                                       {% id %}
                       | ErrorStmt                                                                                                         {% id %}
                       | ExitStmt                                                                                                          {% id %}
+                      | IfStmtInline                                                                                                      {% id %}
 
 GlobalStmtList       -> GlobalStmt GlobalStmtList                                                                                         {% ppHelpers.globalStmtList %}
                       | null
@@ -322,8 +323,9 @@ RedimDecl            -> ExtendedID _ %paren_left _ ExprList _ %paren_right      
 
 #========= If Statement
 
-IfStmt               -> %kw_if _ Expr _ %kw_then NL BlockStmtList ElseStmtList %kw_end __ %kw_if NL                                       {% ppIf.stmt1 %}
-                      | %kw_if _ Expr _ %kw_then __ InlineStmt _ ElseOpt _ EndIfOpt NL                                                    {% ppIf.stmt2 %}
+IfStmt               -> %kw_if _ Expr _ %kw_then NL BlockStmtList ElseStmtList %kw_end __ %kw_if NL                                       {% ppIf.stmt %}
+
+IfStmtInline         -> %kw_if _ Expr _ %kw_then __ InlineStmt _ ElseOpt _ EndIfOpt                                                       {% ppIf.stmtInline %}
 
 ElseStmtList         -> %kw_elseif _ Expr _ %kw_then NL BlockStmtList ElseStmtList                                                        {% ppIf.elseStmt1 %}
                       | %kw_elseif _ Expr _ %kw_then __ InlineStmt NL ElseStmtList                                                        {% ppIf.elseStmt2 %}

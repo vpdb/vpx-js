@@ -40,6 +40,8 @@ import {
 	Identifier,
 	IfStatement,
 	Literal,
+	LogicalExpression,
+	LogicalOperator,
 	MemberExpression,
 	NewExpression,
 	Pattern,
@@ -176,6 +178,15 @@ export function functionExpression(body: BlockStatement, params: Pattern[]): Fun
 		type: 'FunctionExpression',
 		body,
 		params,
+	};
+}
+
+export function logicalExpression(operator: LogicalOperator, left: Expression, right: Expression): LogicalExpression {
+	return {
+		type: 'LogicalExpression',
+		operator,
+		left,
+		right,
 	};
 }
 
