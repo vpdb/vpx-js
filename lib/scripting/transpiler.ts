@@ -22,7 +22,7 @@ import { Program } from 'estree';
 import { Grammar, Parser } from 'nearley';
 import { Player } from '../game/player';
 import { logger } from '../util/logger';
-import { apiEnums } from '../vpt/enums';
+import { EnumsApi } from '../vpt/enums';
 import { GlobalApi } from '../vpt/global-api';
 import { Table } from '../vpt/table/table';
 import { Stdlib } from './stdlib';
@@ -37,7 +37,7 @@ import vbsGrammar from './vbscript';
 //self.escodegen = require('escodegen');
 
 // the table script function
-declare function play(scope: any, table: { [key: string]: any }, enums: any, globalApi: GlobalApi, stdlib: Stdlib, vbsHelper: VBSHelper): void;
+declare function play(scope: any, table: { [key: string]: any }, enums: EnumsApi, globalApi: GlobalApi, stdlib: Stdlib, vbsHelper: VBSHelper): void;
 
 export class Transpiler {
 
@@ -73,7 +73,7 @@ export class Transpiler {
 
 		// tslint:disable-next-line:no-eval
 		eval('//@ sourceURL=tablescript.js\n' + js);
-		play(globalScope, this.table.getElementApis(), apiEnums, new GlobalApi(this.table, this.player), new Stdlib(), new VBSHelper(this));
+		play(globalScope, this.table.getElementApis(), new EnumsApi(), new GlobalApi(this.table, this.player), new Stdlib(), new VBSHelper(this));
 	}
 
 	private parse(vbs: string): Program {

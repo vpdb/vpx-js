@@ -23,7 +23,7 @@ import { TableBuilder } from '../../../test/table-builder';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
-import { ImageAlignment, RampType } from '../enums';
+import { Enums, ImageAlignment, RampType } from '../enums';
 import { Table } from '../table/table';
 import { RampState } from './ramp-state';
 
@@ -45,8 +45,8 @@ describe('The VPinball ramp API', () => {
 		ramp.Material = 'maathos';
 		ramp.Type = 5;
 		ramp.Image = 'test_pattern';
-		ramp.ImageAlignment = ImageAlignment.ImageAlignWorld; expect(ramp.ImageAlignment).to.equal(0);
-		ramp.ImageAlignment = ImageAlignment.ImageAlignTopLeft;
+		ramp.ImageAlignment = Enums.ImageAlignment.ImageAlignWorld; expect(ramp.ImageAlignment).to.equal(0);
+		ramp.ImageAlignment = Enums.ImageAlignment.ImageAlignTopLeft;
 		ramp.HasWallImage = false; expect(ramp.HasWallImage).to.equal(false);
 		ramp.HasWallImage = true;
 		ramp.LeftWallHeight = 3.221;
@@ -117,8 +117,8 @@ describe('The VPinball ramp API', () => {
 		ramp.WidthBottom = 89;
 		ramp.WidthTop = 32;
 		ramp.Material = 'mat2';
-		ramp.Type = RampType.RampType1Wire;
-		ramp.ImageAlignment = ImageAlignment.ImageAlignTopLeft;
+		ramp.Type = Enums.RampType.RampType1Wire;
+		ramp.ImageAlignment = Enums.ImageAlignment.ImageAlignTopLeft;
 		ramp.HasWallImage = false;
 		ramp.LeftWallHeight = 3;
 		ramp.RightWallHeight = 5;
@@ -135,8 +135,8 @@ describe('The VPinball ramp API', () => {
 		expect(state.widthBottom).to.equal(89);
 		expect(state.widthTop).to.equal(32);
 		expect(state.material).to.equal('mat2');
-		expect(state.type).to.equal(RampType.RampType1Wire);
-		expect(state.textureAlignment).to.equal(ImageAlignment.ImageAlignTopLeft);
+		expect(state.type).to.equal(Enums.RampType.RampType1Wire);
+		expect(state.textureAlignment).to.equal(Enums.ImageAlignment.ImageAlignTopLeft);
 		expect(state.hasWallImage).to.equal(false);
 		expect(state.leftWallHeight).to.equal(3);
 		expect(state.rightWallHeight).to.equal(5);

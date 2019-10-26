@@ -23,7 +23,7 @@ import { spy } from 'sinon';
 import { TableBuilder } from '../../../test/table-builder';
 import { TestRenderApi } from '../../../test/test-render-api';
 import { Player } from '../../game/player';
-import { KickerType } from '../enums';
+import { Enums, KickerType } from '../enums';
 import { Table } from '../table/table';
 import { KickerState } from './kicker-state';
 
@@ -46,7 +46,7 @@ describe('The VPinball kicker updater', () => {
 	});
 
 	it('should update visibility', async () => {
-		table.kickers.kicker.getApi().DrawStyle = KickerType.KickerInvisible;
+		table.kickers.kicker.getApi().DrawStyle = Enums.KickerType.KickerInvisible;
 		const states = player.popStates();
 
 		expect(states.getState<KickerState>('kicker').isVisible).to.equal(false);
@@ -56,7 +56,7 @@ describe('The VPinball kicker updater', () => {
 	it('should apply visibility', async () => {
 		const renderApi = new TestRenderApi();
 		spy(renderApi, 'applyVisibility');
-		table.kickers.kicker.getUpdater().applyState(null, { type: KickerType.KickerInvisible } as KickerState, renderApi, table);
+		table.kickers.kicker.getUpdater().applyState(null, { type: Enums.KickerType.KickerInvisible } as KickerState, renderApi, table);
 		expect(renderApi.applyVisibility).to.have.been.calledOnceWith(false);
 	});
 

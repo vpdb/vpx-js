@@ -21,7 +21,7 @@ import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
 import { f4 } from '../../math/float';
 import { Vertex3D } from '../../math/vertex3d';
-import { TargetType } from '../enums';
+import { Enums, TargetType } from '../enums';
 import { IPhysicalData, ItemData } from '../item-data';
 import { Table } from '../table/table';
 
@@ -46,7 +46,7 @@ export class HitTargetData extends ItemData implements IPhysicalData {
 	public szImage?: string;
 	public szMaterial?: string;
 	public szPhysicsMaterial?: string;
-	public targetType: number = TargetType.DropTargetSimple;
+	public targetType: number = Enums.TargetType.DropTargetSimple;
 	public threshold: number = 2.0;
 	public useHitEvent: boolean = true;
 	public position: Vertex3D = new Vertex3D();
@@ -63,9 +63,9 @@ export class HitTargetData extends ItemData implements IPhysicalData {
 	}
 
 	public isDropTarget(): boolean {
-		return this.targetType === TargetType.DropTargetBeveled
-			|| this.targetType === TargetType.DropTargetFlatSimple
-			|| this.targetType === TargetType.DropTargetSimple;
+		return this.targetType === Enums.TargetType.DropTargetBeveled
+			|| this.targetType === Enums.TargetType.DropTargetFlatSimple
+			|| this.targetType === Enums.TargetType.DropTargetSimple;
 	}
 
 	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {

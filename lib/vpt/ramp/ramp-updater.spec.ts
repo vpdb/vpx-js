@@ -23,7 +23,7 @@ import { spy } from 'sinon';
 import { TableBuilder } from '../../../test/table-builder';
 import { TestRenderApi } from '../../../test/test-render-api';
 import { Player } from '../../game/player';
-import { RampType } from '../enums';
+import { Enums, RampType } from '../enums';
 import { Table } from '../table/table';
 import { RampState } from './ramp-state';
 
@@ -40,9 +40,9 @@ describe('The VPinball ramp updater', () => {
 		table = new TableBuilder()
 			.addMaterial('opaque', { isOpacityActive: false })
 			.addMaterial('transparent', { isOpacityActive: true })
-			.addRamp('ramp1', { szMaterial: 'opaque', rampType: RampType.RampTypeFlat })
-			.addRamp('ramp2', { szMaterial: 'transparent', rampType: RampType.RampTypeFlat })
-			.addRamp('ramp3', { szMaterial: 'transparent', rampType: RampType.RampType4Wire })
+			.addRamp('ramp1', { szMaterial: 'opaque', rampType: Enums.RampType.RampTypeFlat })
+			.addRamp('ramp2', { szMaterial: 'transparent', rampType: Enums.RampType.RampTypeFlat })
+			.addRamp('ramp3', { szMaterial: 'transparent', rampType: Enums.RampType.RampType4Wire })
 			.build();
 
 		// init player
@@ -88,7 +88,7 @@ describe('The VPinball ramp updater', () => {
 		const renderApi = new TestRenderApi();
 		spy(renderApi, 'removeChildren');
 		spy(renderApi, 'addChildToParent');
-		table.ramps.ramp2.getUpdater().applyState(null, { type: RampType.RampType2Wire } as RampState, renderApi, table);
+		table.ramps.ramp2.getUpdater().applyState(null, { type: Enums.RampType.RampType2Wire } as RampState, renderApi, table);
 		expect(renderApi.removeChildren).to.have.been.calledOnce;
 		expect(renderApi.addChildToParent).to.have.been.calledTwice;
 	});

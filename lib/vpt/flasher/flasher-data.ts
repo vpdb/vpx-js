@@ -21,7 +21,7 @@ import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
 import { DragPoint } from '../../math/dragpoint';
 import { Vertex2D } from '../../math/vertex2d';
-import { Filters, ImageAlignment } from '../enums';
+import { Enums, Filters, ImageAlignment } from '../enums';
 import { ItemData } from '../item-data';
 
 export class FlasherData extends ItemData {
@@ -41,8 +41,8 @@ export class FlasherData extends ItemData {
 	public isDMD: boolean = false;
 	public displayTexture: boolean = false;
 	public depthBias: number = 0.0;
-	public imageAlignment: number = ImageAlignment.ImageAlignTopLeft;
-	public filter: number = Filters.Filter_Overlay;
+	public imageAlignment: number = Enums.ImageAlignment.ImageAlignTopLeft;
+	public filter: number = Enums.Filters.Filter_Overlay;
 	public filterAmount: number = 100;
 	private dragPoints: DragPoint[] = [];
 

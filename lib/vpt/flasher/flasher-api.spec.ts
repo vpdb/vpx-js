@@ -23,7 +23,7 @@ import sinonChai = require('sinon-chai');
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
-import { ImageAlignment } from '../enums';
+import { Enums, ImageAlignment } from '../enums';
 import { Table } from '../table/table';
 
 /* tslint:disable:no-unused-expression */
@@ -72,8 +72,8 @@ describe('The VPinball flasher API', () => {
 		flasher.DMD = true; expect(flasher.DMD).to.equal(true);
 		flasher.DMD = false;
 		flasher.DepthBias = 2.6;
-		flasher.ImageAlignment = ImageAlignment.ImageAlignTopLeft; expect(flasher.ImageAlignment).to.equal(ImageAlignment.ImageAlignTopLeft);
-		flasher.ImageAlignment = ImageAlignment.ImageAlignWorld;
+		flasher.ImageAlignment = Enums.ImageAlignment.ImageAlignTopLeft; expect(flasher.ImageAlignment).to.equal(Enums.ImageAlignment.ImageAlignTopLeft);
+		flasher.ImageAlignment = Enums.ImageAlignment.ImageAlignWorld;
 
 		expect(flasher.X).to.equal(304);
 		expect(flasher.Y).to.be.closeTo(1.8, 0.0001);
@@ -95,7 +95,7 @@ describe('The VPinball flasher API', () => {
 		expect(flasher.AddBlend).to.equal(false);
 		expect(flasher.DMD).to.equal(false);
 		expect(flasher.DepthBias).to.equal(2.6);
-		expect(flasher.ImageAlignment).to.equal(ImageAlignment.ImageAlignWorld);
+		expect(flasher.ImageAlignment).to.equal(Enums.ImageAlignment.ImageAlignWorld);
 	});
 
 	it('should not crash when executing unused APIs', () => {

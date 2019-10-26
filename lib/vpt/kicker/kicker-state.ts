@@ -18,7 +18,7 @@
  */
 
 import { Pool } from '../../util/object-pool';
-import { KickerType } from '../enums';
+import { Enums, KickerType } from '../enums';
 import { ItemState } from '../item-state';
 
 export class KickerState extends ItemState {
@@ -28,7 +28,7 @@ export class KickerState extends ItemState {
 	public type!: number;
 	public material?: string;
 
-	get isVisible() { return this.type !== KickerType.KickerInvisible; }
+	get isVisible() { return this.type !== Enums.KickerType.KickerInvisible; }
 	set isVisible(v) { /* not used in abstract */ }
 
 	public constructor() {

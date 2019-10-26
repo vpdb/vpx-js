@@ -99,6 +99,18 @@ describe('The scripting reference transformer', () => {
 		expect(js).to.equal(`x = ${Transformer.VBSHELPER_NAME}.setOrCall(${Transformer.STDLIB_NAME}.Math.pow, 12);`);
 	});
 
+	it('should convert an enum name to correct case', () => {
+		const vbs = `x = gaTEtYPe.GateWireRectangle\n`;
+		const js = transform(vbs, table, player);
+		expect(js).to.equal(`x = ${Transformer.ENUMS_NAME}.GateType.GateWireRectangle;`);
+	});
+
+	it('should convert an enum value to correct case', () => {
+		const vbs = `x = GateType.gATeWirERecTAnGlE\n`;
+		const js = transform(vbs, table, player);
+		expect(js).to.equal(`x = ${Transformer.ENUMS_NAME}.GateType.GateWireRectangle;`);
+	});
+
 });
 
 function transform(vbs: string, table: Table, player: Player): string {

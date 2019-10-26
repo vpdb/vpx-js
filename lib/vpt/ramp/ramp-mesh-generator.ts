@@ -25,7 +25,7 @@ import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3DNoTex2 } from '../../math/vertex';
 import { Vertex2D } from '../../math/vertex2d';
 import { RenderVertex3D, Vertex3D } from '../../math/vertex3d';
-import { RampImageAlignment, RampType } from '../enums';
+import { Enums, RampImageAlignment, RampType } from '../enums';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { RampData } from './ramp-data';
@@ -115,12 +115,12 @@ export class RampMeshGenerator {
 		} else {
 			const [wireMeshA, wireMeshB] = this.generateWireMeshes(table);
 			switch (this.state.type) {
-				case RampType.RampType1Wire: {
+				case Enums.RampType.RampType1Wire: {
 					wireMeshA.name = `ramp.wire1-${this.data.getName()}`;
 					meshes.wire1 = wireMeshA;
 					break;
 				}
-				case RampType.RampType2Wire: {
+				case Enums.RampType.RampType2Wire: {
 					const wire1Mesh = wireMeshA.makeTranslation(0, 0, 3.0);
 					const wire2Mesh = wireMeshB.makeTranslation(0, 0, 3.0);
 					wire1Mesh.name = `ramp.wire1-${this.data.getName()}`;
@@ -129,7 +129,7 @@ export class RampMeshGenerator {
 					meshes.wire2 = wire2Mesh;
 					break;
 				}
-				case RampType.RampType4Wire: {
+				case Enums.RampType.RampType4Wire: {
 					meshes.wire1 = wireMeshA.clone(`ramp.wire1-${this.data.getName()}`).makeTranslation(0, 0, this.data.wireDistanceY * 0.5);
 					meshes.wire2 = wireMeshB.clone(`ramp.wire2-${this.data.getName()}`).makeTranslation(0, 0, this.data.wireDistanceY * 0.5);
 					meshes.wire3 = wireMeshA.makeTranslation(0, 0, 3.0);
@@ -138,7 +138,7 @@ export class RampMeshGenerator {
 					meshes.wire4.name = `ramp.wire4-${this.data.getName()}`;
 					break;
 				}
-				case RampType.RampType3WireLeft: {
+				case Enums.RampType.RampType3WireLeft: {
 					meshes.wire2 = wireMeshB.clone(`ramp.wire2-${this.data.getName()}`).makeTranslation(0, 0, this.data.wireDistanceY * 0.5);
 					meshes.wire3 = wireMeshA.makeTranslation(0, 0, 3.0);
 					meshes.wire3.name = `ramp.wire3-${this.data.getName()}`;
@@ -146,7 +146,7 @@ export class RampMeshGenerator {
 					meshes.wire4.name = `ramp.wire4-${this.data.getName()}`;
 					break;
 				}
-				case RampType.RampType3WireRight: {
+				case Enums.RampType.RampType3WireRight: {
 					meshes.wire1 = wireMeshA.clone(`ramp.wire1-${this.data.getName()}`).makeTranslation(0, 0, this.data.wireDistanceY * 0.5);
 					meshes.wire3 = wireMeshA.makeTranslation(0, 0, 3.0);
 					meshes.wire3.name = `ramp.wire3-${this.data.getName()}`;
@@ -197,7 +197,7 @@ export class RampMeshGenerator {
 			rgv3d2.z = rgv3d1.z;
 
 			if (this.state.texture) {
-				if (this.state.textureAlignment === RampImageAlignment.ImageModeWorld) {
+				if (this.state.textureAlignment === Enums.RampImageAlignment.ImageModeWorld) {
 					rgv3d1.tu = rgv3d1.x * invTableWidth;
 					rgv3d1.tv = rgv3d1.y * invTableHeight;
 					rgv3d2.tu = rgv3d2.x * invTableWidth;
@@ -260,7 +260,7 @@ export class RampMeshGenerator {
 			rgv3d2.z = f4(rgHeight[i] + this.state.leftWallHeightVisible) * table.getScaleZ();
 
 			if (this.state.texture && this.state.hasWallImage) {
-				if (this.state.textureAlignment === RampImageAlignment.ImageModeWorld) {
+				if (this.state.textureAlignment === Enums.RampImageAlignment.ImageModeWorld) {
 					rgv3d1.tu = rgv3d1.x * invTableWidth;
 					rgv3d1.tv = rgv3d1.y * invTableHeight;
 
@@ -319,7 +319,7 @@ export class RampMeshGenerator {
 			rgv3d2.z = f4(rgHeight[i] + this.state.rightWallHeightVisible) * table.getScaleZ();
 
 			if (this.state.texture && this.state.hasWallImage) {
-				if (this.state.textureAlignment === RampImageAlignment.ImageModeWorld) {
+				if (this.state.textureAlignment === Enums.RampImageAlignment.ImageModeWorld) {
 					rgv3d1.tu = rgv3d1.x * invTableWidth;
 					rgv3d1.tv = rgv3d1.y * invTableHeight;
 
@@ -390,7 +390,7 @@ export class RampMeshGenerator {
 		let vertBuffer: Vertex3DNoTex2[] = [];
 		let vertBuffer2: Vertex3DNoTex2[] = [];
 
-		if (this.state.type !== RampType.RampType1Wire) {
+		if (this.state.type !== Enums.RampType.RampType1Wire) {
 			vertBuffer = this.createWire(numRings, numSegments, rv.rgvLocal, rgheightInit);
 			vertBuffer2 = this.createWire(numRings, numSegments, tmpPoints, rgheightInit);
 		} else {
@@ -438,7 +438,7 @@ export class RampMeshGenerator {
 
 		meshes.push(new Mesh(vertBuffer, indices));
 
-		if (this.state.type !== RampType.RampType1Wire) {
+		if (this.state.type !== Enums.RampType.RampType1Wire) {
 			meshes.push(new Mesh(vertBuffer2, indices));
 		}
 
@@ -608,12 +608,12 @@ export class RampMeshGenerator {
 
 			// only change the width if we want to create vertices for rendering or for the editor
 			// the collision engine uses flat type ramps
-			if (this.isHabitrail() && this.state.type !== RampType.RampType1Wire) {
+			if (this.isHabitrail() && this.state.type !== Enums.RampType.RampType1Wire) {
 				currentWidth = this.data.wireDistanceX;
 				if (incWidth) {
 					currentWidth = f4(currentWidth + 20.0);
 				}
-			} else if (this.state.type === RampType.RampType1Wire) {
+			} else if (this.state.type === Enums.RampType.RampType1Wire) {
 				currentWidth = this.data.wireDiameter;
 			}
 
@@ -644,11 +644,11 @@ export class RampMeshGenerator {
 	}
 
 	private isHabitrail(): boolean {
-		return this.state.type === RampType.RampType4Wire
-			|| this.state.type === RampType.RampType1Wire
-			|| this.state.type === RampType.RampType2Wire
-			|| this.state.type === RampType.RampType3WireLeft
-			|| this.state.type === RampType.RampType3WireRight;
+		return this.state.type === Enums.RampType.RampType4Wire
+			|| this.state.type === Enums.RampType.RampType1Wire
+			|| this.state.type === Enums.RampType.RampType2Wire
+			|| this.state.type === Enums.RampType.RampType3WireLeft
+			|| this.state.type === Enums.RampType.RampType3WireRight;
 	}
 
 	private assignHeightToControlPoint(v: RenderVertex3D, height: number) {

@@ -19,7 +19,7 @@
 
 import { BiffParser } from '../io/biff-parser';
 import { Storage } from '../io/ole-doc';
-import { ItemType } from './enums';
+import { Enums, ItemType } from './enums';
 import { Table } from './table/table';
 
 /**

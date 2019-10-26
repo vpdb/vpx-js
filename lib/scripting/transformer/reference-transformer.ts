@@ -21,7 +21,7 @@ import { replace } from 'estraverse';
 import { CallExpression, Expression, Identifier, MemberExpression, Program } from 'estree';
 import { Player } from '../../game/player';
 import { logger } from '../../util/logger';
-import { apiEnums } from '../../vpt/enums';
+import { EnumsApi } from '../../vpt/enums';
 import { GlobalApi } from '../../vpt/global-api';
 import { Table } from '../../vpt/table/table';
 import { callExpression, identifier, memberExpression } from '../estree';
@@ -53,14 +53,14 @@ export class ReferenceTransformer extends Transformer {
 	private readonly table: Table;
 	private readonly items: { [p: string]: any };
 	private readonly globalApi: GlobalApi;
-	private readonly stdlib: Stdlib;
+	private readonly enums: EnumsApi = new EnumsApi();
+	private readonly stdlib: Stdlib = new Stdlib();
 
 	constructor(ast: Program, table: Table, player: Player) {
 		super(ast);
 		this.table = table;
 		this.items = table.getElementApis();
 		this.globalApi = new GlobalApi(table, player);
-		this.stdlib = new Stdlib();
 	}
 
 	public transform(): Program {
@@ -84,7 +84,7 @@ export class ReferenceTransformer extends Transformer {
 					const elementName = this.table.getElementApiName(node.name);
 					if (elementName) {
 						// patch property
-						if (parent.property.name) {
+						if (parent.property && parent.property.name) {
 							const propName = this.items[elementName]._getPropertyName(parent.property.name);
 							if (propName) {
 								parent.property.name = propName;
@@ -105,19 +105,27 @@ export class ReferenceTransformer extends Transformer {
 		replace(ast, {
 			enter: (node, parent: any) => {
 				const isFunction = parent && parent.type === 'CallExpression';
-				const isEnumIdentifier = node.type === 'MemberExpression' && node.object.type === 'Identifier' && node.property.type === 'Identifier' && node.object.name in apiEnums;
-				if (isEnumIdentifier && !isFunction) {
+				const isIdentifier = node.type === 'MemberExpression' && node.object.type === 'Identifier' && node.property.type === 'Identifier';
+				if (isIdentifier && !isFunction) {
 					const enumNode = node as MemberExpression;
 					const enumObject = enumNode.object as Identifier;
 					const enumProperty = enumNode.property as Identifier;
-					if (apiEnums[enumObject.name][enumProperty.name] === undefined) {
+					const enumName = this.enums._getPropertyName(enumObject.name);
+					let propName: string | undefined;
+					if (enumName) {
+						propName = (this.enums as any)[enumName]._getPropertyName(enumProperty.name);
+						if (propName) {
+							enumNode.object = memberExpression(
+								identifier(Transformer.ENUMS_NAME),
+								identifier(enumName),
+							);
+							enumProperty.name = propName;
+						}
+					}
+					if (!enumName || !propName) {
 						logger().warn(`[scripting] Unknown value "${enumProperty.name}" of enum ${enumObject.name}.`);
 						return node;
 					}
-					enumNode.object = memberExpression(
-						identifier(Transformer.ENUMS_NAME),
-						identifier(enumObject.name),
-					);
 				}
 				return node;
 			},
@@ -148,7 +156,7 @@ export class ReferenceTransformer extends Transformer {
 					const name = this.stdlib._getPropertyName(node.name);
 					if (name) {
 						// patch property
-						if (parent.property && parent.property.name) {
+						if (parent.property && parent.property.name && (this.stdlib as any)[name]) {
 							const propName = (this.stdlib as any)[name]._getPropertyName(parent.property.name);
 							if (propName) {
 								parent.property.name = propName;

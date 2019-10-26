@@ -19,7 +19,7 @@
 
 import { EventProxy } from '../../game/event-proxy';
 import { Player } from '../../game/player';
-import { TriggerShape } from '../enums';
+import { Enums, TriggerShape } from '../enums';
 import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { TriggerData } from './trigger-data';
@@ -47,7 +47,7 @@ export class TriggerApi extends ItemApi<TriggerData> {
 	get Visible() { return this.state.isVisible; }
 	set Visible(v) {
 		this.data.isVisible = v;
-		this.state.isVisible = v && this.data.shape !== TriggerShape.TriggerNone;
+		this.state.isVisible = v && this.data.shape !== Enums.TriggerShape.TriggerNone;
 	}
 	get HitHeight() { return this.data.hitHeight; }
 	set HitHeight(v) { this.data.hitHeight = v; }
@@ -62,7 +62,7 @@ export class TriggerApi extends ItemApi<TriggerData> {
 	get TriggerShape() { return this.data.shape; }
 	set TriggerShape(v) {
 		this.data.shape = v;
-		this.state.isVisible = this.data.isVisible && v !== TriggerShape.TriggerNone;
+		this.state.isVisible = this.data.isVisible && v !== Enums.TriggerShape.TriggerNone;
 	}
 	get ReflectionEnabled() { return this.data.isReflectionEnabled; }
 	set ReflectionEnabled(v) { this.data.isReflectionEnabled = v; }

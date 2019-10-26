@@ -21,7 +21,7 @@ import { degToRad, f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { logger } from '../../util/logger';
-import { GateType } from '../enums';
+import { Enums, GateType } from '../enums';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { GateData } from './gate-data';
@@ -51,10 +51,10 @@ export class GateMeshGenerator {
 
 	private getBaseMesh(): Mesh {
 		switch (this.data.gateType) {
-			case GateType.GateWireW: return gateWireMesh.clone(`gate.wire-${this.data.getName()}`);
-			case GateType.GateWireRectangle: return gateWireRectangleMesh.clone(`gate.wire-${this.data.getName()}`);
-			case GateType.GatePlate: return gatePlateMesh.clone(`gate.wire-${this.data.getName()}`);
-			case GateType.GateLongPlate: return gateLongPlateMesh.clone(`gate.wire-${this.data.getName()}`);
+			case Enums.GateType.GateWireW: return gateWireMesh.clone(`gate.wire-${this.data.getName()}`);
+			case Enums.GateType.GateWireRectangle: return gateWireRectangleMesh.clone(`gate.wire-${this.data.getName()}`);
+			case Enums.GateType.GatePlate: return gatePlateMesh.clone(`gate.wire-${this.data.getName()}`);
+			case Enums.GateType.GateLongPlate: return gateLongPlateMesh.clone(`gate.wire-${this.data.getName()}`);
 			/* istanbul ignore next */
 			default:
 				logger().warn('[GateItem.getBaseMesh] Unknown gate type "%s".', this.data.gateType);
