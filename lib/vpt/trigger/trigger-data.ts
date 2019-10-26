@@ -21,7 +21,7 @@ import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
 import { DragPoint } from '../../math/dragpoint';
 import { Vertex2D } from '../../math/vertex2d';
-import { TriggerShape } from '../enums';
+import { Enums, TriggerShape } from '../enums';
 import { ItemData } from '../item-data';
 
 export class TriggerData extends ItemData {
@@ -37,7 +37,7 @@ export class TriggerData extends ItemData {
 	public isVisible: boolean = true;
 	public isEnabled: boolean = true;
 	public hitHeight: number = 50;
-	public shape: number = TriggerShape.TriggerWireA;
+	public shape: number = Enums.TriggerShape.TriggerWireA;
 	public animSpeed: number = 1;
 
 	public wireThickness: number = 0;

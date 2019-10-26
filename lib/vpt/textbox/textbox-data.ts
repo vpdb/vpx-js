@@ -20,7 +20,7 @@
 import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
 import { Vertex2D } from '../../math/vertex2d';
-import { TextAlignment } from '../enums';
+import { Enums, TextAlignment } from '../enums';
 import { ItemData } from '../item-data';
 
 export class TextboxData extends ItemData {
@@ -31,7 +31,7 @@ export class TextboxData extends ItemData {
 	public fontColor: number = 0xffffff;
 	public intensityScale: number = 1.0;
 	public text: string = '0';
-	public align: number = TextAlignment.TextAlignRight;
+	public align: number = Enums.TextAlignment.TextAlignRight;
 	public isTransparent: boolean = false;
 	public isDMD: boolean = false;
 

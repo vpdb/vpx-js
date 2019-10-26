@@ -19,7 +19,7 @@
 
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3DNoTex2 } from '../../math/vertex';
-import { PlungerType } from '../enums';
+import { Enums, PlungerType } from '../enums';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { PlungerData } from './plunger-data';
@@ -66,7 +66,7 @@ export class PlungerMeshGenerator {
 		this.cFrames = Math.floor(PLUNGER_FRAME_COUNT * (this.stroke * (1.0 / 80.0))) + 1; // 25 frames per 80 units travel
 		this.invScale = (this.cFrames > 1) ? (1.0 / (this.cFrames - 1)) : 0.0;
 		this.dyPerFrame = (this.endY - this.beginY) * this.invScale;
-		this.circlePoints = (data.type === PlungerType.PlungerTypeFlat) ? 0 : 24;
+		this.circlePoints = (data.type === Enums.PlungerType.PlungerTypeFlat) ? 0 : 24;
 		this.springLoops = 0.0;
 		this.springEndLoops = 0.0;
 		this.springGauge = 0.0;
@@ -99,7 +99,7 @@ export class PlungerMeshGenerator {
 
 		this.calculateFrameRenderingDetails();
 
-		if (this.data.type === PlungerType.PlungerTypeFlat) {
+		if (this.data.type === Enums.PlungerType.PlungerTypeFlat) {
 			this.cache[frame] = { flat: this.buildFlatMesh(frame).transform(Matrix3D.RIGHT_HANDED) };
 		} else {
 			const rod = this.buildRodMesh(frame).transform(Matrix3D.RIGHT_HANDED);
@@ -112,13 +112,13 @@ export class PlungerMeshGenerator {
 	private getDesc(): PlungerDesc {
 		switch (this.data.type) {
 
-			case PlungerType.PlungerTypeModern:
+			case Enums.PlungerType.PlungerTypeModern:
 				return PlungerDesc.getModern();
 
-			case PlungerType.PlungerTypeFlat:
+			case Enums.PlungerType.PlungerTypeFlat:
 				return PlungerDesc.getFlat();
 
-			case PlungerType.PlungerTypeCustom:
+			case Enums.PlungerType.PlungerTypeCustom:
 				const result = PlungerDesc.getCustom(this.data, this.beginY, this.springMinSpacing);
 				this.rodY = result.rody;
 				this.springGauge = result.springGauge;
@@ -132,7 +132,7 @@ export class PlungerMeshGenerator {
 
 	private calculateFrameRenderingDetails(): void {
 
-		if (this.data.type === PlungerType.PlungerTypeFlat) {
+		if (this.data.type === Enums.PlungerType.PlungerTypeFlat) {
 			// For the flat plunger, we render every frame as a simple
 			// flat rectangle.  This requires four vertices for the corners,
 			// and two triangles -> 6 indices.
@@ -167,7 +167,7 @@ export class PlungerMeshGenerator {
 			//
 			// The spring only applies to the custom plunger.
 			let springIndices = 0;
-			if (this.data.type === PlungerType.PlungerTypeCustom) {
+			if (this.data.type === Enums.PlungerType.PlungerTypeCustom) {
 				springIndices = (4 * springVts) - 12;
 				if (springIndices < 0) {
 					springIndices = 0;

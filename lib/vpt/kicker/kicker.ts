@@ -28,7 +28,7 @@ import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
 import { HitObject } from '../../physics/hit-object';
 import { Ball } from '../ball/ball';
-import { KickerType } from '../enums';
+import { Enums, KickerType } from '../enums';
 import { Item } from '../item';
 import { FLT_MAX } from '../mesh';
 import { Table } from '../table/table';
@@ -72,7 +72,7 @@ export class Kicker extends Item<KickerData> implements IRenderable<KickerState>
 	public getMeshes<GEOMETRY>(table: Table): Meshes<GEOMETRY> {
 		return {
 			kicker: {
-				isVisible: this.data.kickerType !== KickerType.KickerInvisible,
+				isVisible: this.data.kickerType !== Enums.KickerType.KickerInvisible,
 				mesh: this.meshGenerator.getMesh(table).transform(Matrix3D.RIGHT_HANDED),
 				material: table.getMaterial(this.data.szMaterial),
 				map: this.getTexture(),
@@ -124,12 +124,12 @@ export class Kicker extends Item<KickerData> implements IRenderable<KickerState>
 
 	private getTexture(): Texture {
 		switch (this.data.kickerType) {
-			case KickerType.KickerCup: return Texture.fromFilesystem('kickerCup.png');
-			case KickerType.KickerWilliams: return Texture.fromFilesystem('kickerWilliams.png');
-			case KickerType.KickerGottlieb: return Texture.fromFilesystem('kickerGottlieb.png');
-			case KickerType.KickerCup2: return Texture.fromFilesystem('kickerT1.png');
-			case KickerType.KickerHole: return Texture.fromFilesystem('kickerHoleWood.png');
-			case KickerType.KickerHoleSimple:
+			case Enums.KickerType.KickerCup: return Texture.fromFilesystem('kickerCup.png');
+			case Enums.KickerType.KickerWilliams: return Texture.fromFilesystem('kickerWilliams.png');
+			case Enums.KickerType.KickerGottlieb: return Texture.fromFilesystem('kickerGottlieb.png');
+			case Enums.KickerType.KickerCup2: return Texture.fromFilesystem('kickerT1.png');
+			case Enums.KickerType.KickerHole: return Texture.fromFilesystem('kickerHoleWood.png');
+			case Enums.KickerType.KickerHoleSimple:
 			default:
 				return Texture.fromFilesystem('kickerHoleWood.png');
 		}

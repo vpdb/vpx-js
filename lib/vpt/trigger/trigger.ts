@@ -26,7 +26,7 @@ import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { HitObject } from '../../physics/hit-object';
-import { TriggerShape } from '../enums';
+import { Enums, TriggerShape } from '../enums';
 import { Item } from '../item';
 import { Table } from '../table/table';
 import { TriggerAnimation } from './trigger-animation';
@@ -61,7 +61,7 @@ export class Trigger extends Item<TriggerData> implements IRenderable<TriggerSta
 
 	public constructor(data: TriggerData) {
 		super(data);
-		this.state = TriggerState.claim(data.getName(), 0, data.szMaterial, data.isVisible && data.shape !== TriggerShape.TriggerNone);
+		this.state = TriggerState.claim(data.getName(), 0, data.szMaterial, data.isVisible && data.shape !== Enums.TriggerShape.TriggerNone);
 		this.meshGenerator = new TriggerMeshGenerator(data);
 		this.hitGenerator = new TriggerHitGenerator(data);
 		this.updater = new TriggerUpdater(this.state);
@@ -88,7 +88,7 @@ export class Trigger extends Item<TriggerData> implements IRenderable<TriggerSta
 	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
 		this.animation = new TriggerAnimation(this.data, this.state);
-		if (this.data.shape === TriggerShape.TriggerStar || this.data.shape === TriggerShape.TriggerButton) {
+		if (this.data.shape === Enums.TriggerShape.TriggerStar || this.data.shape === Enums.TriggerShape.TriggerButton) {
 			this.hits = [ new TriggerHitCircle(this.data, this.animation, this.events, table) ];
 
 		} else {

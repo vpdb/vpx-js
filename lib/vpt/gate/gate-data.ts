@@ -20,7 +20,7 @@
 import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
 import { Vertex2D } from '../../math/vertex2d';
-import { GateType } from '../enums';
+import { Enums, GateType } from '../enums';
 import { ItemData } from '../item-data';
 
 export class GateData extends ItemData {
@@ -30,7 +30,7 @@ export class GateData extends ItemData {
 	public damping: number = 0.985;
 	public elasticity: number = 0.3;
 	public friction: number = 0.02;
-	public gateType: number = GateType.GateWireW;
+	public gateType: number = Enums.GateType.GateWireW;
 	public gravityFactor: number = 0.25;
 	public height: number = 50;
 	public isCollidable: boolean = true;
@@ -59,8 +59,8 @@ export class GateData extends ItemData {
 			case 'GATY':
 				this.gateType = this.getInt(buffer);
 				/* istanbul ignore if: Legacy format */
-				if (this.gateType < GateType.GateWireW || this.gateType > GateType.GateLongPlate) {// for tables that were saved in the phase where m_type could've been undefined
-					this.gateType = GateType.GateWireW;
+				if (this.gateType < Enums.GateType.GateWireW || this.gateType > Enums.GateType.GateLongPlate) {// for tables that were saved in the phase where m_type could've been undefined
+					this.gateType = Enums.GateType.GateWireW;
 				}
 				break;
 			case 'VCEN': this.center = Vertex2D.get(buffer); break;

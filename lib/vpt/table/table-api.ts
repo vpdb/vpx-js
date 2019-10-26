@@ -27,7 +27,7 @@ import {
 	DEFAULT_TABLE_MIN_SLOPE,
 	GRAVITYCONST,
 } from '../../physics/constants';
-import { BackglassIndex } from '../enums';
+import { BackglassIndex, Enums } from '../enums';
 import { dequantizeUnsignedPercent, ItemApi, quantizeUnsignedPercent } from '../item-api';
 import { Table } from './table';
 import { TableData } from './table-data';
@@ -139,12 +139,12 @@ export class TableApi extends ItemApi<TableData> {
 	set BackdropImageApplyNightDay(v) { this.data.imageBackdropNightDay = v; }
 	get ShowFSS() { return this.data.bgEnableFss; }
 	set ShowFSS(v) { this.data.bgEnableFss = v; }
-	get BackdropImage_DT() { return this.data.bgImage[BackglassIndex.DESKTOP]; }
-	set BackdropImage_DT(v) { this.data.bgImage[BackglassIndex.DESKTOP] = v; }
-	get BackdropImage_FS() { return this.data.bgImage[BackglassIndex.FULLSCREEN]; }
-	set BackdropImage_FS(v) { this.data.bgImage[BackglassIndex.FULLSCREEN] = v; }
-	get BackdropImage_FSS() { return this.data.bgImage[BackglassIndex.FULL_SINGLE_SCREEN]; }
-	set BackdropImage_FSS(v) { this.data.bgImage[BackglassIndex.FULL_SINGLE_SCREEN] = v; }
+	get BackdropImage_DT() { return this.data.bgImage[Enums.BackglassIndex.DESKTOP]; }
+	set BackdropImage_DT(v) { this.data.bgImage[Enums.BackglassIndex.DESKTOP] = v; }
+	get BackdropImage_FS() { return this.data.bgImage[Enums.BackglassIndex.FULLSCREEN]; }
+	set BackdropImage_FS(v) { this.data.bgImage[Enums.BackglassIndex.FULLSCREEN] = v; }
+	get BackdropImage_FSS() { return this.data.bgImage[Enums.BackglassIndex.FULL_SINGLE_SCREEN]; }
+	set BackdropImage_FSS(v) { this.data.bgImage[Enums.BackglassIndex.FULL_SINGLE_SCREEN] = v; }
 	get ColorGradeImage() { return this.data.szImageColorGrade; }
 	set ColorGradeImage(v) {
 		const tex = this.table.getTexture(v);
@@ -239,8 +239,8 @@ export class TableApi extends ItemApi<TableData> {
 	set OverridePhysicsFlippers(v) { this.data.overridePhysicsFlipper = v; }
 	get EnableDecals() { return this.data.renderDecals; }
 	set EnableDecals(v) { this.data.renderDecals = v; }
-	get ShowDT() { return this.data.bgCurrentSet === BackglassIndex.DESKTOP || this.data.bgCurrentSet === BackglassIndex.FULL_SINGLE_SCREEN; }
-	set ShowDT(v) { this.data.bgCurrentSet = v ? (this.data.bgEnableFss ? BackglassIndex.FULL_SINGLE_SCREEN : BackglassIndex.DESKTOP) : BackglassIndex.FULLSCREEN; }
+	get ShowDT() { return this.data.bgCurrentSet === Enums.BackglassIndex.DESKTOP || this.data.bgCurrentSet === Enums.BackglassIndex.FULL_SINGLE_SCREEN; }
+	set ShowDT(v) { this.data.bgCurrentSet = v ? (this.data.bgEnableFss ? Enums.BackglassIndex.FULL_SINGLE_SCREEN : Enums.BackglassIndex.DESKTOP) : Enums.BackglassIndex.FULLSCREEN; }
 	get ReflectElementsOnPlayfield() { return this.data.reflectElementsOnPlayfield; }
 	set ReflectElementsOnPlayfield(v) { this.data.reflectElementsOnPlayfield = v; }
 	get EnableEMReels() { return this.data.renderEMReels; }

@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Filters } from '../enums';
+import { Enums, Filters } from '../enums';
 import { ItemApi } from '../item-api';
 import { FlasherData } from './flasher-data';
 
@@ -78,20 +78,20 @@ export class FlasherApi extends ItemApi<FlasherData> {
 
 function filterToName(filter: number): string {
 	switch (filter) {
-		case Filters.Filter_Additive: return 'Additive';
-		case Filters.Filter_Multiply: return 'Multiply';
-		case Filters.Filter_Screen: return 'Screen';
-		case Filters.Filter_None: return 'None';
+		case Enums.Filters.Filter_Additive: return 'Additive';
+		case Enums.Filters.Filter_Multiply: return 'Multiply';
+		case Enums.Filters.Filter_Screen: return 'Screen';
+		case Enums.Filters.Filter_None: return 'None';
 	}
 	return 'None';
 }
 
 function nameToFilter(name?: string): number {
 	switch ((name || '').toLowerCase()) {
-		case 'additive': return Filters.Filter_Additive;
-		case 'multiply': return Filters.Filter_Multiply;
-		case 'screen': return Filters.Filter_Screen;
-		case 'none': return Filters.Filter_None;
+		case 'additive': return Enums.Filters.Filter_Additive;
+		case 'multiply': return Enums.Filters.Filter_Multiply;
+		case 'screen': return Enums.Filters.Filter_Screen;
+		case 'none': return Enums.Filters.Filter_None;
 	}
-	return Filters.Filter_None;
+	return Enums.Filters.Filter_None;
 }

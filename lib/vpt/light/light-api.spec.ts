@@ -23,7 +23,7 @@ import sinonChai = require('sinon-chai');
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
-import { LightStatus } from '../enums';
+import { Enums, LightStatus } from '../enums';
 import { Table } from '../table/table';
 
 /* tslint:disable:no-unused-expression */
@@ -44,9 +44,9 @@ describe('The VPinball light API', () => {
 		const light = table.lights.Surface.getApi();
 		light.Falloff = 23; expect(light.Falloff).to.equal(23);
 		light.FalloffPower = 512; expect(light.FalloffPower).to.equal(512);
-		light.State = LightStatus.LightStateOn; expect(light.State).to.equal(LightStatus.LightStateOn);
-		light.State = LightStatus.LightStateOff; expect(light.State).to.equal(LightStatus.LightStateOff);
-		light.State = LightStatus.LightStateBlinking; expect(light.State).to.equal(LightStatus.LightStateBlinking);
+		light.State = Enums.LightStatus.LightStateOn; expect(light.State).to.equal(Enums.LightStatus.LightStateOn);
+		light.State = Enums.LightStatus.LightStateOff; expect(light.State).to.equal(Enums.LightStatus.LightStateOff);
+		light.State = Enums.LightStatus.LightStateBlinking; expect(light.State).to.equal(Enums.LightStatus.LightStateBlinking);
 		light.Color = 0x12ff54; expect(light.Color).to.equal(0x12ff54);
 		light.ColorFull = 0x00de23; expect(light.ColorFull).to.equal(0x00de23);
 		light.X = 12; expect(light.X).to.equal(12);

@@ -23,7 +23,7 @@ import sinonChai = require('sinon-chai');
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
-import { DecalType, ImageAlignment, SizingType } from '../enums';
+import { DecalType, Enums, ImageAlignment, SizingType } from '../enums';
 import { Table } from '../table/table';
 
 /* tslint:disable:no-unused-expression */
@@ -50,11 +50,11 @@ describe('The VPinball decal API', () => {
 		decal.X = 304;
 		decal.Y = 1.8;
 		decal.Surface = 'surface';
-		decal.Type = DecalType.DecalImage; expect(decal.Type).to.equal(DecalType.DecalImage);
-		decal.Type = DecalType.DecalText;
+		decal.Type = Enums.DecalType.DecalImage; expect(decal.Type).to.equal(Enums.DecalType.DecalImage);
+		decal.Type = Enums.DecalType.DecalText;
 		decal.Text = 'Text';
-		decal.SizingType = SizingType.AutoSize; expect(decal.SizingType).to.equal(SizingType.AutoSize);
-		decal.SizingType = SizingType.AutoWidth;
+		decal.SizingType = Enums.SizingType.AutoSize; expect(decal.SizingType).to.equal(Enums.SizingType.AutoSize);
+		decal.SizingType = Enums.SizingType.AutoWidth;
 		decal.FontColor = 0x913a8d;
 		decal.Material = 'Material';
 		decal.Font = 'Font';
@@ -68,9 +68,9 @@ describe('The VPinball decal API', () => {
 		expect(decal.X).to.equal(304);
 		expect(decal.Y).to.be.closeTo(1.8, 0.0001);
 		expect(decal.Surface).to.equal('surface');
-		expect(decal.Type).to.equal(DecalType.DecalText);
+		expect(decal.Type).to.equal(Enums.DecalType.DecalText);
 		expect(decal.Text).to.equal('Text');
-		expect(decal.SizingType).to.equal(SizingType.AutoWidth);
+		expect(decal.SizingType).to.equal(Enums.SizingType.AutoWidth);
 		expect(decal.FontColor).to.equal(0x913a8d);
 		expect(decal.Material).to.equal('Material');
 		expect(decal.Font).to.equal('Font');

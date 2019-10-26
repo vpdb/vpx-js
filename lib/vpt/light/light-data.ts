@@ -21,7 +21,7 @@ import { BiffParser } from '../../io/biff-parser';
 import { Storage } from '../../io/ole-doc';
 import { DragPoint } from '../../math/dragpoint';
 import { Vertex2D } from '../../math/vertex2d';
-import { LightStatus } from '../enums';
+import { Enums, LightStatus } from '../enums';
 import { ItemData } from '../item-data';
 import { Table } from '../table/table';
 
@@ -30,7 +30,7 @@ export class LightData extends ItemData {
 	public center!: Vertex2D;
 	public falloff: number = 50;
 	public falloffPower: number = 2;
-	public state: number = LightStatus.LightStateOff;
+	public state: number = Enums.LightStatus.LightStateOff;
 	public color: number = 0xffff00;
 	public color2: number = 0xffffff;
 	public szOffImage?: string;

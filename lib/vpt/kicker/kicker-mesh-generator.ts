@@ -20,7 +20,7 @@
 import { degToRad, f4 } from '../../math/float';
 import { Matrix3D } from '../../math/matrix3d';
 import { Vertex3D } from '../../math/vertex3d';
-import { KickerType } from '../enums';
+import { Enums, KickerType } from '../enums';
 import { Mesh } from '../mesh';
 import { Table } from '../table/table';
 import { KickerData } from './kicker-data';
@@ -49,16 +49,16 @@ export class KickerMeshGenerator {
 		let zOffset = 0.0;
 		let zRot = this.data.orientation;
 		switch (this.data.kickerType) {
-			case KickerType.KickerCup:
+			case Enums.KickerType.KickerCup:
 				zOffset = f4(-0.18);
 				break;
-			case KickerType.KickerWilliams:
+			case Enums.KickerType.KickerWilliams:
 				zRot = f4(this.data.orientation + 90.0);
 				break;
-			case KickerType.KickerHole:
+			case Enums.KickerType.KickerHole:
 				zRot = 0.0;
 				break;
-			case KickerType.KickerHoleSimple:
+			case Enums.KickerType.KickerHoleSimple:
 			default:
 				zRot = 0.0;
 				break;
@@ -86,12 +86,12 @@ export class KickerMeshGenerator {
 	private getBaseMesh(): Mesh {
 		const name = `kicker-${this.data.getName()}`;
 		switch (this.data.kickerType) {
-			case KickerType.KickerCup: return kickerCupMesh.clone(name);
-			case KickerType.KickerWilliams: return kickerWilliamsMesh.clone(name);
-			case KickerType.KickerGottlieb: return kickerGottliebMesh.clone(name);
-			case KickerType.KickerCup2: return kickerT1Mesh.clone(name);
-			case KickerType.KickerHole: return kickerHoleMesh.clone(name);
-			case KickerType.KickerHoleSimple:
+			case Enums.KickerType.KickerCup: return kickerCupMesh.clone(name);
+			case Enums.KickerType.KickerWilliams: return kickerWilliamsMesh.clone(name);
+			case Enums.KickerType.KickerGottlieb: return kickerGottliebMesh.clone(name);
+			case Enums.KickerType.KickerCup2: return kickerT1Mesh.clone(name);
+			case Enums.KickerType.KickerHole: return kickerHoleMesh.clone(name);
+			case Enums.KickerType.KickerHoleSimple:
 			default:
 				return kickerSimpleHoleMesh.clone(name);
 		}
