@@ -28,7 +28,7 @@ import { Transformer } from './transformer';
 chai.use(require('sinon-chai'));
 
 /* tslint:disable:no-unused-expression */
-describe('The scripting ambiguity transformer', () => {
+describe.skip('The scripting ambiguity transformer', () => {
 
 	let table: Table;
 	let player: Player;
@@ -93,6 +93,12 @@ describe('The scripting ambiguity transformer', () => {
 			const vbs = `BOT = Name\n`;
 			const js = transpiler.transpile(vbs);
 			expect(js).to.equal(`${Transformer.SCOPE_NAME}.BOT = ${Transformer.GLOBAL_NAME}.Name;`);
+		});
+
+		it('should not use the helper left-hand side of a loop', () => {
+			const vbs = `For each xx in GI:xx.State = 1: Next\n`;
+			const js = transpiler.transpile(vbs);
+			expect(js).to.equal(`for (${Transformer.SCOPE_NAME}.xx of ${Transformer.VBSHELPER_NAME}.getOrCall(${Transformer.SCOPE_NAME}.GI)) {    ${Transformer.VBSHELPER_NAME}.getOrCall(${Transformer.SCOPE_NAME}.xx).State = 1;}`);
 		});
 
 	});
