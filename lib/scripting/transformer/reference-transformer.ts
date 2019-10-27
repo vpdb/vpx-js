@@ -19,7 +19,6 @@
 
 import { replace } from 'estraverse';
 import { CallExpression, Expression, Identifier, MemberExpression, Program } from 'estree';
-import { Player } from '../../game/player';
 import { logger } from '../../util/logger';
 import { EnumsApi } from '../../vpt/enums';
 import { GlobalApi } from '../../vpt/global-api';
@@ -51,16 +50,18 @@ import { Transformer } from './transformer';
 export class ReferenceTransformer extends Transformer {
 
 	private readonly table: Table;
-	private readonly items: { [p: string]: any };
+	private readonly itemApis: { [p: string]: any };
+	private readonly enumApis: EnumsApi;
 	private readonly globalApi: GlobalApi;
-	private readonly enums: EnumsApi = new EnumsApi();
-	private readonly stdlib: Stdlib = new Stdlib();
+	private readonly stdlib: Stdlib;
 
-	constructor(ast: Program, table: Table, player: Player) {
+	constructor(ast: Program, table: Table, itemApis: { [p: string]: any }, enumApis: EnumsApi, globalApi: GlobalApi, stdlib: Stdlib) {
 		super(ast);
 		this.table = table;
-		this.items = table.getElementApis();
-		this.globalApi = new GlobalApi(table, player);
+		this.itemApis = itemApis;
+		this.enumApis = enumApis;
+		this.globalApi = globalApi;
+		this.stdlib = stdlib;
 	}
 
 	public transform(): Program {
@@ -85,7 +86,7 @@ export class ReferenceTransformer extends Transformer {
 					if (elementName) {
 						// patch property
 						if (parent.property && parent.property.name) {
-							const propName = this.items[elementName]._getPropertyName(parent.property.name);
+							const propName = this.itemApis[elementName]._getPropertyName(parent.property.name);
 							if (propName) {
 								parent.property.name = propName;
 							}
@@ -110,21 +111,20 @@ export class ReferenceTransformer extends Transformer {
 					const enumNode = node as MemberExpression;
 					const enumObject = enumNode.object as Identifier;
 					const enumProperty = enumNode.property as Identifier;
-					const enumName = this.enums._getPropertyName(enumObject.name);
+					const enumName = this.enumApis._getPropertyName(enumObject.name);
 					let propName: string | undefined;
 					if (enumName) {
-						propName = (this.enums as any)[enumName]._getPropertyName(enumProperty.name);
+						propName = (this.enumApis as any)[enumName]._getPropertyName(enumProperty.name);
 						if (propName) {
 							enumNode.object = memberExpression(
 								identifier(Transformer.ENUMS_NAME),
 								identifier(enumName),
 							);
 							enumProperty.name = propName;
+
+						} else {
+							logger().warn(`[scripting] Unknown value "${enumProperty.name}" of enum ${enumName}.`);
 						}
-					}
-					if (!enumName || !propName) {
-						logger().warn(`[scripting] Unknown value "${enumProperty.name}" of enum ${enumObject.name}.`);
-						return node;
 					}
 				}
 				return node;

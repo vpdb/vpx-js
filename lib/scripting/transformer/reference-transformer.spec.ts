@@ -25,6 +25,9 @@ import { Player } from '../../game/player';
 import { Table } from '../../vpt/table/table';
 import { ReferenceTransformer } from './reference-transformer';
 import { Transformer } from './transformer';
+import { Enums } from '../../vpt/enums';
+import { GlobalApi } from '../../vpt/global-api';
+import { Stdlib } from '../stdlib';
 
 chai.use(require('sinon-chai'));
 
@@ -115,7 +118,7 @@ describe('The scripting reference transformer', () => {
 
 function transform(vbs: string, table: Table, player: Player): string {
 	const ast = vbsToAst(vbs);
-	const scopeTransformer = new ReferenceTransformer(ast, table, player);
-	const eventAst = scopeTransformer.transform();
+	const referenceTransformer = new ReferenceTransformer(ast, table, table.getElementApis(), Enums, new GlobalApi(table, player), new Stdlib());
+	const eventAst = referenceTransformer.transform();
 	return astToVbs(eventAst);
 }

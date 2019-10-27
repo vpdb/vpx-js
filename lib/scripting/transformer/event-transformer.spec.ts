@@ -65,7 +65,7 @@ describe('The scripting event transformer', () => {
 
 function transform(vbs: string, table: Table): string {
 	const ast = vbsToAst(vbs);
-	const eventTransformer = new EventTransformer(ast, table);
+	const eventTransformer = new EventTransformer(ast, table.getElements());
 	const eventAst = eventTransformer.transform();
 	return astToVbs(eventAst);
 }

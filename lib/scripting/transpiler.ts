@@ -22,7 +22,7 @@ import { Program } from 'estree';
 import { Grammar, Parser } from 'nearley';
 import { Player } from '../game/player';
 import { logger } from '../util/logger';
-import { EnumsApi } from '../vpt/enums';
+import { Enums, EnumsApi } from '../vpt/enums';
 import { GlobalApi } from '../vpt/global-api';
 import { Table } from '../vpt/table/table';
 import { Stdlib } from './stdlib';
@@ -43,11 +43,17 @@ declare function play(scope: any, table: { [key: string]: any }, enums: EnumsApi
 export class Transpiler {
 
 	private readonly table: Table;
-	private readonly player: Player;
+	private readonly itemApis: { [p: string]: any };
+	private readonly enumApis: EnumsApi;
+	private readonly globalApi: GlobalApi;
+	private readonly stdlib: Stdlib;
 
 	constructor(table: Table, player: Player) {
 		this.table = table;
-		this.player = player;
+		this.itemApis = this.table.getElementApis();
+		this.enumApis = Enums;
+		this.globalApi = new GlobalApi(this.table, player);
+		this.stdlib = new Stdlib();
 	}
 
 	public transpile(vbs: string, globalFunction?: string, globalObject?: string) {
@@ -55,10 +61,10 @@ export class Transpiler {
 		logger().debug(vbs);
 		let ast = this.parse(vbs + '\n');
 		ast = new CleanupTransformer(ast).transform();
-		ast = new EventTransformer(ast, this.table).transform();
-		ast = new ReferenceTransformer(ast, this.table, this.player).transform();
+		ast = new EventTransformer(ast, this.table.getElements()).transform();
+		ast = new ReferenceTransformer(ast, this.table, this.itemApis, this.enumApis, this.globalApi, this.stdlib).transform();
 		ast = new ScopeTransformer(ast).transform();
-		ast = new AmbiguityTransformer(ast).transform();
+		ast = new AmbiguityTransformer(ast, this.itemApis, this.enumApis, this.globalApi, this.stdlib).transform();
 		ast = new WrapTransformer(ast).transform(globalFunction, globalObject);
 
 		logger().debug('AST:', ast);
@@ -75,7 +81,7 @@ export class Transpiler {
 
 		// tslint:disable-next-line:no-eval
 		eval('//@ sourceURL=tablescript.js\n' + js);
-		play(new Proxy(globalScope, new ScopeHandler()), this.table.getElementApis(), new EnumsApi(), new GlobalApi(this.table, this.player), new Stdlib(), new VBSHelper(this));
+		play(new Proxy(globalScope, new ScopeHandler()), this.itemApis, this.enumApis, this.globalApi, this.stdlib, new VBSHelper(this));
 	}
 
 	private parse(vbs: string): Program {
