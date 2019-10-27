@@ -87,7 +87,14 @@ export class VBSHelper {
 		return array;
 	}
 
-	public setOrCall(obj: any, param: number) {
-		return Array.isArray(obj) ? obj[param] : obj(param);
+	public getOrCall(obj: any, param?: number) {
+		if (typeof obj === 'function') {
+			return typeof param === 'undefined' ? obj() : obj(param);
+		}
+		if (typeof param === 'undefined') {
+			throw new Error('Cannot return array element for undefined index.');
+		}
+		return obj[param];
 	}
+
 }
