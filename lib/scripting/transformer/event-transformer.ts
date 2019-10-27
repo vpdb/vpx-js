@@ -38,13 +38,11 @@ import { Transformer } from './transformer';
  */
 export class EventTransformer extends Transformer {
 
-	private readonly table: Table;
 	private readonly items: { [p: string]: IScriptable<any> };
 
-	constructor(ast: Program, table: Table) {
+	constructor(ast: Program, items: { [p: string]: IScriptable<any> }) {
 		super(ast);
-		this.table = table;
-		this.items = table.getElements();
+		this.items = items;
 	}
 
 	public transform(): Program {

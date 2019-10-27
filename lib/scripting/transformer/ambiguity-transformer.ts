@@ -18,19 +18,32 @@
  */
 
 import { replace } from 'estraverse';
-import { Expression, Program } from 'estree';
+import { Expression, MemberExpression, Program } from 'estree';
+import { EnumsApi } from '../../vpt/enums';
+import { GlobalApi } from '../../vpt/global-api';
 import { memberExpression } from '../estree';
 import { getOrCall } from '../post-process/helpers';
+import { Stdlib } from '../stdlib';
 import { Transformer } from './transformer';
 
 export class AmbiguityTransformer extends Transformer {
 
-	constructor(ast: Program) {
+	private readonly itemApis: { [p: string]: any };
+	private readonly enumApis: EnumsApi;
+	private readonly globalApi: GlobalApi;
+	private readonly stdlib: Stdlib;
+
+	constructor(ast: Program, itemApis: { [p: string]: any }, enumApis: EnumsApi, globalApi: GlobalApi, stdlib: Stdlib) {
 		super(ast);
+		this.itemApis = itemApis;
+		this.enumApis = enumApis;
+		this.globalApi = globalApi;
+		this.stdlib = stdlib;
 	}
 
 	public transform(): Program {
 		this.transformCallExpressions();
+		//this.transformProperty();
 		return this.ast;
 	}
 
@@ -44,10 +57,14 @@ export class AmbiguityTransformer extends Transformer {
 						return node;
 					}
 
+					// if the parameter is a string, it's not an array index
+					if (node.arguments[0].type === 'Literal' && typeof node.arguments[0].value === 'string') {
+						return node;
+					}
+
 					// we know what `eval()` is..
 					if (node.callee.type === 'Identifier' && node.callee.name === 'eval') {
 						return node;
-						//return VisitorOption.Skip;
 					}
 
 					// if it's an assignment where its left is the node, it's definitely not a function call
@@ -69,7 +86,7 @@ export class AmbiguityTransformer extends Transformer {
 						}
 					}
 
-					// otherwise, we don't know, so use  getOrCall
+					// otherwise, we don't know, so use getOrCall
 					return getOrCall(node.callee as Expression, node.arguments[0] as Expression);
 				}
 				return node;
@@ -77,4 +94,64 @@ export class AmbiguityTransformer extends Transformer {
 		}) as Program;
 	}
 
+	// private transformProperty(): Program {
+	// 	return replace(this.ast, {
+	// 		enter: (node, parent: any) => {
+	// 			if (node.type === 'MemberExpression') {
+	//
+	// 				// if it's an assignment where its left is the node, it's definitely not a function call
+	// 				if (parent && parent.type === 'AssignmentExpression' && node === parent.left) {
+	// 					return node;
+	// 				}
+	//
+	// 				const topMemberName = this.getTopMemberName(node);
+	// 				let obj: any;
+	// 				switch (topMemberName) {
+	// 					case Transformer.GLOBAL_NAME:
+	// 						obj = getValue(this.globalApi, node);
+	// 						break;
+	// 				}
+	// 				if (typeof obj === 'function') {
+	// 					return callExpression(node, []);
+	// 				}
+	//
+	// 				// otherwise we don't know. so eval runtime
+	// 				return node; //return getOrCall(node);
+	// 			}
+	// 			return node;
+	// 		},
+	// 	}) as Program;
+	// }
 }
+
+// function getValue(obj: any, ast: MemberExpression, path: string[] = []): any {
+// 	if (ast.property.type !== 'Identifier') {
+// 		return undefined;
+// 	}
+// 	if (ast.object.type === 'MemberExpression') {
+// 		return getValue(obj, ast.object, [ ast.property.name, ...path ]);
+// 	}
+//
+// 	if (ast.object.type === 'Identifier') {
+// 		return get(obj, path.join('.'));
+// 	}
+// }
+//
+// /**
+//  * Gets the value at path of object
+//  * @see https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_get
+//  * @param obj
+//  * @param path
+//  * @param defaultValue
+//  */
+// function get(obj: any, path: string, defaultValue?: any): any {
+// 	try {
+// 		const result = String.prototype.split.call(path, /[,[\].]+?/)
+// 			.filter(Boolean)
+// 			.reduce((res, key) => (res !== null && res !== undefined) ? res[key] : res, obj);
+// 		return (result === undefined || result === obj) ? defaultValue : result;
+// 	} catch {
+// 		logger().debug('Cannot match path %s at ', path, obj);
+// 		return undefined;
+// 	}
+// }

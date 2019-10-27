@@ -89,7 +89,7 @@ export class VBSHelper {
 
 	public getOrCall(obj: any, param?: number) {
 		if (typeof obj === 'function') {
-			return typeof param === 'undefined' ? obj() : obj(param);
+			return typeof param === 'undefined' ? obj.bind(obj)() : obj.bind(obj)(param);
 		}
 		if (typeof param === 'undefined') {
 			throw new Error('Cannot return array element for undefined index.');
