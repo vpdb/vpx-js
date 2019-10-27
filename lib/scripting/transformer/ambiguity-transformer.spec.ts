@@ -75,24 +75,24 @@ describe('The scripting ambiguity transformer', () => {
 		});
 	});
 
-	describe.skip('with an ambiguous property', () => {
+	describe('with an ambiguous property', () => {
 
-		it('should convert to a function for known members', () => {
+		it('should convert to a function for known global members', () => {
 			const vbs = `BOT = GetBalls\n`;
 			const js = transpiler.transpile(vbs);
 			expect(js).to.equal(`${Transformer.SCOPE_NAME}.BOT = ${Transformer.GLOBAL_NAME}.GetBalls();`);
+		});
+
+		it('should convert to a function for known item members', () => {
+			const vbs = `BOT = Flipper.RotateToEnd\n`;
+			const js = transpiler.transpile(vbs);
+			expect(js).to.equal(`${Transformer.SCOPE_NAME}.BOT = ${Transformer.ITEMS_NAME}.Flipper.RotateToEnd();`);
 		});
 
 		it('should not use the helper for known members', () => {
 			const vbs = `BOT = Name\n`;
 			const js = transpiler.transpile(vbs);
 			expect(js).to.equal(`${Transformer.SCOPE_NAME}.BOT = ${Transformer.GLOBAL_NAME}.Name;`);
-		});
-
-		it('should use the helper for members that are read', () => {
-			const vbs = `BOT = GetBalls\n`;
-			const js = transpiler.transpile(vbs);
-			expect(js).to.equal(`${Transformer.SCOPE_NAME}.BOT = ${Transformer.VBSHELPER_NAME}.getOrCall(${Transformer.GLOBAL_NAME}.GetBalls);`);
 		});
 
 	});

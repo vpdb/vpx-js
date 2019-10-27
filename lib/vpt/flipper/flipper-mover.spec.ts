@@ -50,7 +50,7 @@ describe('The VPinball flipper physics', () => {
 		const flipperState = flipper.getState();
 		const endAngleRad = degToRad(flipper.getFlipperData().endAngle);
 
-		flipper.getApi().rotateToEnd();
+		flipper.getApi().RotateToEnd();
 		simulateCycles(player, 25);
 
 		expect(flipperState.angle).to.equal(endAngleRad);
@@ -63,11 +63,11 @@ describe('The VPinball flipper physics', () => {
 		const startAngleRad = degToRad(flipper.getFlipperData().startAngle);
 
 		// move up
-		flipper.getApi().rotateToEnd();
+		flipper.getApi().RotateToEnd();
 		simulateCycles(player, 25); // hit at 17.012061224193429107ms (at 1000fps)
 
 		// move down again
-		flipper.getApi().rotateToStart();
+		flipper.getApi().RotateToStart();
 		simulateCycles(player, 80);
 
 		expect(flipperState.angle).to.equal(startAngleRad);
@@ -81,11 +81,11 @@ describe('The VPinball flipper physics', () => {
 		const endAngleRad = degToRad(flipper.getFlipperData().endAngle);
 
 		// move up
-		flipper.getApi().rotateToEnd();
+		flipper.getApi().RotateToEnd();
 		simulateCycles(player, 25); // hit at 17.012061224193429107ms (at 1000fps)
 
 		// move down
-		flipper.getApi().rotateToStart();
+		flipper.getApi().RotateToStart();
 		simulateCycles(player, 25);
 
 		// assert it's in the middle
@@ -94,7 +94,7 @@ describe('The VPinball flipper physics', () => {
 		expect(turningAngle).to.be.below(endAngleRad);
 
 		// move up again
-		flipper.getApi().rotateToEnd();
+		flipper.getApi().RotateToEnd();
 		simulateCycles(player, 10);
 
 		// assert it's back up in less than half the time
@@ -105,7 +105,7 @@ describe('The VPinball flipper physics', () => {
 		const flipper = table.flippers.FlipperR;
 
 		// move up
-		flipper.getApi().rotateToEnd();
+		flipper.getApi().RotateToEnd();
 		simulateCycles(player, 25); // hit at 17.012061224193429107ms (at 1000fps)
 
 		const flipperState = flipper.getState();

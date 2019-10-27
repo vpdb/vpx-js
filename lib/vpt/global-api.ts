@@ -27,6 +27,7 @@ import { Ball } from './ball/ball';
 import { Item } from './item';
 import { ItemData } from './item-data';
 import { Table } from './table/table';
+import { BallApi } from './ball/ball-api';
 
 export class GlobalApi extends VbsApi {
 
@@ -107,8 +108,8 @@ export class GlobalApi extends VbsApi {
 		// TODO implement
 	}
 
-	public GetBalls(): Ball[] {
-		return this.player.getBalls();
+	public GetBalls(): BallApi[] {
+		return this.player.getBalls().map(b => b.getApi());
 	}
 
 	public GetElements(): Array<Item<ItemData>> {
