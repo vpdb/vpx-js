@@ -92,7 +92,7 @@ describe('The VPinball flipper collision', () => {
 		player.updatePhysics(1500);
 
 		// now, flip
-		flipper.rotateToEnd();
+		flipper.RotateToEnd();
 		player.updatePhysics(1550);
 
 		// should be moving top right
@@ -121,7 +121,7 @@ describe('The VPinball flipper collision', () => {
 
 		// shoot ball onto flipper and flip at the same time
 		const ball = createBall(player, 420, 1550, 0, 0, 5);
-		flipper.rotateToEnd();
+		flipper.RotateToEnd();
 
 		player.updatePhysics(0);
 		player.updatePhysics(280);
@@ -130,7 +130,7 @@ describe('The VPinball flipper collision', () => {
 		expect(ball.getState().pos.y).to.be.below(830);
 
 		// now, flip
-		flipper.rotateToEnd();
+		flipper.RotateToEnd();
 		player.updatePhysics(1550);
 	});
 

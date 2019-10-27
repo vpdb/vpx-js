@@ -41,8 +41,8 @@ export class Stdlib extends VbsApi {
 		return Math.sqrt(n);
 	}
 
-	public UBound(a: []): number {
-		return a.length;
+	public UBound(a: [], dimension?: number): number { // TODO handle dimension
+		return a.length - 1;
 	}
 
 	protected _getPropertyNames(): string[] {

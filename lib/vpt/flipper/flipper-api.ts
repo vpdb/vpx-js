@@ -110,7 +110,7 @@ export class FlipperApi extends ItemApi<FlipperData> {
 	/**
 	 * Power stroke to hit ball, key/button down/pressed
 	 */
-	public rotateToEnd(): void {
+	public RotateToEnd(): void {
 		this.mover.enableRotateEvent = 1;
 		this.mover.setSolenoidState(true);
 	}
@@ -118,7 +118,7 @@ export class FlipperApi extends ItemApi<FlipperData> {
 	/**
 	 * Return to park, key/button up/released
 	 */
-	public rotateToStart() {
+	public RotateToStart() {
 		this.mover.enableRotateEvent = -1;
 		this.mover.setSolenoidState(false);
 	}
