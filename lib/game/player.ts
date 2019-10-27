@@ -23,59 +23,15 @@ import { Pool } from '../util/object-pool';
 import { Ball } from '../vpt/ball/ball';
 import { ItemState } from '../vpt/item-state';
 import { Table } from '../vpt/table/table';
-import {
-	AssignKey,
-	DIK_1,
-	DIK_4,
-	DIK_5,
-	DIK_D,
-	DIK_EQUALS,
-	DIK_ESCAPE,
-	DIK_F10,
-	DIK_F11,
-	DIK_LALT,
-	DIK_LCONTROL,
-	DIK_LSHIFT,
-	DIK_MINUS,
-	DIK_O,
-	DIK_Q,
-	DIK_RCONTROL,
-	DIK_RETURN,
-	DIK_RSHIFT,
-	DIK_SLASH,
-	DIK_SPACE,
-	DIK_T,
-	DIK_Z,
-} from './key-code';
+import { AssignKey, keyEventToDirectInputKey } from './key-code';
+import { PinInput } from './pin-input';
 import { PlayerPhysics } from './player-physics';
 
 export class Player extends EventEmitter {
 
 	private readonly table: Table;
+	private readonly pinInput: PinInput;
 	private readonly physics: PlayerPhysics;
-	private readonly rgKeys: { [key: number]: number } = {
-		[AssignKey.LeftFlipperKey]: DIK_LCONTROL,
-		[AssignKey.RightFlipperKey]: DIK_RCONTROL,
-		[AssignKey.LeftTiltKey]: DIK_Z,
-		[AssignKey.RightTiltKey]: DIK_SLASH,
-		[AssignKey.CenterTiltKey]: DIK_SPACE,
-		[AssignKey.PlungerKey]: DIK_RETURN,
-		[AssignKey.FrameCount]: DIK_F11,
-		[AssignKey.DBGBalls]: DIK_O,
-		[AssignKey.Debugger]: DIK_D,
-		[AssignKey.AddCreditKey]: DIK_5,
-		[AssignKey.AddCreditKey2]: DIK_4,
-		[AssignKey.StartGameKey]: DIK_1,
-		[AssignKey.MechanicalTilt]: DIK_T,
-		[AssignKey.RightMagnaSave]: DIK_RSHIFT,
-		[AssignKey.LeftMagnaSave]: DIK_LSHIFT,
-		[AssignKey.ExitGame]: DIK_Q,
-		[AssignKey.VolumeUp]: DIK_EQUALS,
-		[AssignKey.VolumeDown]: DIK_MINUS,
-		[AssignKey.LockbarKey]: DIK_LALT,
-		[AssignKey.Enable3D]: DIK_F10,
-		[AssignKey.Escape]: DIK_ESCAPE,
-	};
 
 	get balls() { return this.physics.balls; }
 
@@ -88,7 +44,8 @@ export class Player extends EventEmitter {
 	constructor(table: Table) {
 		super();
 		this.table = table;
-		this.physics = new PlayerPhysics(table);
+		this.pinInput = new PinInput(table, this);
+		this.physics = new PlayerPhysics(table, this.pinInput);
 		this.setupTableElements();
 		this.setupStates();
 	}
@@ -137,6 +94,16 @@ export class Player extends EventEmitter {
 		return changedStates;
 	}
 
+	public onKeyUp(event: { code: string, key: string, ts: number }) {
+		const dkCode = keyEventToDirectInputKey(event);
+		this.pinInput.onKeyUp(dkCode, event.ts);
+	}
+
+	public onKeyDown(event: { code: string, key: string, ts: number }) {
+		const dkCode = keyEventToDirectInputKey(event);
+		this.pinInput.onKeyDown(dkCode, event.ts);
+	}
+
 	public updatePhysics(dTime?: number): number {
 		return this.physics.updatePhysics(dTime);
 	}
@@ -174,7 +141,7 @@ export class Player extends EventEmitter {
 	}
 
 	public getKey(key: AssignKey): number {
-		return this.rgKeys[key];
+		return this.pinInput.rgKeys[key];
 	}
 
 	public getPhysics(): PlayerPhysics {

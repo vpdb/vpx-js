@@ -44,6 +44,7 @@ import { MAX_TIMERS_MSEC_OVERALL } from '../vpt/timer/timer-const';
 import { TimerHit } from '../vpt/timer/timer-hit';
 import { TimerOnOff } from '../vpt/timer/timer-on-off';
 import { Event } from './event';
+import { PinInput } from './pin-input';
 import { IBallCreationPosition, Player } from './player';
 
 const SLOW_MO = 1; // the lower, the slower
@@ -67,6 +68,7 @@ export class PlayerPhysics {
 	public bcTarget?: Vertex3D;
 
 	private readonly table: Table;
+	private readonly pinInput: PinInput;
 	private readonly movers: MoverObject[] = [];
 	private readonly flipperMovers: FlipperMover[] = [];
 
@@ -104,8 +106,9 @@ export class PlayerPhysics {
 	 * Player physics are instantiated in the Player's constructor.
 	 * @param table
 	 */
-	constructor(table: Table) {
+	constructor(table: Table, pinInput: PinInput) {
 		this.table = table;
+		this.pinInput = pinInput;
 	}
 
 	/**
@@ -364,6 +367,8 @@ export class PlayerPhysics {
 			// }
 
 			// update keys, hid, plumb, nudge, timers, etc
+			this.pinInput.processKeys();
+
 			// do the en/disable changes for the timers that piled up
 			for (const changedHitTimer of this.changedHitTimers) {
 				if (changedHitTimer.enabled) { // add the timer?
