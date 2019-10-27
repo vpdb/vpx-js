@@ -154,7 +154,7 @@ export const DIK_RWIN = 0xDC;    /* Right Windows key */
  *
  * @param event Key pressed by the user
  */
-export function keyEventToDirectInputKey(event: KeyboardEvent) {
+export function keyEventToDirectInputKey(event: { key: string, code: string }): number {
 	const codeDi = KEY_JS2DI[event.key.toLowerCase()];
 	if (codeDi) {
 		return codeDi;
@@ -206,6 +206,7 @@ export function keyEventToDirectInputKey(event: KeyboardEvent) {
 		case '/': return DIK_SLASH;
 		case 'enter': return DIK_RETURN;
 	}
+	return 0;
 }
 
 /**
