@@ -29,16 +29,20 @@ export class Stdlib extends VbsApi {
 
 	get Math() { return this.math; }
 
-	public Csng(n: number) {
+	public Csng(n: number): number {
 		return f4(n);
 	}
 
-	public Int(n: number) {
+	public Int(n: number): number {
 		return Math.floor(n);
 	}
 
-	public Sqr(n: number) {
+	public Sqr(n: number): number {
 		return Math.sqrt(n);
+	}
+
+	public UBound(a: []): number {
+		return a.length;
 	}
 
 	protected _getPropertyNames(): string[] {

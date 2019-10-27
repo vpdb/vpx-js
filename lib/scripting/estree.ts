@@ -190,12 +190,12 @@ export function logicalExpression(operator: LogicalOperator, left: Expression, r
 	};
 }
 
-export function memberExpression(object: Expression | Super, property: Expression): MemberExpression {
+export function memberExpression(object: Expression | Super, property: Expression, computed = false): MemberExpression {
 	return {
 		type: 'MemberExpression',
 		object,
 		property,
-		computed: false,
+		computed: computed,
 	};
 }
 
