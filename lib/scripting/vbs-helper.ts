@@ -92,7 +92,7 @@ export class VBSHelper {
 			return typeof param === 'undefined' ? obj.bind(obj)() : obj.bind(obj)(param);
 		}
 		if (typeof param === 'undefined') {
-			throw new Error('Cannot return array element for undefined index.');
+			return obj;
 		}
 		return obj[param];
 	}

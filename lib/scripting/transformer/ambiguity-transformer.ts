@@ -100,15 +100,16 @@ export class AmbiguityTransformer extends Transformer {
 				if (node.type === 'MemberExpression') {
 
 					// if it's already a call, ignore
-					if (parent && parent.type === 'CallExpression') {
+					if (parent && parent.type === 'CallExpression' && parent.callee === node) {
 						return node;
 					}
 
 					// if it's an assignment where its left is the node, it's definitely not a function call
-					if (parent && parent.type === 'AssignmentExpression' && node === parent.left) {
+					if (parent && (parent.type === 'AssignmentExpression' || parent.type === 'ForOfStatement') && node === parent.left) {
 						return node;
 					}
 
+					// now, if it's a prop of something we already know, check if it's a function.
 					const topMemberName = this.getTopMemberName(node);
 					let api: any;
 					switch (topMemberName) {
@@ -130,8 +131,16 @@ export class AmbiguityTransformer extends Transformer {
 						return callExpression(node, []);
 					}
 
+					// already replaced?
+					if (parent && parent.type === 'CallExpression' && parent.callee.type === 'MemberExpression' && parent.callee.object.name === Transformer.VBSHELPER_NAME) {
+						return node;
+					}
+
+					// todo check scope
+					// todo check items we now have `__vbsHelper.getOrCall(__items.ScoreText).Visible = false;`
+
 					// otherwise we don't know. so eval runtime
-					return node; //return getOrCall(node);
+					return getOrCall(node);
 				}
 				return node;
 			},
@@ -139,6 +148,12 @@ export class AmbiguityTransformer extends Transformer {
 	}
 }
 
+/**
+ * Reads the value from an object where an AST points to.
+ * @param obj Object
+ * @param ast AST
+ * @param path Recursively populated path
+ */
 function getValue(obj: any, ast: MemberExpression, path: string[] = []): any {
 	if (ast.property.type !== 'Identifier') {
 		return undefined;
@@ -146,7 +161,6 @@ function getValue(obj: any, ast: MemberExpression, path: string[] = []): any {
 	if (ast.object.type === 'MemberExpression') {
 		return getValue(obj, ast.object, [ ast.property.name, ...path ]);
 	}
-
 	if (ast.object.type === 'Identifier') {
 		let o = obj;
 		path = [ ast.property.name, ...path ];
@@ -160,22 +174,3 @@ function getValue(obj: any, ast: MemberExpression, path: string[] = []): any {
 	}
 	return undefined;
 }
-
-// /**
-//  * Gets the value at path of object
-//  * @see https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_get
-//  * @param obj
-//  * @param path
-//  * @param defaultValue
-//  */
-// function get(obj: any, path: string, defaultValue?: any): any {
-// 	try {
-// 		const result = String.prototype.split.call(path, /[,[\].]+?/)
-// 			.filter(Boolean)
-// 			.reduce((res, key) => (res !== null && res !== undefined) ? res[key] : res, obj);
-// 		return (result === undefined || result === obj) ? defaultValue : result;
-// 	} catch {
-// 		logger().debug('Cannot match path %s at ', path, obj);
-// 		return undefined;
-// 	}
-// }
