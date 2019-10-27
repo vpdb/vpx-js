@@ -33,6 +33,7 @@ import { ScopeTransformer } from './transformer/scope-transformer';
 import { WrapTransformer } from './transformer/wrap-transformer';
 import { VBSHelper } from './vbs-helper';
 import vbsGrammar from './vbscript';
+import { CallArrayTransformer } from './transformer/call-array-transformer';
 
 //self.escodegen = require('escodegen');
 
@@ -57,6 +58,7 @@ export class Transpiler {
 		ast = new EventTransformer(ast, this.table).transform();
 		ast = new ReferenceTransformer(ast, this.table, this.player).transform();
 		ast = new ScopeTransformer(ast).transform();
+		ast = new CallArrayTransformer(ast).transform();
 		ast = new WrapTransformer(ast).transform(globalFunction, globalObject);
 
 		logger().debug('AST:', ast);
