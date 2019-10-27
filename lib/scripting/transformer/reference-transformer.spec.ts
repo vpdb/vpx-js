@@ -90,13 +90,13 @@ describe('The scripting reference transformer', () => {
 	it('should convert a stdlib call to correct case', () => {
 		const vbs = `x = INT(1.2)\n`;
 		const js = transform(vbs, table, player);
-		expect(js).to.equal(`x = ${Transformer.VBSHELPER_NAME}.setOrCall(${Transformer.STDLIB_NAME}.Int, 1.2);`);
+		expect(js).to.equal(`x = ${Transformer.STDLIB_NAME}.Int(1.2);`);
 	});
 
 	it('should convert a stdlib property call to correct case', () => {
 		const vbs = `x = Math.PoW(12)\n`;
 		const js = transform(vbs, table, player);
-		expect(js).to.equal(`x = ${Transformer.VBSHELPER_NAME}.setOrCall(${Transformer.STDLIB_NAME}.Math.pow, 12);`);
+		expect(js).to.equal(`x = ${Transformer.STDLIB_NAME}.Math.pow(12);`);
 	});
 
 	it('should convert an enum name to correct case', () => {

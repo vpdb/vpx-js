@@ -26,6 +26,7 @@ import { EnumsApi } from '../vpt/enums';
 import { GlobalApi } from '../vpt/global-api';
 import { Table } from '../vpt/table/table';
 import { Stdlib } from './stdlib';
+import { AmbiguityTransformer } from './transformer/ambiguity-transformer';
 import { CleanupTransformer } from './transformer/cleanup-transformer';
 import { EventTransformer } from './transformer/event-transformer';
 import { ReferenceTransformer } from './transformer/reference-transformer';
@@ -33,7 +34,6 @@ import { ScopeTransformer } from './transformer/scope-transformer';
 import { WrapTransformer } from './transformer/wrap-transformer';
 import { VBSHelper } from './vbs-helper';
 import vbsGrammar from './vbscript';
-import { CallArrayTransformer } from './transformer/call-array-transformer';
 
 //self.escodegen = require('escodegen');
 
@@ -58,7 +58,7 @@ export class Transpiler {
 		ast = new EventTransformer(ast, this.table).transform();
 		ast = new ReferenceTransformer(ast, this.table, this.player).transform();
 		ast = new ScopeTransformer(ast).transform();
-		ast = new CallArrayTransformer(ast).transform();
+		ast = new AmbiguityTransformer(ast).transform();
 		ast = new WrapTransformer(ast).transform(globalFunction, globalObject);
 
 		logger().debug('AST:', ast);

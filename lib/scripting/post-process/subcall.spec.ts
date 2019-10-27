@@ -80,7 +80,7 @@ describe('The VBScript transpiler - Subcall', () => {
 		const vbs = `PlaySound SoundFX("fx_flipperup",DOFFlippers), 0, .67, AudioPan(RightFlipper), 0.05,0,0,1,AudioFade(RightFlipper)\n`;
 		const js = vbsToJs(vbs);
 		expect(js).to.equal(
-			`PlaySound(SoundFX('fx_flipperup', DOFFlippers), 0, 0.67, ${Transformer.VBSHELPER_NAME}.setOrCall(AudioPan, RightFlipper), 0.05, 0, 0, 1, ${Transformer.VBSHELPER_NAME}.setOrCall(AudioFade, RightFlipper));`,
+			`PlaySound(SoundFX('fx_flipperup', DOFFlippers), 0, 0.67, AudioPan(RightFlipper), 0.05, 0, 0, 1, AudioFade(RightFlipper));`,
 		);
 	});
 
