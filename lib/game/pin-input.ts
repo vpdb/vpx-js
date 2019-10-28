@@ -109,6 +109,7 @@ export class PinInput {
 					this.fireKeyEvent((input.dwData & 0x80) ? Event.GameEventsKeyDown : Event.GameEventsKeyUp, input.dwOfs);
 				}
 			}
+			DirectInputDeviceObjectData.release(input);
 			input = this.getTail();
 		}
 	}
