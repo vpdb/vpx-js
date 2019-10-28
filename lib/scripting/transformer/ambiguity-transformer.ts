@@ -73,7 +73,7 @@ export class AmbiguityTransformer extends Transformer {
 			enter: (node, parent: any) => {
 				if (node.type === 'CallExpression') {
 
-					// if there's more than one argument, it's definitely for accessing the array
+					// if there's more than one argument, it's definitely a function
 					if (!node.arguments || node.arguments.length !== 1) {
 						return node;
 					}
@@ -90,11 +90,13 @@ export class AmbiguityTransformer extends Transformer {
 
 					// if it's an assignment where its left is the node, it's definitely not a function call
 					if (parent && parent.type === 'AssignmentExpression' && node === parent.left) {
-						return memberExpression(
+						const arrayNode = memberExpression(
 							node.callee,
 							node.arguments[0] as Expression,
 							true,
-						);
+						) as any;
+						arrayNode.__isProperty = true;
+						return arrayNode;
 					}
 
 					// if it's a member, then check if we exclude objects we know don't contain arrays
@@ -130,6 +132,11 @@ export class AmbiguityTransformer extends Transformer {
 						return node;
 					}
 
+					// if we previously determined that this isn't a function, return.
+					if ((parent as any).__isProperty) {
+						return node;
+					}
+
 					// now, if it's a prop of something we already know, check if it's a function.
 					const topMemberName = this.getTopMemberName(node);
 					let api: any;
@@ -148,17 +155,19 @@ export class AmbiguityTransformer extends Transformer {
 					}
 
 					const obj = getValue(api, node);
+					// if it's a function, render it as such
 					if (typeof obj === 'function') {
 						return callExpression(node, []);
+					}
+					// otherwise, if we got something, that means it's a property
+					if (typeof obj !== 'undefined') {
+						return node;
 					}
 
 					// already replaced?
 					if (parent && parent.type === 'CallExpression' && parent.callee.type === 'MemberExpression' && parent.callee.object.name === Transformer.VBSHELPER_NAME) {
 						return node;
 					}
-
-					// todo check scope
-					// todo check items we now have `__vbsHelper.getOrCall(__items.ScoreText).Visible = false;`
 
 					// otherwise we don't know. so eval runtime
 					return getOrCall(node);
@@ -176,6 +185,9 @@ export class AmbiguityTransformer extends Transformer {
  * @param path Recursively populated path
  */
 function getValue(obj: any, ast: MemberExpression, path: string[] = []): any {
+	if (typeof obj === 'undefined') {
+		return undefined;
+	}
 	if (ast.property.type !== 'Identifier') {
 		return undefined;
 	}
