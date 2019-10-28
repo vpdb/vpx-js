@@ -151,7 +151,12 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		if (!obj) {
 			return;
 		}
-		obj.visible = isVisible;
+		obj.visible = !!isVisible;
+		if (obj.children && obj.children.length > 0) {
+			for (const child of obj.children) {
+				child.visible = !!isVisible;
+			}
+		}
 	}
 
 	public applyMeshToNode(mesh: Mesh, obj: Object3D): void {
