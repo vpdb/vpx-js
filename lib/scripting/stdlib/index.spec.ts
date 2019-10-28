@@ -65,6 +65,15 @@ describe('The VBScript stdlib', () => {
 		expect(scope.result).to.equal(3);
 	});
 
+	it('should provide the UBound function', () => {
+		const scope = {} as any;
+		const vbs = `dim arr(9)\nresult = UBound(arr)`;
+		const transpiler = new Transpiler(table, player);
+		transpiler.execute(vbs, scope, 'global');
+
+		expect(scope.result).to.equal(9);
+	});
+
 	it('should provide the Math object', () => {
 		const scope = {} as any;
 		const vbs = `result = math`;
