@@ -58,7 +58,7 @@ describe('The VBScript transpiler', () => {
 		const Spy = sinon.spy();
 		const vbs = `Spy\n`;                                 // that's our spy, in VBScript!
 		const transpiler = new Transpiler(table, player);
-		transpiler.execute(vbs, 'global', { Spy });       // this should execute the spy
+		transpiler.execute(vbs, { Spy }, 'global');       // this should execute the spy
 
 		expect(Spy).to.have.been.calledOnce;
 	});
@@ -67,7 +67,7 @@ describe('The VBScript transpiler', () => {
 		const scope = {} as any;
 		const vbs = `MyVariable = 10\nValueRead = mYvArIAblE`;
 		const transpiler = new Transpiler(table, player);
-		transpiler.execute(vbs, 'global', scope);
+		transpiler.execute(vbs, scope, 'global');
 
 		expect(scope.ValueRead).to.equal(10);
 	});
@@ -76,7 +76,7 @@ describe('The VBScript transpiler', () => {
 		const scope = {} as any;
 		const vbs = `MyVariable = 10\nmYvArIAblE = 12`;
 		const transpiler = new Transpiler(table, player);
-		transpiler.execute(vbs, 'global', scope);
+		transpiler.execute(vbs, scope, 'global');
 
 		expect(scope.MyVariable).to.equal(12);
 	});
@@ -85,7 +85,7 @@ describe('The VBScript transpiler', () => {
 		const scope = {} as any;
 		const vbs = `Sub Abc\nMyVariable = 13\nEnd Sub\naBC`;
 		const transpiler = new Transpiler(table, player);
-		transpiler.execute(vbs, 'global', scope);
+		transpiler.execute(vbs, scope, 'global');
 
 		expect(scope.MyVariable).to.equal(13);
 	});

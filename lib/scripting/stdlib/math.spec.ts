@@ -41,7 +41,7 @@ describe('The VBScript math stdlib', () => {
 		const scope = {} as any;
 		const vbs = `result = math.pow(2, 10)`;
 		const transpiler = new Transpiler(table, player);
-		transpiler.execute(vbs, 'global', scope);
+		transpiler.execute(vbs, scope, 'global');
 
 		expect(scope.result).to.equal(1024);
 	});

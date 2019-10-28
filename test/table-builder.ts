@@ -59,6 +59,11 @@ export class TableBuilder {
 		this.table.data.name = `Table${TableBuilder.tableItem++}`;
 	}
 
+	public withTableScript(vbs: string): this {
+		this.table.tableScript = vbs;
+		return this;
+	}
+
 	public addBumper(name: string, attrs: any = {}): this {
 		const data = new BumperData(`GameItem${this.gameItem++}`);
 		data.name = name;
@@ -253,7 +258,10 @@ export class TableBuilder {
 		return this;
 	}
 
-	public build(): Table {
+	public build(name?: string): Table {
+		if (name) {
+			this.table.data!.name = name;
+		}
 		return new Table(new TableLoader(), this.table);
 	}
 }

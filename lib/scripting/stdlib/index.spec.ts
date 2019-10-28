@@ -42,7 +42,7 @@ describe('The VBScript stdlib', () => {
 		const scope = {} as any;
 		const vbs = `result = csng(1.3)`;
 		const transpiler = new Transpiler(table, player);
-		transpiler.execute(vbs, 'global', scope);
+		transpiler.execute(vbs, scope, 'global');
 
 		expect(scope.result).to.equal(f4(1.3));
 	});
@@ -51,7 +51,7 @@ describe('The VBScript stdlib', () => {
 		const scope = {} as any;
 		const vbs = `result = Int(1.3)`;
 		const transpiler = new Transpiler(table, player);
-		transpiler.execute(vbs, 'global', scope);
+		transpiler.execute(vbs, scope, 'global');
 
 		expect(scope.result).to.equal(1);
 	});
@@ -60,7 +60,7 @@ describe('The VBScript stdlib', () => {
 		const scope = {} as any;
 		const vbs = `result = sqr(9)`;
 		const transpiler = new Transpiler(table, player);
-		transpiler.execute(vbs, 'global', scope);
+		transpiler.execute(vbs, scope, 'global');
 
 		expect(scope.result).to.equal(3);
 	});
@@ -69,7 +69,7 @@ describe('The VBScript stdlib', () => {
 		const scope = {} as any;
 		const vbs = `result = math`;
 		const transpiler = new Transpiler(table, player);
-		transpiler.execute(vbs, 'global', scope);
+		transpiler.execute(vbs, scope, 'global');
 
 		expect(scope.result).to.be.ok;
 	});

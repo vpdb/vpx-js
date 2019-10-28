@@ -102,29 +102,13 @@ export class PinInput {
 			if (input.dwSequence === APP_KEYBOARD) {
 
 				// Normal game keys:
-				if (input.dwOfs === this.rgKeys[AssignKey.FrameCount]) {
-					if ((input.dwData & 0x80) !== 0) {
-						//this.player.toggleFps();
-					}
+				if (input.dwOfs !== this.rgKeys[AssignKey.FrameCount]
+					&& input.dwOfs !== this.rgKeys[AssignKey.Enable3D]
+					&& input.dwOfs !== this.rgKeys[AssignKey.DBGBalls]) {
 
-				} else if (input.dwOfs === this.rgKeys[AssignKey.Enable3D]) {
-					if ((input.dwData & 0x80) !== 0) {
-						//this.player.stereo3Denabled = !this.player.stereo3Denabled;
-					}
-
-				} else if (input.dwOfs === this.rgKeys[AssignKey.DBGBalls]) {
-
-					// Activate on edge only.
-					if ((input.dwData & 0x80) !== 0) {
-						// this.player.debugBalls = !(this.player.debugBalls);
-						// this.player.toggleDebugBalls = true;
-					}
-
-				} else {
 					this.fireKeyEvent((input.dwData & 0x80) ? Event.GameEventsKeyDown : Event.GameEventsKeyUp, input.dwOfs);
 				}
 			}
-
 			input = this.getTail();
 		}
 	}
