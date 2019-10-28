@@ -50,11 +50,11 @@ export class Player extends EventEmitter {
 		this.setupStates();
 	}
 
-	public init(): this {
+	public init(scope = {}): this {
 		this.table.setupCollections();
 		this.physics.init();
 		this.table.prepareToPlay();
-		this.table.runTableScript(this);
+		this.table.runTableScript(this, scope);
 		this.table.broadcastInit();
 		return this;
 	}

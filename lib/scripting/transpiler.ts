@@ -74,7 +74,7 @@ export class Transpiler {
 		return js;
 	}
 
-	public execute(vbs: string, globalObject?: string, globalScope: any = {}) {
+	public execute(vbs: string, globalScope: any, globalObject?: string) {
 
 		globalObject = globalObject || (typeof window !== 'undefined' ? 'window' : (typeof self !== 'undefined' ? 'self' : 'global'));
 		const js = this.transpile(vbs, 'play', globalObject);
