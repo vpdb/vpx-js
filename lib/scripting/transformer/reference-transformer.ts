@@ -23,7 +23,7 @@ import { logger } from '../../util/logger';
 import { EnumsApi } from '../../vpt/enums';
 import { GlobalApi } from '../../vpt/global-api';
 import { Table } from '../../vpt/table/table';
-import { callExpression, identifier, memberExpression } from '../estree';
+import { awaitExpression, callExpression, identifier, memberExpression } from '../estree';
 import { Stdlib } from '../stdlib';
 import { Transformer } from './transformer';
 
@@ -205,6 +205,7 @@ export class ReferenceTransformer extends Transformer {
 							),
 							[ node.arguments[0] as Expression ],
 						);
+						return awaitExpression(node);
 					}
 				}
 				return node;

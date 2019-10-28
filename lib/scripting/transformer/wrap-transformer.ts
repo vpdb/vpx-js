@@ -17,11 +17,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { replace, traverse } from 'estraverse';
 import { Program, Statement } from 'estree';
 import {
 	arrowFunctionExpression,
 	assignmentExpression,
+	awaitExpression,
 	blockStatement,
+	callExpression,
 	expressionStatement,
 	identifier,
 	memberExpression,
@@ -43,6 +46,7 @@ export class WrapTransformer extends Transformer {
 	}
 
 	public transform(mainFunctionName?: string, globalObjectName?: string): Program {
+		this.makeFunctionsAsync();
 		if (!mainFunctionName) {
 			return this.ast;
 		}
@@ -63,8 +67,40 @@ export class WrapTransformer extends Transformer {
 							identifier(Transformer.STDLIB_NAME),
 							identifier(Transformer.VBSHELPER_NAME),
 						],
+						true,
 					),
 				)),
 		]);
+	}
+
+	public transformAsync(): Program {
+		this.makeFunctionsAsync();
+		return program([
+			expressionStatement(
+				callExpression(
+					arrowFunctionExpression(
+						false,
+						blockStatement(this.ast.body as Statement[]),
+						[],
+						true,
+					),
+					[],
+				),
+			),
+		]);
+	}
+
+	private makeFunctionsAsync() {
+		replace(this.ast, {
+			enter: (node, parent) => {
+				if (node.type === 'FunctionExpression' || node.type === 'ArrowFunctionExpression') {
+					node.async = true;
+				}
+				if (node.type === 'CallExpression' && parent && parent.type !== 'AwaitExpression') {
+					return awaitExpression(node);
+				}
+				return node;
+			},
+		});
 	}
 }

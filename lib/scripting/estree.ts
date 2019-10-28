@@ -21,7 +21,7 @@ import {
 	ArrayExpression,
 	ArrowFunctionExpression,
 	AssignmentExpression,
-	AssignmentOperator,
+	AssignmentOperator, AwaitExpression,
 	BinaryExpression,
 	BinaryOperator,
 	BlockStatement,
@@ -125,12 +125,13 @@ export function arrayExpression(elements: Expression[] | SpreadElement[]): Array
 	};
 }
 
-export function arrowFunctionExpression(expression: boolean, body: BlockStatement | Expression, params: Pattern[] = []): ArrowFunctionExpression {
+export function arrowFunctionExpression(expression: boolean, body: BlockStatement | Expression, params: Pattern[] = [], isAsync: boolean = false): ArrowFunctionExpression {
 	return {
 		type: 'ArrowFunctionExpression',
 		expression,
 		body,
 		params,
+		async: isAsync,
 	};
 }
 
@@ -161,6 +162,13 @@ export function callExpression(callee: Expression, args: Expression[] | SpreadEl
 		type: 'CallExpression',
 		callee,
 		arguments: args,
+	};
+}
+
+export function awaitExpression(argument: Expression): AwaitExpression {
+	return {
+		type: 'AwaitExpression',
+		argument,
 	};
 }
 
@@ -195,7 +203,7 @@ export function memberExpression(object: Expression | Super, property: Expressio
 		type: 'MemberExpression',
 		object,
 		property,
-		computed: computed,
+		computed,
 	};
 }
 
