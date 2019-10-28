@@ -89,7 +89,9 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		light.name = `light:${lightData.getName()}`;
 		light.updateMatrixWorld();
 		light.position.set(lightData.center.x, lightData.center.y, -10);
-		if (ThreeRenderApi.SHADOWS) {
+		const isSlingshotLight = ((lightData.center.x > 150 && lightData.center.x < 250) || (lightData.center.x > 600 && lightData.center.x < 750))
+			&& (lightData.center.y > 1400 && lightData.center.y < 1650);
+		if (ThreeRenderApi.SHADOWS && isSlingshotLight) {
 			light.castShadow = true;
 			light.shadow.bias = -0.001;
 			light.shadow.radius = 12;
