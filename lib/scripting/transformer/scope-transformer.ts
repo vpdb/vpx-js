@@ -31,6 +31,21 @@ import { Transformer } from './transformer';
 
 const { analyze } = require('escope');
 
+/**
+ * In VBScript, running `ExecuteGlobal()` is like including code directly where
+ * that statement was called. For example, a variable declared in the executed
+ * code is persisted into the calling context.
+ *
+ * In JavaScript when using the `eval()` method, this only applies when strict
+ * mode is *not* enabled. However, we would like to support strict mode.
+ *
+ * This transformer wraps all root execution context variables into an object.
+ * Evaluated scripts will use the same object name and thus persist new
+ * variables into the calling context.
+ *
+ * A nice side-effect of this is that in tests, we can supply an existing scope
+ * and assert against it afterwards.
+ */
 export class ScopeTransformer extends Transformer {
 
 	private readonly scopeManager: any;
@@ -49,6 +64,12 @@ export class ScopeTransformer extends Transformer {
 		return this.ast;
 	}
 
+	/**
+	 * Using `escope`, we acquire the current scope for each node and attach it
+	 * to the node for later usage.
+	 *
+	 * This is a separate run because it's done when *leaving* the node.
+	 */
 	private addScope(): void {
 		let currentScope = this.rootScope;
 		traverse(this.ast, {
@@ -66,14 +87,21 @@ export class ScopeTransformer extends Transformer {
 		});
 	}
 
+	/**
+	 * Replaces declarations with member assignments.
+	 *
+	 * This checks whether the node's scope is the same as the root scope, and
+	 * replaces it with a member assignment of the scope object if that's the
+	 * case.
+	 */
 	private replaceDeclarations(): void {
 		replace(this.ast, {
 			enter: (node, parent) => {
-				const isLoopVarDecl = parent && /^For.*Statement$/.test(parent.type);
 				const isRootScope = (node as any).__scope === this.rootScope;
 				if (isRootScope) {
 
-					// variables
+					// variable declarations
+					const isLoopVarDecl = parent && /^For.*Statement$/.test(parent.type);
 					if (node.type === 'VariableDeclaration' && !isLoopVarDecl) {
 						const declarationNode = node as VariableDeclaration;
 						const nodes = [];
@@ -99,12 +127,36 @@ export class ScopeTransformer extends Transformer {
 							),
 						);
 					}
+
+					// TODO class declarations (and probably others)
 				}
 				return node;
 			},
 		});
 	}
 
+	/**
+	 * This replaces usages of root scope identifiers with members of the
+	 * scope object.
+	 *
+	 * Note that we're getting a lot more identifiers than the declarations
+	 * we've replaced above, so we need to know what we need to replace. We do
+	 * that by looking at the identifier and making sure it's declared in the
+	 * root scope.
+	 *
+	 * However, that won't cut it, because an `ExecuteGlobal`ed script might
+	 * have declared it, and we only know that at runtime. So, in order to
+	 * assume that an identifier actually *was* declared in such an included
+	 * script, we look at the other references and make sure it's not one of
+	 * them.
+	 *
+	 * That's relatively easy, because the other reference are already wrapped
+	 * into their respective objects by the {@link ReferenceTransformer}.
+	 *
+	 * So the condition to replace is:
+	 *    1. Is in root scope or has unknown scope
+	 *    2. Is *not* part of the "known" objects
+	 */
 	private replaceUsages() {
 		replace(this.ast, {
 			enter: (node, parent: any) => {

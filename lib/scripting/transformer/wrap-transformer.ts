@@ -29,6 +29,13 @@ import {
 } from '../estree';
 import { Transformer } from './transformer';
 
+/**
+ * This transformer wraps the program into a function that provides the
+ * different name spaces as objects.
+ *
+ * @see ReferenceTransformer
+ * @see ScopeTransformer
+ */
 export class WrapTransformer extends Transformer {
 
 	constructor(ast: Program) {
@@ -43,10 +50,7 @@ export class WrapTransformer extends Transformer {
 			expressionStatement(
 				assignmentExpression(
 					globalObjectName
-						? memberExpression(
-						identifier(globalObjectName),
-						identifier(mainFunctionName),
-						)
+						? memberExpression(identifier(globalObjectName), identifier(mainFunctionName))
 						: identifier(mainFunctionName),
 					'=',
 					arrowFunctionExpression(false,

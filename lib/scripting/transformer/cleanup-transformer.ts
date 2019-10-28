@@ -21,6 +21,11 @@ import { replace, VisitorOption } from 'estraverse';
 import { Program } from 'estree';
 import { Transformer } from './transformer';
 
+/**
+ * This transformer just gets rid of empty statements, since comments are
+ * stripped by `eval()` and otherwise the script in in devtools ends up with
+ * endless `;` lines.
+ */
 export class CleanupTransformer extends Transformer {
 
 	constructor(ast: Program) {

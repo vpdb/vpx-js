@@ -32,15 +32,23 @@ import { Transformer } from './transformer';
  * decided to properly manage the scope in order not to pollute the global
  * namespace.
  *
- * This transformer wraps the table script into a function, and provides
- * reference to the following objects:
- *   - items: all table elements, key is name, value is the API implementation
- *   - enums: enum values used in Visual Pinball
- *   - global: reference to the global API
+ * This transformer goes through all variables and determines to which of the
+ * following name spaces it belongs to (in that order):
+ *   - items: table elements
+ *   - enums: enum values exposed in Visual Pinball's VBScript API
  *   - stdlib: the VBScript Standard Library implemented in JavaScript
- *   - vbsHelper: a bunch of utils for VBScript syntax not available in JavaScript
- * The transformer then goes through all identifiers and changes the reference to
- * the provided objects if available.
+ *   - global: reference to Visual Pinball's global API
+ *   - eval: `ExecuteGlobal()` calls are directly handled here because they
+ *     cannot be wrapped into another method without losing the current
+ *     execution context.
+ *
+ * To match a namespace, the transformer looks at the actual values of each
+ * name space. That's possible because at compile time, the table and the
+ * player are already set up and thus accessible.
+ *
+ * To match an object or property, the transformer uses a special API that
+ * allows matching in a case-insensitive way. When matched, the resulting
+ * identifier is properly cased.
  *
  * Examples:
  *   - `BallRelease.CreateBall()` would become `__items.BallRelease.CreateBall()`.
@@ -188,7 +196,7 @@ export class ReferenceTransformer extends Transformer {
 		replace(ast, {
 			enter: (node, parent: any) => {
 				if (node.type === 'CallExpression') {
-					if (node.callee.type === 'Identifier' && node.callee.name === 'ExecuteGlobal') {
+					if (node.callee.type === 'Identifier' && node.callee.name.toLowerCase() === 'executeglobal') {
 						node.callee.name = 'eval';
 						node.arguments[0] = callExpression(
 							memberExpression(

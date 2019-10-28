@@ -26,6 +26,27 @@ import { getOrCall } from '../post-process/helpers';
 import { Stdlib } from '../stdlib';
 import { Transformer } from './transformer';
 
+/**
+ * This transformer handles two cases where VBScript's syntax is ambiguous
+ * without context.
+ *
+ * 1. Call expressions that potentially are array accessors
+ *
+ *   In VBScript you can't tell if `someIdentifier(1)` is a function call with
+ *   parameter `1` or access to the 2nd element of the `someIdentifier` array.
+ *
+ *   The {@link #transformCallExpressions()} method replaces ambiguous
+ *   occurrences with a function call that determines this at runtime.
+ *
+ * 2. Property accessors that potentially are function calls
+ *
+ *   If a sub of an object has no parameters in VBScript, it's not clear at
+ *   compile time if it's a sub or a property. For example, `foo.Bar` could be
+ *   an access to `foo`'s `Bar` property or a call to its `Bar` sub.
+ *
+ *   The {@link #transformProperty()} method replaces ambiguous occurrences with
+ *   a function call that determines this at runtime.
+ */
 export class AmbiguityTransformer extends Transformer {
 
 	private readonly itemApis: { [p: string]: any };
