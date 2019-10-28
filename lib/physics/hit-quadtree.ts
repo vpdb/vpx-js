@@ -168,9 +168,8 @@ export class HitQuadtree {
 			}
 		}
 
-		// originally: m_vho.swap(vRemain);
-		const vho = this.vho.splice(0, this.vho.length, ...vRemain); // replace vho content with vRemain content
-		vRemain.splice(0, vRemain.length, ...vho);                   // replace vRemain content with vho content
+		// originally: m_vho.swap(vRemain); - but vRemain isn't used below.
+		this.vho = vRemain;
 
 		// check if at least two nodes feature objects, otherwise don't bother subdividing further
 		let countEmpty = (this.vho.length === 0) ? 1 : 0;
