@@ -28,7 +28,7 @@ import { Transformer } from './transformer';
 chai.use(require('sinon-chai'));
 
 /* tslint:disable:no-unused-expression */
-describe.skip('The scripting ambiguity transformer', () => {
+describe('The scripting ambiguity transformer', () => {
 
 	let table: Table;
 	let player: Player;
@@ -57,7 +57,7 @@ describe.skip('The scripting ambiguity transformer', () => {
 		it('should not use the helper for known calls', () => {
 			const vbs = `x = UBound(X)\n`;
 			const js = transpiler.transpile(vbs);
-			expect(js).to.equal(`${Transformer.SCOPE_NAME}.x = ${Transformer.STDLIB_NAME}.UBound(${Transformer.SCOPE_NAME}.X);`);
+			expect(js).to.equal(`${Transformer.SCOPE_NAME}.x = ${Transformer.STDLIB_NAME}.UBound(${Transformer.VBSHELPER_NAME}.getOrCall(${Transformer.SCOPE_NAME}.X));`);
 		});
 
 		it('should not use the helper string parameters', () => {
@@ -95,10 +95,22 @@ describe.skip('The scripting ambiguity transformer', () => {
 			expect(js).to.equal(`${Transformer.SCOPE_NAME}.BOT = ${Transformer.GLOBAL_NAME}.Name;`);
 		});
 
+		it('should not use the helper for enums', () => {
+			const vbs = `shape = TriggerShape.TriggerWireA\n`;
+			const js = transpiler.transpile(vbs);
+			expect(js).to.equal(`${Transformer.SCOPE_NAME}.shape = ${Transformer.ENUMS_NAME}.TriggerShape.TriggerWireA;`);
+		});
+
 		it('should not use the helper left-hand side of a loop', () => {
 			const vbs = `For each xx in GI:xx.State = 1: Next\n`;
 			const js = transpiler.transpile(vbs);
-			expect(js).to.equal(`for (${Transformer.SCOPE_NAME}.xx of ${Transformer.VBSHELPER_NAME}.getOrCall(${Transformer.SCOPE_NAME}.GI)) {    ${Transformer.VBSHELPER_NAME}.getOrCall(${Transformer.SCOPE_NAME}.xx).State = 1;}`);
+			expect(js).to.equal(`for (${Transformer.SCOPE_NAME}.xx of ${Transformer.VBSHELPER_NAME}.getOrCall(${Transformer.SCOPE_NAME}.GI)) {\n    ${Transformer.VBSHELPER_NAME}.getOrCall(${Transformer.SCOPE_NAME}.xx).State = 1;\n}`);
+		});
+
+		it('should not use the helper for a property declared in a local scope', () => {
+			const vbs = `sub test\ndim prop\nx = prop\nend sub\n`;
+			const js = transpiler.transpile(vbs);
+			expect(js).to.equal(`__scope.test = function () {\n    let prop;\n    ${Transformer.SCOPE_NAME}.x = prop;\n};`);
 		});
 
 	});
