@@ -17,10 +17,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { controller } from './controller.vbs';
-import { wpc } from './wpc.vbs';
+import controller from '../../../res/scripts/controller.vbs';
+import core from '../../../res/scripts/core.vbs';
+import VPMKeys from '../../../res/scripts/VPMKeys.vbs';
+import WPC from '../../../res/scripts/WPC.vbs';
 
-export const textFiles: { [key: string]: string } = {
-	'controller.vbs': controller,
-	'wpc.vbs': wpc,
-};
+export function getTextFile(fileName: string) {
+	switch (fileName.toLowerCase()) {
+		case 'controller.vbs': return controller;
+		case 'core.vbs': return core;
+		case 'vpmkeys.vbs': return VPMKeys;
+		case 'wpc.vbs': return WPC;
+	}
+	throw new Error(`Cannot find text file ${fileName}`);
+}
