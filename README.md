@@ -21,14 +21,15 @@ The player can be split into three parts:
 This library provides an abstraction layer for rendering with [three.js](https://threejs.org/),
 which covers the first point. A physics loop is implemented by the `Player`
 class. Collision detection and rigid body dynamics are fully ported, covering the 
-second part. Work on scripting has begun with the wiring set up and simple 
-statements working. More info about how we go about this can be found [here](https://github.com/freezy/vpweb/issues/1).  
+second part. Work on scripting has begun with the wiring set up and the default
+table script working. More info about how we go about this can be found 
+[here](https://github.com/freezy/vpweb/issues/1).  
     
 ### Rendering 
 
 VPX-JS reads Visual Pinball's VPX format and extracts all meshes in VP's internal
 format. Using an abstraction layer, any WebGL framework can convert this format
-and construct a scene. An adapter for three.js is shipped with this library.
+and construct a scene. An adapter for three.js is included.
 
 Additionally, VPX-JS supports direct export to [GLTF](https://www.khronos.org/gltf/)
 files, which is nice, because it allows off-loading the export to a server. It's
@@ -76,25 +77,12 @@ And the host application:
 git clone https://github.com/freezy/vpweb.git
 cd vpweb
 npm ci
-npm run start:dev
+npm start
 ```
 
 Then connect to `http://localhost:8080` and drag a VPX file into it. Note that 
-the scripting engine is currently pretty limited, but with the blank table from 
-VP, this table script should work fine:
-
-```vbs
-Sub Drain_Hit()
-Drain.DestroyBall
-BallRelease.CreateBall
-BallRelease.Kick 90, 7
-End Sub
-
-Sub Plunger_Init()
-BallRelease.CreateBall
-BallRelease.Kick 90, 7
-End Sub
-```
+the scripting engine is still limited. However, the table script of the default
+table should now work.
 
 ## Usage
 
