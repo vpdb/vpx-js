@@ -17,10 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { controller } from './controller.vbs';
-import { wpc } from './wpc.vbs';
+import { VpmController } from './vpm-controller';
 
-export const textFiles: { [key: string]: string } = {
-	'controller.vbs': controller,
-	'wpc.vbs': wpc,
-};
+export function getObject(name: string): any {
+	switch (name) {
+		case 'VPinMAME.Controller': return new VpmController();
+	}
+	throw new Error(`Unknown object "${name}".`);
+}

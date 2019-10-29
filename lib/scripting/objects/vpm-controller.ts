@@ -17,10 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { controller } from './controller.vbs';
-import { wpc } from './wpc.vbs';
+export class VpmController {
 
-export const textFiles: { [key: string]: string } = {
-	'controller.vbs': controller,
-	'wpc.vbs': wpc,
-};
+}
