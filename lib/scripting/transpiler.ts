@@ -29,6 +29,7 @@ import { Stdlib } from './stdlib';
 import { AmbiguityTransformer } from './transformer/ambiguity-transformer';
 import { CleanupTransformer } from './transformer/cleanup-transformer';
 import { EventTransformer } from './transformer/event-transformer';
+import { FunctionHoistTransformer } from './transformer/function-hoist-transformer';
 import { ReferenceTransformer } from './transformer/reference-transformer';
 import { ScopeTransformer } from './transformer/scope-transformer';
 import { WrapTransformer } from './transformer/wrap-transformer';
@@ -58,16 +59,18 @@ export class Transpiler {
 
 	public transpile(vbs: string, globalFunction?: string, globalObject?: string) {
 
-		logger().debug(vbs);
+		//logger().debug(vbs);
 		let ast = this.parse(vbs + '\n');
+
 		ast = new CleanupTransformer(ast).transform();
+		ast = new FunctionHoistTransformer(ast).transform();
 		ast = new EventTransformer(ast, this.table.getElements()).transform();
 		ast = new ReferenceTransformer(ast, this.table, this.itemApis, this.enumApis, this.globalApi, this.stdlib).transform();
 		ast = new ScopeTransformer(ast).transform();
 		ast = new AmbiguityTransformer(ast, this.itemApis, this.enumApis, this.globalApi, this.stdlib).transform();
 		ast = new WrapTransformer(ast).transform(globalFunction, globalObject);
-
 		logger().debug('AST:', ast);
+
 		const js = this.generate(ast);
 		logger().debug(js);
 
