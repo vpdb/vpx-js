@@ -17,14 +17,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ERR } from '../stdlib/error-handler';
-import { Dictionary } from './dictionary';
-import { VpmController } from './vpm-controller';
+class ErrorHandler {
 
-export function getObject(name: string): any {
-	switch (name) {
-		case 'Scripting.Dictionary': return new Dictionary();
-		case 'VPinMAME.Controller': return new VpmController();
+	private error?: Error;
+
+	public getError() {
+		return this.error;
 	}
-	ERR.setError(new Error(`Unknown object "${name}".`));
+
+	public setError(error: Error) {
+		this.error = error;
+	}
 }
+
+export const ERR = new ErrorHandler();

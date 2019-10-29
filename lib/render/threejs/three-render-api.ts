@@ -148,7 +148,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		ThreeRenderApi.POOL.Matrix4.release(m4);
 	}
 
-	public applyVisibility(isVisible: boolean, obj: Object3D): void {
+	public applyVisibility(isVisible: boolean | number, obj: Object3D): void {
 		/* istanbul ignore next */
 		if (!obj) {
 			return;
