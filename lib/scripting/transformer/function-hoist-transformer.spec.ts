@@ -23,12 +23,12 @@ import { astToVbs, vbsToAst } from '../../../test/script.helper';
 import { TableBuilder } from '../../../test/table-builder';
 import { Player } from '../../game/player';
 import { Table } from '../../vpt/table/table';
-import { CleanupTransformer } from './cleanup-transformer';
+import { FunctionHoistTransformer } from './function-hoist-transformer';
 
 chai.use(require('sinon-chai'));
 
 /* tslint:disable:no-unused-expression */
-describe('The scripting cleanup transformer', () => {
+describe('The scripting function hoist transformer', () => {
 
 	let table: Table;
 	let player: Player;
@@ -38,16 +38,16 @@ describe('The scripting cleanup transformer', () => {
 		player = new Player(table);
 	});
 
-	it('should not render any comments', () => {
-		const vbs = `' this is a comment\ndim test\n`;
+	it('should move a function to the top', () => {
+		const vbs = `test\nsub test\nend sub`;
 		const js = transform(vbs);
-		expect(js).to.equal(`let test;`);
+		expect(js).to.equal(`function test() {\n}\ntest();`);
 	});
 
 });
 
 function transform(vbs: string): string {
 	const ast = vbsToAst(vbs);
-	const eventAst = new CleanupTransformer(ast).transform();
+	const eventAst = new FunctionHoistTransformer(ast).transform();
 	return astToVbs(eventAst);
 }
