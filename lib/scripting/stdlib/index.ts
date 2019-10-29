@@ -20,13 +20,14 @@
 import { f4 } from '../../math/float';
 import { getObject } from '../objects';
 import { VbsApi } from '../vbs-api';
+import { ERR } from './error-handler';
 import { VbsMath } from './math';
 
 export class Stdlib extends VbsApi {
 
 	private readonly math = new VbsMath();
 
-	get Err() { return null; }
+	get Err() { return ERR.getError(); }
 
 	get Math() { return this.math; }
 
