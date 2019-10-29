@@ -20,7 +20,7 @@
 import { AssignKey } from '../game/key-code';
 import { Player } from '../game/player';
 import { now, storage } from '../refs.node';
-import { textFiles } from '../scripting/textfiles';
+import { getTextFile } from '../scripting/textfiles';
 import { VbsApi } from '../scripting/vbs-api';
 import { BallApi } from './ball/ball-api';
 import { Item } from './item';
@@ -75,10 +75,7 @@ export class GlobalApi extends VbsApi {
 	get VersionRevision() { return this.table.getApi().VersionRevision; }
 
 	public GetTextFile(fileName: string): string {
-		if (textFiles[fileName.toLowerCase()]) {
-			return textFiles[fileName.toLowerCase()];
-		}
-		throw new Error(`Cannot find text file ${fileName}`);
+		return getTextFile(fileName);
 	}
 
 	public PlaySound(sampleName: string, loopCount: number, volume: number, pan: number, randomPitch: number, pitch: number, useSame: boolean, restart: boolean, frontRearFade: number) {
