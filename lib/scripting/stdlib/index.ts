@@ -18,6 +18,7 @@
  */
 
 import { f4 } from '../../math/float';
+import { getObject } from '../objects';
 import { VbsApi } from '../vbs-api';
 import { VbsMath } from './math';
 
@@ -43,6 +44,14 @@ export class Stdlib extends VbsApi {
 
 	public UBound(a: [], dimension?: number): number { // TODO handle dimension
 		return a.length - 1;
+	}
+
+	public Randomize(): void {
+		// Initializes the random-number generator in VBScript. Nothing to initialize here.
+	}
+
+	public CreateObject(name: string): any {
+		return getObject(name);
 	}
 
 	protected _getPropertyNames(): string[] {

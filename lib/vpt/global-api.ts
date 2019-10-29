@@ -22,12 +22,10 @@ import { Player } from '../game/player';
 import { now, storage } from '../refs.node';
 import { textFiles } from '../scripting/textfiles';
 import { VbsApi } from '../scripting/vbs-api';
-import { logger } from '../util/logger';
-import { Ball } from './ball/ball';
+import { BallApi } from './ball/ball-api';
 import { Item } from './item';
 import { ItemData } from './item-data';
 import { Table } from './table/table';
-import { BallApi } from './ball/ball-api';
 
 export class GlobalApi extends VbsApi {
 
@@ -77,11 +75,10 @@ export class GlobalApi extends VbsApi {
 	get VersionRevision() { return this.table.getApi().VersionRevision; }
 
 	public GetTextFile(fileName: string): string {
-		if (textFiles[fileName]) {
-			return textFiles[fileName];
+		if (textFiles[fileName.toLowerCase()]) {
+			return textFiles[fileName.toLowerCase()];
 		}
-		logger().warn('[GetTextFile] Cannot find text file %s.', fileName);
-		return '';
+		throw new Error(`Cannot find text file ${fileName}`);
 	}
 
 	public PlaySound(sampleName: string, loopCount: number, volume: number, pan: number, randomPitch: number, pitch: number, useSame: boolean, restart: boolean, frontRearFade: number) {

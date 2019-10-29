@@ -74,6 +74,13 @@ describe('The VBScript stdlib', () => {
 		expect(scope.result).to.equal(9);
 	});
 
+	it('should provide the Randomize function', () => {
+		const scope = {} as any;
+		const vbs = `Randomize`;
+		const transpiler = new Transpiler(table, player);
+		transpiler.execute(vbs, scope, 'global');
+	});
+
 	it('should provide the Math object', () => {
 		const scope = {} as any;
 		const vbs = `result = math`;
