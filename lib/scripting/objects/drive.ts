@@ -17,18 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ERR } from '../stdlib/error-handler';
-import { Dictionary } from './dictionary';
-import { FileSystemObject } from './file-system-object';
-import { VpmController } from './vpm-controller';
-import { WshShell } from './wsh-shell';
+/**
+ * Provides access to the properties of a particular disk drive or network share.
+ *
+ * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/drive-object
+ */
+export class Drive {
 
-export function getObject(name: string): any {
-	switch (name.toLowerCase()) {
-		case 'scripting.dictionary': return new Dictionary();
-		case 'scripting.filesystemobject': return new FileSystemObject();
-		case 'vpinmame.controller': return new VpmController();
-		case 'wscript.shell': return new WshShell();
-	}
-	ERR.setError(new Error(`Unknown object "${name}".`));
 }

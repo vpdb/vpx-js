@@ -17,18 +17,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ERR } from '../stdlib/error-handler';
-import { Dictionary } from './dictionary';
+import * as chai from 'chai';
+import { expect } from 'chai';
 import { FileSystemObject } from './file-system-object';
-import { VpmController } from './vpm-controller';
-import { WshShell } from './wsh-shell';
 
-export function getObject(name: string): any {
-	switch (name.toLowerCase()) {
-		case 'scripting.dictionary': return new Dictionary();
-		case 'scripting.filesystemobject': return new FileSystemObject();
-		case 'vpinmame.controller': return new VpmController();
-		case 'wscript.shell': return new WshShell();
-	}
-	ERR.setError(new Error(`Unknown object "${name}".`));
-}
+/* tslint:disable:no-unused-expression no-string-literal */
+chai.use(require('sinon-chai'));
+describe('The VBScript file system object', () => {
+
+	it('should build a path', () => {
+		const fso = new FileSystemObject();
+		const path1 = fso.BuildPath('C:\\folder', 'file.txt');
+		const path2 = fso.BuildPath('C:\\folder\\', 'file.txt');
+		expect(path1).to.equal('C:\\folder\\file.txt');
+		expect(path2).to.equal('C:\\folder\\file.txt');
+	});
+
+});
