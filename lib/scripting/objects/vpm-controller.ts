@@ -24,7 +24,7 @@ export class VpmController {
   private webworker: WpcEmuWebWorkerApi.WebWorkerApi;
 
   constructor() {
-    this.webworker = WpcEmuWebWorkerApi.initialiseWebworkerAPI();
+    this.webworker = WpcEmuWebWorkerApi.initializeWebworkerAPI();
   }
 
 }
