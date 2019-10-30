@@ -50,7 +50,7 @@
 		"sharp": "^0.23.0",
 		"text-encoding": "^0.7.0",
 		"three": "^0.109.0",
-		"wpc-emu": "github:neophob/wpc-emu#develop"
+		"wpc-emu": "github:neophob/wpc-emu#36189140e4ffd3268a68582406b756cf0b10a2c7"
 	},
 	"devDependencies": {
 		"@types/chai": "4.2.4",
