@@ -52,25 +52,35 @@ import { Table } from '../lib/vpt/table/table';
 			vpxFiles = [ vpxPath ];
 		}
 		for (const vpxFile of vpxFiles) {
-			const vpt = await Table.load(new NodeBinaryReader(vpxFile), { loadTableScript: true, tableDataOnly: true });
 
-			if (writeToFile) {
-				const destPath = dirname(vpxFile);
-				const destName = basename(vpxFile);
-				const destFile = resolve(destPath, destName.substr(0, destName.length - 3) + 'vbs');
+			try {
+				const vpt = await Table.load(new NodeBinaryReader(vpxFile), {
+					loadTableScript: true,
+					tableDataOnly: true
+				});
 
-				console.log('[vptscript] Writing to "%s".', destFile);
-				writeFileSync(destFile, vpt.getTableScript());
+				if (writeToFile) {
+					const destPath = dirname(vpxFile);
+					const destName = basename(vpxFile);
+					const destFile = resolve(destPath, destName.substr(0, destName.length - 3) + 'vbs');
 
-				// update timestamp
-				const srcStat = statSync(vpxFile);
-				const destFs = openSync(destFile, 'r+');
-				futimesSync(destFs, srcStat.atime, srcStat.mtime);
-				closeSync(destFs);
+					console.log('[vptscript] Writing to "%s".', destFile);
+					writeFileSync(destFile, vpt.getTableScript());
 
-			} else {
-				console.log(vpt.getTableScript());
+					// update timestamp
+					const srcStat = statSync(vpxFile);
+					const destFs = openSync(destFile, 'r+');
+					futimesSync(destFs, srcStat.atime, srcStat.mtime);
+					closeSync(destFs);
+
+				} else {
+					console.log(vpt.getTableScript());
+				}
+			} catch (error) {
+				console.error(error);
 			}
+
+
 		}
 
 	} catch (err) {
