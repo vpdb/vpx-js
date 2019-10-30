@@ -64,6 +64,7 @@ export { ClampToEdgeWrapping, DoubleSide, FloatType, InterpolateDiscrete, Interp
 	TriangleStripDrawMode, UnsignedByteType, TextureDataType, HalfFloatType, LinearEncoding, RGBEEncoding, RGBEFormat,
 	RGBFormat,
 } from 'three/src/constants';
+export { getTextFile } from './scripting/vbs-scripts.browser';
 
 // polyfills
 if (typeof(window) !== 'undefined') {
