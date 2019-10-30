@@ -17,18 +17,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import * as chai from 'chai';
+import { expect } from 'chai';
 import { ERR } from '../stdlib/error-handler';
 import { Dictionary } from './dictionary';
-import { FileSystemObject } from './file-system-object';
-import { VpmController } from './vpm-controller';
-import { WshShell } from './wsh-shell';
 
-export function getObject(name: string): any {
-	switch (name.toLowerCase()) {
-		case 'scripting.dictionary': return new Dictionary();
-		case 'scripting.filesystemobject': return new FileSystemObject();
-		case 'vpinmame.controller': return new VpmController();
-		case 'wscript.shell': return new WshShell();
-	}
-	ERR.setError(new Error(`Unknown object "${name}".`));
-}
+/* tslint:disable:no-unused-expression no-string-literal */
+chai.use(require('sinon-chai'));
+describe('The VBScript native windows shell object', () => {
+
+	it('xxx', () => {
+	});
+
+});

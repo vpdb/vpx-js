@@ -56,6 +56,22 @@ describe('The VBScript objects implementations', () => {
 		expect(scope.vpm).to.be.ok;
 	});
 
+	it('should provide the "Scripting.FileSystemObject" object', () => {
+		const scope = {} as any;
+		const vbs = `Dim fso\nSet fso = CreateObject("Scripting.FileSystemObject")`;
+
+		transpiler.execute(vbs, scope, 'global');
+		expect(scope.fso).to.be.ok;
+	});
+
+	it('should provide the "WScript.Shell" object', () => {
+		const scope = {} as any;
+		const vbs = `Dim wss\nSet wss = CreateObject("WScript.Shell")`;
+
+		transpiler.execute(vbs, scope, 'global');
+		expect(scope.wss).to.be.ok;
+	});
+
 	it('should fail when providing an unknown object', () => {
 		const scope = {} as any;
 		const vbs = `Dim x\nSet x = CreateObject("DontExist")\n`;

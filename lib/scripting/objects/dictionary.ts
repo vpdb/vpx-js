@@ -30,6 +30,7 @@ export class Dictionary<V> {
 
 	/**
 	 * Returns the number of key/item pairs in a Dictionary object.
+	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/count-property-dictionary-object
 	 */
 	public get Count() { return this.d.size; }
 
@@ -78,6 +79,7 @@ export class Dictionary<V> {
 	 *
 	 * @param key The key associated with the item being added.
 	 * @param item The item associated with the key being added.
+	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/add-method-dictionary
 	 */
 	public Add(key: string | number | symbol, item: V): void {
 		if (this.d.has(key)) {
@@ -90,6 +92,7 @@ export class Dictionary<V> {
 	 * Returns True if a specified key exists in the Dictionary object; False if it does not.
 	 *
 	 * @param key Key value being searched for in the Dictionary object.
+	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/exists-method
 	 */
 	public Exists(key: string | number | symbol): boolean {
 		return this.d.has(key);
@@ -97,6 +100,7 @@ export class Dictionary<V> {
 
 	/**
 	 * Returns an array containing all the items in a Dictionary object.
+	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/items-method
 	 */
 	public Items(): Array<V | null> {
 		return Array.from(this.d.values());
@@ -104,6 +108,7 @@ export class Dictionary<V> {
 
 	/**
 	 * Returns an array containing all existing keys in a Dictionary object.
+	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/keys-method
 	 */
 	public Keys(): Array<string | number | symbol> {
 		return Array.from(this.d.keys());
@@ -112,6 +117,7 @@ export class Dictionary<V> {
 	/**
 	 * Removes a key/item pair from a Dictionary object.
 	 * @param key Key associated with the key/item pair that you want to remove from the Dictionary object.
+	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/remove-method-dictionary-object
 	 */
 	public Remove(key: string | number | symbol) {
 		if (!this.d.has(key)) {
@@ -122,6 +128,7 @@ export class Dictionary<V> {
 
 	/**
 	 * The RemoveAll method removes all key, item pairs from a Dictionary object
+	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/removeall-method
 	 */
 	public RemoveAll() {
 		this.d.clear();
