@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { WpcEmuWebWorkerApi } from 'wpc-emu';
+import { WpcEmuWebWorkerApi, gamelist } from 'wpc-emu';
 
 export class VpmController {
 
@@ -25,6 +25,9 @@ export class VpmController {
 
   constructor(optionalWebWorkerInstance?: any) {
     this.webworker = WpcEmuWebWorkerApi.initializeWebworkerAPI(optionalWebWorkerInstance);
+
+    console.log(gamelist.getAllNames());
+    const game: gamelist.ClientGameEntry = gamelist.getByName('WPC-95: Medieval Madness');
 
     const romData: WpcEmuWebWorkerApi.RomData = { u06: new Uint8Array(2048) };
     const gameEntry: WpcEmuWebWorkerApi.GameEntry = {
