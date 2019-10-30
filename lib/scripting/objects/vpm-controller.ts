@@ -23,8 +23,20 @@ export class VpmController {
 
   private webworker: WpcEmuWebWorkerApi.WebWorkerApi;
 
-  constructor() {
-    this.webworker = WpcEmuWebWorkerApi.initializeWebworkerAPI();
+  constructor(optionalWebWorkerInstance?: any) {
+    this.webworker = WpcEmuWebWorkerApi.initializeWebworkerAPI(optionalWebWorkerInstance);
+
+    const romData: WpcEmuWebWorkerApi.RomData = { u06: new Uint8Array(2048) };
+    const gameEntry: WpcEmuWebWorkerApi.GameEntry = {
+      name: 'foo',
+      rom: {
+        u06: 'my.rom',
+      },
+      skipWpcRomCheck: false,
+      fileName: 'fooname',
+      features: [ 'wpc95' ],
+    };
+    this.webworker.initializeEmulator(romData, gameEntry);
   }
 
 }
