@@ -17,6 +17,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { WpcEmuWebWorkerApi } from 'wpc-emu';
+
 export class VpmController {
+
+  private webworker: WpcEmuWebWorkerApi.WebWorkerApi;
+
+  constructor() {
+    this.webworker = WpcEmuWebWorkerApi.initialiseWebworkerAPI();
+  }
 
 }
