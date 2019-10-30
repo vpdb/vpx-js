@@ -22,6 +22,7 @@ export { NodeBinaryReader as BinaryReader } from './io/binary-reader.node';
 export { storage } from './io/storage.node';
 export { exportGltf } from './gltf/export-gltf.node';
 export { now } from './util/time.node';
+export { getTextFile } from './scripting/vbs-scripts.node';
 export {
 	Object3D, Mesh, Box3, Scene, AnimationClip, KeyframeTrack, PropertyBinding, Camera, ClampToEdgeWrapping,
 	DoubleSide, InterpolateDiscrete, InterpolateLinear, LinearFilter, LinearMipMapLinearFilter, LinearMipMapNearestFilter,

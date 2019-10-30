@@ -22,7 +22,7 @@ import core from '../../../res/scripts/core.vbs';
 import VPMKeys from '../../../res/scripts/VPMKeys.vbs';
 import WPC from '../../../res/scripts/WPC.vbs';
 
-export function getTextFile(fileName: string) {
+export function getTextFile(fileName: string): string {
 	switch (fileName.toLowerCase()) {
 		case 'controller.vbs': return controller;
 		case 'core.vbs': return core;

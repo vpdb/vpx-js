@@ -19,8 +19,7 @@
 
 import { AssignKey } from '../game/key-code';
 import { Player } from '../game/player';
-import { now, storage } from '../refs.node';
-import { getTextFile } from '../scripting/textfiles';
+import { getTextFile, now, storage } from '../refs.node';
 import { VbsApi } from '../scripting/vbs-api';
 import { BallApi } from './ball/ball-api';
 import { Item } from './item';
