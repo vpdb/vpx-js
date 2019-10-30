@@ -14,7 +14,8 @@
 		"build:cp": "cp -r res dist",
 		"compile": "nearleyc lib/scripting/vbscript.ne -o lib/scripting/vbscript.ts",
 		"lint": "tslint lib/**/*.ts --format stylish",
-		"test": "npm run compile && nyc mocha"
+		"test": "npm run compile && nyc mocha",
+		"prettier": "prettier --config ./.prettierrc --write ./lib/**/*.ts"
 	},
 	"bin": {
 		"vbs2js": "./dist/bin/vbs2js.js",
