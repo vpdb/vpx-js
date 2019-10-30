@@ -39,10 +39,16 @@ import vbsGrammar from './vbscript';
 //self.escodegen = require('escodegen');
 
 // the table script function
-declare function play(scope: any, table: { [key: string]: any }, enums: EnumsApi, globalApi: GlobalApi, stdlib: Stdlib, vbsHelper: VBSHelper): void;
+declare function play(
+	scope: any,
+	table: { [key: string]: any },
+	enums: EnumsApi,
+	globalApi: GlobalApi,
+	stdlib: Stdlib,
+	vbsHelper: VBSHelper,
+): void;
 
 export class Transpiler {
-
 	private readonly table: Table;
 	private readonly itemApis: { [p: string]: any };
 	private readonly enumApis: EnumsApi;
@@ -58,14 +64,20 @@ export class Transpiler {
 	}
 
 	public transpile(vbs: string, globalFunction?: string, globalObject?: string) {
-
 		//logger().debug(vbs);
 		let ast = this.parse(vbs + '\n');
 
 		ast = new CleanupTransformer(ast).transform();
 		ast = new FunctionHoistTransformer(ast).transform();
 		ast = new EventTransformer(ast, this.table.getElements()).transform();
-		ast = new ReferenceTransformer(ast, this.table, this.itemApis, this.enumApis, this.globalApi, this.stdlib).transform();
+		ast = new ReferenceTransformer(
+			ast,
+			this.table,
+			this.itemApis,
+			this.enumApis,
+			this.globalApi,
+			this.stdlib,
+		).transform();
 		ast = new ScopeTransformer(ast).transform();
 		ast = new AmbiguityTransformer(ast, this.itemApis, this.enumApis, this.globalApi, this.stdlib).transform();
 		ast = new WrapTransformer(ast).transform(globalFunction, globalObject);
@@ -78,17 +90,24 @@ export class Transpiler {
 	}
 
 	public execute(vbs: string, globalScope: any, globalObject?: string) {
-
-		globalObject = globalObject || (typeof window !== 'undefined' ? 'window' : (typeof self !== 'undefined' ? 'self' : 'global'));
+		globalObject =
+			globalObject ||
+			(typeof window !== 'undefined' ? 'window' : typeof self !== 'undefined' ? 'self' : 'global');
 		const js = this.transpile(vbs, 'play', globalObject);
 
 		// tslint:disable-next-line:no-eval
 		eval('//@ sourceURL=tablescript.js\n' + js);
-		play(new Proxy(globalScope, new ScopeHandler()), this.itemApis, this.enumApis, this.globalApi, this.stdlib, new VBSHelper(this));
+		play(
+			new Proxy(globalScope, new ScopeHandler()),
+			this.itemApis,
+			this.enumApis,
+			this.globalApi,
+			this.stdlib,
+			new VBSHelper(this),
+		);
 	}
 
 	private parse(vbs: string): Program {
-
 		const parser = new Parser(Grammar.fromCompiled(vbsGrammar));
 		parser.feed(vbs);
 		/* istanbul ignore if */
@@ -104,7 +123,6 @@ export class Transpiler {
 }
 
 class ScopeHandler implements ProxyHandler<any> {
-
 	// tslint:disable-next-line:variable-name
 	private readonly __props: { [key: string]: string | number | symbol } = {};
 

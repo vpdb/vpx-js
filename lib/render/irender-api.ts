@@ -28,7 +28,6 @@ import { Table, TableGenerateOptions } from '../vpt/table/table';
 import { Texture } from '../vpt/texture';
 
 export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
-
 	/**
 	 * Pre-loads all the table's textures into the renderer's texture format
 	 * so they can be loaded and swapped synchronously later.
@@ -129,7 +128,14 @@ export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 	 * @param envMap Name of the environment map, if any
 	 * @param emissiveMap Name of the emissive map, if any
 	 */
-	applyMaterial(node: NODE | undefined, material?: Material, map?: string, normalMap?: string, envMap?: string, emissiveMap?: string): void;
+	applyMaterial(
+		node: NODE | undefined,
+		material?: Material,
+		map?: string,
+		normalMap?: string,
+		envMap?: string,
+		emissiveMap?: string,
+	): void;
 
 	/**
 	 * Creates a new node based on a renderable.
@@ -172,7 +178,6 @@ export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 }
 
 export interface ITextureLoader<TEXTURE> {
-
 	/**
 	 * Loads a texture coming from an `Image{n}` stream.
 	 *

@@ -34,7 +34,6 @@ import { Table } from './table/table';
  * @see https://github.com/vpinball/vpinball/blob/master/Texture.cpp
  */
 export class Texture extends BiffParser {
-
 	public localFileName?: string; // either localPath or storageName is set
 	public storageName?: string;
 
@@ -67,15 +66,18 @@ export class Texture extends BiffParser {
 
 	private static createStreamHandler(storage: Storage, itemName: string, texture: Texture) {
 		texture.binary = new Binary();
-		return BiffParser.stream((buffer, tag, offset, len) => texture.fromTag(buffer, tag, offset, len, storage, itemName), {
-			nestedTags: {
-				JPEG: {
-					onStart: () => new Binary(),
-					onTag: binary => binary.fromTag.bind(binary),
-					onEnd: binary => texture.binary = binary,
+		return BiffParser.stream(
+			(buffer, tag, offset, len) => texture.fromTag(buffer, tag, offset, len, storage, itemName),
+			{
+				nestedTags: {
+					JPEG: {
+						onStart: () => new Binary(),
+						onTag: binary => binary.fromTag.bind(binary),
+						onEnd: binary => (texture.binary = binary),
+					},
 				},
 			},
-		});
+		);
 	}
 
 	public getName(): string {
@@ -93,12 +95,12 @@ export class Texture extends BiffParser {
 		const ext = fileName.substr(fileName.lastIndexOf('.')).toLowerCase();
 		if (this.isRaw()) {
 			texture = await loader.loadRawTexture(this.getName(), this.pdsBuffer!.getData(), this.width, this.height);
-
 		} else if (this.localFileName) {
 			texture = await loader.loadDefaultTexture(this.getName(), ext, this.localFileName);
-
 		} else {
-			const data = await table.streamStorage<Buffer>('GameStg', storage => this.streamImage(storage, this.storageName, this.binary));
+			const data = await table.streamStorage<Buffer>('GameStg', storage =>
+				this.streamImage(storage, this.storageName, this.binary),
+			);
 			if (!data || !data.length) {
 				throw new Error(`Cannot load image data for texture ${this.getName()}`);
 			}
@@ -129,34 +131,67 @@ export class Texture extends BiffParser {
 		});
 	}
 
-	private async fromTag(buffer: Buffer, tag: string, offset: number, len: number, storage: Storage, itemName: string): Promise<number> {
+	private async fromTag(
+		buffer: Buffer,
+		tag: string,
+		offset: number,
+		len: number,
+		storage: Storage,
+		itemName: string,
+	): Promise<number> {
 		switch (tag) {
-			case 'NAME': this.szName = this.getString(buffer, len); break;
-			case 'INME': this.szInternalName = this.getString(buffer, len); break;
-			case 'PATH': this.szPath = this.getString(buffer, len); break;
-			case 'WDTH': this.width = this.getInt(buffer); break;
-			case 'HGHT': this.height = this.getInt(buffer); break;
-			case 'ALTV': this.alphaTestValue = this.getFloat(buffer); break;
+			case 'NAME':
+				this.szName = this.getString(buffer, len);
+				break;
+			case 'INME':
+				this.szInternalName = this.getString(buffer, len);
+				break;
+			case 'PATH':
+				this.szPath = this.getString(buffer, len);
+				break;
+			case 'WDTH':
+				this.width = this.getInt(buffer);
+				break;
+			case 'HGHT':
+				this.height = this.getInt(buffer);
+				break;
+			case 'ALTV':
+				this.alphaTestValue = this.getFloat(buffer);
+				break;
 			case 'BITS':
 				let compressedLen: number;
-				[ this.pdsBuffer, compressedLen ] = await BaseTexture.get(storage, itemName, offset, this.width, this.height);
+				[this.pdsBuffer, compressedLen] = await BaseTexture.get(
+					storage,
+					itemName,
+					offset,
+					this.width,
+					this.height,
+				);
 				return compressedLen + 4;
 
 			/* istanbul ignore next: duh. */
-			case 'LINK': logger().warn('[Texture.fromTag] Ignoring LINK tag for %s at %s, implement when understood what it is.', this.szName, this.storageName); break;
+			case 'LINK':
+				logger().warn(
+					'[Texture.fromTag] Ignoring LINK tag for %s at %s, implement when understood what it is.',
+					this.szName,
+					this.storageName,
+				);
+				break;
 
 			/* istanbul ignore next: legacy vp9 */
-			case 'TRNS': this.rgbTransparent = this.getInt(buffer); break;
+			case 'TRNS':
+				this.rgbTransparent = this.getInt(buffer);
+				break;
 
 			/* istanbul ignore next */
-			default: logger().warn('[Texture.fromTag] Unknown tag "%s".', tag);
+			default:
+				logger().warn('[Texture.fromTag] Unknown tag "%s".', tag);
 		}
 		return 0;
 	}
 }
 
 class BaseTexture {
-
 	public static readonly RGBA = 0;
 	public static readonly RGB_FP = 1;
 
@@ -174,13 +209,19 @@ class BaseTexture {
 		return this.data;
 	}
 
-	public static async get(storage: Storage, itemName: string, pos: number, width: number, height: number): Promise<[BaseTexture, number]> {
+	public static async get(
+		storage: Storage,
+		itemName: string,
+		pos: number,
+		width: number,
+		height: number,
+	): Promise<[BaseTexture, number]> {
 		const pdsBuffer = new BaseTexture(width, height);
 		const compressed = await storage.read(itemName, pos);
 
 		const lzw = new LzwReader(compressed, width * 4, height, pdsBuffer.pitch());
 		let compressedLen: number;
-		[ pdsBuffer.data, compressedLen ] = lzw.decompress();
+		[pdsBuffer.data, compressedLen] = lzw.decompress();
 
 		const lpitch = pdsBuffer.pitch();
 
@@ -206,7 +247,7 @@ class BaseTexture {
 			}
 		}
 		pdsBuffer.data = pdsBuffer.rgbToBgr(width, height);
-		return [ pdsBuffer, compressedLen ];
+		return [pdsBuffer, compressedLen];
 	}
 
 	private rgbToBgr(width: number, height: number): Buffer {
@@ -216,13 +257,12 @@ class BaseTexture {
 		for (let i = 0; i < height; i++) {
 			for (let l = 0; l < width; l++) {
 				if (this.format === BaseTexture.RGBA) {
-					to[i * pitch + 4 * l] = from[i * pitch + 4 * l + 2];     // r
+					to[i * pitch + 4 * l] = from[i * pitch + 4 * l + 2]; // r
 					to[i * pitch + 4 * l + 1] = from[i * pitch + 4 * l + 1]; // g
-					to[i * pitch + 4 * l + 2] = from[i * pitch + 4 * l];     // b
+					to[i * pitch + 4 * l + 2] = from[i * pitch + 4 * l]; // b
 					to[i * pitch + 4 * l + 3] = from[i * pitch + 4 * l + 3]; // a
-
 				} else {
-					to[i * pitch + 4 * l] = from[i * pitch + 4 * l + 6];     // r
+					to[i * pitch + 4 * l] = from[i * pitch + 4 * l + 6]; // r
 					to[i * pitch + 4 * l + 1] = from[i * pitch + 4 * l + 7];
 					to[i * pitch + 4 * l + 2] = from[i * pitch + 4 * l + 8];
 
@@ -230,7 +270,7 @@ class BaseTexture {
 					to[i * pitch + 4 * l + 4] = from[i * pitch + 4 * l + 4];
 					to[i * pitch + 4 * l + 5] = from[i * pitch + 4 * l + 5];
 
-					to[i * pitch + 4 * l + 6] = from[i * pitch + 4 * l];     // b
+					to[i * pitch + 4 * l + 6] = from[i * pitch + 4 * l]; // b
 					to[i * pitch + 4 * l + 7] = from[i * pitch + 4 * l + 1];
 					to[i * pitch + 4 * l + 8] = from[i * pitch + 4 * l + 2];
 

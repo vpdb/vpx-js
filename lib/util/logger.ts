@@ -19,7 +19,6 @@
 
 /* tslint:disable:no-empty no-console */
 export class Logger implements ILogger {
-
 	private static instance: ILogger = new Logger();
 
 	public static logger(): ILogger {
@@ -31,27 +30,27 @@ export class Logger implements ILogger {
 	}
 
 	public debug(format: any, ...param: any[]): void {
-		console.debug.apply(console.log, [ format, ...param ]);
+		console.debug.apply(console.log, [format, ...param]);
 	}
 
 	public error(format: any, ...param: any[]): void {
-		console.error.apply(console.log, [ format, ...param ]);
+		console.error.apply(console.log, [format, ...param]);
 	}
 
 	public info(format: any, ...param: any[]): void {
-		console.log.apply(console.log, [ format, ...param ]);
+		console.log.apply(console.log, [format, ...param]);
 	}
 
 	public verbose(format: any, ...param: any[]): void {
-		console.debug.apply(console.log, [ format, ...param ]);
+		console.debug.apply(console.log, [format, ...param]);
 	}
 
 	public warn(format: any, ...param: any[]): void {
-		console.warn.apply(console.log, [ format, ...param ]);
+		console.warn.apply(console.log, [format, ...param]);
 	}
 
 	public wtf(format: any, ...param: any[]): void {
-		console.error.apply(console.log, [ format, ...param ]);
+		console.error.apply(console.log, [format, ...param]);
 	}
 }
 

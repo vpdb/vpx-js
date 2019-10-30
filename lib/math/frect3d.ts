@@ -2,7 +2,6 @@ import { FLT_MAX } from '../vpt/mesh';
 import { Vertex3D } from './vertex3d';
 
 export class FRect3D {
-
 	public left: number = 0;
 	public top: number = 0;
 	public right: number = 0;
@@ -10,12 +9,25 @@ export class FRect3D {
 	public zlow: number = 0;
 	public zhigh: number = 0;
 
-	get width() { return Math.abs(this.left - this.right); }
-	get height() { return Math.abs(this.top - this.bottom); }
-	get depth() { return Math.abs(this.zlow - this.zhigh); }
+	get width() {
+		return Math.abs(this.left - this.right);
+	}
+	get height() {
+		return Math.abs(this.top - this.bottom);
+	}
+	get depth() {
+		return Math.abs(this.zlow - this.zhigh);
+	}
 
 	constructor(left?: number, right?: number, top?: number, bottom?: number, zLow?: number, zHigh?: number) {
-		if (left !== undefined && right !== undefined && top !== undefined && bottom !== undefined  && zLow !== undefined  && zHigh !== undefined ) {
+		if (
+			left !== undefined &&
+			right !== undefined &&
+			top !== undefined &&
+			bottom !== undefined &&
+			zLow !== undefined &&
+			zHigh !== undefined
+		) {
 			this.left = left;
 			this.right = right;
 			this.top = top;
@@ -56,11 +68,13 @@ export class FRect3D {
 	}
 
 	public intersectRect(rc: FRect3D): boolean {
-		return this.right >= rc.left
-			&& this.bottom >= rc.top
-			&& this.left <= rc.right
-			&& this.top <= rc.bottom
-			&& this.zlow <= rc.zhigh
-			&& this.zhigh >= rc.zlow;
+		return (
+			this.right >= rc.left &&
+			this.bottom >= rc.top &&
+			this.left <= rc.right &&
+			this.top <= rc.bottom &&
+			this.zlow <= rc.zhigh &&
+			this.zhigh >= rc.zlow
+		);
 	}
 }

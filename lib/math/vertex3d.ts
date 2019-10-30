@@ -27,19 +27,30 @@ import { IRenderVertex, Vertex } from './vertex';
 import { Vertex2D } from './vertex2d';
 
 export class Vertex3D implements Vertex {
-
 	public static readonly POOL = new Pool(Vertex3D);
 
 	public readonly isVector2 = false;
 	public readonly isVector3 = true;
 
-	set x(_x: number) { this._x = f4(_x); }
-	set y(_y: number) { this._y = f4(_y); }
-	set z(_z: number) { this._z = f4(_z); }
+	set x(_x: number) {
+		this._x = f4(_x);
+	}
+	set y(_y: number) {
+		this._y = f4(_y);
+	}
+	set z(_z: number) {
+		this._z = f4(_z);
+	}
 
-	get x(): number { return this._x; }
-	get y(): number { return this._y; }
-	get z(): number { return this._z; }
+	get x(): number {
+		return this._x;
+	}
+	get y(): number {
+		return this._y;
+	}
+	get z(): number {
+		return this._z;
+	}
 
 	private _x!: number;
 	private _y!: number;
@@ -86,7 +97,6 @@ export class Vertex3D implements Vertex {
 			this.x = xOrV;
 			this.y = y!;
 			this.z = z || 0;
-
 		} else {
 			this.x = xOrV.x;
 			this.y = xOrV.y;
@@ -111,7 +121,7 @@ export class Vertex3D implements Vertex {
 	}
 
 	public normalize(): this {
-		return this.divideScalar( this.length() || 1 );
+		return this.divideScalar(this.length() || 1);
 	}
 
 	public normalizeSafe() {
@@ -121,7 +131,7 @@ export class Vertex3D implements Vertex {
 	}
 
 	public length(): number {
-		return f4(Math.sqrt( f4(f4(f4(this.x * this.x) + f4(this.y * this.y)) + f4(this.z * this.z))));
+		return f4(Math.sqrt(f4(f4(f4(this.x * this.x) + f4(this.y * this.y)) + f4(this.z * this.z))));
 	}
 
 	public lengthSq(): number {
@@ -190,7 +200,6 @@ export class Vertex3D implements Vertex {
 	}
 
 	public crossVectors(a: Vertex3D, b: Vertex3D) {
-
 		const ax = a.x;
 		const ay = a.y;
 		const az = a.z;
@@ -224,21 +233,15 @@ export class Vertex3D implements Vertex {
 	public static crossProduct(pv1: Vertex3D, pv2: Vertex3D, recycle = false): Vertex3D {
 		return recycle
 			? Vertex3D.claim(
-				pv1.y * pv2.z - pv1.z * pv2.y,
-				pv1.z * pv2.x - pv1.x * pv2.z,
-				pv1.x * pv2.y - pv1.y * pv2.x,
-			)
-			: new Vertex3D(
-				pv1.y * pv2.z - pv1.z * pv2.y,
-				pv1.z * pv2.x - pv1.x * pv2.z,
-				pv1.x * pv2.y - pv1.y * pv2.x,
-			);
+					pv1.y * pv2.z - pv1.z * pv2.y,
+					pv1.z * pv2.x - pv1.x * pv2.z,
+					pv1.x * pv2.y - pv1.y * pv2.x,
+			  )
+			: new Vertex3D(pv1.y * pv2.z - pv1.z * pv2.y, pv1.z * pv2.x - pv1.x * pv2.z, pv1.x * pv2.y - pv1.y * pv2.x);
 	}
 
 	public static crossZ(rz: number, v: Vertex3D, recycle = false) {
-		return recycle
-			? Vertex3D.claim(-rz * v.y, rz * v.x, 0)
-			: new Vertex3D(-rz * v.y, rz * v.x, 0);
+		return recycle ? Vertex3D.claim(-rz * v.y, rz * v.x, 0) : new Vertex3D(-rz * v.y, rz * v.x, 0);
 	}
 
 	public static getRotatedAxis(angle: number, axis: Vertex3D, temp: Vertex3D): Vertex3D {

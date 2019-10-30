@@ -23,6 +23,5 @@ import { PlayerPhysics } from '../game/player-physics';
  * DispReel, LightSeq and Slingshot
  */
 export interface AnimObject {
-
 	animate(physics: PlayerPhysics): void;
 }

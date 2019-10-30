@@ -18,7 +18,6 @@
  */
 
 export abstract class ItemState {
-
 	public name: string = '';
 	public isVisible: boolean = true;
 

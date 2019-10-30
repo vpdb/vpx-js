@@ -33,7 +33,6 @@ interface GltfElement {
  * Indices of those attributes that deviate from their initialization value.
  */
 export interface GltfAccessorSparseIndices extends GltfElement {
-
 	/**
 	 * The index of the bufferView with sparse indices. Referenced bufferView can't have ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER target.
 	 */
@@ -54,7 +53,6 @@ export interface GltfAccessorSparseIndices extends GltfElement {
  * Array of size `accessor.sparse.count` times number of components storing the displaced accessor attributes pointed by `accessor.sparse.indices`.
  */
 export interface GltfAccessorSparseValues extends GltfElement {
-
 	/**
 	 * The index of the bufferView with sparse values. Referenced bufferView can't have ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER target.
 	 */
@@ -70,7 +68,6 @@ export interface GltfAccessorSparseValues extends GltfElement {
  * Sparse storage of attributes that deviate from their initialization value.
  */
 export interface GltfAccessorSparse extends GltfElement {
-
 	/**
 	 * Number of entries stored in the sparse array.
 	 */
@@ -91,7 +88,6 @@ export interface GltfAccessorSparse extends GltfElement {
  * A typed view into a bufferView.  A bufferView contains raw binary data.  An accessor provides a typed view into a bufferView or a subset of a bufferView similar to how WebGL's `vertexAttribPointer()` defines an attribute in a buffer.
  */
 export interface GltfAccessor extends GltfNamedElement {
-
 	/**
 	 * The index of the bufferView.
 	 */
@@ -142,7 +138,6 @@ export interface GltfAccessor extends GltfNamedElement {
  * The index of the node and TRS property that an animation channel targets.
  */
 export interface GltfAnimationChannelTarget extends GltfElement {
-
 	/**
 	 * The index of the node to target.
 	 */
@@ -158,7 +153,6 @@ export interface GltfAnimationChannelTarget extends GltfElement {
  * Targets an animation's sampler at a node's property.
  */
 export interface GltfAnimationChannel extends GltfElement {
-
 	/**
 	 * The index of a sampler in this animation used to compute the value for the target.
 	 */
@@ -174,7 +168,6 @@ export interface GltfAnimationChannel extends GltfElement {
  * Combines input and output accessors with an interpolation algorithm to define a keyframe graph (but not its target).
  */
 export interface GltfAnimationSampler extends GltfElement {
-
 	/**
 	 * The index of an accessor containing keyframe input values, e.g., time.
 	 */
@@ -195,7 +188,6 @@ export interface GltfAnimationSampler extends GltfElement {
  * A keyframe animation.
  */
 export interface GltfAnimation extends GltfNamedElement {
-
 	/**
 	 * An array of channels, each of which targets an animation's sampler at a node's property. Different channels of the same animation can't have equal targets.
 	 */
@@ -211,7 +203,6 @@ export interface GltfAnimation extends GltfNamedElement {
  * Metadata about the glTF asset.
  */
 export interface GltfAsset extends GltfElement {
-
 	/**
 	 * A copyright message suitable for display to credit the content creator.
 	 */
@@ -237,7 +228,6 @@ export interface GltfAsset extends GltfElement {
  * A buffer points to binary geometry, animation, or skins.
  */
 export interface GltfBuffer extends GltfNamedElement {
-
 	/**
 	 * The uri of the buffer.
 	 */
@@ -253,7 +243,6 @@ export interface GltfBuffer extends GltfNamedElement {
  * A view into a buffer generally representing a subset of the buffer.
  */
 export interface GltfBufferView extends GltfNamedElement {
-
 	/**
 	 * The index of the buffer.
 	 */
@@ -284,7 +273,6 @@ export interface GltfBufferView extends GltfNamedElement {
  * An orthographic camera containing properties to create an orthographic projection matrix.
  */
 export interface GltfCameraOrthographic extends GltfElement {
-
 	/**
 	 * The floating-point horizontal magnification of the view. Must not be zero.
 	 */
@@ -310,7 +298,6 @@ export interface GltfCameraOrthographic extends GltfElement {
  * A perspective camera containing properties to create a perspective projection matrix.
  */
 export interface GltfCameraPerspective extends GltfElement {
-
 	/**
 	 * The floating-point aspect ratio of the field of view.
 	 */
@@ -336,7 +323,6 @@ export interface GltfCameraPerspective extends GltfElement {
  * A camera's projection.  A node can reference a camera to apply a transform to place the camera in the scene.
  */
 export interface GltfCamera extends GltfNamedElement {
-
 	/**
 	 * An orthographic camera containing properties to create an orthographic projection matrix.
 	 */
@@ -357,7 +343,6 @@ export interface GltfCamera extends GltfNamedElement {
  * Image data used to create a texture. Image can be referenced by URI or `bufferView` index. `mimeType` is required in the latter case.
  */
 export interface GltfImage extends GltfNamedElement {
-
 	/**
 	 * The uri of the image.
 	 */
@@ -378,7 +363,6 @@ export interface GltfImage extends GltfNamedElement {
  * Reference to a texture.
  */
 export interface GltfTextureInfo extends GltfElement {
-
 	/**
 	 * The index of the texture.
 	 */
@@ -394,7 +378,6 @@ export interface GltfTextureInfo extends GltfElement {
  * A set of parameter values that are used to define the metallic-roughness material model from Physically-Based Rendering (PBR) methodology.
  */
 export interface GltfMaterialPbrMetallicRoughness extends GltfElement {
-
 	/**
 	 * The material's base color factor.
 	 */
@@ -422,7 +405,6 @@ export interface GltfMaterialPbrMetallicRoughness extends GltfElement {
 }
 
 export interface GltfMaterialNormalTextureInfo extends GltfElement {
-
 	index?: any;
 	texCoord?: any;
 
@@ -433,7 +415,6 @@ export interface GltfMaterialNormalTextureInfo extends GltfElement {
 }
 
 export interface GltfMaterialOcclusionTextureInfo extends GltfElement {
-
 	index?: any;
 	texCoord?: any;
 
@@ -447,7 +428,6 @@ export interface GltfMaterialOcclusionTextureInfo extends GltfElement {
  * The material appearance of a primitive.
  */
 export interface GltfMaterial extends GltfNamedElement {
-
 	/**
 	 * A set of parameter values that are used to define the metallic-roughness material model from Physically-Based Rendering (PBR) methodology. When not specified, all the default values of `pbrMetallicRoughness` apply.
 	 */
@@ -493,7 +473,6 @@ export interface GltfMaterial extends GltfNamedElement {
  * Geometry to be rendered with the given material.
  */
 export interface GltfMeshPrimitive extends GltfElement {
-
 	/**
 	 * A dictionary object, where each key corresponds to mesh attribute semantic and each value is the index of the accessor containing attribute's data.
 	 */
@@ -528,7 +507,6 @@ export interface GltfMeshPrimitive extends GltfElement {
  * A set of primitives to be rendered.  A node can contain one mesh.  A node's transform places the mesh in the scene.
  */
 export interface GltfMesh extends GltfNamedElement {
-
 	/**
 	 * An array of primitives, each defining geometry to be rendered with a material.
 	 */
@@ -543,7 +521,6 @@ export interface GltfMesh extends GltfNamedElement {
  * A node in the node hierarchy.  When the node contains `skin`, all `mesh.primitives` must contain `JOINTS_0` and `WEIGHTS_0` attributes.  A node can have either a `matrix` or any combination of `translation`/`rotation`/`scale` (TRS) properties. TRS properties are converted to matrices and postmultiplied in the `T * R * S` order to compose the transformation matrix; first the scale is applied to the vertices, then the rotation, and then the translation. If none are provided, the transform is the identity. When a node is targeted for animation (referenced by an animation.channel.target), only TRS properties may be present; `matrix` will not be present.
  */
 export interface GltfNode extends GltfNamedElement {
-
 	/**
 	 * The index of the camera referenced by this node.
 	 */
@@ -594,7 +571,6 @@ export interface GltfNode extends GltfNamedElement {
  * Texture sampler properties for filtering and wrapping modes.
  */
 export interface GltfSampler extends GltfNamedElement {
-
 	/**
 	 * Magnification filter.
 	 */
@@ -630,7 +606,6 @@ export interface GltfScene extends GltfNamedElement {
  * Joints and matrices defining a skin.
  */
 export interface GltfSkin extends GltfNamedElement {
-
 	/**
 	 * The index of the accessor containing the floating-point 4x4 inverse-bind matrices.  The default is that each matrix is a 4x4 identity matrix, which implies that inverse-bind matrices were pre-applied.
 	 */
@@ -651,7 +626,6 @@ export interface GltfSkin extends GltfNamedElement {
  * A texture and its sampler.
  */
 export interface GltfTexture extends GltfNamedElement {
-
 	/**
 	 * The index of the sampler used by this texture. When undefined, a sampler with repeat wrapping and auto filtering should be used.
 	 */
@@ -667,7 +641,6 @@ export interface GltfTexture extends GltfNamedElement {
  * The root object for a glTF asset.
  */
 export interface GltfFile extends GltfElement {
-
 	/**
 	 * Names of glTF extensions used somewhere in this asset.
 	 */

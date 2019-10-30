@@ -26,7 +26,6 @@ import { Player } from './player';
  * to IEditable in VPinball.
  */
 export interface IPlayable extends IItem {
-
 	setupPlayer(player: Player, table: Table): void;
 }
 

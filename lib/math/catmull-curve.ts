@@ -28,14 +28,33 @@ import { RenderVertex3D, Vertex3D } from './vertex3d';
  * @see https://github.com/vpinball/vpinball/blob/master/mesh.h#L55
  */
 export abstract class CatmullCurve {
-
 	public abstract getPointAt(t: number): IRenderVertex;
 
 	protected static dt(v0: Vertex, v1: Vertex, v2: Vertex, v3: Vertex): [number, number, number] {
-
-		let dt0 = f4(Math.sqrt(v1.clone().sub(v0).length()));
-		let dt1 = f4(Math.sqrt(v2.clone().sub(v1).length()));
-		let dt2 = f4(Math.sqrt(v3.clone().sub(v2).length()));
+		let dt0 = f4(
+			Math.sqrt(
+				v1
+					.clone()
+					.sub(v0)
+					.length(),
+			),
+		);
+		let dt1 = f4(
+			Math.sqrt(
+				v2
+					.clone()
+					.sub(v1)
+					.length(),
+			),
+		);
+		let dt2 = f4(
+			Math.sqrt(
+				v3
+					.clone()
+					.sub(v2)
+					.length(),
+			),
+		);
 
 		// check for repeated control points
 		if (dt1 < 1e-4) {
@@ -50,8 +69,15 @@ export abstract class CatmullCurve {
 		return [dt0, dt1, dt2];
 	}
 
-	protected static initNonuniformCatmullCoeffs(x0: number, x1: number, x2: number, x3: number, dt0: number, dt1: number, dt2: number): number[] {
-
+	protected static initNonuniformCatmullCoeffs(
+		x0: number,
+		x1: number,
+		x2: number,
+		x3: number,
+		dt0: number,
+		dt1: number,
+		dt2: number,
+	): number[] {
 		// compute tangents when parameterized in [t1,t2]
 		let t1 = f4(f4(f4(f4(x1 - x0) / dt0) - f4(f4(x2 - x0) / f4(dt0 + dt1))) + f4(f4(x2 - x1) / dt1));
 		let t2 = f4(f4(f4(f4(x2 - x1) / dt1) - f4(f4(x3 - x1) / f4(dt1 + dt2))) + f4(f4(x3 - x2) / dt2));
@@ -74,8 +100,7 @@ export abstract class CatmullCurve {
 }
 
 export class CatmullCurve2D extends CatmullCurve {
-
-	private c: { x: number[], y: number[], z?: number[] } = {
+	private c: { x: number[]; y: number[]; z?: number[] } = {
 		x: [0, 0, 0, 0],
 		y: [0, 0, 0, 0],
 	};
@@ -106,8 +131,7 @@ export class CatmullCurve2D extends CatmullCurve {
 }
 
 export class CatmullCurve3D extends CatmullCurve {
-
-	private c: { x: number[], y: number[], z: number[] } = {
+	private c: { x: number[]; y: number[]; z: number[] } = {
 		x: [0, 0, 0, 0],
 		y: [0, 0, 0, 0],
 		z: [0, 0, 0, 0],

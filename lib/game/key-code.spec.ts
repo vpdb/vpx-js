@@ -79,7 +79,6 @@ import {
 } from './key-code';
 
 describe('The VPinball keyboard scan codes', () => {
-
 	it('should correctly map control keys', async () => {
 		expect(keyEventToDirectInputKey({ key: 'Control', code: 'ControlLeft' } as any)).to.equal(DIK_LCONTROL);
 		expect(keyEventToDirectInputKey({ key: 'Control', code: 'ControlRight' } as any)).to.equal(DIK_RCONTROL);
@@ -148,5 +147,4 @@ describe('The VPinball keyboard scan codes', () => {
 		expect(keyEventToDirectInputKey({ key: 'Q', code: 'KeyQ' } as any)).to.equal(DIK_Q);
 		expect(keyEventToDirectInputKey({ key: 'z', code: 'KeyZ' } as any)).to.equal(DIK_Z);
 	});
-
 });

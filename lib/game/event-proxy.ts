@@ -24,7 +24,6 @@ import { IPlayable } from './iplayable';
 import { isScriptable } from './iscriptable';
 
 export class EventProxy {
-
 	/**
 	 * while playing and the ball hits the mesh the hit threshold is updated here
 	 */
@@ -62,7 +61,6 @@ export class EventProxy {
 	}
 
 	public fireGroupEvent(e: Event): void {
-
 		for (let i = 0; i < this.eventCollection.length; i++) {
 			this.eventCollection[i].fireVoidEventParm(e, this.eventCollectionItemPos[i]);
 		}
@@ -83,24 +81,43 @@ export class EventProxy {
 
 function getEventName(event: Event): string {
 	switch (event) {
-		case Event.FlipperEventsCollide: return 'Collide';
-		case Event.GameEventsExit: return 'Exit';
-		case Event.GameEventsInit: return 'Init';
-		case Event.GameEventsKeyDown: return 'KeyDown';
-		case Event.GameEventsKeyUp: return 'KeyUp';
-		case Event.GameEventsMusicDone: return 'MusicDone';
-		case Event.GameEventsPaused: return 'Paused';
-		case Event.GameEventsUnPaused: return 'UnPaused';
-		case Event.HitEventsHit: return 'Hit';
-		case Event.HitEventsUnhit: return 'Unhit';
-		case Event.LightSeqEventsPlayDone: return 'PlayDone';
-		case Event.LimitEventsBOS: return 'LimitBOS';
-		case Event.LimitEventsEOS: return 'LimitEOS';
-		case Event.SpinnerEventsSpin: return 'Spin';
-		case Event.SurfaceEventsSlingshot: return 'Slingshot';
-		case Event.TargetEventsDropped: return 'Dropped';
-		case Event.TargetEventsRaised: return 'Raised';
-		case Event.TimerEventsTimer: return 'Timer';
-		default: return 'UnknownEvent' + event;
+		case Event.FlipperEventsCollide:
+			return 'Collide';
+		case Event.GameEventsExit:
+			return 'Exit';
+		case Event.GameEventsInit:
+			return 'Init';
+		case Event.GameEventsKeyDown:
+			return 'KeyDown';
+		case Event.GameEventsKeyUp:
+			return 'KeyUp';
+		case Event.GameEventsMusicDone:
+			return 'MusicDone';
+		case Event.GameEventsPaused:
+			return 'Paused';
+		case Event.GameEventsUnPaused:
+			return 'UnPaused';
+		case Event.HitEventsHit:
+			return 'Hit';
+		case Event.HitEventsUnhit:
+			return 'Unhit';
+		case Event.LightSeqEventsPlayDone:
+			return 'PlayDone';
+		case Event.LimitEventsBOS:
+			return 'LimitBOS';
+		case Event.LimitEventsEOS:
+			return 'LimitEOS';
+		case Event.SpinnerEventsSpin:
+			return 'Spin';
+		case Event.SurfaceEventsSlingshot:
+			return 'Slingshot';
+		case Event.TargetEventsDropped:
+			return 'Dropped';
+		case Event.TargetEventsRaised:
+			return 'Raised';
+		case Event.TimerEventsTimer:
+			return 'Timer';
+		default:
+			return 'UnknownEvent' + event;
 	}
 }

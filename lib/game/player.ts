@@ -28,12 +28,13 @@ import { PinInput } from './pin-input';
 import { PlayerPhysics } from './player-physics';
 
 export class Player extends EventEmitter {
-
 	private readonly table: Table;
 	private readonly pinInput: PinInput;
 	private readonly physics: PlayerPhysics;
 
-	get balls() { return this.physics.balls; }
+	get balls() {
+		return this.physics.balls;
+	}
 
 	private previousStates: { [key: string]: ItemState } = {};
 	private currentStates: { [key: string]: ItemState } = {};
@@ -94,12 +95,12 @@ export class Player extends EventEmitter {
 		return changedStates;
 	}
 
-	public onKeyUp(event: { code: string, key: string, ts: number }) {
+	public onKeyUp(event: { code: string; key: string; ts: number }) {
 		const dkCode = keyEventToDirectInputKey(event);
 		this.pinInput.onKeyUp(dkCode, event.ts);
 	}
 
-	public onKeyDown(event: { code: string, key: string, ts: number }) {
+	public onKeyDown(event: { code: string; key: string; ts: number }) {
 		const dkCode = keyEventToDirectInputKey(event);
 		this.pinInput.onKeyDown(dkCode, event.ts);
 	}
@@ -183,7 +184,6 @@ export class Player extends EventEmitter {
 }
 
 export interface IBallCreationPosition {
-
 	getBallCreationPosition(table: Table): Vertex3D;
 
 	getBallCreationVelocity(table: Table): Vertex3D;
@@ -192,13 +192,16 @@ export interface IBallCreationPosition {
 }
 
 export class ChangedStates<STATE extends ItemState = ItemState> {
-
 	public static readonly POOL = new Pool(ChangedStates);
 
 	public changedStates: { [key: string]: STATE } = {};
 
-	get keys() { return Object.keys(this.changedStates); }
-	get states() { return Object.values(this.changedStates); }
+	get keys() {
+		return Object.keys(this.changedStates);
+	}
+	get states() {
+		return Object.values(this.changedStates);
+	}
 
 	public static claim(): ChangedStates {
 		return ChangedStates.POOL.get();

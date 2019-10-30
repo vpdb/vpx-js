@@ -24,10 +24,14 @@ import WPC from '../../../res/scripts/WPC.vbs';
 
 export function getTextFile(fileName: string): string {
 	switch (fileName.toLowerCase()) {
-		case 'controller.vbs': return controller;
-		case 'core.vbs': return core;
-		case 'vpmkeys.vbs': return VPMKeys;
-		case 'wpc.vbs': return WPC;
+		case 'controller.vbs':
+			return controller;
+		case 'core.vbs':
+			return core;
+		case 'vpmkeys.vbs':
+			return VPMKeys;
+		case 'wpc.vbs':
+			return WPC;
 	}
 	throw new Error(`Cannot find text file ${fileName}`);
 }

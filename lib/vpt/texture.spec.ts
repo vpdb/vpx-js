@@ -31,7 +31,6 @@ const three = new ThreeHelper();
 const imgDiffTolerance = 7;
 
 describe('The VPinball texture parser', () => {
-
 	let vpt: Table;
 	const loader = new ThreeTextureLoaderNode();
 	const testPng = readFileSync(three.fixturePath('test_pattern.png'));
@@ -56,7 +55,9 @@ describe('The VPinball texture parser', () => {
 		const texture = vpt.getTexture('test_pattern_png')!;
 		const threeTexture = await texture.loadTexture(loader, vpt);
 		const jpg = await threeTexture.image.getImage(false, 100);
-		const png = await sharp(jpg).png().toBuffer();
+		const png = await sharp(jpg)
+			.png()
+			.toBuffer();
 		const match = await comparePngs(png, testPng);
 		expect(match).to.equal(true);
 	});
@@ -65,7 +66,9 @@ describe('The VPinball texture parser', () => {
 		const texture = vpt.getTexture('test_pattern_jpg')!;
 		const threeTexture = await texture.loadTexture(loader, vpt);
 		const jpg = await threeTexture.image.getImage(false, 100);
-		const png = await sharp(jpg).png().toBuffer();
+		const png = await sharp(jpg)
+			.png()
+			.toBuffer();
 		const match = await comparePngs(png, testPng);
 		expect(match).to.equal(true);
 	});
@@ -74,7 +77,9 @@ describe('The VPinball texture parser', () => {
 		const texture = vpt.getTexture('test_pattern_xrgb')!;
 		const threeTexture = await texture.loadTexture(loader, vpt);
 		const jpg = await threeTexture.image.getImage(false, 100);
-		const png = await sharp(jpg).png().toBuffer();
+		const png = await sharp(jpg)
+			.png()
+			.toBuffer();
 		const match = await comparePngs(png, testPng);
 		expect(match).to.equal(true);
 	});
@@ -83,7 +88,9 @@ describe('The VPinball texture parser', () => {
 		const texture = vpt.getTexture('test_pattern_argb')!;
 		const threeTexture = await texture.loadTexture(loader, vpt);
 		const jpg = await threeTexture.image.getImage(false, 100);
-		const png = await sharp(jpg).png().toBuffer();
+		const png = await sharp(jpg)
+			.png()
+			.toBuffer();
 		const match = await comparePngs(png, testPng);
 		expect(match).to.equal(true);
 	});
@@ -93,7 +100,9 @@ describe('The VPinball texture parser', () => {
 		const threeTexture = await texture.loadTexture(loader, vpt);
 		threeTexture.image.resize(1024, 512);
 		const jpg = await threeTexture.image.getImage(false, 100);
-		const png = await sharp(jpg).png().toBuffer();
+		const png = await sharp(jpg)
+			.png()
+			.toBuffer();
 		const match = await comparePngs(png, testPngPow2, 20);
 		expect(match).to.equal(true);
 	});
@@ -130,14 +139,21 @@ describe('The VPinball texture parser', () => {
 		expect(threeTexture.image.height).to.equal(256);
 
 		const jpg = await threeTexture.image.getImage(false, 100);
-		const png = await sharp(jpg).png().toBuffer();
+		const png = await sharp(jpg)
+			.png()
+			.toBuffer();
 		const match = await comparePngs(png, testLocalGottliebKicker);
 		expect(match).to.equal(true);
 	});
-
 });
 
-async function comparePngs(img1: Buffer, img2: Buffer, tolerance = imgDiffTolerance, ignoreAntialiasing = false, debugPrint = false): Promise<boolean> {
+async function comparePngs(
+	img1: Buffer,
+	img2: Buffer,
+	tolerance = imgDiffTolerance,
+	ignoreAntialiasing = false,
+	debugPrint = false,
+): Promise<boolean> {
 	return new Promise((resolve, reject) => {
 		looksSame(img1, img2, { tolerance, ignoreAntialiasing, ignoreCaret: false }, (error, result) => {
 			if (error) {
@@ -155,17 +171,20 @@ async function comparePngs(img1: Buffer, img2: Buffer, tolerance = imgDiffTolera
 async function debug(img1: Buffer, img2: Buffer, tolerance = imgDiffTolerance, ignoreAntialiasing = false) {
 	await comparePngs(img1, img2, tolerance, ignoreAntialiasing, true);
 	await new Promise((resolve, reject) => {
-		createDiff({
-			reference: img1,
-			current: img2,
-			diff: 'diff.png',
-			highlightColor: '#ff00ff', // color to highlight the differences
-			strict: false,
-			tolerance,
-			antialiasingTolerance: 0,
-			ignoreAntialiasing,
-			ignoreCaret: false,
-		}, error => error ? reject(error) : resolve());
+		createDiff(
+			{
+				reference: img1,
+				current: img2,
+				diff: 'diff.png',
+				highlightColor: '#ff00ff', // color to highlight the differences
+				strict: false,
+				tolerance,
+				antialiasingTolerance: 0,
+				ignoreAntialiasing,
+				ignoreCaret: false,
+			},
+			error => (error ? reject(error) : resolve()),
+		);
 	});
 	writeFileSync('texture.png', img1);
 	writeFileSync('fixture.png', img2);

@@ -33,7 +33,6 @@ export const HIT_SHAPE_DETAIL_LEVEL = 7.0;
  * @see https://github.com/vpinball/vpinball/blob/master/dragpoint.cpp
  */
 export class DragPoint extends BiffParser {
-
 	public vertex!: Vertex3D;
 	public fSmooth!: boolean;
 	public fSlingshot!: boolean;
@@ -46,8 +45,8 @@ export class DragPoint extends BiffParser {
 		instantiateT: () => T,
 		instantiateCatmullCurve: (pdp0: Vertex, pdp1: Vertex, pdp2: Vertex, pdp3: Vertex) => CatmullCurve,
 		loop: boolean = true,
-		accuracy: number = 4.0): T[] {
-
+		accuracy: number = 4.0,
+	): T[] {
 		let vv: T[] = [];
 
 		//static const int Dim = T::Dim;    // for now, this is always 2 or 3
@@ -57,23 +56,22 @@ export class DragPoint extends BiffParser {
 		const rendv2 = instantiateT();
 
 		for (let i = 0; i < endpoint; i++) {
-
 			const pdp1: DragPoint = vdpoint[i];
-			const pdp2: DragPoint = vdpoint[(i < cpoint - 1) ? (i + 1) : 0];
+			const pdp2: DragPoint = vdpoint[i < cpoint - 1 ? i + 1 : 0];
 
-			if ((pdp1.vertex.x === pdp2.vertex.x) && (pdp1.vertex.y === pdp2.vertex.y) && (pdp1.vertex.z === pdp2.vertex.z)) {
+			if (pdp1.vertex.x === pdp2.vertex.x && pdp1.vertex.y === pdp2.vertex.y && pdp1.vertex.z === pdp2.vertex.z) {
 				// Special case - two points coincide
 				continue;
 			}
 
 			let iprev: number = pdp1.fSmooth ? i - 1 : i;
 			if (iprev < 0) {
-				iprev = (loop ? cpoint - 1 : 0);
+				iprev = loop ? cpoint - 1 : 0;
 			}
 
 			let inext: number = pdp2.fSmooth ? i + 2 : i + 1;
 			if (inext >= cpoint) {
-				inext = (loop ? inext - cpoint : cpoint - 1);
+				inext = loop ? inext - cpoint : cpoint - 1;
 			}
 
 			const pdp0: DragPoint = vdpoint[iprev];
@@ -105,7 +103,6 @@ export class DragPoint extends BiffParser {
 	}
 
 	public static getTextureCoords(dragPoints: DragPoint[], vv: RenderVertex[]): number[] {
-
 		const vitexpoints: number[] = [];
 		const virenderpoints: number[] = [];
 		let fNoCoords = false;
@@ -140,16 +137,14 @@ export class DragPoint extends BiffParser {
 		virenderpoints.push(virenderpoints[0] + cpoints);
 
 		for (let i = 0; i < vitexpoints.length - 1; ++i) {
-
 			const startrenderpoint = virenderpoints[i] % cpoints;
-			let endrenderpoint = virenderpoints[(i < cpoints - 1) ? (i + 1) : 0] % cpoints;
+			let endrenderpoint = virenderpoints[i < cpoints - 1 ? i + 1 : 0] % cpoints;
 
 			let startTexCoord: number;
 			let endtexcoord: number;
 			if (fNoCoords) {
 				startTexCoord = 0.0;
 				endtexcoord = 1.0;
-
 			} else {
 				startTexCoord = dragPoints[vitexpoints[i] % dragPoints.length].texturecoord;
 				endtexcoord = dragPoints[vitexpoints[i + 1] % dragPoints.length].texturecoord;
@@ -163,7 +158,6 @@ export class DragPoint extends BiffParser {
 
 			let totalLength = 0.0;
 			for (let l = startrenderpoint; l < endrenderpoint; ++l) {
-
 				const pv1 = vv[l % cpoints];
 				const pv2 = vv[(l + 1) % cpoints];
 
@@ -176,7 +170,6 @@ export class DragPoint extends BiffParser {
 
 			let partialLength = 0.0;
 			for (let l = startrenderpoint; l < endrenderpoint; ++l) {
-
 				const pv1 = vv[l % cpoints];
 				const pv2 = vv[(l + 1) % cpoints];
 
@@ -188,15 +181,22 @@ export class DragPoint extends BiffParser {
 				}
 				const texCoord = f4(partialLength / totalLength);
 
-				ppcoords[l % cpoints] = (texCoord * deltacoord) + startTexCoord;
+				ppcoords[l % cpoints] = texCoord * deltacoord + startTexCoord;
 				partialLength = f4(partialLength + length);
 			}
 		}
 		return ppcoords;
 	}
 
-	private static recurseSmoothLine<T extends IRenderVertex>(vv: T[] = [], cc: CatmullCurve, t1: number, t2: number, vt1: T, vt2: T, accuracy: number): T[] {
-
+	private static recurseSmoothLine<T extends IRenderVertex>(
+		vv: T[] = [],
+		cc: CatmullCurve,
+		t1: number,
+		t2: number,
+		vt1: T,
+		vt2: T,
+		accuracy: number,
+	): T[] {
 		const tMid = f4(f4(t1 + t2) * 0.5);
 
 		const vmid: T = cc.getPointAt(tMid) as T;
@@ -210,7 +210,6 @@ export class DragPoint extends BiffParser {
 			// Last point never gets added by this recursive loop,
 			// but that's where it wraps around to the next curve.
 			vv.push(vt1);
-
 		} else {
 			vv = DragPoint.recurseSmoothLine<T>(vv, cc, t1, tMid, vt1, vmid, accuracy);
 			vv = DragPoint.recurseSmoothLine<T>(vv, cc, tMid, t2, vmid, vt2, accuracy);
@@ -218,8 +217,12 @@ export class DragPoint extends BiffParser {
 		return vv;
 	}
 
-	private static flatWithAccuracy(v1: IRenderVertex, v2: IRenderVertex, vMid: IRenderVertex, accuracy: number): boolean {
-
+	private static flatWithAccuracy(
+		v1: IRenderVertex,
+		v2: IRenderVertex,
+		vMid: IRenderVertex,
+		accuracy: number,
+	): boolean {
 		if (v1.isVector3 && v2.isVector3 && vMid.isVector3) {
 			return DragPoint.flatWithAccuracy3(v1 as any, v2 as any, vMid as any, accuracy);
 		} else {
@@ -227,7 +230,12 @@ export class DragPoint extends BiffParser {
 		}
 	}
 
-	private static flatWithAccuracy2(v1: IRenderVertex, v2: IRenderVertex, vMid: IRenderVertex, accuracy: number): boolean {
+	private static flatWithAccuracy2(
+		v1: IRenderVertex,
+		v2: IRenderVertex,
+		vMid: IRenderVertex,
+		accuracy: number,
+	): boolean {
 		// compute double the signed area of the triangle (v1, vMid, v2)
 		const dblArea = f4(f4(vMid.x - v1.x) * f4(v2.y - v1.y)) - f4(f4(v2.x - v1.x) * f4(vMid.y - v1.y));
 		return f4(dblArea * dblArea) < accuracy;
@@ -235,19 +243,34 @@ export class DragPoint extends BiffParser {
 
 	private static flatWithAccuracy3(v1: Vertex3D, v2: Vertex3D, vMid: Vertex3D, accuracy: number): boolean {
 		// compute the square of double the signed area of the triangle (v1, vMid, v2)
-		const cross = vMid.clone().sub(v1).cross(v2.clone().sub(v1));
+		const cross = vMid
+			.clone()
+			.sub(v1)
+			.cross(v2.clone().sub(v1));
 		const dblareasq = cross.lengthSq();
 		return dblareasq < accuracy;
 	}
 
 	public async fromTag(buffer: Buffer, tag: string): Promise<number> {
 		switch (tag) {
-			case 'VCEN': this.vertex = Vertex3D.get(buffer); break;
-			case 'POSZ': this.vertex.z = this.getFloat(buffer); break;
-			case 'SMTH': this.fSmooth = this.getBool(buffer); break;
-			case 'SLNG': this.fSlingshot = this.getBool(buffer); break;
-			case 'ATEX': this.fAutoTexture = this.getBool(buffer); break;
-			case 'TEXC': this.texturecoord = this.getFloat(buffer); break;
+			case 'VCEN':
+				this.vertex = Vertex3D.get(buffer);
+				break;
+			case 'POSZ':
+				this.vertex.z = this.getFloat(buffer);
+				break;
+			case 'SMTH':
+				this.fSmooth = this.getBool(buffer);
+				break;
+			case 'SLNG':
+				this.fSlingshot = this.getBool(buffer);
+				break;
+			case 'ATEX':
+				this.fAutoTexture = this.getBool(buffer);
+				break;
+			case 'TEXC':
+				this.texturecoord = this.getFloat(buffer);
+				break;
 			default:
 				//this.getUnknownBlock(buffer, tag);
 				break;

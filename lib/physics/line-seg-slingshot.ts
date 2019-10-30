@@ -28,7 +28,6 @@ import { CollisionEvent } from './collision-event';
 import { LineSeg } from './line-seg';
 
 export class LineSegSlingshot extends LineSeg {
-
 	private readonly physics: PlayerPhysics;
 	private readonly surface: Surface;
 	private readonly surfaceData: SurfaceData;
@@ -37,7 +36,15 @@ export class LineSegSlingshot extends LineSeg {
 	private eventTimeReset: number = 0;
 	public doHitEvent: boolean = false;
 
-	constructor(surface: Surface, surfaceData: SurfaceData, p1: Vertex2D, p2: Vertex2D, zLow: number, zHigh: number, physics: PlayerPhysics) {
+	constructor(
+		surface: Surface,
+		surfaceData: SurfaceData,
+		p1: Vertex2D,
+		p2: Vertex2D,
+		zLow: number,
+		zHigh: number,
+		physics: PlayerPhysics,
+	) {
 		super(p1, p2, zLow, zHigh);
 		this.surface = surface;
 		this.surfaceData = surfaceData;
@@ -48,14 +55,15 @@ export class LineSegSlingshot extends LineSeg {
 		const ball = coll.ball;
 		const hitNormal = coll.hitNormal;
 
-		const dot = coll.hitNormal.dot(coll.ball.hit.vel);                    // normal velocity to slingshot
-		const threshold = (dot <= -this.surfaceData.slingshotThreshold);       // normal greater than threshold?
+		const dot = coll.hitNormal.dot(coll.ball.hit.vel); // normal velocity to slingshot
+		const threshold = dot <= -this.surfaceData.slingshotThreshold; // normal greater than threshold?
 
-		if (!this.surfaceData.isDisabled && threshold) {                           // enabled and if velocity greater than threshold level
+		if (!this.surfaceData.isDisabled && threshold) {
+			// enabled and if velocity greater than threshold level
 			const len = (this.v2.x - this.v1.x) * hitNormal.y - (this.v2.y - this.v1.y) * hitNormal.x; // length of segment, Unit TAN points from V1 to V2
 
 			const vHitPoint = Vertex2D.claim(
-				ball.state.pos.x - hitNormal.x * ball.data.radius,          // project ball radius along norm
+				ball.state.pos.x - hitNormal.x * ball.data.radius, // project ball radius along norm
 				ball.state.pos.y - hitNormal.y * ball.data.radius,
 			);
 
@@ -63,8 +71,8 @@ export class LineSegSlingshot extends LineSeg {
 			// Calculate this distance from the center of the slingshot to get force
 			const btd = (vHitPoint.x - this.v1.x) * hitNormal.y - (vHitPoint.y - this.v1.y) * hitNormal.x; // distance to vhit from V1
 			Vertex2D.release(vHitPoint);
-			let force = (Math.abs(len) > 1.0e-6) ? ((btd + btd) / len - 1.0) : -1.0;                       // -1..+1
-			force = 0.5 * (1.0 - force * force);                               // !! maximum value 0.5 ...I think this should have been 1.0...oh well
+			let force = Math.abs(len) > 1.0e-6 ? (btd + btd) / len - 1.0 : -1.0; // -1..+1
+			force = 0.5 * (1.0 - force * force); // !! maximum value 0.5 ...I think this should have been 1.0...oh well
 			// will match the previous physics
 			force *= this.force; //-80;
 
@@ -83,7 +91,8 @@ export class LineSegSlingshot extends LineSeg {
 			Vertex3D.release(eventPos);
 			ball.hit.eventPos.set(ball.state.pos); //remember last collide position
 
-			if (distLs > 0.25) { // must be a new place if only by a little
+			if (distLs > 0.25) {
+				// must be a new place if only by a little
 				this.obj.fireGroupEvent(Event.SurfaceEventsSlingshot);
 				this.slingshotAnim.timeReset = this.physics.timeMsec + 100;
 			}

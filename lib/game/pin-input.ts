@@ -48,7 +48,6 @@ import { Player } from './player';
 
 /* tslint:disable:no-bitwise */
 export class PinInput {
-
 	private readonly table: Table;
 	private readonly player: Player;
 	private readonly diq: DirectInputDeviceObjectData[] = []; // direct input queue
@@ -95,18 +94,19 @@ export class PinInput {
 	}
 
 	public processKeys(): void {
-
 		let input = this.getTail();
 		while (input) {
-
 			if (input.dwSequence === APP_KEYBOARD) {
-
 				// Normal game keys:
-				if (input.dwOfs !== this.rgKeys[AssignKey.FrameCount]
-					&& input.dwOfs !== this.rgKeys[AssignKey.Enable3D]
-					&& input.dwOfs !== this.rgKeys[AssignKey.DBGBalls]) {
-
-					this.fireKeyEvent((input.dwData & 0x80) ? Event.GameEventsKeyDown : Event.GameEventsKeyUp, input.dwOfs);
+				if (
+					input.dwOfs !== this.rgKeys[AssignKey.FrameCount] &&
+					input.dwOfs !== this.rgKeys[AssignKey.Enable3D] &&
+					input.dwOfs !== this.rgKeys[AssignKey.DBGBalls]
+				) {
+					this.fireKeyEvent(
+						input.dwData & 0x80 ? Event.GameEventsKeyDown : Event.GameEventsKeyUp,
+						input.dwOfs,
+					);
 				}
 			}
 			DirectInputDeviceObjectData.release(input);
@@ -124,7 +124,6 @@ const APP_JOYSTICKMN = 1;
 const APP_MOUSE = 2;
 
 class DirectInputDeviceObjectData {
-
 	public static readonly POOL = new Pool(DirectInputDeviceObjectData);
 
 	public dwOfs: number = 0;

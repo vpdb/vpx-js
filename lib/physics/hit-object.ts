@@ -30,7 +30,6 @@ import { CollisionEvent } from './collision-event';
 import { CollisionType } from './collision-type';
 
 export abstract class HitObject {
-
 	/**
 	 * Base object pointer.
 	 *
@@ -38,7 +37,7 @@ export abstract class HitObject {
 	 */
 	public obj?: EventProxy;
 
-	public threshold: number = 0;  // threshold for firing an event (usually (always??) normal dot ball-velocity)
+	public threshold: number = 0; // threshold for firing an event (usually (always??) normal dot ball-velocity)
 	public hitBBox: FRect3D = new FRect3D();
 
 	public elasticity: number = 0.3;
@@ -90,7 +89,6 @@ export abstract class HitObject {
 
 	public fireHitEvent(ball: Ball): void {
 		if (this.obj && this.fe && this.isEnabled) {
-
 			// is this the same place as last event? if same then ignore it
 			const posDiff = ball.hit.eventPos.clone(true).sub(ball.state.pos);
 			const distLs = posDiff.lengthSq();
@@ -100,9 +98,10 @@ export abstract class HitObject {
 			ball.hit.eventPos.set(ball.state.pos.x, ball.state.pos.y, ball.state.pos.z);
 
 			// hit targets when used with a captured ball have always a too small distance
-			const normalDist = (this.objType === CollisionType.HitTarget) ? 0.0 : 0.25; // magic distance
+			const normalDist = this.objType === CollisionType.HitTarget ? 0.0 : 0.25; // magic distance
 
-			if (distLs > normalDist) { // must be a new place if only by a little
+			if (distLs > normalDist) {
+				// must be a new place if only by a little
 				this.obj!.fireGroupEvent(Event.HitEventsHit);
 			}
 		}
@@ -143,23 +142,24 @@ export abstract class HitObject {
 		const newTime = this.hitTest(ball, coll.hitTime, !physics.recordContacts ? coll : newColl, physics);
 		const validHit = newTime >= 0 && newTime <= coll.hitTime;
 
-		if (!physics.recordContacts) {            // simply find first event
+		if (!physics.recordContacts) {
+			// simply find first event
 			if (validHit) {
 				coll.ball = ball;
 				coll.obj = this;
 				coll.hitTime = newTime;
 			}
 			CollisionEvent.release(newColl);
-
-		} else {                                 // find first collision, but also remember all contacts
+		} else {
+			// find first collision, but also remember all contacts
 			if (newColl.isContact || validHit) {
 				newColl.ball = ball;
 				newColl.obj = this;
 
 				if (newColl.isContact) {
 					physics.contacts.push(newColl);
-
-				} else {                         // if (validhit)
+				} else {
+					// if (validhit)
 					coll.set(newColl);
 					coll.hitTime = newTime;
 					CollisionEvent.release(newColl);
@@ -176,7 +176,6 @@ export abstract class HitObject {
 			this.setElasticity(mat.elasticity, mat.elasticityFalloff);
 			this.setFriction(mat.friction);
 			this.setScatter(degToRad(mat.scatterAngle));
-
 		} else {
 			this.setElasticity(data.elasticity, data.elasticityFalloff);
 			this.setFriction(data.friction);

@@ -21,7 +21,6 @@ import { close, open, read } from 'fs';
 import { IBinaryReader } from './ole-doc';
 
 export class NodeBinaryReader implements IBinaryReader {
-
 	private readonly filename: string;
 	private fd: number = 0;
 

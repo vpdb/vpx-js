@@ -21,7 +21,6 @@ import { MoverObject } from '../physics/mover-object';
 import { IPlayable } from './iplayable';
 
 export interface IMovable extends IPlayable {
-
 	getMover(): MoverObject;
 }
 

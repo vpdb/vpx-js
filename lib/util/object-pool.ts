@@ -20,7 +20,6 @@
 import { logger } from './logger';
 
 export class Pool<T> {
-
 	private static DEBUG = 0; // globally enable debug prints
 	private static TRACE = false;
 	private static MAX_POOL_SIZE = 100;
@@ -51,18 +50,19 @@ export class Pool<T> {
 		let obj: any;
 		/* istanbul ignore next: only needed for debugging */
 		if (this.debugging && Pool.TRACE) {
-			caller = (new Error()).stack!.split('\n')[3].trim();
+			caller = new Error().stack!.split('\n')[3].trim();
 			if (!this.claimed[caller]) {
 				this.claimed[caller] = 0;
 			}
 			this.claimed[caller]++;
 		}
 
-		if (this.pool.length) {                                      // something left in pool?
+		if (this.pool.length) {
+			// something left in pool?
 			this.recycled++;
 			obj = this.pool.splice(0, 1)[0];
-
-		} else {                                                     // if not, instantiate.
+		} else {
+			// if not, instantiate.
 			if (this.pool.length < Pool.MAX_POOL_SIZE) {
 				this.warned = false;
 			}
@@ -71,7 +71,8 @@ export class Pool<T> {
 		}
 
 		/* istanbul ignore next: only set when debugging */
-		if (caller) {                                                // update meta props
+		if (caller) {
+			// update meta props
 			obj.__caller = caller;
 		} else if (obj._caller) {
 			delete obj._caller;
@@ -106,7 +107,11 @@ export class Pool<T> {
 		/* istanbul ignore next: not supposed to happen! */
 		if (this.pool.length >= Pool.MAX_POOL_SIZE) {
 			if (!this.warned) {
-				logger().warn('Pool size %s of %s is exhausted, future objects will be garbage-collected.', Pool.MAX_POOL_SIZE, this.poolable.name);
+				logger().warn(
+					'Pool size %s of %s is exhausted, future objects will be garbage-collected.',
+					Pool.MAX_POOL_SIZE,
+					this.poolable.name,
+				);
 				this.warned = true;
 			}
 			this.skipped++;
@@ -131,16 +136,27 @@ export class Pool<T> {
 	/* istanbul ignore next: only needed for debugging */
 	private setupDebug(interval: number) {
 		this.debugging = setInterval(() => {
-			logger().debug('[Pool] %s: %s recycled, %s created, %s released, %s skipped (%s%)',
-				this.poolable.name, this.recycled, this.created, this.released, this.skipped,
-				Math.floor(this.recycled / (this.recycled + this.created) * 100000) / 1000);
+			logger().debug(
+				'[Pool] %s: %s recycled, %s created, %s released, %s skipped (%s%)',
+				this.poolable.name,
+				this.recycled,
+				this.created,
+				this.released,
+				this.skipped,
+				Math.floor((this.recycled / (this.recycled + this.created)) * 100000) / 1000,
+			);
 
 			if (Pool.TRACE) {
 				for (const caller of Object.keys(this.claimed)) {
 					logger().debug('[Pool] %s: Unreleased: %d %s', this.poolable.name, this.claimed[caller], caller);
 				}
 				for (const caller of Object.keys(this.unclaimed)) {
-					logger().debug('[Pool] %s: Released without claimed: %d %s', this.poolable.name, this.unclaimed[caller], caller);
+					logger().debug(
+						'[Pool] %s: Released without claimed: %d %s',
+						this.poolable.name,
+						this.unclaimed[caller],
+						caller,
+					);
 				}
 			}
 
@@ -155,9 +171,8 @@ export class Pool<T> {
 }
 
 export interface IPoolable<T> {
-
 	// constructor
-	new(): T;
+	new (): T;
 
 	// static
 	reset?(obj: T): void;

@@ -18,7 +18,6 @@
  */
 
 export enum Event {
-
 	// Table
 	GameEventsKeyDown = 1000, // DISPID_GameEvents_KeyDown
 	GameEventsKeyUp = 1001, // DISPID_GameEvents_KeyUp
@@ -42,7 +41,7 @@ export enum Event {
 
 	// HitTarget
 	TargetEventsDropped = 1302, // DISPID_TargetEvents_Dropped
-	TargetEventsRaised = 1303,  // DISPID_TargetEvents_Raised
+	TargetEventsRaised = 1303, // DISPID_TargetEvents_Raised
 
 	// Light Sequencer
 	LightSeqEventsPlayDone = 1320,

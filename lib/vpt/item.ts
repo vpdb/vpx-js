@@ -24,7 +24,6 @@ import { ItemData } from './item-data';
  * This is the base class of all table items.
  */
 export abstract class Item<DATA extends ItemData> {
-
 	protected readonly data: DATA;
 	protected events?: EventProxy;
 

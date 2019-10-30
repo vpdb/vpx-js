@@ -18,7 +18,6 @@
  */
 
 class StorageNode {
-
 	private readonly storage: Map<string, any> = new Map<string, any>();
 
 	public setItem(name: string, value: any): void {

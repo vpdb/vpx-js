@@ -23,17 +23,24 @@ import { f4 } from './float';
 import { IRenderVertex, Vertex } from './vertex';
 
 export class Vertex2D implements Vertex {
-
 	public static readonly POOL = new Pool(Vertex2D);
 
 	public readonly isVector2 = true;
 	public readonly isVector3 = false;
 
-	set x(_x: number) { this._x = f4(_x); }
-	set y(_y: number) { this._y = f4(_y); }
+	set x(_x: number) {
+		this._x = f4(_x);
+	}
+	set y(_y: number) {
+		this._y = f4(_y);
+	}
 
-	get x() { return this._x; }
-	get y() { return this._y; }
+	get x() {
+		return this._x;
+	}
+	get y() {
+		return this._y;
+	}
 
 	private _x!: number;
 	private _y!: number;
@@ -106,7 +113,7 @@ export class Vertex2D implements Vertex {
 	}
 
 	public normalize(): this {
-		return this.divideScalar(this.length() || 1 );
+		return this.divideScalar(this.length() || 1);
 	}
 
 	public divideScalar(scalar: number): this {
@@ -120,7 +127,7 @@ export class Vertex2D implements Vertex {
 	}
 
 	public length(): number {
-		return f4(Math.sqrt( f4(f4(this.x * this.x) + f4(this.y * this.y))));
+		return f4(Math.sqrt(f4(f4(this.x * this.x) + f4(this.y * this.y))));
 	}
 
 	public lengthSq() {

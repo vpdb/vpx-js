@@ -28,7 +28,6 @@ import { C_CONTACTVEL, C_LOWNORMVEL, PHYS_TOUCH } from './constants';
 import { HitObject } from './hit-object';
 
 export class HitCircle extends HitObject {
-
 	public center: Vertex2D;
 	public readonly radius: number;
 
@@ -41,7 +40,13 @@ export class HitCircle extends HitObject {
 	}
 
 	public collide(coll: CollisionEvent, physics: PlayerPhysics): void {
-		coll.ball.hit.collide3DWall(coll.hitNormal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
+		coll.ball.hit.collide3DWall(
+			coll.hitNormal,
+			this.elasticity,
+			this.elasticityFalloff,
+			this.friction,
+			this.scatter,
+		);
 	}
 
 	public calcHitBBox(): void {
@@ -58,13 +63,20 @@ export class HitCircle extends HitObject {
 		return this.hitTestBasicRadius(ball, dTime, coll, true, true, true);
 	}
 
-	protected hitTestBasicRadius(ball: Ball, dTime: number, coll: CollisionEvent, direction: boolean, lateral: boolean, rigid: boolean): number {
+	protected hitTestBasicRadius(
+		ball: Ball,
+		dTime: number,
+		coll: CollisionEvent,
+		direction: boolean,
+		lateral: boolean,
+		rigid: boolean,
+	): number {
 		if (!this.isEnabled || ball.state.isFrozen) {
 			return -1.0;
 		}
 
 		const c = Vertex3D.claim(this.center.x, this.center.y, 0.0);
-		const dist = ball.state.pos.clone(true).sub(c);    // relative ball position
+		const dist = ball.state.pos.clone(true).sub(c); // relative ball position
 		const dv = ball.hit.vel.clone(true);
 
 		const capsule3D = !lateral && ball.state.pos.z > this.hitBBox.zhigh;
@@ -75,8 +87,7 @@ export class HitCircle extends HitObject {
 		if (capsule3D) {
 			targetRadius = this.radius * (13.0 / 5.0);
 			c.z = this.hitBBox.zhigh - this.radius * (12.0 / 5.0);
-			dist.z = ball.state.pos.z - c.z;                          // ball rolling point - capsule center height
-
+			dist.z = ball.state.pos.z - c.z; // ball rolling point - capsule center height
 		} else {
 			targetRadius = this.radius;
 			if (lateral) {
@@ -86,23 +97,23 @@ export class HitCircle extends HitObject {
 			dv.z = 0.0;
 		}
 
-		const bcddsq = dist.lengthSq();             // ball center to circle center distance ... squared
-		const bcdd = Math.sqrt(bcddsq);             // distance center to center
+		const bcddsq = dist.lengthSq(); // ball center to circle center distance ... squared
+		const bcdd = Math.sqrt(bcddsq); // distance center to center
 		if (bcdd <= 1.0e-6) {
 			Vertex3D.release(dist, dv, c);
-			return -1.0;         // no hit on exact center
+			return -1.0; // no hit on exact center
 		}
 
 		const b = dist.dot(dv);
-		const bnv = b / bcdd;                       // ball normal velocity
+		const bnv = b / bcdd; // ball normal velocity
 		Vertex3D.release(dist);
 
 		if (direction && bnv > C_LOWNORMVEL) {
 			Vertex3D.release(dv, c);
-			return -1.0;         // clearly receding from radius
+			return -1.0; // clearly receding from radius
 		}
 
-		const bnd = bcdd - targetRadius;            // ball normal distance to
+		const bnd = bcdd - targetRadius; // ball normal distance to
 
 		const a = dv.lengthSq();
 		Vertex3D.release(dv);
@@ -123,10 +134,8 @@ export class HitCircle extends HitObject {
 			if (bnd < -ball.data.radius) {
 				Vertex3D.release(c);
 				return -1.0;
-
 			} else if (Math.abs(bnv) <= C_CONTACTVEL) {
 				isContact = true;
-
 			} else {
 				// estimate based on distance and speed along distance
 				// the ball can be that fast that in the next hit cycle the ball will be inside the hit shape of a bumper or other element.
@@ -134,19 +143,24 @@ export class HitCircle extends HitObject {
 				// below the "if (infNan(hittime) || hittime <0.f...)" will then be true and the hit function will return -1.0f = no hit
 				hitTime = Math.max(0.0, -bnd / bnv);
 			}
-
-		} else if (isKickerOrTrigger && ball.hit.isRealBall() && (bnd < 0 === ball.hit.vpVolObjs.indexOf(this.obj!) < 0)) { // triggers & kickers
+		} else if (
+			isKickerOrTrigger &&
+			ball.hit.isRealBall() &&
+			bnd < 0 === ball.hit.vpVolObjs.indexOf(this.obj!) < 0
+		) {
+			// triggers & kickers
 
 			// here if ... ball inside and no hit set .... or ... ball outside and hit set
-			if (Math.abs(bnd - this.radius) < 0.05) {   // if ball appears in center of trigger, then assumed it was gen'ed there
-				ball.hit.vpVolObjs.push(this.obj!);        // special case for trigger overlaying a kicker
-
-			} else {                                       // this will add the ball to the trigger space without a Hit
-				isUnhit = (bnd > 0);                       // ball on outside is UnHit, otherwise it's a Hit
+			if (Math.abs(bnd - this.radius) < 0.05) {
+				// if ball appears in center of trigger, then assumed it was gen'ed there
+				ball.hit.vpVolObjs.push(this.obj!); // special case for trigger overlaying a kicker
+			} else {
+				// this will add the ball to the trigger space without a Hit
+				isUnhit = bnd > 0; // ball on outside is UnHit, otherwise it's a Hit
 			}
-
 		} else {
-			if ((!rigid && bnd * bnv > 0) || (a < 1.0e-8)) { // (outside and receding) or (inside and approaching)
+			if ((!rigid && bnd * bnv > 0) || a < 1.0e-8) {
+				// (outside and receding) or (inside and approaching)
 				// no hit ... ball not moving relative to object
 				Vertex3D.release(c);
 				return -1.0;
@@ -158,7 +172,7 @@ export class HitCircle extends HitObject {
 				return -1.0;
 			}
 			const [time1, time2] = sol;
-			isUnhit = (time1 * time2 < 0);
+			isUnhit = time1 * time2 < 0;
 			hitTime = isUnhit ? Math.max(time1, time2) : Math.min(time1, time2); // ball is inside the circle
 		}
 
@@ -169,9 +183,11 @@ export class HitCircle extends HitObject {
 		}
 
 		const hitZ = ball.state.pos.z + ball.hit.vel.z * hitTime; // rolling point
-		if (hitZ + ball.data.radius * 0.5 < this.hitBBox.zlow
-			|| !capsule3D && (hitZ - ball.data.radius * 0.5) > this.hitBBox.zhigh
-			|| capsule3D && hitZ < this.hitBBox.zhigh) {
+		if (
+			hitZ + ball.data.radius * 0.5 < this.hitBBox.zlow ||
+			(!capsule3D && hitZ - ball.data.radius * 0.5 > this.hitBBox.zhigh) ||
+			(capsule3D && hitZ < this.hitBBox.zhigh)
+		) {
 			Vertex3D.release(c);
 			return -1.0;
 		}
@@ -183,20 +199,22 @@ export class HitCircle extends HitObject {
 		coll.hitNormal.setZero();
 
 		// over center?
-		if (sqrLen > 1.0e-8) {                             // no
+		if (sqrLen > 1.0e-8) {
+			// no
 			const invLen = 1.0 / Math.sqrt(sqrLen);
 			coll.hitNormal.x = (hitX - c.x) * invLen;
 			coll.hitNormal.y = (hitY - c.y) * invLen;
-
-		} else {                                           // yes, over center
-			coll.hitNormal.x = 0.0;                        // make up a value, any direction is ok
+		} else {
+			// yes, over center
+			coll.hitNormal.x = 0.0; // make up a value, any direction is ok
 			coll.hitNormal.y = 1.0;
 			coll.hitNormal.z = 0.0;
 		}
 		Vertex3D.release(c);
 
-		if (!rigid) {                                      // non rigid body collision? return direction
-			coll.hitFlag = isUnhit;                        // UnHit signal is receding from target
+		if (!rigid) {
+			// non rigid body collision? return direction
+			coll.hitFlag = isUnhit; // UnHit signal is receding from target
 		}
 
 		coll.isContact = isContact;
@@ -204,7 +222,7 @@ export class HitCircle extends HitObject {
 			coll.hitOrgNormalVelocity = bnv;
 		}
 
-		coll.hitDistance = bnd;                            // actual contact distance ...
+		coll.hitDistance = bnd; // actual contact distance ...
 		//coll.m_hitRigid = rigid;                         // collision type
 
 		return hitTime;

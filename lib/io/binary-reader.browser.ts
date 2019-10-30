@@ -20,7 +20,6 @@
 import { IBinaryReader } from './ole-doc';
 
 export class BrowserBinaryReader implements IBinaryReader {
-
 	private readonly blob: Blob;
 	private data!: Uint8Array;
 

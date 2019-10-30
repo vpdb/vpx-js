@@ -23,7 +23,6 @@ import { f4 } from './float';
 import { RenderVertex, Vertex2D } from './vertex2d';
 
 export class SplineVertex {
-
 	/** number of vertices for the central curve */
 	public pcvertex!: number;
 
@@ -35,8 +34,13 @@ export class SplineVertex {
 
 	public rgvLocal: Vertex2D[] = [];
 
-	public static getInstance(dragPoints: DragPoint[], thickness: number, tableDetailLevel: number, accuracy: number, staticRendering = true): SplineVertex {
-
+	public static getInstance(
+		dragPoints: DragPoint[],
+		thickness: number,
+		tableDetailLevel: number,
+		accuracy: number,
+		staticRendering = true,
+	): SplineVertex {
 		const v = new SplineVertex();
 		const vvertex = SplineVertex.getCentralCurve(dragPoints, tableDetailLevel, accuracy, staticRendering);
 
@@ -44,8 +48,8 @@ export class SplineVertex {
 
 		for (let i = 0; i < cvertex; i++) {
 			// prev and next wrap around as rubbers always loop
-			const vprev = vvertex[(i > 0) ? i - 1 : cvertex - 1];
-			const vnext = vvertex[(i < (cvertex - 1)) ? i + 1 : 0];
+			const vprev = vvertex[i > 0 ? i - 1 : cvertex - 1];
+			const vnext = vvertex[i < cvertex - 1 ? i + 1 : 0];
 			const vmiddle = vvertex[i];
 
 			v.ppfCross[i] = vmiddle.fControlPoint;
@@ -55,18 +59,16 @@ export class SplineVertex {
 			// Get normal at this point
 			// Notice that these values equal the ones in the line
 			// equation and could probably be substituted by them.
-			const v1Normal = new Vertex2D(vprev.y - vmiddle.y, vmiddle.x - vprev.x);   // vector vmiddle-vprev rotated RIGHT
-			const v2Normal = new Vertex2D(vmiddle.y - vnext.y, vnext.x - vmiddle.x);   // vector vnext-vmiddle rotated RIGHT
+			const v1Normal = new Vertex2D(vprev.y - vmiddle.y, vmiddle.x - vprev.x); // vector vmiddle-vprev rotated RIGHT
+			const v2Normal = new Vertex2D(vmiddle.y - vnext.y, vnext.x - vmiddle.x); // vector vnext-vmiddle rotated RIGHT
 
 			// not needed special start/end handling as rubbers always loop, except for the case where there are only 2 control points
-			if (cvertex === 2 && i === (cvertex - 1)) {
+			if (cvertex === 2 && i === cvertex - 1) {
 				v1Normal.normalize();
 				vNormal = v1Normal;
-
 			} else if (cvertex === 2 && i === 0) {
 				v2Normal.normalize();
 				vNormal = v2Normal;
-
 			} else {
 				v1Normal.normalize();
 				v2Normal.normalize();
@@ -74,7 +76,6 @@ export class SplineVertex {
 				if (Math.abs(v1Normal.x - v2Normal.x) < 0.0001 && Math.abs(v1Normal.y - v2Normal.y) < 0.0001) {
 					// Two parallel segments
 					vNormal = v1Normal;
-
 				} else {
 					// Find intersection of the two edges meeting this points, but
 					// shift those lines outwards along their normals
@@ -94,7 +95,7 @@ export class SplineVertex {
 					const F = f4(f4(D * f4(v2Normal.x - vnext.x)) + f4(E * f4(v2Normal.y - vnext.y)));
 
 					const det = f4(f4(A * E) - f4(B * D));
-					const invDet = (det !== 0.0) ? f4(1.0 / det) : 0.0;
+					const invDet = det !== 0.0 ? f4(1.0 / det) : 0.0;
 
 					const intersectX = f4(f4(f4(B * F) - f4(E * C)) * invDet);
 					const intersectY = f4(f4(f4(C * D) - f4(A * F)) * invDet);
@@ -126,8 +127,12 @@ export class SplineVertex {
 		return v;
 	}
 
-	public static getCentralCurve(dragPoints: DragPoint[], tableDetailLevel: number, acc: number, staticRendering = true): RenderVertex[] {
-
+	public static getCentralCurve(
+		dragPoints: DragPoint[],
+		tableDetailLevel: number,
+		acc: number,
+		staticRendering = true,
+	): RenderVertex[] {
 		let accuracy: number;
 
 		// as solid rubbers are rendered into the static buffer, always use maximum precision
@@ -142,6 +147,12 @@ export class SplineVertex {
 			accuracy = 4.0 * Math.pow(10.0, (10.0 - accuracy) * (1.0 / 1.5)); // min = 4 (highest accuracy/detail level), max = 4 * 10^(10/1.5) = ~18.000.000 (lowest accuracy/detail level)
 		}
 		// FIXME as any
-		return DragPoint.getRgVertex<RenderVertex>(dragPoints, () => new RenderVertex(), CatmullCurve2D.fromVertex2D as any, true, accuracy);
+		return DragPoint.getRgVertex<RenderVertex>(
+			dragPoints,
+			() => new RenderVertex(),
+			CatmullCurve2D.fromVertex2D as any,
+			true,
+			accuracy,
+		);
 	}
 }

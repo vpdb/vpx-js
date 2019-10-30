@@ -18,7 +18,6 @@
  */
 
 export abstract class VbsApi {
-
 	private propertyMap?: { [key: string]: string };
 
 	protected abstract _getPropertyNames(): string[];

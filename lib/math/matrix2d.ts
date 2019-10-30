@@ -21,14 +21,9 @@ import { Pool } from '../util/object-pool';
 import { Vertex3D } from './vertex3d';
 
 export class Matrix2D {
-
 	private static readonly POOL = new Pool(Matrix2D);
 
-	public readonly matrix = [
-		[ 1, 0, 0 ],
-		[ 0, 1, 0 ],
-		[ 0, 0, 1 ],
-	];
+	public readonly matrix = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
 
 	public static claim(): Matrix2D {
 		return Matrix2D.POOL.get();
@@ -60,13 +55,15 @@ export class Matrix2D {
 	public multiplyVectorT(v: Vertex3D, recycle = false): Vertex3D {
 		return recycle
 			? Vertex3D.claim(
-				this.matrix[0][0] * v.x + this.matrix[1][0] * v.y + this.matrix[2][0] * v.z,
-				this.matrix[0][1] * v.x + this.matrix[1][1] * v.y + this.matrix[2][1] * v.z,
-				this.matrix[0][2] * v.x + this.matrix[1][2] * v.y + this.matrix[2][2] * v.z)
+					this.matrix[0][0] * v.x + this.matrix[1][0] * v.y + this.matrix[2][0] * v.z,
+					this.matrix[0][1] * v.x + this.matrix[1][1] * v.y + this.matrix[2][1] * v.z,
+					this.matrix[0][2] * v.x + this.matrix[1][2] * v.y + this.matrix[2][2] * v.z,
+			  )
 			: new Vertex3D(
-				this.matrix[0][0] * v.x + this.matrix[1][0] * v.y + this.matrix[2][0] * v.z,
-				this.matrix[0][1] * v.x + this.matrix[1][1] * v.y + this.matrix[2][1] * v.z,
-				this.matrix[0][2] * v.x + this.matrix[1][2] * v.y + this.matrix[2][2] * v.z);
+					this.matrix[0][0] * v.x + this.matrix[1][0] * v.y + this.matrix[2][0] * v.z,
+					this.matrix[0][1] * v.x + this.matrix[1][1] * v.y + this.matrix[2][1] * v.z,
+					this.matrix[0][2] * v.x + this.matrix[1][2] * v.y + this.matrix[2][2] * v.z,
+			  );
 	}
 
 	public rotationAroundAxis(axis: Vertex3D, rsin: number, rcos: number) {
@@ -163,15 +160,28 @@ export class Matrix2D {
 	}
 
 	public equals(m: Matrix2D) {
-		return this.matrix[0][0] === m.matrix[0][0] && this.matrix[0][1] === m.matrix[0][1] && this.matrix[0][2] === m.matrix[0][2]
-			&& this.matrix[1][0] === m.matrix[1][0] && this.matrix[1][1] === m.matrix[1][1] && this.matrix[1][2] === m.matrix[1][2]
-			&& this.matrix[2][0] === m.matrix[2][0] && this.matrix[2][1] === m.matrix[2][1] && this.matrix[2][2] === m.matrix[2][2];
+		return (
+			this.matrix[0][0] === m.matrix[0][0] &&
+			this.matrix[0][1] === m.matrix[0][1] &&
+			this.matrix[0][2] === m.matrix[0][2] &&
+			this.matrix[1][0] === m.matrix[1][0] &&
+			this.matrix[1][1] === m.matrix[1][1] &&
+			this.matrix[1][2] === m.matrix[1][2] &&
+			this.matrix[2][0] === m.matrix[2][0] &&
+			this.matrix[2][1] === m.matrix[2][1] &&
+			this.matrix[2][2] === m.matrix[2][2]
+		);
 	}
 
 	/* istanbul ignore next: debugging only */
 	public toString() {
-		return `[${Math.round(this.matrix[0][0] * 1000) / 1000}, ${Math.round(this.matrix[0][1] * 1000) / 1000}, ${Math.round(this.matrix[0][2] * 1000) / 1000}]\n` +
-			`[${Math.round(this.matrix[1][0] * 1000) / 1000}, ${Math.round(this.matrix[1][1] * 1000) / 1000}, ${Math.round(this.matrix[1][2] * 1000) / 1000}]\n` +
-			`[${Math.round(this.matrix[2][0] * 1000) / 1000}, ${Math.round(this.matrix[2][1] * 1000) / 1000}, ${Math.round(this.matrix[2][2] * 1000) / 1000}]\n`;
+		return (
+			`[${Math.round(this.matrix[0][0] * 1000) / 1000}, ${Math.round(this.matrix[0][1] * 1000) /
+				1000}, ${Math.round(this.matrix[0][2] * 1000) / 1000}]\n` +
+			`[${Math.round(this.matrix[1][0] * 1000) / 1000}, ${Math.round(this.matrix[1][1] * 1000) /
+				1000}, ${Math.round(this.matrix[1][2] * 1000) / 1000}]\n` +
+			`[${Math.round(this.matrix[2][0] * 1000) / 1000}, ${Math.round(this.matrix[2][1] * 1000) /
+				1000}, ${Math.round(this.matrix[2][2] * 1000) / 1000}]\n`
+		);
 	}
 }

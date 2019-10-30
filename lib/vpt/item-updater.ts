@@ -25,7 +25,6 @@ import { ItemState } from './item-state';
 import { Table } from './table/table';
 
 export abstract class ItemUpdater<STATE extends ItemState> {
-
 	protected readonly state: STATE;
 
 	public abstract applyState<NODE, GEOMETRY, POINT_LIGHT>(
@@ -39,24 +38,38 @@ export abstract class ItemUpdater<STATE extends ItemState> {
 		this.state = state;
 	}
 
-	protected applyVisibility<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: STATE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>) {
+	protected applyVisibility<NODE, GEOMETRY, POINT_LIGHT>(
+		obj: NODE,
+		state: STATE,
+		renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>,
+	) {
 		// visibility
 		if (state.isVisible !== undefined) {
 			renderApi.applyVisibility(this.state.isVisible, obj);
 		}
 	}
 
-	protected applyMaterial<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, material: string | undefined, texture: string | undefined, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table) {
+	protected applyMaterial<NODE, GEOMETRY, POINT_LIGHT>(
+		obj: NODE,
+		material: string | undefined,
+		texture: string | undefined,
+		renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>,
+		table: Table,
+	) {
 		if (material || texture) {
-			renderApi.applyMaterial(
-				obj,
-				table.getMaterial(material),
-				texture,
-			);
+			renderApi.applyMaterial(obj, table.getMaterial(material), texture);
 		}
 	}
 
-	protected applyXRotation<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, center: Vertex2D, posZ: number, rotationZ: number, angle: number, name: string) {
+	protected applyXRotation<NODE, GEOMETRY, POINT_LIGHT>(
+		obj: NODE,
+		renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>,
+		center: Vertex2D,
+		posZ: number,
+		rotationZ: number,
+		angle: number,
+		name: string,
+	) {
 		const matTransToOrigin = Matrix3D.claim().setTranslation(-center.x, -center.y, posZ);
 		const matRotateToOrigin = Matrix3D.claim().rotateZMatrix(degToRad(-rotationZ));
 		const matTransFromOrigin = Matrix3D.claim().setTranslation(center.x, center.y, -posZ);

@@ -23,7 +23,6 @@ import { EventEmitter } from 'events';
 import { readableStream } from './event-stream';
 
 export class Header {
-
 	/** Size of sectors */
 	public secSize!: number;
 
@@ -64,7 +63,11 @@ export class Header {
 		for (let i = 0; i < 8; i++) {
 			/* istanbul ignore if */
 			if (header.oleId[i] !== buffer[i]) {
-				throw new Error(`Doesn't look like a valid compound document (wrong ID, 0x${header.oleId[i].toString(16)} must be equal to 0x${buffer[i].toString(16)}).`);
+				throw new Error(
+					`Doesn't look like a valid compound document (wrong ID, 0x${header.oleId[i].toString(
+						16,
+					)} must be equal to 0x${buffer[i].toString(16)}).`,
+				);
 			}
 		}
 		header.secSize = 1 << buffer.readInt16LE(30);
@@ -87,7 +90,6 @@ export class Header {
 }
 
 export class AllocationTable {
-
 	private static SecIdFree = -1;
 	private static SecIdEndOfChain = -2;
 	private static SecIdSAT = -3;
@@ -118,7 +120,9 @@ export class AllocationTable {
 			secIds.push(secId);
 			secId = this.table[secId];
 			if (!secId) {
-				throw new Error('Possibly corrupt file (cannot find secId ' + secIds[secIds.length - 1] + ' in allocation table).');
+				throw new Error(
+					'Possibly corrupt file (cannot find secId ' + secIds[secIds.length - 1] + ' in allocation table).',
+				);
 			}
 		}
 		return secIds;
@@ -139,7 +143,6 @@ export interface StorageEntry {
 }
 
 export class DirectoryTree {
-
 	private static EntryTypeEmpty = 0;
 	private static EntryTypeStorage = 1;
 	private static EntryTypeStream = 2;
@@ -229,7 +232,6 @@ export class DirectoryTree {
 }
 
 export class Storage {
-
 	private readonly doc: OleCompoundDoc;
 	private dirEntry: StorageEntry;
 
@@ -264,33 +266,35 @@ export class Storage {
 		const secOffset = Math.floor(offset / secSize);
 		offset -= secOffset * secSize;
 
-		return readableStream(async (stream, i): Promise<Buffer | null> => {
-			try {
-				if (bytesToRead <= 0) {
+		return readableStream(
+			async (stream, i): Promise<Buffer | null> => {
+				try {
+					if (bytesToRead <= 0) {
+						stream.emit('end');
+						return Promise.resolve(null);
+					}
+
+					const currentSec = i + secOffset;
+					const currentBytesToRead = Math.min(bytesToRead, secSize - offset);
+
+					let buffer: Buffer;
+					if (shortStream) {
+						buffer = await this.doc.readShortSector(secIds[currentSec], offset, currentBytesToRead);
+					} else {
+						buffer = await this.doc.readSector(secIds[currentSec], offset, currentBytesToRead);
+					}
+					bytesToRead -= currentBytesToRead;
+					offset = 0;
+					return buffer;
+
+					/* istanbul ignore next */
+				} catch (err) {
+					stream.emit('error', err);
 					stream.emit('end');
-					return Promise.resolve(null);
+					return null;
 				}
-
-				const currentSec = i + secOffset;
-				const currentBytesToRead = Math.min(bytesToRead, secSize - offset);
-
-				let buffer: Buffer;
-				if (shortStream) {
-					buffer = await this.doc.readShortSector(secIds[currentSec], offset, currentBytesToRead);
-				} else {
-					buffer = await this.doc.readSector(secIds[currentSec], offset, currentBytesToRead);
-				}
-				bytesToRead -= currentBytesToRead;
-				offset = 0;
-				return buffer;
-
-			/* istanbul ignore next */
-			} catch (err) {
-				stream.emit('error', err);
-				stream.emit('end');
-				return null;
-			}
-		});
+			},
+		);
 	}
 
 	/**
@@ -319,7 +323,11 @@ export class Storage {
 	 * @param offset Where to start reading in the stream
 	 * @param next Callback taking in the data and returning the next position
 	 */
-	public async streamFiltered<T>(streamName: string, offset: number, next: (data: ReadResult) => Promise<number | null>): Promise<void> {
+	public async streamFiltered<T>(
+		streamName: string,
+		offset: number,
+		next: (data: ReadResult) => Promise<number | null>,
+	): Promise<void> {
 		const streamEntry = this.dirEntry.streams[streamName];
 		/* istanbul ignore if */
 		if (!streamEntry) {
@@ -337,62 +345,82 @@ export class Storage {
 		let slidingBuffer: Buffer;
 		offset -= secOffset * secSize;
 
-		const str = readableStream<ReadResult>(async (stream): Promise<ReadResult | null> => {
+		const str = readableStream<ReadResult>(
+			async (stream): Promise<ReadResult | null> => {
+				const nextSec = Math.floor(offset / secSize);
 
-			const nextSec = Math.floor(offset / secSize);
-
-			if (!slidingBuffer || nextSec > 1) { // if no buffer can be reused, fetch both
-				secOffset += nextSec;
-				if (shortStream) {
-					slidingBuffer = await this.doc.readShortSectors(secIds.slice(secOffset, secOffset + 2));
-				} else {
-					slidingBuffer = await this.doc.readSectors(secIds.slice(secOffset, secOffset + 2));
+				if (!slidingBuffer || nextSec > 1) {
+					// if no buffer can be reused, fetch both
+					secOffset += nextSec;
+					if (shortStream) {
+						slidingBuffer = await this.doc.readShortSectors(secIds.slice(secOffset, secOffset + 2));
+					} else {
+						slidingBuffer = await this.doc.readSectors(secIds.slice(secOffset, secOffset + 2));
+					}
+				} else if (nextSec === 1) {
+					// if last buffer can be reused as first buffer, fetch second and shift
+					secOffset++;
+					if (shortStream) {
+						slidingBuffer = Buffer.concat(
+							[
+								slidingBuffer.slice(slidingBuffer.length - secSize),
+								await this.doc.readShortSectors(secIds.slice(secOffset + 1, secOffset + 2)),
+							],
+							secSize * 2,
+						);
+					} else {
+						slidingBuffer = Buffer.concat(
+							[
+								slidingBuffer.slice(slidingBuffer.length - secSize),
+								await this.doc.readSectors(secIds.slice(secOffset + 1, secOffset + 2)),
+							],
+							secSize * 2,
+						);
+					}
 				}
+				offset -= nextSec * secSize;
+				const resultBuffer = slidingBuffer.slice(offset);
+				const result = {
+					data: resultBuffer,
+					storageOffset,
+				};
+				let len = await next(result);
 
-			} else if (nextSec === 1) { // if last buffer can be reused as first buffer, fetch second and shift
-				secOffset++;
-				if (shortStream) {
-					slidingBuffer = Buffer.concat([slidingBuffer.slice(slidingBuffer.length - secSize), await this.doc.readShortSectors(secIds.slice(secOffset + 1, secOffset + 2))], secSize * 2);
-				} else {
-					slidingBuffer = Buffer.concat([slidingBuffer.slice(slidingBuffer.length - secSize), await this.doc.readSectors(secIds.slice(secOffset + 1, secOffset + 2))], secSize * 2);
+				// if len is negative, we need to read more!
+				if (len !== null && len < 0) {
+					// read missing sectors
+					const remainingLen = -len - resultBuffer.length;
+					const numSecs = Math.ceil(remainingLen / secSize);
+					/* istanbul ignore if */
+					if (remainingLen > bytes - storageOffset) {
+						throw new Error(
+							`Cannot read ${remainingLen} bytes when only ${bytes - storageOffset} remain in stream.`,
+						);
+					}
+					//console.log('need %s bytes, reading remaining %s in %s sectors...', -len, remainingLen, numSecs);
+					let missingBuffer: Buffer;
+					if (shortStream) {
+						missingBuffer = await this.doc.readShortSectors(
+							secIds.slice(secOffset + 2, secOffset + 2 + numSecs),
+						);
+					} else {
+						missingBuffer = await this.doc.readSectors(
+							secIds.slice(secOffset + 2, secOffset + 2 + numSecs),
+						);
+					}
+					result.data = Buffer.concat([result.data, missingBuffer]);
+					len = await next(result);
 				}
-			}
-			offset -= nextSec * secSize;
-			const resultBuffer = slidingBuffer.slice(offset);
-			const result = {
-				data: resultBuffer,
-				storageOffset,
-			};
-			let len = await next(result);
+				if (len === null) {
+					stream.emit('end');
+					return Promise.resolve(null);
+				}
+				offset += len;
+				storageOffset += len;
 
-			// if len is negative, we need to read more!
-			if (len !== null && len < 0) {
-				// read missing sectors
-				const remainingLen = -len - resultBuffer.length;
-				const numSecs = Math.ceil(remainingLen / secSize);
-				/* istanbul ignore if */
-				if (remainingLen > bytes - storageOffset) {
-					throw new Error(`Cannot read ${remainingLen} bytes when only ${bytes - storageOffset} remain in stream.`);
-				}
-				//console.log('need %s bytes, reading remaining %s in %s sectors...', -len, remainingLen, numSecs);
-				let missingBuffer: Buffer;
-				if (shortStream) {
-					missingBuffer = await this.doc.readShortSectors(secIds.slice(secOffset + 2, secOffset + 2 + numSecs));
-				} else {
-					missingBuffer = await this.doc.readSectors(secIds.slice(secOffset + 2, secOffset + 2 + numSecs));
-				}
-				result.data = Buffer.concat([result.data, missingBuffer]);
-				len = await next(result);
-			}
-			if (len === null) {
-				stream.emit('end');
-				return Promise.resolve(null);
-			}
-			offset += len;
-			storageOffset += len;
-
-			return Promise.resolve(result);
-		});
+				return Promise.resolve(result);
+			},
+		);
 
 		await new Promise((resolve, reject) => {
 			str.on('end', resolve);
@@ -424,7 +452,6 @@ export class Storage {
 }
 
 export class OleCompoundDoc extends EventEmitter {
-
 	public header!: Header;
 	public SAT!: AllocationTable;
 	public SSAT!: AllocationTable;
@@ -443,7 +470,6 @@ export class OleCompoundDoc extends EventEmitter {
 	}
 
 	public static async load(reader: IBinaryReader): Promise<OleCompoundDoc> {
-
 		const doc = new OleCompoundDoc(reader);
 		try {
 			await doc.openFile();
@@ -452,7 +478,6 @@ export class OleCompoundDoc extends EventEmitter {
 			await doc.readSAT();
 			await doc.readSSAT();
 			await doc.readDirectoryTree();
-
 		} catch (err) {
 			await doc.close();
 			throw err;
@@ -522,7 +547,10 @@ export class OleCompoundDoc extends EventEmitter {
 	}
 
 	public async readShortSectors(secIds: number[], offset: number = 0, bytesToRead: number = 0): Promise<Buffer> {
-		bytesToRead = Math.min(secIds.length * this.header.shortSecSize, bytesToRead || secIds.length * this.header.shortSecSize);
+		bytesToRead = Math.min(
+			secIds.length * this.header.shortSecSize,
+			bytesToRead || secIds.length * this.header.shortSecSize,
+		);
 		const buffer = Buffer.alloc(bytesToRead);
 		let i = 0;
 		let bufferOffset = 0;
@@ -571,7 +599,6 @@ export class OleCompoundDoc extends EventEmitter {
 	}
 
 	private async readMSAT(): Promise<void> {
-
 		this.MSAT = this.header.partialMSAT.slice(0);
 		this.MSAT.length = this.header.SATSize;
 
@@ -611,7 +638,6 @@ export class OleCompoundDoc extends EventEmitter {
 	}
 
 	private async readDirectoryTree(): Promise<void> {
-
 		const secIds = this.SAT.getSecIdChain(this.header.dirSecId);
 		this.directoryTree = await DirectoryTree.load(this, secIds);
 
@@ -622,7 +648,7 @@ export class OleCompoundDoc extends EventEmitter {
 
 	private getFileOffsetForSec(secId: number): number {
 		const secSize = this.header.secSize;
-		return this.skipBytes + (secId + 1) * secSize;  // Skip past the header sector
+		return this.skipBytes + (secId + 1) * secSize; // Skip past the header sector
 	}
 
 	private getFileOffsetForShortSec(shortSecId: number): number {
@@ -642,7 +668,6 @@ export interface ReadResult {
 }
 
 export interface IBinaryReader {
-
 	/**
 	 * Reads data into a buffer.
 	 *
@@ -652,7 +677,7 @@ export interface IBinaryReader {
 	 * @param position At which offset to start reading
 	 * @returns [ number of bytes read, data read ]
 	 */
-	read(buffer: Buffer, offset: number, length: number, position: number): Promise<[ number, Buffer ]>;
+	read(buffer: Buffer, offset: number, length: number, position: number): Promise<[number, Buffer]>;
 
 	/**
 	 * Opens the data source.

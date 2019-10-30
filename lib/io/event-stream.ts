@@ -20,8 +20,10 @@
 const Stream = require('stream').Stream;
 const immediately = global.setImmediate || process.nextTick;
 
-export function readableStream<T>(func: (stream: any, i: number) => Promise<T | null>, continueOnError: boolean = false) {
-
+export function readableStream<T>(
+	func: (stream: any, i: number) => Promise<T | null>,
+	continueOnError: boolean = false,
+) {
 	const stream = new Stream();
 	let i = 0;
 	let paused = false;
@@ -31,10 +33,9 @@ export function readableStream<T>(func: (stream: any, i: number) => Promise<T | 
 	stream.readable = true;
 	stream.writable = false;
 
-	stream.on('end', () => ended = true);
+	stream.on('end', () => (ended = true));
 
 	function get(err?: Error, data: T | null = null) {
-
 		/* istanbul ignore if */
 		if (err) {
 			stream.emit('error', err);
@@ -51,15 +52,15 @@ export function readableStream<T>(func: (stream: any, i: number) => Promise<T | 
 			}
 			try {
 				reading = true;
-				func(stream, i++).then(buffer => {
-					reading = false;
-					get(undefined, buffer);
-
-				}).catch(e => {
-					stream.emit('error', e);
-					stream.emit('end');
-				});
-
+				func(stream, i++)
+					.then(buffer => {
+						reading = false;
+						get(undefined, buffer);
+					})
+					.catch(e => {
+						stream.emit('error', e);
+						stream.emit('end');
+					});
 			} catch (err) {
 				stream.emit('error', err);
 				stream.emit('end');
@@ -72,7 +73,7 @@ export function readableStream<T>(func: (stream: any, i: number) => Promise<T | 
 		get();
 	};
 	process.nextTick(get);
-	stream.pause = () => paused = true;
+	stream.pause = () => (paused = true);
 	stream.destroy = () => {
 		stream.emit('end');
 		stream.emit('close');

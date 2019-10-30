@@ -20,7 +20,6 @@
 import { Transpiler } from './transpiler';
 
 export class VBSHelper {
-
 	private readonly transpiler: Transpiler;
 	private transpileCount = 0;
 
@@ -96,5 +95,4 @@ export class VBSHelper {
 		}
 		return obj[param];
 	}
-
 }

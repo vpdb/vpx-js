@@ -24,7 +24,6 @@ import { C_CONTACTVEL, PHYS_TOUCH } from './constants';
 import { HitObject } from './hit-object';
 
 export class HitPlane extends HitObject {
-
 	private readonly normal: Vertex3D;
 	private readonly d: number;
 
@@ -43,9 +42,10 @@ export class HitPlane extends HitObject {
 			return -1.0;
 		}
 
-		const bnv = this.normal.dot(ball.hit.vel);         // speed in normal direction
+		const bnv = this.normal.dot(ball.hit.vel); // speed in normal direction
 
-		if (bnv > C_CONTACTVEL) {                          // return if clearly ball is receding from object
+		if (bnv > C_CONTACTVEL) {
+			// return if clearly ball is receding from object
 			return -1.0;
 		}
 
@@ -62,17 +62,17 @@ export class HitPlane extends HitObject {
 			if (Math.abs(bnd) <= PHYS_TOUCH) {
 				coll.isContact = true;
 				coll.hitNormal.set(this.normal);
-				coll.hitOrgNormalVelocity = bnv;           // remember original normal velocity
+				coll.hitOrgNormalVelocity = bnv; // remember original normal velocity
 				coll.hitDistance = bnd;
-				return 0.0;                                // hit time is ignored for contacts
+				return 0.0; // hit time is ignored for contacts
 			} else {
-				return -1.0;                               // large distance, small velocity -> no hit
+				return -1.0; // large distance, small velocity -> no hit
 			}
 		}
 
-		hitTime = bnd / (-bnv);                            // rate ok for safe divide
+		hitTime = bnd / -bnv; // rate ok for safe divide
 		if (hitTime < 0) {
-			hitTime = 0.0;                                 // already penetrating? then collide immediately
+			hitTime = 0.0; // already penetrating? then collide immediately
 		}
 
 		if (!isFinite(hitTime) || hitTime < 0 || hitTime > dTime) {
@@ -81,13 +81,19 @@ export class HitPlane extends HitObject {
 		}
 
 		coll.hitNormal.set(this.normal);
-		coll.hitDistance = bnd;                            // actual contact distance
+		coll.hitDistance = bnd; // actual contact distance
 
 		return hitTime;
 	}
 
 	public collide(coll: CollisionEvent): void {
-		coll.ball.hit.collide3DWall(coll.hitNormal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
+		coll.ball.hit.collide3DWall(
+			coll.hitNormal,
+			this.elasticity,
+			this.elasticityFalloff,
+			this.friction,
+			this.scatter,
+		);
 
 		// distance from plane to ball surface
 		const bnd = this.normal.dot(coll.ball.state.pos) - coll.ball.data.radius - this.d;

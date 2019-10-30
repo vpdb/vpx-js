@@ -26,7 +26,6 @@ import { CollisionEvent } from './collision-event';
 import { HitKD } from './hit-kd';
 
 export class HitKDNode {
-
 	private hitOct: HitKD; //!! meh, stupid
 
 	public rectBounds: FRect3D = new FRect3D();
@@ -47,8 +46,7 @@ export class HitKDNode {
 	}
 
 	public hitTestBall(ball: Ball, coll: CollisionEvent, physics: PlayerPhysics): void {
-
-		const orgItems = this.items & 0x3FFFFFFF;
+		const orgItems = this.items & 0x3fffffff;
 		const axis = this.items >> 30;
 
 		for (let i = this.start; i < this.start + orgItems; i++) {
@@ -59,7 +57,8 @@ export class HitKDNode {
 		}
 
 		/* istanbul ignore if: never executed (https://www.vpforums.org/index.php?showtopic=42690) */
-		if (this.children && this.children.length) { // not a leaf
+		if (this.children && this.children.length) {
+			// not a leaf
 			if (axis === 0) {
 				const vCenter = (this.rectBounds.left + this.rectBounds.right) * 0.5;
 				if (ball.hit.hitBBox.left <= vCenter) {
@@ -68,7 +67,6 @@ export class HitKDNode {
 				if (ball.hit.hitBBox.right >= vCenter) {
 					this.children[1].hitTestBall(ball, coll, physics);
 				}
-
 			} else if (axis === 1) {
 				const vCenter = (this.rectBounds.top + this.rectBounds.bottom) * 0.5;
 				if (ball.hit.hitBBox.top <= vCenter) {
@@ -77,7 +75,6 @@ export class HitKDNode {
 				if (ball.hit.hitBBox.bottom >= vCenter) {
 					this.children[1].hitTestBall(ball, coll, physics);
 				}
-
 			} else {
 				const vCenter = (this.rectBounds.zlow + this.rectBounds.zhigh) * 0.5;
 				if (ball.hit.hitBBox.zlow <= vCenter) {
@@ -92,7 +89,7 @@ export class HitKDNode {
 
 	/* istanbul ignore next: never executed below the "magic" check (https://www.vpforums.org/index.php?showtopic=42690) */
 	public createNextLevel(level: number, levelEmpty: number): void {
-		const orgItems = (this.items & 0x3FFFFFFF);
+		const orgItems = this.items & 0x3fffffff;
 
 		// !! magic
 		if (orgItems <= 4 || level >= 128 / 2) {
@@ -107,21 +104,22 @@ export class HitKDNode {
 
 		let axis: number;
 		if (vDiag.x > vDiag.y && vDiag.x > vDiag.z) {
-			if (vDiag.x < 0.0001) { //!! magic
+			if (vDiag.x < 0.0001) {
+				//!! magic
 				Vertex3D.release(vDiag);
 				return;
 			}
 			axis = 0;
-
 		} else if (vDiag.y > vDiag.z) {
-			if (vDiag.y < 0.0001) { //!!
+			if (vDiag.y < 0.0001) {
+				//!!
 				Vertex3D.release(vDiag);
 				return;
 			}
 			axis = 1;
-
 		} else {
-			if (vDiag.z < 0.0001) { //!!
+			if (vDiag.z < 0.0001) {
+				//!!
 				Vertex3D.release(vDiag);
 				return;
 			}
@@ -148,11 +146,9 @@ export class HitKDNode {
 		if (axis === 0) {
 			this.children[0].rectBounds.right = vCenter.x;
 			this.children[1].rectBounds.left = vCenter.x;
-
 		} else if (axis === 1) {
 			this.children[0].rectBounds.bottom = vCenter.y;
 			this.children[1].rectBounds.top = vCenter.y;
-
 		} else {
 			this.children[0].rectBounds.zhigh = vCenter.z;
 			this.children[1].rectBounds.zlow = vCenter.z;
@@ -172,31 +168,27 @@ export class HitKDNode {
 
 				if (pho.hitBBox.right < vCenter.x) {
 					this.children[0].items++;
-
 				} else if (pho.hitBBox.left > vCenter.x) {
 					this.children[1].items++;
 				}
 			}
-
 		} else if (axis === 1) {
 			for (let i = this.start; i < this.start + orgItems; ++i) {
 				const pho = this.hitOct.getItemAt(i);
 
 				if (pho.hitBBox.bottom < vCenter.y) {
 					this.children[0].items++;
-
 				} else if (pho.hitBBox.top > vCenter.y) {
 					this.children[1].items++;
 				}
 			}
-
-		} else { // axis == 2
+		} else {
+			// axis == 2
 			for (let i = this.start; i < this.start + orgItems; ++i) {
 				const pho = this.hitOct.getItemAt(i);
 
 				if (pho.hitBBox.zhigh < vCenter.z) {
 					this.children[0].items++;
-
 				} else if (pho.hitBBox.zlow > vCenter.z) {
 					this.children[1].items++;
 				}
@@ -217,12 +209,12 @@ export class HitKDNode {
 
 		if (countEmpty >= 2) {
 			++levelEmpty;
-
 		} else {
 			levelEmpty = 0;
 		}
 
-		if (levelEmpty > 8) {// If 8 levels were all just subdividing the same objects without luck, exit & Free the nodes again (but at least empty space was cut off)
+		if (levelEmpty > 8) {
+			// If 8 levels were all just subdividing the same objects without luck, exit & Free the nodes again (but at least empty space was cut off)
 			this.hitOct.numNodes -= 2;
 			this.children.length = 0;
 			Vertex3D.release(vCenter);
@@ -242,11 +234,11 @@ export class HitKDNode {
 				const pho = this.hitOct.getItemAt(i);
 
 				if (pho.hitBBox.right < vCenter.x) {
-					this.hitOct.tmp[this.children[0].start + (this.children[0].items++)] = this.hitOct.orgIdx[i];
+					this.hitOct.tmp[this.children[0].start + this.children[0].items++] = this.hitOct.orgIdx[i];
 				} else if (pho.hitBBox.left > vCenter.x) {
-					this.hitOct.tmp[this.children[1].start + (this.children[1].items++)] = this.hitOct.orgIdx[i];
+					this.hitOct.tmp[this.children[1].start + this.children[1].items++] = this.hitOct.orgIdx[i];
 				} else {
-					this.hitOct.orgIdx[this.start + (items++)] = this.hitOct.orgIdx[i];
+					this.hitOct.orgIdx[this.start + items++] = this.hitOct.orgIdx[i];
 				}
 			}
 		} else if (axis === 1) {
@@ -254,24 +246,24 @@ export class HitKDNode {
 				const pho = this.hitOct.getItemAt(i);
 
 				if (pho.hitBBox.bottom < vCenter.y) {
-					this.hitOct.tmp[this.children[0].start + (this.children[0].items++)] = this.hitOct.orgIdx[i];
+					this.hitOct.tmp[this.children[0].start + this.children[0].items++] = this.hitOct.orgIdx[i];
 				} else if (pho.hitBBox.top > vCenter.y) {
-					this.hitOct.tmp[this.children[1].start + (this.children[1].items++)] = this.hitOct.orgIdx[i];
+					this.hitOct.tmp[this.children[1].start + this.children[1].items++] = this.hitOct.orgIdx[i];
 				} else {
-					this.hitOct.orgIdx[this.start + (items++)] = this.hitOct.orgIdx[i];
+					this.hitOct.orgIdx[this.start + items++] = this.hitOct.orgIdx[i];
 				}
 			}
-
-		} else { // axis == 2
+		} else {
+			// axis == 2
 			for (let i = this.start; i < this.start + orgItems; ++i) {
 				const pho = this.hitOct.getItemAt(i);
 
 				if (pho.hitBBox.zhigh < vCenter.z) {
-					this.hitOct.tmp[this.children[0].start + (this.children[0].items++)] = this.hitOct.orgIdx[i];
+					this.hitOct.tmp[this.children[0].start + this.children[0].items++] = this.hitOct.orgIdx[i];
 				} else if (pho.hitBBox.zlow > vCenter.z) {
-					this.hitOct.tmp[this.children[1].start + (this.children[1].items++)] = this.hitOct.orgIdx[i];
+					this.hitOct.tmp[this.children[1].start + this.children[1].items++] = this.hitOct.orgIdx[i];
 				} else {
-					this.hitOct.orgIdx[this.start + (items++)] = this.hitOct.orgIdx[i];
+					this.hitOct.orgIdx[this.start + items++] = this.hitOct.orgIdx[i];
 				}
 			}
 		}
@@ -342,5 +334,4 @@ export class HitKDNode {
 	// 		}
 	// 	}
 	// }
-
 }

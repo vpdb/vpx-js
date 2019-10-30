@@ -21,7 +21,8 @@ import { VpmController } from './vpm-controller';
 
 export function getObject(name: string): any {
 	switch (name) {
-		case 'VPinMAME.Controller': return new VpmController();
+		case 'VPinMAME.Controller':
+			return new VpmController();
 	}
 	throw new Error(`Unknown object "${name}".`);
 }

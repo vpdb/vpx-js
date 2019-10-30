@@ -30,7 +30,6 @@ const PngQuant = require('pngquant');
  * PNGs to JPEGs when no alpha channel is found.
  */
 export class NodeImage {
-
 	private static readonly jpegQuality = 65;
 
 	public readonly src: string;
@@ -41,7 +40,14 @@ export class NodeImage {
 	private readonly stats: sharp.Stats;
 	private readonly sharp: sharp.Sharp;
 
-	public constructor(src: string, width: number, height: number, format: string, stats: sharp.Stats, shrp: sharp.Sharp) {
+	public constructor(
+		src: string,
+		width: number,
+		height: number,
+		format: string,
+		stats: sharp.Stats,
+		shrp: sharp.Sharp,
+	) {
 		this.src = src;
 		this.width = width;
 		this.height = height;
@@ -72,7 +78,6 @@ export class NodeImage {
 	}
 
 	public async getImage(optimize: boolean, quality = NodeImage.jpegQuality): Promise<Buffer> {
-
 		if (this.stats.isOpaque) {
 			if (this.format === 'png') {
 				logger().debug('[Image.getImage]: Converting opaque png to jpeg.');
@@ -86,8 +91,10 @@ export class NodeImage {
 					const quanter = new PngQuant([128]);
 					return new Promise((resolve, reject) => {
 						const buffers: Buffer[] = [];
-						this.sharp.on('error', reject)
-							.pipe(quanter).on('error', reject)
+						this.sharp
+							.on('error', reject)
+							.pipe(quanter)
+							.on('error', reject)
 							.on('data', (buf: Buffer) => buffers.push(buf as Buffer))
 							.on('end', () => resolve(Buffer.concat(buffers)))
 							.on('error', reject);

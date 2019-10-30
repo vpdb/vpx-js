@@ -36,7 +36,6 @@ export class SlingshotAnimObject implements AnimObject {
 	public animate(physics: PlayerPhysics) {
 		if (!this.iframe && this.timeReset !== 0 && this.animations) {
 			this.iframe = true;
-
 		} else if (this.iframe && this.timeReset < physics.timeMsec) {
 			this.iframe = false;
 			this.timeReset = 0;

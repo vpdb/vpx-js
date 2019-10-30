@@ -24,7 +24,6 @@ import { Ball } from '../vpt/ball/ball';
 import { HitObject } from './hit-object';
 
 export class CollisionEvent {
-
 	private static readonly POOL = new Pool(CollisionEvent);
 
 	/**

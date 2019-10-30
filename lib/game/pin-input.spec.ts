@@ -28,7 +28,6 @@ chai.use(require('sinon-chai'));
 
 /* tslint:disable:no-unused-expression */
 describe('The VPinball input handler', () => {
-
 	let table: Table;
 	let player: Player;
 	let scope: any;
@@ -42,27 +41,26 @@ describe('The VPinball input handler', () => {
 	});
 
 	it('should react on left flipper key down', () => {
-		player.onKeyDown({code: 'ControlLeft', key: 'Control', ts: Date.now()});
+		player.onKeyDown({ code: 'ControlLeft', key: 'Control', ts: Date.now() });
 		player.updatePhysics(20);
 		expect(scope.keyDown).to.be.equal(player.getKey(AssignKey.LeftFlipperKey));
 	});
 
 	it('should react on plunger key down', () => {
-		player.onKeyDown({code: 'Enter', key: 'Enter', ts: Date.now()});
+		player.onKeyDown({ code: 'Enter', key: 'Enter', ts: Date.now() });
 		player.updatePhysics(20);
 		expect(scope.keyDown).to.be.equal(player.getKey(AssignKey.PlungerKey));
 	});
 
 	it('should react on some other key down', () => {
-		player.onKeyDown({code: 'KeyG', key: 'g', ts: Date.now()});
+		player.onKeyDown({ code: 'KeyG', key: 'g', ts: Date.now() });
 		player.updatePhysics(20);
 		expect(scope.keyDown).to.be.equal(0x22);
 	});
 
 	it('should react on a key up', () => {
-		player.onKeyUp({code: 'ControlRight', key: 'Control', ts: Date.now()});
+		player.onKeyUp({ code: 'ControlRight', key: 'Control', ts: Date.now() });
 		player.updatePhysics(20);
 		expect(scope.keyUp).to.be.equal(player.getKey(AssignKey.RightFlipperKey));
 	});
-
 });

@@ -26,7 +26,6 @@ import { logger } from '../util/logger';
  * @see https://github.com/vpinball/vpinball/blob/master/pinbinary.cpp
  */
 export class Binary extends BiffParser {
-
 	public szName!: string;
 	public szInternalName!: string;
 	public szPath!: string;
@@ -36,16 +35,25 @@ export class Binary extends BiffParser {
 
 	public async fromTag(buffer: Buffer, tag: string, offset: number, len: number): Promise<number> {
 		switch (tag) {
-			case 'NAME': this.szName = this.getString(buffer, len); break;
-			case 'INME': this.szInternalName = this.getString(buffer, len); break;
-			case 'PATH': this.szPath = this.getString(buffer, len); break;
-			case 'SIZE': this.cdata = this.getInt(buffer); break;
+			case 'NAME':
+				this.szName = this.getString(buffer, len);
+				break;
+			case 'INME':
+				this.szInternalName = this.getString(buffer, len);
+				break;
+			case 'PATH':
+				this.szPath = this.getString(buffer, len);
+				break;
+			case 'SIZE':
+				this.cdata = this.getInt(buffer);
+				break;
 			case 'DATA':
 				this.pos = offset;
 				this.len = len;
 				break;
 			/* istanbul ignore next */
-			default: logger().warn('[Binary.fromTag] Unknown tag "%s".', tag);
+			default:
+				logger().warn('[Binary.fromTag] Unknown tag "%s".', tag);
 		}
 		return 0;
 	}

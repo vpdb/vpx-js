@@ -26,7 +26,6 @@ import { Texture } from './texture';
  * @see https://github.com/vpinball/vpinball/blob/master/Material.h
  */
 export class Material {
-
 	public name!: string;
 	/**
 	 *  Wrap/rim lighting factor (0(off)..1(full))
@@ -69,7 +68,7 @@ export class Material {
 	/**
 	 * Can be overridden by texture on object itself
 	 */
-	public baseColor: number = 0xB469FF;
+	public baseColor: number = 0xb469ff;
 	/**
 	 * Specular of glossy layer
 	 */
@@ -134,7 +133,6 @@ export class Material {
 }
 
 export class SaveMaterial {
-
 	public static size = 76;
 
 	public szName: string;
@@ -168,7 +166,6 @@ export class SaveMaterial {
 }
 
 export class SavePhysicsMaterial {
-
 	public static size = 48;
 
 	public name: string;

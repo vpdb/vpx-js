@@ -31,7 +31,6 @@ chai.use(require('sinon-chai'));
 
 /* tslint:disable:no-unused-expression */
 describe('The VBScript transpiler', () => {
-
 	let table: Table;
 	let player: Player;
 
@@ -44,21 +43,25 @@ describe('The VBScript transpiler', () => {
 		const vbs = `Dim test\n`;
 		const transpiler = new Transpiler(table, player);
 		const js = transpiler.transpile(vbs, 'runTableScript');
-		expect(js).to.equal(`runTableScript = (${Transformer.SCOPE_NAME}, ${Transformer.ITEMS_NAME}, ${Transformer.ENUMS_NAME}, ${Transformer.GLOBAL_NAME}, ${Transformer.STDLIB_NAME}, ${Transformer.VBSHELPER_NAME}) => {\n        __scope.test = null;\n};`);
+		expect(js).to.equal(
+			`runTableScript = (${Transformer.SCOPE_NAME}, ${Transformer.ITEMS_NAME}, ${Transformer.ENUMS_NAME}, ${Transformer.GLOBAL_NAME}, ${Transformer.STDLIB_NAME}, ${Transformer.VBSHELPER_NAME}) => {\n        __scope.test = null;\n};`,
+		);
 	});
 
 	it('should wrap everything into a function of an object', () => {
 		const vbs = `Dim test\n`;
 		const transpiler = new Transpiler(table, player);
 		const js = transpiler.transpile(vbs, 'runTableScript', 'window');
-		expect(js).to.equal(`window.runTableScript = (${Transformer.SCOPE_NAME}, ${Transformer.ITEMS_NAME}, ${Transformer.ENUMS_NAME}, ${Transformer.GLOBAL_NAME}, ${Transformer.STDLIB_NAME}, ${Transformer.VBSHELPER_NAME}) => {\n        __scope.test = null;\n};`);
+		expect(js).to.equal(
+			`window.runTableScript = (${Transformer.SCOPE_NAME}, ${Transformer.ITEMS_NAME}, ${Transformer.ENUMS_NAME}, ${Transformer.GLOBAL_NAME}, ${Transformer.STDLIB_NAME}, ${Transformer.VBSHELPER_NAME}) => {\n        __scope.test = null;\n};`,
+		);
 	});
 
 	it('should execute the table script', () => {
 		const Spy = sinon.spy();
-		const vbs = `Spy\n`;                                 // that's our spy, in VBScript!
+		const vbs = `Spy\n`; // that's our spy, in VBScript!
 		const transpiler = new Transpiler(table, player);
-		transpiler.execute(vbs, { Spy }, 'global');       // this should execute the spy
+		transpiler.execute(vbs, { Spy }, 'global'); // this should execute the spy
 
 		expect(Spy).to.have.been.calledOnce;
 	});
@@ -89,5 +92,4 @@ describe('The VBScript transpiler', () => {
 
 		expect(scope.MyVariable).to.equal(13);
 	});
-
 });

@@ -41,30 +41,61 @@ export interface IRenderVertex {
 }
 
 export class Vertex3DNoTex2 {
-
 	public static size = 32;
 
-	set x(x: number) { this._x = f4(x); }
-	set y(y: number) { this._y = f4(y); }
-	set z(z: number) { this._z = f4(z); }
+	set x(x: number) {
+		this._x = f4(x);
+	}
+	set y(y: number) {
+		this._y = f4(y);
+	}
+	set z(z: number) {
+		this._z = f4(z);
+	}
 
-	set nx(nx: number) { this._nx = f4(nx); }
-	set ny(ny: number) { this._ny = f4(ny); }
-	set nz(nz: number) { this._nz = f4(nz); }
+	set nx(nx: number) {
+		this._nx = f4(nx);
+	}
+	set ny(ny: number) {
+		this._ny = f4(ny);
+	}
+	set nz(nz: number) {
+		this._nz = f4(nz);
+	}
 
-	set tu(tu: number) { this._tu = f4(tu); }
-	set tv(tv: number) { this._tv = f4(tv); }
+	set tu(tu: number) {
+		this._tu = f4(tu);
+	}
+	set tv(tv: number) {
+		this._tv = f4(tv);
+	}
 
-	get x() { return this._x; }
-	get y() { return this._y; }
-	get z() { return this._z; }
+	get x() {
+		return this._x;
+	}
+	get y() {
+		return this._y;
+	}
+	get z() {
+		return this._z;
+	}
 
-	get nx() { return this._nx; }
-	get ny() { return this._ny; }
-	get nz() { return this._nz; }
+	get nx() {
+		return this._nx;
+	}
+	get ny() {
+		return this._ny;
+	}
+	get nz() {
+		return this._nz;
+	}
 
-	get tu() { return this._tu; }
-	get tv() { return this._tv; }
+	get tu() {
+		return this._tu;
+	}
+	get tv() {
+		return this._tv;
+	}
 
 	public _x: number = 0;
 	public _y: number = 0;

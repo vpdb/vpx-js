@@ -30,12 +30,10 @@ import { PlayerPhysics } from './player-physics';
  * Visual Pinball's `RenderDynamic()` method.
  */
 export interface IAnimatable extends IPlayable {
-
 	getAnimation(): IAnimation;
 }
 
 export interface IAnimation {
-
 	init(physics: PlayerPhysics): void;
 
 	updateAnimation(physics: PlayerPhysics, table: Table): void;

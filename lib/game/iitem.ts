@@ -18,6 +18,5 @@
  */
 
 export interface IItem {
-
 	getName(): string;
 }

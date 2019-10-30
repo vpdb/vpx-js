@@ -29,7 +29,6 @@ import { TimerHit } from './timer/timer-hit';
 import { TimerOnOff } from './timer/timer-on-off';
 
 export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
-
 	protected readonly table: Table;
 	protected readonly player: Player;
 
@@ -43,12 +42,24 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 
 	protected abstract _getPropertyNames(): string[];
 
-	get Name() { return this.data.getName(); }
-	set Name(v) { this.data.name = v; }
-	get TimerInterval() { return this.data.timer.interval; }
-	set TimerInterval(v) { this._setTimerInterval(v); }
-	get TimerEnabled() { return this.data.timer.enabled; }
-	set TimerEnabled(v) { this._setTimerEnabled(v); }
+	get Name() {
+		return this.data.getName();
+	}
+	set Name(v) {
+		this.data.name = v;
+	}
+	get TimerInterval() {
+		return this.data.timer.interval;
+	}
+	set TimerInterval(v) {
+		this._setTimerInterval(v);
+	}
+	get TimerEnabled() {
+		return this.data.timer.enabled;
+	}
+	set TimerEnabled(v) {
+		this._setTimerEnabled(v);
+	}
 	public UserValue: any;
 
 	public constructor(data: DATA, events: EventProxy, player: Player, table: Table) {
@@ -65,12 +76,9 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 
 	public _getTimers(): TimerHit[] {
 		this._beginPlay();
-		const interval = this.data.timer.interval >= 0 ? Math.max(this.data.timer.interval, MAX_TIMER_MSEC_INTERVAL) : -1;
-		this.hitTimer = new TimerHit(
-			this.events,
-			interval,
-			interval,
-		);
+		const interval =
+			this.data.timer.interval >= 0 ? Math.max(this.data.timer.interval, MAX_TIMER_MSEC_INTERVAL) : -1;
+		this.hitTimer = new TimerHit(this.events, interval, interval);
 		return this.data.timer.enabled ? [this.hitTimer] : [];
 	}
 
@@ -133,7 +141,6 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 
 	protected _setTimerEnabled(isEnabled: boolean): void {
 		if (isEnabled !== this.data.timer.enabled && this.hitTimer) {
-
 			// to avoid problems with timers dis/enabling themselves, store all the changes in a list
 			let found = false;
 			for (const changedHitTimer of this.player.getPhysics().changedHitTimers) {
@@ -152,7 +159,7 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 			if (isEnabled) {
 				this.hitTimer.nextFire = this.player.getPhysics().timeMsec + this.hitTimer.interval;
 			} else {
-				this.hitTimer.nextFire = 0xFFFFFFFF;
+				this.hitTimer.nextFire = 0xffffffff;
 			} // fakes the disabling of the timer, until it will be catched by the cleanup via m_changed_vht
 		}
 		this.data.timer.enabled = isEnabled;

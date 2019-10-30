@@ -27,15 +27,9 @@ import { f4, fr } from './float';
  * @see https://github.com/vpinball/vpinball/blob/master/math/matrix.h#L160
  */
 export class Matrix3D {
-
 	private static readonly POOL = new Pool(Matrix3D);
 
-	private readonly matrix = [
-		[ 1, 0, 0, 0 ],
-		[ 0, 1, 0, 0 ],
-		[ 0, 0, 1, 0 ],
-		[ 0, 0, 0, 1 ],
-	];
+	private readonly matrix = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];
 
 	constructor() {
 		this.setIdentity();
@@ -75,9 +69,7 @@ export class Matrix3D {
 
 	public setIdentity(): this {
 		this._11 = this._22 = this._33 = this._44 = 1.0;
-		this._12 = this._13 = this._14 = this._41 =
-		this._21 = this._23 = this._24 = this._42 =
-		this._31 = this._32 = this._34 = this._43 = 0.0;
+		this._12 = this._13 = this._14 = this._41 = this._21 = this._23 = this._24 = this._42 = this._31 = this._32 = this._34 = this._43 = 0.0;
 		return this;
 	}
 
@@ -125,9 +117,7 @@ export class Matrix3D {
 	/* multiplyVectorNoTranslate() has moved to {@link Vertex3D.multiplyMatrixNoTranslate()} */
 
 	public multiply(a: Matrix3D, b?: Matrix3D): this {
-		const product = b
-			? Matrix3D.multiplyMatrices(a, b, true)
-			: Matrix3D.multiplyMatrices(this, a, true);
+		const product = b ? Matrix3D.multiplyMatrices(a, b, true) : Matrix3D.multiplyMatrices(this, a, true);
 
 		this.set(product.matrix);
 		Matrix3D.release(product);
@@ -153,11 +143,12 @@ export class Matrix3D {
 		const result = recycle ? Matrix3D.claim() : new Matrix3D();
 		for (let i = 0; i < 4; ++i) {
 			for (let l = 0; l < 4; ++l) {
-				result.matrix[i][l] =
-					f4(f4(f4(f4(a.matrix[0][l] * b.matrix[i][0]) +
-					f4(a.matrix[1][l] * b.matrix[i][1])) +
-					f4(a.matrix[2][l] * b.matrix[i][2])) +
-					f4(a.matrix[3][l] * b.matrix[i][3]));
+				result.matrix[i][l] = f4(
+					f4(
+						f4(f4(a.matrix[0][l] * b.matrix[i][0]) + f4(a.matrix[1][l] * b.matrix[i][1])) +
+							f4(a.matrix[2][l] * b.matrix[i][2]),
+					) + f4(a.matrix[3][l] * b.matrix[i][3]),
+				);
 			}
 		}
 		return result;
@@ -201,38 +192,102 @@ export class Matrix3D {
 		];
 	}
 
-	get _11() { return this.matrix[0][0]; }
-	set _11(v) { this.matrix[0][0] = f4(v); }
-	get _12() { return this.matrix[1][0]; }
-	set _12(v) { this.matrix[1][0] = f4(v); }
-	get _13() { return this.matrix[2][0]; }
-	set _13(v) { this.matrix[2][0] = f4(v); }
-	get _14() { return this.matrix[3][0]; }
-	set _14(v) { this.matrix[3][0] = f4(v); }
-	get _21() { return this.matrix[0][1]; }
-	set _21(v) { this.matrix[0][1] = f4(v); }
-	get _22() { return this.matrix[1][1]; }
-	set _22(v) { this.matrix[1][1] = f4(v); }
-	get _23() { return this.matrix[2][1]; }
-	set _23(v) { this.matrix[2][1] = f4(v); }
-	get _24() { return this.matrix[3][1]; }
-	set _24(v) { this.matrix[3][1] = f4(v); }
-	get _31() { return this.matrix[0][2]; }
-	set _31(v) { this.matrix[0][2] = f4(v); }
-	get _32() { return this.matrix[1][2]; }
-	set _32(v) { this.matrix[1][2] = f4(v); }
-	get _33() { return this.matrix[2][2]; }
-	set _33(v) { this.matrix[2][2] = f4(v); }
-	get _34() { return this.matrix[3][2]; }
-	set _34(v) { this.matrix[3][2] = f4(v); }
-	get _41() { return this.matrix[0][3]; }
-	set _41(v) { this.matrix[0][3] = f4(v); }
-	get _42() { return this.matrix[1][3]; }
-	set _42(v) { this.matrix[1][3] = f4(v); }
-	get _43() { return this.matrix[2][3]; }
-	set _43(v) { this.matrix[2][3] = f4(v); }
-	get _44() { return this.matrix[3][3]; }
-	set _44(v) { this.matrix[3][3] = f4(v); }
+	get _11() {
+		return this.matrix[0][0];
+	}
+	set _11(v) {
+		this.matrix[0][0] = f4(v);
+	}
+	get _12() {
+		return this.matrix[1][0];
+	}
+	set _12(v) {
+		this.matrix[1][0] = f4(v);
+	}
+	get _13() {
+		return this.matrix[2][0];
+	}
+	set _13(v) {
+		this.matrix[2][0] = f4(v);
+	}
+	get _14() {
+		return this.matrix[3][0];
+	}
+	set _14(v) {
+		this.matrix[3][0] = f4(v);
+	}
+	get _21() {
+		return this.matrix[0][1];
+	}
+	set _21(v) {
+		this.matrix[0][1] = f4(v);
+	}
+	get _22() {
+		return this.matrix[1][1];
+	}
+	set _22(v) {
+		this.matrix[1][1] = f4(v);
+	}
+	get _23() {
+		return this.matrix[2][1];
+	}
+	set _23(v) {
+		this.matrix[2][1] = f4(v);
+	}
+	get _24() {
+		return this.matrix[3][1];
+	}
+	set _24(v) {
+		this.matrix[3][1] = f4(v);
+	}
+	get _31() {
+		return this.matrix[0][2];
+	}
+	set _31(v) {
+		this.matrix[0][2] = f4(v);
+	}
+	get _32() {
+		return this.matrix[1][2];
+	}
+	set _32(v) {
+		this.matrix[1][2] = f4(v);
+	}
+	get _33() {
+		return this.matrix[2][2];
+	}
+	set _33(v) {
+		this.matrix[2][2] = f4(v);
+	}
+	get _34() {
+		return this.matrix[3][2];
+	}
+	set _34(v) {
+		this.matrix[3][2] = f4(v);
+	}
+	get _41() {
+		return this.matrix[0][3];
+	}
+	set _41(v) {
+		this.matrix[0][3] = f4(v);
+	}
+	get _42() {
+		return this.matrix[1][3];
+	}
+	set _42(v) {
+		this.matrix[1][3] = f4(v);
+	}
+	get _43() {
+		return this.matrix[2][3];
+	}
+	set _43(v) {
+		this.matrix[2][3] = f4(v);
+	}
+	get _44() {
+		return this.matrix[3][3];
+	}
+	set _44(v) {
+		this.matrix[3][3] = f4(v);
+	}
 
 	public static readonly RIGHT_HANDED = new Matrix3D().setEach(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1);
 }

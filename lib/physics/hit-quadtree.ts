@@ -26,7 +26,6 @@ import { CollisionEvent } from './collision-event';
 import { HitObject } from './hit-object';
 
 export class HitQuadtree {
-
 	private unique?: EventProxy; // everything below/including this node shares the same original primitive object (just for early outs if not collidable)
 
 	private vho: HitObject[] = [];
@@ -39,7 +38,6 @@ export class HitQuadtree {
 	}
 
 	public initialize(bounds?: FRect3D): void {
-
 		if (!bounds) {
 			bounds = new FRect3D();
 			for (const vho of this.vho) {
@@ -51,10 +49,11 @@ export class HitQuadtree {
 
 	public hitTestBall(ball: Ball, coll: CollisionEvent, physics: PlayerPhysics): void {
 		for (const vho of this.vho) {
-			if (ball.hit !== vho                                              // ball can not hit itself
-				&& vho.hitBBox.intersectRect(ball.hit.hitBBox)
-				&& vho.hitBBox.intersectSphere(ball.state.pos, ball.hit.rcHitRadiusSqr)) {
-
+			if (
+				ball.hit !== vho && // ball can not hit itself
+				vho.hitBBox.intersectRect(ball.hit.hitBBox) &&
+				vho.hitBBox.intersectSphere(ball.state.pos, ball.hit.rcHitRadiusSqr)
+			) {
 				vho.doHitTest(ball, coll, physics);
 			}
 		}
@@ -63,7 +62,8 @@ export class HitQuadtree {
 			const isLeft = ball.hit.hitBBox.left <= this.vCenter.x;
 			const isRight = ball.hit.hitBBox.right >= this.vCenter.x;
 
-			if (ball.hit.hitBBox.top <= this.vCenter.y) { // Top
+			if (ball.hit.hitBBox.top <= this.vCenter.y) {
+				// Top
 				if (isLeft) {
 					this.children[0].hitTestBall(ball, coll, physics);
 				}
@@ -71,7 +71,8 @@ export class HitQuadtree {
 					this.children[1].hitTestBall(ball, coll, physics);
 				}
 			}
-			if (ball.hit.hitBBox.bottom >= this.vCenter.y) { // Bottom
+			if (ball.hit.hitBBox.bottom >= this.vCenter.y) {
+				// Bottom
 				if (isLeft) {
 					this.children[2].hitTestBall(ball, coll, physics);
 				}
@@ -118,7 +119,8 @@ export class HitQuadtree {
 	// }
 
 	private createNextLevel(bounds: FRect3D, level: number, levelEmpty: number): void {
-		if (this.vho.length <= 4) { //!! magic
+		if (this.vho.length <= 4) {
+			//!! magic
 			return;
 		}
 
@@ -141,7 +143,8 @@ export class HitQuadtree {
 		for (const pho of this.vho) {
 			let oct: number;
 
-			if ((pho.e ? pho.obj : undefined) !== this.unique) { // are all objects in current node unique/belong to the same primitive?
+			if ((pho.e ? pho.obj : undefined) !== this.unique) {
+				// are all objects in current node unique/belong to the same primitive?
 				this.unique = undefined;
 			}
 
@@ -172,7 +175,7 @@ export class HitQuadtree {
 		this.vho = vRemain;
 
 		// check if at least two nodes feature objects, otherwise don't bother subdividing further
-		let countEmpty = (this.vho.length === 0) ? 1 : 0;
+		let countEmpty = this.vho.length === 0 ? 1 : 0;
 		for (let i = 0; i < 4; ++i) {
 			if (this.children[i].vho.length === 0) {
 				++countEmpty;
@@ -185,18 +188,20 @@ export class HitQuadtree {
 			levelEmpty = 0;
 		}
 
-		if (this.vCenter.x - bounds.left > 0.0001  //!! magic
-			&& levelEmpty <= 8 // If 8 levels were all just subdividing the same objects without luck, exit & Free the nodes again (but at least empty space was cut off)
-			&& level + 1 < 128 / 3) {
+		if (
+			this.vCenter.x - bounds.left > 0.0001 && //!! magic
+			levelEmpty <= 8 && // If 8 levels were all just subdividing the same objects without luck, exit & Free the nodes again (but at least empty space was cut off)
+			level + 1 < 128 / 3
+		) {
 			for (let i = 0; i < 4; ++i) {
 				const childBounds = new FRect3D();
 
-				childBounds.left = (i & 1) ? this.vCenter.x : bounds.left;
-				childBounds.top = (i & 2) ? this.vCenter.y : bounds.top;
+				childBounds.left = i & 1 ? this.vCenter.x : bounds.left;
+				childBounds.top = i & 2 ? this.vCenter.y : bounds.top;
 				childBounds.zlow = bounds.zlow;
 
-				childBounds.right = (i & 1) ? bounds.right : this.vCenter.x;
-				childBounds.bottom = (i & 2) ? bounds.bottom : this.vCenter.y;
+				childBounds.right = i & 1 ? bounds.right : this.vCenter.x;
+				childBounds.bottom = i & 2 ? bounds.bottom : this.vCenter.y;
 				childBounds.zhigh = bounds.zhigh;
 
 				this.children[i].createNextLevel(childBounds, level + 1, levelEmpty);

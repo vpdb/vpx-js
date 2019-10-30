@@ -25,7 +25,6 @@ import { C_CONTACTVEL, C_LOWNORMVEL, PHYS_TOUCH } from './constants';
 import { HitObject } from './hit-object';
 
 export class HitTriangle extends HitObject {
-
 	public readonly rgv: Vertex3D[];
 	public readonly normal: Vertex3D;
 
@@ -61,16 +60,17 @@ export class HitTriangle extends HitObject {
 			return -1.0;
 		}
 
-		const bnv = this.normal.dot(ball.hit.vel);         // speed in Normal-vector direction
-		if (bnv > C_CONTACTVEL) {                          // return if clearly ball is receding from object
+		const bnv = this.normal.dot(ball.hit.vel); // speed in Normal-vector direction
+		if (bnv > C_CONTACTVEL) {
+			// return if clearly ball is receding from object
 			return -1.0;
 		}
 
 		// Point on the ball that will hit the polygon, if it hits at all
 		const normRadius = this.normal.clone(true).multiplyScalar(ball.data.radius);
-		const hitPos = ball.state.pos.clone(true).sub(normRadius);     // nearest point on ball ... projected radius along norm
+		const hitPos = ball.state.pos.clone(true).sub(normRadius); // nearest point on ball ... projected radius along norm
 		const hpSubRgv0 = hitPos.clone(true).sub(this.rgv[0]);
-		const bnd = this.normal.dot(hpSubRgv0);                                // distance from plane to ball
+		const bnd = this.normal.dot(hpSubRgv0); // distance from plane to ball
 		Vertex3D.release(normRadius, hpSubRgv0);
 
 		if (bnd < -ball.data.radius) {
@@ -86,25 +86,22 @@ export class HitTriangle extends HitObject {
 			if (Math.abs(bnv) <= C_CONTACTVEL) {
 				hitTime = 0;
 				isContact = true;
-
 			} else if (bnd <= 0) {
-				hitTime = 0;                               // zero time for rigid fast bodies
-
+				hitTime = 0; // zero time for rigid fast bodies
 			} else {
 				hitTime = bnd / -bnv;
 			}
-
-		} else if (Math.abs(bnv) > C_LOWNORMVEL) {         // not velocity low?
-			hitTime = bnd / -bnv;                          // rate ok for safe divide
-
+		} else if (Math.abs(bnv) > C_LOWNORMVEL) {
+			// not velocity low?
+			hitTime = bnd / -bnv; // rate ok for safe divide
 		} else {
 			Vertex3D.release(hitPos);
-			return -1.0;                // wait for touching
+			return -1.0; // wait for touching
 		}
 
 		if (!isFinite(hitTime) || hitTime < 0 || hitTime > dTime) {
 			Vertex3D.release(hitPos);
-			return -1.0;                // time is outside this frame ... no collision
+			return -1.0; // time is outside this frame ... no collision
 		}
 
 		// advance hit point to contact
@@ -133,12 +130,12 @@ export class HitTriangle extends HitObject {
 		const v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
 		// 4. Check if point is in triangle
-		const pointInTriangle = (u >= 0) && (v >= 0) && (u + v <= 1);
+		const pointInTriangle = u >= 0 && v >= 0 && u + v <= 1;
 
 		Vertex3D.release(hitPos);
 		if (pointInTriangle) {
 			coll.hitNormal.set(this.normal);
-			coll.hitDistance = bnd;                        // 3dhit actual contact distance ...
+			coll.hitDistance = bnd; // 3dhit actual contact distance ...
 			//coll.m_hitRigid = true;                      // collision type
 
 			if (isContact) {
@@ -146,7 +143,6 @@ export class HitTriangle extends HitObject {
 				coll.hitOrgNormalVelocity = bnv;
 			}
 			return hitTime;
-
 		} else {
 			return -1.0;
 		}
@@ -155,7 +151,7 @@ export class HitTriangle extends HitObject {
 	public collide(coll: CollisionEvent, physics: PlayerPhysics): void {
 		const ball = coll.ball;
 		const hitNormal = coll.hitNormal;
-		const dot = -(hitNormal.dot(ball.hit.vel));
+		const dot = -hitNormal.dot(ball.hit.vel);
 
 		ball.hit.collide3DWall(this.normal, this.elasticity, this.elasticityFalloff, this.friction, this.scatter);
 

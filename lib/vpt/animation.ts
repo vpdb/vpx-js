@@ -18,7 +18,6 @@
  */
 
 export class FrameData {
-
 	public frameVerts: VertData[] = [];
 
 	public static get(buffer: Buffer, numVertices: number): FrameData {
@@ -37,7 +36,6 @@ export class FrameData {
 }
 
 export class VertData {
-
 	public readonly x: number;
 	public readonly y: number;
 	public readonly z: number;

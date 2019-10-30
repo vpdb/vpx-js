@@ -49,11 +49,10 @@ import { IBallCreationPosition, Player } from './player';
 
 const SLOW_MO = 1; // the lower, the slower
 const ANIM_FPS = 60;
-const ANIM_FRAME_USEC = 1 / ANIM_FPS * 1000000;
-const ANIM_FRAME_MSEC = Math.floor(1 / ANIM_FPS * 1000);
+const ANIM_FRAME_USEC = (1 / ANIM_FPS) * 1000000;
+const ANIM_FRAME_MSEC = Math.floor((1 / ANIM_FPS) * 1000);
 
 export class PlayerPhysics {
-
 	public readonly balls: Ball[] = [];
 	public gravity = new Vertex3D();
 	public timeMsec: number = 0;
@@ -120,8 +119,12 @@ export class PlayerPhysics {
 		const slope = minSlope + (maxSlope - minSlope) * this.table.data!.globalDifficulty!;
 
 		this.gravity.x = 0;
-		this.gravity.y = Math.sin(degToRad(slope)) * (this.table.data!.overridePhysics ? DEFAULT_TABLE_GRAVITY : this.table.data!.gravity);
-		this.gravity.z = -Math.cos(degToRad(slope)) * (this.table.data!.overridePhysics ? DEFAULT_TABLE_GRAVITY : this.table.data!.gravity);
+		this.gravity.y =
+			Math.sin(degToRad(slope)) *
+			(this.table.data!.overridePhysics ? DEFAULT_TABLE_GRAVITY : this.table.data!.gravity);
+		this.gravity.z =
+			-Math.cos(degToRad(slope)) *
+			(this.table.data!.overridePhysics ? DEFAULT_TABLE_GRAVITY : this.table.data!.gravity);
 
 		// [vpx-js added] init animation timers
 		for (const animatable of this.table.getAnimatables()) {
@@ -133,7 +136,6 @@ export class PlayerPhysics {
 	}
 
 	private indexTableElements(): void {
-
 		// index movables
 		for (const movable of this.table.getMovables()) {
 			this.movers.push(movable.getMover());
@@ -173,8 +175,7 @@ export class PlayerPhysics {
 	}
 
 	public physicsSimulateCycle(dTime: number) {
-
-		let StaticCnts = STATICCNTS;    // maximum number of static counts
+		let StaticCnts = STATICCNTS; // maximum number of static counts
 
 		// it's okay to have this code outside of the inner loop, as the ball hitrects already include the maximum distance they can travel in that timespan
 		this.hitOcTreeDynamic.update();
@@ -185,7 +186,8 @@ export class PlayerPhysics {
 			// find earliest time where a flipper collides with its stop
 			for (const flipperMover of this.flipperMovers) {
 				const flipperHitTime = flipperMover.getHitTime();
-				if (flipperHitTime > 0 && flipperHitTime < hitTime) { //!! >= 0.f causes infinite loop
+				if (flipperHitTime > 0 && flipperHitTime < hitTime) {
+					//!! >= 0.f causes infinite loop
 					hitTime = flipperHitTime;
 				}
 			}
@@ -197,9 +199,10 @@ export class PlayerPhysics {
 			for (const ball of this.balls) {
 				const ballHit = ball.hit;
 
-				if (!ball.state.isFrozen) {                   // don't play with frozen balls
+				if (!ball.state.isFrozen) {
+					// don't play with frozen balls
 
-					ballHit.coll.hitTime = hitTime;        // search upto current hit time
+					ballHit.coll.hitTime = hitTime; // search upto current hit time
 					ballHit.coll.clear();
 
 					// always check for playfield and top glass
@@ -210,27 +213,28 @@ export class PlayerPhysics {
 
 					// swap order of dynamic and static obj checks randomly
 					if (Math.random() < 0.5) {
-						this.hitOcTreeDynamic.hitTestBall(ball, ball.coll, this);  // dynamic objects
-						this.hitOcTree.hitTestBall(ball, ball.coll, this);         // find the hit objects and hit times
+						this.hitOcTreeDynamic.hitTestBall(ball, ball.coll, this); // dynamic objects
+						this.hitOcTree.hitTestBall(ball, ball.coll, this); // find the hit objects and hit times
 					} else {
-						this.hitOcTree.hitTestBall(ball, ball.coll, this);         // find the hit objects and hit times
-						this.hitOcTreeDynamic.hitTestBall(ball, ball.coll, this);  // dynamic objects
+						this.hitOcTree.hitTestBall(ball, ball.coll, this); // find the hit objects and hit times
+						this.hitOcTreeDynamic.hitTestBall(ball, ball.coll, this); // dynamic objects
 					}
 
-					const htz = ball.coll.hitTime;                                 // this ball's hit time
+					const htz = ball.coll.hitTime; // this ball's hit time
 
-					if (htz < 0) {                         // no negative time allowed
+					if (htz < 0) {
+						// no negative time allowed
 						ball.coll.clear();
 					}
 
 					if (ball.coll.obj) {
 						///////////////////////////////////////////////////////////////////////////
 						if (htz <= hitTime) {
-							hitTime = htz;                 // record actual event time
+							hitTime = htz; // record actual event time
 
 							if (htz < STATICTIME) {
 								if (--StaticCnts < 0) {
-									StaticCnts = 0;        // keep from wrapping
+									StaticCnts = 0; // keep from wrapping
 									hitTime = STATICTIME;
 								}
 							}
@@ -245,7 +249,8 @@ export class PlayerPhysics {
 			// now update displacements to collide-contact or end of physics frame
 			// !!!!! 2) move objects to hittime
 
-			if (hitTime > STATICTIME) { // allow more zeros next round
+			if (hitTime > STATICTIME) {
+				// allow more zeros next round
 				StaticCnts = STATICCNTS;
 			}
 
@@ -255,7 +260,6 @@ export class PlayerPhysics {
 
 			// find balls that need to be collided and script'ed (generally there will be one, but more are possible)
 			for (let i = 0; i < this.balls.length; i++) {
-
 				const ball = this.balls[i];
 				const pho = ball.coll.obj; // object that ball hit in trials
 
@@ -263,17 +267,17 @@ export class PlayerPhysics {
 				if (pho && ball.coll.hitTime <= hitTime) {
 					// now collision, contact and script reactions on active ball (object)+++++++++
 
-					this.activeBall = ball;                         // For script that wants the ball doing the collision
-					pho.collide(ball.coll, this);          // !!!!! 3) collision on active ball
-					ball.coll.clear();                     // remove trial hit object pointer
+					this.activeBall = ball; // For script that wants the ball doing the collision
+					pho.collide(ball.coll, this); // !!!!! 3) collision on active ball
+					ball.coll.clear(); // remove trial hit object pointer
 
 					// Collide may have changed the velocity of the ball,
 					// and therefore the bounding box for the next hit cycle
-					if (this.balls[i] !== ball) { // Ball still exists? may have been deleted from list
+					if (this.balls[i] !== ball) {
+						// Ball still exists? may have been deleted from list
 
 						// collision script deleted the ball, back up one count
 						--i;
-
 					} else {
 						ball.hit.calcHitBBox(); // do new boundings
 					}
@@ -290,7 +294,8 @@ export class PlayerPhysics {
 			 * Maybe a two-phase setup where we first process only contacts, then only collisions
 			 * could also work.
 			 */
-			if (Math.random() < 0.5) { // swap order of contact handling randomly
+			if (Math.random() < 0.5) {
+				// swap order of contact handling randomly
 				// tslint:disable-next-line:prefer-for-of
 				for (let i = 0; i < this.contacts.length; ++i) {
 					this.contacts[i].obj!.contact(this.contacts[i], hitTime, this);
@@ -319,10 +324,9 @@ export class PlayerPhysics {
 	 * @return Number of executed cycles
 	 */
 	public updatePhysics(time?: number): number {
-
 		const initialTimeUsec = time !== undefined ? time * 1000 : Math.floor(this.now() * 1000);
 
-//#ifdef FPS
+		//#ifdef FPS
 		this.lastFrameDuration = initialTimeUsec - this.lastTimeUsec;
 		if (this.lastFrameDuration > 1000000) {
 			this.lastFrameDuration = 0;
@@ -331,20 +335,19 @@ export class PlayerPhysics {
 
 		this.cFrames++;
 		if (this.timeMsec - this.lastFpsTime > 1000) {
-			this.fps = this.cFrames * 1000.0 / (this.timeMsec - this.lastFpsTime);
+			this.fps = (this.cFrames * 1000.0) / (this.timeMsec - this.lastFpsTime);
 			this.lastFpsTime = this.timeMsec;
 			this.fpsAvg += this.fps;
 			this.fpsCount++;
 			this.cFrames = 0;
 		}
-//#endif
+		//#endif
 
 		this.scriptPeriod = 0;
 		let physIterations = 0;
 
 		// loop here until current (real) time matches the physics (simulated) time
 		while (this.curPhysicsFrameTime < initialTimeUsec) {
-
 			// Get time in milliseconds for timers
 			this.timeMsec = (this.curPhysicsFrameTime - this.startTimeUsec) / 1000;
 			physIterations++;
@@ -371,11 +374,13 @@ export class PlayerPhysics {
 
 			// do the en/disable changes for the timers that piled up
 			for (const changedHitTimer of this.changedHitTimers) {
-				if (changedHitTimer.enabled) { // add the timer?
+				if (changedHitTimer.enabled) {
+					// add the timer?
 					if (this.hitTimers.indexOf(changedHitTimer.timer) < 0) {
 						this.hitTimers.push(changedHitTimer.timer);
 					}
-				} else { // delete the timer?
+				} else {
+					// delete the timer?
 					const idx = this.hitTimers.indexOf(changedHitTimer.timer);
 					if (idx >= 0) {
 						this.hitTimers.splice(idx, 1);
@@ -387,7 +392,8 @@ export class PlayerPhysics {
 			const oldActiveBall = this.activeBall;
 			this.activeBall = undefined; // No ball is the active ball for timers/key events
 
-			if (this.scriptPeriod <= 1000 * MAX_TIMERS_MSEC_OVERALL) { // if overall script time per frame exceeded, skip
+			if (this.scriptPeriod <= 1000 * MAX_TIMERS_MSEC_OVERALL) {
+				// if overall script time per frame exceeded, skip
 				const timeCur = (this.curPhysicsFrameTime - this.startTimeUsec) / 1000; // milliseconds
 
 				for (const pht of this.hitTimers) {
@@ -410,7 +416,10 @@ export class PlayerPhysics {
 			this.physicsSimulateCycle(physicsDiffTime); // main simulator call
 
 			// animations
-			if (Math.round(this.curPhysicsFrameTime / 1000) % ANIM_FRAME_MSEC === 0 || this.curPhysicsFrameTime - this.lastAnimTimeUsec >= ANIM_FRAME_USEC) {
+			if (
+				Math.round(this.curPhysicsFrameTime / 1000) % ANIM_FRAME_MSEC === 0 ||
+				this.curPhysicsFrameTime - this.lastAnimTimeUsec >= ANIM_FRAME_USEC
+			) {
 				//console.log(this.lastAnimTimeUsec)
 				for (const animatable of this.table.getAnimatables()) {
 					animatable.getAnimation().updateAnimation(this, this.table);
@@ -419,8 +428,7 @@ export class PlayerPhysics {
 			}
 
 			this.curPhysicsFrameTime = this.nextPhysicsFrameTime; // new cycle, on physics frame boundary
-			this.nextPhysicsFrameTime += PHYSICS_STEPTIME;     // advance physics position
-
+			this.nextPhysicsFrameTime += PHYSICS_STEPTIME; // advance physics position
 		} // end while (m_curPhysicsFrameTime < initial_time_usec)
 
 		this.physPeriod = Math.floor(this.now() * 1000) - initialTimeUsec;
@@ -434,7 +442,6 @@ export class PlayerPhysics {
 	}
 
 	public createBall(ballCreator: IBallCreationPosition, player: Player, radius = 25, mass = 1): Ball {
-
 		const data = new BallData(radius, mass, this.table.data!.defaultBulbIntensityScaleOnBall);
 		const state = BallState.claim(`Ball${Ball.idCounter}`, ballCreator.getBallCreationPosition(this.table));
 		state.pos.z += data.radius;

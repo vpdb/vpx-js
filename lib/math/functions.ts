@@ -35,7 +35,7 @@ export function solveQuadraticEq(a: number, b: number, c: number): [number, numb
 
 	discr = Math.sqrt(discr);
 
-	const invA = (-0.5) / a;
+	const invA = -0.5 / a;
 	solution[0] = (b + discr) * invA;
 	solution[1] = (b - discr) * invA;
 

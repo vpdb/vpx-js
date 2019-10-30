@@ -25,7 +25,6 @@ import { CollisionEvent } from './collision-event';
 import { HitLineZ } from './hit-line-z';
 
 export class HitLine3D extends HitLineZ {
-
 	private readonly matrix: Matrix2D = new Matrix2D();
 	private readonly zLow: number = 0;
 	private readonly zHigh: number = 0;
@@ -38,8 +37,9 @@ export class HitLine3D extends HitLineZ {
 		// Axis of rotation to make 3D cylinder a cylinder along the z-axis
 		const transAxis = Vertex3D.claim(vLine.y, -vLine.x, 0);
 		const l = transAxis.lengthSq();
-		if (l <= 1e-6) {                                   // line already points in z axis?
-			transAxis.set(1, 0, 0);                        // choose arbitrary rotation vector
+		if (l <= 1e-6) {
+			// line already points in z axis?
+			transAxis.set(1, 0, 0); // choose arbitrary rotation vector
 		} else {
 			transAxis.divideScalar(Math.sqrt(l));
 		}
@@ -84,17 +84,18 @@ export class HitLine3D extends HitLineZ {
 
 		// and update z bounds of LineZ with transformed coordinates
 		const oldZ = Vertex2D.claim(this.hitBBox.zlow, this.hitBBox.zhigh);
-		this.hitBBox.zlow = this.zLow;   // HACK; needed below // evil cast to non-const, should actually change the stupid HitLineZ to have explicit z coordinates!
+		this.hitBBox.zlow = this.zLow; // HACK; needed below // evil cast to non-const, should actually change the stupid HitLineZ to have explicit z coordinates!
 		this.hitBBox.zhigh = this.zHigh; // dto.
 
 		const hitTime = super.hitTest(ball, dTime, coll);
 
 		ball.state.pos.set(oldPos.x, oldPos.y, oldPos.z); // see above
 		ball.hit.vel.set(oldVel.x, oldVel.y, oldVel.z);
-		this.hitBBox.zlow = oldZ.x;   // HACK
-		this.hitBBox.zhigh = oldZ.y;  // dto.
+		this.hitBBox.zlow = oldZ.x; // HACK
+		this.hitBBox.zhigh = oldZ.y; // dto.
 
-		if (hitTime >= 0) {      // transform hit normal back to world coordinate system
+		if (hitTime >= 0) {
+			// transform hit normal back to world coordinate system
 			coll.hitNormal.setAndRelease(this.matrix.multiplyVectorT(coll.hitNormal, true));
 		}
 

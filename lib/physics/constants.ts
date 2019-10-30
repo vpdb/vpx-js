@@ -1,11 +1,11 @@
-export const PHYSICS_STEPTIME = 1000;         // usecs to go between each physics update
+export const PHYSICS_STEPTIME = 1000; // usecs to go between each physics update
 
-export const PHYSICS_STEPTIME_S = (PHYSICS_STEPTIME * 1e-6);     // step time in seconds
+export const PHYSICS_STEPTIME_S = PHYSICS_STEPTIME * 1e-6; // step time in seconds
 
-export const DEFAULT_STEPTIME = 10000;     // default physics rate: 1000Hz
-export const DEFAULT_STEPTIME_S = 0.01;      // default physics rate: 1000Hz
+export const DEFAULT_STEPTIME = 10000; // default physics rate: 1000Hz
+export const DEFAULT_STEPTIME_S = 0.01; // default physics rate: 1000Hz
 
-export const PHYS_FACTOR = (PHYSICS_STEPTIME_S / DEFAULT_STEPTIME_S);
+export const PHYS_FACTOR = PHYSICS_STEPTIME_S / DEFAULT_STEPTIME_S;
 
 export const DEFAULT_TABLE_GRAVITY = 0.97;
 export const DEFAULT_TABLE_CONTACTFRICTION = 0.075;
@@ -79,7 +79,7 @@ export const STATICCNTS = 10;
 export const C_INTERATIONS = 20; // Precision level and cycles for interative calculations // acceptable contact time ... near zero time
 
 //Plumb:
-export const VELOCITY_EPSILON = 0.05;	// The threshold for zero velocity.
+export const VELOCITY_EPSILON = 0.05; // The threshold for zero velocity.
 
-export const JOYRANGEMN  = -65536;
+export const JOYRANGEMN = -65536;
 export const JOYRANGEMX = 65536;

@@ -27,8 +27,11 @@ import { Texture } from '../vpt/texture';
 import { IItem } from './iitem';
 
 export interface IRenderable<STATE extends ItemState> extends IItem {
-
-	getMeshes<NODE, GEOMETRY, POINT_LIGHT>(table: Table, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, opts: TableGenerateOptions): Meshes<GEOMETRY>;
+	getMeshes<NODE, GEOMETRY, POINT_LIGHT>(
+		table: Table,
+		renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>,
+		opts: TableGenerateOptions,
+	): Meshes<GEOMETRY>;
 
 	getState(): STATE;
 

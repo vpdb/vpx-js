@@ -25,8 +25,10 @@ import { ReadResult } from './ole-doc';
  * A class that comes with set of utilities for parsing the BIFF structure.
  */
 export class BiffParser {
-
-	public static stream(callback: OnBiffResult, opts: BiffStreamOptions = {}): (result: ReadResult) => Promise<number | null> {
+	public static stream(
+		callback: OnBiffResult,
+		opts: BiffStreamOptions = {},
+	): (result: ReadResult) => Promise<number | null> {
 		let nested: OnBiffResultStream<any> | null = null;
 		let nestedItem: any = null;
 		return async (result: ReadResult): Promise<number | null> => {
@@ -59,7 +61,8 @@ export class BiffParser {
 				dataResult = data.slice(8, 8 + len - 4);
 			}
 
-			if (!tag || tag === 'ENDB' || tag === 'FONT') { // FIXME font screws up parsing currently.
+			if (!tag || tag === 'ENDB' || tag === 'FONT') {
+				// FIXME font screws up parsing currently.
 				if (nested) {
 					nested.onEnd(nestedItem);
 					nestedItem = null;
@@ -169,7 +172,6 @@ export type OnBiffResult = (buffer: Buffer, tag: string, offset: number, len: nu
  * Callbacks to provide to a nested BIFF stream.
  */
 export interface OnBiffResultStream<T> {
-
 	/**
 	 * Run before the first tag is sent. What's returned is passed to [[onTag]]
 	 * and [[onEnd]].

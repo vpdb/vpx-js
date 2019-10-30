@@ -110,8 +110,15 @@ export class TriggerShape extends VbsApi {
 	public readonly TriggerWireD = 6;
 
 	protected _getPropertyNames(): string[] {
-		return ['TriggerNone', 'TriggerWireA', 'TriggerStar', 'TriggerWireB', 'TriggerButton', 'TriggerWireC',
-			'TriggerWireD'];
+		return [
+			'TriggerNone',
+			'TriggerWireA',
+			'TriggerStar',
+			'TriggerWireB',
+			'TriggerButton',
+			'TriggerWireC',
+			'TriggerWireD',
+		];
 	}
 }
 
@@ -124,8 +131,14 @@ export class RampType extends VbsApi {
 	public readonly RampType1Wire = 5;
 
 	protected _getPropertyNames(): string[] {
-		return ['RampTypeFlat', 'RampType4Wire', 'RampType2Wire', 'RampType3WireLeft', 'RampType3WireRight',
-			'RampType1Wire'];
+		return [
+			'RampTypeFlat',
+			'RampType4Wire',
+			'RampType2Wire',
+			'RampType3WireLeft',
+			'RampType3WireRight',
+			'RampType1Wire',
+		];
 	}
 }
 
@@ -160,8 +173,16 @@ export class FXAASettings extends VbsApi {
 	public readonly Quality_SMAA = 6;
 
 	protected _getPropertyNames(): string[] {
-		return ['Defaults', 'Disabled', 'Fast_FXAA', 'Standard_FXAA', 'Quality_FXAA', 'Fast_NFAA', 'Standard_DLAA',
-			'Quality_SMAA'];
+		return [
+			'Defaults',
+			'Disabled',
+			'Fast_FXAA',
+			'Standard_FXAA',
+			'Quality_FXAA',
+			'Fast_NFAA',
+			'Standard_DLAA',
+			'Quality_SMAA',
+		];
 	}
 }
 
@@ -193,8 +214,17 @@ export class TargetType extends VbsApi {
 	public readonly HitTargetSlim = 9;
 
 	protected _getPropertyNames(): string[] {
-		return ['DropTargetBeveled', 'DropTargetSimple', 'HitTargetRound', 'HitTargetRectangle', 'HitFatTargetRectangle',
-			'HitFatTargetSquare', 'DropTargetFlatSimple', 'HitFatTargetSlim', 'HitTargetSlim'];
+		return [
+			'DropTargetBeveled',
+			'DropTargetSimple',
+			'HitTargetRound',
+			'HitTargetRectangle',
+			'HitFatTargetRectangle',
+			'HitFatTargetSquare',
+			'DropTargetFlatSimple',
+			'HitFatTargetSlim',
+			'HitTargetSlim',
+		];
 	}
 }
 
@@ -320,25 +350,97 @@ export class SequencerState extends VbsApi {
 	public readonly SeqRandom = 1003;
 
 	protected _getPropertyNames(): string[] {
-		return ['SeqUpOn', 'SeqUpOff', 'SeqDownOn', 'SeqDownOff', 'SeqRightOn', 'SeqRightOff', 'SeqLeftOn',
-			'SeqLeftOff', 'SeqDiagUpRightOn', 'SeqDiagUpRightOff', 'SeqDiagUpLeftOn', 'SeqDiagUpLeftOff',
-			'SeqDiagDownRightOn', 'SeqDiagDownRightOff', 'SeqDiagDownLeftOn', 'SeqDiagDownLeftOff',
-			'SeqMiddleOutHorizOn', 'SeqMiddleOutHorizOff', 'SeqMiddleInHorizOn', 'SeqMiddleInHorizOff',
-			'SeqMiddleOutVertOn', 'SeqMiddleOutVertOff', 'SeqMiddleInVertOn', 'SeqMiddleInVertOff', 'SeqStripe1HorizOn',
-			'SeqStripe1HorizOff', 'SeqStripe2HorizOn', 'SeqStripe2HorizOff', 'SeqStripe1VertOn', 'SeqStripe1VertOff',
-			'SeqStripe2VertOn', 'SeqStripe2VertOff', 'SeqHatch1HorizOn', 'SeqHatch1HorizOff', 'SeqHatch2HorizOn',
-			'SeqHatch2HorizOff', 'SeqHatch1VertOn', 'SeqHatch1VertOff', 'SeqHatch2VertOn', 'SeqHatch2VertOff',
-			'SeqCircleOutOn', 'SeqCircleOutOff', 'SeqCircleInOn', 'SeqCircleInOff', 'SeqClockRightOn',
-			'SeqClockRightOff', 'SeqClockLeftOn', 'SeqClockLeftOff', 'SeqRadarRightOn', 'SeqRadarRightOff',
-			'SeqRadarLeftOn', 'SeqRadarLeftOff', 'SeqWiperRightOn', 'SeqWiperRightOff', 'SeqWiperLeftOn',
-			'SeqWiperLeftOff', 'SeqFanLeftUpOn', 'SeqFanLeftUpOff', 'SeqFanLeftDownOn', 'SeqFanLeftDownOff',
-			'SeqFanRightUpOn', 'SeqFanRightUpOff', 'SeqFanRightDownOn', 'SeqFanRightDownOff', 'SeqArcBottomLeftUpOn',
-			'SeqArcBottomLeftUpOff', 'SeqArcBottomLeftDownOn', 'SeqArcBottomLeftDownOff', 'SeqArcBottomRightUpOn',
-			'SeqArcBottomRightUpOff', 'SeqArcBottomRightDownOn', 'SeqArcBottomRightDownOff', 'SeqArcTopLeftUpOn',
-			'SeqArcTopLeftUpOff', 'SeqArcTopLeftDownOn', 'SeqArcTopLeftDownOff', 'SeqArcTopRightUpOn',
-			'SeqArcTopRightUpOff', 'SeqArcTopRightDownOn', 'SeqArcTopRightDownOff', 'SeqScrewRightOn',
-			'SeqScrewRightOff', 'SeqScrewLeftOn', 'SeqScrewLeftOff', 'SeqLastDynamic', 'SeqAllOff', 'SeqAllOn',
-			'SeqBlinking', 'SeqRandom'];
+		return [
+			'SeqUpOn',
+			'SeqUpOff',
+			'SeqDownOn',
+			'SeqDownOff',
+			'SeqRightOn',
+			'SeqRightOff',
+			'SeqLeftOn',
+			'SeqLeftOff',
+			'SeqDiagUpRightOn',
+			'SeqDiagUpRightOff',
+			'SeqDiagUpLeftOn',
+			'SeqDiagUpLeftOff',
+			'SeqDiagDownRightOn',
+			'SeqDiagDownRightOff',
+			'SeqDiagDownLeftOn',
+			'SeqDiagDownLeftOff',
+			'SeqMiddleOutHorizOn',
+			'SeqMiddleOutHorizOff',
+			'SeqMiddleInHorizOn',
+			'SeqMiddleInHorizOff',
+			'SeqMiddleOutVertOn',
+			'SeqMiddleOutVertOff',
+			'SeqMiddleInVertOn',
+			'SeqMiddleInVertOff',
+			'SeqStripe1HorizOn',
+			'SeqStripe1HorizOff',
+			'SeqStripe2HorizOn',
+			'SeqStripe2HorizOff',
+			'SeqStripe1VertOn',
+			'SeqStripe1VertOff',
+			'SeqStripe2VertOn',
+			'SeqStripe2VertOff',
+			'SeqHatch1HorizOn',
+			'SeqHatch1HorizOff',
+			'SeqHatch2HorizOn',
+			'SeqHatch2HorizOff',
+			'SeqHatch1VertOn',
+			'SeqHatch1VertOff',
+			'SeqHatch2VertOn',
+			'SeqHatch2VertOff',
+			'SeqCircleOutOn',
+			'SeqCircleOutOff',
+			'SeqCircleInOn',
+			'SeqCircleInOff',
+			'SeqClockRightOn',
+			'SeqClockRightOff',
+			'SeqClockLeftOn',
+			'SeqClockLeftOff',
+			'SeqRadarRightOn',
+			'SeqRadarRightOff',
+			'SeqRadarLeftOn',
+			'SeqRadarLeftOff',
+			'SeqWiperRightOn',
+			'SeqWiperRightOff',
+			'SeqWiperLeftOn',
+			'SeqWiperLeftOff',
+			'SeqFanLeftUpOn',
+			'SeqFanLeftUpOff',
+			'SeqFanLeftDownOn',
+			'SeqFanLeftDownOff',
+			'SeqFanRightUpOn',
+			'SeqFanRightUpOff',
+			'SeqFanRightDownOn',
+			'SeqFanRightDownOff',
+			'SeqArcBottomLeftUpOn',
+			'SeqArcBottomLeftUpOff',
+			'SeqArcBottomLeftDownOn',
+			'SeqArcBottomLeftDownOff',
+			'SeqArcBottomRightUpOn',
+			'SeqArcBottomRightUpOff',
+			'SeqArcBottomRightDownOn',
+			'SeqArcBottomRightDownOff',
+			'SeqArcTopLeftUpOn',
+			'SeqArcTopLeftUpOff',
+			'SeqArcTopLeftDownOn',
+			'SeqArcTopLeftDownOff',
+			'SeqArcTopRightUpOn',
+			'SeqArcTopRightUpOff',
+			'SeqArcTopRightDownOn',
+			'SeqArcTopRightDownOff',
+			'SeqScrewRightOn',
+			'SeqScrewRightOff',
+			'SeqScrewLeftOn',
+			'SeqScrewLeftOff',
+			'SeqLastDynamic',
+			'SeqAllOff',
+			'SeqAllOn',
+			'SeqBlinking',
+			'SeqRandom',
+		];
 	}
 }
 
@@ -362,8 +464,15 @@ export class KickerType extends VbsApi {
 	public readonly KickerCup2 = 6;
 
 	protected _getPropertyNames(): string[] {
-		return ['KickerInvisible', 'KickerHole', 'KickerCup', 'KickerHoleSimple', 'KickerWilliams', 'KickerGottlieb',
-			'KickerCup2'];
+		return [
+			'KickerInvisible',
+			'KickerHole',
+			'KickerCup',
+			'KickerHoleSimple',
+			'KickerWilliams',
+			'KickerGottlieb',
+			'KickerCup2',
+		];
 	}
 }
 
@@ -378,13 +487,13 @@ export class RampImageAlignment extends VbsApi {
 
 export class VBColors extends VbsApi {
 	public readonly vbBlack = 0x00;
-	public readonly vbRed = 0xFF;
-	public readonly vbGreen = 0xFF00;
-	public readonly vbYellow = 0xFFFF;
-	public readonly vbBlue = 0xFF0000;
-	public readonly vbMagenta = 0xFF00FF;
-	public readonly vbCyan = 0xFFFF00;
-	public readonly vbWhite = 0xFFFFFF;
+	public readonly vbRed = 0xff;
+	public readonly vbGreen = 0xff00;
+	public readonly vbYellow = 0xffff;
+	public readonly vbBlue = 0xff0000;
+	public readonly vbMagenta = 0xff00ff;
+	public readonly vbCyan = 0xffff00;
+	public readonly vbWhite = 0xffffff;
 
 	protected _getPropertyNames(): string[] {
 		return ['vbBlack', 'vbRed', 'vbGreen', 'vbYellow', 'vbBlue', 'vbMagenta', 'vbCyan', 'vbWhite'];
@@ -415,8 +524,20 @@ export class VBDateTime extends VbsApi {
 	public readonly vbFirstFullWeek = 3;
 
 	protected _getPropertyNames(): string[] {
-		return ['vbSunday', 'vbMonday', 'vbTuesday', 'vbWednesday', 'vbThursday', 'vbFriday', 'vbSaturday',
-			'vbUseSystem', 'vbUseSystemDayOfWeek', 'vbFirstJan1', 'vbFirstFourDays', 'vbFirstFullWeek'];
+		return [
+			'vbSunday',
+			'vbMonday',
+			'vbTuesday',
+			'vbWednesday',
+			'vbThursday',
+			'vbFriday',
+			'vbSaturday',
+			'vbUseSystem',
+			'vbUseSystemDayOfWeek',
+			'vbFirstJan1',
+			'vbFirstFourDays',
+			'vbFirstFullWeek',
+		];
 	}
 }
 
@@ -451,9 +572,24 @@ export class VBDateFormat extends VbsApi {
 	public readonly vbSystemModal = 4096;
 
 	protected _getPropertyNames(): string[] {
-		return ['vbOKOnly', 'vbOKCancel', 'vbAbortRetryIgnore', 'vbYesNoCancel', 'vbYesNo', 'vbRetryCancel',
-			'vbCritical', 'vbQuestion', 'vbExclamation', 'vbInformation', 'vbDefaultButton1', 'vbDefaultButton2',
-			'vbDefaultButton3', 'vbDefaultButton4', 'vbApplicationModal', 'vbSystemModal'];
+		return [
+			'vbOKOnly',
+			'vbOKCancel',
+			'vbAbortRetryIgnore',
+			'vbYesNoCancel',
+			'vbYesNo',
+			'vbRetryCancel',
+			'vbCritical',
+			'vbQuestion',
+			'vbExclamation',
+			'vbInformation',
+			'vbDefaultButton1',
+			'vbDefaultButton2',
+			'vbDefaultButton3',
+			'vbDefaultButton4',
+			'vbApplicationModal',
+			'vbSystemModal',
+		];
 	}
 }
 
@@ -501,13 +637,29 @@ export class VBVarType extends VbsApi {
 	public readonly vbArray = 8192;
 
 	protected _getPropertyNames(): string[] {
-		return ['vbEmpty', 'vbNull', 'vbInteger', 'vbLong', 'vbSingle', 'vbDouble', 'vbCurrency', 'vbDate', 'vbString',
-			'vbObject', 'vbError', 'vbBoolean', 'vbVariant', 'vbDataObject', 'vbDecimal', 'vbByte', 'vbArray'];
+		return [
+			'vbEmpty',
+			'vbNull',
+			'vbInteger',
+			'vbLong',
+			'vbSingle',
+			'vbDouble',
+			'vbCurrency',
+			'vbDate',
+			'vbString',
+			'vbObject',
+			'vbError',
+			'vbBoolean',
+			'vbVariant',
+			'vbDataObject',
+			'vbDecimal',
+			'vbByte',
+			'vbArray',
+		];
 	}
 }
 
 export class EnumsApi extends VbsApi {
-
 	public LightStatus = new LightStatus();
 	public BackglassIndex = new BackglassIndex();
 	public Filters = new Filters();
@@ -537,10 +689,34 @@ export class EnumsApi extends VbsApi {
 	public VBVarType = new VBVarType();
 
 	protected _getPropertyNames(): string[] {
-		return ['LightStatus', 'BackglassIndex', 'Filters', 'ImageAlignment', 'Shape', 'TriggerShape', 'RampType',
-			'PlungerType', 'UserDefaultOnOff', 'FXAASettings', 'PhysicsSet', 'TargetType', 'GateType', 'TextAlignment',
-			'SequencerState', 'SizingType', 'KickerType', 'RampImageAlignment', 'VBColors', 'VBComparison',
-			'VBDateTime', 'VBMsgBox', 'VBDateFormat', 'VBMsgBoxReturn', 'VBTriState', 'VBVarType'];
+		return [
+			'LightStatus',
+			'BackglassIndex',
+			'Filters',
+			'ImageAlignment',
+			'Shape',
+			'TriggerShape',
+			'RampType',
+			'PlungerType',
+			'UserDefaultOnOff',
+			'FXAASettings',
+			'PhysicsSet',
+			'TargetType',
+			'GateType',
+			'TextAlignment',
+			'SequencerState',
+			'SizingType',
+			'KickerType',
+			'RampImageAlignment',
+			'VBColors',
+			'VBComparison',
+			'VBDateTime',
+			'VBMsgBox',
+			'VBDateFormat',
+			'VBMsgBoxReturn',
+			'VBTriState',
+			'VBVarType',
+		];
 	}
 }
 

@@ -51,12 +51,12 @@ export const DIK_5 = 0x06;
 export const DIK_6 = 0x07;
 export const DIK_7 = 0x08;
 export const DIK_8 = 0x09;
-export const DIK_9 = 0x0A;
-export const DIK_0 = 0x0B;
-export const DIK_MINUS = 0x0C;    /* - on main keyboard */
-export const DIK_EQUALS = 0x0D;
-export const DIK_BACK = 0x0E;    /* backspace */
-export const DIK_TAB = 0x0F;
+export const DIK_9 = 0x0a;
+export const DIK_0 = 0x0b;
+export const DIK_MINUS = 0x0c; /* - on main keyboard */
+export const DIK_EQUALS = 0x0d;
+export const DIK_BACK = 0x0e; /* backspace */
+export const DIK_TAB = 0x0f;
 export const DIK_Q = 0x10;
 export const DIK_W = 0x11;
 export const DIK_E = 0x12;
@@ -67,12 +67,12 @@ export const DIK_U = 0x16;
 export const DIK_I = 0x17;
 export const DIK_O = 0x18;
 export const DIK_P = 0x19;
-export const DIK_LBRACKET = 0x1A;
-export const DIK_RBRACKET = 0x1B;
-export const DIK_RETURN = 0x1C;    /* Enter on main keyboard */
-export const DIK_LCONTROL = 0x1D;
-export const DIK_A = 0x1E;
-export const DIK_S = 0x1F;
+export const DIK_LBRACKET = 0x1a;
+export const DIK_RBRACKET = 0x1b;
+export const DIK_RETURN = 0x1c; /* Enter on main keyboard */
+export const DIK_LCONTROL = 0x1d;
+export const DIK_A = 0x1e;
+export const DIK_S = 0x1f;
 export const DIK_D = 0x20;
 export const DIK_F = 0x21;
 export const DIK_G = 0x22;
@@ -82,71 +82,71 @@ export const DIK_K = 0x25;
 export const DIK_L = 0x26;
 export const DIK_SEMICOLON = 0x27;
 export const DIK_APOSTROPHE = 0x28;
-export const DIK_GRAVE = 0x29;    /* accent grave */
-export const DIK_LSHIFT = 0x2A;
-export const DIK_BACKSLASH = 0x2B;
-export const DIK_Z = 0x2C;
-export const DIK_X = 0x2D;
-export const DIK_C = 0x2E;
-export const DIK_V = 0x2F;
+export const DIK_GRAVE = 0x29; /* accent grave */
+export const DIK_LSHIFT = 0x2a;
+export const DIK_BACKSLASH = 0x2b;
+export const DIK_Z = 0x2c;
+export const DIK_X = 0x2d;
+export const DIK_C = 0x2e;
+export const DIK_V = 0x2f;
 export const DIK_B = 0x30;
 export const DIK_N = 0x31;
 export const DIK_M = 0x32;
 export const DIK_COMMA = 0x33;
-export const DIK_PERIOD = 0x34;    /* . on main keyboard */
-export const DIK_SLASH = 0x35;    /* / on main keyboard */
+export const DIK_PERIOD = 0x34; /* . on main keyboard */
+export const DIK_SLASH = 0x35; /* / on main keyboard */
 export const DIK_RSHIFT = 0x36;
-export const DIK_MULTIPLY = 0x37;    /* * on numeric keypad */
-export const DIK_LALT = 0x38;    /* left Alt */
+export const DIK_MULTIPLY = 0x37; /* * on numeric keypad */
+export const DIK_LALT = 0x38; /* left Alt */
 export const DIK_SPACE = 0x39;
-export const DIK_CAPITAL = 0x3A;
-export const DIK_F1 = 0x3B;
-export const DIK_F2 = 0x3C;
-export const DIK_F3 = 0x3D;
-export const DIK_F4 = 0x3E;
-export const DIK_F5 = 0x3F;
+export const DIK_CAPITAL = 0x3a;
+export const DIK_F1 = 0x3b;
+export const DIK_F2 = 0x3c;
+export const DIK_F3 = 0x3d;
+export const DIK_F4 = 0x3e;
+export const DIK_F5 = 0x3f;
 export const DIK_F6 = 0x40;
 export const DIK_F7 = 0x41;
 export const DIK_F8 = 0x42;
 export const DIK_F9 = 0x43;
 export const DIK_F10 = 0x44;
 export const DIK_NUMLOCK = 0x45;
-export const DIK_SCROLL = 0x46;    /* Scroll Lock */
+export const DIK_SCROLL = 0x46; /* Scroll Lock */
 export const DIK_NUMPAD7 = 0x47;
 export const DIK_NUMPAD8 = 0x48;
 export const DIK_NUMPAD9 = 0x49;
-export const DIK_SUBTRACT = 0x4A;    /* - on numeric keypad */
-export const DIK_NUMPAD4 = 0x4B;
-export const DIK_NUMPAD5 = 0x4C;
-export const DIK_NUMPAD6 = 0x4D;
-export const DIK_ADD = 0x4E;    /* + on numeric keypad */
-export const DIK_NUMPAD1 = 0x4F;
+export const DIK_SUBTRACT = 0x4a; /* - on numeric keypad */
+export const DIK_NUMPAD4 = 0x4b;
+export const DIK_NUMPAD5 = 0x4c;
+export const DIK_NUMPAD6 = 0x4d;
+export const DIK_ADD = 0x4e; /* + on numeric keypad */
+export const DIK_NUMPAD1 = 0x4f;
 export const DIK_NUMPAD2 = 0x50;
 export const DIK_NUMPAD3 = 0x51;
 export const DIK_NUMPAD0 = 0x52;
-export const DIK_DECIMAL = 0x53;    /* . on numeric keypad */
+export const DIK_DECIMAL = 0x53; /* . on numeric keypad */
 export const DIK_F11 = 0x57;
 export const DIK_F12 = 0x58;
-export const DIK_F13 = 0x64;    /*                     (NEC PC98) */
-export const DIK_F14 = 0x65;    /*                     (NEC PC98) */
-export const DIK_F15 = 0x66;    /*                     (NEC PC98) */
-export const DIK_NUMPADENTER = 0x9C;    /* Enter on numeric keypad */
-export const DIK_RCONTROL = 0x9D;
-export const DIK_DIVIDE = 0xB5;
-export const DIK_RALT = 0xB8;    /* right Alt */
-export const DIK_PAUSE = 0xC5;    /* Pause */
-export const DIK_HOME = 0xC7;    /* Home on arrow keypad */
-export const DIK_UP = 0xC8;    /* UpArrow on arrow keypad */
-export const DIK_PRIOR = 0xC9;    /* PgUp on arrow keypad */
-export const DIK_LEFT = 0xCB;    /* LeftArrow on arrow keypad */
-export const DIK_RIGHT = 0xCD;    /* RightArrow on arrow keypad */
-export const DIK_END = 0xCF;    /* End on arrow keypad */
-export const DIK_DOWN = 0xD0;    /* DownArrow on arrow keypad */
-export const DIK_NEXT = 0xD1;    /* PgDn on arrow keypad */
-export const DIK_INSERT = 0xD2;    /* Insert on arrow keypad */
-export const DIK_DELETE = 0xD3;    /* Delete on arrow keypad */
-export const DIK_LWIN = 0xDB;    /* Left Windows key */
-export const DIK_RWIN = 0xDC;    /* Right Windows key */
+export const DIK_F13 = 0x64; /*                     (NEC PC98) */
+export const DIK_F14 = 0x65; /*                     (NEC PC98) */
+export const DIK_F15 = 0x66; /*                     (NEC PC98) */
+export const DIK_NUMPADENTER = 0x9c; /* Enter on numeric keypad */
+export const DIK_RCONTROL = 0x9d;
+export const DIK_DIVIDE = 0xb5;
+export const DIK_RALT = 0xb8; /* right Alt */
+export const DIK_PAUSE = 0xc5; /* Pause */
+export const DIK_HOME = 0xc7; /* Home on arrow keypad */
+export const DIK_UP = 0xc8; /* UpArrow on arrow keypad */
+export const DIK_PRIOR = 0xc9; /* PgUp on arrow keypad */
+export const DIK_LEFT = 0xcb; /* LeftArrow on arrow keypad */
+export const DIK_RIGHT = 0xcd; /* RightArrow on arrow keypad */
+export const DIK_END = 0xcf; /* End on arrow keypad */
+export const DIK_DOWN = 0xd0; /* DownArrow on arrow keypad */
+export const DIK_NEXT = 0xd1; /* PgDn on arrow keypad */
+export const DIK_INSERT = 0xd2; /* Insert on arrow keypad */
+export const DIK_DELETE = 0xd3; /* Delete on arrow keypad */
+export const DIK_LWIN = 0xdb; /* Left Windows key */
+export const DIK_RWIN = 0xdc; /* Right Windows key */
 
 /**
  * Converts a key-event from the browser to a DirectInput code that is used by
@@ -154,7 +154,7 @@ export const DIK_RWIN = 0xDC;    /* Right Windows key */
  *
  * @param event Key pressed by the user
  */
-export function keyEventToDirectInputKey(event: { key: string, code: string }): number {
+export function keyEventToDirectInputKey(event: { key: string; code: string }): number {
 	const codeDi = KEY_JS2DI[event.key.toLowerCase()];
 	if (codeDi) {
 		return codeDi;
@@ -162,49 +162,88 @@ export function keyEventToDirectInputKey(event: { key: string, code: string }): 
 
 	// first try by code (actual key name)
 	switch (event.code) {
-		case 'ControlLeft': return DIK_LCONTROL;
-		case 'ControlRight': return DIK_RCONTROL;
-		case 'ShiftLeft': return DIK_LSHIFT;
-		case 'ShiftRight': return DIK_RSHIFT;
-		case 'NumpadMultiply': return DIK_MULTIPLY;
-		case 'NumpadDivide': return DIK_DIVIDE;
-		case 'NumpadEnter': return DIK_NUMPADENTER;
-		case 'AltLeft': return DIK_LALT;
-		case 'AltRight': return DIK_RALT;
-		case 'Numpad7': return DIK_NUMPAD7;
-		case 'Numpad8': return DIK_NUMPAD8;
-		case 'Numpad9': return DIK_NUMPAD9;
-		case 'NumpadSubtract': return DIK_SUBTRACT;
-		case 'Numpad4': return DIK_NUMPAD4;
-		case 'Numpad5': return DIK_NUMPAD5;
-		case 'Numpad6': return DIK_NUMPAD6;
-		case 'NumpadAdd': return DIK_ADD;
-		case 'Numpad1': return DIK_NUMPAD1;
-		case 'Numpad2': return DIK_NUMPAD2;
-		case 'Numpad3': return DIK_NUMPAD3;
-		case 'Numpad0': return DIK_NUMPAD0;
-		case 'NumpadDecimal': return DIK_DECIMAL;
-		case 'MetaLeft': return DIK_LWIN;
-		case 'MetaRight': return DIK_RWIN;
+		case 'ControlLeft':
+			return DIK_LCONTROL;
+		case 'ControlRight':
+			return DIK_RCONTROL;
+		case 'ShiftLeft':
+			return DIK_LSHIFT;
+		case 'ShiftRight':
+			return DIK_RSHIFT;
+		case 'NumpadMultiply':
+			return DIK_MULTIPLY;
+		case 'NumpadDivide':
+			return DIK_DIVIDE;
+		case 'NumpadEnter':
+			return DIK_NUMPADENTER;
+		case 'AltLeft':
+			return DIK_LALT;
+		case 'AltRight':
+			return DIK_RALT;
+		case 'Numpad7':
+			return DIK_NUMPAD7;
+		case 'Numpad8':
+			return DIK_NUMPAD8;
+		case 'Numpad9':
+			return DIK_NUMPAD9;
+		case 'NumpadSubtract':
+			return DIK_SUBTRACT;
+		case 'Numpad4':
+			return DIK_NUMPAD4;
+		case 'Numpad5':
+			return DIK_NUMPAD5;
+		case 'Numpad6':
+			return DIK_NUMPAD6;
+		case 'NumpadAdd':
+			return DIK_ADD;
+		case 'Numpad1':
+			return DIK_NUMPAD1;
+		case 'Numpad2':
+			return DIK_NUMPAD2;
+		case 'Numpad3':
+			return DIK_NUMPAD3;
+		case 'Numpad0':
+			return DIK_NUMPAD0;
+		case 'NumpadDecimal':
+			return DIK_DECIMAL;
+		case 'MetaLeft':
+			return DIK_LWIN;
+		case 'MetaRight':
+			return DIK_RWIN;
 	}
 
 	// main keyboard keys that weren't covered above by numpad
 	switch (event.key.toLowerCase()) {
-		case '1': return DIK_1;
-		case '2': return DIK_2;
-		case '3': return DIK_3;
-		case '4': return DIK_4;
-		case '5': return DIK_5;
-		case '6': return DIK_6;
-		case '7': return DIK_7;
-		case '8': return DIK_8;
-		case '9': return DIK_9;
-		case '0': return DIK_0;
-		case '-': return DIK_MINUS;
-		case '=': return DIK_EQUALS;
-		case '.': return DIK_PERIOD;
-		case '/': return DIK_SLASH;
-		case 'enter': return DIK_RETURN;
+		case '1':
+			return DIK_1;
+		case '2':
+			return DIK_2;
+		case '3':
+			return DIK_3;
+		case '4':
+			return DIK_4;
+		case '5':
+			return DIK_5;
+		case '6':
+			return DIK_6;
+		case '7':
+			return DIK_7;
+		case '8':
+			return DIK_8;
+		case '9':
+			return DIK_9;
+		case '0':
+			return DIK_0;
+		case '-':
+			return DIK_MINUS;
+		case '=':
+			return DIK_EQUALS;
+		case '.':
+			return DIK_PERIOD;
+		case '/':
+			return DIK_SLASH;
+		case 'enter':
+			return DIK_RETURN;
 	}
 	return 0;
 }
@@ -216,7 +255,6 @@ export function keyEventToDirectInputKey(event: { key: string, code: string }): 
  * was hold, and we only care about the key, not other combinations.
  */
 const KEY_JS2DI: { [key: string]: number } = {
-
 	escape: DIK_ESCAPE,
 	backspace: DIK_BACK,
 	tab: DIK_TAB,

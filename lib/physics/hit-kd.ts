@@ -24,7 +24,6 @@ import { HitKDNode } from './hit-kd-node';
 import { HitObject } from './hit-object';
 
 export class HitKD {
-
 	public orgIdx: number[] = [];
 
 	private rootNode: HitKDNode;
@@ -96,14 +95,14 @@ export class HitKD {
 	// }
 
 	public getItemAt(i: number): HitObject {
-		return this.orgVho[ this.orgIdx[ i ] ];
+		return this.orgVho[this.orgIdx[i]];
 	}
 
 	/* istanbul ignore next: never executed below the "magic" check (https://www.vpforums.org/index.php?showtopic=42690) */
 	public allocTwoNodes(): HitKDNode[] {
-		if (this.numNodes + 1 >= this.nodes.length) {       // space for two more nodes?
+		if (this.numNodes + 1 >= this.nodes.length) {
+			// space for two more nodes?
 			return [];
-
 		} else {
 			this.numNodes += 2;
 			return this.nodes.slice(this.numNodes - 2);

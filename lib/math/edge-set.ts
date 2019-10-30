@@ -26,7 +26,6 @@ import { Vertex3D } from './vertex3d';
  * are sorted prior to checking the index.
  */
 export class EdgeSet {
-
 	private readonly edges = new Set<string>();
 
 	public add(i: number, j: number) {
@@ -38,7 +37,8 @@ export class EdgeSet {
 	}
 
 	public addHitEdge(i: number, j: number, vi: Vertex3D, vj: Vertex3D): HitLine3D[] {
-		if (!this.has(i, j)) {   // edge not yet added?
+		if (!this.has(i, j)) {
+			// edge not yet added?
 			this.add(i, j);
 			return [new HitLine3D(vi, vj)];
 		}

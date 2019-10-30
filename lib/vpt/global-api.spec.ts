@@ -47,7 +47,6 @@ chai.use(sinonChai);
 const three = new ThreeHelper();
 
 describe('The VPinball global API', () => {
-
 	let table: Table;
 	let player: Player;
 
@@ -95,7 +94,6 @@ describe('The VPinball global API', () => {
 	});
 
 	it('should correctly return the balls in play', () => {
-
 		const api = new GlobalApi(table, player);
 		const kicker = table.kickers.Williams.getApi();
 		expect(api.GetBalls()).to.have.lengthOf(0);
@@ -141,5 +139,4 @@ describe('The VPinball global API', () => {
 		api.SaveValue('myTable', 'myValueName', 'myValue');
 		expect(api.LoadValue('myTable', 'myValueName')).to.equal('myValue');
 	});
-
 });

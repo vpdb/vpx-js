@@ -22,7 +22,6 @@ import { ItemData } from '../vpt/item-data';
 import { IPlayable } from './iplayable';
 
 export interface IScriptable<T extends ItemApi<ItemData>> extends IPlayable {
-
 	getApi(): T;
 
 	getEventNames(): string[];

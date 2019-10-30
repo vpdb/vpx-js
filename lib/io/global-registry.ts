@@ -23,7 +23,6 @@
  * returns the provided fallbacks.
  */
 class GlobalRegistry {
-
 	public getRegStringAsFloat(key: string, value: string, fallback: number): number {
 		return fallback;
 	}

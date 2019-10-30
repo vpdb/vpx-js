@@ -18,7 +18,6 @@
  */
 
 class StorageBrowser {
-
 	public setItem(name: string, value: any): void {
 		localStorage.setItem(name, JSON.stringify(value));
 	}
