@@ -74,6 +74,34 @@ describe('The VBScript stdlib', () => {
 		expect(scope.result).to.equal(9);
 	});
 
+	it('should provide the IsArray function', () => {
+		const scope = {} as any;
+		const vbs = `dim arr(9)\nresult1 = IsArray(arr)\ndim narr\nresult2 = IsArray(narr)`;
+		const transpiler = new Transpiler(table, player);
+		transpiler.execute(vbs, scope, 'global');
+
+		expect(scope.result1).to.equal(true);
+		expect(scope.result2).to.equal(false);
+	});
+
+	it('should provide the IsEmpty function', () => {
+		const scope = {} as any;
+		const vbs = `dim v1\ndim v2\ndim arr1(0)\nredim arr2(1)\nv2 = "test"\nresult1 = IsEmpty(v1)\nresult2 = IsEmpty(v2)\nresult3 = IsEmpty(arr1)\nresult4 = IsEmpty(arr2)`;
+		const transpiler = new Transpiler(table, player);
+		transpiler.execute(vbs, scope, 'global');
+
+		expect(scope.result1).to.equal(true);
+		expect(scope.result2).to.equal(false);
+		expect(scope.result3).to.equal(false);
+		expect(scope.result4).to.equal(false);
+	});
+
+	it('should provide the MsgBox function', () => {
+		const vbs = `MsgBox "duh"`;
+		const transpiler = new Transpiler(table, player);
+		transpiler.execute(vbs, {}, 'global');
+	});
+
 	it('should provide the Randomize function', () => {
 		const scope = {} as any;
 		const vbs = `Randomize`;
