@@ -18,11 +18,11 @@
  */
 
 import { f4 } from '../../math/float';
+import { logger } from '../../util/logger';
 import { getObject } from '../objects';
 import { VbsApi } from '../vbs-api';
 import { Err } from './err';
 import { VbsMath } from './math';
-import { logger } from '../../util/logger';
 
 export class Stdlib extends VbsApi {
 
@@ -55,6 +55,14 @@ export class Stdlib extends VbsApi {
 
 	public UBound(a: [], dimension?: number): number { // TODO handle dimension
 		return a.length - 1;
+	}
+
+	public IsArray(obj: any): boolean {
+		return Array.isArray(obj);
+	}
+
+	public IsEmpty(v: any): boolean {
+		return (typeof v === 'undefined') || v === null;
 	}
 
 	public Randomize(): void {
