@@ -103,7 +103,7 @@ export class AmbiguityTransformer extends Transformer {
 					if (node.callee.type === 'MemberExpression') {
 						if (node.callee.object.type === 'Identifier') {
 							if ([ Transformer.ITEMS_NAME, Transformer.ENUMS_NAME,  Transformer.GLOBAL_NAME,
-								Transformer.STDLIB_NAME, Transformer.VBSHELPER_NAME ].includes(node.callee.object.name)) {
+								Transformer.STDLIB_NAME, Transformer.VBSHELPER_NAME, Transformer.PLAYER_NAME ].includes(node.callee.object.name)) {
 								return node;
 							}
 						}

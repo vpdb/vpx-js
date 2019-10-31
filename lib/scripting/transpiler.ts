@@ -39,11 +39,12 @@ import vbsGrammar from './vbscript';
 //self.escodegen = require('escodegen');
 
 // the table script function
-declare function play(scope: any, table: { [key: string]: any }, enums: EnumsApi, globalApi: GlobalApi, stdlib: Stdlib, vbsHelper: VBSHelper): void;
+declare function play(scope: any, table: { [key: string]: any }, enums: EnumsApi, globalApi: GlobalApi, stdlib: Stdlib, vbsHelper: VBSHelper, player: Player): void;
 
 export class Transpiler {
 
 	private readonly table: Table;
+	private readonly player: Player;
 	private readonly itemApis: { [p: string]: any };
 	private readonly enumApis: EnumsApi;
 	private readonly globalApi: GlobalApi;
@@ -51,6 +52,7 @@ export class Transpiler {
 
 	constructor(table: Table, player: Player) {
 		this.table = table;
+		this.player = player;
 		this.itemApis = this.table.getElementApis();
 		this.enumApis = Enums;
 		this.globalApi = new GlobalApi(this.table, player);
@@ -84,7 +86,7 @@ export class Transpiler {
 
 		// tslint:disable-next-line:no-eval
 		eval('//@ sourceURL=tablescript.js\n' + js);
-		play(new Proxy(globalScope, new ScopeHandler()), this.itemApis, this.enumApis, this.globalApi, this.stdlib, new VBSHelper(this));
+		play(new Proxy(globalScope, new ScopeHandler()), this.itemApis, this.enumApis, this.globalApi, this.stdlib, new VBSHelper(this), this.player);
 	}
 
 	private parse(vbs: string): Program {

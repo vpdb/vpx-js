@@ -17,17 +17,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Player } from '../../game/player';
 import { ERR } from '../stdlib/err';
 import { Dictionary } from './dictionary';
 import { FileSystemObject } from './file-system-object';
 import { VpmController } from './vpm-controller';
 import { WshShell } from './wsh-shell';
 
-export function getObject(name: string): any {
+export function getObject(name: string, player: Player): any {
 	switch (name.toLowerCase()) {
 		case 'scripting.dictionary': return new Dictionary();
 		case 'scripting.filesystemobject': return new FileSystemObject();
-		case 'vpinmame.controller': return new VpmController();
+		case 'vpinmame.controller': return new VpmController(player);
 		case 'wscript.shell': return new WshShell();
 	}
 	ERR.Raise(429, undefined, "ActiveX component can't create object");

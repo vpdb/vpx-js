@@ -2,12 +2,13 @@ import { BaseNode, CallExpression, Identifier, MemberExpression, Program } from 
 
 export class Transformer {
 
+	public static SCOPE_NAME = '__scope';
 	public static ITEMS_NAME = '__items';
 	public static ENUMS_NAME = '__enums';
 	public static GLOBAL_NAME = '__global';
 	public static STDLIB_NAME = '__stdlib';
 	public static VBSHELPER_NAME = '__vbsHelper';
-	public static SCOPE_NAME = '__scope';
+	public static PLAYER_NAME = '__player';
 
 	protected readonly ast: Program;
 
@@ -26,6 +27,7 @@ export class Transformer {
 		return [
 			'eval',
 			'Array',
+			Transformer.PLAYER_NAME,
 		].includes((node as Identifier).name);
 	}
 
@@ -37,12 +39,13 @@ export class Transformer {
 			return false;
 		}
 		return [
+			Transformer.SCOPE_NAME,
 			Transformer.ITEMS_NAME,
 			Transformer.ENUMS_NAME,
 			Transformer.GLOBAL_NAME,
 			Transformer.STDLIB_NAME,
 			Transformer.VBSHELPER_NAME,
-			Transformer.SCOPE_NAME,
+			Transformer.PLAYER_NAME,
 		].includes(this.getTopMemberName(parent as MemberExpression));
 	}
 

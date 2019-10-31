@@ -17,6 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Player } from '../../game/player';
+
 export class VpmController {
 
+	private readonly player: Player;
+
+	constructor(player: Player) {
+		this.player = player;
+	}
 }
