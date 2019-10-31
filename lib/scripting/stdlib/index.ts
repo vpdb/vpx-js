@@ -22,6 +22,7 @@ import { getObject } from '../objects';
 import { VbsApi } from '../vbs-api';
 import { Err } from './err';
 import { VbsMath } from './math';
+import { logger } from '../../util/logger';
 
 export class Stdlib extends VbsApi {
 
@@ -62,6 +63,10 @@ export class Stdlib extends VbsApi {
 
 	public CreateObject(name: string): any {
 		return getObject(name);
+	}
+
+	public MsgBox(msg: string): void {
+		logger().warn(`[MsgBox] ${msg}`);
 	}
 
 	protected _getPropertyNames(): string[] {

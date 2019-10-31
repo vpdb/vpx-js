@@ -17,7 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-export class Err {
+import { VbsApi } from '../vbs-api';
+
+export class Err extends VbsApi {
 
 	/**
 	 * Returns or sets a numeric value specifying an error. Number is the Err object's default property. Read/write.
@@ -94,6 +96,10 @@ export class Err {
 
 	public valueOf() {
 		return this.Number;
+	}
+
+	protected _getPropertyNames(): string[] {
+		return Object.getOwnPropertyNames(Err.prototype);
 	}
 }
 
