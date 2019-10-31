@@ -22,7 +22,7 @@ import { expect } from 'chai';
 import { TableBuilder } from '../../../test/table-builder';
 import { Player } from '../../game/player';
 import { Table } from '../../vpt/table/table';
-import { ERR } from '../stdlib/error-handler';
+import { ERR } from '../stdlib/err';
 import { Transpiler } from '../transpiler';
 
 chai.use(require('sinon-chai'));
@@ -34,10 +34,15 @@ describe('The VBScript objects implementations', () => {
 	let player: Player;
 	let transpiler: Transpiler;
 
-	before(async () => {
+	before(() => {
+		ERR.OnErrorResumeNext();
 		table = new TableBuilder().build('Table1');
 		player = new Player(table);
 		transpiler = new Transpiler(table, player);
+	});
+
+	after(() => {
+		ERR.OnErrorGoto0();
 	});
 
 	it('should provide the "Scripting.Dictionary" object', () => {
@@ -77,7 +82,7 @@ describe('The VBScript objects implementations', () => {
 		const vbs = `Dim x\nSet x = CreateObject("DontExist")\n`;
 
 		transpiler.execute(vbs, scope, 'global');
-		expect(ERR.getError()).to.be.ok;
+		expect(ERR.Number).to.equal(429);
 	});
 
 });

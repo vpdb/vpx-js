@@ -19,12 +19,20 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import { ERR } from '../stdlib/error-handler';
+import { ERR } from '../stdlib/err';
 import { Dictionary } from './dictionary';
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
 describe('The VBScript dictionary', () => {
+
+	before(() => {
+		ERR.OnErrorResumeNext();
+	});
+
+	after(() => {
+		ERR.OnErrorGoto0();
+	});
 
 	it('should read and write values', () => {
 		const d = new Dictionary();
@@ -119,7 +127,7 @@ describe('The VBScript dictionary', () => {
 		d.Add('b', 'Belgrade');
 		d.Add('b', 'Cairo');
 
-		expect(ERR.getError()).to.be.ok;
+		expect(ERR.Number).to.equal(457);
 	});
 
 	it('should fail changing a non-existing key', () => {
@@ -128,7 +136,7 @@ describe('The VBScript dictionary', () => {
 		d.Add('b', 'Belgrade');
 
 		d.Key['bb'] = 'bbb';
-		expect(ERR.getError()).to.be.ok;
+		expect(ERR.Number).to.equal(32811);
 	});
 
 	it('should fail removing a non-existing item', () => {
@@ -138,7 +146,7 @@ describe('The VBScript dictionary', () => {
 		d.Add('c', 'Cairo');
 
 		d.Remove('nonexistent');
-		expect(ERR.getError()).to.be.ok;
+		expect(ERR.Number).to.equal(32811);
 	});
 
 });

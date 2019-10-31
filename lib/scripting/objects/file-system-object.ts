@@ -17,8 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { ERR } from '../stdlib/err';
+import { VbsNotImplementedError } from '../vbs-api';
 import { Drive } from './drive';
 import { File } from './file';
+import { FS } from './file-system';
 import { TextStream } from './text-stream';
 
 /**
@@ -36,7 +39,7 @@ export class FileSystemObject {
 	 * Returns a Drives collection consisting of all Drive objects available on the local machine.
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/drives-property
 	 */
-	public get Drives(): Drive[] { return []; }
+	public get Drives(): Drive[] { throw new VbsNotImplementedError(); }
 
 	/**
 	 * Appends a name to an existing path.
@@ -56,7 +59,8 @@ export class FileSystemObject {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/copyfile-method
 	 */
 	public CopyFile(source: string, destination: string, overwrite = true): void {
-		// todo fs
+		// only used in NVOffset(), which doesn't seem to be used very often.
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -67,7 +71,8 @@ export class FileSystemObject {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/copyfolder-method
 	 */
 	public CopyFolder(source: string, destination: string, overwrite = true): void {
-		// todo fs
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -76,7 +81,8 @@ export class FileSystemObject {
 	 * @https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/createfolder-method
 	 */
 	public CreateFolder(foldername: string): void {
-		// todo fs
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -87,9 +93,13 @@ export class FileSystemObject {
 	 * @param unicode Boolean value that indicates whether the file is created as a Unicode or ASCII file. The value is True if the file is created as a Unicode file; False if it's created as an ASCII file. If omitted, an ASCII file is assumed.
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/createtextfile-method
 	 */
-	public CreateTextFile(filename: string, overwrite = true, unicode = false): TextStream {
-		// todo fs
-		return new TextStream();
+	public CreateTextFile(filename: string, overwrite = true, unicode = false): TextStream | void {
+		if (FS.fileExists(filename) && !overwrite) {
+			return ERR.Raise(58, undefined, 'File already exists');
+		}
+		const textStream = new TextStream(filename, unicode);
+		FS.addStream(filename, textStream);
+		return textStream;
 	}
 
 	/**
@@ -99,7 +109,10 @@ export class FileSystemObject {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/deletefile-method
 	 */
 	public DeleteFile(filespec: string, force = false): void {
-		// todo fs
+		if (!FS.fileExists(filespec)) {
+			return ERR.Raise(53, undefined, 'File not found');
+		}
+		FS.deleteFile(filespec);
 	}
 
 	/**
@@ -109,7 +122,8 @@ export class FileSystemObject {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/deletefolder-method
 	 */
 	public DeleteFolder(folderspec: string, force = false): void {
-		// todo fs
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -118,8 +132,8 @@ export class FileSystemObject {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/driveexists-method
 	 */
 	public DriveExists(drivespec: string): boolean {
-		// todo fs
-		return false;
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -128,8 +142,7 @@ export class FileSystemObject {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/fileexists-method
 	 */
 	public FileExists(filespec: string): boolean {
-		// todo fs
-		return false;
+		return FS.fileExists(filespec);
 	}
 
 	/**
@@ -138,8 +151,7 @@ export class FileSystemObject {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/folderexists-method
 	 */
 	public FolderExists(folderspec: string): boolean {
-		// todo fs
-		return false;
+		return FS.folderExists(folderspec);
 	}
 
 	/**
@@ -148,8 +160,8 @@ export class FileSystemObject {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/getabsolutepathname-method
 	 */
 	public GetAbsolutePathName(pathspec: string): string {
-		// todo fs
-		return '';
+		// unless we want to read real files like for ultradmd, we don't care about absolute paths.
+		return pathspec;
 	}
 
 	/**
@@ -158,8 +170,15 @@ export class FileSystemObject {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/getbasename-method
 	 */
 	public GetBaseName(path: string): string {
-		// todo fs
-		return '';
+		const last = path
+			.replace(/\\+/g, '/')
+			.split('/')
+			.filter(p => !!p)
+			.reverse()[0];
+		if (last.indexOf('.') >= 0) {
+			return last.substr(0, last.lastIndexOf('.'));
+		}
+		return last;
 	}
 
 	/**
@@ -168,8 +187,8 @@ export class FileSystemObject {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/getdrive-method
 	 */
 	public GetDrive(drivespec: string): Drive {
-		// todo fs
-		return new Drive();
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -178,8 +197,8 @@ export class FileSystemObject {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/getdrivename-method
 	 */
 	public GetDriveName(path: string): string {
-		// todo fs
-		return '';
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -188,7 +207,14 @@ export class FileSystemObject {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/getextensionname-method
 	 */
 	public GetExtensionName(path: string): string {
-		// todo fs
+		const last = path
+			.replace(/\\+/g, '/')
+			.split('/')
+			.filter(p => !!p)
+			.reverse()[0];
+		if (last.indexOf('.') >= 0) {
+			return last.substr(last.lastIndexOf('.') + 1);
+		}
 		return '';
 	}
 
@@ -197,9 +223,11 @@ export class FileSystemObject {
 	 * @param filespec The filespec is the path (absolute or relative) to a specific file.
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/getfile-method
 	 */
-	public GetFile(filespec: string): File {
-		// todo fs
-		return new File();
+	public GetFile(filespec: string): File | void {
+		if (!FS.fileExists(filespec)) {
+			return ERR.Raise(53, undefined, 'File not found');
+		}
+		return new File(filespec);
 	}
 
 	/**
@@ -208,8 +236,12 @@ export class FileSystemObject {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/getfilename-method-visual-basic-for-applications
 	 */
 	public GetFileName(pathspec: string): string {
-		// todo fs
-		return '';
+		const last = pathspec
+			.replace(/\\+/g, '/')
+			.split('/')
+			.filter(p => !!p)
+			.reverse()[0];
+		return last;
 	}
 
 	/**
@@ -218,8 +250,8 @@ export class FileSystemObject {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/getfolder-method
 	 */
 	public GetFolder(folderspec: string): string {
-		// todo fs
-		return '';
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -228,8 +260,8 @@ export class FileSystemObject {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/getparentfoldername-method
 	 */
 	public GetParentFolderName(path: string): string {
-		// todo fs
-		return '';
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -238,8 +270,8 @@ export class FileSystemObject {
 	 * @constructor
 	 */
 	public GetSpecialFolder(folderspec: number): {} {
-		// todo fs
-		return {};
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -247,8 +279,8 @@ export class FileSystemObject {
 	 * @https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/gettempname-method
 	 */
 	public GetTempName(): string {
-		// todo fs
-		return '';
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -258,7 +290,8 @@ export class FileSystemObject {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/movefile-method
 	 */
 	public MoveFile(source: string, destination: string): void {
-		// todo fs
+		// only used in NVOffset(), which doesn't seem to be used very often.
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -268,7 +301,8 @@ export class FileSystemObject {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/movefolder-method
 	 */
 	public MoveFolder(source: string, destination: string): void {
-		// todo fs
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -279,8 +313,10 @@ export class FileSystemObject {
 	 * @param format One of three Tristate values used to indicate the format of the opened file. If omitted, the file is opened as ASCII.
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/opentextfile-method
 	 */
-	public OpenTextFile(filename: string, iomode: number = 1, create = false, format = 0): TextStream {
-		// todo fs
-		return new TextStream();
+	public OpenTextFile(filename: string, iomode: number = 1, create = false, format = 0): TextStream | void {
+		if (!FS.fileExists(filename) && !create) {
+			return ERR.Raise(53, undefined, 'File not found');
+		}
+		return FS.fileExists(filename) ? FS.getStream(filename) : FS.addStream(filename, new TextStream(filename, false));
 	}
 }
