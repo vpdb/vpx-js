@@ -47,7 +47,7 @@ export class FileSystem {
 		try {
 			getTextFile(fileName);
 			return true;
-		} catch {
+		} catch (err) {
 			return false;
 		}
 	}

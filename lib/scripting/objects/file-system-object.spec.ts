@@ -118,20 +118,25 @@ describe('The VBScript file system object', () => {
 		expect(fso.GetFileName('c:\\a\\folder\\')).to.equal('folder');
 	});
 
-	it.skip('should open a bundled text file', () => {
+	it('should open a bundled text file', () => {
 		const fso = new FileSystemObject();
 		expect(fso.OpenTextFile('controller.vbs')).to.be.ok;
 	});
 
-	it.skip('should open an existing file', () => {
+	it('should open an existing file', () => {
 		const fso = new FileSystemObject();
 		fso.CreateTextFile('test.txt');
 		expect(fso.OpenTextFile('test.txt')).to.be.ok;
 	});
 
-	it.skip('should open an non-existent file', () => {
+	it('should open an non-existent file', () => {
 		const fso = new FileSystemObject();
 		expect(fso.OpenTextFile('test.txt', 1, true)).to.be.ok;
+	});
+
+	it('should fail with a non-existing file', () => {
+		const fso = new FileSystemObject();
+		expect(() => fso.OpenTextFile('test.txt', 1, false)).to.throw('Error 53: File not found');
 	});
 
 	it('should throw an exception when using non-implemented APIs', () => {
