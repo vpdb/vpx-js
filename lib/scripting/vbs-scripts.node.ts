@@ -29,10 +29,10 @@ export function getTextFile(fileName: string): string {
 /* istanbul ignore next: We don't test VB's core library. */
 function getLocalPath(fileName: string): string {
 	switch (fileName.toLowerCase()) {
-		case 'controller.vbs': return resolve(__dirname, '../../../res/scripts/controller.vbs');
-		case 'core.vbs': return resolve(__dirname, '../../../res/scripts/core.vbs');
-		case 'vpmkeys.vbs': return resolve(__dirname, '../../../res/scripts/VPMKeys.vbs');
-		case 'wpc.vbs': return resolve(__dirname, '../../../res/scripts/WPC.vbs');
+		case 'controller.vbs': return resolve(__dirname, '../../res/scripts/controller.vbs');
+		case 'core.vbs': return resolve(__dirname, '../../res/scripts/core.vbs');
+		case 'vpmkeys.vbs': return resolve(__dirname, '../../res/scripts/VPMKeys.vbs');
+		case 'wpc.vbs': return resolve(__dirname, '../../res/scripts/WPC.vbs');
 	}
 	throw new Error(`Cannot find text file ${fileName}`);
 }
