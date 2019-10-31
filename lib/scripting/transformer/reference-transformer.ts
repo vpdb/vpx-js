@@ -170,6 +170,10 @@ export class ReferenceTransformer extends Transformer {
 								parent.property.name = propName;
 							}
 						}
+						// add player object to activeX instantiation
+						if (name === 'CreateObject') {
+							parent.arguments.push(identifier(Transformer.PLAYER_NAME));
+						}
 						return memberExpression(
 							identifier(Transformer.STDLIB_NAME),
 							identifier(name),

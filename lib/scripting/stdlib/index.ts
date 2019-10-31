@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Player } from '../../game/player';
 import { f4 } from '../../math/float';
 import { logger } from '../../util/logger';
 import { getObject } from '../objects';
@@ -69,8 +70,8 @@ export class Stdlib extends VbsApi {
 		// Initializes the random-number generator in VBScript. Nothing to initialize here.
 	}
 
-	public CreateObject(name: string): any {
-		return getObject(name);
+	public CreateObject(name: string, player: Player): any {
+		return getObject(name, player);
 	}
 
 	public MsgBox(msg: string): void {

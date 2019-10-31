@@ -62,6 +62,7 @@ export class WrapTransformer extends Transformer {
 							identifier(Transformer.GLOBAL_NAME),
 							identifier(Transformer.STDLIB_NAME),
 							identifier(Transformer.VBSHELPER_NAME),
+							identifier(Transformer.PLAYER_NAME),
 						],
 					),
 				)),
