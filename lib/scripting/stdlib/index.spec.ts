@@ -90,4 +90,13 @@ describe('The VBScript stdlib', () => {
 		expect(scope.result).to.be.ok;
 	});
 
+	it('should provide the Err object', () => {
+		const scope = {} as any;
+		const vbs = `result = Err`;
+		const transpiler = new Transpiler(table, player);
+		transpiler.execute(vbs, scope, 'global');
+
+		expect(scope.result).to.be.ok;
+	});
+
 });

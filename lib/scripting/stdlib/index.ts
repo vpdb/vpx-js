@@ -20,17 +20,26 @@
 import { f4 } from '../../math/float';
 import { getObject } from '../objects';
 import { VbsApi } from '../vbs-api';
-import { ERR } from './error-handler';
+import { Err } from './err';
 import { VbsMath } from './math';
 
 export class Stdlib extends VbsApi {
 
 	private readonly math = new VbsMath();
+	private readonly err = new Err();
 
-	get Err() { return ERR.getError(); }
-
+	get Err() { return this.err; }
 	get Math() { return this.math; }
 
+	/**
+	 * Converts to Single Data Type:
+	 *
+	 * -3.402823E+38 through -1.401298E-45 for negative values;
+	 * 1.401298E-45 through 3.402823E+38 for positive values.
+	 *
+	 * @param n Number to convert
+	 * @see https://docs.microsoft.com/en-us/dotnet/visual-basic/language-reference/functions/type-conversion-functions
+	 */
 	public Csng(n: number): number {
 		return f4(n);
 	}

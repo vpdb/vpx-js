@@ -19,7 +19,6 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import { ERR } from '../stdlib/error-handler';
 import { Dictionary } from './dictionary';
 
 /* tslint:disable:no-unused-expression no-string-literal */

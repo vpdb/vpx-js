@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ERR } from '../stdlib/error-handler';
+import { ERR } from '../stdlib/err';
 
 /**
  * Object that stores data key/item pairs.
@@ -64,7 +64,7 @@ export class Dictionary<V> {
 	public Key: { [key: string]: V | null} = new Proxy(this, {
 		set: (target: {}, oldKey: string | number | symbol, newKey: string | number | symbol) => {
 			if (!this.d.has(oldKey)) {
-				ERR.setError(new Error('Key does not exist'));
+				ERR.Raise(32811, undefined, 'Element not found');
 				return true;
 			}
 			const value = this.d.get(oldKey) as V | null;
@@ -83,7 +83,7 @@ export class Dictionary<V> {
 	 */
 	public Add(key: string | number | symbol, item: V): void {
 		if (this.d.has(key)) {
-			ERR.setError(new Error('Key already exists'));
+			ERR.Raise(457, undefined, 'This key is already associated with an element of this collection');
 		}
 		this.d.set(key, item);
 	}
@@ -121,7 +121,7 @@ export class Dictionary<V> {
 	 */
 	public Remove(key: string | number | symbol) {
 		if (!this.d.has(key)) {
-			ERR.setError(new Error('Key does not exists'));
+			ERR.Raise(32811, undefined, 'Element not found');
 		}
 		this.d.delete(key);
 	}

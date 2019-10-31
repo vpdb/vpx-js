@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { ERR } from '../stdlib/error-handler';
+import { ERR } from '../stdlib/err';
 import { Dictionary } from './dictionary';
 import { FileSystemObject } from './file-system-object';
 import { VpmController } from './vpm-controller';
@@ -30,5 +30,5 @@ export function getObject(name: string): any {
 		case 'vpinmame.controller': return new VpmController();
 		case 'wscript.shell': return new WshShell();
 	}
-	ERR.setError(new Error(`Unknown object "${name}".`));
+	ERR.Raise(429, undefined, "ActiveX component can't create object");
 }
