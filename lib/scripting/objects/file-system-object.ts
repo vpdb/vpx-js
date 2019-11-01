@@ -97,7 +97,7 @@ export class FileSystemObject {
 		if (FS.fileExists(filename) && !overwrite) {
 			return ERR.Raise(58, undefined, 'File already exists');
 		}
-		const textStream = new TextStream(filename, unicode);
+		const textStream = new TextStream(filename, unicode, TextStream.MODE_APPEND);
 		FS.addStream(filename, textStream);
 		return textStream;
 	}
@@ -308,15 +308,15 @@ export class FileSystemObject {
 	/**
 	 * Opens a specified file and returns a {@link TextStream} object that can be used to read from, write to, or append to the file.
 	 * @param filename String expression that identifies the file to open.
-	 * @param iomode Indicates input/output mode. Can be one of three constants: ForReading, ForWriting, or ForAppending.
+	 * @param mode Indicates input/output mode. Can be one of three constants: ForReading, ForWriting, or ForAppending.
 	 * @param create Boolean value that indicates whether a new file can be created if the specified filename doesn't exist. The value is True if a new file is created; False if it isn't created. The default is False.
 	 * @param format One of three Tristate values used to indicate the format of the opened file. If omitted, the file is opened as ASCII.
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/opentextfile-method
 	 */
-	public OpenTextFile(filename: string, iomode: number = 1, create = false, format = 0): TextStream | void {
+	public OpenTextFile(filename: string, mode: number = 1, create = false, format = 0): TextStream | void {
 		if (!FS.fileExists(filename) && !create) {
 			return ERR.Raise(53, undefined, 'File not found');
 		}
-		return FS.fileExists(filename) ? FS.getStream(filename) : FS.addStream(filename, new TextStream(filename, false));
+		return FS.fileExists(filename) ? FS.getStream(filename) : FS.addStream(filename, new TextStream(filename, false, mode));
 	}
 }

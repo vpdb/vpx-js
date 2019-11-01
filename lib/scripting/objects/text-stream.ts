@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { ERR } from '../stdlib/err';
 import { VbsNotImplementedError } from '../vbs-api';
 
 /**
@@ -26,12 +27,21 @@ import { VbsNotImplementedError } from '../vbs-api';
  */
 export class TextStream {
 
+	public static readonly MODE_READ = 1;
+	public static readonly MODE_WRITE = 2;
+	public static readonly MODE_APPEND = 8;
+
 	private readonly filename: string;
 	private readonly unicode: boolean;
 
-	constructor(filename: string, unicode: boolean) {
+	private buffer: Buffer = Buffer.alloc(0);
+	private cursor: number = -1;
+	private mode: number;
+
+	constructor(filename: string, unicode: boolean, mode: number) {
 		this.filename = filename;
 		this.unicode = unicode;
+		this.mode = mode;
 	}
 
 	/**
@@ -47,9 +57,8 @@ export class TextStream {
 	 * Read-only property that returns True if the file pointer is at the end of a TextStream file; False if it is not.
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/atendofstream-property
 	 */
-	public get AtEndOfStream() {
-		// todo fs
-		return true;
+	public get AtEndOfStream(): boolean {
+		return this.cursor === this.buffer.length - 1;
 	}
 
 	/**
@@ -57,8 +66,8 @@ export class TextStream {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/column-property-visual-basic-for-applications
 	 */
 	public get Column() {
-		// todo fs
-		return 0;
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -66,8 +75,8 @@ export class TextStream {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/line-property
 	 */
 	public get Line() {
-		// todo fs
-		return 0;
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -75,7 +84,8 @@ export class TextStream {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/close-method-textstream-object
 	 */
 	public Close(): void {
-		// todo fs
+		this.cursor = 0;
+		// no file, nothing to close
 	}
 
 	/**
@@ -83,27 +93,46 @@ export class TextStream {
 	 * @param characters Number of characters that you want to read from the file.
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/read-method
 	 */
-	public Read(characters: number): string {
-		// todo fs
-		return '';
+	public Read(characters: number): string | void {
+		if (this.mode !== TextStream.MODE_READ) {
+			return ERR.Raise(54, undefined, 'Bad file mode');
+		}
+		return this.buffer.slice(this.cursor, this.cursor + characters).toString(this.unicode ? 'utf8' : 'ascii');
 	}
 
 	/**
 	 * Reads an entire TextStream file and returns the resulting string.
 	 * @see f
 	 */
-	public ReadAll(): string {
-		// todo fs
-		return '';
+	public ReadAll(): string | void {
+		if (this.mode !== TextStream.MODE_READ) {
+			return ERR.Raise(54, undefined, 'Bad file mode');
+		}
+		return this.buffer.toString(this.unicode ? 'utf8' : 'ascii');
 	}
 
 	/**
 	 * Reads an entire line (up to, but not including, the newline character) from a TextStream file and returns the resulting string.
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/readline-method
 	 */
-	public ReadLine(): string {
-		// todo fs
-		return '';
+	public ReadLine(): string | void {
+		if (this.mode !== TextStream.MODE_READ) {
+			return ERR.Raise(54, undefined, 'Bad file mode');
+		}
+		const start = this.cursor;
+		let end = this.cursor;
+		do {
+			this.cursor++;
+			end++;
+			if (this.buffer[this.cursor] === 0x0d) {
+				if (this.cursor < this.buffer.length - 2 && this.buffer[this.cursor + 1] === 0x0a) {
+					this.cursor++;
+				}
+				end--;
+				break;
+			}
+		} while (this.cursor < this.buffer.length - 1);
+		return this.buffer.slice(start, end + 1).toString(this.unicode ? 'utf8' : 'ascii');
 	}
 
 	/**
@@ -112,7 +141,11 @@ export class TextStream {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/skip-method
 	 */
 	public Skip(characters: number): void {
-		// todo fs
+		if (this.mode !== TextStream.MODE_READ) {
+			return ERR.Raise(54, undefined, 'Bad file mode');
+		}
+		this.cursor += characters;
+		this.clampCursor();
 	}
 
 	/**
@@ -120,7 +153,18 @@ export class TextStream {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/skipline-method
 	 */
 	public SkipLine(): void {
-		// todo fs
+		if (this.mode !== TextStream.MODE_READ) {
+			return ERR.Raise(54, undefined, 'Bad file mode');
+		}
+		do {
+			this.cursor++;
+			if (this.buffer[this.cursor] === 0x0d) {
+				if (this.cursor < this.buffer.length - 2 && this.buffer[this.cursor + 1] === 0x0a) {
+					this.cursor++;
+				}
+				return;
+			}
+		} while (this.cursor < this.buffer.length - 1);
 	}
 
 	/**
@@ -129,7 +173,8 @@ export class TextStream {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/write-method
 	 */
 	public Write(data: string): void {
-		// todo fs
+		this.buffer = Buffer.concat([this.buffer, Buffer.from(data) ]);
+		this.cursorToEnd();
 	}
 
 	/**
@@ -138,7 +183,8 @@ export class TextStream {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/writeblanklines-method
 	 */
 	public WriteBlankLines(lines: number): void {
-		// todo fs
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -147,11 +193,25 @@ export class TextStream {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/writeline-method
 	 */
 	public WriteLine(data: string): void {
-		// todo fs
+		this.Write(data + '\r\n');
 	}
 
-	public setContent(textFile: string): this {
-		// todo fs
+	public setContent(data: string): this {
+		this.buffer = Buffer.from(data);
+		this.cursorToEnd();
 		return this;
+	}
+
+	public setMode(mode: number): this {
+		this.mode = mode;
+		return this;
+	}
+
+	private clampCursor() {
+		this.cursor = Math.min(Math.max(-1, this.cursor), this.buffer.length - 1);
+	}
+
+	private cursorToEnd() {
+		this.cursor = this.buffer.length - 1;
 	}
 }
