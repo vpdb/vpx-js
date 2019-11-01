@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { VbsNotImplementedError } from '../vbs-api';
+
 /**
  * Facilitates sequential access to file.
  *
@@ -37,8 +39,8 @@ export class TextStream {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/atendofline-property
 	 */
 	public get AtEndOfLine() {
-		// todo fs
-		return true;
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**

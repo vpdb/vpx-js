@@ -18,6 +18,8 @@
  */
 
 import { globalEnvironment, WshEnvironment } from './wsh-environment';
+import { VbsNotImplementedError } from '../vbs-api';
+import { registry } from '../../io/global-registry';
 
 /**
  * Provides access to the native Windows shell.
@@ -52,7 +54,8 @@ export class WshShell {
 	 * @see https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/windows-scripting/wzcddbek%28v%3dvs.84%29
 	 */
 	public AppActivate(id: string | number): void {
-		// todo shell
+		// only used in ultradmd which we currently ignore
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -61,7 +64,8 @@ export class WshShell {
 	 * @see https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/windows-scripting/xsy6k3ys%28v%3dvs.84%29
 	 */
 	public CreateShortcut(strPathname: string): void {
-		// todo shell
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -70,7 +74,8 @@ export class WshShell {
 	 * @see https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/windows-scripting/ateytk4a%28v%3dvs.84%29
 	 */
 	public Exec(strCommand: string): void {
-		// todo shell
+		// no usages found (fortunately!)
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -79,7 +84,8 @@ export class WshShell {
 	 * @see https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/windows-scripting/dy8116cf%28v%3dvs.84%29
 	 */
 	public ExpandEnvironmentStrings(strString: string): void {
-		// todo shell
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -90,7 +96,8 @@ export class WshShell {
 	 * @see https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/windows-scripting/b4ce6by3%28v%3dvs.84%29
 	 */
 	public LogEvent(intType: number, strMessage: string, strTarget?: string): void {
-		// todo shell
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -103,7 +110,8 @@ export class WshShell {
 	 * @see https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/windows-scripting/x83z1d9f%28v%3dvs.84%29
 	 */
 	public Popup(strText: string, nSecondsToWait?: number, strTitle?: string, nType?: number, intButton?: number): void {
-		// todo shell
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -112,7 +120,8 @@ export class WshShell {
 	 * @see https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/windows-scripting/293bt9hh%28v%3dvs.84%29
 	 */
 	public RegDelete(strName: string): void {
-		// todo shell
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -122,7 +131,7 @@ export class WshShell {
 	 * @see https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/windows-scripting/x05fawxd%28v%3dvs.84%29
 	 */
 	public RegRead(strName: string): any {
-		// todo shell
+		return registry.regRead(strName);
 	}
 
 	/**
@@ -133,7 +142,7 @@ export class WshShell {
 	 * @see https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/windows-scripting/yfdfhz1b%28v%3dvs.84%29
 	 */
 	public RegWrite(strName: string, anyValue: any, strType?: string): void {
-		// todo shell
+		registry.regWrite(strName, anyValue);
 	}
 
 	/**
@@ -144,7 +153,8 @@ export class WshShell {
 	 * @see https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/windows-scripting/d5fk67ky%28v%3dvs.84%29
 	 */
 	public Run(strCommand: string, intWindowStyle?: number, bWaitOnReturn?: boolean): void {
-		// todo shell
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 
 	/**
@@ -153,6 +163,7 @@ export class WshShell {
 	 * @see https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/windows-scripting/8c6yea83%28v%3dvs.84%29#arguments
 	 */
 	public SendKeys(s: string): void {
-		// todo shell
+		// no usages found
+		throw new VbsNotImplementedError();
 	}
 }
