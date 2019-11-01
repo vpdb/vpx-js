@@ -46,6 +46,7 @@ import { TimerOnOff } from '../vpt/timer/timer-on-off';
 import { Event } from './event';
 import { PinInput } from './pin-input';
 import { IBallCreationPosition, Player } from './player';
+import { IEmulator } from './iemulator';
 
 const SLOW_MO = 1; // the lower, the slower
 const ANIM_FPS = 60;
@@ -101,6 +102,8 @@ export class PlayerPhysics {
 	private activeBallDebug?: Ball;
 	public readonly changedHitTimers: TimerOnOff[] = [];
 	private scriptPeriod: number = 0;
+
+	public emu?: IEmulator;
 
 	/**
 	 * Player physics are instantiated in the Player's constructor.
@@ -403,6 +406,11 @@ export class PlayerPhysics {
 				this.scriptPeriod += Math.floor(this.now() - curTimeUsec);
 			}
 			this.activeBall = oldActiveBall;
+
+			// emulator loop
+			if (this.emu) {
+				this.emu.emuSimulateCycle(physicsDiffTime);
+			}
 
 			this.updateVelocities();
 
