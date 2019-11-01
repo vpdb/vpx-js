@@ -23,6 +23,7 @@ import { Pool } from '../util/object-pool';
 import { Ball } from '../vpt/ball/ball';
 import { ItemState } from '../vpt/item-state';
 import { Table } from '../vpt/table/table';
+import { IEmulator } from './iemulator';
 import { AssignKey, keyEventToDirectInputKey } from './key-code';
 import { PinInput } from './pin-input';
 import { PlayerPhysics } from './player-physics';
@@ -150,6 +151,10 @@ export class Player extends EventEmitter {
 
 	public setGravity(slopeDeg: number, strength: number): void {
 		this.physics.setGravity(slopeDeg, strength);
+	}
+
+	public setEmulator(emu: IEmulator) {
+		this.physics.emu = emu;
 	}
 
 	/**
