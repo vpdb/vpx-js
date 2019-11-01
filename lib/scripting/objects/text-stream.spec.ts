@@ -20,19 +20,35 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import { VbsNotImplementedError } from '../vbs-api';
+import { File } from './file';
+import { FileSystemObject } from './file-system-object';
 import { TextStream } from './text-stream';
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
 describe('The VBScript native text stream object', () => {
 
-	it('xxx', () => {
-		const ts = new TextStream('test.txt', true);
+	it('should write and read a line', () => {
+		const fs = new FileSystemObject();
+		fs.CreateTextFile('test1.txt');
+		const f = fs.GetFile('test1.txt') as File;
+
+		let ts = f.OpenAsTextStream(TextStream.MODE_WRITE, -2);
+		ts.Write('Hello World');
+		ts.Close();
+
+		ts = f.OpenAsTextStream(TextStream.MODE_READ, -2);
+		ts.Skip(3);
+		expect(ts.ReadLine()).to.equal('lo World');
 	});
 
 	it('should throw an exception when using non-implemented APIs', () => {
-		const ts = new TextStream('test.txt', true);
+		const ts = new TextStream('test.txt', true, 0);
 		expect(() => ts.AtEndOfLine).to.throw(VbsNotImplementedError);
+		expect(() => ts.WriteBlankLines(1)).to.throw(VbsNotImplementedError);
+		expect(() => ts.Column).to.throw(VbsNotImplementedError);
+		expect(() => ts.Line).to.throw(VbsNotImplementedError);
+		expect(() => ts.Close()).not.to.throw(VbsNotImplementedError);
 	});
 
 });

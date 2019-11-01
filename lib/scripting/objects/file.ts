@@ -17,6 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { FS } from './file-system';
+import { TextStream } from './text-stream';
+
 /**
  * Provides access to all the properties of a file.
  *
@@ -24,9 +27,19 @@
  */
 export class File {
 
-	private path: string;
+	private readonly path: string;
 
 	constructor(path: string) {
 		this.path = path;
+	}
+
+	/**
+	 * Opens a specified file and returns a TextStream object that can be used to read from, write to, or append to the file.
+	 * @param mode Indicates input/output mode. Can be one of three constants: ForReading, ForWriting, or ForAppending.
+	 * @param format One of three Tristate values used to indicate the format of the opened file. If omitted, the file is opened as ASCII.
+	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/openastextstream-method
+	 */
+	public OpenAsTextStream(mode: number, tristate?: number): TextStream {
+		return FS.getStream(this.path, mode);
 	}
 }

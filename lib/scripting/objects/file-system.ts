@@ -29,11 +29,11 @@ export class FileSystem {
 		return stream;
 	}
 
-	public getStream(fileName: string): TextStream {
+	public getStream(fileName: string, iomode: number = 1): TextStream {
 		if (!this.files.has(this.normalizePath(fileName))) {
-			return new TextStream(fileName, true).setContent(getTextFile(fileName));
+			return new TextStream(fileName, true, iomode).setContent(getTextFile(fileName));
 		}
-		return this.files.get(this.normalizePath(fileName))!;
+		return this.files.get(this.normalizePath(fileName))!.setMode(iomode);
 	}
 
 	public deleteFile(fileName: string) {
