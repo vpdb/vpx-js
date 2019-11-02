@@ -21,14 +21,18 @@ import { IRenderApi } from '../../render/irender-api';
 import { ItemUpdater } from '../item-updater';
 import { Table } from '../table/table';
 import { LightState } from './light-state';
+import { LightData } from './light-data';
 
 export class LightUpdater extends ItemUpdater<LightState> {
+	
+	private readonly data: LightData;
 
-	constructor(state: LightState) {
+	constructor(data: LightData, state: LightState) {
 		super(state);
+		this.data = data;
 	}
 
 	public applyState<NODE, GEOMETRY, POINT_LIGHT>(obj: NODE, state: LightState, renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, table: Table): void {
-		renderApi.applyLighting(state, obj);
+		renderApi.applyLighting(state, this.data.intensity, obj);
 	}
 }

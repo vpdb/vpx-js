@@ -19,7 +19,7 @@
 
 import { IRenderable, RenderInfo } from '../../game/irenderable';
 import { Matrix3D } from '../../math/matrix3d';
-import { BufferGeometry, Group, Matrix4, MeshStandardMaterial, Object3D, PointLight, Vector2 } from '../../refs.node';
+import { BufferGeometry, Group, Matrix4, MeshStandardMaterial, Object3D, PointLight, Vector2, Mesh as ThreeMesh } from '../../refs.node';
 import { Pool } from '../../util/object-pool';
 import { ItemState } from '../../vpt/item-state';
 import { LightData } from '../../vpt/light/light-data';
@@ -87,7 +87,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 
 	public createPointLight(lightData: LightData): PointLight {
 		const light = new PointLight(lightData.color, lightData.state !== Enums.LightStatus.LightStateOff ? lightData.intensity : 0, lightData.falloff * ThreeRenderApi.SCALE, 2);
-		light.name = `light:${lightData.getName()}`;
+		light.name = `light`;
 		light.updateMatrixWorld();
 		light.position.set(lightData.center.x, lightData.center.y, -10);
 		const isSlingshotLight = ((lightData.center.x > 150 && lightData.center.x < 250) || (lightData.center.x > 600 && lightData.center.x < 750))
@@ -180,12 +180,19 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		releaseGeometry(srcGeo);
 	}
 
-	public applyLighting(state: LightState, light: PointLight | undefined): void {
+	public applyLighting(state: LightState, initialIntensity: number, obj: Object3D | undefined): void {
 		/* istanbul ignore next */
-		if (!light) {
+		if (!obj) {
 			return;
 		}
-		light.intensity = state.intensity;
+		for (const lightObj of obj.children) {
+			if (lightObj.name === 'light') {
+				(lightObj as PointLight).intensity = state.intensity;
+			}
+			if (lightObj.name === 'bulb.light') {
+				((lightObj as ThreeMesh).material as MeshStandardMaterial).emissiveIntensity = state.intensity / initialIntensity;
+			}
+		}
 	}
 
 	public applyMaterial(obj?: Object3D, material?: Material, map?: string, normalMap?: string, envMap?: string, emissiveMap?: string): void {
