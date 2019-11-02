@@ -128,6 +128,7 @@ export class TextStream {
 				if (this.cursor < this.buffer.length - 2 && this.buffer[this.cursor + 1] === 0x0a) {
 					this.cursor++;
 				}
+				this.cursor++;
 				end--;
 				break;
 			}
@@ -162,6 +163,7 @@ export class TextStream {
 				if (this.cursor < this.buffer.length - 2 && this.buffer[this.cursor + 1] === 0x0a) {
 					this.cursor++;
 				}
+				this.cursor++;
 				return;
 			}
 		} while (this.cursor < this.buffer.length - 1);
@@ -213,5 +215,10 @@ export class TextStream {
 
 	private cursorToEnd() {
 		this.cursor = this.buffer.length - 1;
+	}
+
+	public cursorToStart(): this {
+		this.cursor = 0;
+		return this;
 	}
 }

@@ -19,13 +19,29 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import { Dictionary } from './dictionary';
+import { WshEnvironment } from './wsh-environment';
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
 describe('The VBScript windows environment object', () => {
 
-	it('xxx', () => {
+	it('should write and read values', () => {
+		const env = new WshEnvironment();
+		env.Item['key'] = 'Value'
+		expect(env.Item['key']).to.equal('Value');
 	});
+
+	it('should count the values', () => {
+		const env = new WshEnvironment();
+		env.Item['key'] = 'Value'
+		expect(env.Count()).to.equal(1);
+	});
+
+	it('should remove a value', () => {
+		const env = new WshEnvironment();
+		env.Item['key'] = 'Value'
+		env.Remove('key');
+		expect(env.Count()).to.equal(0);
+	})
 
 });
