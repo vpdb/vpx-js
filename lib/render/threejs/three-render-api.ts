@@ -35,6 +35,7 @@ import { ThreeMapGenerator } from './three-map-generator';
 import { ThreeMaterialGenerator } from './three-material-generator';
 import { releaseGeometry, ThreeMeshGenerator } from './three-mesh-generator';
 import { ThreePlayfieldMeshGenerator } from './three-playfield-mesh-generator';
+import { LightStatus, Enums } from '../../vpt/enums';
 
 export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, PointLight> {
 
@@ -85,7 +86,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 	}
 
 	public createPointLight(lightData: LightData): PointLight {
-		const light = new PointLight(lightData.color, lightData.intensity, lightData.falloff * ThreeRenderApi.SCALE, 2);
+		const light = new PointLight(lightData.color, lightData.state !== Enums.LightStatus.LightStateOff ? lightData.intensity : 0, lightData.falloff * ThreeRenderApi.SCALE, 2);
 		light.name = `light:${lightData.getName()}`;
 		light.updateMatrixWorld();
 		light.position.set(lightData.center.x, lightData.center.y, -10);
