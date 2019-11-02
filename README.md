@@ -98,6 +98,15 @@ npm run test
 
 For more infos about how tests are written, see [here](https://github.com/vpdb/vpx-js/tree/master/test#readme)
 
+## Credits
+
+* @jsm174 for getting the Nearley grammar right and his work on translating VBScript to JavaScript
+* @neophob for his awesome WPC-EMU integration
+
+<a title="IntelliJ IDEA" href="https://www.jetbrains.com/idea/"><img src="https://raw.githubusercontent.com/vpdb/server/master/assets/intellij-logo-text.svg?sanitize=true" alt="IntelliJ IDEA" width="250"></a>
+
+Special thanks go to JetBrains for their awesome IDE and support of the Open Source Community!
+
 ## License
 
 GPLv2, see [LICENSE](LICENSE).
