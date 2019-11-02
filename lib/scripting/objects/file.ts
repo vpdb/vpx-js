@@ -40,6 +40,6 @@ export class File {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/openastextstream-method
 	 */
 	public OpenAsTextStream(mode: number, tristate?: number): TextStream {
-		return FS.getStream(this.path, mode);
+		return FS.getStream(this.path, mode).cursorToStart();
 	}
 }
