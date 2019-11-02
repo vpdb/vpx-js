@@ -35,7 +35,7 @@ import { ThreeMapGenerator } from './three-map-generator';
 import { ThreeMaterialGenerator } from './three-material-generator';
 import { releaseGeometry, ThreeMeshGenerator } from './three-mesh-generator';
 import { ThreePlayfieldMeshGenerator } from './three-playfield-mesh-generator';
-import { LightStatus, Enums } from '../../vpt/enums';
+import { Enums } from '../../vpt/enums';
 
 export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, PointLight> {
 

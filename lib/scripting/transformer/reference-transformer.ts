@@ -200,7 +200,7 @@ export class ReferenceTransformer extends Transformer {
 		replace(ast, {
 			enter: (node, parent: any) => {
 				if (node.type === 'CallExpression') {
-					if (node.callee.type === 'Identifier' && node.callee.name.toLowerCase() === 'executeglobal') {
+					if (node.callee.type === 'Identifier' && (['executeglobal', 'execute'].includes(node.callee.name.toLowerCase()) )) {
 						node.callee.name = 'eval';
 						node.arguments[0] = callExpression(
 							memberExpression(
