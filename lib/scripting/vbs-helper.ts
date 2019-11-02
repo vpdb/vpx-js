@@ -63,7 +63,12 @@ export class VBSHelper {
 	}
 
 	public transpileInline(vbs: string) {
-		return `//@ sourceURL=inline${this.transpileCount++}.js\n${this.transpiler.transpile(vbs)}`;
+		// don't show oneliners in devtools
+		if (vbs.length > 150) {
+			return `//@ sourceURL=inline${this.transpileCount++}.js\n${this.transpiler.transpile(vbs)}`;
+		} else {
+			return this.transpiler.transpile(vbs);
+		}		
 	}
 
 	/**

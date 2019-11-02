@@ -26,4 +26,8 @@ export class VpmController {
 	constructor(player: Player) {
 		this.player = player;
 	}
+
+	public Run(): void {
+		
+	}
 }
