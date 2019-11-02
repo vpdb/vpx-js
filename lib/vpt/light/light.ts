@@ -34,6 +34,7 @@ import { LightData } from './light-data';
 import { LightMeshGenerator } from './light-mesh-generator';
 import { LightState } from './light-state';
 import { LightUpdater } from './light-updater';
+import { Enums } from '../enums';
 
 /**
  * VPinball's lights.
@@ -66,7 +67,7 @@ export class Light extends Item<LightData> implements IRenderable<LightState>, I
 		this.state = LightState.claim(this.getName(), 0);
 		this.data = data;
 		this.meshGenerator = new LightMeshGenerator(data);
-		this.updater = new LightUpdater(this.state);
+		this.updater = new LightUpdater(this.data, this.state);
 	}
 
 	public isVisible(table: Table): boolean {
@@ -115,6 +116,7 @@ export class Light extends Item<LightData> implements IRenderable<LightState>, I
 		const meshes: Meshes<GEOMETRY> = {};
 		if (light.light) {
 			const lightMaterial = new Material();
+			lightMaterial.name = `bulb.light:${this.getName()}`;
 			lightMaterial.baseColor = 0;
 			lightMaterial.wrapLighting = 0.5;
 			lightMaterial.isOpacityActive = true;
@@ -128,7 +130,7 @@ export class Light extends Item<LightData> implements IRenderable<LightState>, I
 			lightMaterial.thickness = 0.05;
 			lightMaterial.clearCoat = 0xFFFFFF;
 			lightMaterial.emissiveColor = this.data.color;
-			lightMaterial.emissiveIntensity = 1;
+			lightMaterial.emissiveIntensity = this.data.state === Enums.LightStatus.LightStateOn ? 1 : 0.1;
 
 			meshes.light = {
 				isVisible: this.data.isVisible,

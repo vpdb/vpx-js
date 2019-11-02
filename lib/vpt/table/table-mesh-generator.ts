@@ -76,15 +76,24 @@ export class TableMeshGenerator {
 
 		// light bulb lights
 		if (opts.exportLightBulbLights) {
-			const lightGroup = renderApi.createParentNode('lights');
+			let lightGroup = renderApi.findInGroup(tableNode, 'lightBulbs');
+			if (!lightGroup) {
+				lightGroup = renderApi.createParentNode('lightBulbs');
+				renderApi.addChildToParent(tableNode, lightGroup);
+			}
 			for (const lightInfo of Object.values(this.table.lights).filter(l => l.isBulbLight())) {
+				let itemGroup = renderApi.findInGroup(lightGroup, lightInfo.getName());
+				if (!itemGroup) {
+					itemGroup = renderApi.createParentNode(lightInfo.getName());
+					renderApi.addChildToParent(lightGroup, itemGroup);
+				}
+
 				const pointLight = renderApi.createPointLight(lightInfo.data);
-				renderApi.addChildToParent(lightGroup, pointLight);
+				renderApi.addChildToParent(itemGroup, pointLight);
 
 				// FIXME dunno why TF this is necessary to get any light at all
 				//renderApi.addChildToParent(lightGroup, new PointLightHelper(pointLight as any, 10, 0xffffff) as any);
-			}
-			renderApi.addChildToParent(tableNode, lightGroup);
+			}			
 		}
 
 		// ball group

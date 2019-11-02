@@ -106,7 +106,7 @@ export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 	 * @param state New light state
 	 * @param node The light node
 	 */
-	applyLighting(state: LightState, node: NODE | undefined): void;
+	applyLighting(state: LightState, initialIntensity: number, node: NODE | undefined): void;
 
 	/**
 	 * Toggles visibility of an object.
