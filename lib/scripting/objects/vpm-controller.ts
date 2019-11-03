@@ -59,6 +59,7 @@ export class VpmController {
 	set GameName(gameName: string) {
 		this.gameName = gameName;
 		logger().debug('GAMENAME:', gameName);
+		//TODO this is hardwired to test
 		getGameEntry(gameName)
 			.then((answer: LoadedGameEntry) => {
 				logger().info('LOADED', answer.wpcDbEntry);
@@ -192,7 +193,8 @@ export class VpmController {
 
 	// AggregatePollingFunctions
 	get ChangedLamps() {
-		return [ 0 ];
+		logger().debug('ChangedLamps');
+		return [ [10, 1], [20, 1] ];
 	}
 	get ChangedSolenoids() {
 		return [ 0 ];
@@ -206,6 +208,7 @@ export class VpmController {
 
 	// GameInputOutput TODO need a proxy handle
 	get Lamp() {
+		logger().debug('get Lamp');
 		return 0;
 	}
 	get Solenoid() {
