@@ -192,6 +192,12 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 			if (lightObj.name === 'bulb.light') {
 				((lightObj as ThreeMesh).material as MeshStandardMaterial).emissiveIntensity = state.intensity / initialIntensity;
 			}
+			if (lightObj.name === 'surface.light') {
+				const mat = ((lightObj as ThreeMesh).material as MeshStandardMaterial);
+				const intensity = state.intensity / initialIntensity;
+				mat.emissiveIntensity = intensity;
+				mat.emissive.setRGB(intensity, intensity, intensity);
+			}
 		}
 	}
 
@@ -207,7 +213,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 				this.materialGenerator.applyMap(threeMaterial, map);
 				this.materialGenerator.applyNormalMap(threeMaterial, normalMap);
 				this.materialGenerator.applyEnvMap(threeMaterial, envMap);
-				this.materialGenerator.applyEmissiveMap(threeMaterial, emissiveMap);
+				this.materialGenerator.applyEmissiveMap(threeMaterial, material, emissiveMap);
 			}
 		} else {
 			const threeMaterial: MeshStandardMaterial = (obj as any).material;
@@ -215,7 +221,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 			this.materialGenerator.applyMap(threeMaterial, map);
 			this.materialGenerator.applyNormalMap(threeMaterial, normalMap);
 			this.materialGenerator.applyEnvMap(threeMaterial, envMap);
-			this.materialGenerator.applyEmissiveMap(threeMaterial, emissiveMap);
+			this.materialGenerator.applyEmissiveMap(threeMaterial, material, emissiveMap);
 		}
 	}
 

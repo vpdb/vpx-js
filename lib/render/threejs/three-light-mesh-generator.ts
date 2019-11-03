@@ -64,7 +64,7 @@ export class ThreeLightMeshGenerator {
 		if (lightData.szSurface) {
 			geometry.translate(0, 0, -table.getSurfaceHeight(lightData.szSurface, 0, 0));
 		}
-		geometry.name = `surface.light-${lightData.getName()}`;
+		geometry.name = `surface.light`;
 		return geometry;
 	}
 
