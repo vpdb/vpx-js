@@ -64,7 +64,7 @@ export class Light extends Item<LightData> implements IRenderable<LightState>, I
 
 	private constructor(data: LightData) {
 		super(data);
-		this.state = LightState.claim(this.getName(), 0);
+		this.state = LightState.claim(this.getName(), 0, data.color, data.color2);
 		this.data = data;
 		this.meshGenerator = new LightMeshGenerator(data);
 		this.updater = new LightUpdater(this.data, this.state);
@@ -77,7 +77,7 @@ export class Light extends Item<LightData> implements IRenderable<LightState>, I
 	public setupPlayer(player: Player, table: Table): void {
 		this.events = new EventProxy(this);
 		this.animation = new LightAnimation(this.data, this.state);
-		this.api = new LightApi(this.animation, this.data, this.events, player, table);
+		this.api = new LightApi(this.state, this.animation, this.data, this.events, player, table);
 	}
 
 	public getApi(): LightApi {
@@ -129,7 +129,7 @@ export class Light extends Item<LightData> implements IRenderable<LightState>, I
 			lightMaterial.thickness = 0.05;
 			lightMaterial.clearCoat = 0xFFFFFF;
 			lightMaterial.emissiveColor = this.data.color;
-			lightMaterial.emissiveIntensity = this.data.state === Enums.LightStatus.LightStateOn ? 1 : 0.1;
+			lightMaterial.emissiveIntensity = this.data.isOn() ? 1 : 0.1;
 
 			meshes.light = {
 				isVisible: this.data.isVisible,

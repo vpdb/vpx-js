@@ -33,7 +33,7 @@ export class TestRenderApi implements IRenderApi<any, any, any> {
 	addChildToParent(parent: any, child: any): void {
 	}
 
-	applyLighting(state: LightState, node: any | undefined): void {
+	applyLighting(state: LightState, initialIntensity: number, node: any | undefined): void {
 	}
 
 	applyMaterial(node: any | undefined, material?: Material, map?: string, normalMap?: string, envMap?: string, emissiveMap?: string): void {

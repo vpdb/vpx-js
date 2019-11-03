@@ -19,9 +19,8 @@
 
 import { IRenderable, RenderInfo } from '../../game/irenderable';
 import { Matrix3D } from '../../math/matrix3d';
-import { BufferGeometry, Group, Matrix4, Mesh as ThreeMesh, MeshStandardMaterial, Object3D, PointLight, Vector2 } from '../../refs.node';
+import { BufferGeometry, Group, Matrix4, MeshStandardMaterial, Object3D, PointLight } from '../../refs.node';
 import { Pool } from '../../util/object-pool';
-import { Enums } from '../../vpt/enums';
 import { ItemState } from '../../vpt/item-state';
 import { LightData } from '../../vpt/light/light-data';
 import { LightState } from '../../vpt/light/light-state';
@@ -31,6 +30,7 @@ import { Table, TableGenerateOptions } from '../../vpt/table/table';
 import { Texture } from '../../vpt/texture';
 import { IRenderApi, MeshConvertOptions } from '../irender-api';
 import { ThreeConverter } from './three-converter';
+import { ThreeLightGenerator } from './three-light-generator';
 import { ThreeLightMeshGenerator } from './three-light-mesh-generator';
 import { ThreeMapGenerator } from './three-map-generator';
 import { ThreeMaterialGenerator } from './three-material-generator';
@@ -50,10 +50,11 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 	private readonly converter: ThreeConverter;
 	private readonly meshConvertOpts: MeshConvertOptions;
 	private readonly playfieldGenerator: ThreePlayfieldMeshGenerator;
-	private readonly lightGenerator: ThreeLightMeshGenerator;
+	private readonly lightMeshGenerator: ThreeLightMeshGenerator;
 	private readonly meshGenerator = new ThreeMeshGenerator();
 	private readonly mapGenerator: ThreeMapGenerator;
 	private readonly materialGenerator: ThreeMaterialGenerator;
+	private readonly lightGenerator: ThreeLightGenerator;
 
 	constructor(opts?: MeshConvertOptions) {
 		this.meshConvertOpts = opts || {
@@ -64,7 +65,8 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 		this.materialGenerator = new ThreeMaterialGenerator(this.mapGenerator);
 		this.converter = new ThreeConverter(this.meshGenerator, this.mapGenerator, this.materialGenerator, this.meshConvertOpts);
 		this.playfieldGenerator = new ThreePlayfieldMeshGenerator();
-		this.lightGenerator = new ThreeLightMeshGenerator();
+		this.lightMeshGenerator = new ThreeLightMeshGenerator();
+		this.lightGenerator = new ThreeLightGenerator();
 	}
 
 	public async preloadTextures(textures: Texture[], table: Table): Promise<void> {
@@ -86,19 +88,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 	}
 
 	public createPointLight(lightData: LightData): PointLight {
-		const light = new PointLight(lightData.color, lightData.state !== Enums.LightStatus.LightStateOff ? lightData.intensity : 0, lightData.falloff * ThreeRenderApi.SCALE, 2);
-		light.name = `light`;
-		light.updateMatrixWorld();
-		light.position.set(lightData.center.x, lightData.center.y, -10);
-		const isSlingshotLight = ((lightData.center.x > 150 && lightData.center.x < 250) || (lightData.center.x > 600 && lightData.center.x < 750))
-			&& (lightData.center.y > 1400 && lightData.center.y < 1650);
-		if (ThreeRenderApi.SHADOWS && isSlingshotLight) {
-			light.castShadow = true;
-			light.shadow.bias = -0.001;
-			light.shadow.radius = 12;
-			light.shadow.mapSize = new Vector2(512, 512);
-		}
-		return light;
+		return this.lightGenerator.createPointLight(lightData);
 	}
 
 	public addChildToParent(group: Group, obj: Object3D | Group): void {
@@ -181,24 +171,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 	}
 
 	public applyLighting(state: LightState, initialIntensity: number, obj: Object3D | undefined): void {
-		/* istanbul ignore next */
-		if (!obj) {
-			return;
-		}
-		for (const lightObj of obj.children) {
-			if (lightObj.name === 'light') {
-				(lightObj as PointLight).intensity = state.intensity;
-			}
-			if (lightObj.name === 'bulb.light') {
-				((lightObj as ThreeMesh).material as MeshStandardMaterial).emissiveIntensity = state.intensity / initialIntensity;
-			}
-			if (lightObj.name === 'surface.light') {
-				const mat = ((lightObj as ThreeMesh).material as MeshStandardMaterial);
-				const intensity = state.intensity / initialIntensity;
-				mat.emissiveIntensity = intensity;
-				mat.emissive.setRGB(intensity, intensity, intensity);
-			}
-		}
+		this.lightGenerator.applyLighting(state, initialIntensity, obj);
 	}
 
 	public applyMaterial(obj?: Object3D, material?: Material, map?: string, normalMap?: string, envMap?: string, emissiveMap?: string): void {
@@ -234,7 +207,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 	}
 
 	public createLightGeometry(lightData: LightData, table: Table): BufferGeometry {
-		return this.lightGenerator.createLight(lightData, table);
+		return this.lightMeshGenerator.createLight(lightData, table);
 	}
 
 	public createPlayfieldGeometry(table: Table, opts: TableGenerateOptions): BufferGeometry {

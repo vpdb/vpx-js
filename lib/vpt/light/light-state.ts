@@ -28,26 +28,36 @@ export class LightState extends ItemState {
 	 * Intensity, from 0 to 1 (probably)
 	 */
 	public intensity: number = 0;
+	public color: number = 0;
+	public colorFull: number = 0;
 
 	public constructor() {
 		super();
 	}
 
-	public static claim(name: string, intensity: number): LightState {
+	public static claim(name: string, intensity: number, color: number, colorFull: number): LightState {
 		const state = LightState.POOL.get();
 		state.name = name;
 		state.intensity = intensity;
+		state.color = color;
+		state.colorFull = colorFull;
 		return state;
 	}
 
 	public clone(): LightState {
-		return LightState.claim(this.name, this.intensity);
+		return LightState.claim(this.name, this.intensity, this.color, this.colorFull);
 	}
 
 	public diff(state: LightState): LightState {
 		const diff = this.clone();
 		if (diff.intensity === state.intensity) {
 			delete diff.intensity;
+		}
+		if (diff.color === state.color) {
+			delete diff.color;
+		}
+		if (diff.colorFull === state.colorFull) {
+			delete diff.colorFull;
 		}
 		return diff;
 	}
@@ -61,6 +71,8 @@ export class LightState extends ItemState {
 		if (!state) {
 			return false;
 		}
-		return state.intensity === this.intensity;
+		return state.intensity === this.intensity
+			&& state.color === this.color
+			&& state.colorFull === this.colorFull;
 	}
 }

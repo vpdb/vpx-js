@@ -79,6 +79,16 @@ export class LightData extends ItemData {
 		super(itemName);
 	}
 
+	public isOn() {
+		if (this.state === Enums.LightStatus.LightStateOff) {
+			return false;
+		}
+		if (this.state === Enums.LightStatus.LightStateBlinking) {
+			return this.rgBlinkPattern && this.rgBlinkPattern[0] === '1';
+		}
+		return this.state === Enums.LightStatus.LightStateOn;
+	}
+
 	/**
 	 * Returns whether this light comes with a bulb mesh.
 	 */
