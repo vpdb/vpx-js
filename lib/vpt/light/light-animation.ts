@@ -37,16 +37,16 @@ export class LightAnimation implements IAnimation {
 
 	private timeMsec: number = 0;
 	private timerDurationEndTime: number = 0;
-	private blinkFrame: number = 0;
 	private duration: number = 0;
 	private iBlinkFrame: number = 0;
 
 	constructor(data: LightData, state: LightState) {
 		this.data = data;
 		this.state = state;
+		this.realState = this.data.state;
 	}
 
-	public init(physics: PlayerPhysics): void {
+	public init(): void {
 		// nothing to init here
 	}
 
@@ -56,7 +56,7 @@ export class LightAnimation implements IAnimation {
 
 			if (this.realState === Enums.LightStatus.LightStateBlinking) {
 				this.timeNextBlink = physics.timeMsec;     // Start pattern right away // + m_d.m_blinkinterval;
-				this.blinkFrame = 0;                       // reset pattern
+				this.iBlinkFrame = 0;                      // reset pattern
 			}
 			if (this.duration > 0) {
 				this.duration = 0;                         // disable duration if a state was set this way
