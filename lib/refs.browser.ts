@@ -62,7 +62,7 @@ export { ClampToEdgeWrapping, DoubleSide, FloatType, InterpolateDiscrete, Interp
 	LinearMipMapLinearFilter, LinearMipMapNearestFilter, MirroredRepeatWrapping, NearestFilter,
 	NearestMipMapLinearFilter, NearestMipMapNearestFilter, PixelFormat, RepeatWrapping, RGBAFormat, TriangleFanDrawMode,
 	TriangleStripDrawMode, UnsignedByteType, TextureDataType, HalfFloatType, LinearEncoding, RGBEEncoding, RGBEFormat,
-	RGBFormat,
+	RGBFormat, AdditiveBlending,
 } from 'three/src/constants';
 export { getTextFile } from './scripting/vbs-scripts.browser';
 

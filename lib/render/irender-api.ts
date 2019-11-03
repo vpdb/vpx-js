@@ -104,6 +104,7 @@ export interface IRenderApi<NODE, GEOMETRY, POINT_LIGHT> {
 	 * Update's a light's parameters.
 	 *
 	 * @param state New light state
+	 * @param initialIntensity Intensity at 100% from data
 	 * @param node The light node
 	 */
 	applyLighting(state: LightState, initialIntensity: number, node: NODE | undefined): void;

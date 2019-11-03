@@ -23,13 +23,16 @@ import { ItemApi } from '../item-api';
 import { Table } from '../table/table';
 import { LightAnimation } from './light-animation';
 import { LightData } from './light-data';
+import { LightState } from './light-state';
 
 export class LightApi extends ItemApi<LightData> {
 
+	private readonly state: LightState;
 	private readonly animation: LightAnimation;
 
-	constructor(animation: LightAnimation, data: LightData, events: EventProxy, player: Player, table: Table) {
+	constructor(state: LightState, animation: LightAnimation, data: LightData, events: EventProxy, player: Player, table: Table) {
 		super(data, events, player, table);
+		this.state = state;
 		this.animation = animation;
 	}
 
@@ -45,10 +48,10 @@ export class LightApi extends ItemApi<LightData> {
 		}
 		this.data.state = v;
 	}
-	get Color() { return this.data.color; }
-	set Color(v) { this.data.color = v; }
-	get ColorFull() { return this.data.color2; }
-	set ColorFull(v) { this.data.color2 = v; }
+	get Color() { return this.state.color; }
+	set Color(v) { this.state.color = v; }
+	get ColorFull() { return this.state.colorFull; }
+	set ColorFull(v) { this.state.colorFull = v; }
 	get X() { return this.data.center.x; }
 	set X(v) { this.data.center.x = v; }
 	get Y() { return this.data.center.y; }
