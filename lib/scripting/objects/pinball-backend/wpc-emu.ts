@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { GamelistDB, WpcEmuApi } from 'wpc-emu';
+import { GamelistDB, WpcEmuApi, WpcEmuWebWorkerApi } from 'wpc-emu';
 import { logger } from '../../../util/logger';
 import { IEmulator } from '../../../game/iemulator';
 
@@ -58,6 +58,7 @@ export class Emulator implements IEmulator {
 	}
 
 	public emuSimulateCycle(advanceByMs: number): number {
+		console.log('emuSimulateCycle', advanceByMs);
 		if (!this.emulator) {
 			return 0;
 		}
@@ -79,10 +80,15 @@ export class Emulator implements IEmulator {
 	}
 
 	public setFliptronicsInput(value: string): void {
+		this.emulator.setFliptronicsInput(value);
+	}
+
+	// TODO, this emuchecking sucks...
+	public getState(): WpcEmuWebWorkerApi.EmuState | undefined {
 		if (!this.emulator) {
 			return;
 		}
-		this.emulator.setFliptronicsInput(value);
+		return this.emulator.getUiState();
 	}
 
 }

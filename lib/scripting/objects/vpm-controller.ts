@@ -36,7 +36,7 @@ export class VpmController {
 	private gameName: string;
 	private splashInfoLine: string;
 	private paused: boolean;
-	public Dip: { [index: number]: number };
+	public readonly Dip: { [index: number]: number };
 
 	//private gameRomInfoPromise: Promise<Response>;
 
