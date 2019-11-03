@@ -39,21 +39,21 @@ describe('The VPinball lights generator', () => {
 	});
 
 	it('should generate a static light bulb mesh', async () => {
-		three.expectObject(gltf, 'lightBulbs', 'StaticBulb', 'bulblight-StaticBulb');
+		three.expectObject(gltf, 'lightBulbs', 'StaticBulb', 'bulblight');
 	});
 
 	it('should generate a light bulb mesh', async () => {
-		three.expectObject(gltf, 'lightBulbs', 'Bulb', 'bulblight-Bulb');
+		three.expectObject(gltf, 'lightBulbs', 'Bulb', 'bulblight');
 	});
 
 	it('should generate a scaled light bulb mesh', async () => {
 		// TODO find a way to test scaling (vpx obj export doesn't export light bulbs)
-		three.expectObject(gltf, 'lightBulbs', 'Scaled', 'bulblight-Scaled');
+		three.expectObject(gltf, 'lightBulbs', 'Scaled', 'bulblight');
 	});
 
 	it('should generate a light bulb mesh on a surface', async () => {
 		// TODO find a way to test (vpx obj export doesn't export light bulbs)
-		three.expectObject(gltf, 'lightBulbs', 'Surface', 'bulblight-Surface');
+		three.expectObject(gltf, 'lightBulbs', 'Surface', 'bulblight');
 	});
 
 	it('should not generate a light bulb with no bulb mesh', async () => {
@@ -61,11 +61,11 @@ describe('The VPinball lights generator', () => {
 	});
 
 	it('should not generate a light with no bulb mesh', async () => {
-		three.expectNoObject(gltf, 'lights', 'lightNoBulb');
+		three.expectNoObject(gltf, 'lightBulbs', 'lightNoBulb');
 	});
 
 	it('should generate a light with default parameters', async () => {
-		const light = three.find<SpotLight>(gltf, 'lights', 'lightStaticBulb');
+		const light = three.find<SpotLight>(gltf, 'lightBulbs', 'StaticBulb', 'light');
 		expect(light.decay).to.equal(2);
 		expect(light.intensity).to.equal(1);
 		expect(light.distance).to.equal(scale * 50);
@@ -75,7 +75,7 @@ describe('The VPinball lights generator', () => {
 	});
 
 	it('should generate a light with custom parameters', async () => {
-		const light = three.find<SpotLight>(gltf, 'lights', 'lightCustomParams');
+		const light = three.find<SpotLight>(gltf, 'lightBulbs', 'CustomParams', 'light');
 		expect(light.decay).to.equal(2);
 		expect(Math.round(light.intensity * 1000) / 1000).to.equal(5.2);
 		expect(Math.round(light.distance * 1000) / 1000).to.equal(scale * 64.1);
@@ -85,15 +85,15 @@ describe('The VPinball lights generator', () => {
 	});
 
 	it('should generate a mesh for a light with the same texture as the playfield', async () => {
-		three.expectObject(gltf, 'playfieldLights', 'PlayfieldLight', 'surfacelight-PlayfieldLight');
+		three.expectObject(gltf, 'playfieldLights', 'PlayfieldLight', 'surfacelight');
 	});
 
 	it('should generate a mesh for a light with the same texture as a surface', async () => {
-		three.expectObject(gltf, 'playfieldLights', 'SurfaceLight', 'surfacelight-SurfaceLight');
+		three.expectObject(gltf, 'playfieldLights', 'SurfaceLight', 'surfacelight');
 	});
 
 	it('should generate a mesh for a light that has the same texture as three other lights', async () => {
-		three.expectObject(gltf, 'playfieldLights', 'SurfaceLightCollection', 'surfacelight-SurfaceLightCollection');
+		three.expectObject(gltf, 'playfieldLights', 'SurfaceLightCollection', 'surfacelight');
 	});
 
 });

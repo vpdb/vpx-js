@@ -152,22 +152,22 @@ describe('The VPinball light animation', () => {
 		api.Intensity = 10;
 		api.IntensityScale = 1;
 
-		player.updatePhysics(0);
-		expect(light.getState().intensity).to.equal(10);
-
 		player.updatePhysics(100);
-		expect(light.getState().intensity).to.equal(0);
+		expect(light.getState().intensity).to.equal(10);
 
 		player.updatePhysics(200);
 		expect(light.getState().intensity).to.equal(0);
 
 		player.updatePhysics(300);
-		expect(light.getState().intensity).to.equal(10);
+		expect(light.getState().intensity).to.equal(0);
 
 		player.updatePhysics(400);
 		expect(light.getState().intensity).to.equal(10);
 
 		player.updatePhysics(500);
+		expect(light.getState().intensity).to.equal(10);
+
+		player.updatePhysics(600);
 		expect(light.getState().intensity).to.equal(0);
 	});
 
@@ -181,28 +181,28 @@ describe('The VPinball light animation', () => {
 		api.Intensity = 10;
 		api.IntensityScale = 1;
 
-		player.updatePhysics(0);
-		expect(light.getState().intensity).to.equal(10);
-
 		player.updatePhysics(100);
-		expect(light.getState().intensity).to.equal(0);
+		expect(light.getState().intensity).to.equal(10);
 
 		player.updatePhysics(200);
-		expect(light.getState().intensity).to.equal(10);
+		expect(light.getState().intensity).to.equal(0);
 
 		player.updatePhysics(300);
 		expect(light.getState().intensity).to.equal(10);
 
 		player.updatePhysics(400);
-		expect(light.getState().intensity).to.equal(0);
+		expect(light.getState().intensity).to.equal(10);
 
 		player.updatePhysics(500);
-		expect(light.getState().intensity).to.equal(10);
+		expect(light.getState().intensity).to.equal(0);
 
 		player.updatePhysics(600);
 		expect(light.getState().intensity).to.equal(10);
 
 		player.updatePhysics(700);
+		expect(light.getState().intensity).to.equal(10);
+
+		player.updatePhysics(800);
 		expect(light.getState().intensity).to.equal(0);
 	});
 
@@ -218,34 +218,31 @@ describe('The VPinball light animation', () => {
 		api.FadeSpeedDown = 0.3;
 		api.FadeSpeedUp = 0.4;
 
-		player.updatePhysics(0);
+		player.updatePhysics(600);
 		expect(light.getState().intensity).to.equal(100);
 
-		player.updatePhysics(40);
+		player.updatePhysics(640);
 		expect(light.getState().intensity).to.be.within(90, 91);
 
-		player.updatePhysics(170);
-		expect(light.getState().intensity).to.be.within(51, 53);
+		player.updatePhysics(770);
+		expect(light.getState().intensity).to.be.within(47, 48);
 
-		player.updatePhysics(170);
-		expect(light.getState().intensity).to.be.within(51, 53);
-
-		player.updatePhysics(310);
+		player.updatePhysics(910);
 		expect(light.getState().intensity).to.be.within(7, 9);
 
-		player.updatePhysics(340);
+		player.updatePhysics(940);
 		expect(light.getState().intensity).to.equal(0);
 
-		player.updatePhysics(630);
+		player.updatePhysics(1230);
 		expect(light.getState().intensity).to.be.within(12, 13);
 
-		player.updatePhysics(730);
-		expect(light.getState().intensity).to.be.within(51, 52);
+		player.updatePhysics(1330);
+		expect(light.getState().intensity).to.be.within(57, 58);
 
-		player.updatePhysics(820);
+		player.updatePhysics(1420);
 		expect(light.getState().intensity).to.be.within(89, 91);
 
-		player.updatePhysics(850);
+		player.updatePhysics(1450);
 		expect(light.getState().intensity).to.equal(100);
 	});
 

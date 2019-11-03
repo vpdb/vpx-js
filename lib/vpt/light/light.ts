@@ -78,7 +78,6 @@ export class Light extends Item<LightData> implements IRenderable<LightState>, I
 		this.events = new EventProxy(this);
 		this.animation = new LightAnimation(this.data, this.state);
 		this.api = new LightApi(this.animation, this.data, this.events, player, table);
-		this.animation.setState(this.data.state, player.getPhysics());
 	}
 
 	public getApi(): LightApi {
