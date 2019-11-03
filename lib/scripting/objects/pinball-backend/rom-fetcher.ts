@@ -23,7 +23,7 @@ export function getGameEntry(pinmameGameName: string): Promise<LoadedGameEntry> 
 			return {
 				wpcDbEntry: gameEntry,
 				romFile,
-			}
+			};
 		});
 }
 

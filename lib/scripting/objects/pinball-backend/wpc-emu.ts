@@ -19,8 +19,9 @@
 
 import { GamelistDB, WpcEmuApi } from 'wpc-emu';
 import { logger } from '../../../util/logger';
+import { IEmulator } from '../../../game/iemulator';
 
-export class Emulator {
+export class Emulator implements IEmulator {
 	private emulator?: WpcEmuApi.Emulator;
 	private romLoading: boolean;
 
@@ -56,7 +57,7 @@ export class Emulator {
 		this.emulator.registerAudioConsumer(callbackFunction);
 	}
 
-	public executeCycleForTime(advanceByMs: number): number {
+	public emuSimulateCycle(advanceByMs: number): number {
 		if (!this.emulator) {
 			return 0;
 		}

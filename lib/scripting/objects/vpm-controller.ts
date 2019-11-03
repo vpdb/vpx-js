@@ -67,12 +67,12 @@ export class VpmController {
 			})
 			.then(() => {
 				setInterval(() => {
-					this.emulator.executeCycleForTime(200);
+					this.emulator.emuSimulateCycle(200);
 				}, 200);
 			})
 			.catch((error) => {
 				logger().error('ERROR FAILED', error.messages);
-			})
+			});
 	}
 	get Running(): boolean {
 		return this.emulator && !this.paused;
