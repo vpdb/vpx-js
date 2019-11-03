@@ -20,8 +20,8 @@
 
 import { Player } from '../../game/player';
 import { logger } from '../../util/logger';
-import { Emulator } from './pinball-backend/wpc-emu';
 import { getGameEntry } from './pinball-backend/rom-fetcher';
+import { Emulator } from './pinball-backend/wpc-emu';
 
 /**
  * Implementation of the VISUAL PINMAME COM OBJECT PROPERTY/METHOD
