@@ -68,7 +68,7 @@ export class VBSHelper {
 			return `//@ sourceURL=inline${this.transpileCount++}.js\n${this.transpiler.transpile(vbs)}`;
 		} else {
 			return this.transpiler.transpile(vbs);
-		}		
+		}
 	}
 
 	/**
@@ -92,14 +92,16 @@ export class VBSHelper {
 		return array;
 	}
 
-	public getOrCall(obj: any, param?: number) {
+	public getOrCall(obj: any, ...params: number[]) {
 		if (typeof obj === 'function') {
-			return typeof param === 'undefined' ? obj.bind(obj)() : obj.bind(obj)(param);
+			return typeof params === 'undefined' ? obj.bind(obj)() : obj.bind(obj)(...params);
 		}
-		if (typeof param === 'undefined') {
+		if (typeof params === 'undefined') {
 			return obj;
 		}
-		return obj[param];
+		for (const param of params) {
+			obj = obj[param];
+		}
+		return obj;
 	}
-
 }
