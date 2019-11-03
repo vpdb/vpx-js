@@ -26,7 +26,7 @@ import { VpmController } from './vpm-controller';
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
-describe.only('The VpmController - VISUAL PINMAME COM OBJECT', () => {
+describe('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 
 	let vpmController: VpmController;
 
