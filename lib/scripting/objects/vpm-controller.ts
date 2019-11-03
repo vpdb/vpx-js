@@ -66,6 +66,8 @@ export class VpmController {
 				return this.emulator.loadGame(answer.wpcDbEntry, answer.romFile);
 			})
 			.then(() => {
+				// TODO enable me
+				//this.player.setEmulator(this.emulator);
 				setInterval(() => {
 					this.emulator.emuSimulateCycle(200);
 				}, 200);
