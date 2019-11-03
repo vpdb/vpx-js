@@ -30,22 +30,14 @@ export class Emulator {
 		this.romLoading = false;
 	}
 
-	public loadGame(gameName: string) {
-		const romData: GamelistDB.RomData = { u06: new Uint8Array(128 * 1024) };
-		const gameEntry: GamelistDB.GameEntry = {
-			name: 'foo',
-			rom: {
-				u06: 'my.rom',
-			},
-			skipWpcRomCheck: false,
-			fileName: 'fooname',
-			features: ['wpc95'],
-		};
+	public loadGame(gameEntry: GamelistDB.GameEntry, romContent: Uint8Array) {
+		const romData: GamelistDB.RomData = { u06: romContent };
 		this.romLoading = true;
 		return WpcEmuApi.initVMwithRom(romData, gameEntry)
 			.then((emulator: WpcEmuApi.Emulator) => {
 				this.emulator = emulator;
 				this.romLoading = false;
+				this.emulator.reset();
 			});
 	}
 

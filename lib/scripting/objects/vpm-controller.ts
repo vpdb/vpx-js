@@ -20,7 +20,7 @@
 
 import { Player } from '../../game/player';
 import { logger } from '../../util/logger';
-import { getGameEntry } from './pinball-backend/rom-fetcher';
+import { getGameEntry, LoadedGameEntry } from './pinball-backend/rom-fetcher';
 import { Emulator } from './pinball-backend/wpc-emu';
 
 /**
@@ -59,7 +59,19 @@ export class VpmController {
 	set GameName(gameName: string) {
 		this.gameName = gameName;
 		logger().debug('GAMENAME:', gameName);
-		getGameEntry(gameName);
+		getGameEntry(gameName)
+			.then((answer: LoadedGameEntry) => {
+				logger().info('LOADED', answer.wpcDbEntry);
+				return this.emulator.loadGame(answer.wpcDbEntry, answer.romFile);
+			})
+			.then(() => {
+				setInterval(() => {
+					this.emulator.executeCycleForTime(200);
+				}, 200);
+			})
+			.catch((error) => {
+				logger().error('ERROR FAILED', error.messages);
+			})
 	}
 	get Running(): boolean {
 		return this.emulator && !this.paused;
@@ -78,7 +90,7 @@ export class VpmController {
 		logger().debug('RUN', parentWindow, minVersion);
 		if (this.gameName) {
 			// TODO: fetch rom from vpdb.io here
-			return this.emulator.loadGame(this.gameName);
+			//return this.emulator.loadGame(this.gameName);
 		}
 	}
 	public Stop(): void {

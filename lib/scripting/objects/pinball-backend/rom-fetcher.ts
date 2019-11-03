@@ -13,7 +13,7 @@ export function getGameEntry(pinmameGameName: string): Promise<LoadedGameEntry> 
 			if (!result) {
 				return Promise.reject(new Error('GAME_ENTRY_NOT_FOUND'));
 			}
-			logger().debug(pinmameGameName, 'VPDB RESULT:', result);
+			logger().debug(pinmameGameName, 'VPDB RESULT:', jsonData);
 			// TODO get main ROM from VPDB response
 			const romUrl: string = 'https://storage.vpdb.io/files/p2b9gpvd1.zip/mm_1_09c.bin';
 			logger().debug('load rom from', romUrl);
