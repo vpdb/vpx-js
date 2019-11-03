@@ -56,7 +56,7 @@ export class ThreeMaterialGenerator {
 		this.applyMap(threeMaterial, map);
 		this.applyNormalMap(threeMaterial, normalMap);
 		this.applyEnvMap(threeMaterial, envMap);
-		this.applyEmissiveMap(threeMaterial, emissiveMap);
+		this.applyEmissiveMap(threeMaterial, material, emissiveMap);
 
 		this.cachedMaterials[key] = threeMaterial;
 		return threeMaterial;
@@ -105,10 +105,13 @@ export class ThreeMaterialGenerator {
 		}
 	}
 
-	public applyEmissiveMap(threeMaterial: MeshStandardMaterial, emissiveMap?: string) {
+	public applyEmissiveMap(threeMaterial: MeshStandardMaterial, material?: Material, emissiveMap?: string) {
 		if (emissiveMap && this.mapGenerator.hasTexture(emissiveMap)) {
 			threeMaterial.emissiveMap = this.mapGenerator.getTexture(emissiveMap);
 			threeMaterial.emissiveMap.name = emissiveMap;
+			if (material) {
+				threeMaterial.emissive.set(material.emissiveColor || 0x0);
+			}
 			threeMaterial.needsUpdate = true;
 		}
 	}

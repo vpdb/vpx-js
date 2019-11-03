@@ -165,9 +165,10 @@ export class Light extends Item<LightData> implements IRenderable<LightState>, I
 
 	public getSurfaceMaterial(table: Table): Material {
 		const material = new Material();
+		material.name = `surface-${this.getName()}`;
 		material.emissiveMap = table.getTexture(this.data.szOffImage);
 		material.emissiveIntensity = 0;
-		material.emissiveColor =  0x808080;
+		material.emissiveColor = 0x0;
 		material.opacity = 1;
 		return material;
 	}
