@@ -22,62 +22,62 @@ import { logger } from '../../../util/logger';
 
 export class EmulatorState {
 
-	private lastKnownState?: WpcEmuWebWorkerApi.EmuState;
 	private lastKnownLampState: Uint8Array;
+	private currentLampState: Uint8Array;
 	private lastKnownSolenoidState: Uint8Array;
+	private currentSolenoidState: Uint8Array;
 	private lastKnownGIState: Uint8Array;
+	private currentGIState: Uint8Array;
 
 	constructor() {
-		this.lastKnownState = undefined;
 		this.lastKnownLampState = new Uint8Array();
 		this.lastKnownSolenoidState = new Uint8Array();
 		this.lastKnownGIState = new Uint8Array();
-	}
-
-	public clearState() {
-		this.lastKnownState = undefined;
-		this.lastKnownLampState = new Uint8Array();
-		this.lastKnownSolenoidState = new Uint8Array();
-		this.lastKnownGIState = new Uint8Array();
+		this.currentLampState = new Uint8Array();
+		this.currentSolenoidState = new Uint8Array();
+		this.currentGIState = new Uint8Array();
 	}
 
 	public updateState(state: WpcEmuWebWorkerApi.EmuState) {
-		this.lastKnownState = state;
+		if (state.wpc.lampState) {
+			this.currentLampState = this.normalize(state.wpc.lampState);
+		}
+		if (state.wpc.solenoidState) {
+			this.currentSolenoidState = state.wpc.solenoidState;
+		}
+		if (state.wpc.generalIlluminationState) {
+			this.currentGIState = state.wpc.generalIlluminationState;
+		}
 	}
 
 	public getChangedLamps(): number[][] {
-		if (!this.lastKnownState || !this.lastKnownState.wpc.lampState) {
-			return [];
-		}
-
-		const result: number[][] = this.getArrayDiff(this.lastKnownLampState, this.lastKnownState.wpc.lampState);
-		this.lastKnownLampState = this.lastKnownState.wpc.lampState;
+		const result: number[][] = this.getArrayDiff(this.lastKnownLampState, this.currentLampState);
+		this.lastKnownLampState = this.currentLampState;
 		return result;
 	}
 
 	public getChangedSolenoids(): number[][] {
-		if (!this.lastKnownState || !this.lastKnownState.wpc.solenoidState) {
-			return [];
-		}
-
-		const result: number[][] = this.getArrayDiff(this.lastKnownSolenoidState, this.lastKnownState.wpc.solenoidState);
-		this.lastKnownSolenoidState = this.lastKnownState.wpc.solenoidState;
+		const result: number[][] = this.getArrayDiff(this.lastKnownSolenoidState, this.currentSolenoidState);
+		this.lastKnownSolenoidState = this.currentSolenoidState;
 		return result;
 	}
 
 	public getChangedGI(): number[][] {
-		if (!this.lastKnownState || !this.lastKnownState.wpc.generalIlluminationState) {
-			return [];
-		}
-
-		const result: number[][] = this.getArrayDiff(this.lastKnownSolenoidState, this.lastKnownState.wpc.generalIlluminationState);
-		this.lastKnownGIState = this.lastKnownState.wpc.generalIlluminationState;
+		const result: number[][] = this.getArrayDiff(this.lastKnownSolenoidState, this.currentGIState);
+		this.lastKnownGIState = this.currentGIState;
 		return result;
 	}
 
-	// NOT IMPLEMENTED YET - needed for alphanumeric games
+	// NOT IMPLEMENTED YET - needed for alphanumeric games only!
 	public ChangedLEDs(): number[][] {
 		return [];
+	}
+
+	/**
+	 * map uint8 values to 0 or 1 (VisualPinball engine)
+	 */
+	private normalize(input: Uint8Array): Uint8Array {
+		return input.map((value) => value > 127 ? 1 : 0);
 	}
 
 	/**

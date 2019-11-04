@@ -58,10 +58,10 @@ const wpcStateEmpty: WpcEmuWebWorkerApi.EmuStateWpc = {
 
 const wpcState1: WpcEmuWebWorkerApi.EmuStateWpc = {
 	diagnosticLed: 0,
-	lampState: new Uint8Array([1, 0, 0, 0, 0, 0, 0, 0]),
-	solenoidState: new Uint8Array([2, 0, 0, 0, 0, 0, 0, 0]),
-	generalIlluminationState: new Uint8Array([3, 0, 0, 0, 0, 0, 0, 0]),
-	inputState: new Uint8Array([4, 0, 0, 0, 0, 0, 0, 0]),
+	lampState: new Uint8Array([1, 0, 0, 0, 0, 255, 127, 128]),
+	solenoidState: new Uint8Array([2, 0, 0, 0, 0, 255, 127, 128]),
+	generalIlluminationState: new Uint8Array([3, 0, 0, 0, 0, 255, 127, 128]),
+	inputState: new Uint8Array([4, 0, 0, 0, 0, 255, 127, 128]),
 	diagnosticLedToggleCount: 0,
 	midnightModeEnabled: false,
 	irqEnabled: false,
@@ -71,7 +71,7 @@ const wpcState1: WpcEmuWebWorkerApi.EmuStateWpc = {
 	watchdogExpiredCounter: 0,
 	watchdogTicks: 0,
 	zeroCrossFlag: 0,
-	inputSwitchMatrixActiveColumn: new Uint8Array([5, 0, 0, 0, 0, 0, 0, 0]),
+	inputSwitchMatrixActiveColumn: new Uint8Array([5, 0, 0, 0, 0, 255, 127, 128]),
 	lampRow: 0,
 	lampColumn: 0,
 	wpcSecureScrambler: 0,
@@ -110,13 +110,13 @@ describe('The EmulatorState - handle state changes', () => {
 		wpc: wpcStateEmpty,
 		dmd: dmdState,
 	};
-	const stateZero: WpcEmuWebWorkerApi.EmuState = {
+	const stateOne: WpcEmuWebWorkerApi.EmuState = {
 		ram: new Uint8Array(),
 		sound: soundState,
 		wpc: wpcState1,
 		dmd: dmdState,
 	};
-	const stateOne: WpcEmuWebWorkerApi.EmuState = {
+	const stateTwo: WpcEmuWebWorkerApi.EmuState = {
 		ram: new Uint8Array(),
 		sound: soundState,
 		wpc: wpcState2,
@@ -133,21 +133,22 @@ describe('The EmulatorState - handle state changes', () => {
 
 	it('transition empty state -> state 1', () => {
 		const expectedDiff: number[][] = [
-			[ 0, 1 ],
+			[ 0, 0 ],
 			[ 1, 0 ],
 			[ 2, 0 ],
 			[ 3, 0 ],
 			[ 4, 0 ],
-			[ 5, 0 ],
+			[ 5, 1 ],
 			[ 6, 0 ],
-			[ 7, 0 ]
+			[ 7, 1 ],
 		];
-		emulatorState.updateState(stateZero);
-		expect(emulatorState.getChangedLamps()).to.deep.equal(expectedDiff);
+		emulatorState.updateState(stateOne);
+		const result: number[][] = emulatorState.getChangedLamps();
+		expect(result).to.deep.equal(expectedDiff);
 	});
 
 	it('transition multiple getChangedLamps() calls without state update should return empty array', () => {
-		emulatorState.updateState(stateZero);
+		emulatorState.updateState(stateOne);
 		emulatorState.getChangedLamps();
 		expect(emulatorState.getChangedLamps()).to.deep.equal([]);
 	});
