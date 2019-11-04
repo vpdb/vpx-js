@@ -87,12 +87,15 @@ export class AmbiguityTransformer extends Transformer {
 
 					// if it's an assignment where its left is the node, it's definitely not a function call
 					if (parent && parent.type === 'AssignmentExpression' && node === parent.left) {
-						const arrayNode = memberExpression(
-							node.callee,
-							node.arguments[0] as Expression,
-							true,
-						) as any;
-						arrayNode.__isProperty = true;
+						let arrayNode: any = null;
+						for (const argument of node.arguments) {
+							arrayNode = memberExpression(
+								arrayNode !== null ? arrayNode : node.callee,
+								argument as Expression,
+								true) as any;
+
+							arrayNode.__isProperty = true;
+						}
 						return arrayNode;
 					}
 
