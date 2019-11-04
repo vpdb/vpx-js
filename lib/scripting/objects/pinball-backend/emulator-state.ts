@@ -23,16 +23,61 @@ import { WpcEmuWebWorkerApi } from 'wpc-emu';
 export class EmulatorState {
 
 	private lastKnownState?: WpcEmuWebWorkerApi.EmuState;
+	private lastKnownLampState: Uint8Array;
+	private lastKnownSolenoidState: Uint8Array;
+	private lastKnownGIState: Uint8Array;
 
 	constructor() {
-		this.lastKnownState = undefined;
+		this.clearState();
 	}
 
-	updateState(state: WpcEmuWebWorkerApi.EmuState) {
+	public clearState() {
+		this.lastKnownState = undefined;
+		this.lastKnownLampState = new Uint8Array();
+		this.lastKnownSolenoidState = new Uint8Array();
+		this.lastKnownGIState = new Uint8Array();
+	}
+
+	public updateState(state: WpcEmuWebWorkerApi.EmuState) {
 		this.lastKnownState = state;
 	}
 
-	getChangedLamps(): void {
-		//TODO
+	public getChangedLamps(): number[][] {
+		if (!this.lastKnownState || !this.lastKnownState.wpc.lampState) {
+			return [];
+		}
+
+		const result: number[][] = this.getArrayDiff(this.lastKnownLampState, this.lastKnownState.wpc.lampState);
+		this.lastKnownLampState = this.lastKnownState.wpc.lampState;
+		return result;
+	}
+
+	public getChangedSolenoids(): number[][] {
+		if (!this.lastKnownState || !this.lastKnownState.wpc.solenoidState) {
+			return [];
+		}
+
+		const result: number[][] = this.getArrayDiff(this.lastKnownSolenoidState, this.lastKnownState.wpc.solenoidState);
+		this.lastKnownSolenoidState = this.lastKnownState.wpc.solenoidState;
+		return result;
+	}
+
+	public getChangedGI(): number[][] {
+		if (!this.lastKnownState || !this.lastKnownState.wpc.generalIlluminationState) {
+			return [];
+		}
+
+		const result: number[][] = this.getArrayDiff(this.lastKnownSolenoidState, this.lastKnownState.wpc.generalIlluminationState);
+		this.lastKnownGIState = this.lastKnownState.wpc.generalIlluminationState;
+		return result;
+	}
+
+	// NOT IMPLEMENTED YET - needed for alphanumeric games
+	public ChangedLEDs(): number[][] {
+		return [];
+	}
+
+	private getArrayDiff(lastState: Uint8Array, newState: Uint8Array): number[][] {
+		return [];
 	}
 }

@@ -20,15 +20,18 @@
 import { GamelistDB, WpcEmuApi, WpcEmuWebWorkerApi } from 'wpc-emu';
 import { logger } from '../../../util/logger';
 import { IEmulator } from '../../../game/iemulator';
+import { EmulatorState } from './emulator-state';
 
 export class Emulator implements IEmulator {
 	private emulator?: WpcEmuApi.Emulator;
+	public readonly emulatorState: EmulatorState;
 	private romLoading: boolean;
 
 	constructor() {
 		logger().debug('HELLO FROM WPC CONTROLLER');
 		this.emulator = undefined;
 		this.romLoading = false;
+		this.emulatorState = new EmulatorState();
 	}
 
 	public loadGame(gameEntry: GamelistDB.GameEntry, romContent: Uint8Array) {
@@ -62,7 +65,9 @@ export class Emulator implements IEmulator {
 		if (!this.emulator) {
 			return 0;
 		}
-		return this.emulator.executeCycleForTime(advanceByMs, 16);
+		const executedCycles: number = this.emulator.executeCycleForTime(advanceByMs, 16);
+		this.emulatorState.updateState(this.emulator.getUiState());
+		return executedCycles;
 	}
 
 	public setInput(switchNr: number): void {

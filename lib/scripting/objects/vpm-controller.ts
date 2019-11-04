@@ -194,18 +194,18 @@ export class VpmController {
 	}
 
 	// AggregatePollingFunctions
-	get ChangedLamps() {
+	get ChangedLamps(): number[][] {
 		logger().debug('ChangedLamps');
-		return [ [10, 1], [20, 1] ];
+		return this.emulator.emulatorState.getChangedLamps();
 	}
-	get ChangedSolenoids() {
-		return [ 0 ];
+	get ChangedSolenoids(): number[][] {
+		return this.emulator.emulatorState.getChangedSolenoids();
 	}
-	get ChangedGI() {
-		return [ 0 ];
+	get ChangedGI(): number[][] {
+		return this.emulator.emulatorState.getChangedGI();
 	}
-	get ChangedLEDs() {
-		return [ 0 ];
+	get ChangedLEDs(): number[][] {
+		return this.emulator.emulatorState.ChangedLEDs();
 	}
 
 	// GameInputOutput TODO need a proxy handle
