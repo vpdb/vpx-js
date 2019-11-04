@@ -61,7 +61,6 @@ export class Emulator implements IEmulator {
 	}
 
 	public emuSimulateCycle(advanceByMs: number): number {
-		logger().debug('emuSimulateCycle', advanceByMs);
 		if (!this.emulator) {
 			return 0;
 		}
