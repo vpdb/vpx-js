@@ -21,10 +21,10 @@
 import { existsSync, writeFileSync } from 'fs';
 import { basename, dirname, resolve } from 'path';
 import { NodeBinaryReader } from '../lib/io/binary-reader.node';
-import { TableExporter } from '../lib/vpt/table/table-exporter';
+import { ThreeTextureLoaderNode } from '../lib/render/threejs/three-texture-loader-node';
 import { Logger } from '../lib/util/logger';
 import { Table } from '../lib/vpt/table/table';
-import { ThreeTextureLoaderNode } from '../lib/render/threejs/three-texture-loader-node';
+import { TableExporter } from '../lib/vpt/table/table-exporter';
 
 (async () => {
 
@@ -63,7 +63,7 @@ import { ThreeTextureLoaderNode } from '../lib/render/threejs/three-texture-load
 			info(format: any, ...param: any[]): void {},
 			verbose(format: any, ...param: any[]): void {},
 			warn(format: any, ...param: any[]): void {},
-			wtf(format: any, ...param: any[]): void {}
+			wtf(format: any, ...param: any[]): void {},
 		});
 
 		const start = Date.now();
@@ -91,7 +91,6 @@ import { ThreeTextureLoaderNode } from '../lib/render/threejs/three-texture-load
 			const name = basename(vpxPath).split('.').slice(0, -1).join('.') + '.glb';
 			glbPath = resolve(dirname(vpxPath), name);
 		}
-
 
 		console.log('Parsing file from %s...', vpxPath);
 		const table = await Table.load(new NodeBinaryReader(vpxPath));

@@ -31,7 +31,7 @@ export function vbsToJs(vbs: string): string {
 
 export function vbsToAst(vbs: string): Program {
 	const parser = new Parser(Grammar.fromCompiled(vbsGrammar));
-	parser.feed(vbs.trim() + "\n");
+	parser.feed(vbs.trim() + '\n');
 	/* istanbul ignore if */
 	if (parser.results.length === 0) {
 		throw new Error('Parser returned no results.');
