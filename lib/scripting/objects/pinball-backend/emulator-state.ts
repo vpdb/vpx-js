@@ -22,17 +22,17 @@ import { logger } from '../../../util/logger';
 
 export class EmulatorState {
 
-	private lastKnownLampState: Uint8Array;
 	private currentLampState: Uint8Array;
-	private lastKnownSolenoidState: Uint8Array;
 	private currentSolenoidState: Uint8Array;
-	private lastKnownGIState: Uint8Array;
 	private currentGIState: Uint8Array;
+	private lastSentLampState: Uint8Array;
+	private lastSentSolenoidState: Uint8Array;
+	private lastSentGIState: Uint8Array;
 
 	constructor() {
-		this.lastKnownLampState = new Uint8Array();
-		this.lastKnownSolenoidState = new Uint8Array();
-		this.lastKnownGIState = new Uint8Array();
+		this.lastSentLampState = new Uint8Array();
+		this.lastSentSolenoidState = new Uint8Array();
+		this.lastSentGIState = new Uint8Array();
 		this.currentLampState = new Uint8Array();
 		this.currentSolenoidState = new Uint8Array();
 		this.currentGIState = new Uint8Array();
@@ -51,20 +51,20 @@ export class EmulatorState {
 	}
 
 	public getChangedLamps(): number[][] {
-		const result: number[][] = this.getArrayDiff(this.lastKnownLampState, this.currentLampState);
-		this.lastKnownLampState = this.currentLampState;
+		const result: number[][] = this.getArrayDiff(this.lastSentLampState, this.currentLampState);
+		this.lastSentLampState = this.currentLampState;
 		return result;
 	}
 
 	public getChangedSolenoids(): number[][] {
-		const result: number[][] = this.getArrayDiff(this.lastKnownSolenoidState, this.currentSolenoidState);
-		this.lastKnownSolenoidState = this.currentSolenoidState;
+		const result: number[][] = this.getArrayDiff(this.lastSentSolenoidState, this.currentSolenoidState);
+		this.lastSentSolenoidState = this.currentSolenoidState;
 		return result;
 	}
 
 	public getChangedGI(): number[][] {
-		const result: number[][] = this.getArrayDiff(this.lastKnownSolenoidState, this.currentGIState);
-		this.lastKnownGIState = this.currentGIState;
+		const result: number[][] = this.getArrayDiff(this.lastSentGIState, this.currentGIState);
+		this.lastSentGIState = this.currentGIState;
 		return result;
 	}
 
@@ -90,10 +90,9 @@ export class EmulatorState {
 			return result;
 		}
 		for (let n: number = 0; n < newState.length; n++) {
-			if (lastState[n] === newState[n]) {
-				continue;
+			if (lastState[n] !== newState[n]) {
+				result.push([n, newState[n]]);
 			}
-			result.push([n, newState[n]]);
 		}
 		return result;
 	}
