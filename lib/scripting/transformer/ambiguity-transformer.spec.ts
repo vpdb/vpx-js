@@ -73,6 +73,18 @@ describe('The scripting ambiguity transformer', () => {
 				`${Transformer.SCOPE_NAME}.x = ${Transformer.VBSHELPER_NAME}.getOrCall(${Transformer.SCOPE_NAME}.DOFeffects, ${Transformer.SCOPE_NAME}.Effect);`,
 			);
 		});
+
+		it('should handle multi-dim arrays', () => {
+			const vbs = `dim result(1, 1, 1)\nresult(0, 0, 0) = 42`;
+			const js = transpiler.transpile(vbs);
+			expect(js).to.equal(`__scope.result = __vbsHelper.dim([\n    1,\n    1,\n    1\n]);\n__scope.result[0][0][0] = 42;`);
+		});
+
+		it('should pass the function and not the name to the helper', () => {
+			const vbs = `result = My.Fct(10, 2)`;
+			const js = transpiler.transpile(vbs);
+			expect(js).to.equal(`__scope.result = __vbsHelper.getOrCall(__scope.My.Function, 10, 2);`);
+		});
 	});
 
 	describe('with an ambiguous property', () => {
