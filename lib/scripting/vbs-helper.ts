@@ -96,9 +96,6 @@ export class VBSHelper {
 		if (typeof obj === 'function') {
 			return typeof params === 'undefined' ? obj.bind(obj)() : obj.bind(obj)(...params);
 		}
-		if (typeof params === 'undefined') {
-			return obj;
-		}
 		for (const param of params) {
 			obj = obj[param];
 		}
