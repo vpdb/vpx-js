@@ -56,7 +56,7 @@ export function stmt1(
 					estree.binaryExpression('<', step, estree.literal(0)),
 					estree.binaryExpression('>=', identifier, test),
 					estree.binaryExpression('<=', identifier, test),
-			  )
+				)
 			: estree.binaryExpression('<=', identifier, test),
 		estree.assignmentExpression(identifier, '+=', step ? step : estree.literal(1)),
 		body,
