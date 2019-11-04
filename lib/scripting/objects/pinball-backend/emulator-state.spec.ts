@@ -100,7 +100,7 @@ const wpcState2: WpcEmuWebWorkerApi.EmuStateWpc = {
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
-describe.only('The EmulatorState - handle state changes', () => {
+describe('The EmulatorState - handle state changes', () => {
 
 	let emulatorState: EmulatorState;
 
