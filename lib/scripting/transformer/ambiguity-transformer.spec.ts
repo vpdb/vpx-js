@@ -60,6 +60,12 @@ describe('The scripting ambiguity transformer', () => {
 			expect(js).to.equal(`${Transformer.SCOPE_NAME}.x = ${Transformer.STDLIB_NAME}.UBound(${Transformer.VBSHELPER_NAME}.getOrCall(${Transformer.SCOPE_NAME}.X));`);
 		});
 
+		it('should not use the helper for known calls of an object', () => {
+			const vbs = `result = Math.pow(10, 2)`;
+			const js = transpiler.transpile(vbs);
+			expect(js).to.equal(`${Transformer.SCOPE_NAME}.result = __stdlib.Math.pow(10, 2);`);
+		});
+
 		it('should not use the helper string parameters', () => {
 			const vbs = `LoadController "EM"\n`;
 			const js = transpiler.transpile(vbs);
@@ -77,13 +83,13 @@ describe('The scripting ambiguity transformer', () => {
 		it('should handle multi-dim arrays', () => {
 			const vbs = `dim result(1, 1, 1)\nresult(0, 0, 0) = 42`;
 			const js = transpiler.transpile(vbs);
-			expect(js).to.equal(`__scope.result = __vbsHelper.dim([\n    1,\n    1,\n    1\n]);\n__scope.result[0][0][0] = 42;`);
+			expect(js).to.equal(`${Transformer.SCOPE_NAME}.result = ${Transformer.VBSHELPER_NAME}.dim([\n    1,\n    1,\n    1\n]);\n${Transformer.SCOPE_NAME}.result[0][0][0] = 42;`);
 		});
 
 		it('should pass the function and not the name to the helper', () => {
 			const vbs = `result = My.Fct(10, 2)`;
 			const js = transpiler.transpile(vbs);
-			expect(js).to.equal(`__scope.result = __vbsHelper.getOrCall(__scope.My.Function, 10, 2);`);
+			expect(js).to.equal(`${Transformer.SCOPE_NAME}.result = ${Transformer.VBSHELPER_NAME}.getOrCall(${Transformer.SCOPE_NAME}.My.Fct, 10, 2);`);
 		});
 	});
 
@@ -122,15 +128,14 @@ describe('The scripting ambiguity transformer', () => {
 		it('should not use the helper for a property declared in a local scope', () => {
 			const vbs = `sub test\ndim prop\nx = prop\nend sub\n`;
 			const js = transpiler.transpile(vbs);
-			expect(js).to.equal(`__scope.test = function () {\n    let prop;\n    ${Transformer.SCOPE_NAME}.x = prop;\n};`);
+			expect(js).to.equal(`${Transformer.SCOPE_NAME}.test = function () {\n    let prop;\n    ${Transformer.SCOPE_NAME}.x = prop;\n};`);
 		});
 
 		it.skip('should not use the helper for a property in local scope', () => {
 			const vbs = `Dim objShell\nSet objShell = CreateObject("WScript.Shell")\nSub LoadController(TableType)\nobjShell.RegRead("")\nEnd Sub`;
 			const js = transpiler.transpile(vbs);
-			expect(js).to.equal(`__scope.objShell = null;\n__scope.objShell = __scope.CreateObject('WScript.Shell');\n__scope.LoadController = function (TableType) {\n    __scope.objShell.RegRead('');\n};`);
+			expect(js).to.equal(`${Transformer.SCOPE_NAME}.objShell = null;\n${Transformer.SCOPE_NAME}.objShell = ${Transformer.SCOPE_NAME}.CreateObject('WScript.Shell');\n${Transformer.SCOPE_NAME}.LoadController = function (TableType) {\n    ${Transformer.SCOPE_NAME}.objShell.RegRead('');\n};`);
 		});
-
 	});
 
 });
