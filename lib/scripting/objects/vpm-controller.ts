@@ -28,6 +28,6 @@ export class VpmController {
 	}
 
 	public Run(): void {
-		
+
 	}
 }

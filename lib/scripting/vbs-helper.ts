@@ -68,7 +68,7 @@ export class VBSHelper {
 			return `//@ sourceURL=inline${this.transpileCount++}.js\n${this.transpiler.transpile(vbs)}`;
 		} else {
 			return this.transpiler.transpile(vbs);
-		}		
+		}
 	}
 
 	/**

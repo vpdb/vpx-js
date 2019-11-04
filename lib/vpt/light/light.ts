@@ -25,6 +25,7 @@ import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Matrix3D } from '../../math/matrix3d';
 import { IRenderApi } from '../../render/irender-api';
+import { Enums } from '../enums';
 import { Item } from '../item';
 import { Material } from '../material';
 import { Table } from '../table/table';
@@ -34,7 +35,6 @@ import { LightData } from './light-data';
 import { LightMeshGenerator } from './light-mesh-generator';
 import { LightState } from './light-state';
 import { LightUpdater } from './light-updater';
-import { Enums } from '../enums';
 
 /**
  * VPinball's lights.

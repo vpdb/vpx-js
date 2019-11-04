@@ -47,12 +47,12 @@ describe('The VBScript native text stream object', () => {
 		fs.CreateTextFile('test1.txt');
 		const f = fs.GetFile('test1.txt') as File;
 
-		let ts = f.OpenAsTextStream(TextStream.MODE_WRITE, -2);
+		const ts = f.OpenAsTextStream(TextStream.MODE_WRITE, -2);
 		ts.Write('Hello World');
 
 		expect(ts.AtEndOfStream).to.equal(true);
 	});
-	
+
 	it('should read a given number of characters', () => {
 		const fs = new FileSystemObject();
 		fs.CreateTextFile('test1.txt');
@@ -64,7 +64,7 @@ describe('The VBScript native text stream object', () => {
 		ts = f.OpenAsTextStream(TextStream.MODE_READ, -2);
 		expect(ts.Read(5)).to.equal('Hello');
 	});
-	
+
 	it('should read a line', () => {
 		const fs = new FileSystemObject();
 		fs.CreateTextFile('test1.txt');
@@ -92,7 +92,7 @@ describe('The VBScript native text stream object', () => {
 		ts.SkipLine();
 		expect(ts.ReadLine()).to.equal('Line2');
 	});
-	
+
 	it('should read the entire file', () => {
 		const fs = new FileSystemObject();
 		fs.CreateTextFile('test1.txt');
@@ -112,7 +112,7 @@ describe('The VBScript native text stream object', () => {
 		fs.CreateTextFile('test1.txt');
 		const f = fs.GetFile('test1.txt') as File;
 
-		let ts = f.OpenAsTextStream(TextStream.MODE_WRITE, -2);
+		const ts = f.OpenAsTextStream(TextStream.MODE_WRITE, -2);
 		expect(() => ts.Read(1)).to.throw('Bad file mode');
 		expect(() => ts.ReadAll()).to.throw('Bad file mode');
 		expect(() => ts.ReadLine()).to.throw('Bad file mode');

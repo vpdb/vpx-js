@@ -17,9 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { globalEnvironment, WshEnvironment } from './wsh-environment';
-import { VbsNotImplementedError } from '../vbs-api';
 import { registry } from '../../io/global-registry';
+import { VbsNotImplementedError } from '../vbs-api';
+import { globalEnvironment, WshEnvironment } from './wsh-environment';
 
 /**
  * Provides access to the native Windows shell.

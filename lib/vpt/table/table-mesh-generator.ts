@@ -93,7 +93,7 @@ export class TableMeshGenerator {
 
 				// FIXME dunno why TF this is necessary to get any light at all
 				//renderApi.addChildToParent(lightGroup, new PointLightHelper(pointLight as any, 10, 0xffffff) as any);
-			}			
+			}
 		}
 
 		// ball group

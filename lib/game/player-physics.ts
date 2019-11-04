@@ -44,9 +44,9 @@ import { MAX_TIMERS_MSEC_OVERALL } from '../vpt/timer/timer-const';
 import { TimerHit } from '../vpt/timer/timer-hit';
 import { TimerOnOff } from '../vpt/timer/timer-on-off';
 import { Event } from './event';
+import { IEmulator } from './iemulator';
 import { PinInput } from './pin-input';
 import { IBallCreationPosition, Player } from './player';
-import { IEmulator } from './iemulator';
 
 const SLOW_MO = 1; // the lower, the slower
 const ANIM_FPS = 60;
