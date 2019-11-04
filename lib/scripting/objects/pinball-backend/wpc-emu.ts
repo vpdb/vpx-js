@@ -22,6 +22,8 @@ import { IEmulator } from '../../../game/iemulator';
 import { logger } from '../../../util/logger';
 import { EmulatorState } from './emulator-state';
 
+const WPC_EMU_INCLUDE_RAM_AND_VIDEORAM_DATA = false;
+
 export class Emulator implements IEmulator {
 	private emulator?: WpcEmuApi.Emulator;
 	public readonly emulatorState: EmulatorState;
@@ -65,7 +67,8 @@ export class Emulator implements IEmulator {
 			return 0;
 		}
 		const executedCycles: number = this.emulator.executeCycleForTime(advanceByMs, 16);
-		this.emulatorState.updateState(this.emulator.getUiState());
+		const emuState: WpcEmuWebWorkerApi.EmuState = this.emulator.getUiState(WPC_EMU_INCLUDE_RAM_AND_VIDEORAM_DATA);
+		this.emulatorState.updateState(emuState.asic);
 		return executedCycles;
 	}
 

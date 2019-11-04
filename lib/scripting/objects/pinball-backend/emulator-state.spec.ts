@@ -83,13 +83,13 @@ describe('The EmulatorState - handle state changes', () => {
 
 	let emulatorState: EmulatorState;
 
-	const stateOne: WpcEmuWebWorkerApi.EmuState = {
+	const stateOne: WpcEmuWebWorkerApi.EmuStateAsic = {
 		ram: new Uint8Array(),
 		sound: soundState,
 		wpc: wpcState1,
 		dmd: dmdState,
 	};
-	const stateTwo: WpcEmuWebWorkerApi.EmuState = {
+	const stateTwo: WpcEmuWebWorkerApi.EmuStateAsic = {
 		ram: new Uint8Array(),
 		sound: soundState,
 		wpc: wpcState2,

@@ -38,7 +38,7 @@ export class EmulatorState {
 		this.currentGIState = new Uint8Array();
 	}
 
-	public updateState(state: WpcEmuWebWorkerApi.EmuState) {
+	public updateState(state: WpcEmuWebWorkerApi.EmuStateAsic) {
 		if (state.wpc.lampState) {
 			this.currentLampState = this.normalize(state.wpc.lampState);
 		}
