@@ -195,7 +195,7 @@ export function memberExpression(object: Expression | Super, property: Expressio
 		type: 'MemberExpression',
 		object,
 		property,
-		computed: computed,
+		computed,
 	};
 }
 

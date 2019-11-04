@@ -19,8 +19,9 @@
 
 import { IRenderable, RenderInfo } from '../../game/irenderable';
 import { Matrix3D } from '../../math/matrix3d';
-import { BufferGeometry, Group, Matrix4, MeshStandardMaterial, Object3D, PointLight, Vector2, Mesh as ThreeMesh } from '../../refs.node';
+import { BufferGeometry, Group, Matrix4, Mesh as ThreeMesh, MeshStandardMaterial, Object3D, PointLight, Vector2 } from '../../refs.node';
 import { Pool } from '../../util/object-pool';
+import { Enums } from '../../vpt/enums';
 import { ItemState } from '../../vpt/item-state';
 import { LightData } from '../../vpt/light/light-data';
 import { LightState } from '../../vpt/light/light-state';
@@ -35,7 +36,6 @@ import { ThreeMapGenerator } from './three-map-generator';
 import { ThreeMaterialGenerator } from './three-material-generator';
 import { releaseGeometry, ThreeMeshGenerator } from './three-mesh-generator';
 import { ThreePlayfieldMeshGenerator } from './three-playfield-mesh-generator';
-import { Enums } from '../../vpt/enums';
 
 export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, PointLight> {
 

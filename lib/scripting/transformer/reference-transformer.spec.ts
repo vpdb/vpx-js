@@ -22,12 +22,12 @@ import { expect } from 'chai';
 import { astToVbs, vbsToAst } from '../../../test/script.helper';
 import { TableBuilder } from '../../../test/table-builder';
 import { Player } from '../../game/player';
-import { Table } from '../../vpt/table/table';
-import { ReferenceTransformer } from './reference-transformer';
-import { Transformer } from './transformer';
 import { Enums } from '../../vpt/enums';
 import { GlobalApi } from '../../vpt/global-api';
+import { Table } from '../../vpt/table/table';
 import { Stdlib } from '../stdlib';
+import { ReferenceTransformer } from './reference-transformer';
+import { Transformer } from './transformer';
 
 chai.use(require('sinon-chai'));
 

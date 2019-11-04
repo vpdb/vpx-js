@@ -27,21 +27,21 @@ describe('The VBScript windows environment object', () => {
 
 	it('should write and read values', () => {
 		const env = new WshEnvironment();
-		env.Item['key'] = 'Value'
+		env.Item['key'] = 'Value';
 		expect(env.Item['key']).to.equal('Value');
 	});
 
 	it('should count the values', () => {
 		const env = new WshEnvironment();
-		env.Item['key'] = 'Value'
+		env.Item['key'] = 'Value';
 		expect(env.Count()).to.equal(1);
 	});
 
 	it('should remove a value', () => {
 		const env = new WshEnvironment();
-		env.Item['key'] = 'Value'
+		env.Item['key'] = 'Value';
 		env.Remove('key');
 		expect(env.Count()).to.equal(0);
-	})
+	});
 
 });

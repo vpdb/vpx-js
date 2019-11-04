@@ -20,11 +20,11 @@
 import { IRenderApi } from '../../render/irender-api';
 import { ItemUpdater } from '../item-updater';
 import { Table } from '../table/table';
-import { LightState } from './light-state';
 import { LightData } from './light-data';
+import { LightState } from './light-state';
 
 export class LightUpdater extends ItemUpdater<LightState> {
-	
+
 	private readonly data: LightData;
 
 	constructor(data: LightData, state: LightState) {
