@@ -80,6 +80,9 @@ export class Emulator implements IEmulator {
 	}
 
 	public setFliptronicsInput(value: string): void {
+    if (!this.emulator) {
+			return;
+		}
 		this.emulator.setFliptronicsInput(value);
 	}
 
