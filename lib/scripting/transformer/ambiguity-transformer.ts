@@ -110,7 +110,7 @@ export class AmbiguityTransformer extends Transformer {
 					}
 
 					// otherwise, we don't know, so use getOrCall
-					return getOrCall(node.callee as Expression, node.arguments[0] as Expression);
+					return getOrCall(node.callee as Expression, ...node.arguments as Expression[]);
 				}
 				return node;
 			},
