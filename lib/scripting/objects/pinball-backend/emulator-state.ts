@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { logger } from '../../../util/logger';
 import { WpcEmuWebWorkerApi } from 'wpc-emu';
+import { logger } from '../../../util/logger';
 
 export class EmulatorState {
 
@@ -28,7 +28,10 @@ export class EmulatorState {
 	private lastKnownGIState: Uint8Array;
 
 	constructor() {
-		this.clearState();
+		this.lastKnownState = undefined;
+		this.lastKnownLampState = new Uint8Array();
+		this.lastKnownSolenoidState = new Uint8Array();
+		this.lastKnownGIState = new Uint8Array();
 	}
 
 	public clearState() {
@@ -77,7 +80,36 @@ export class EmulatorState {
 		return [];
 	}
 
+	/**
+	 * diff between two arrays equally sized arrays
+	 * returns 2 dimensional array with the result, eg [0, 5], [4, 44] -> means entry at offset 0 changed to 5, entry at offset 4 changed to 44
+	 */
 	private getArrayDiff(lastState: Uint8Array, newState: Uint8Array): number[][] {
-		return [];
+		const result: number[][] = [];
+		if (arraysEqual(lastState, newState)) {
+			return result;
+		}
+		for (let n: number = 0; n < newState.length; n++) {
+			if (lastState[n] === newState[n]) {
+				continue;
+			}
+			result.push([n, newState[n]]);
+		}
+		return result;
 	}
+}
+
+function arraysEqual(a: Uint8Array, b: Uint8Array): boolean {
+	if (a === b) {
+		return true;
+	}
+	if (!a || !b || a.length !== b.length) {
+		return false;
+	}
+	for (let i = 0; i < a.length; ++i) {
+		if (a[i] !== b[i]) {
+			return false;
+		}
+	}
+	return true;
 }

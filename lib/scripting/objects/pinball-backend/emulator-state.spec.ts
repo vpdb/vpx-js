@@ -1,0 +1,155 @@
+/*
+ * VPDB - Virtual Pinball Database
+ * Copyright (C) 2019 freezy <freezy@vpdb.io>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+
+import * as chai from 'chai';
+import { expect } from 'chai';
+import { WpcEmuWebWorkerApi } from 'wpc-emu';
+import { EmulatorState } from './emulator-state';
+
+const soundState: WpcEmuWebWorkerApi.EmuStateSound = {
+	volume: 0,
+	readDataBytes: 0,
+	writeDataBytes: 0,
+	readControlBytes: 0,
+	writeControlBytes: 0,
+};
+
+const dmdState: WpcEmuWebWorkerApi.EmuStateDMD = {
+	scanline: 0,
+	dmdPageMapping: [],
+};
+
+const wpcStateEmpty: WpcEmuWebWorkerApi.EmuStateWpc = {
+	diagnosticLed: 0,
+	lampState: new Uint8Array([]),
+	solenoidState: new Uint8Array([]),
+	generalIlluminationState: new Uint8Array([]),
+	inputState: new Uint8Array([]),
+	diagnosticLedToggleCount: 0,
+	midnightModeEnabled: false,
+	irqEnabled: false,
+	activeRomBank: 0,
+	time: 'fooTIME',
+	blankSignalHigh: false,
+	watchdogExpiredCounter: 0,
+	watchdogTicks: 0,
+	zeroCrossFlag: 0,
+	inputSwitchMatrixActiveColumn: new Uint8Array([]),
+	lampRow: 0,
+	lampColumn: 0,
+	wpcSecureScrambler: 0,
+};
+
+const wpcState1: WpcEmuWebWorkerApi.EmuStateWpc = {
+	diagnosticLed: 0,
+	lampState: new Uint8Array([1, 0, 0, 0, 0, 0, 0, 0]),
+	solenoidState: new Uint8Array([2, 0, 0, 0, 0, 0, 0, 0]),
+	generalIlluminationState: new Uint8Array([3, 0, 0, 0, 0, 0, 0, 0]),
+	inputState: new Uint8Array([4, 0, 0, 0, 0, 0, 0, 0]),
+	diagnosticLedToggleCount: 0,
+	midnightModeEnabled: false,
+	irqEnabled: false,
+	activeRomBank: 0,
+	time: 'fooTIME1',
+	blankSignalHigh: false,
+	watchdogExpiredCounter: 0,
+	watchdogTicks: 0,
+	zeroCrossFlag: 0,
+	inputSwitchMatrixActiveColumn: new Uint8Array([5, 0, 0, 0, 0, 0, 0, 0]),
+	lampRow: 0,
+	lampColumn: 0,
+	wpcSecureScrambler: 0,
+};
+
+const wpcState2: WpcEmuWebWorkerApi.EmuStateWpc = {
+	diagnosticLed: 1,
+	lampState: new Uint8Array([1, 0, 0, 0, 0, 0, 0, 0]),
+	solenoidState: new Uint8Array([2, 0, 0, 0, 0, 0, 0, 0]),
+	generalIlluminationState: new Uint8Array([3, 0, 0, 0, 0, 0, 0, 0]),
+	inputState: new Uint8Array([4, 0, 0, 0, 0, 0, 0, 0]),
+	diagnosticLedToggleCount: 1,
+	midnightModeEnabled: true,
+	irqEnabled: true,
+	activeRomBank: 1,
+	time: 'fooTIME2',
+	blankSignalHigh: true,
+	watchdogExpiredCounter: 1,
+	watchdogTicks: 1,
+	zeroCrossFlag: 1,
+	inputSwitchMatrixActiveColumn: new Uint8Array([5, 0, 0, 0, 0, 0, 0, 0]),
+	lampRow: 1,
+	lampColumn: 1,
+	wpcSecureScrambler: 1,
+};
+
+/* tslint:disable:no-unused-expression no-string-literal */
+chai.use(require('sinon-chai'));
+describe.only('The EmulatorState - handle state changes', () => {
+
+	let emulatorState: EmulatorState;
+
+	const stateEmpty: WpcEmuWebWorkerApi.EmuState = {
+		ram: new Uint8Array(),
+		sound: soundState,
+		wpc: wpcStateEmpty,
+		dmd: dmdState,
+	};
+	const stateZero: WpcEmuWebWorkerApi.EmuState = {
+		ram: new Uint8Array(),
+		sound: soundState,
+		wpc: wpcState1,
+		dmd: dmdState,
+	};
+	const stateOne: WpcEmuWebWorkerApi.EmuState = {
+		ram: new Uint8Array(),
+		sound: soundState,
+		wpc: wpcState2,
+		dmd: dmdState,
+	};
+
+	beforeEach(() => {
+		emulatorState = new EmulatorState();
+	});
+
+	it('transition initial getChangedLamps() should return empty array', () => {
+		expect(emulatorState.getChangedLamps()).to.deep.equal([]);
+	});
+
+	it('transition empty state -> state 1', () => {
+		const expectedDiff: number[][] = [
+			[ 0, 1 ],
+			[ 1, 0 ],
+			[ 2, 0 ],
+			[ 3, 0 ],
+			[ 4, 0 ],
+			[ 5, 0 ],
+			[ 6, 0 ],
+			[ 7, 0 ]
+		];
+		emulatorState.updateState(stateZero);
+		expect(emulatorState.getChangedLamps()).to.deep.equal(expectedDiff);
+	});
+
+	it('transition multiple getChangedLamps() calls without state update should return empty array', () => {
+		emulatorState.updateState(stateZero);
+		emulatorState.getChangedLamps();
+		expect(emulatorState.getChangedLamps()).to.deep.equal([]);
+	});
+
+});

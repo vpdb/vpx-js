@@ -18,8 +18,8 @@
  */
 
 import { GamelistDB, WpcEmuApi, WpcEmuWebWorkerApi } from 'wpc-emu';
-import { logger } from '../../../util/logger';
 import { IEmulator } from '../../../game/iemulator';
+import { logger } from '../../../util/logger';
 import { EmulatorState } from './emulator-state';
 
 export class Emulator implements IEmulator {
@@ -61,7 +61,7 @@ export class Emulator implements IEmulator {
 	}
 
 	public emuSimulateCycle(advanceByMs: number): number {
-		console.log('emuSimulateCycle', advanceByMs);
+		logger().debug('emuSimulateCycle', advanceByMs);
 		if (!this.emulator) {
 			return 0;
 		}
@@ -85,7 +85,7 @@ export class Emulator implements IEmulator {
 	}
 
 	public setFliptronicsInput(value: string): void {
-    if (!this.emulator) {
+		if (!this.emulator) {
 			return;
 		}
 		this.emulator.setFliptronicsInput(value);
