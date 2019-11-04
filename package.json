@@ -13,7 +13,7 @@
 		"build:watch": "npm run compile && npm run build:cp && tsc --watch",
 		"build:cp": "cp -r res dist",
 		"compile": "nearleyc lib/scripting/vbscript.ne -o lib/scripting/vbscript.ts",
-		"lint": "tslint lib/**/*.ts --format stylish",
+		"lint": "tslint --format stylish --project ./tsconfig.json --config ./lib/tslint.json",
 		"test": "npm run compile && nyc mocha"
 	},
 	"bin": {

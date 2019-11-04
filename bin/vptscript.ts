@@ -56,7 +56,7 @@ import { Table } from '../lib/vpt/table/table';
 			try {
 				const vpt = await Table.load(new NodeBinaryReader(vpxFile), {
 					loadTableScript: true,
-					tableDataOnly: true
+					tableDataOnly: true,
 				});
 
 				if (writeToFile) {
@@ -79,7 +79,6 @@ import { Table } from '../lib/vpt/table/table';
 			} catch (error) {
 				console.error(error);
 			}
-
 
 		}
 
