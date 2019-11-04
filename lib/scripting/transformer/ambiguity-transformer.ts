@@ -73,14 +73,11 @@ export class AmbiguityTransformer extends Transformer {
 			enter: (node, parent: any) => {
 				if (node.type === 'CallExpression') {
 
-					// if there's more than one argument, it's definitely a function
-					if (!node.arguments || node.arguments.length !== 1) {
-						return node;
-					}
-
-					// if the parameter is a string, it's not an array index
-					if (node.arguments[0].type === 'Literal' && typeof node.arguments[0].value === 'string') {
-						return node;
+					// if any of the parameters are a string, it's not an array index
+					for (const argument of node.arguments) {
+						if (argument.type === 'Literal' && typeof argument.value === 'string') {
+							return node;
+						}
 					}
 
 					// we know what `eval()` is..
