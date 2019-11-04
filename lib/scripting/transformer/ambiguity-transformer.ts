@@ -94,22 +94,23 @@ export class AmbiguityTransformer extends Transformer {
 								argument as Expression,
 								true) as any;
 
-							arrayNode.__isProperty = true;
+							arrayNode.__isProperty = true; // so we don't transform it below
 						}
 						return arrayNode;
 					}
 
 					// if it's a member, then check if we exclude objects we know don't contain arrays
 					if (node.callee.type === 'MemberExpression') {
-						if (node.callee.object.type === 'Identifier') {
-							if ([ Transformer.ITEMS_NAME, Transformer.ENUMS_NAME,  Transformer.GLOBAL_NAME,
-								Transformer.STDLIB_NAME, Transformer.VBSHELPER_NAME, Transformer.PLAYER_NAME ].includes(node.callee.object.name)) {
-								return node;
-							}
+						const topMemberName = this.getTopMemberName(node.callee);
+						if ([ Transformer.ITEMS_NAME, Transformer.ENUMS_NAME,  Transformer.GLOBAL_NAME,
+							Transformer.STDLIB_NAME, Transformer.VBSHELPER_NAME, Transformer.PLAYER_NAME ].includes(topMemberName)) {
+							return node;
 						}
 					}
 
+
 					// otherwise, we don't know, so use getOrCall
+					(node.callee as any).__isProperty = true; // need to eval that on runtime, not compile time
 					return getOrCall(node.callee as Expression, ...node.arguments as Expression[]);
 				}
 				return node;
@@ -156,7 +157,7 @@ export class AmbiguityTransformer extends Transformer {
 
 					const obj = getValue(api, node);
 					// if it's a function, render it as such
-					if (typeof obj === 'function') {
+					if (typeof obj === 'function' && (node as any).__isProperty !== true) {
 						return callExpression(node, []);
 					}
 					// otherwise, if we got something, that means it's a property
