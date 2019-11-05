@@ -406,7 +406,8 @@ export class PlayerPhysics {
 
 			// emulator loop
 			if (this.emu) {
-				this.emu.emuSimulateCycle(physicsDiffTime);
+				const deltaTimeMs = physicsDiffTime * 10;
+				this.emu.emuSimulateCycle(deltaTimeMs);
 			}
 
 			this.updateVelocities();
