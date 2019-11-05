@@ -29,6 +29,7 @@ export class EmulatorState {
 	private lastSentSolenoidState: Uint8Array;
 	private lastSentGIState: Uint8Array;
 	private dmdScreen: Uint8Array;
+	private switchState: Uint8Array;
 
 	constructor() {
 		this.lastSentLampState = new Uint8Array();
@@ -38,6 +39,7 @@ export class EmulatorState {
 		this.currentSolenoidState = new Uint8Array();
 		this.currentGIState = new Uint8Array();
 		this.dmdScreen = new Uint8Array();
+		this.switchState = new Uint8Array();
 	}
 
 	public updateState(state: WpcEmuWebWorkerApi.EmuStateAsic) {
@@ -55,6 +57,13 @@ export class EmulatorState {
 		if (state.dmd.dmdShadedBuffer) {
 			this.dmdScreen = state.dmd.dmdShadedBuffer;
 		}
+		if (state.wpc.inputSwitchMatrixActiveColumn) {
+			this.switchState = state.wpc.inputSwitchMatrixActiveColumn;
+		}
+	}
+
+	public getSwitchState(index: number): number {
+		return this.switchState[index];
 	}
 
 	/**

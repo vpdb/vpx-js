@@ -37,6 +37,7 @@ export class VpmController {
 	private splashInfoLine: string;
 	private paused: boolean;
 	public readonly Dip: { [index: number]: number };
+	public readonly Switch: { [index: number]: number };
 
 	//private gameRomInfoPromise: Promise<Response>;
 
@@ -47,8 +48,8 @@ export class VpmController {
 		this.splashInfoLine = '';
 		this.paused = false;
 		this.emulator = new Emulator();
-		this.Dip = createIndexGetter();
-
+		this.Dip = this.createDipGetter();
+		this.Switch = this.createSwitchProxy();
 //		this.gameRomInfoPromise = Promise.reject();
 	}
 
@@ -218,9 +219,9 @@ export class VpmController {
 	get GIString() {
 		return 0;
 	}
-	get Switch() {
+/*	get Switch() {
 		return 0;
-	}
+	}*/
 
 	// Debugging
 	get ShowDMDOnly(): boolean {
@@ -241,20 +242,38 @@ export class VpmController {
 	set ShowTitle(show: boolean) {
 		logger().debug('ShowTitle', show);
 	}
+
+	private createDipGetter(): { [index: number]: number } {
+		const handler = {
+			get: (target: {[ index: number ]: number}, prop: number): number => {
+				logger().debug('GET', {target, prop});
+				return prop in target ? target[prop] : 0;
+			},
+
+			set: (target: {[ index: number ]: number}, prop: number, value: number): boolean => {
+				target[prop] = value;
+				logger().debug('SET', {target, prop, value});
+				return true;
+			},
+		};
+		return new Proxy<{ [index: number ]: number; }>({}, handler);
+	}
+
+	private createSwitchProxy(): { [index: number]: number } {
+		const handler = {
+			get: (target: {[ index: number ]: number}, prop: number): number => {
+				logger().debug('GET SWITCH', {target, prop});
+				return this.emulator.emulatorState.getSwitchState(prop);
+			},
+
+			set: (target: {[ index: number ]: number}, prop: number, value: number): boolean => {
+				logger().debug('SET SWITCH', {target, prop, value});
+				this.emulator.setInput(value);
+				return true;
+			},
+		};
+		return new Proxy<{ [index: number ]: number; }>({}, handler);
+	}
+
 }
 
-function createIndexGetter(): { [index: number]: number } {
-	const handler = {
-		get: (target: {[ index: number ]: number}, prop: number): number => {
-			logger().debug('GET', {target, prop});
-			return prop in target ? target[prop] : 0;
-		},
-
-		set: (target: {[ index: number ]: number}, prop: number, value: number): boolean => {
-			target[prop] = value;
-			logger().debug('SET', {target, prop, value});
-			return true;
-		},
-	};
-	return new Proxy<{ [index: number ]: number; }>({}, handler);
-}

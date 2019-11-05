@@ -82,6 +82,13 @@ export class Emulator implements IEmulator {
 		return executedCycles;
 	}
 
+	public getInput(switchNr: number): number {
+		if (!this.emulator) {
+			return 0;
+		}
+		return this.emulatorState.getSwitchState(switchNr);
+	}
+
 	public setInput(switchNr: number): void {
 		if (!this.emulator) {
 			return;
