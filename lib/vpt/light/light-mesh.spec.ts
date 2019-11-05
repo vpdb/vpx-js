@@ -24,6 +24,7 @@ import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { SpotLight } from '../../refs.node';
 import { Table } from '../table/table';
 import { TableExporter } from '../table/table-exporter';
+import { ThreeLightGenerator } from '../../render/threejs/three-light-generator';
 
 const three = new ThreeHelper();
 const scale = 0.05;
@@ -67,7 +68,7 @@ describe('The VPinball lights generator', () => {
 	it('should generate a light with default parameters', async () => {
 		const light = three.find<SpotLight>(gltf, 'lightBulbs', 'StaticBulb', 'light');
 		expect(light.decay).to.equal(2);
-		expect(light.intensity).to.equal(1);
+		expect(light.intensity).to.equal(ThreeLightGenerator.BULB_FACTOR);
 		expect(light.distance).to.equal(scale * 50);
 		expect(light.color.r).to.equal(1);
 		expect(light.color.g).to.equal(1);
@@ -77,8 +78,8 @@ describe('The VPinball lights generator', () => {
 	it('should generate a light with custom parameters', async () => {
 		const light = three.find<SpotLight>(gltf, 'lightBulbs', 'CustomParams', 'light');
 		expect(light.decay).to.equal(2);
-		expect(Math.round(light.intensity * 1000) / 1000).to.equal(5.2);
-		expect(Math.round(light.distance * 1000) / 1000).to.equal(scale * 64.1);
+		expect(light.intensity).to.be.closeTo(5.2 * ThreeLightGenerator.BULB_FACTOR, 0.0001);
+		expect(light.distance).to.be.closeTo(scale * 64.1, 0.0001);
 		expect(light.color.r).to.equal(0.34901960784313724);
 		expect(light.color.g).to.equal(0.9333333333333333);
 		expect(light.color.b).to.equal(0.06666666666666667);

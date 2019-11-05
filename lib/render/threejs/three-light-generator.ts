@@ -25,8 +25,8 @@ import { ThreeRenderApi } from './three-render-api';
 
 export class ThreeLightGenerator {
 
-	private static readonly EMISSIVE_MAP_FACTOR = 4;
-	private static readonly BULB_FACTOR = 0.3;
+	public static readonly EMISSIVE_MAP_FACTOR = 4;
+	public static readonly BULB_FACTOR = 0.3;
 
 	public createPointLight(lightData: LightData): PointLight {
 		const light = new PointLight(lightData.color, lightData.state !== Enums.LightStatus.LightStateOff ? lightData.intensity * ThreeLightGenerator.BULB_FACTOR : 0, lightData.falloff * ThreeRenderApi.SCALE, 2);
