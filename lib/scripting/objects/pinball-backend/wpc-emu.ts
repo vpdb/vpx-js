@@ -70,6 +70,7 @@ export class Emulator implements IEmulator {
 		}
 		const executedCycles: number = this.emulator.executeCycleForTime(advanceByMs, 16);
 		const emuState: WpcEmuWebWorkerApi.EmuState = this.emulator.getUiState(WPC_EMU_INCLUDE_RAM_AND_VIDEORAM_DATA);
+		//logger().debug('TICKS', emuState.cpuState.tickCount);
 		this.emulatorState.updateState(emuState.asic);
 		return executedCycles;
 	}

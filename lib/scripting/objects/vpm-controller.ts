@@ -66,11 +66,13 @@ export class VpmController {
 				return this.emulator.loadGame(answer.wpcDbEntry, answer.romFile);
 			})
 			.then(() => {
-				// TODO enable me
-				//this.player.setEmulator(this.emulator);
-				setInterval(() => {
-					this.emulator.emuSimulateCycle(200);
-				}, 200);
+				this.player.setEmulator(this.emulator);
+
+				//TODO HACK - used to launch the rom
+				setTimeout(() => {
+					console.log('MANUAL KICK ROMS BUTT!');
+					this.emulator.setCabinetInput(16);
+				}, 3000);
 			})
 			.catch((error) => {
 				logger().error('ERROR FAILED', error.messages);
@@ -195,8 +197,11 @@ export class VpmController {
 
 	// AggregatePollingFunctions
 	get ChangedLamps(): number[][] {
-		logger().debug('ChangedLamps');
-		return this.emulator.emulatorState.getChangedLamps();
+		const changedLamps: number[][] = this.emulator.emulatorState.getChangedLamps();
+		if (changedLamps.length > 0) {
+			logger().debug('ChangedLamps', changedLamps);
+		}
+		return changedLamps;
 	}
 	get ChangedSolenoids(): number[][] {
 		return this.emulator.emulatorState.getChangedSolenoids();

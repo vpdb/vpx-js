@@ -42,12 +42,14 @@ export class EmulatorState {
 
 	public updateState(state: WpcEmuWebWorkerApi.EmuStateAsic) {
 		if (state.wpc.lampState) {
-			this.currentLampState = this.normalize(state.wpc.lampState);
+			this.currentLampState = this.normalizeValue(state.wpc.lampState);
 		}
 		if (state.wpc.solenoidState) {
+			//TODO unclear if we need to normalize
 			this.currentSolenoidState = state.wpc.solenoidState;
 		}
 		if (state.wpc.generalIlluminationState) {
+			//TODO unclear if we need to normalize
 			this.currentGIState = state.wpc.generalIlluminationState;
 		}
 		if (state.dmd.dmdShadedBuffer) {
@@ -55,20 +57,26 @@ export class EmulatorState {
 		}
 	}
 
+	/**
+	 * return changed lamps, index starts at 11..18, 21..28.. up to index 88
+	 */
 	public getChangedLamps(): number[][] {
-		const result: number[][] = this.getArrayDiff(this.lastSentLampState, this.currentLampState);
+		const result: number[][] = this.getArrayDiff(this.lastSentLampState, this.currentLampState, mapIndexToLampIndex);
 		this.lastSentLampState = this.currentLampState;
 		return result;
 	}
 
+	/**
+	 * return changed solenoids, index starts at
+	 */
 	public getChangedSolenoids(): number[][] {
-		const result: number[][] = this.getArrayDiff(this.lastSentSolenoidState, this.currentSolenoidState);
+		const result: number[][] = this.getArrayDiff(this.lastSentSolenoidState, this.currentSolenoidState, mapIndexToOneBasedIndex);
 		this.lastSentSolenoidState = this.currentSolenoidState;
 		return result;
 	}
 
 	public getChangedGI(): number[][] {
-		const result: number[][] = this.getArrayDiff(this.lastSentGIState, this.currentGIState);
+		const result: number[][] = this.getArrayDiff(this.lastSentGIState, this.currentGIState, mapIndexToOneBasedIndex);
 		this.lastSentGIState = this.currentGIState;
 		return result;
 	}
@@ -85,7 +93,7 @@ export class EmulatorState {
 	/**
 	 * map uint8 values to 0 or 1 (VisualPinball engine)
 	 */
-	private normalize(input: Uint8Array): Uint8Array {
+	private normalizeValue(input: Uint8Array): Uint8Array {
 		return input.map((value) => value > 127 ? 1 : 0);
 	}
 
@@ -93,19 +101,30 @@ export class EmulatorState {
 	 * diff between two arrays equally sized arrays
 	 * returns 2 dimensional array with the result, eg [0, 5], [4, 44] -> means entry at offset 0 changed to 5, entry at offset 4 changed to 44
 	 */
-	private getArrayDiff(lastState: Uint8Array, newState: Uint8Array): number[][] {
+	private getArrayDiff(lastState: Uint8Array, newState: Uint8Array, offsetMapperFunction: (index: number) => number): number[][] {
 		const result: number[][] = [];
 		if (arraysEqual(lastState, newState)) {
 			return result;
 		}
 		for (let n: number = 0; n < newState.length; n++) {
-			if (lastState[n] !== newState[n]) {
-				// NOTE: the first entry has index 1 and not 0!
-				result.push([n + 1, newState[n]]);
+			// HACK: looks like we need the number of lamps per table (here 61)
+			if (n < 62 && lastState[n] !== newState[n]) {
+				const index = offsetMapperFunction(n);
+				result.push([index, newState[n]]);
 			}
 		}
 		return result;
 	}
+}
+
+function mapIndexToLampIndex(index: number): number {
+	const row = Math.floor(index / 8);
+	const column = Math.floor(index % 8);
+	return 10 * row + 11 + column;
+}
+
+function mapIndexToOneBasedIndex(index: number): number {
+	return index + 1;
 }
 
 function arraysEqual(a: Uint8Array, b: Uint8Array): boolean {
