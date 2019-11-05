@@ -18,11 +18,10 @@
  */
 
 import { replace } from 'estraverse';
-import { Expression, MemberExpression, Program } from 'estree';
+import { CallExpression, Expression, MemberExpression, Program } from 'estree';
 import { EnumsApi } from '../../vpt/enums';
 import { GlobalApi } from '../../vpt/global-api';
-import { callExpression, memberExpression } from '../estree';
-import { getOrCall } from '../post-process/helpers';
+import { callExpression, identifier, memberExpression } from '../estree';
 import { Stdlib } from '../stdlib';
 import { Transformer } from './transformer';
 
@@ -207,4 +206,19 @@ function getValue(obj: any, ast: MemberExpression, path: string[] = []): any {
 		return o;
 	}
 	return undefined;
+}
+
+/**
+ * Creates a callExpression to the "getOrCall" vbs-helper.
+ * @param callee Object
+ * @param ...args Arguments
+ */
+function getOrCall(callee: Expression, ...args: Expression[]): CallExpression {
+	return callExpression(
+		memberExpression(
+			identifier(Transformer.VBSHELPER_NAME),
+			identifier('getOrCall'),
+		),
+		[ callee, ...args ],
+	);
 }

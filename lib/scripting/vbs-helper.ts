@@ -94,7 +94,7 @@ export class VBSHelper {
 
 	public getOrCall(obj: any, ...params: number[]) {
 		if (typeof obj === 'function') {
-			return typeof params === 'undefined' ? obj.bind(obj)() : obj.bind(obj)(...params);
+			return obj.bind(obj)(...params);
 		}
 		for (const param of params) {
 			obj = obj[param];
