@@ -268,6 +268,16 @@ export class VpmController {
 
 			set: (target: {[ index: number ]: number}, prop: number, value: number): boolean => {
 				logger().debug('SET SWITCH', {target, prop, value});
+/*
+				TODO implement this to the backend
+				23:54:23.544 logger.js:30 SET SWITCH {target: {…}, prop: "24", value: 0}
+				23:54:23.544 logger.js:30 SET SWITCH {target: {…}, prop: "32", value: 1}
+				23:54:23.544 logger.js:30 SET SWITCH {target: {…}, prop: "33", value: 1}
+				23:54:23.545 logger.js:30 SET SWITCH {target: {…}, prop: "34", value: 1}
+				23:54:23.545 logger.js:30 SET SWITCH {target: {…}, prop: "35", value: 1}
+				23:54:23.545 logger.js:30 SET SWITCH {target: {…}, prop: "36", value: 1}
+				23:54:23.545 logger.js:30 SET SWITCH {target: {…}, prop: "38", value: 1}
+*/
 				this.emulator.setInput(value);
 				return true;
 			},

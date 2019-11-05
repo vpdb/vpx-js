@@ -54,7 +54,7 @@ describe('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 		expect(vpmController.Dip[40]).to.equal(VALUE);
 	});
 
-	it.skip('no changed lamps detected', () => {
+	it('no changed lamps detected', () => {
 		const result = vpmController.ChangedLamps;
 		expect(result).to.deep.equal([]);
 	});
@@ -65,6 +65,11 @@ describe('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 		expect(resultIndex).to.equal(42);
 		//TODO unclear if uint8 or float type
 		expect(resultValue).to.equal(0.5);
+	});
+
+	it.skip('get Switch 0', () => {
+		const result = vpmController.Switch[0];
+		expect(result).to.deep.equal(0);
 	});
 
 
