@@ -28,6 +28,7 @@ import { IEmulator } from './iemulator';
 import { AssignKey, keyEventToDirectInputKey } from './key-code';
 import { PinInput } from './pin-input';
 import { PlayerPhysics } from './player-physics';
+import { Vertex2D } from '../math/vertex2d';
 
 export class Player extends EventEmitter {
 
@@ -208,6 +209,18 @@ export class Player extends EventEmitter {
 
 	public setEmulator(emu: IEmulator) {
 		this.physics.emu = emu;
+	}
+
+	public hasDmd(): boolean {
+		return !!this.physics.emu && !!this.physics.emu.getDmdDimensions();
+	}
+
+	public getDmdDimensions(): Vertex2D {
+		return this.physics.emu!.getDmdDimensions();
+	}
+
+	public getDmdFrame(): Uint8Array {
+		return this.physics.emu!.getDmdFrame();
 	}
 
 	/**

@@ -104,6 +104,7 @@ export class PlayerPhysics {
 	/**
 	 * Player physics are instantiated in the Player's constructor.
 	 * @param table
+	 * @param pinInput
 	 */
 	constructor(table: Table, pinInput: PinInput) {
 		this.table = table;
