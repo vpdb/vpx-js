@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { Vertex2D } from '../math/vertex2d';
+
 export interface IEmulator {
 
 	/**
@@ -31,4 +33,20 @@ export interface IEmulator {
 	 * @param dTime Time passed since last cycle in milliseconds (as double)
 	 */
 	emuSimulateCycle(dTime: number): void;
+
+	/**
+	 * Returns the frame buffer of the DMD.
+	 *
+	 * Top-right to bottom-left array, one byte per pixel, with values from 0 to 3
+	 *
+	 * TODO will probably change to use bit planes and cut size by four.
+	 */
+	getDmdFrame(): Uint8Array;
+
+	/**
+	 * Returns the current DMD dimensions.
+	 *
+	 * @return Vector where `x` is the width and `y` the height.
+	 */
+	getDmdDimensions(): Vertex2D;
 }
