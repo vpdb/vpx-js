@@ -26,9 +26,10 @@ import { ThreeRenderApi } from './three-render-api';
 export class ThreeLightGenerator {
 
 	private static readonly EMISSIVE_MAP_FACTOR = 4;
+	private static readonly BULB_FACTOR = 0.3;
 
 	public createPointLight(lightData: LightData): PointLight {
-		const light = new PointLight(lightData.color, lightData.state !== Enums.LightStatus.LightStateOff ? lightData.intensity : 0, lightData.falloff * ThreeRenderApi.SCALE, 2);
+		const light = new PointLight(lightData.color, lightData.state !== Enums.LightStatus.LightStateOff ? lightData.intensity * ThreeLightGenerator.BULB_FACTOR : 0, lightData.falloff * ThreeRenderApi.SCALE, 2);
 		light.name = `light`;
 		light.color.set(lightData.color);
 		light.updateMatrixWorld();
@@ -52,7 +53,7 @@ export class ThreeLightGenerator {
 		for (const lightObj of obj.children) {
 			if (lightObj.name === 'light') {
 				if (state.intensity) {
-					(lightObj as PointLight).intensity = state.intensity;
+					(lightObj as PointLight).intensity = state.intensity * ThreeLightGenerator.BULB_FACTOR;
 				}
 				if (state.color) {
 					(lightObj as PointLight).color.set(state.color);
