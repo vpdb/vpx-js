@@ -318,13 +318,3 @@ export function id(result: [Token]): Identifier {
 	}
 	return estree.identifier(name);
 }
-
-export function getOrCall(callee: Expression, ...args: Expression[]): CallExpression {
-	return estree.callExpression(
-		estree.memberExpression(
-			estree.identifier(Transformer.VBSHELPER_NAME),
-			estree.identifier('getOrCall'),
-		),
-		[ callee, ...args ],
-	);
-}
