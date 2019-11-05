@@ -51,7 +51,7 @@ export class Emulator implements IEmulator {
 				setTimeout(() => {
 					console.log('RSET!')
 					emulator.reset();
-				}, 8000);
+				}, 2000);
 
 			});
 	}
