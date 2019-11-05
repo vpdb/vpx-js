@@ -140,4 +140,35 @@ describe('The scripting VBS Helper', () => {
 			}
 		}
 	});
+
+	it('should get a value in a single-dimension array using "getOrCall"', () => {
+		const js = vbsHelper.dim([20]);
+		js[20] = 'Test';
+		const value = vbsHelper.getOrCall(js, 20);
+		expect(js[20]).to.equal(`Test`);
+	});
+
+	it('should get a value in a three-dimension array using "getOrCall"', () => {
+		const js = vbsHelper.dim([2, 2, 3]);
+		js[0][0][3] = 'Test';
+		const value = vbsHelper.getOrCall(js, 0, 0, 3);
+		expect(value).to.equal(`Test`);
+	});
+
+	it('should get the return value of a function using "getOrCall" and no params', () => {
+		const js = () => {
+			return 'Test';
+		};
+		const value = vbsHelper.getOrCall(js);
+		expect(value).to.equal(`Test`);
+	});
+
+	it('should get the return value of a function using "getOrCall" and multiple params', () => {
+		const js = (value1: number, value2: number, value3: number) => {
+			return value1 + value2 + value3;
+		};
+		const value = vbsHelper.getOrCall(js, 8, 10, 5);
+		expect(value).to.equal(23);
+	});
+
 });
