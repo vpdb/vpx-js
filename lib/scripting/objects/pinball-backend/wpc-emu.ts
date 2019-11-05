@@ -50,7 +50,7 @@ export class Emulator implements IEmulator {
 				//TODO HACK - used to launch the rom
 				setTimeout(() => {
 					console.log('RSET!')
-					this.emulator.reset();
+					emulator.reset();
 				}, 8000);
 
 			});
