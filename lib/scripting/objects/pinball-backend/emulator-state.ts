@@ -91,7 +91,8 @@ export class EmulatorState {
 		}
 		for (let n: number = 0; n < newState.length; n++) {
 			if (lastState[n] !== newState[n]) {
-				result.push([n, newState[n]]);
+				// NOTE: the first entry has index 1 and not 0!
+				result.push([n + 1, newState[n]]);
 			}
 		}
 		return result;
