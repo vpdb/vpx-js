@@ -21,12 +21,14 @@ import { GamelistDB, WpcEmuApi, WpcEmuWebWorkerApi } from 'wpc-emu';
 import { IEmulator } from '../../../game/iemulator';
 import { logger } from '../../../util/logger';
 import { EmulatorState } from './emulator-state';
+import { Vertex2D } from '../../../math/vertex2d';
 
 const WPC_EMU_INCLUDE_RAM_AND_VIDEORAM_DATA = false;
 
 export class Emulator implements IEmulator {
 	private emulator?: WpcEmuApi.Emulator;
 	public readonly emulatorState: EmulatorState;
+	private readonly dmdSize = new Vertex2D(128, 32);
 	private romLoading: boolean;
 
 	constructor() {
@@ -99,6 +101,14 @@ export class Emulator implements IEmulator {
 			return;
 		}
 		return this.emulator.getUiState();
+	}
+
+	public getDmdDimensions(): Vertex2D {
+		return this.dmdSize;
+	}
+
+	public getDmdFrame(): Uint8Array {
+		return new Uint8Array();
 	}
 
 }
