@@ -46,6 +46,13 @@ export class Emulator implements IEmulator {
 				this.emulator = emulator;
 				this.romLoading = false;
 				this.emulator.reset();
+
+				//TODO HACK - used to launch the rom
+				setTimeout(() => {
+					console.log('RSET!')
+					this.emulator.reset();
+				}, 8000);
+
 			});
 	}
 

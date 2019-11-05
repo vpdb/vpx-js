@@ -67,12 +67,6 @@ export class VpmController {
 			})
 			.then(() => {
 				this.player.setEmulator(this.emulator);
-
-				//TODO HACK - used to launch the rom
-				setTimeout(() => {
-					console.log('MANUAL KICK ROMS BUTT!');
-					this.emulator.setCabinetInput(16);
-				}, 3000);
 			})
 			.catch((error) => {
 				logger().error('ERROR FAILED', error.messages);
@@ -199,7 +193,7 @@ export class VpmController {
 	get ChangedLamps(): number[][] {
 		const changedLamps: number[][] = this.emulator.emulatorState.getChangedLamps();
 		if (changedLamps.length > 0) {
-			logger().debug('ChangedLamps', changedLamps);
+		//	logger().debug('ChangedLamps', changedLamps);
 		}
 		return changedLamps;
 	}
