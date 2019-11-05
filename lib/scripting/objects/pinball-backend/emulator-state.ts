@@ -28,6 +28,7 @@ export class EmulatorState {
 	private lastSentLampState: Uint8Array;
 	private lastSentSolenoidState: Uint8Array;
 	private lastSentGIState: Uint8Array;
+	private dmdScreen: Uint8Array;
 
 	constructor() {
 		this.lastSentLampState = new Uint8Array();
@@ -36,6 +37,7 @@ export class EmulatorState {
 		this.currentLampState = new Uint8Array();
 		this.currentSolenoidState = new Uint8Array();
 		this.currentGIState = new Uint8Array();
+		this.dmdScreen = new Uint8Array();
 	}
 
 	public updateState(state: WpcEmuWebWorkerApi.EmuStateAsic) {
@@ -47,6 +49,9 @@ export class EmulatorState {
 		}
 		if (state.wpc.generalIlluminationState) {
 			this.currentGIState = state.wpc.generalIlluminationState;
+		}
+		if (state.dmd.dmdShadedBuffer) {
+			this.dmdScreen = state.dmd.dmdShadedBuffer;
 		}
 	}
 
@@ -71,6 +76,10 @@ export class EmulatorState {
 	// NOT IMPLEMENTED YET - needed for alphanumeric games only!
 	public ChangedLEDs(): number[][] {
 		return [];
+	}
+
+	public getDmdScreen(): Uint8Array {
+		return this.dmdScreen;
 	}
 
 	/**

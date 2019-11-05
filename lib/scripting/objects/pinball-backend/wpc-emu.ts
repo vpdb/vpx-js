@@ -107,8 +107,12 @@ export class Emulator implements IEmulator {
 		return this.dmdSize;
 	}
 
+	/**
+	 * returns the content of the DMD display, 1 byte per pixel
+	 * values range from 0 (dark) to 3 (bright) - this means the Uint8Array needs to be postprocessed
+	 */
 	public getDmdFrame(): Uint8Array {
-		return new Uint8Array();
+		return this.emulatorState.getDmdScreen();
 	}
 
 }

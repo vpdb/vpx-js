@@ -37,7 +37,7 @@ export interface IEmulator {
 	/**
 	 * Returns the frame buffer of the DMD.
 	 *
-	 * Top-right to bottom-left array, one byte per pixel, with values from 0 to 3
+	 * top-left to bottom-right array, one byte per pixel, with values from 0 to 3
 	 *
 	 * TODO will probably change to use bit planes and cut size by four.
 	 */
