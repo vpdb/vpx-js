@@ -63,14 +63,15 @@ export class EmulatorState {
 	}
 
 	public getSwitchState(index: number): number {
-		return this.switchState[index];
+		const matrixIndex: number = mapIndexToMatrixIndex(index);
+		return this.switchState[matrixIndex];
 	}
 
 	/**
 	 * return changed lamps, index starts at 11..18, 21..28.. up to index 88
 	 */
 	public getChangedLamps(): number[][] {
-		const result: number[][] = this.getArrayDiff(this.lastSentLampState, this.currentLampState, mapIndexToLampIndex);
+		const result: number[][] = this.getArrayDiff(this.lastSentLampState, this.currentLampState, mapIndexToMatrixIndex);
 		this.lastSentLampState = this.currentLampState;
 		return result;
 	}
@@ -126,7 +127,7 @@ export class EmulatorState {
 	}
 }
 
-function mapIndexToLampIndex(index: number): number {
+function mapIndexToMatrixIndex(index: number): number {
 	const row = Math.floor(index / 8);
 	const column = Math.floor(index % 8);
 	return 10 * row + 11 + column;

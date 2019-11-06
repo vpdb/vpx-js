@@ -266,8 +266,13 @@ export class VpmController {
 				return this.emulator.emulatorState.getSwitchState(prop);
 			},
 
-			set: (target: {[ index: number ]: number}, prop: number, value: number): boolean => {
+			set: (target: {[ index: number ]: number}, prop: number | string, value: number): boolean => {
 				logger().debug('SET SWITCH', {target, prop, value});
+				if (value) {
+					this.emulator.setInput(parseInt(prop.toString(), 10));
+				} else {
+					logger().debug('CLEAR SWITCH IGNORED!', {target, prop, value});
+				}
 /*
 				TODO implement this to the backend
 				23:54:23.544 logger.js:30 SET SWITCH {target: {…}, prop: "24", value: 0}
@@ -278,7 +283,6 @@ export class VpmController {
 				23:54:23.545 logger.js:30 SET SWITCH {target: {…}, prop: "36", value: 1}
 				23:54:23.545 logger.js:30 SET SWITCH {target: {…}, prop: "38", value: 1}
 */
-				this.emulator.setInput(value);
 				return true;
 			},
 		};
