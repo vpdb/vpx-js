@@ -36,10 +36,9 @@ describe('EmulatorCache', () => {
 		const result: CacheEntry[] = emulatorCache.getCache();
 
 		expect(addedToCache).to.equal(true);
-		expect(result).to.deep.equal([
-			{
+		expect(result).to.deep.equal([{
 				cacheType: CacheType.SetSwitchInput,
-				valuee: 42
+				value: 42
 			}
 		]);
 	});
