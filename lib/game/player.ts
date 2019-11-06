@@ -223,6 +223,18 @@ export class Player extends EventEmitter {
 		return this.physics.emu!.getDmdFrame();
 	}
 
+	public setCabinetInput(keyNr: number) {
+		if (this.physics.emu) {
+			this.physics.emu.setCabinetInput(keyNr);
+		}
+	}
+
+	public setSwitchInput(switchNr: number, optionalEnableSwitch?: number) {
+		if (this.physics.emu) {
+			this.physics.emu.setSwitchInput(switchNr, optionalEnableSwitch)
+		}
+	}
+
 	/**
 	 * Sets the dimensions of the render frame.
 	 *
