@@ -19,14 +19,19 @@
 
 import { GamelistDB, WpcEmuApi, WpcEmuWebWorkerApi } from 'wpc-emu';
 import { IEmulator } from '../../../game/iemulator';
-import { logger } from '../../../util/logger';
-import { EmulatorState } from './emulator-state';
 import { Vertex2D } from '../../../math/vertex2d';
+import { logger } from '../../../util/logger';
+import { CacheEntry, CacheType, EmulatorCachingService } from './caching-service';
+import { EmulatorState } from './emulator-state';
 
 const WPC_EMU_INCLUDE_RAM_AND_VIDEORAM_DATA = false;
 
+/**
+ * Provides an interface to WPC-EMU
+ */
 export class Emulator implements IEmulator {
 	private emulator?: WpcEmuApi.Emulator;
+	private emulatorCachingService: EmulatorCachingService;
 	public readonly emulatorState: EmulatorState;
 	private readonly dmdSize = new Vertex2D(128, 32);
 	private romLoading: boolean;
@@ -36,6 +41,7 @@ export class Emulator implements IEmulator {
 		this.emulator = undefined;
 		this.romLoading = false;
 		this.emulatorState = new EmulatorState();
+		this.emulatorCachingService = new EmulatorCachingService();
 	}
 
 	public loadGame(gameEntry: GamelistDB.GameEntry, romContent: Uint8Array) {
@@ -47,10 +53,20 @@ export class Emulator implements IEmulator {
 				this.romLoading = false;
 				this.emulator.reset();
 
+				const cachedData: CacheEntry[] = this.emulatorCachingService.getCache();
+				logger().debug('Apply cached commands to emu', cachedData.length);
+				cachedData.forEach((cacheEntry: CacheEntry) => {
+					switch (cacheEntry.cacheType) {
+						case CacheType.SetSwitchInput:
+							return emulator.setInput(cacheEntry.value);
+						default:
+							logger().warn('UNKNOWN CACHE TYPE', cacheEntry.cacheType);
+					}
+				});
 				//TODO HACK - used to launch the rom
 				setTimeout(() => {
-					console.log('RSET!')
-					emulator.reset();
+					logger().info('ESC!');
+					emulator.setCabinetInput(16);
 				}, 2000);
 
 			});
@@ -73,11 +89,14 @@ export class Emulator implements IEmulator {
 
 	public emuSimulateCycle(advanceByMs: number): number {
 		if (!this.emulator) {
+			this.emulatorCachingService.cacheState(CacheType.ExecuteTicks, advanceByMs);
 			return 0;
 		}
 		const executedCycles: number = this.emulator.executeCycleForTime(advanceByMs, 16);
 		const emuState: WpcEmuWebWorkerApi.EmuState = this.emulator.getUiState(WPC_EMU_INCLUDE_RAM_AND_VIDEORAM_DATA);
 		//logger().debug('TICKS', emuState.cpuState.tickCount);
+
+		// TODO - we need to stay in sync with VPX as the expected ticks to run and the actual ticks that did run will not match
 		this.emulatorState.updateState(emuState.asic);
 		return executedCycles;
 	}
@@ -91,6 +110,7 @@ export class Emulator implements IEmulator {
 
 	public setInput(switchNr: number): void {
 		if (!this.emulator) {
+			this.emulatorCachingService.cacheState(CacheType.SetSwitchInput, switchNr);
 			return;
 		}
 		this.emulator.setInput(switchNr);

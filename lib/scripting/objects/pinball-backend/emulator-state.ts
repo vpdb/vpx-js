@@ -20,6 +20,9 @@
 import { WpcEmuWebWorkerApi } from 'wpc-emu';
 import { logger } from '../../../util/logger';
 
+/**
+ * This class encapsulates the WPC-EMU state and transform state object
+ */
 export class EmulatorState {
 
 	private currentLampState: Uint8Array;

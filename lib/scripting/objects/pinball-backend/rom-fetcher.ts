@@ -1,6 +1,10 @@
 import { GamelistDB } from 'wpc-emu';
 import { logger } from '../../../util/logger';
 
+/**
+ * Functions to fetch a WPC ROM file from VPDB.io
+ */
+
 export function getGameEntry(pinmameGameName: string): Promise<LoadedGameEntry> {
 	const gameEntry: undefined | GamelistDB.ClientGameEntry = GamelistDB.getByPinmameName(pinmameGameName);
 	if (!gameEntry) {
