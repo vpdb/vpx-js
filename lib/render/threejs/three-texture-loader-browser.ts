@@ -60,6 +60,7 @@ export class ThreeTextureLoaderBrowser implements ITextureLoader<ThreeTexture> {
 		const texture = await load(mimeType, objectUrl);
 		texture.name = `texture:${name}`;
 		texture.needsUpdate = true;
+		texture.anisotropy = 4;
 		return Promise.resolve(texture);
 	}
 }

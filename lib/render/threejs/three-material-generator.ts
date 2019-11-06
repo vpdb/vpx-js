@@ -18,7 +18,14 @@
  */
 
 import { RenderInfo } from '../../game/irenderable';
-import { BufferGeometry, Color, DoubleSide, Material as ThreeMaterial, MeshStandardMaterial } from '../../refs.node';
+import {
+	BufferGeometry,
+	Color,
+	DoubleSide,
+	LinearFilter, LinearMipMapLinearFilter, LinearMipMapNearestFilter,
+	Material as ThreeMaterial,
+	MeshStandardMaterial
+} from '../../refs.node';
 import { Material } from '../../vpt/material';
 import { MeshConvertOptions } from '../irender-api';
 import { ThreeMapGenerator } from './three-map-generator';
