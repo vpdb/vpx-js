@@ -49,4 +49,16 @@ export interface IEmulator {
 	 * @return Vector where `x` is the width and `y` the height.
 	 */
 	getDmdDimensions(): Vertex2D;
+
+	/**
+	 * trigger a cabinet key (like ESC, -, +, ENTER)
+	 */
+	setCabinetInput(keyNr: number): void;
+
+	/**
+	 * Update Switch State
+	 * @param switchNr which switch number (11..88) to modifiy
+	 * @param optionalEnableSwitch if this parameter is missing, the switch will be toggled, else set to the defined state
+	 */
+	setSwitchInput(switchNr: number, optionalEnableSwitch?: number): void;
 }
