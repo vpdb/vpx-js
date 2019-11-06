@@ -246,13 +246,13 @@ export class VpmController {
 	private createDipGetter(): { [index: number]: number } {
 		const handler = {
 			get: (target: {[ index: number ]: number}, prop: number): number => {
-				logger().debug('GET', {target, prop});
+				logger().debug('GETDIP', {target, prop});
 				return prop in target ? target[prop] : 0;
 			},
 
 			set: (target: {[ index: number ]: number}, prop: number, value: number): boolean => {
 				target[prop] = value;
-				logger().debug('SET', {target, prop, value});
+				logger().debug('SETDIP', {target, prop, value});
 				return true;
 			},
 		};
@@ -267,7 +267,7 @@ export class VpmController {
 			},
 
 			set: (target: {[ index: number ]: number}, prop: number | string, value: number): boolean => {
-				logger().debug('SET SWITCH', {target, prop, value});
+				logger().debug('SET SWITCH', {target, prop, value, type: typeof prop});
 				if (value) {
 					this.emulator.setInput(parseInt(prop.toString(), 10));
 				} else {
