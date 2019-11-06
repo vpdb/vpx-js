@@ -58,7 +58,7 @@ export class Emulator implements IEmulator {
 				cachedData.forEach((cacheEntry: CacheEntry) => {
 					switch (cacheEntry.cacheType) {
 						case CacheType.SetSwitchInput:
-							return emulator.setInput(cacheEntry.value);
+							return emulator.setSwitchInput(cacheEntry.value);
 						default:
 							logger().warn('UNKNOWN CACHE TYPE', cacheEntry.cacheType);
 					}
@@ -141,7 +141,7 @@ export class Emulator implements IEmulator {
 			return true;
 		}
 		//TODO pass optionalEnableSwitch
-		this.emulator.setInput(switchNr);
+		this.emulator.setSwitchInput(switchNr);
 		return true;
 	}
 
