@@ -70,6 +70,21 @@ export class EmulatorState {
 		return this.switchState[matrixIndex];
 	}
 
+	public getLampState(index: number): number {
+		const matrixIndex: number = mapIndexToMatrixIndex(index);
+		return this.currentLampState[matrixIndex];
+	}
+
+	public getSolenoidState(index: number): number {
+		const matrixIndex: number = index++;
+		return this.currentSolenoidState[matrixIndex];
+	}
+
+	public getGIState(index: number): number {
+		const matrixIndex: number = index++;
+		return this.currentGIState[matrixIndex];
+	}
+
 	/**
 	 * return changed lamps, index starts at 11..18, 21..28.. up to index 88
 	 */

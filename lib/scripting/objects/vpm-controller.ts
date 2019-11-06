@@ -38,6 +38,9 @@ export class VpmController {
 	private paused: boolean;
 	public readonly Dip: { [index: number]: number };
 	public readonly Switch: { [index: number]: number };
+	public readonly Lamp: { [index: number]: number };
+	public readonly Solenoid: { [index: number]: number };
+	public readonly GIString: { [index: number]: number };
 
 	//private gameRomInfoPromise: Promise<Response>;
 
@@ -49,8 +52,27 @@ export class VpmController {
 		this.paused = false;
 		this.emulator = new Emulator();
 		this.Dip = this.createDipGetter();
-		this.Switch = this.createSwitchProxy();
-//		this.gameRomInfoPromise = Promise.reject();
+
+/*
+				TODO implement this to the backend
+				23:54:23.544 logger.js:30 SET SWITCH {target: {…}, prop: "24", value: 0}
+				23:54:23.544 logger.js:30 SET SWITCH {target: {…}, prop: "32", value: 1}
+				23:54:23.544 logger.js:30 SET SWITCH {target: {…}, prop: "33", value: 1}
+				23:54:23.545 logger.js:30 SET SWITCH {target: {…}, prop: "34", value: 1}
+				23:54:23.545 logger.js:30 SET SWITCH {target: {…}, prop: "35", value: 1}
+				23:54:23.545 logger.js:30 SET SWITCH {target: {…}, prop: "36", value: 1}
+				23:54:23.545 logger.js:30 SET SWITCH {target: {…}, prop: "38", value: 1}
+*/
+		this.Switch = this.createGetSetProxy('SWITCH',
+			(index) => this.emulator.getSwitchInput(index), (switchNr, value) => this.emulator.setSwitchInput(switchNr, value));
+		this.Lamp = this.createGetSetProxy('LAMP',
+			(index) => this.emulator.getLampState(index), SET_NOP);
+		this.Solenoid = this.createGetSetProxy('SOLENOID',
+			(index) => this.emulator.getSolenoidState(index), SET_NOP);
+		this.GIString = this.createGetSetProxy('GI',
+			(index) => this.emulator.getGIState(index), SET_NOP);
+
+			//		this.gameRomInfoPromise = Promise.reject();
 	}
 
 	// Control
@@ -208,21 +230,6 @@ export class VpmController {
 		return this.emulator.emulatorState.ChangedLEDs();
 	}
 
-	// GameInputOutput TODO need a proxy handle
-	get Lamp() {
-		logger().debug('get Lamp');
-		return 0;
-	}
-	get Solenoid() {
-		return 0;
-	}
-	get GIString() {
-		return 0;
-	}
-/*	get Switch() {
-		return 0;
-	}*/
-
 	// Debugging
 	get ShowDMDOnly(): boolean {
 		return false;
@@ -259,34 +266,28 @@ export class VpmController {
 		return new Proxy<{ [index: number ]: number; }>({}, handler);
 	}
 
-	private createSwitchProxy(): { [index: number]: number } {
+	private createGetSetProxy(
+			name:string,
+			getFunction: (prop: number) => number,
+			setFunction: (prop: number, value: number) => boolean,
+		): { [index: number]: number } {
 		const handler = {
 			get: (target: {[ index: number ]: number}, prop: number): number => {
-				logger().debug('GET SWITCH', {target, prop});
-				return this.emulator.emulatorState.getSwitchState(prop);
+				logger().debug('GET', name, {target, prop});
+				return getFunction(prop);
 			},
 
 			set: (target: {[ index: number ]: number}, prop: number | string, value: number): boolean => {
-				logger().debug('SET SWITCH', {target, prop, value, type: typeof prop});
-				if (value) {
-					this.emulator.setInput(parseInt(prop.toString(), 10));
-				} else {
-					logger().debug('CLEAR SWITCH IGNORED!', {target, prop, value});
-				}
-/*
-				TODO implement this to the backend
-				23:54:23.544 logger.js:30 SET SWITCH {target: {…}, prop: "24", value: 0}
-				23:54:23.544 logger.js:30 SET SWITCH {target: {…}, prop: "32", value: 1}
-				23:54:23.544 logger.js:30 SET SWITCH {target: {…}, prop: "33", value: 1}
-				23:54:23.545 logger.js:30 SET SWITCH {target: {…}, prop: "34", value: 1}
-				23:54:23.545 logger.js:30 SET SWITCH {target: {…}, prop: "35", value: 1}
-				23:54:23.545 logger.js:30 SET SWITCH {target: {…}, prop: "36", value: 1}
-				23:54:23.545 logger.js:30 SET SWITCH {target: {…}, prop: "38", value: 1}
-*/
-				return true;
+				logger().debug('SET', name, {target, prop, value});
+				return setFunction(parseInt(prop.toString(), 10), value);
 			},
 		};
 		return new Proxy<{ [index: number ]: number; }>({}, handler);
 	}
 
+}
+
+function SET_NOP(index: number, value: number): boolean {
+	logger().warn('UNEXPECTED SET CALL', {index, value});
+	return true;
 }

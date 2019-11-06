@@ -101,19 +101,48 @@ export class Emulator implements IEmulator {
 		return executedCycles;
 	}
 
-	public getInput(switchNr: number): number {
+	public getSwitchInput(switchNr: number): number {
 		if (!this.emulator) {
 			return 0;
 		}
 		return this.emulatorState.getSwitchState(switchNr);
 	}
 
-	public setInput(switchNr: number): void {
+	public getLampState(lampNr: number): number {
 		if (!this.emulator) {
-			this.emulatorCachingService.cacheState(CacheType.SetSwitchInput, switchNr);
-			return;
+			return 0;
 		}
+		return this.emulatorState.getLampState(lampNr);
+	}
+
+	public getSolenoidState(SolenoidNr: number): number {
+		if (!this.emulator) {
+			return 0;
+		}
+		return this.emulatorState.getSolenoidState(SolenoidNr);
+	}
+
+	public getGIState(giNr: number): number {
+		if (!this.emulator) {
+			return 0;
+		}
+		return this.emulatorState.getGIState(giNr);
+	}
+
+	/**
+	 * Update Switch State
+	 * @param switchNr which switch number (11..88) to modifiy
+	 * @param optionalEnableSwitch if this parameter is missing, the switch will be toggled, else set to the defined state
+	 */
+	public setSwitchInput(switchNr: number, optionalEnableSwitch?: number): boolean {
+		if (!this.emulator) {
+			//TODO add ClearSwitchInput here
+			this.emulatorCachingService.cacheState(CacheType.SetSwitchInput, switchNr);
+			return true;
+		}
+		//TODO pass optionalEnableSwitch
 		this.emulator.setInput(switchNr);
+		return true;
 	}
 
 	public setCabinetInput(value: number): void {
