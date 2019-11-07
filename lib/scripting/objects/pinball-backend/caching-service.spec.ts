@@ -24,7 +24,7 @@ import { IEmulator } from '../../../game/iemulator';
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
-describe.only('EmulatorCache', () => {
+describe('EmulatorCache', () => {
 
 	let emulatorCache: EmulatorCachingService;
 	let mockEmulator: IEmulator;

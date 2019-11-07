@@ -26,7 +26,7 @@ import { VpmController } from './vpm-controller';
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
-describe('The VpmController - VISUAL PINMAME COM OBJECT', () => {
+describe.only('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 
 	let vpmController: VpmController;
 
@@ -67,10 +67,30 @@ describe('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 		expect(resultValue).to.equal(0.5);
 	});
 
-	it.skip('get Switch 0', () => {
+	it('get Switch 0', () => {
 		const result = vpmController.Switch[0];
 		expect(result).to.deep.equal(0);
 	});
 
+	it.skip('set Switch 0', () => {
+		vpmController.Switch[0] = 5;
+		const result = vpmController.Switch[0];
+		expect(result).to.deep.equal(5);
+	});
+
+	it('get Lamp 0', () => {
+		const result = vpmController.Lamp[0];
+		expect(result).to.deep.equal(0);
+	});
+
+	it('get Solenoid 0', () => {
+		const result = vpmController.Solenoid[0];
+		expect(result).to.deep.equal(0);
+	});
+
+	it('get GIString 0', () => {
+		const result = vpmController.GIString[0];
+		expect(result).to.deep.equal(0);
+	});
 
 });
