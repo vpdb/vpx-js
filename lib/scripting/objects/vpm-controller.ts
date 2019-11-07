@@ -117,8 +117,13 @@ export class VpmController {
 	set HandleMechanics(mechanicNr: number) {
 		logger().debug('HandleMechanics');
 	}
+	/**
+	 * Determine if game uses WPC Numbering of Switches and Lamps
+	 * WPCNumbering = Column*10 + Row (11,12,13,14,15,16,17,18,21,22...)
+	 * non WPCnumbering = 1,2,3,4,...
+	 */
 	get WPCNumbering(): number {
-		return 0;
+		return 1;
 	}
 	get SampleRate(): number {
 		return 22050;
