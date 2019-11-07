@@ -97,8 +97,8 @@ export class VpmController {
 		return this.emulator.getVersion();
 	}
 	//TODO return value
-	public Run(parentWindow: any, minVersion: number) {
-		logger().debug('RUN', parentWindow, minVersion);
+	public Run() {
+		logger().debug('RUN', this.gameName);
 		if (this.gameName) {
 			// TODO: fetch rom from vpdb.io here
 			//return this.emulator.loadGame(this.gameName);
@@ -111,11 +111,12 @@ export class VpmController {
 
 	// GameSetting
 	// NOTE: Dip - implemented using Proxy
+
 	get HandleMechanics(): number {
 		return 0;
 	}
 	set HandleMechanics(mechanicNr: number) {
-		logger().debug('HandleMechanics');
+		logger().debug('TODO HandleMechanics');
 	}
 	/**
 	 * Determine if game uses WPC Numbering of Switches and Lamps
@@ -259,8 +260,7 @@ export class VpmController {
 		return new Proxy<{ [index: number ]: number; }>({}, handler);
 	}
 
-	private createGetSetNumberProxy(
-			name: string,
+	private createGetSetNumberProxy(name: string,
 			getFunction: (prop: number) => number,
 			setFunction: (prop: number, value: number) => boolean,
 		): { [index: number]: number } {
@@ -278,8 +278,7 @@ export class VpmController {
 		return new Proxy<{ [index: number ]: number; }>({}, handler);
 	}
 
-	private createGetSetBooleanProxy(
-		name: string,
+	private createGetSetBooleanProxy(name: string,
 		getFunction: (prop: number) => number,
 		setFunction: (prop: number, value: boolean) => boolean,
 	): { [index: number]: number } {

@@ -36,6 +36,7 @@ describe.only('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 		vpmController = new VpmController(player);
 	});
 
+	//TODO this fails due module loader
 	it('should set and get GameName', () => {
 		const NAME: string = 'foo';
 		vpmController.GameName = NAME;
