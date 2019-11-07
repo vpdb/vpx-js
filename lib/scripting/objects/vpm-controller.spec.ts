@@ -94,4 +94,102 @@ describe.only('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 		expect(result).to.deep.equal(0);
 	});
 
+	it('is WPCNumbering?', () => {
+		const result: number = vpmController.WPCNumbering;
+		expect(result).to.equal(1);
+	});
+
+	it('get SampleRate', () => {
+		const result: number = vpmController.SampleRate;
+		expect(result).to.equal(22050);
+	});
+
+	it('set and get SplashInfoLine', () => {
+		vpmController.SplashInfoLine = 'SPLASH!';
+		const result: string = vpmController.SplashInfoLine;
+		expect(result).to.equal('SPLASH!');
+	});
+
+	it('dummy Debugging function (GET): ShowDMDOnly', () => {
+		const result: boolean = vpmController.ShowDMDOnly;
+		expect(result).to.equal(false);
+	});
+
+	it('dummy Debugging function (GET): HandleKeyboard', () => {
+		const result: boolean = vpmController.HandleKeyboard;
+		expect(result).to.equal(false);
+	});
+
+	it('dummy Debugging function (GET): ShowTitle', () => {
+		const result: boolean = vpmController.ShowTitle;
+		expect(result).to.equal(false);
+	});
+
+	it('set dummy Debugging functions', () => {
+		vpmController.ShowDMDOnly = true;
+		vpmController.HandleKeyboard = true;
+		vpmController.ShowTitle = true;
+		expect(vpmController.ShowTitle).to.equal(false);
+	});
+
+	it('dummy Customization function (GET): LockDisplay', () => {
+		vpmController.LockDisplay = true;
+		const result: boolean = vpmController.LockDisplay;
+		expect(result).to.equal(false);
+	});
+
+	it('dummy Customization function: Hidden', () => {
+		vpmController.Hidden = true;
+		const result: boolean = vpmController.Hidden;
+		expect(result).to.equal(false);
+	});
+
+	it('dummy Customization function: DoubleSize', () => {
+		vpmController.DoubleSize = true;
+		const result: boolean = vpmController.DoubleSize;
+		expect(result).to.equal(false);
+	});
+
+	it('dummy Customization function: Antialias', () => {
+		vpmController.Antialias = true;
+		const result: boolean = vpmController.Antialias;
+		expect(result).to.equal(false);
+	});
+
+	it('dummy Customization function: ShowFrame', () => {
+		vpmController.ShowFrame = true;
+		const result: boolean = vpmController.ShowFrame;
+		expect(result).to.equal(false);
+	});
+
+	it('dummy Customization function: DoubleSize', () => {
+		vpmController.BorderSizeX = 5;
+		const result: number = vpmController.BorderSizeX;
+		expect(result).to.equal(0);
+	});
+
+	it('dummy Customization function: BorderSizeY', () => {
+		vpmController.BorderSizeY = 5;
+		const result: number = vpmController.BorderSizeY;
+		expect(result).to.equal(0);
+	});
+
+	it('dummy Customization function: WindowPosX', () => {
+		vpmController.WindowPosX = 5;
+		const result: number = vpmController.WindowPosX;
+		expect(result).to.equal(0);
+	});
+
+	it('dummy Customization function: WindowPosY', () => {
+		vpmController.WindowPosY = 5;
+		const result: number = vpmController.WindowPosY;
+		expect(result).to.equal(0);
+	});
+
+	it('dummy GameSetting function: HandleMechanics', () => {
+		vpmController.HandleMechanics = 1;
+		const result: number = vpmController.HandleMechanics;
+		expect(result).to.equal(0);
+	});
+
 });

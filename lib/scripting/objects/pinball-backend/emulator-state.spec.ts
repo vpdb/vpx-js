@@ -32,6 +32,7 @@ const soundState: WpcEmuWebWorkerApi.EmuStateSound = {
 
 const dmdState: WpcEmuWebWorkerApi.EmuStateDMD = {
 	scanline: 0,
+	dmdShadedBuffer: new Uint8Array([1,2,3]),
 	dmdPageMapping: [],
 };
 
@@ -161,6 +162,16 @@ describe('The EmulatorState - handle state changes', () => {
 		emulatorState.updateState(stateOne);
 		emulatorState.getChangedLamps();
 		expect(emulatorState.getChangedLamps()).to.deep.equal([]);
+	});
+
+	it('get ChangedLEDs - not implemented used for Alphanumeric displays only', () => {
+		const result: number[][] = emulatorState.ChangedLEDs();
+		expect(result).to.deep.equal([]);
+	});
+
+	it('get empty getDmdScreen', () => {
+		const result: Uint8Array = emulatorState.getDmdScreen();
+		expect(result.length).to.equal(0);
 	});
 
 });
