@@ -51,6 +51,7 @@ export class VpmController {
 		this.splashInfoLine = '';
 		this.paused = false;
 		this.emulator = new Emulator();
+		// TODO route this to the emu
 		this.Dip = this.createDipGetter();
 		this.Switch = this.createGetSetBooleanProxy('SWITCH',
 			(index) => this.emulator.getSwitchInput(index), (switchNr, value) => this.emulator.setSwitchInput(switchNr, value));

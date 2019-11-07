@@ -67,22 +67,22 @@ export class EmulatorState {
 
 	public getSwitchState(index: number): number {
 		const matrixIndex: number = mapIndexToMatrixIndex(index);
-		return this.switchState[matrixIndex];
+		return this.switchState[matrixIndex] || 0;
 	}
 
 	public getLampState(index: number): number {
 		const matrixIndex: number = mapIndexToMatrixIndex(index);
-		return this.currentLampState[matrixIndex];
+		return this.currentLampState[matrixIndex] || 0;
 	}
 
 	public getSolenoidState(index: number): number {
 		const matrixIndex: number = index++;
-		return this.currentSolenoidState[matrixIndex];
+		return this.currentSolenoidState[matrixIndex] || 0;
 	}
 
 	public getGIState(index: number): number {
 		const matrixIndex: number = index++;
-		return this.currentGIState[matrixIndex];
+		return this.currentGIState[matrixIndex] || 0;
 	}
 
 	/**

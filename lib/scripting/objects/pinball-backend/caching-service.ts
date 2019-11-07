@@ -29,6 +29,7 @@ export enum CacheType {
 	SetSwitchInput = 1,
 	ClearSwitchInput,
 	ToggleSwitchInput,
+	CabinetInput,
 	ExecuteTicks,
 }
 
@@ -66,6 +67,8 @@ export class EmulatorCachingService {
 					return emulator.setSwitchInput(cacheEntry.value, false);
 				case CacheType.ToggleSwitchInput:
 					return emulator.setSwitchInput(cacheEntry.value);
+				case CacheType.CabinetInput:
+					return emulator.setCabinetInput(cacheEntry.value);
 				default:
 					logger().warn('UNKNOWN CACHE TYPE', cacheEntry.cacheType);
 			}

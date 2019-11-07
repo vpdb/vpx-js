@@ -64,6 +64,14 @@ describe('EmulatorCache', () => {
 		}]);
 	});
 
+	it('add cabinet input to cache and apply it', () => {
+		emulatorCache.cacheState(CacheType.CabinetInput, 4);
+		emulatorCache.applyCache(mockEmulator);
+		expect(cache).to.deep.equal([{
+			keyNr: 4
+		}]);
+	});
+
 	it('should warn when add entries to cache if already consumed', () => {
 		emulatorCache.applyCache(mockEmulator);
 		const addedToCache = emulatorCache.cacheState(CacheType.SetSwitchInput, 42);
@@ -85,7 +93,7 @@ class MockEmulator implements IEmulator {
 		throw new Error("Method not implemented.");
 	}
 	setCabinetInput(keyNr: number): void {
-		throw new Error("Method not implemented.");
+		this.cache.push({keyNr});
 	}
 	setSwitchInput(switchNr: number, optionalEnableSwitch?: boolean): void {
 		this.cache.push({switchNr, optionalEnableSwitch});

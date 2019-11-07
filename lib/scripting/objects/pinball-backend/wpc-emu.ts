@@ -55,7 +55,7 @@ export class Emulator implements IEmulator {
 
 				this.emulatorCachingService.applyCache(this);
 
-				//TODO HACK - used to launch the rom
+				//TODO HACK - used to launch the rom - if we have a RAM state, this would be obsolete!
 				setTimeout(() => {
 					logger().info('ESC!');
 					emulator.setCabinetInput(16);
@@ -65,9 +65,6 @@ export class Emulator implements IEmulator {
 	}
 
 	public getVersion(): string {
-		if (!this.emulator) {
-			return 'unknown';
-		}
 		return WpcEmuApi.getVersion();
 	}
 
@@ -94,30 +91,18 @@ export class Emulator implements IEmulator {
 	}
 
 	public getSwitchInput(switchNr: number): number {
-		if (!this.emulator) {
-			return 0;
-		}
 		return this.emulatorState.getSwitchState(switchNr);
 	}
 
 	public getLampState(lampNr: number): number {
-		if (!this.emulator) {
-			return 0;
-		}
 		return this.emulatorState.getLampState(lampNr);
 	}
 
 	public getSolenoidState(SolenoidNr: number): number {
-		if (!this.emulator) {
-			return 0;
-		}
 		return this.emulatorState.getSolenoidState(SolenoidNr);
 	}
 
 	public getGIState(giNr: number): number {
-		if (!this.emulator) {
-			return 0;
-		}
 		return this.emulatorState.getGIState(giNr);
 	}
 
@@ -143,6 +128,7 @@ export class Emulator implements IEmulator {
 
 	public setCabinetInput(value: number): void {
 		if (!this.emulator) {
+			this.emulatorCachingService.cacheState(CacheType.CabinetInput, value);
 			return;
 		}
 		this.emulator.setCabinetInput(value);
