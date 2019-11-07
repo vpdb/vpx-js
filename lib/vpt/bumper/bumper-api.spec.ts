@@ -80,10 +80,11 @@ describe('The VPinball bumper API', () => {
 
 		bumper.getApi().PlayHit();
 
-		player.updatePhysics(10);
+		player.simulateTime(10);
 		expect(bumper.getState().ringOffset).to.equal(0);
-		player.updatePhysics(20);
-		expect(bumper.getState().ringOffset).to.equal(-8);
+
+		player.simulateTime(20);
+		expect(bumper.getState().ringOffset).to.be.closeTo(-8.33, 0.01);
 	});
 
 	it('should not animate the bumper when the ring is invisible', () => {
