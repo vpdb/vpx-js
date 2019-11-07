@@ -49,9 +49,6 @@ import { PinInput } from './pin-input';
 import { IBallCreationPosition, Player } from './player';
 
 const SLOW_MO = 1; // the lower, the slower
-const ANIM_FPS = 60;
-const ANIM_FRAME_USEC = 1 / ANIM_FPS * 1000000;
-const ANIM_FRAME_MSEC = Math.floor(1 / ANIM_FPS * 1000);
 
 export class PlayerPhysics {
 
@@ -84,7 +81,6 @@ export class PlayerPhysics {
 	private hitTimers: TimerHit[] = [];
 
 	private minPhysLoopTime: number = 0;
-	private lastAnimTimeUsec: number = 0;
 	private lastFlipTime: number = 0;
 	private lastTimeUsec: number = 0;
 	private lastFrameDuration: number = 0;
@@ -416,15 +412,6 @@ export class PlayerPhysics {
 
 			// primary physics loop
 			this.physicsSimulateCycle(physicsDiffTime); // main simulator call
-
-			// animations
-			// if (Math.round(this.curPhysicsFrameTime / 1000) % ANIM_FRAME_MSEC === 0 || this.curPhysicsFrameTime - this.lastAnimTimeUsec >= ANIM_FRAME_USEC) {
-			// 	//console.log(this.lastAnimTimeUsec)
-			// 	for (const animatable of this.table.getAnimatables()) {
-			// 		animatable.getAnimation().updateAnimation(this.timeMsec, this.table);
-			// 	}
-			// 	this.lastAnimTimeUsec = this.curPhysicsFrameTime;
-			// }
 
 			this.curPhysicsFrameTime = this.nextPhysicsFrameTime; // new cycle, on physics frame boundary
 			this.nextPhysicsFrameTime += PHYSICS_STEPTIME;     // advance physics position
