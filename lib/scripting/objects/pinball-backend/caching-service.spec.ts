@@ -19,34 +19,75 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import { CacheEntry, CacheType, EmulatorCachingService } from './caching-service';
+import { CacheType, EmulatorCachingService } from './caching-service';
+import { IEmulator } from '../../../game/iemulator';
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
-describe('EmulatorCache', () => {
+describe.only('EmulatorCache', () => {
 
 	let emulatorCache: EmulatorCachingService;
+	let mockEmulator: IEmulator;
+	let cache: object[];
 
 	beforeEach(() => {
 		emulatorCache = new EmulatorCachingService();
+		cache = [];
+		mockEmulator = new MockEmulator(cache);
 	});
 
-	it('add switch input to cache and retrieve it', () => {
-		const addedToCache = emulatorCache.cacheState(CacheType.SetSwitchInput, 42);
-		const result: CacheEntry[] = emulatorCache.getCache();
-
+	it('add switch toggle to cache and apply it', () => {
+		const addedToCache = emulatorCache.cacheState(CacheType.ToggleSwitchInput, 42);
+		emulatorCache.applyCache(mockEmulator);
 		expect(addedToCache).to.equal(true);
-		expect(result).to.deep.equal([{
-				cacheType: CacheType.SetSwitchInput,
-				value: 42
-			}
-		]);
+		expect(cache).to.deep.equal([{
+			optionalEnableSwitch: undefined,
+			switchNr: 42
+		}]);
 	});
 
+	it('add switch set to cache and apply it', () => {
+		emulatorCache.cacheState(CacheType.SetSwitchInput, 42);
+		emulatorCache.applyCache(mockEmulator);
+		expect(cache).to.deep.equal([{
+			optionalEnableSwitch: true,
+			switchNr: 42
+		}]);
+	});
 
-	it('should refuse to add entries to cache if already consumed', () => {
-		emulatorCache.getCache();
+	it('add switch clear to cache and apply it', () => {
+		emulatorCache.cacheState(CacheType.ClearSwitchInput, 42);
+		emulatorCache.applyCache(mockEmulator);
+		expect(cache).to.deep.equal([{
+			optionalEnableSwitch: false,
+			switchNr: 42
+		}]);
+	});
+
+	it('should warn when add entries to cache if already consumed', () => {
+		emulatorCache.applyCache(mockEmulator);
 		const addedToCache = emulatorCache.cacheState(CacheType.SetSwitchInput, 42);
 		expect(addedToCache).to.equal(false);
 	});
 });
+
+class MockEmulator implements IEmulator {
+	private cache: object[];
+	constructor(cache: object[]) {
+		this.cache = cache;
+	}
+	emuSimulateCycle(dTime: number): void {
+		throw new Error("Method not implemented.");
+	}	getDmdFrame(): Uint8Array {
+		throw new Error("Method not implemented.");
+	}
+	getDmdDimensions(): import("../../../math/vertex2d").Vertex2D {
+		throw new Error("Method not implemented.");
+	}
+	setCabinetInput(keyNr: number): void {
+		throw new Error("Method not implemented.");
+	}
+	setSwitchInput(switchNr: number, optionalEnableSwitch?: boolean): void {
+		this.cache.push({switchNr, optionalEnableSwitch});
+	}
+}

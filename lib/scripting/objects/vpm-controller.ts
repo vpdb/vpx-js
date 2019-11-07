@@ -52,27 +52,15 @@ export class VpmController {
 		this.paused = false;
 		this.emulator = new Emulator();
 		this.Dip = this.createDipGetter();
-
-/*
-				TODO implement this to the backend
-				23:54:23.544 logger.js:30 SET SWITCH {target: {…}, prop: "24", value: 0}
-				23:54:23.544 logger.js:30 SET SWITCH {target: {…}, prop: "32", value: 1}
-				23:54:23.544 logger.js:30 SET SWITCH {target: {…}, prop: "33", value: 1}
-				23:54:23.545 logger.js:30 SET SWITCH {target: {…}, prop: "34", value: 1}
-				23:54:23.545 logger.js:30 SET SWITCH {target: {…}, prop: "35", value: 1}
-				23:54:23.545 logger.js:30 SET SWITCH {target: {…}, prop: "36", value: 1}
-				23:54:23.545 logger.js:30 SET SWITCH {target: {…}, prop: "38", value: 1}
-*/
-		this.Switch = this.createGetSetProxy('SWITCH',
+		this.Switch = this.createGetSetBooleanProxy('SWITCH',
 			(index) => this.emulator.getSwitchInput(index), (switchNr, value) => this.emulator.setSwitchInput(switchNr, value));
-		this.Lamp = this.createGetSetProxy('LAMP',
+		this.Lamp = this.createGetSetNumberProxy('LAMP',
 			(index) => this.emulator.getLampState(index), SET_NOP);
-		this.Solenoid = this.createGetSetProxy('SOLENOID',
+		this.Solenoid = this.createGetSetNumberProxy('SOLENOID',
 			(index) => this.emulator.getSolenoidState(index), SET_NOP);
-		this.GIString = this.createGetSetProxy('GI',
+		this.GIString = this.createGetSetNumberProxy('GI',
 			(index) => this.emulator.getGIState(index), SET_NOP);
-
-			//		this.gameRomInfoPromise = Promise.reject();
+		//		this.gameRomInfoPromise = Promise.reject();
 	}
 
 	// Control
@@ -266,8 +254,8 @@ export class VpmController {
 		return new Proxy<{ [index: number ]: number; }>({}, handler);
 	}
 
-	private createGetSetProxy(
-			name:string,
+	private createGetSetNumberProxy(
+			name: string,
 			getFunction: (prop: number) => number,
 			setFunction: (prop: number, value: number) => boolean,
 		): { [index: number]: number } {
@@ -285,6 +273,24 @@ export class VpmController {
 		return new Proxy<{ [index: number ]: number; }>({}, handler);
 	}
 
+	private createGetSetBooleanProxy(
+		name: string,
+		getFunction: (prop: number) => number,
+		setFunction: (prop: number, value: boolean) => boolean,
+	): { [index: number]: number } {
+	const handler = {
+		get: (target: {[ index: number ]: number}, prop: number): number => {
+			logger().debug('GET', name, {target, prop});
+			return getFunction(prop);
+		},
+
+		set: (target: {[ index: number ]: number}, prop: number | string, value: boolean): boolean => {
+			logger().debug('SET', name, {target, prop, value});
+			return setFunction(parseInt(prop.toString(), 10), value);
+		},
+	};
+	return new Proxy<{ [index: number ]: number; }>({}, handler);
+}
 }
 
 function SET_NOP(index: number, value: number): boolean {

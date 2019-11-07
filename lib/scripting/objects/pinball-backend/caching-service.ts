@@ -18,16 +18,17 @@
  */
 
 import { logger } from '../../../util/logger';
+import { IEmulator } from '../../../game/iemulator';
 
 /**
  * the VPX interface is sync, while our implementation is not when initializing
  * This Caching Service caches all calls to the EMU while its initializing and
  * allows to apply the changes once the emu is ready
  */
-
-
 export enum CacheType {
 	SetSwitchInput = 1,
+	ClearSwitchInput,
+	ToggleSwitchInput,
 	ExecuteTicks,
 }
 
@@ -54,13 +55,25 @@ export class EmulatorCachingService {
 		return true;
 	}
 
-	public getCache(): CacheEntry[] {
+	public applyCache(emulator: IEmulator): void {
 		this.clearedCache = true;
-		return this.cache;
+		logger().debug('Apply cached commands to emu', this.cache.length);
+		this.cache.forEach((cacheEntry: CacheEntry) => {
+			switch (cacheEntry.cacheType) {
+				case CacheType.SetSwitchInput:
+					return emulator.setSwitchInput(cacheEntry.value, true);
+				case CacheType.ClearSwitchInput:
+					return emulator.setSwitchInput(cacheEntry.value, false);
+				case CacheType.ToggleSwitchInput:
+					return emulator.setSwitchInput(cacheEntry.value);
+				default:
+					logger().warn('UNKNOWN CACHE TYPE', cacheEntry.cacheType);
+			}
+		});
 	}
 }
 
-export interface CacheEntry {
+interface CacheEntry {
 	cacheType: CacheType;
 	value: number;
 }

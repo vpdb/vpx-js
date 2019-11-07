@@ -60,5 +60,5 @@ export interface IEmulator {
 	 * @param switchNr which switch number (11..88) to modifiy
 	 * @param optionalEnableSwitch if this parameter is missing, the switch will be toggled, else set to the defined state
 	 */
-	setSwitchInput(switchNr: number, optionalEnableSwitch?: number): void;
+	setSwitchInput(switchNr: number, optionalEnableSwitch?: boolean): void;
 }

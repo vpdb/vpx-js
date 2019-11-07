@@ -21,7 +21,7 @@ import { GamelistDB, WpcEmuApi, WpcEmuWebWorkerApi } from 'wpc-emu';
 import { IEmulator } from '../../../game/iemulator';
 import { Vertex2D } from '../../../math/vertex2d';
 import { logger } from '../../../util/logger';
-import { CacheEntry, CacheType, EmulatorCachingService } from './caching-service';
+import { CacheType, EmulatorCachingService } from './caching-service';
 import { EmulatorState } from './emulator-state';
 
 const WPC_EMU_INCLUDE_RAM_AND_VIDEORAM_DATA = false;
@@ -53,16 +53,8 @@ export class Emulator implements IEmulator {
 				this.romLoading = false;
 				this.emulator.reset();
 
-				const cachedData: CacheEntry[] = this.emulatorCachingService.getCache();
-				logger().debug('Apply cached commands to emu', cachedData.length);
-				cachedData.forEach((cacheEntry: CacheEntry) => {
-					switch (cacheEntry.cacheType) {
-						case CacheType.SetSwitchInput:
-							return emulator.setSwitchInput(cacheEntry.value);
-						default:
-							logger().warn('UNKNOWN CACHE TYPE', cacheEntry.cacheType);
-					}
-				});
+				this.emulatorCachingService.applyCache(this);
+
 				//TODO HACK - used to launch the rom
 				setTimeout(() => {
 					logger().info('ESC!');
@@ -134,14 +126,18 @@ export class Emulator implements IEmulator {
 	 * @param switchNr which switch number (11..88) to modifiy
 	 * @param optionalEnableSwitch if this parameter is missing, the switch will be toggled, else set to the defined state
 	 */
-	public setSwitchInput(switchNr: number, optionalEnableSwitch?: number): boolean {
+	public setSwitchInput(switchNr: number, optionalEnableSwitch?: boolean): boolean {
 		if (!this.emulator) {
-			//TODO add ClearSwitchInput here
-			this.emulatorCachingService.cacheState(CacheType.SetSwitchInput, switchNr);
+			if (optionalEnableSwitch === true) {
+				this.emulatorCachingService.cacheState(CacheType.SetSwitchInput, switchNr);
+			} else if (optionalEnableSwitch === false) {
+				this.emulatorCachingService.cacheState(CacheType.ClearSwitchInput, switchNr);
+			} else {
+				this.emulatorCachingService.cacheState(CacheType.ToggleSwitchInput, switchNr);
+			}
 			return true;
 		}
-		//TODO pass optionalEnableSwitch
-		this.emulator.setSwitchInput(switchNr);
+		this.emulator.setSwitchInput(switchNr, optionalEnableSwitch);
 		return true;
 	}
 
