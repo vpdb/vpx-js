@@ -141,14 +141,6 @@ export class Emulator implements IEmulator {
 		this.emulator.setFliptronicsInput(value);
 	}
 
-	// TODO, this emuchecking sucks...
-	public getState(): WpcEmuWebWorkerApi.EmuState | undefined {
-		if (!this.emulator) {
-			return;
-		}
-		return this.emulator.getUiState();
-	}
-
 	public getDmdDimensions(): Vertex2D {
 		return this.dmdSize;
 	}

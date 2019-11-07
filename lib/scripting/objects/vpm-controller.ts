@@ -204,9 +204,6 @@ export class VpmController {
 	// AggregatePollingFunctions
 	get ChangedLamps(): number[][] {
 		const changedLamps: number[][] = this.emulator.emulatorState.getChangedLamps();
-		if (changedLamps.length > 0) {
-		//	logger().debug('ChangedLamps', changedLamps);
-		}
 		return changedLamps;
 	}
 	get ChangedSolenoids(): number[][] {
