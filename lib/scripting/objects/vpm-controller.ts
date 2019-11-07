@@ -123,9 +123,11 @@ export class VpmController {
 	 * non WPCnumbering = 1,2,3,4,...
 	 */
 	get WPCNumbering(): number {
+		logger().debug('WPCNumbering');
 		return 1;
 	}
 	get SampleRate(): number {
+		logger().debug('SampleRate');
 		return 22050;
 	}
 
