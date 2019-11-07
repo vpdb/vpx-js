@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { logger } from '../../../util/logger';
 import { IEmulator } from '../../../game/iemulator';
+import { logger } from '../../../util/logger';
 
 /**
  * the VPX interface is sync, while our implementation is not when initializing
