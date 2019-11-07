@@ -24,22 +24,6 @@ import { Player } from '../lib/game/player';
 import { Table } from '../lib/vpt/table/table';
 
 /**
- * Simulates a given number of milliseconds.
- *
- * @param player Player object
- * @param duration Duration in milliseconds
- * @param tickDuration How many ticks to simulate (default 1ms per tick)
- */
-export function simulateCycles(player: Player, duration: number, tickDuration = 1) {
-	const numTicks = Math.floor(duration / tickDuration);
-	for (let i = 0; i < numTicks; i++) {
-		player.updateVelocities();
-		player.physicsSimulateCycle(tickDuration);
-	}
-
-}
-
-/**
  * Creates a ball at the given position
  * @param player
  * @param x Position at x

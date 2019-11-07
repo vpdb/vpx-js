@@ -224,20 +224,6 @@ export class Player extends EventEmitter {
 		this.width = width;
 		this.height = height;
 	}
-
-	/**
-	 * @deprecated use updatePhysics()
-	 */
-	public updateVelocities() {
-		this.physics.updateVelocities();
-	}
-
-	/**
-	 * @deprecated use updatePhysics()
-	 */
-	public physicsSimulateCycle(tickDuration: number) {
-		this.physics.physicsSimulateCycle(tickDuration);
-	}
 }
 
 export interface IBallCreationPosition {

@@ -19,8 +19,6 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import sinonChai = require('sinon-chai');
-import { simulateCycles } from '../../../test/physics.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
@@ -31,7 +29,7 @@ import { TableExporter } from '../table/table-exporter';
 import { PlungerMover } from './plunger-mover';
 import { PlungerState } from './plunger-state';
 
-chai.use(sinonChai);
+chai.use(require('sinon-chai'));
 const three = new ThreeHelper();
 const renderApi = new ThreeRenderApi();
 
@@ -48,7 +46,7 @@ describe('The VPinball plunger physics', () => {
 
 	beforeEach(() => {
 		player = new Player(table).init();
-		simulateCycles(player, 50); // move to start position
+		player.simulateTime(50); // move to start position
 	});
 
 	it('should be in the correct initial state', async () => {
@@ -67,7 +65,13 @@ describe('The VPinball plunger physics', () => {
 		const endPosition = plunger.getApi().Y;
 
 		plunger.pullBack();
-		simulateCycles(player, 50);
+
+		for (let i = 0; i < 1000; i += 5) {
+			player.simulateTime(i);
+			console.log('%s: %s', i, plunger.getState().frame);
+		}
+
+		player.simulateTime(50);
 
 		const plungerState = popState(player, 'CustomPlunger');
 		expect(plungerState.frame).to.equal(0);
@@ -80,9 +84,9 @@ describe('The VPinball plunger physics', () => {
 		const parkFrame = plungerMover.cFrames - 1;
 
 		plunger.pullBack();
-		simulateCycles(player, 50);
+		player.simulateTime(50);
 		plunger.fire();
-		simulateCycles(player, 500);
+		player.simulateTime(500);
 
 		const plungerState = popState(player, 'CustomPlunger');
 		expect(plungerState.frame).to.equal(parkFrame);
@@ -92,16 +96,15 @@ describe('The VPinball plunger physics', () => {
 		const plunger = table.plungers.CustomPlunger;
 		const plungerMover = plunger.getMover() as PlungerMover;
 		const parkFrame = plungerMover.cFrames - 1;
+		const plungerState = plunger.getState();
 
 		plunger.fire();
-		simulateCycles(player, 50);
 
-		let plungerState = plunger.getState();
+		player.updatePhysics(50);
 		expect(plungerState.frame).to.equal(21);
 
-		simulateCycles(player, 180);
-		plungerState = popState(player, 'CustomPlunger');
-		expect(plungerState.frame).to.equal(parkFrame);
+		player.updatePhysics(300);
+		expect(popState(player, 'CustomPlunger').frame).to.equal(parkFrame);
 	});
 
 	it('should fire fully when auto-fire is enabled', async () => {
@@ -135,7 +138,7 @@ describe('The VPinball plunger physics', () => {
 
 		// pull plunger
 		plunger.pullBack();
-		simulateCycles(player, 50);
+		player.updatePhysics(200);
 
 		// apply again
 		plunger.getUpdater().applyState(plungerObj, plunger.getState(), renderApi, table);
