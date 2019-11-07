@@ -44,14 +44,14 @@ export class HitTargetAnimation implements IAnimation {
 		this.events = events;
 	}
 
-	public init(physics: PlayerPhysics): void {
-		this.timeMsec = physics.timeMsec;
+	public init(timeMsec: number): void {
+		this.timeMsec = timeMsec;
 	}
 
-	public updateAnimation(physics: PlayerPhysics, table: Table): void {
-		const oldTimeMsec = (this.timeMsec < physics.timeMsec) ? this.timeMsec : physics.timeMsec;
-		this.timeMsec = physics.timeMsec;
-		const diffTimeMsec = physics.timeMsec - oldTimeMsec;
+	public updateAnimation(timeMsec: number, table: Table): void {
+		const oldTimeMsec = (this.timeMsec < timeMsec) ? this.timeMsec : timeMsec;
+		this.timeMsec = timeMsec;
+		const diffTimeMsec = timeMsec - oldTimeMsec;
 
 		if (this.hitEvent) {
 			if (!this.data.isDropped) {

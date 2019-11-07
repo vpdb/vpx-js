@@ -44,15 +44,15 @@ export class BumperAnimation implements IAnimation {
 		this.state = state;
 	}
 
-	public init(physics: PlayerPhysics): void {
-		this.timeMsec = physics.timeMsec;
+	public init(timeMsec: number): void {
+		this.timeMsec = timeMsec;
 	}
 
-	public updateAnimation(physics: PlayerPhysics, table: Table): void {
+	public updateAnimation(timeMsec: number, table: Table): void {
 
-		const oldTimeMsec = this.timeMsec < physics.timeMsec ? this.timeMsec : physics.timeMsec;
-		this.timeMsec = physics.timeMsec;
-		const diffTimeMsec = (physics.timeMsec - oldTimeMsec);
+		const oldTimeMsec = this.timeMsec < timeMsec ? this.timeMsec : timeMsec;
+		this.timeMsec = timeMsec;
+		const diffTimeMsec = (timeMsec - oldTimeMsec);
 		const state = this.hitEvent ? 1 : 0;    // 0 = not hit, 1 = hit
 
 		this.updateRingAnimation(state, diffTimeMsec, table);

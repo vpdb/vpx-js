@@ -128,7 +128,7 @@ export class PlayerPhysics {
 
 		// [vpx-js added] init animation timers
 		for (const animatable of this.table.getAnimatables()) {
-			animatable.getAnimation().init(this);
+			animatable.getAnimation().init(this.timeMsec);
 		}
 
 		this.indexTableElements();
@@ -421,7 +421,7 @@ export class PlayerPhysics {
 			if (Math.round(this.curPhysicsFrameTime / 1000) % ANIM_FRAME_MSEC === 0 || this.curPhysicsFrameTime - this.lastAnimTimeUsec >= ANIM_FRAME_USEC) {
 				//console.log(this.lastAnimTimeUsec)
 				for (const animatable of this.table.getAnimatables()) {
-					animatable.getAnimation().updateAnimation(this, this.table);
+					animatable.getAnimation().updateAnimation(this.timeMsec, this.table);
 				}
 				this.lastAnimTimeUsec = this.curPhysicsFrameTime;
 			}
