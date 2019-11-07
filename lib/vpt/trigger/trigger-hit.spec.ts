@@ -50,18 +50,18 @@ describe('The VPinball trigger collision', () => {
 		kicker.Kick(0, -1);
 
 		// let it roll down some
-		player.updatePhysics(0);
-		player.updatePhysics(750);
+		player.simulateTime(0);
+		player.simulateTime(750);
 
 		expect(trigger.getState().heightOffset).to.equal(0);
 
 		// let it collide
-		player.updatePhysics(800);
+		player.simulateTime(800);
 
 		expect(trigger.getState().heightOffset).to.equal(-32);
 
 		// let it roll over and animate back
-		player.updatePhysics(1150);
+		player.simulateTime(1150);
 
 		expect(trigger.getState().heightOffset).to.equal(0);
 	});
@@ -71,18 +71,18 @@ describe('The VPinball trigger collision', () => {
 		createBall(player, 174, 1300, 0, 0, 2);
 
 		// let it roll down some
-		player.updatePhysics(0);
-		player.updatePhysics(500);
+		player.simulateTime(0);
+		player.simulateTime(500);
 
 		expect(trigger.getState().heightOffset).to.equal(0);
 
 		// let it collide
-		player.updatePhysics(600);
+		player.simulateTime(600);
 
 		expect(trigger.getState().heightOffset).to.equal(-2.5);
 
 		// let it roll over and animate back
-		player.updatePhysics(820);
+		player.simulateTime(820);
 
 		expect(trigger.getState().heightOffset).to.equal(0);
 	});
@@ -99,8 +99,8 @@ describe('The VPinball trigger collision', () => {
 		// }
 
 		// let it roll onto trigger
-		player.updatePhysics(0);
-		player.updatePhysics(900);
+		player.simulateTime(0);
+		player.simulateTime(900);
 		const state = player.popStates().getState<TriggerState>('WireB');
 		expect(state.heightOffset).to.equal(trigger.getState().heightOffset);
 	});

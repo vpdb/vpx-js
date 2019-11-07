@@ -18,6 +18,7 @@
  */
 
 import { EventEmitter } from 'events';
+import { Vertex2D } from '../math/vertex2d';
 import { Vertex3D } from '../math/vertex3d';
 import { Pool } from '../util/object-pool';
 import { Ball } from '../vpt/ball/ball';
@@ -38,6 +39,8 @@ export class Player extends EventEmitter {
 
 	private previousStates: { [key: string]: ItemState } = {};
 	private currentStates: { [key: string]: ItemState } = {};
+
+	private simulatedTimeMs = 0;
 
 	public width: number = 0;
 	public height: number = 0;
@@ -76,18 +79,66 @@ export class Player extends EventEmitter {
 	}
 
 	/**
+	 * This is only used for tests, and simulates time by running the physics
+	 * loop as well as the animations every frame.
+	 * @param dTime Time to simulate in ms
+	 */
+	public simulateTime(dTime: number) {
+		const FPS = 60;
+		const timePerFrameMs = 1000 / FPS;
+		while (this.simulatedTimeMs <= dTime) {
+			this.updatePhysics(this.simulatedTimeMs);
+			this.updateAnimations(this.simulatedTimeMs);
+			this.simulatedTimeMs += timePerFrameMs;
+		}
+	}
+
+	/**
+	 * Runs the physics calculation since last time called.
+	 *
+	 * This is the method the host app should run in its physics loop.
+	 *
+	 * @param dTime Optionally override current time
+	 */
+	public updatePhysics(dTime?: number): number {
+		return this.physics.updatePhysics(dTime);
+	}
+
+	/**
+	 * Updates animations and returns the changed state since last frame.
+	 *
+	 * This is the method the host app should be calling on each frame before
+	 * updating the scene.
+	 */
+	public onFrame(): ChangedStates<ItemState> {
+
+		// first, animate. we do this here to make sure no frames are skipped.
+		this.updateAnimations(this.physics.timeMsec);
+
+		// now, get the states
+		return this.popStates();
+	}
+
+	/**
+	 * Runs one animation cycle for the given time. If more than one cycle has
+	 * to be run over a longer period, this method needs to be called multiple
+	 * times.
+	 *
+	 * @param timeMs Absolute current time
+	 */
+	public updateAnimations(timeMs: number) {
+		for (const animatable of this.table.getAnimatables()) {
+			animatable.getAnimation().updateAnimation(timeMs, this.table);
+		}
+	}
+
+	/**
 	 * Returns the changed states and clears them.
 	 *
 	 * Note that the returned object is recycled and should be released after
 	 * usage.
 	 */
 	public popStates(): ChangedStates<ItemState> {
-		// first, animate.
-		for (const animatable of this.table.getAnimatables()) {
-			animatable.getAnimation().updateAnimation(this.physics.timeMsec, this.table);
-		}
-
-		// now, get the states
 		const changedStates = ChangedStates.claim();
 		for (const name of Object.keys(this.currentStates)) {
 			const newState = this.currentStates[name];
@@ -109,10 +160,6 @@ export class Player extends EventEmitter {
 	public onKeyDown(event: { code: string, key: string, ts: number }) {
 		const dkCode = keyEventToDirectInputKey(event);
 		this.pinInput.onKeyDown(dkCode, event.ts);
-	}
-
-	public updatePhysics(dTime?: number): number {
-		return this.physics.updatePhysics(dTime);
 	}
 
 	public createBall(ballCreator: IBallCreationPosition, radius = 25, mass = 1): Ball {

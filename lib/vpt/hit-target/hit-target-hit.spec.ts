@@ -68,7 +68,7 @@ describe('The VPinball hit target collision', () => {
 			const ball = createBall(player, dropTarget.X, dropTarget.Y + 100, 0, 0, -10);
 
 			// assert ball moving up
-			player.updatePhysics(200);
+			player.simulateTime(200);
 			expect(ball.getState().pos.y).to.be.above(1130);
 
 			player.destroyBall(ball);
@@ -76,11 +76,11 @@ describe('The VPinball hit target collision', () => {
 			const ball2 = createBall(player, dropTarget.X, dropTarget.Y + 100, 0, 0, -10);
 			//debugBall(player, ball2, 300, 5, 200);
 
-			player.updatePhysics(300);
+			player.simulateTime(300);
 			expect(ball2.getState().pos.y).to.be.below(1085);
-			player.updatePhysics(500);
-			expect(ball2.getState().pos.y).to.be.below(940);
-			player.updatePhysics(1000);
+			player.simulateTime(500);
+			expect(ball2.getState().pos.y).to.be.below(947);
+			player.simulateTime(1000);
 			expect(ball2.getState().pos.y).to.be.below(610);
 		});
 
@@ -91,11 +91,11 @@ describe('The VPinball hit target collision', () => {
 			// drop
 			dropTarget.IsDropped = true;
 
-			player.updatePhysics(100);
-			expect(ball.getState().pos.y).to.be.below(1290);
-			player.updatePhysics(550);
+			player.simulateTime(100);
+			expect(ball.getState().pos.y).to.be.below(1299);
+			player.simulateTime(550);
 			expect(ball.getState().pos.y).to.be.below(1000);
-			player.updatePhysics(1000);
+			player.simulateTime(1000);
 			expect(ball.getState().pos.y).to.be.below(690);
 		});
 	});
@@ -140,7 +140,7 @@ describe('The VPinball hit target collision', () => {
 		const dropTarget = table.hitTargets.DropTargetBeveled.getApi();
 		dropTarget.IsDropped = true;
 
-		player.updatePhysics(200);
+		player.simulateTime(200);
 		const state = player.popStates().getState<HitTargetState>('DropTargetBeveled');
 		expect(state.zOffset).to.equal(table.hitTargets.DropTargetBeveled.getState().zOffset);
 	});

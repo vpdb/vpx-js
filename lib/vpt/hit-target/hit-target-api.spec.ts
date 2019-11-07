@@ -97,7 +97,7 @@ describe('The VPinball hit target API', () => {
 		expect(dropTarget.IsDropped).to.equal(false); // still raised
 
 		// animate down
-		player.updatePhysics(200);
+		player.simulateTime(200);
 		expect(dropTarget.IsDropped).to.equal(true);
 
 		// set to raised
@@ -105,7 +105,7 @@ describe('The VPinball hit target API', () => {
 		expect(dropTarget.IsDropped).to.equal(true); // still dropped
 
 		// animate up
-		player.updatePhysics(420);
+		player.simulateTime(420);
 		expect(dropTarget.IsDropped).to.equal(false);
 
 	});

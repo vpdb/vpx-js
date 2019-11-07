@@ -52,10 +52,10 @@ describe('The VPinball bumper collision', () => {
 
 		expect(ball.getState().pos.x).to.equal(450);
 
-		player.updatePhysics(500);
+		player.simulateTime(500);
 		expect(ball.getState().pos.x).to.equal(450);
 
-		player.updatePhysics(1100);
+		player.simulateTime(1100);
 		expect(ball.getState().pos.x).to.be.within(75, 85);
 		expect(ball.getState().pos.y).to.be.below(600);
 
@@ -65,10 +65,10 @@ describe('The VPinball bumper collision', () => {
 		const ball = createBall(player, 450, 750, 50, 0, 0.5);
 		expect(ball.getState().pos.x).to.equal(450);
 
-		player.updatePhysics(500);
+		player.simulateTime(500);
 		expect(ball.getState().pos.x).to.equal(450);
 
-		player.updatePhysics(1100);
+		player.simulateTime(1100);
 		expect(ball.getState().pos.x).to.be.within(430, 440);
 		expect(ball.getState().pos.y).to.be.above(800);
 	});
@@ -77,15 +77,15 @@ describe('The VPinball bumper collision', () => {
 		createBall(player, 450, 750, 50, 0, 1);
 		const bumper = table.bumpers.Bumper2;
 
-		player.updatePhysics(10);
+		player.simulateTime(10);
 		expect(bumper.getState().ringOffset).to.equal(0);
-		player.updatePhysics(700);
-		expect(bumper.getState().ringOffset).to.equal(-8);
-		player.updatePhysics(780);
-		expect(bumper.getState().ringOffset).to.equal(-45);
-		player.updatePhysics(840);
-		expect(bumper.getState().ringOffset).to.equal(-13);
-		player.updatePhysics(900);
+		player.simulateTime(700);
+		expect(bumper.getState().ringOffset).to.be.closeTo(-8.33, 0.01);
+		player.simulateTime(780);
+		expect(bumper.getState().ringOffset).to.be.closeTo(-41.66, 0.01);
+		player.simulateTime(840);
+		expect(bumper.getState().ringOffset).to.be.closeTo(-20, 0.01);
+		player.simulateTime(900);
 		expect(bumper.getState().ringOffset).to.equal(0);
 	});
 
@@ -100,19 +100,19 @@ describe('The VPinball bumper collision', () => {
 		const bumperObj = three.find<Mesh>(gltf, 'bumpers', 'Bumper2');
 		const ringObj = bumperObj.children.find(o => o.name === `bumper-ring-Bumper2`)!;
 
-		player.updatePhysics(710);
+		player.simulateTime(710);
 		let states = player.popStates();
 		let state = states.getState<BumperState>('Bumper2');
 		bumper.getUpdater().applyState(bumperObj, state, renderApi, table);
 		ringObj.getWorldPosition(ringPos);
-		expect(ringPos.z).to.equal(16);
+		expect(ringPos.z).to.be.closeTo(8.33, 0.01);
 
-		player.updatePhysics(770);
+		player.simulateTime(770);
 		states = player.popStates();
 		state = states.getState<BumperState>('Bumper2');
 		bumper.getUpdater().applyState(bumperObj, state, renderApi, table);
 		ringObj.getWorldPosition(ringPos);
-		expect(ringPos.z).to.equal(61);
+		expect(ringPos.z).to.be.closeTo(50, 0.01);
 	});
 
 });
