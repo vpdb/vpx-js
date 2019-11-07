@@ -82,6 +82,12 @@ export class Player extends EventEmitter {
 	 * usage.
 	 */
 	public popStates(): ChangedStates<ItemState> {
+		// first, animate.
+		for (const animatable of this.table.getAnimatables()) {
+			animatable.getAnimation().updateAnimation(this.physics.timeMsec, this.table);
+		}
+
+		// now, get the states
 		const changedStates = ChangedStates.claim();
 		for (const name of Object.keys(this.currentStates)) {
 			const newState = this.currentStates[name];

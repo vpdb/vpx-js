@@ -418,13 +418,13 @@ export class PlayerPhysics {
 			this.physicsSimulateCycle(physicsDiffTime); // main simulator call
 
 			// animations
-			if (Math.round(this.curPhysicsFrameTime / 1000) % ANIM_FRAME_MSEC === 0 || this.curPhysicsFrameTime - this.lastAnimTimeUsec >= ANIM_FRAME_USEC) {
-				//console.log(this.lastAnimTimeUsec)
-				for (const animatable of this.table.getAnimatables()) {
-					animatable.getAnimation().updateAnimation(this.timeMsec, this.table);
-				}
-				this.lastAnimTimeUsec = this.curPhysicsFrameTime;
-			}
+			// if (Math.round(this.curPhysicsFrameTime / 1000) % ANIM_FRAME_MSEC === 0 || this.curPhysicsFrameTime - this.lastAnimTimeUsec >= ANIM_FRAME_USEC) {
+			// 	//console.log(this.lastAnimTimeUsec)
+			// 	for (const animatable of this.table.getAnimatables()) {
+			// 		animatable.getAnimation().updateAnimation(this.timeMsec, this.table);
+			// 	}
+			// 	this.lastAnimTimeUsec = this.curPhysicsFrameTime;
+			// }
 
 			this.curPhysicsFrameTime = this.nextPhysicsFrameTime; // new cycle, on physics frame boundary
 			this.nextPhysicsFrameTime += PHYSICS_STEPTIME;     // advance physics position
