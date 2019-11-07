@@ -36,9 +36,9 @@ export interface IAnimatable extends IPlayable {
 
 export interface IAnimation {
 
-	init(physics: PlayerPhysics): void;
+	init(timeMsec: number): void;
 
-	updateAnimation(physics: PlayerPhysics, table: Table): void;
+	updateAnimation(timeMsec: number, table: Table): void;
 }
 
 export function isAnimatable(arg: any): arg is IAnimatable {
