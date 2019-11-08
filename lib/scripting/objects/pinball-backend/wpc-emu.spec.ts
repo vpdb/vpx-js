@@ -48,6 +48,10 @@ describe('WPC-EMU', () => {
 		expect(result.length).to.equal(0);
 	});
 
+	it('should ignore registerAudioConsumer when emu is not initialized', () => {
+		emulator.registerAudioConsumer((id) => {});
+	});
+
 	it('getDmdDimensions should return correct size', () => {
 		const result: Vertex2D = emulator.getDmdDimensions();
 		expect(result.x).to.equal(128);

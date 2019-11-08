@@ -30,9 +30,9 @@ const WPC_EMU_INCLUDE_RAM_AND_VIDEORAM_DATA = false;
  * Provides an interface to WPC-EMU
  */
 export class Emulator implements IEmulator {
+	public readonly emulatorState: EmulatorState;
 	private emulator?: WpcEmuApi.Emulator;
 	private emulatorCachingService: EmulatorCachingService;
-	public readonly emulatorState: EmulatorState;
 	private readonly dmdSize = new Vertex2D(128, 32);
 
 	constructor() {

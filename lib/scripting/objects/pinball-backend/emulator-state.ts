@@ -20,6 +20,9 @@
 import { WpcEmuWebWorkerApi } from 'wpc-emu';
 import { logger } from '../../../util/logger';
 
+function getEmptyUint8Array(size: number = 64) {
+	return new Uint8Array(size).fill(0);
+}
 /**
  * This class encapsulates the WPC-EMU state and transform state object
  */
@@ -35,12 +38,12 @@ export class EmulatorState {
 	private switchState: Uint8Array;
 
 	constructor() {
-		this.lastSentLampState = new Uint8Array();
-		this.lastSentSolenoidState = new Uint8Array();
-		this.lastSentGIState = new Uint8Array();
-		this.currentLampState = new Uint8Array();
-		this.currentSolenoidState = new Uint8Array();
-		this.currentGIState = new Uint8Array();
+		this.lastSentLampState = getEmptyUint8Array()
+		this.lastSentSolenoidState = getEmptyUint8Array();
+		this.lastSentGIState = getEmptyUint8Array();
+		this.currentLampState = getEmptyUint8Array();
+		this.currentSolenoidState = getEmptyUint8Array();
+		this.currentGIState = getEmptyUint8Array();
 		this.dmdScreen = new Uint8Array();
 		this.switchState = new Uint8Array();
 	}
@@ -135,8 +138,7 @@ export class EmulatorState {
 			return result;
 		}
 		for (let n: number = 0; n < newState.length; n++) {
-			// HACK: looks like we need the number of lamps per table (here 61)
-			if (n < 62 && lastState[n] !== newState[n]) {
+			if (lastState[n] !== newState[n]) {
 				const index = offsetMapperFunction(n);
 				result.push([index, newState[n]]);
 			}
