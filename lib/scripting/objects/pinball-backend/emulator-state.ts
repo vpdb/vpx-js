@@ -38,7 +38,7 @@ export class EmulatorState {
 	private switchState: Uint8Array;
 
 	constructor() {
-		this.lastSentLampState = getEmptyUint8Array()
+		this.lastSentLampState = getEmptyUint8Array();
 		this.lastSentSolenoidState = getEmptyUint8Array();
 		this.lastSentGIState = getEmptyUint8Array();
 		this.currentLampState = getEmptyUint8Array();

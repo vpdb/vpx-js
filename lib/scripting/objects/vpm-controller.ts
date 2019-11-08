@@ -20,7 +20,7 @@
 
 import { Player } from '../../game/player';
 import { logger } from '../../util/logger';
-import { getGameEntry, LoadedGameEntry } from './pinball-backend/rom-fetcher';
+import { downloadGameEntry, LoadedGameEntry } from './pinball-backend/rom-fetcher';
 import { Emulator } from './pinball-backend/wpc-emu';
 
 /**
@@ -72,7 +72,7 @@ export class VpmController {
 		this.gameName = gameName;
 		logger().debug('GAMENAME:', gameName);
 		//TODO this is hardwired to test
-		getGameEntry(gameName)
+		downloadGameEntry(gameName)
 			.then((answer: LoadedGameEntry) => {
 				logger().info('LOADED', answer.wpcDbEntry);
 				return this.emulator.loadGame(answer.wpcDbEntry, answer.romFile);

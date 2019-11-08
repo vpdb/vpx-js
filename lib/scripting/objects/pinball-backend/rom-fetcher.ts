@@ -5,7 +5,7 @@ import { logger } from '../../../util/logger';
  * Functions to fetch a WPC ROM file from VPDB.io
  */
 
-export function getGameEntry(pinmameGameName: string): Promise<LoadedGameEntry> {
+export function downloadGameEntry(pinmameGameName: string): Promise<LoadedGameEntry> {
 	const gameEntry: undefined | GamelistDB.ClientGameEntry = GamelistDB.getByPinmameName(pinmameGameName);
 	if (!gameEntry) {
 		return Promise.reject(new Error('GAME_ENTRY_NOT_FOUND_' + pinmameGameName));
@@ -13,21 +13,24 @@ export function getGameEntry(pinmameGameName: string): Promise<LoadedGameEntry> 
 	const url: string = buildVpdbGameEntryUrl(gameEntry.pinmame.vpdbId || gameEntry.pinmame.id);
 	return downloadFileAsJson(url)
 		.then((jsonData: VpdbGameEntry[]) => {
+			if (!Array.isArray(jsonData)) {
+				return Promise.reject(new Error('VPDB_INVALID_ANSWER'));
+			}
 			const result: VpdbGameEntry | void = jsonData.find((vpdbEntry: VpdbGameEntry) => vpdbEntry.id === pinmameGameName);
 			if (!result) {
-				return Promise.reject(new Error('GAME_ENTRY_NOT_FOUND'));
+				return Promise.reject(new Error('VPDB_GAME_ENTRY_NOT_FOUND'));
 			}
 			logger().debug(pinmameGameName, 'VPDB RESULT:', jsonData);
 
 			const romSet: VpdbGameEntry | void = findRomSet(jsonData, pinmameGameName);
 			if (!romSet) {
-				return Promise.reject(new Error('ROMSET_ENTRY_NOT_FOUND'));
+				return Promise.reject(new Error('VPDB_ROMSET_ENTRY_NOT_FOUND'));
 			}
 			logger().debug(pinmameGameName, 'VPDB romSet:', romSet);
 
 			const romName: string | undefined = findMainRomFilename(romSet);
 			if (!romName) {
-				return Promise.reject(new Error('ROM_TYPE_NOT_FOUND'));
+				return Promise.reject(new Error('VPDB_ROM_TYPE_NOT_FOUND'));
 			}
 			logger().debug(pinmameGameName, 'VPDB romName:', romName);
 
@@ -64,7 +67,7 @@ function buildVpdbGameEntryUrl(id: string): string {
 }
 
 function downloadFileAsJson(url: string): Promise<VpdbGameEntry[]> {
-	return fetch(url).then((response) => {
+	return fetch(url).then((response: Response) => {
 		if (!response.ok) {
 			return Promise.reject(new Error('HTTP error, status = ' + response.status));
 		}
@@ -73,7 +76,7 @@ function downloadFileAsJson(url: string): Promise<VpdbGameEntry[]> {
 }
 
 function downloadFileAsUint8Array(url: string): Promise<Uint8Array> {
-	return fetch(url).then((response) => {
+	return fetch(url).then((response: Response) => {
 		if (!response.ok) {
 			return Promise.reject(new Error('HTTP error, status = ' + response.status));
 		}
