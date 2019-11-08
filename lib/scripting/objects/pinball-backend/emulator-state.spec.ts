@@ -115,13 +115,7 @@ describe('The EmulatorState - handle state changes', () => {
 
 	it('transition empty state -> state 1', () => {
 		const expectedDiff: number[][] = [
-			[ 11, 0 ],
-			[ 12, 0 ],
-			[ 13, 0 ],
-			[ 14, 0 ],
-			[ 15, 0 ],
 			[ 16, 1 ],
-			[ 17, 0 ],
 			[ 18, 1 ],
 		];
 		emulatorState.updateState(stateOne);
@@ -142,20 +136,10 @@ describe('The EmulatorState - handle state changes', () => {
 	});
 
 	it('transition empty state -> state 1 -> state 2, without fetching state', () => {
-		const expectedDiff: number[][] = [
-			[ 11, 0 ],
-			[ 12, 0 ],
-			[ 13, 0 ],
-			[ 14, 0 ],
-			[ 15, 0 ],
-			[ 16, 0 ],
-			[ 17, 0 ],
-			[ 18, 0 ],
-		];
 		emulatorState.updateState(stateOne);
 		emulatorState.updateState(stateTwo);
 		const result: number[][] = emulatorState.getChangedLamps();
-		expect(result).to.deep.equal(expectedDiff);
+		expect(result).to.deep.equal([]);
 	});
 
 	it('transition multiple getChangedLamps() calls without state update should return empty array', () => {
