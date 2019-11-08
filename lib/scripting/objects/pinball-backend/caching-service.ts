@@ -70,6 +70,7 @@ export class EmulatorCachingService {
 				case CacheType.CabinetInput:
 					return emulator.setCabinetInput(cacheEntry.value);
 				case CacheType.ExecuteTicks:
+					return emulator.emuSimulateCycle(cacheEntry.value);
 				default:
 					logger().warn('UNKNOWN CACHE TYPE', cacheEntry.cacheType);
 			}

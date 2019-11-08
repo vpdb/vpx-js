@@ -72,6 +72,14 @@ describe('EmulatorCache', () => {
 		}]);
 	});
 
+	it('add execute ticks to cache and apply it', () => {
+		emulatorCache.cacheState(CacheType.ExecuteTicks, 4);
+		emulatorCache.applyCache(mockEmulator);
+		expect(cache).to.deep.equal([{
+			dTime: 4
+		}]);
+	});
+
 	it('should warn when add entries to cache if already consumed', () => {
 		emulatorCache.applyCache(mockEmulator);
 		const addedToCache = emulatorCache.cacheState(CacheType.SetSwitchInput, 42);
@@ -85,8 +93,9 @@ class MockEmulator implements IEmulator {
 		this.cache = cache;
 	}
 	emuSimulateCycle(dTime: number): void {
-		throw new Error("Method not implemented.");
-	}	getDmdFrame(): Uint8Array {
+		this.cache.push({dTime});
+	}
+	getDmdFrame(): Uint8Array {
 		throw new Error("Method not implemented.");
 	}
 	getDmdDimensions(): import("../../../math/vertex2d").Vertex2D {
