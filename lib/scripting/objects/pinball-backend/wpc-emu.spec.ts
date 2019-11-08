@@ -32,9 +32,20 @@ describe('WPC-EMU', () => {
 		emulator = new Emulator();
 	});
 
+	//TODO this fails due wpc-emu module loader
 	it.skip('getVersion should be defined', () => {
 		const result: string = emulator.getVersion();
 		expect(result.length > 4).to.equal(true);
+	});
+
+	it('should not be initialized by default', () => {
+		const result: boolean = emulator.isInitialized();
+		expect(result).to.equal(false);
+	});
+
+	it('should get getDmdFrame', () => {
+		const result: Uint8Array = emulator.getDmdFrame();
+		expect(result.length).to.equal(0);
 	});
 
 	it('getDmdDimensions should return correct size', () => {

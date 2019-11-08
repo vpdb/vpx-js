@@ -26,7 +26,7 @@ import { VpmController } from './vpm-controller';
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
-describe.only('The VpmController - VISUAL PINMAME COM OBJECT', () => {
+describe('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 
 	let vpmController: VpmController;
 
@@ -36,11 +36,31 @@ describe.only('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 		vpmController = new VpmController(player);
 	});
 
-	//TODO this fails due module loader
+	//TODO this fails due wpc-emu module loader
 	it('should set and get GameName', () => {
 		const NAME: string = 'foo';
 		vpmController.GameName = NAME;
 		expect(vpmController.GameName).to.equal(NAME);
+	});
+
+	it('should set and get pause state', () => {
+		vpmController.Pause = true;
+		expect(vpmController.Pause).to.equal(true);
+	});
+
+	it('should not run when paused', () => {
+		vpmController.Pause = true;
+		expect(vpmController.Running).to.equal(false);
+	});
+
+	it('should not run when emu is not initialized', () => {
+		vpmController.Pause = false;
+		expect(vpmController.Running).to.equal(false);
+	});
+
+	it('should Stop', () => {
+		vpmController.Stop();
+		expect(vpmController.Running).to.equal(false);
 	});
 
 	it('should set and get Dip[0]', () => {
@@ -60,12 +80,35 @@ describe.only('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 		expect(result).to.deep.equal([]);
 	});
 
-	it.skip('should return one changed lamp', () => {
-		const resultIndex = vpmController.ChangedLamps[0][0];
-		const resultValue = vpmController.ChangedLamps[0][1];
-		expect(resultIndex).to.equal(42);
-		//TODO unclear if uint8 or float type
-		expect(resultValue).to.equal(0.5);
+	it('no changed solenoid detected', () => {
+		const result = vpmController.ChangedSolenoids;
+		expect(result).to.deep.equal([]);
+	});
+
+	it('no changed GI detected', () => {
+		const result = vpmController.ChangedGI;
+		expect(result).to.deep.equal([]);
+	});
+
+	it('no changed LEDs detected', () => {
+		const result = vpmController.ChangedLEDs;
+		expect(result).to.deep.equal([]);
+	});
+
+	it('should ignore writes to RO settings', () => {
+		vpmController.Solenoid[0] = 1;
+		vpmController.Lamp[0] = 1;
+		vpmController.GIString[0] = 1;
+		vpmController.Switch[0] = 1;
+		expect(vpmController.Solenoid[0]).to.equal(0);
+	});
+
+	it('should ignore calls to Customization functions', () => {
+		vpmController.SetDisplayPosition(1, 2, 3);
+		vpmController.ShowOptsDialog(3);
+		vpmController.ShowPathesDialog(3);
+		const foo = vpmController.ShowAboutDialog(3);
+		expect(foo).to.equal(undefined);
 	});
 
 	it('get Switch 0', () => {
@@ -102,6 +145,16 @@ describe.only('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 	it('get SampleRate', () => {
 		const result: number = vpmController.SampleRate;
 		expect(result).to.equal(22050);
+	});
+
+	it('CheckROMS()', () => {
+		const result: boolean = vpmController.CheckROMS(1);
+		expect(result).to.equal(true);
+	});
+
+	it('get Version', () => {
+		const result: string = vpmController.Version;
+		expect(result).to.equal('00990201');
 	});
 
 	it('set and get SplashInfoLine', () => {

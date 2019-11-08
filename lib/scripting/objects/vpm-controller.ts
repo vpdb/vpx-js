@@ -85,7 +85,7 @@ export class VpmController {
 			});
 	}
 	get Running(): boolean {
-		return this.emulator && !this.paused;
+		return this.paused !== true && this.emulator.isInitialized();
 	}
 	get Pause(): boolean {
 		return this.paused;
@@ -93,10 +93,14 @@ export class VpmController {
 	set Pause(paused: boolean) {
 		this.paused = paused;
 	}
+	/**
+	 * Returns the version number of Visual PinMAME as an 8-digit string "vvmmbbrr":
+	 * Example: A result of "00990201" signifies "Version 0.99 Beta 2 Rev A
+	 *
+	 */
 	get Version(): string {
-		return this.emulator.getVersion();
+		return '00990201';
 	}
-	//TODO return value
 	public Run() {
 		logger().debug('RUN', this.gameName);
 		if (this.gameName) {
@@ -205,8 +209,14 @@ export class VpmController {
 	public ShowAboutDialog(hWnd: any): void {
 		logger().debug('ShowAboutDialog', hWnd);
 	}
-	public CheckROMS(nShowOptions: number, hWnd: any): void {
-		logger().debug('CheckROMS', nShowOptions, hWnd);
+	/**
+	 * Checks the rom set for the current game and displays the results.
+	 * @param nShowOptions: 0 = Always displays the results, 1 = Only displays the results if there are errors found, 2 = Never displays the results
+	 * @returns true if the roms are good.
+	 */
+	public CheckROMS(nShowOptions: number): boolean {
+		logger().debug('CheckROMS', nShowOptions);
+		return true;
 	}
 
 	// AggregatePollingFunctions

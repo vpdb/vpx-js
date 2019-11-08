@@ -34,23 +34,19 @@ export class Emulator implements IEmulator {
 	private emulatorCachingService: EmulatorCachingService;
 	public readonly emulatorState: EmulatorState;
 	private readonly dmdSize = new Vertex2D(128, 32);
-	private romLoading: boolean;
 
 	constructor() {
 		logger().debug('HELLO FROM WPC CONTROLLER');
 		this.emulator = undefined;
-		this.romLoading = false;
 		this.emulatorState = new EmulatorState();
 		this.emulatorCachingService = new EmulatorCachingService();
 	}
 
 	public loadGame(gameEntry: GamelistDB.GameEntry, romContent: Uint8Array) {
 		const romData: GamelistDB.RomData = { u06: romContent };
-		this.romLoading = true;
 		return WpcEmuApi.initVMwithRom(romData, gameEntry)
 			.then((emulator: WpcEmuApi.Emulator) => {
 				this.emulator = emulator;
-				this.romLoading = false;
 				this.emulator.reset();
 
 				this.emulatorCachingService.applyCache(this);
@@ -60,8 +56,11 @@ export class Emulator implements IEmulator {
 					logger().info('ESC!');
 					emulator.setCabinetInput(16);
 				}, 2000);
-
 			});
+	}
+
+	public isInitialized(): boolean {
+		return this.emulator !== undefined;
 	}
 
 	public getVersion(): string {
