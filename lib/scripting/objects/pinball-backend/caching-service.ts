@@ -35,13 +35,8 @@ export enum CacheType {
 
 export class EmulatorCachingService {
 
-	private cache: CacheEntry[];
-	private clearedCache: boolean;
-
-	constructor() {
-		this.cache = [];
-		this.clearedCache = false;
-	}
+	private readonly cache: CacheEntry[] = [];
+	private clearedCache: boolean = false;
 
 	/**
 	 * adds new cache entry

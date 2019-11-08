@@ -24,7 +24,7 @@ import { IEmulator } from '../../../game/iemulator';
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
-describe('EmulatorCache', () => {
+describe('The WPC-EMU emulator cache', () => {
 
 	let emulatorCache: EmulatorCachingService;
 	let mockEmulator: IEmulator;
@@ -36,7 +36,7 @@ describe('EmulatorCache', () => {
 		mockEmulator = new MockEmulator(cache);
 	});
 
-	it('add switch toggle to cache and apply it', () => {
+	it('should add switch toggle to cache and apply it', () => {
 		const addedToCache = emulatorCache.cacheState(CacheType.ToggleSwitchInput, 42);
 		emulatorCache.applyCache(mockEmulator);
 		expect(addedToCache).to.equal(true);
@@ -46,7 +46,7 @@ describe('EmulatorCache', () => {
 		}]);
 	});
 
-	it('add switch set to cache and apply it', () => {
+	it('should add switch set to cache and apply it', () => {
 		emulatorCache.cacheState(CacheType.SetSwitchInput, 42);
 		emulatorCache.applyCache(mockEmulator);
 		expect(cache).to.deep.equal([{
@@ -55,7 +55,7 @@ describe('EmulatorCache', () => {
 		}]);
 	});
 
-	it('add switch clear to cache and apply it', () => {
+	it('should add switch clear to cache and apply it', () => {
 		emulatorCache.cacheState(CacheType.ClearSwitchInput, 42);
 		emulatorCache.applyCache(mockEmulator);
 		expect(cache).to.deep.equal([{
@@ -64,7 +64,7 @@ describe('EmulatorCache', () => {
 		}]);
 	});
 
-	it('add cabinet input to cache and apply it', () => {
+	it('should add cabinet input to cache and apply it', () => {
 		emulatorCache.cacheState(CacheType.CabinetInput, 4);
 		emulatorCache.applyCache(mockEmulator);
 		expect(cache).to.deep.equal([{
@@ -72,7 +72,7 @@ describe('EmulatorCache', () => {
 		}]);
 	});
 
-	it('add execute ticks to cache and apply it', () => {
+	it('should add execute ticks to cache and apply it', () => {
 		emulatorCache.cacheState(CacheType.ExecuteTicks, 4);
 		emulatorCache.applyCache(mockEmulator);
 		expect(cache).to.deep.equal([{
@@ -80,7 +80,7 @@ describe('EmulatorCache', () => {
 		}]);
 	});
 
-	it('should warn when add entries to cache if already consumed', () => {
+	it('should should warn when add entries to cache if already consumed', () => {
 		emulatorCache.applyCache(mockEmulator);
 		const addedToCache = emulatorCache.cacheState(CacheType.SetSwitchInput, 42);
 		expect(addedToCache).to.equal(false);
