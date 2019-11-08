@@ -48,14 +48,12 @@ export class Emulator implements IEmulator {
 			.then((emulator: WpcEmuApi.Emulator) => {
 				this.emulator = emulator;
 				this.emulator.reset();
-
+				// Let the ROM boot, run for 1000ms
+				this.emulator.executeCycleForTime(1000, 4);
+				// Set initial state for emulator and press ESC to remove the initial
+				// message that the RAM was cleared
+				this.emulatorCachingService.cacheState(CacheType.CabinetInput, 16);
 				this.emulatorCachingService.applyCache(this);
-
-				//TODO HACK - used to launch the rom - if we have a RAM state, this would be obsolete!
-				setTimeout(() => {
-					logger().info('ESC!');
-					emulator.setCabinetInput(16);
-				}, 2000);
 			});
 	}
 
