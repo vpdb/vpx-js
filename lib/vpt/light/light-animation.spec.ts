@@ -104,11 +104,6 @@ describe('The VPinball light animation', () => {
 
 		api.Duration(Enums.LightStatus.LightStateOff, 500, Enums.LightStatus.LightStateBlinking);
 
-		// for (let i = 0; i < 3000; i += 10) {
-		// 	player.simulateTime(i);
-		// 	console.log('%s %s', i, light.getState().intensity);
-		// }
-
 		player.simulateTime(520);
 		expect(light.getState().intensity).to.equal(1);
 
