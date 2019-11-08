@@ -36,7 +36,6 @@ export class Emulator implements IEmulator {
 	private readonly dmdSize = new Vertex2D(128, 32);
 
 	constructor() {
-		logger().debug('HELLO FROM WPC CONTROLLER');
 		this.emulator = undefined;
 		this.emulatorState = new EmulatorState();
 		this.emulatorCachingService = new EmulatorCachingService();

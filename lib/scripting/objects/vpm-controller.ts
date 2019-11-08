@@ -45,7 +45,6 @@ export class VpmController {
 	//private gameRomInfoPromise: Promise<Response>;
 
 	constructor(player: Player) {
-		logger().debug('HELLO FROM VPM CONTROLLER');
 		this.player = player;
 		this.gameName = '';
 		this.splashInfoLine = '';
