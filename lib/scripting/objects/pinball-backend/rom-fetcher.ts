@@ -18,9 +18,21 @@ export function getGameEntry(pinmameGameName: string): Promise<LoadedGameEntry> 
 				return Promise.reject(new Error('GAME_ENTRY_NOT_FOUND'));
 			}
 			logger().debug(pinmameGameName, 'VPDB RESULT:', jsonData);
-			// TODO get main ROM from VPDB response
-			const romUrl: string = 'https://storage.vpdb.io/files/p2b9gpvd1.zip/mm_1_09c.bin';
-			logger().debug('load rom from', romUrl);
+
+			const romSet: VpdbGameEntry | void = findRomSet(jsonData, pinmameGameName);
+			if (!romSet) {
+				return Promise.reject(new Error('ROMSET_ENTRY_NOT_FOUND'));
+			}
+			logger().debug(pinmameGameName, 'VPDB romSet:', romSet);
+
+			const romName: string | undefined = findMainRomFilename(romSet);
+			if (!romName) {
+				return Promise.reject(new Error('ROM_TYPE_NOT_FOUND'));
+			}
+			logger().debug(pinmameGameName, 'VPDB romName:', romName);
+
+			const romUrl: string = buildVpdbGameRomUrl(romSet.file.url, romName);
+			logger().debug('load rom from', romUrl, ', # downloads', romSet.file.counter.downloads);
 			return downloadFileAsUint8Array(romUrl);
 		})
 		.then((romFile: Uint8Array) => {
@@ -29,6 +41,22 @@ export function getGameEntry(pinmameGameName: string): Promise<LoadedGameEntry> 
 				romFile,
 			};
 		});
+}
+
+function findMainRomFilename(romSet: VpdbGameEntry): string | undefined {
+	const vpdbGameRomEntry: VpdbGameRomEntry | undefined = romSet.rom_files.find((entry: VpdbGameRomEntry) => entry.type === 'main');
+	if (!vpdbGameRomEntry) {
+		return '';
+	}
+	return vpdbGameRomEntry.filename;
+}
+
+function findRomSet(availableRomSets: VpdbGameEntry[], pinmameGameName: string): VpdbGameEntry | undefined {
+	return availableRomSets.find((entry: VpdbGameEntry) => entry.id === pinmameGameName);
+}
+
+function buildVpdbGameRomUrl(parentFileUrl: string, romFilename: string): string {
+	return `${parentFileUrl}/${romFilename}`;
 }
 
 function buildVpdbGameEntryUrl(id: string): string {
@@ -65,13 +93,27 @@ interface VpdbGameEntry {
 	version: string;
 	notes?: string;
 	file: VpdbFileEntry;
+	rom_files: VpdbGameRomEntry[];
 }
 
 interface VpdbFileEntry {
 	id: string;
 	bytes: number;
+	counter: VpdbCounter;
 	is_protected: boolean;
 	mime_type: string;
 	name: string;
 	url: string;
+}
+
+interface VpdbGameRomEntry {
+	bytes: number;
+	crc: number;
+	filename: string;
+	system: string;
+	type: string;
+}
+
+interface VpdbCounter {
+	downloads: number;
 }
