@@ -28,7 +28,6 @@ import { IEmulator } from './iemulator';
 import { AssignKey, keyEventToDirectInputKey } from './key-code';
 import { PinInput } from './pin-input';
 import { PlayerPhysics } from './player-physics';
-import { Vertex2D } from '../math/vertex2d';
 
 export class Player extends EventEmitter {
 
