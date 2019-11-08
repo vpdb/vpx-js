@@ -48,11 +48,11 @@ export class BumperAnimation implements IAnimation {
 		this.timeMsec = timeMsec;
 	}
 
-	public updateAnimation(timeMsec: number, table: Table): void {
+	public updateAnimation(newTimeMsec: number, table: Table): void {
 
-		const oldTimeMsec = this.timeMsec < timeMsec ? this.timeMsec : timeMsec;
-		this.timeMsec = timeMsec;
-		const diffTimeMsec = (timeMsec - oldTimeMsec);
+		const oldTimeMsec = this.timeMsec < newTimeMsec ? this.timeMsec : newTimeMsec;
+		this.timeMsec = newTimeMsec;
+		const diffTimeMsec = (newTimeMsec - oldTimeMsec);
 		const state = this.hitEvent ? 1 : 0;    // 0 = not hit, 1 = hit
 
 		this.updateRingAnimation(state, diffTimeMsec, table);

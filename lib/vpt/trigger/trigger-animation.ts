@@ -53,10 +53,10 @@ export class TriggerAnimation implements IAnimation {
 		this.unhitEvent = true;
 	}
 
-	public updateAnimation(timeMsec: number, table: Table) {
-		const oldTimeMsec = (this.timeMsec < timeMsec) ? this.timeMsec : timeMsec;
-		this.timeMsec = timeMsec;
-		const diffTimeMsec = timeMsec - oldTimeMsec;
+	public updateAnimation(newTimeMsec: number, table: Table) {
+		const oldTimeMsec = (this.timeMsec < newTimeMsec) ? this.timeMsec : newTimeMsec;
+		this.timeMsec = newTimeMsec;
+		const diffTimeMsec = newTimeMsec - oldTimeMsec;
 
 		let animLimit = this.data.shape === Enums.TriggerShape.TriggerStar ? this.data.radius * (1.0 / 5.0) : 32.0;
 		if (this.data.shape === Enums.TriggerShape.TriggerButton) {

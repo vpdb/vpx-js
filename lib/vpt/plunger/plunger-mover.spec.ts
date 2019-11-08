@@ -65,13 +65,7 @@ describe('The VPinball plunger physics', () => {
 		const endPosition = plunger.getApi().Y;
 
 		plunger.pullBack();
-
-		for (let i = 0; i < 1000; i += 5) {
-			player.simulateTime(i);
-			console.log('%s: %s', i, plunger.getState().frame);
-		}
-
-		player.simulateTime(50);
+		player.simulateTime(1000);
 
 		const plungerState = popState(player, 'CustomPlunger');
 		expect(plungerState.frame).to.equal(0);

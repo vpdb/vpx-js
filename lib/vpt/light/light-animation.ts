@@ -70,25 +70,25 @@ export class LightAnimation implements IAnimation {
 		this.timerDurationEndTime = timeMsec + this.duration;
 	}
 
-	public updateAnimation(timeMsec: number, table: Table): void {
+	public updateAnimation(newTimeMsec: number, table: Table): void {
 
 		if (!this.data.isVisible) {
 			return;
 		}
 
-		const oldTimeMsec = this.timeMsec < timeMsec ? this.timeMsec : timeMsec;
-		this.timeMsec = timeMsec;
-		const diffTimeMsec = timeMsec - oldTimeMsec;
+		const oldTimeMsec = this.timeMsec < newTimeMsec ? this.timeMsec : newTimeMsec;
+		this.timeMsec = newTimeMsec;
+		const diffTimeMsec = newTimeMsec - oldTimeMsec;
 
 		if (this.duration > 0 && this.timerDurationEndTime < this.timeMsec) {
 			this.realState = this.finalState;
 			this.duration = 0;
 			if (this.realState === Enums.LightStatus.LightStateBlinking) {
-				this.restartBlinker(timeMsec);
+				this.restartBlinker(newTimeMsec);
 			}
 		}
 		if (this.realState === Enums.LightStatus.LightStateBlinking) {
-			this.updateBlinker(timeMsec);
+			this.updateBlinker(newTimeMsec);
 		}
 
 		if (this.isOn()) {
