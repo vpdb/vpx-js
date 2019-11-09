@@ -92,6 +92,12 @@ describe('WPC-EMU', () => {
 		expect(mockEmu.cabinetInput).to.deep.equal([ 16 ]);
 	});
 
+	it('should emuSimulateCycle', async () => {
+		await emulator.loadGame(mockGameEntry, new Uint8Array())
+		emulator.emuSimulateCycle(20);
+		expect(mockEmu.executedCyclesMs).to.equal(1020);
+	});
+
 });
 
 class MockWpcEmulator implements WpcEmuApi.Emulator {
@@ -101,7 +107,60 @@ class MockWpcEmulator implements WpcEmuApi.Emulator {
 		throw new Error("Method not implemented.");
 	}
 	getUiState(includeExpensiveData?: boolean): WpcEmuWebWorkerApi.EmuState {
-		throw new Error("Method not implemented.");
+		return {
+			asic: {
+				sound: {
+					volume: 1,
+					readDataBytes: 2,
+					writeDataBytes: 3,
+					readControlBytes: 4,
+					writeControlBytes: 5,
+				},
+				wpc: {
+					diagnosticLed: 6,
+					generalIlluminationState: new Uint8Array(),
+					diagnosticLedToggleCount: 7,
+					midnightModeEnabled: true,
+					irqEnabled: true,
+					activeRomBank: 8,
+					time: '9',
+					blankSignalHigh: false,
+					watchdogExpiredCounter: 10,
+					watchdogTicks: 11,
+					zeroCrossFlag: 12,
+					inputSwitchMatrixActiveColumn: new Uint8Array(),
+					lampRow: 13,
+					lampColumn: 14,
+					wpcSecureScrambler: 15,
+				},
+				dmd: {
+					scanline: 16,
+					dmdPageMapping: [],
+				}
+			},
+			cpuState: {
+				regPC: 44,
+				regS: 44,
+				regU: 44,
+				regA: 44,
+				regB: 44,
+				firqCount: 44,
+				irqCount: 44,
+				missedFIRQ: 44,
+				missedIRQ: 44,
+				nmiCount: 44,
+				regCC: 44,
+				regDP: 44,
+				regX: 44,
+				regY: 44,
+				tickCount: 44,
+			},
+			opsMs: 100,
+			protectedMemoryWriteAttempts: 101,
+		    runtime: 102,
+		    ticksIrq: 103,
+		    version: 104,
+		}
 	}
 	getState(): WpcEmuWebWorkerApi.EmuState {
 		throw new Error("Method not implemented.");
