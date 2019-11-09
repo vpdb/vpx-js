@@ -18,7 +18,6 @@
  */
 
 import { WpcEmuWebWorkerApi } from 'wpc-emu';
-import { logger } from '../../../util/logger';
 
 function getEmptyUint8Array(size: number = 64) {
 	return new Uint8Array(size).fill(0);

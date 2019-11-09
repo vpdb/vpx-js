@@ -22,7 +22,6 @@ import {
 	BufferGeometry,
 	Color,
 	DoubleSide,
-	LinearFilter, LinearMipMapLinearFilter, LinearMipMapNearestFilter,
 	Material as ThreeMaterial,
 	MeshStandardMaterial
 } from '../../refs.node';
