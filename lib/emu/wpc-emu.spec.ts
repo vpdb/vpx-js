@@ -19,7 +19,7 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import { Vertex2D } from '../../../math/vertex2d';
+import { Vertex2D } from '../math/vertex2d';
 import { Emulator } from './wpc-emu';
 
 /* tslint:disable:no-unused-expression no-string-literal */
