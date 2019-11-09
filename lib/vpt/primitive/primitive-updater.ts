@@ -53,17 +53,17 @@ export class PrimitiveUpdater extends ItemUpdater<PrimitiveState> {
 
 		// scale matrix
 		const scaleMatrix = Matrix3D.claim().setScaling(
-			((this.state.size as any)._x / this.data.size.x),
-			((this.state.size as any)._y / this.data.size.y),
-			((this.state.size as any)._z / this.data.size.z),
+			(this.state.size as any)._x / this.data.size.x,
+			(this.state.size as any)._y / this.data.size.y,
+			(this.state.size as any)._z / this.data.size.z,
 		);
 		const scaleMatrixTable = Matrix3D.claim().setScaling(1.0, 1.0, table.getScaleZ());
 
 		// translation matrix
 		const transMatrix = Matrix3D.claim().setTranslation(
-			-((this.state.position as any)._x - this.data.position.x),
-			-((this.state.position as any)._y - this.data.position.y),
-			(this.state.position as any)._z - this.data.position.z,
+			-(this.data.position.x - (this.state.position as any)._x),
+			-(this.data.position.y - (this.state.position as any)._y),
+			this.data.position.z - (this.state.position as any)._z,
 		);
 
 		// translation + rotation matrix

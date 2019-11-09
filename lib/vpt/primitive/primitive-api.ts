@@ -80,12 +80,12 @@ export class PrimitiveApi extends ItemApi<PrimitiveData> {
 	}
 	get DrawTexturesInside() { return this.data.drawTexturesInside; } // TODO test
 	set DrawTexturesInside(v) { this.data.drawTexturesInside = v; }
-	get X() { return this.data.position.x; }
-	set X(v) { this.data.position.x = v; }
-	get Y() { return this.data.position.y; }
-	set Y(v) { this.data.position.y = v; }
-	get Z() { return this.data.position.z; }
-	set Z(v) { this.data.position.z = v; }
+	get X() { return this.state.position.x; }
+	set X(v) { this.state.position.x = v; }
+	get Y() { return this.state.position.y; }
+	set Y(v) { this.state.position.y = v; }
+	get Z() { return this.state.position.z; }
+	set Z(v) { this.state.position.z = v; }
 	get Size_X() { return this.data.size.x; } // TODO make sure it doesn't conflict with event callbacks
 	set Size_X(v) {
 		if (this.isDynamic) {
