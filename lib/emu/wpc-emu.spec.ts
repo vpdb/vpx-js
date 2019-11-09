@@ -49,7 +49,9 @@ describe('WPC-EMU', () => {
 	});
 
 	it('should ignore registerAudioConsumer when emu is not initialized', () => {
-		emulator.registerAudioConsumer((id) => {});
+		emulator.registerAudioConsumer((id) => {
+			// do nothing
+		});
 	});
 
 	it('getDmdDimensions should return correct size', () => {

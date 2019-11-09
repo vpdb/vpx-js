@@ -20,7 +20,7 @@
 import { GamelistDB, WpcEmuApi, WpcEmuWebWorkerApi } from 'wpc-emu';
 import { IEmulator } from '../game/iemulator';
 import { Vertex2D } from '../math/vertex2d';
-import { CacheType, EmulatorCachingService } from './caching-service';
+import { EmulatorMessageQueue, MessageType } from './emulator-message-queue';
 import { EmulatorState } from './emulator-state';
 
 const WPC_EMU_INCLUDE_RAM_AND_VIDEORAM_DATA = false;
@@ -29,10 +29,11 @@ const WPC_EMU_INCLUDE_RAM_AND_VIDEORAM_DATA = false;
  * Provides an interface to WPC-EMU
  */
 export class Emulator implements IEmulator {
+
 	public readonly emulatorState: EmulatorState = new EmulatorState();
-	private emulator?: WpcEmuApi.Emulator = undefined;
-	private readonly emulatorCachingService: EmulatorCachingService = new EmulatorCachingService();
+	private readonly emulatorMessageQueue = new EmulatorMessageQueue();
 	private readonly dmdSize = new Vertex2D(128, 32);
+	private emulator?: WpcEmuApi.Emulator;
 
 	constructor() {
 		this.emulator = undefined;
@@ -48,8 +49,8 @@ export class Emulator implements IEmulator {
 		this.emulator.executeCycleForTime(1000, 4);
 		// Set initial state for emulator and press ESC to remove the initial
 		// message that the RAM was cleared
-		this.emulatorCachingService.cacheState(CacheType.CabinetInput, 16);
-		this.emulatorCachingService.applyCache(this);
+		this.emulatorMessageQueue.addMessage(MessageType.CabinetInput, 16);
+		this.emulatorMessageQueue.replayMessages(this);
 	}
 
 	public isInitialized(): boolean {
@@ -70,7 +71,7 @@ export class Emulator implements IEmulator {
 
 	public emuSimulateCycle(advanceByMs: number): number {
 		if (!this.emulator) {
-			this.emulatorCachingService.cacheState(CacheType.ExecuteTicks, advanceByMs);
+			this.emulatorMessageQueue.addMessage(MessageType.ExecuteTicks, advanceByMs);
 			return 0;
 		}
 		const executedCycles: number = this.emulator.executeCycleForTime(advanceByMs, 16);
@@ -106,11 +107,11 @@ export class Emulator implements IEmulator {
 	public setSwitchInput(switchNr: number, optionalEnableSwitch?: boolean): boolean {
 		if (!this.emulator) {
 			if (optionalEnableSwitch === true) {
-				this.emulatorCachingService.cacheState(CacheType.SetSwitchInput, switchNr);
+				this.emulatorMessageQueue.addMessage(MessageType.SetSwitchInput, switchNr);
 			} else if (optionalEnableSwitch === false) {
-				this.emulatorCachingService.cacheState(CacheType.ClearSwitchInput, switchNr);
+				this.emulatorMessageQueue.addMessage(MessageType.ClearSwitchInput, switchNr);
 			} else {
-				this.emulatorCachingService.cacheState(CacheType.ToggleSwitchInput, switchNr);
+				this.emulatorMessageQueue.addMessage(MessageType.ToggleSwitchInput, switchNr);
 			}
 			return true;
 		}
@@ -120,7 +121,7 @@ export class Emulator implements IEmulator {
 
 	public setCabinetInput(value: number): void {
 		if (!this.emulator) {
-			this.emulatorCachingService.cacheState(CacheType.CabinetInput, value);
+			this.emulatorMessageQueue.addMessage(MessageType.CabinetInput, value);
 			return;
 		}
 		this.emulator.setCabinetInput(value);

@@ -20,15 +20,58 @@
 import { IEmulator } from '../game/iemulator';
 import { logger } from '../util/logger';
 
-// TODO caching is not exactly the correct term, come up with a better name!
-
 /**
- * the VPX interface is sync, while our implementation is not when initializing
+ * The VPX interface is sync, while our implementation is not when initializing.
+ *
  * This Caching Service caches all calls to the EMU while its initializing and
  * allows to apply the changes once the emu is ready
  */
+export class EmulatorMessageQueue {
 
-export enum CacheType {
+	private readonly queue: QueueItem[] = [];
+	private clearedQueue: boolean = false;
+
+	/**
+	 * adds new cache entry
+	 * @returns true if entry was added to the cache, false if cache has already been consumed!
+	 */
+	public addMessage(cacheType: MessageType, value: number): boolean {
+		if (this.clearedQueue) {
+			logger().warn('ADD STATE TO CLEARED CACHE! ENTRY WILL BE IGNORED!');
+			return false;
+		}
+		this.queue.push({ cacheType, value });
+		return true;
+	}
+
+	public replayMessages(emulator: IEmulator): void {
+		this.clearedQueue = true;
+		logger().debug('Replaying %d messages to emu', this.queue.length);
+		for (const item of this.queue) {
+			switch (item.cacheType) {
+				case MessageType.SetSwitchInput:
+					emulator.setSwitchInput(item.value, true);
+					break;
+				case MessageType.ClearSwitchInput:
+					emulator.setSwitchInput(item.value, false);
+					break;
+				case MessageType.ToggleSwitchInput:
+					emulator.setSwitchInput(item.value);
+					break;
+				case MessageType.CabinetInput:
+					emulator.setCabinetInput(item.value);
+					break;
+				case MessageType.ExecuteTicks:
+					emulator.emuSimulateCycle(item.value);
+					break;
+				default:
+					logger().warn('UNKNOWN CACHE TYPE', item.cacheType);
+			}
+		}
+	}
+}
+
+export enum MessageType {
 	SetSwitchInput = 1,
 	ClearSwitchInput,
 	ToggleSwitchInput,
@@ -36,53 +79,7 @@ export enum CacheType {
 	ExecuteTicks,
 }
 
-export class EmulatorCachingService {
-
-	private readonly cache: CacheEntry[] = [];
-	private clearedCache: boolean = false;
-
-	/**
-	 * adds new cache entry
-	 * @returns true if entry was added to the cache, false if cache has already been consumed!
-	 */
-	public cacheState(cacheType: CacheType, value: number): boolean {
-		if (this.clearedCache) {
-			logger().warn('ADD STATE TO CLEARED CACHE! ENTRY WILL BE IGNORED!');
-			return false;
-		}
-		this.cache.push({ cacheType, value });
-		return true;
-	}
-
-	// TODO replay messages as alternative?
-	public applyCache(emulator: IEmulator): void {
-		this.clearedCache = true;
-		logger().debug('Apply cached commands to emu', this.cache.length);
-		for (const cacheEntry of this.cache) {
-			switch (cacheEntry.cacheType) {
-				case CacheType.SetSwitchInput:
-					emulator.setSwitchInput(cacheEntry.value, true);
-					break;
-				case CacheType.ClearSwitchInput:
-					emulator.setSwitchInput(cacheEntry.value, false);
-					break;
-				case CacheType.ToggleSwitchInput:
-					emulator.setSwitchInput(cacheEntry.value);
-					break;
-				case CacheType.CabinetInput:
-					emulator.setCabinetInput(cacheEntry.value);
-					break;
-				case CacheType.ExecuteTicks:
-					emulator.emuSimulateCycle(cacheEntry.value);
-					break;
-				default:
-					logger().warn('UNKNOWN CACHE TYPE', cacheEntry.cacheType);
-			}
-		}
-	}
-}
-
-interface CacheEntry {
-	cacheType: CacheType;
+interface QueueItem {
+	cacheType: MessageType;
 	value: number;
 }

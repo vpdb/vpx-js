@@ -21,80 +21,80 @@ import * as chai from 'chai';
 import { expect } from 'chai';
 import { IEmulator } from '../game/iemulator';
 import { Vertex2D } from '../math/vertex2d';
-import { CacheType, EmulatorCachingService } from './caching-service';
+import { EmulatorMessageQueue, MessageType } from './emulator-message-queue';
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
-describe('The WPC-EMU emulator cache', () => {
+describe('The WPC-EMU message queue', () => {
 
-	let emulatorCache: EmulatorCachingService;
+	let messageQueue: EmulatorMessageQueue;
 	let mockEmulator: IEmulator;
-	let cache: object[];
+	let queue: object[];
 
 	beforeEach(() => {
-		emulatorCache = new EmulatorCachingService();
-		cache = [];
-		mockEmulator = new MockEmulator(cache);
+		messageQueue = new EmulatorMessageQueue();
+		queue = [];
+		mockEmulator = new MockEmulator(queue);
 	});
 
-	it('should add switch toggle to cache and apply it', () => {
-		const addedToCache = emulatorCache.cacheState(CacheType.ToggleSwitchInput, 42);
-		emulatorCache.applyCache(mockEmulator);
-		expect(addedToCache).to.equal(true);
-		expect(cache).to.deep.equal([{
+	it('should add switch toggle to queue and replay it', () => {
+		const addedToQueue = messageQueue.addMessage(MessageType.ToggleSwitchInput, 42);
+		messageQueue.replayMessages(mockEmulator);
+		expect(addedToQueue).to.equal(true);
+		expect(queue).to.deep.equal([{
 			optionalEnableSwitch: undefined,
 			switchNr: 42,
 		}]);
 	});
 
-	it('should add switch set to cache and apply it', () => {
-		emulatorCache.cacheState(CacheType.SetSwitchInput, 42);
-		emulatorCache.applyCache(mockEmulator);
-		expect(cache).to.deep.equal([{
+	it('should add switch set to queue and apply it', () => {
+		messageQueue.addMessage(MessageType.SetSwitchInput, 42);
+		messageQueue.replayMessages(mockEmulator);
+		expect(queue).to.deep.equal([{
 			optionalEnableSwitch: true,
 			switchNr: 42,
 		}]);
 	});
 
-	it('should add switch clear to cache and apply it', () => {
-		emulatorCache.cacheState(CacheType.ClearSwitchInput, 42);
-		emulatorCache.applyCache(mockEmulator);
-		expect(cache).to.deep.equal([{
+	it('should add switch clear to queue and replay it', () => {
+		messageQueue.addMessage(MessageType.ClearSwitchInput, 42);
+		messageQueue.replayMessages(mockEmulator);
+		expect(queue).to.deep.equal([{
 			optionalEnableSwitch: false,
 			switchNr: 42,
 		}]);
 	});
 
-	it('should add cabinet input to cache and apply it', () => {
-		emulatorCache.cacheState(CacheType.CabinetInput, 4);
-		emulatorCache.applyCache(mockEmulator);
-		expect(cache).to.deep.equal([{
+	it('should add cabinet input to queue and replay it', () => {
+		messageQueue.addMessage(MessageType.CabinetInput, 4);
+		messageQueue.replayMessages(mockEmulator);
+		expect(queue).to.deep.equal([{
 			keyNr: 4,
 		}]);
 	});
 
-	it('should add execute ticks to cache and apply it', () => {
-		emulatorCache.cacheState(CacheType.ExecuteTicks, 4);
-		emulatorCache.applyCache(mockEmulator);
-		expect(cache).to.deep.equal([{
+	it('should add execute ticks to queue and replay it', () => {
+		messageQueue.addMessage(MessageType.ExecuteTicks, 4);
+		messageQueue.replayMessages(mockEmulator);
+		expect(queue).to.deep.equal([{
 			dTime: 4,
 		}]);
 	});
 
-	it('should should warn when add entries to cache if already consumed', () => {
-		emulatorCache.applyCache(mockEmulator);
-		const addedToCache = emulatorCache.cacheState(CacheType.SetSwitchInput, 42);
-		expect(addedToCache).to.equal(false);
+	it('should should warn when add entries to queue if already consumed', () => {
+		messageQueue.replayMessages(mockEmulator);
+		const addedToQueue = messageQueue.addMessage(MessageType.SetSwitchInput, 42);
+		expect(addedToQueue).to.equal(false);
 	});
 });
 
 class MockEmulator implements IEmulator {
-	private cache: object[];
+	private messages: object[];
 	constructor(cache: object[]) {
-		this.cache = cache;
+		this.messages = cache;
 	}
 	public emuSimulateCycle(dTime: number): void {
-		this.cache.push({dTime});
+		this.messages.push({dTime});
 	}
 	public getDmdFrame(): Uint8Array {
 		throw new Error('Method not implemented.');
@@ -103,9 +103,9 @@ class MockEmulator implements IEmulator {
 		throw new Error('Method not implemented.');
 	}
 	public setCabinetInput(keyNr: number): void {
-		this.cache.push({keyNr});
+		this.messages.push({keyNr});
 	}
 	public setSwitchInput(switchNr: number, optionalEnableSwitch?: boolean): void {
-		this.cache.push({switchNr, optionalEnableSwitch});
+		this.messages.push({switchNr, optionalEnableSwitch});
 	}
 }
