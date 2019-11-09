@@ -25,34 +25,34 @@ import { OffsetIndex } from './offset-index';
 chai.use(require('sinon-chai'));
 describe('The Offset Index calculator', () => {
 
-	it('0 -> 11', () => {
+	it('should convert 0 -> 11', () => {
 		const result: OffsetIndex = OffsetIndex.fromZeroBased(0);
 		expect(result.wpcMatrixIndex).to.equal(11);
 		expect(result.zeroBasedIndex).to.equal(0);
 	});
 
-	it('7 -> 18', () => {
+	it('should convert 7 -> 18', () => {
 		const result: number = OffsetIndex.fromZeroBased(7).wpcMatrixIndex;
 		expect(result).to.equal(18);
 	});
 
-	it('8 -> 21', () => {
+	it('should convert 8 -> 21', () => {
 		const result: number = OffsetIndex.fromZeroBased(8).wpcMatrixIndex;
 		expect(result).to.equal(21);
 	});
 
-	it('63 -> 88', () => {
+	it('should convert 63 -> 88', () => {
 		const result: number = OffsetIndex.fromZeroBased(63).wpcMatrixIndex;
 		expect(result).to.equal(88);
 	});
 
-	it('11 -> 0', () => {
+	it('should convert 11 -> 0', () => {
 		const result: OffsetIndex = OffsetIndex.fromWpcMatrix(11);
 		expect(result.wpcMatrixIndex).to.equal(11);
 		expect(result.zeroBasedIndex).to.equal(0);
 	});
 
-	it('21 -> 8', () => {
+	it('should convert 21 -> 8', () => {
 		const result: OffsetIndex = OffsetIndex.fromWpcMatrix(21);
 		expect(result.wpcMatrixIndex).to.equal(21);
 		expect(result.zeroBasedIndex).to.equal(8);
