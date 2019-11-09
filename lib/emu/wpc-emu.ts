@@ -18,8 +18,8 @@
  */
 
 import { GamelistDB, WpcEmuApi, WpcEmuWebWorkerApi } from 'wpc-emu';
-import { IEmulator } from '../../../game/iemulator';
-import { Vertex2D } from '../../../math/vertex2d';
+import { IEmulator } from '../game/iemulator';
+import { Vertex2D } from '../math/vertex2d';
 import { CacheType, EmulatorCachingService } from './caching-service';
 import { EmulatorState } from './emulator-state';
 

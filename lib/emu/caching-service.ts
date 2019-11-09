@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { IEmulator } from '../../../game/iemulator';
-import { logger } from '../../../util/logger';
+import { IEmulator } from '../game/iemulator';
+import { logger } from '../util/logger';
 
 // TODO caching is not exactly the correct term, come up with a better name!
 
@@ -27,6 +27,7 @@ import { logger } from '../../../util/logger';
  * This Caching Service caches all calls to the EMU while its initializing and
  * allows to apply the changes once the emu is ready
  */
+
 export enum CacheType {
 	SetSwitchInput = 1,
 	ClearSwitchInput,

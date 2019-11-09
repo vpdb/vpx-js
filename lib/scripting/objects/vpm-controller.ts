@@ -18,10 +18,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { downloadGameEntry, LoadedGameEntry } from '../../emu/rom-fetcher';
+import { Emulator } from '../../emu/wpc-emu';
 import { Player } from '../../game/player';
 import { logger } from '../../util/logger';
-import { downloadGameEntry, LoadedGameEntry } from './pinball-backend/rom-fetcher';
-import { Emulator } from './pinball-backend/wpc-emu';
 
 /**
  * Implementation of the VISUAL PINMAME COM OBJECT PROPERTY/METHOD

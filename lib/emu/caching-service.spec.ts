@@ -19,7 +19,8 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import { IEmulator } from '../../../game/iemulator';
+import { IEmulator } from '../game/iemulator';
+import { Vertex2D } from '../math/vertex2d';
 import { CacheType, EmulatorCachingService } from './caching-service';
 
 /* tslint:disable:no-unused-expression no-string-literal */
@@ -98,7 +99,7 @@ class MockEmulator implements IEmulator {
 	public getDmdFrame(): Uint8Array {
 		throw new Error('Method not implemented.');
 	}
-	public getDmdDimensions(): import('../../../math/vertex2d').Vertex2D {
+	public getDmdDimensions(): Vertex2D {
 		throw new Error('Method not implemented.');
 	}
 	public setCabinetInput(keyNr: number): void {
