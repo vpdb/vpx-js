@@ -95,7 +95,7 @@ describe('The ROM Fetcher', () => {
 
 		return downloadGameEntry('mm_109c')
 			.catch((error) => {
-				expect(error.message).match(/HTTP error/);
+				expect(error.message).match(/VPDB_FETCH_FAILED_WITH_ERROR_404/);
 				expect(nockScopeA.isDone()).to.equal(true);
 			});
 	});
@@ -111,7 +111,7 @@ describe('The ROM Fetcher', () => {
 
 		return downloadGameEntry('mm_109c')
 			.catch((error) => {
-				expect(error.message).match(/HTTP error/);
+				expect(error.message).match(/VPDB_FETCH_FAILED_WITH_ERROR_404/);
 				expect(nockScopeA.isDone()).to.equal(true);
 			});
 	});

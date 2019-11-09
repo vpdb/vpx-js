@@ -8,29 +8,29 @@ import { logger } from '../../../util/logger';
 export async function downloadGameEntry(pinmameGameName: string): Promise<LoadedGameEntry> {
 	const gameEntry = GamelistDB.getByPinmameName(pinmameGameName);
 	if (!gameEntry) {
-		throw(new Error('GAME_ENTRY_NOT_FOUND_' + pinmameGameName));
+		throw new Error('GAME_ENTRY_NOT_FOUND_' + pinmameGameName);
 	}
-	const url: string = buildVpdbGameEntryUrl(gameEntry.pinmame.vpdbId || gameEntry.pinmame.id);
-
+	const url = buildVpdbGameEntryUrl(gameEntry.pinmame.vpdbId || gameEntry.pinmame.id);
 	const jsonData = await downloadFileAsJson(url);
 	if (!Array.isArray(jsonData)) {
-		throw(new Error('VPDB_INVALID_ANSWER'));
+		logger().error('VPDB Fetch failed for url', url);
+		throw new Error('VPDB_INVALID_ANSWER_FOR_' + pinmameGameName);
 	}
 	const result = jsonData.find((vpdbEntry: VpdbGameEntry) => vpdbEntry.id === pinmameGameName);
 	if (!result) {
-		throw(new Error('VPDB_GAME_ENTRY_NOT_FOUND'));
+		throw new Error('VPDB_GAME_ENTRY_NOT_FOUND_' + pinmameGameName);
 	}
 	logger().debug(pinmameGameName, 'VPDB RESULT:', jsonData);
 
 	const romSet = findRomSet(jsonData, pinmameGameName);
 	if (!romSet) {
-		throw(new Error('VPDB_ROMSET_ENTRY_NOT_FOUND'));
+		throw new Error('VPDB_ROMSET_ENTRY_NOT_FOUND_' + pinmameGameName);
 	}
 	logger().debug(pinmameGameName, 'VPDB romSet:', romSet);
 
 	const romName = findMainRomFilename(romSet);
 	if (!romName) {
-		throw(new Error('VPDB_ROM_TYPE_NOT_FOUND'));
+		throw new Error('VPDB_ROM_TYPE_NOT_FOUND_' + pinmameGameName);
 	}
 	logger().debug(pinmameGameName, 'VPDB romName:', romName);
 
@@ -66,7 +66,8 @@ function buildVpdbGameEntryUrl(id: string): string {
 async function downloadFileAsJson(url: string): Promise<VpdbGameEntry[]> {
 	const response: Response = await fetch(url);
 	if (!response.ok) {
-		throw(new Error('HTTP error, status = ' + response.status));
+		logger().error('VPDB Fetch JSON failed for url', url);
+		throw new Error('VPDB_FETCH_FAILED_WITH_ERROR_' + response.status);
 	}
 	return response.json();
 }
@@ -74,7 +75,8 @@ async function downloadFileAsJson(url: string): Promise<VpdbGameEntry[]> {
 async function downloadFileAsUint8Array(url: string): Promise<Uint8Array> {
 	const response: Response = await fetch(url);
 	if (!response.ok) {
-		throw(new Error('HTTP error, status = ' + response.status));
+		logger().error('VPDB Fetch ROM failed for url', url);
+		throw new Error('VPDB_FETCH_FAILED_WITH_ERROR_' + response.status);
 	}
 	const arrayBuffer = await response.arrayBuffer();
 	return new Uint8Array(arrayBuffer);
