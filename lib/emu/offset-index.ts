@@ -34,8 +34,8 @@ export class OffsetIndex {
 		return new OffsetIndex(zeroBasedIndex, wpcMatrixIndex);
 	}
 
- 	/**
- 	 * convert zero based index to matrix input, 0 -> 11, 8 -> 21
+	/**
+	 * convert zero based index to matrix input, 0 -> 11, 8 -> 21
 	 */
 	public static mapIndexToMatrixIndex(index: number): number {
 		const row = Math.floor(index / 8);
@@ -44,8 +44,8 @@ export class OffsetIndex {
 	}
 
 	/**
- 	 * convert matrix index to zero based input, 11 -> 0, 21 -> 8
- 	 */
+	 * convert matrix index to zero based input, 11 -> 0, 21 -> 8
+	 */
 	public static mapMatrixIndexToIndex(index: number): number {
 		const row = Math.floor((index - 11) / 10);
 		const column = Math.floor((index - 11) % 10);
