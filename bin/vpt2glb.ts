@@ -26,6 +26,7 @@ import { Logger } from '../lib/util/logger';
 import { Table } from '../lib/vpt/table/table';
 import { TableExporter } from '../lib/vpt/table/table-exporter';
 
+/* tslint:disable:no-empty no-console */
 (async () => {
 
 	try {

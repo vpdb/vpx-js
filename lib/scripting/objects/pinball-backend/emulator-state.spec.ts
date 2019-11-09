@@ -32,7 +32,7 @@ const soundState: WpcEmuWebWorkerApi.EmuStateSound = {
 
 const dmdState: WpcEmuWebWorkerApi.EmuStateDMD = {
 	scanline: 0,
-	dmdShadedBuffer: new Uint8Array([1,2,3]),
+	dmdShadedBuffer: new Uint8Array([1, 2, 3]),
 	dmdPageMapping: [],
 };
 

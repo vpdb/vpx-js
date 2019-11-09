@@ -19,8 +19,8 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import { Emulator } from './wpc-emu';
 import { Vertex2D } from '../../../math/vertex2d';
+import { Emulator } from './wpc-emu';
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));

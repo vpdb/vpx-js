@@ -65,7 +65,6 @@ export class Transformer {
 				return obj.callee.name;
 			}
 		}
-		debugger;
-		return '';
+		throw new Error(`Unknown node "${obj.type}" when looking for top member name.`);
 	}
 }

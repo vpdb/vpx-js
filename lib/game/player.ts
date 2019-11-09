@@ -230,7 +230,7 @@ export class Player extends EventEmitter {
 
 	public setSwitchInput(switchNr: number, optionalEnableSwitch?: boolean) {
 		if (this.physics.emu) {
-			this.physics.emu.setSwitchInput(switchNr, optionalEnableSwitch)
+			this.physics.emu.setSwitchInput(switchNr, optionalEnableSwitch);
 		}
 	}
 

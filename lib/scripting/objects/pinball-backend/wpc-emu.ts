@@ -40,7 +40,7 @@ export class Emulator implements IEmulator {
 
 	public async loadGame(gameEntry: GamelistDB.GameEntry, romContent: Uint8Array) {
 		const romData: GamelistDB.RomData = { u06: romContent };
-		const emulator = await WpcEmuApi.initVMwithRom(romData, gameEntry)
+		const emulator = await WpcEmuApi.initVMwithRom(romData, gameEntry);
 
 		this.emulator = emulator;
 		this.emulator.reset();

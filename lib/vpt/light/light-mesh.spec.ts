@@ -22,9 +22,9 @@ import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { ThreeHelper } from '../../../test/three.helper';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { SpotLight } from '../../refs.node';
+import { ThreeLightGenerator } from '../../render/threejs/three-light-generator';
 import { Table } from '../table/table';
 import { TableExporter } from '../table/table-exporter';
-import { ThreeLightGenerator } from '../../render/threejs/three-light-generator';
 
 const three = new ThreeHelper();
 const scale = 0.05;

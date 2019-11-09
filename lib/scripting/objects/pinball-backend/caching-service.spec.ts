@@ -19,8 +19,8 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import { CacheType, EmulatorCachingService } from './caching-service';
 import { IEmulator } from '../../../game/iemulator';
+import { CacheType, EmulatorCachingService } from './caching-service';
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
@@ -42,7 +42,7 @@ describe('The WPC-EMU emulator cache', () => {
 		expect(addedToCache).to.equal(true);
 		expect(cache).to.deep.equal([{
 			optionalEnableSwitch: undefined,
-			switchNr: 42
+			switchNr: 42,
 		}]);
 	});
 
@@ -51,7 +51,7 @@ describe('The WPC-EMU emulator cache', () => {
 		emulatorCache.applyCache(mockEmulator);
 		expect(cache).to.deep.equal([{
 			optionalEnableSwitch: true,
-			switchNr: 42
+			switchNr: 42,
 		}]);
 	});
 
@@ -60,7 +60,7 @@ describe('The WPC-EMU emulator cache', () => {
 		emulatorCache.applyCache(mockEmulator);
 		expect(cache).to.deep.equal([{
 			optionalEnableSwitch: false,
-			switchNr: 42
+			switchNr: 42,
 		}]);
 	});
 
@@ -68,7 +68,7 @@ describe('The WPC-EMU emulator cache', () => {
 		emulatorCache.cacheState(CacheType.CabinetInput, 4);
 		emulatorCache.applyCache(mockEmulator);
 		expect(cache).to.deep.equal([{
-			keyNr: 4
+			keyNr: 4,
 		}]);
 	});
 
@@ -76,7 +76,7 @@ describe('The WPC-EMU emulator cache', () => {
 		emulatorCache.cacheState(CacheType.ExecuteTicks, 4);
 		emulatorCache.applyCache(mockEmulator);
 		expect(cache).to.deep.equal([{
-			dTime: 4
+			dTime: 4,
 		}]);
 	});
 
@@ -92,19 +92,19 @@ class MockEmulator implements IEmulator {
 	constructor(cache: object[]) {
 		this.cache = cache;
 	}
-	emuSimulateCycle(dTime: number): void {
+	public emuSimulateCycle(dTime: number): void {
 		this.cache.push({dTime});
 	}
-	getDmdFrame(): Uint8Array {
-		throw new Error("Method not implemented.");
+	public getDmdFrame(): Uint8Array {
+		throw new Error('Method not implemented.');
 	}
-	getDmdDimensions(): import("../../../math/vertex2d").Vertex2D {
-		throw new Error("Method not implemented.");
+	public getDmdDimensions(): import('../../../math/vertex2d').Vertex2D {
+		throw new Error('Method not implemented.');
 	}
-	setCabinetInput(keyNr: number): void {
+	public setCabinetInput(keyNr: number): void {
 		this.cache.push({keyNr});
 	}
-	setSwitchInput(switchNr: number, optionalEnableSwitch?: boolean): void {
+	public setSwitchInput(switchNr: number, optionalEnableSwitch?: boolean): void {
 		this.cache.push({switchNr, optionalEnableSwitch});
 	}
 }

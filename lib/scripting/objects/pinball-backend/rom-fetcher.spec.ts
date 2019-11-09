@@ -19,8 +19,8 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import { downloadGameEntry, LoadedGameEntry } from './rom-fetcher';
 import nock = require('nock');
+import { downloadGameEntry, LoadedGameEntry } from './rom-fetcher';
 const fetch = require('node-fetch');
 
 // Yes hacky way to pollute the global scope!
@@ -41,19 +41,19 @@ describe('The ROM Fetcher', () => {
 		globalAny.fetch = undefined;
 	});
 
-	it('should not find a rom entry', async() => {
+	it('should not find a rom entry', async () => {
 		await downloadGameEntry('XXX')
 			.catch((error) => {
 				expect(error.message).match(/GAME_ENTRY_NOT_FOUND_XXX/);
 			});
 	});
 
-	it('should successful download ROM', async() => {
+	it('should successful download ROM', async () => {
 		const nockScopeA = nock('https://api.vpdb.io')
 			.get('/v1/games/mm/roms/')
 			.reply(200, VPDB_GAME_ENTRY_JSON);
 
-		const nockScopeB= nock('https://storage.vpdb.io')
+		const nockScopeB = nock('https://storage.vpdb.io')
 			.get('/files/p2b9gpvd1.zip/mm_1_09c.bin')
 			.reply(200, MOCK_ROM);
 
@@ -64,7 +64,7 @@ describe('The ROM Fetcher', () => {
 		expect(nockScopeB.isDone()).to.equal(true);
 	});
 
-	it('should handle invalid rom list, option 1', async() => {
+	it('should handle invalid rom list, option 1', async () => {
 		const nockScopeA = nock('https://api.vpdb.io')
 			.get('/v1/games/mm/roms/')
 			.reply(200, { foo: 'bar' });
@@ -76,7 +76,7 @@ describe('The ROM Fetcher', () => {
 			});
 	});
 
-	it('should handle invalid rom list, option 2', async() => {
+	it('should handle invalid rom list, option 2', async () => {
 		const nockScopeA = nock('https://api.vpdb.io')
 			.get('/v1/games/mm/roms/')
 			.reply(200, [{ foo: 'bar' }]);
@@ -88,7 +88,7 @@ describe('The ROM Fetcher', () => {
 			});
 	});
 
-	it('should fail to download Gameset', async() => {
+	it('should fail to download Gameset', async () => {
 		const nockScopeA = nock('https://api.vpdb.io')
 			.get('/v1/games/mm/roms/')
 			.reply(404);
@@ -100,12 +100,12 @@ describe('The ROM Fetcher', () => {
 			});
 	});
 
-	it('should fail to download ROM', async() => {
+	it('should fail to download ROM', async () => {
 		const nockScopeA = nock('https://api.vpdb.io')
 			.get('/v1/games/mm/roms/')
 			.reply(200, VPDB_GAME_ENTRY_JSON);
 
-		const nockScopeB= nock('https://storage.vpdb.io')
+		const nockScopeB = nock('https://storage.vpdb.io')
 			.get('/files/p2b9gpvd1.zip/mm_1_09c.bin')
 			.reply(404);
 

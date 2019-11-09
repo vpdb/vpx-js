@@ -107,7 +107,6 @@ export class AmbiguityTransformer extends Transformer {
 						}
 					}
 
-
 					// otherwise, we don't know, so use getOrCall
 					(node.callee as any).__isProperty = true; // need to eval that on runtime, not compile time
 					return getOrCall(node.callee as Expression, ...node.arguments as Expression[]);

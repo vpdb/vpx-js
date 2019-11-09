@@ -23,7 +23,7 @@ import {
 	Color,
 	DoubleSide,
 	Material as ThreeMaterial,
-	MeshStandardMaterial
+	MeshStandardMaterial,
 } from '../../refs.node';
 import { Material } from '../../vpt/material';
 import { MeshConvertOptions } from '../irender-api';

@@ -62,22 +62,22 @@ export function elseStmt2(
 }
 
 export function elseStmt3(result: [Token, null, Statement, Comment[]]): Statement {
-	const stmt = result[2];
+	const statement = result[2];
 	const comments = result[3] || [];
-	stmt.trailingComments = comments;
-	return stmt;
+	statement.trailingComments = comments;
+	return statement;
 }
 
 export function elseStmt4(result: [Token, Comment[], BlockStatement]): Statement {
 	const comments = result[1] || [];
-	const stmt = result[2];
-	if (stmt != null) {
-		stmt.trailingComments = comments;
+	const statement = result[2];
+	if (statement != null) {
+		statement.trailingComments = comments;
 	}
-	return stmt;
+	return statement;
 }
 
 export function elseOpt(result: [Token, null, Statement]): Statement {
-	const stmt = result[2];
-	return stmt;
+	const statement = result[2];
+	return statement;
 }

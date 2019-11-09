@@ -23,6 +23,7 @@ import { basename, dirname, resolve } from 'path';
 import { NodeBinaryReader } from '../lib/io/binary-reader.node';
 import { Table } from '../lib/vpt/table/table';
 
+/* tslint:disable: no-console */
 (async () => {
 
 	try {

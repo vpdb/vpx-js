@@ -21,6 +21,7 @@
 import { existsSync, readFileSync } from 'fs';
 import { vbsToJs } from '../test/script.helper';
 
+/* tslint:disable: no-console */
 (() => {
 
 	try {
