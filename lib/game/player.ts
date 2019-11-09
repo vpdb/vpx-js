@@ -208,6 +208,7 @@ export class Player extends EventEmitter {
 
 	public setEmulator(emu: IEmulator) {
 		this.physics.emu = emu;
+		this.emit('emuStarted');
 	}
 
 	public hasDmd(): boolean {
