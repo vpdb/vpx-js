@@ -20,6 +20,8 @@
 import { IEmulator } from '../../../game/iemulator';
 import { logger } from '../../../util/logger';
 
+// TODO caching is not exactly the correct term, come up with a better name!
+
 /**
  * the VPX interface is sync, while our implementation is not when initializing
  * This Caching Service caches all calls to the EMU while its initializing and
@@ -51,6 +53,7 @@ export class EmulatorCachingService {
 		return true;
 	}
 
+	// TODO replay messages as alternative?
 	public applyCache(emulator: IEmulator): void {
 		this.clearedCache = true;
 		logger().debug('Apply cached commands to emu', this.cache.length);

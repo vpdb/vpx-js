@@ -41,14 +41,14 @@ describe('The ROM Fetcher', () => {
 		globalAny.fetch = undefined;
 	});
 
-	it('should not find a rom entry', () => {
-		return downloadGameEntry('XXX')
+	it('should not find a rom entry', async() => {
+		await downloadGameEntry('XXX')
 			.catch((error) => {
 				expect(error.message).match(/GAME_ENTRY_NOT_FOUND_XXX/);
 			});
 	});
 
-	it('should successful download ROM', () => {
+	it('should successful download ROM', async() => {
 		const nockScopeA = nock('https://api.vpdb.io')
 			.get('/v1/games/mm/roms/')
 			.reply(200, VPDB_GAME_ENTRY_JSON);
@@ -57,50 +57,50 @@ describe('The ROM Fetcher', () => {
 			.get('/files/p2b9gpvd1.zip/mm_1_09c.bin')
 			.reply(200, MOCK_ROM);
 
-		return downloadGameEntry('mm_109c')
-			.then((answer: LoadedGameEntry) => {
-				expect(answer.romFile).to.deep.equal(new Uint8Array([ 77, 79, 67, 75, 82, 79, 77 ]));
-				expect(answer.wpcDbEntry.name).to.equal('WPC-95: Medieval Madness');
-				expect(nockScopeA.isDone()).to.equal(true);
-				expect(nockScopeB.isDone()).to.equal(true);
-			});
+		const answer = await downloadGameEntry('mm_109c');
+		expect(answer.romFile).to.deep.equal(new Uint8Array([ 77, 79, 67, 75, 82, 79, 77 ]));
+		expect(answer.wpcDbEntry.name).to.equal('WPC-95: Medieval Madness');
+		expect(nockScopeA.isDone()).to.equal(true);
+		expect(nockScopeB.isDone()).to.equal(true);
 	});
 
-	it('should handle invalid rom list, option 1', () => {
+	it('should handle invalid rom list, option 1', async() => {
 		const nockScopeA = nock('https://api.vpdb.io')
 			.get('/v1/games/mm/roms/')
 			.reply(200, { foo: 'bar' });
 
-		return downloadGameEntry('mm_109c')
+		await downloadGameEntry('mm_109c')
 			.catch((error) => {
 				expect(error.message).match(/VPDB_INVALID_ANSWER/);
+				expect(nockScopeA.isDone()).to.equal(true);
 			});
 	});
 
-	it('should handle invalid rom list, option 2', () => {
+	it('should handle invalid rom list, option 2', async() => {
 		const nockScopeA = nock('https://api.vpdb.io')
 			.get('/v1/games/mm/roms/')
 			.reply(200, [{ foo: 'bar' }]);
 
-		return downloadGameEntry('mm_109c')
+		await downloadGameEntry('mm_109c')
 			.catch((error) => {
 				expect(error.message).match(/VPDB_GAME_ENTRY_NOT_FOUND/);
+				expect(nockScopeA.isDone()).to.equal(true);
 			});
 	});
 
-	it('should fail to download Gameset', () => {
+	it('should fail to download Gameset', async() => {
 		const nockScopeA = nock('https://api.vpdb.io')
 			.get('/v1/games/mm/roms/')
 			.reply(404);
 
-		return downloadGameEntry('mm_109c')
+		await downloadGameEntry('mm_109c')
 			.catch((error) => {
 				expect(error.message).match(/VPDB_FETCH_FAILED_WITH_ERROR_404/);
 				expect(nockScopeA.isDone()).to.equal(true);
 			});
 	});
 
-	it('should fail to download ROM', () => {
+	it('should fail to download ROM', async() => {
 		const nockScopeA = nock('https://api.vpdb.io')
 			.get('/v1/games/mm/roms/')
 			.reply(200, VPDB_GAME_ENTRY_JSON);
@@ -109,10 +109,11 @@ describe('The ROM Fetcher', () => {
 			.get('/files/p2b9gpvd1.zip/mm_1_09c.bin')
 			.reply(404);
 
-		return downloadGameEntry('mm_109c')
+		await downloadGameEntry('mm_109c')
 			.catch((error) => {
 				expect(error.message).match(/VPDB_FETCH_FAILED_WITH_ERROR_404/);
 				expect(nockScopeA.isDone()).to.equal(true);
+				expect(nockScopeB.isDone()).to.equal(true);
 			});
 	});
 

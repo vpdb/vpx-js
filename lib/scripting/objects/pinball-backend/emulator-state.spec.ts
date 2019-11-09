@@ -101,19 +101,19 @@ describe('The EmulatorState - handle state changes', () => {
 		emulatorState = new EmulatorState();
 	});
 
-	it('transition initial getChangedLamps() should return empty array', () => {
+	it('should return empty array for initially unchanged lamps', () => {
 		expect(emulatorState.getChangedLamps()).to.deep.equal([]);
 	});
 
-	it('transition initial getChangedSolenoids() should return empty array', () => {
+	it('should return empty array for initially unchanged solenoids', () => {
 		expect(emulatorState.getChangedSolenoids()).to.deep.equal([]);
 	});
 
-	it('transition initial getChangedGI() should return empty array', () => {
+	it('should return empty array for initially unchanged GI strings', () => {
 		expect(emulatorState.getChangedGI()).to.deep.equal([]);
 	});
 
-	it('transition empty state -> state 1', () => {
+	it('should get changed lamps when transition from empty state to state 1', () => {
 		const expectedDiff: number[][] = [
 			[ 16, 1 ],
 			[ 18, 1 ],
@@ -123,7 +123,7 @@ describe('The EmulatorState - handle state changes', () => {
 		expect(result).to.deep.equal(expectedDiff);
 	});
 
-	it('transition state 1 -> state 2', () => {
+	it('should get changed lamps when transition from state 1 to state 2', () => {
 		const expectedDiff: number[][] = [
 			[ 16, 0 ],
 			[ 18, 0 ],
@@ -135,25 +135,25 @@ describe('The EmulatorState - handle state changes', () => {
 		expect(result).to.deep.equal(expectedDiff);
 	});
 
-	it('transition empty state -> state 1 -> state 2, without fetching state', () => {
+	it('should return empty array when transition from empty state -> state 1 -> state 2, without fetching state', () => {
 		emulatorState.updateState(stateOne);
 		emulatorState.updateState(stateTwo);
 		const result: number[][] = emulatorState.getChangedLamps();
 		expect(result).to.deep.equal([]);
 	});
 
-	it('transition multiple getChangedLamps() calls without state update should return empty array', () => {
+	it('should return empty array after calling multiple getChangedLamps()', () => {
 		emulatorState.updateState(stateOne);
 		emulatorState.getChangedLamps();
 		expect(emulatorState.getChangedLamps()).to.deep.equal([]);
 	});
 
-	it('get ChangedLEDs - not implemented used for Alphanumeric displays only', () => {
+	it('should return empty array after fetching ChangedLEDs - not implemented used for Alphanumeric displays only', () => {
 		const result: number[][] = emulatorState.ChangedLEDs();
 		expect(result).to.deep.equal([]);
 	});
 
-	it('get empty getDmdScreen', () => {
+	it('should get empty getDmdScreen', () => {
 		const result: Uint8Array = emulatorState.getDmdScreen();
 		expect(result.length).to.equal(0);
 	});
