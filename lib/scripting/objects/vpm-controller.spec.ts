@@ -112,7 +112,7 @@ describe('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 	});
 
 	it('get Switch 0', () => {
-		const result = vpmController.Switch[0];
+		const result = vpmController.Switch[11];
 		expect(result).to.deep.equal(0);
 	});
 
@@ -123,7 +123,7 @@ describe('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 	});
 
 	it('get Lamp 0', () => {
-		const result = vpmController.Lamp[0];
+		const result = vpmController.Lamp[11];
 		expect(result).to.deep.equal(0);
 	});
 

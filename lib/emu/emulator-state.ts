@@ -18,6 +18,7 @@
  */
 
 import { WpcEmuWebWorkerApi } from 'wpc-emu';
+import { OffsetIndex } from './offset-index';
 
 function getEmptyUint8Array(size: number = 64) {
 	return new Uint8Array(size).fill(0);
@@ -56,14 +57,12 @@ export class EmulatorState {
 		}
 	}
 
-	public getSwitchState(index: number): number {
-		const matrixIndex: number = mapIndexToMatrixIndex(index);
-		return this.switchState[matrixIndex] || 0;
+	public getSwitchState(offset: OffsetIndex): number {
+		return this.switchState[offset.zeroBasedIndex] || 0;
 	}
 
-	public getLampState(index: number): number {
-		const matrixIndex: number = mapIndexToMatrixIndex(index);
-		return this.currentLampState[matrixIndex] || 0;
+	public getLampState(offset: OffsetIndex): number {
+		return this.currentLampState[offset.zeroBasedIndex] || 0;
 	}
 
 	public getSolenoidState(index: number): number {
@@ -132,7 +131,19 @@ export class EmulatorState {
 	}
 }
 
+/**
+ * convert zero based index to matrix input, 0 -> 11, 8 -> 21
+ */
 function mapIndexToMatrixIndex(index: number): number {
+	const row = Math.floor(index / 8);
+	const column = Math.floor(index % 8);
+	return 10 * row + 11 + column;
+}
+
+/**
+ * convert matrix index to zero based input, 0 -> 11, 8 -> 21
+ */
+function mapMatrixIndexToIndex(index: number): number {
 	const row = Math.floor(index / 8);
 	const column = Math.floor(index % 8);
 	return 10 * row + 11 + column;

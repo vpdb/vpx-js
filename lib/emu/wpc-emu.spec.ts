@@ -87,15 +87,44 @@ describe('WPC-EMU', () => {
 	});
 
 	it('should load the emulator', async () => {
-		await emulator.loadGame(mockGameEntry, new Uint8Array())
+		await emulator.loadGame(mockGameEntry, new Uint8Array());
 		expect(mockEmu.executedCyclesMs).to.equal(1000);
 		expect(mockEmu.cabinetInput).to.deep.equal([ 16 ]);
 	});
 
-	it('should emuSimulateCycle', async () => {
-		await emulator.loadGame(mockGameEntry, new Uint8Array())
+	it('should call WPC-Emu emuSimulateCycle when initialized', async () => {
+		await emulator.loadGame(mockGameEntry, new Uint8Array());
 		emulator.emuSimulateCycle(20);
 		expect(mockEmu.executedCyclesMs).to.equal(1020);
+	});
+
+	it('should call WPC-Emu setSwitchInput when initialized', async () => {
+		await emulator.loadGame(mockGameEntry, new Uint8Array());
+		emulator.setSwitchInput(20);
+		expect(mockEmu.switchInput).to.deep.equal([ 20 ]);
+	});
+
+	it('should call WPC-Emu fliptronicsInput when initialized', async () => {
+		await emulator.loadGame(mockGameEntry, new Uint8Array());
+		emulator.setFliptronicsInput('A123');
+		expect(mockEmu.fliptronicsInput).to.deep.equal([ 'A123' ]);
+	});
+
+	it('should call WPC-Emu registerAudioConsumer when initialized', async () => {
+		await emulator.loadGame(mockGameEntry, new Uint8Array());
+		let playSampleId = -1;
+		emulator.registerAudioConsumer((sampleId) => playSampleId = sampleId);
+		expect(playSampleId).to.equal(123);
+	});
+
+	it('should update WPC-Emu state after emuSimulateCycle is run', async () => {
+		await emulator.loadGame(mockGameEntry, new Uint8Array());
+		emulator.emuSimulateCycle(20);
+		expect(emulator.getSwitchInput(11)).to.equal(0);
+		expect(emulator.getLampState(11)).to.equal(1);
+		expect(emulator.getLampState(12)).to.equal(0);
+		expect(emulator.getSolenoidState(0)).to.equal(11);
+		expect(emulator.getGIState(0)).to.equal(8);
 	});
 
 });
@@ -103,6 +132,8 @@ describe('WPC-EMU', () => {
 class MockWpcEmulator implements WpcEmuApi.Emulator {
 	public executedCyclesMs: number = 0;
 	public cabinetInput: number[] = [];
+	public fliptronicsInput: string[] = [];
+	public switchInput: number[] = [];
 	start(): void {
 		throw new Error("Method not implemented.");
 	}
@@ -118,8 +149,11 @@ class MockWpcEmulator implements WpcEmuApi.Emulator {
 				},
 				wpc: {
 					diagnosticLed: 6,
-					generalIlluminationState: new Uint8Array(),
+					generalIlluminationState: new Uint8Array([ 8, 2, 3, 4]),
 					diagnosticLedToggleCount: 7,
+					lampState: new Uint8Array([ 255, 0 ]),
+					solenoidState: new Uint8Array([ 11, 2, 3, 4]),
+					inputState: new Uint8Array([ 1, 2, 3, 4]),
 					midnightModeEnabled: true,
 					irqEnabled: true,
 					activeRomBank: 8,
@@ -169,7 +203,7 @@ class MockWpcEmulator implements WpcEmuApi.Emulator {
 		throw new Error("Method not implemented.");
 	}
 	registerAudioConsumer(callbackFunction: (sampleId: number) => void): void {
-		throw new Error("Method not implemented.");
+		callbackFunction(123);
 	}
 	executeCycle(ticksToRun: number, tickSteps: number): number {
 		throw new Error("Method not implemented.");
@@ -182,10 +216,10 @@ class MockWpcEmulator implements WpcEmuApi.Emulator {
 		this.cabinetInput.push(value);
 	}
 	setSwitchInput(switchNr: number, optionalValue?: boolean): void {
-		throw new Error("Method not implemented.");
+		this.switchInput.push(switchNr);
 	}
 	setFliptronicsInput(value: string): void {
-		throw new Error("Method not implemented.");
+		this.fliptronicsInput.push(value)
 	}
 	toggleMidnightMadnessMode(): void {
 		throw new Error("Method not implemented.");
