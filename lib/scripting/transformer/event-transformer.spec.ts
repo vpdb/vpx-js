@@ -20,8 +20,8 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import { astToVbs, vbsToAst } from '../../../test/script.helper';
+import { TableBuilder } from '../../../test/table-builder';
 import { ThreeHelper } from '../../../test/three.helper';
-import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../../vpt/table/table';
 import { EventTransformer } from './event-transformer';
 
@@ -33,14 +33,23 @@ describe('The scripting event transformer', () => {
 	const three = new ThreeHelper();
 	let table: Table;
 
-	before(async () => {
-		table = await Table.load(new NodeBinaryReader(three.fixturePath('table-gate.vpx')));
+	before(() => {
+		table = new TableBuilder()
+			.addGate('WireRectangle')
+			.addGate('Wire_Rectangle')
+			.build();
 	});
 
 	it('should transform a valid event on a valid item', () => {
 		const vbs = `Sub WireRectangle_Init()\nBallRelease.CreateBall\nEnd Sub\n`;
 		const js = transform(vbs, table);
 		expect(js).to.equal(`WireRectangle.on('Init', () => {\n    BallRelease.CreateBall();\n});`);
+	});
+
+	it('should transform a an item with an underscore in its name', () => {
+		const vbs = `Sub Wire_Rectangle_Init()\nBallRelease.CreateBall\nEnd Sub\n`;
+		const js = transform(vbs, table);
+		expect(js).to.equal(`Wire_Rectangle.on('Init', () => {\n    BallRelease.CreateBall();\n});`);
 	});
 
 	it('should not transform an invalid event on a valid item', () => {
