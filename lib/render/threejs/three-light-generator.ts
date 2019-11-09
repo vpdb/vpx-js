@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { AdditiveBlending, Mesh as ThreeMesh, MeshStandardMaterial, Object3D, PointLight, Vector2 } from '../../refs.node';
+import { Mesh as ThreeMesh, MeshStandardMaterial, Object3D, PointLight, Vector2 } from '../../refs.node';
 import { Enums } from '../../vpt/enums';
 import { LightData } from '../../vpt/light/light-data';
 import { LightState } from '../../vpt/light/light-state';
@@ -25,10 +25,13 @@ import { ThreeRenderApi } from './three-render-api';
 
 export class ThreeLightGenerator {
 
-	private static readonly EMISSIVE_MAP_FACTOR = 4;
+	public static readonly EMISSIVE_MAP_FACTOR = 0.1;
+	public static readonly BULB_FACTOR = 0.3;
+
+	private readonly hsl: any = {};
 
 	public createPointLight(lightData: LightData): PointLight {
-		const light = new PointLight(lightData.color, lightData.state !== Enums.LightStatus.LightStateOff ? lightData.intensity : 0, lightData.falloff * ThreeRenderApi.SCALE, 2);
+		const light = new PointLight(lightData.color, lightData.state !== Enums.LightStatus.LightStateOff ? lightData.intensity * ThreeLightGenerator.BULB_FACTOR : 0, lightData.falloff * ThreeRenderApi.SCALE, 2);
 		light.name = `light`;
 		light.color.set(lightData.color);
 		light.updateMatrixWorld();
@@ -51,35 +54,23 @@ export class ThreeLightGenerator {
 		}
 		for (const lightObj of obj.children) {
 			if (lightObj.name === 'light') {
-				if (state.intensity) {
-					(lightObj as PointLight).intensity = state.intensity;
-				}
-				if (state.color) {
-					(lightObj as PointLight).color.set(state.color);
-				}
+				const pointLight = lightObj as PointLight;
+				pointLight.intensity = state.intensity * ThreeLightGenerator.BULB_FACTOR;
+				pointLight.color.set(state.color);
 			}
 			if (lightObj.name === 'bulb.light') {
-				if (state.intensity) {
-					((lightObj as ThreeMesh).material as MeshStandardMaterial).emissiveIntensity = state.intensity / initialIntensity;
-				}
-				if (state.color) {
-					((lightObj as ThreeMesh).material as MeshStandardMaterial).color.set(state.color);
-					((lightObj as ThreeMesh).material as MeshStandardMaterial).emissive.set(state.color);
-				}
+				const bulb = lightObj as ThreeMesh;
+				const bulbMat = bulb.material as MeshStandardMaterial;
+				bulbMat.emissiveIntensity = state.intensity / initialIntensity;
+				bulbMat.color.set(state.color);
+				bulbMat.emissive.set(state.color);
 			}
 			if (lightObj.name === 'surface.light') {
 				const mat = ((lightObj as ThreeMesh).material as MeshStandardMaterial);
-				if (state.intensity) {
-					const intensity = state.intensity / initialIntensity;
-					mat.emissiveIntensity = intensity * ThreeLightGenerator.EMISSIVE_MAP_FACTOR;
-					mat.blending = AdditiveBlending;
-					const hsl: any = {};
-					mat.emissive.getHSL(hsl);
-					mat.emissive.setHSL(hsl.h, hsl.s, intensity);
-				}
-				if (state.color) {
-					mat.emissive.set(state.color);
-				}
+				mat.emissiveIntensity = state.intensity * ThreeLightGenerator.EMISSIVE_MAP_FACTOR;
+				mat.emissive.set(state.color);
+				mat.emissive.getHSL(this.hsl);
+				mat.emissive.setHSL(this.hsl.h, this.hsl.s, this.hsl.l * 1.25);
 			}
 		}
 	}

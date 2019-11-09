@@ -210,6 +210,30 @@ export class Player extends EventEmitter {
 		this.physics.emu = emu;
 	}
 
+	public hasDmd(): boolean {
+		return !!this.physics.emu && !!this.physics.emu.getDmdDimensions();
+	}
+
+	public getDmdDimensions(): Vertex2D {
+		return this.physics.emu!.getDmdDimensions();
+	}
+
+	public getDmdFrame(): Uint8Array {
+		return this.physics.emu!.getDmdFrame();
+	}
+
+	public setCabinetInput(keyNr: number) {
+		if (this.physics.emu) {
+			this.physics.emu.setCabinetInput(keyNr);
+		}
+	}
+
+	public setSwitchInput(switchNr: number, optionalEnableSwitch?: boolean) {
+		if (this.physics.emu) {
+			this.physics.emu.setSwitchInput(switchNr, optionalEnableSwitch)
+		}
+	}
+
 	/**
 	 * Sets the dimensions of the render frame.
 	 *

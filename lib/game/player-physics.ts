@@ -104,6 +104,7 @@ export class PlayerPhysics {
 	/**
 	 * Player physics are instantiated in the Player's constructor.
 	 * @param table
+	 * @param pinInput
 	 */
 	constructor(table: Table, pinInput: PinInput) {
 		this.table = table;
@@ -405,7 +406,8 @@ export class PlayerPhysics {
 
 			// emulator loop
 			if (this.emu) {
-				this.emu.emuSimulateCycle(physicsDiffTime);
+				const deltaTimeMs = physicsDiffTime * 10;
+				this.emu.emuSimulateCycle(deltaTimeMs);
 			}
 
 			this.updateVelocities();

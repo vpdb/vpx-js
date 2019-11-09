@@ -49,7 +49,8 @@
 		"pngquant": "^3.0.0",
 		"sharp": "^0.23.0",
 		"text-encoding": "^0.7.0",
-		"three": "^0.109.0"
+		"three": "^0.109.0",
+		"wpc-emu": "github:neophob/wpc-emu#43d2ebceec5a9d19941fd06af0288c46789c54c6"
 	},
 	"devDependencies": {
 		"@types/chai": "4.2.4",
@@ -71,6 +72,8 @@
 		"microtime": "3.0.0",
 		"mocha": "6.2.2",
 		"nearley": "2.19.0",
+		"nock": "^11.7.0",
+		"node-fetch": "^2.6.0",
 		"nyc": "14.1.1",
 		"rimraf": "3.0.0",
 		"sinon": "7.5.0",
