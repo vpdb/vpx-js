@@ -18,22 +18,38 @@
  */
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { Vertex2D } from '../math/vertex2d';
 import { Emulator } from './wpc-emu';
+import { GamelistDB, WpcEmuApi, WpcEmuWebWorkerApi } from 'wpc-emu';
+
+const mockGameEntry: GamelistDB.GameEntry = {
+	name: 'foo',
+	rom: {
+		u06: 'lala'
+	}
+};
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
 describe('WPC-EMU', () => {
 
+	const sandbox = sinon.createSandbox();
 	let emulator: Emulator;
+	let mockEmu: MockWpcEmulator;
 
 	beforeEach(() => {
+		mockEmu = new MockWpcEmulator();
+		sandbox.stub(WpcEmuApi, 'initVMwithRom').resolves(mockEmu);
 		emulator = new Emulator();
 	});
 
-	//TODO this fails due wpc-emu module loader
-	it.skip('getVersion should be defined', () => {
+	afterEach(() => {
+		sandbox.restore();
+	})
+
+	it('should getVersion', () => {
 		const result: string = emulator.getVersion();
 		expect(result.length > 4).to.equal(true);
 	});
@@ -54,7 +70,7 @@ describe('WPC-EMU', () => {
 		});
 	});
 
-	it('getDmdDimensions should return correct size', () => {
+	it('should return correct sized DmdDimensions', () => {
 		const result: Vertex2D = emulator.getDmdDimensions();
 		expect(result.x).to.equal(128);
 		expect(result.y).to.equal(32);
@@ -70,4 +86,53 @@ describe('WPC-EMU', () => {
 		expect(executedSteps).to.equal(0);
 	});
 
+	it('should load the emulator', async () => {
+		await emulator.loadGame(mockGameEntry, new Uint8Array())
+		expect(mockEmu.executedCyclesMs).to.equal(1000);
+		expect(mockEmu.cabinetInput).to.deep.equal([ 16 ]);
+	});
+
 });
+
+class MockWpcEmulator implements WpcEmuApi.Emulator {
+	public executedCyclesMs: number = 0;
+	public cabinetInput: number[] = [];
+	start(): void {
+		throw new Error("Method not implemented.");
+	}
+	getUiState(includeExpensiveData?: boolean): WpcEmuWebWorkerApi.EmuState {
+		throw new Error("Method not implemented.");
+	}
+	getState(): WpcEmuWebWorkerApi.EmuState {
+		throw new Error("Method not implemented.");
+	}
+	setState(stateObject: WpcEmuWebWorkerApi.EmuState): void {
+		throw new Error("Method not implemented.");
+	}
+	registerAudioConsumer(callbackFunction: (sampleId: number) => void): void {
+		throw new Error("Method not implemented.");
+	}
+	executeCycle(ticksToRun: number, tickSteps: number): number {
+		throw new Error("Method not implemented.");
+	}
+	executeCycleForTime(advanceByMs: number, tickSteps: number): number {
+		this.executedCyclesMs += advanceByMs;
+		return 0;
+	}
+	setCabinetInput(value: number): void {
+		this.cabinetInput.push(value);
+	}
+	setSwitchInput(switchNr: number, optionalValue?: boolean): void {
+		throw new Error("Method not implemented.");
+	}
+	setFliptronicsInput(value: string): void {
+		throw new Error("Method not implemented.");
+	}
+	toggleMidnightMadnessMode(): void {
+		throw new Error("Method not implemented.");
+	}
+	reset(): void {	}
+	version(): string {
+		throw new Error("Method not implemented.");
+	}
+}
