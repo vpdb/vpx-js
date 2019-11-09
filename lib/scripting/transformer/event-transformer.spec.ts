@@ -52,6 +52,13 @@ describe('The scripting event transformer', () => {
 		expect(js).to.equal(`Wire_Rectangle.on('Init', () => {\n    BallRelease.CreateBall();\n});`);
 	});
 
+	it('should transform when the event name has a different case', () => {
+		const vbs = `Sub WireRectangle_init()\nBallRelease.CreateBall\nEnd Sub\n`;
+		const js = transform(vbs, table);
+		expect(js).to.equal(`WireRectangle.on('Init', () => {\n    BallRelease.CreateBall();\n});`);
+	});
+
+
 	it('should not transform an invalid event on a valid item', () => {
 		const vbs = `Sub WireRectangle_DuhDah()\nBallRelease.CreateBall\nEnd Sub\n`;
 		const js = transform(vbs, table);

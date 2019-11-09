@@ -75,7 +75,8 @@ export class EventTransformer extends Transformer {
 				}
 
 				// table item must support given event
-				if (!this.items[objName].getEventNames().includes(eventName)) {
+				const existingEventName = matchEventName(this.items[objName].getEventNames(), eventName);
+				if (!existingEventName) {
 					return node;
 				}
 
@@ -85,11 +86,19 @@ export class EventTransformer extends Transformer {
 						identifier('on'),
 					),
 					[
-						literal(eventName),
+						literal(existingEventName),
 						arrowFunctionExpression(false, functionNode.body, functionNode.params),
 					],
 				));
 			},
 		}) as Program;
+	}
+}
+
+function matchEventName(eventNames: string[], nameToMatch: string): string | undefined {
+	for (const eventName of eventNames) {
+		if (eventName.toLowerCase() === nameToMatch.toLowerCase()) {
+			return eventName;
+		}
 	}
 }
