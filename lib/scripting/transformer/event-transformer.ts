@@ -61,10 +61,13 @@ export class EventTransformer extends Transformer {
 				}
 
 				// must have a _Event suffix
-				const [objName, eventName] = functionNode.id.name.split('_');
-				if (!eventName) {
+				if (!functionNode.id.name.includes('_')) {
 					return node;
 				}
+
+				// split on last index
+				const objName = functionNode.id.name.substr(0, functionNode.id.name.lastIndexOf('_'));
+				const eventName = functionNode.id.name.substr(functionNode.id.name.lastIndexOf('_') + 1);
 
 				// table item must exist
 				if (!this.items[objName]) {
