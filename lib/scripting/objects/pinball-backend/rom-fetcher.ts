@@ -5,45 +5,42 @@ import { logger } from '../../../util/logger';
  * Functions to fetch a WPC ROM file from VPDB.io
  */
 
-export function downloadGameEntry(pinmameGameName: string): Promise<LoadedGameEntry> {
+export async function downloadGameEntry(pinmameGameName: string): Promise<LoadedGameEntry> {
 	const gameEntry = GamelistDB.getByPinmameName(pinmameGameName);
 	if (!gameEntry) {
-		return Promise.reject(new Error('GAME_ENTRY_NOT_FOUND_' + pinmameGameName));
+		throw(new Error('GAME_ENTRY_NOT_FOUND_' + pinmameGameName));
 	}
 	const url: string = buildVpdbGameEntryUrl(gameEntry.pinmame.vpdbId || gameEntry.pinmame.id);
-	return downloadFileAsJson(url)
-		.then((jsonData: VpdbGameEntry[]) => {
-			if (!Array.isArray(jsonData)) {
-				return Promise.reject(new Error('VPDB_INVALID_ANSWER'));
-			}
-			const result = jsonData.find((vpdbEntry: VpdbGameEntry) => vpdbEntry.id === pinmameGameName);
-			if (!result) {
-				return Promise.reject(new Error('VPDB_GAME_ENTRY_NOT_FOUND'));
-			}
-			logger().debug(pinmameGameName, 'VPDB RESULT:', jsonData);
 
-			const romSet = findRomSet(jsonData, pinmameGameName);
-			if (!romSet) {
-				return Promise.reject(new Error('VPDB_ROMSET_ENTRY_NOT_FOUND'));
-			}
-			logger().debug(pinmameGameName, 'VPDB romSet:', romSet);
+	const jsonData = await downloadFileAsJson(url);
+	if (!Array.isArray(jsonData)) {
+		throw(new Error('VPDB_INVALID_ANSWER'));
+	}
+	const result = jsonData.find((vpdbEntry: VpdbGameEntry) => vpdbEntry.id === pinmameGameName);
+	if (!result) {
+		throw(new Error('VPDB_GAME_ENTRY_NOT_FOUND'));
+	}
+	logger().debug(pinmameGameName, 'VPDB RESULT:', jsonData);
 
-			const romName = findMainRomFilename(romSet);
-			if (!romName) {
-				return Promise.reject(new Error('VPDB_ROM_TYPE_NOT_FOUND'));
-			}
-			logger().debug(pinmameGameName, 'VPDB romName:', romName);
+	const romSet = findRomSet(jsonData, pinmameGameName);
+	if (!romSet) {
+		throw(new Error('VPDB_ROMSET_ENTRY_NOT_FOUND'));
+	}
+	logger().debug(pinmameGameName, 'VPDB romSet:', romSet);
 
-			const romUrl = buildVpdbGameRomUrl(romSet.file.url, romName);
-			logger().debug('load rom from', romUrl, ', # downloads', romSet.file.counter.downloads);
-			return downloadFileAsUint8Array(romUrl);
-		})
-		.then((romFile: Uint8Array) => {
-			return {
-				wpcDbEntry: gameEntry,
-				romFile,
-			};
-		});
+	const romName = findMainRomFilename(romSet);
+	if (!romName) {
+		throw(new Error('VPDB_ROM_TYPE_NOT_FOUND'));
+	}
+	logger().debug(pinmameGameName, 'VPDB romName:', romName);
+
+	const romUrl = buildVpdbGameRomUrl(romSet.file.url, romName);
+	logger().debug('load rom from', romUrl, ', # downloads', romSet.file.counter.downloads);
+	const romFile = await downloadFileAsUint8Array(romUrl);
+	return {
+		wpcDbEntry: gameEntry,
+		romFile,
+	};
 }
 
 function findMainRomFilename(romSet: VpdbGameEntry): string {
@@ -66,24 +63,21 @@ function buildVpdbGameEntryUrl(id: string): string {
 	return `https://api.vpdb.io/v1/games/${id}/roms/`;
 }
 
-function downloadFileAsJson(url: string): Promise<VpdbGameEntry[]> {
-	return fetch(url).then((response: Response) => {
-		if (!response.ok) {
-			return Promise.reject(new Error('HTTP error, status = ' + response.status));
-		}
-		return response.json();
-	});
+async function downloadFileAsJson(url: string): Promise<VpdbGameEntry[]> {
+	const response: Response = await fetch(url);
+	if (!response.ok) {
+		throw(new Error('HTTP error, status = ' + response.status));
+	}
+	return response.json();
 }
 
-function downloadFileAsUint8Array(url: string): Promise<Uint8Array> {
-	return fetch(url).then((response: Response) => {
-		if (!response.ok) {
-			return Promise.reject(new Error('HTTP error, status = ' + response.status));
-		}
-		return response.arrayBuffer();
-	}).then((arrayBuffer) => {
-		return new Uint8Array(arrayBuffer);
-	});
+async function downloadFileAsUint8Array(url: string): Promise<Uint8Array> {
+	const response: Response = await fetch(url);
+	if (!response.ok) {
+		throw(new Error('HTTP error, status = ' + response.status));
+	}
+	const arrayBuffer = await response.arrayBuffer();
+	return new Uint8Array(arrayBuffer);
 }
 
 export interface LoadedGameEntry {
