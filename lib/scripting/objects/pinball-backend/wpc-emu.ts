@@ -20,7 +20,6 @@
 import { GamelistDB, WpcEmuApi, WpcEmuWebWorkerApi } from 'wpc-emu';
 import { IEmulator } from '../../../game/iemulator';
 import { Vertex2D } from '../../../math/vertex2d';
-import { logger } from '../../../util/logger';
 import { CacheType, EmulatorCachingService } from './caching-service';
 import { EmulatorState } from './emulator-state';
 
@@ -30,15 +29,13 @@ const WPC_EMU_INCLUDE_RAM_AND_VIDEORAM_DATA = false;
  * Provides an interface to WPC-EMU
  */
 export class Emulator implements IEmulator {
-	public readonly emulatorState: EmulatorState;
-	private emulator?: WpcEmuApi.Emulator;
-	private emulatorCachingService: EmulatorCachingService;
+	public readonly emulatorState: EmulatorState = new EmulatorState();
+	private emulator?: WpcEmuApi.Emulator = undefined;
+	private readonly emulatorCachingService: EmulatorCachingService = new EmulatorCachingService();
 	private readonly dmdSize = new Vertex2D(128, 32);
 
 	constructor() {
 		this.emulator = undefined;
-		this.emulatorState = new EmulatorState();
-		this.emulatorCachingService = new EmulatorCachingService();
 	}
 
 	public loadGame(gameEntry: GamelistDB.GameEntry, romContent: Uint8Array) {

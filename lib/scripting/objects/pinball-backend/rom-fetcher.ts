@@ -6,7 +6,7 @@ import { logger } from '../../../util/logger';
  */
 
 export function downloadGameEntry(pinmameGameName: string): Promise<LoadedGameEntry> {
-	const gameEntry: undefined | GamelistDB.ClientGameEntry = GamelistDB.getByPinmameName(pinmameGameName);
+	const gameEntry = GamelistDB.getByPinmameName(pinmameGameName);
 	if (!gameEntry) {
 		return Promise.reject(new Error('GAME_ENTRY_NOT_FOUND_' + pinmameGameName));
 	}
@@ -16,25 +16,25 @@ export function downloadGameEntry(pinmameGameName: string): Promise<LoadedGameEn
 			if (!Array.isArray(jsonData)) {
 				return Promise.reject(new Error('VPDB_INVALID_ANSWER'));
 			}
-			const result: VpdbGameEntry | void = jsonData.find((vpdbEntry: VpdbGameEntry) => vpdbEntry.id === pinmameGameName);
+			const result = jsonData.find((vpdbEntry: VpdbGameEntry) => vpdbEntry.id === pinmameGameName);
 			if (!result) {
 				return Promise.reject(new Error('VPDB_GAME_ENTRY_NOT_FOUND'));
 			}
 			logger().debug(pinmameGameName, 'VPDB RESULT:', jsonData);
 
-			const romSet: VpdbGameEntry | void = findRomSet(jsonData, pinmameGameName);
+			const romSet = findRomSet(jsonData, pinmameGameName);
 			if (!romSet) {
 				return Promise.reject(new Error('VPDB_ROMSET_ENTRY_NOT_FOUND'));
 			}
 			logger().debug(pinmameGameName, 'VPDB romSet:', romSet);
 
-			const romName: string | undefined = findMainRomFilename(romSet);
+			const romName = findMainRomFilename(romSet);
 			if (!romName) {
 				return Promise.reject(new Error('VPDB_ROM_TYPE_NOT_FOUND'));
 			}
 			logger().debug(pinmameGameName, 'VPDB romName:', romName);
 
-			const romUrl: string = buildVpdbGameRomUrl(romSet.file.url, romName);
+			const romUrl = buildVpdbGameRomUrl(romSet.file.url, romName);
 			logger().debug('load rom from', romUrl, ', # downloads', romSet.file.counter.downloads);
 			return downloadFileAsUint8Array(romUrl);
 		})
@@ -46,7 +46,7 @@ export function downloadGameEntry(pinmameGameName: string): Promise<LoadedGameEn
 		});
 }
 
-function findMainRomFilename(romSet: VpdbGameEntry): string | undefined {
+function findMainRomFilename(romSet: VpdbGameEntry): string {
 	const vpdbGameRomEntry: VpdbGameRomEntry | undefined = romSet.rom_files.find((entry: VpdbGameRomEntry) => entry.type === 'main');
 	if (!vpdbGameRomEntry) {
 		return '';

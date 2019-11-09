@@ -54,22 +54,27 @@ export class EmulatorCachingService {
 	public applyCache(emulator: IEmulator): void {
 		this.clearedCache = true;
 		logger().debug('Apply cached commands to emu', this.cache.length);
-		this.cache.forEach((cacheEntry: CacheEntry) => {
+		for (const cacheEntry of this.cache) {
 			switch (cacheEntry.cacheType) {
 				case CacheType.SetSwitchInput:
-					return emulator.setSwitchInput(cacheEntry.value, true);
+					emulator.setSwitchInput(cacheEntry.value, true);
+					break;
 				case CacheType.ClearSwitchInput:
-					return emulator.setSwitchInput(cacheEntry.value, false);
+					emulator.setSwitchInput(cacheEntry.value, false);
+					break;
 				case CacheType.ToggleSwitchInput:
-					return emulator.setSwitchInput(cacheEntry.value);
+					emulator.setSwitchInput(cacheEntry.value);
+					break;
 				case CacheType.CabinetInput:
-					return emulator.setCabinetInput(cacheEntry.value);
+					emulator.setCabinetInput(cacheEntry.value);
+					break;
 				case CacheType.ExecuteTicks:
-					return emulator.emuSimulateCycle(cacheEntry.value);
+					emulator.emuSimulateCycle(cacheEntry.value);
+					break;
 				default:
 					logger().warn('UNKNOWN CACHE TYPE', cacheEntry.cacheType);
 			}
-		});
+		}
 	}
 }
 

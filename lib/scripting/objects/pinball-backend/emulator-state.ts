@@ -28,25 +28,14 @@ function getEmptyUint8Array(size: number = 64) {
  */
 export class EmulatorState {
 
-	private currentLampState: Uint8Array;
-	private currentSolenoidState: Uint8Array;
-	private currentGIState: Uint8Array;
-	private lastSentLampState: Uint8Array;
-	private lastSentSolenoidState: Uint8Array;
-	private lastSentGIState: Uint8Array;
-	private dmdScreen: Uint8Array;
-	private switchState: Uint8Array;
-
-	constructor() {
-		this.lastSentLampState = getEmptyUint8Array();
-		this.lastSentSolenoidState = getEmptyUint8Array();
-		this.lastSentGIState = getEmptyUint8Array();
-		this.currentLampState = getEmptyUint8Array();
-		this.currentSolenoidState = getEmptyUint8Array();
-		this.currentGIState = getEmptyUint8Array();
-		this.dmdScreen = new Uint8Array();
-		this.switchState = new Uint8Array();
-	}
+	private currentLampState: Uint8Array = getEmptyUint8Array();
+	private currentSolenoidState: Uint8Array = getEmptyUint8Array();
+	private currentGIState: Uint8Array = getEmptyUint8Array();
+	private lastSentLampState: Uint8Array = getEmptyUint8Array();
+	private lastSentSolenoidState: Uint8Array = getEmptyUint8Array();
+	private lastSentGIState: Uint8Array = getEmptyUint8Array();
+	private dmdScreen: Uint8Array = new Uint8Array();
+	private switchState: Uint8Array = new Uint8Array();
 
 	public updateState(state: WpcEmuWebWorkerApi.EmuStateAsic) {
 		if (state.wpc.lampState) {
@@ -134,9 +123,6 @@ export class EmulatorState {
 	 */
 	private getArrayDiff(lastState: Uint8Array, newState: Uint8Array, offsetMapperFunction: (index: number) => number): number[][] {
 		const result: number[][] = [];
-		if (arraysEqual(lastState, newState)) {
-			return result;
-		}
 		for (let n: number = 0; n < newState.length; n++) {
 			if (lastState[n] !== newState[n]) {
 				const index = offsetMapperFunction(n);
@@ -155,19 +141,4 @@ function mapIndexToMatrixIndex(index: number): number {
 
 function mapIndexToOneBasedIndex(index: number): number {
 	return index + 1;
-}
-
-function arraysEqual(a: Uint8Array, b: Uint8Array): boolean {
-	if (a === b) {
-		return true;
-	}
-	if (!a || !b || a.length !== b.length) {
-		return false;
-	}
-	for (let i = 0; i < a.length; ++i) {
-		if (a[i] !== b[i]) {
-			return false;
-		}
-	}
-	return true;
 }
