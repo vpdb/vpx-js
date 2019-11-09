@@ -38,19 +38,18 @@ export class Emulator implements IEmulator {
 		this.emulator = undefined;
 	}
 
-	public loadGame(gameEntry: GamelistDB.GameEntry, romContent: Uint8Array) {
+	public async loadGame(gameEntry: GamelistDB.GameEntry, romContent: Uint8Array) {
 		const romData: GamelistDB.RomData = { u06: romContent };
-		return WpcEmuApi.initVMwithRom(romData, gameEntry)
-			.then((emulator: WpcEmuApi.Emulator) => {
-				this.emulator = emulator;
-				this.emulator.reset();
-				// Let the ROM boot, run for 1000ms
-				this.emulator.executeCycleForTime(1000, 4);
-				// Set initial state for emulator and press ESC to remove the initial
-				// message that the RAM was cleared
-				this.emulatorCachingService.cacheState(CacheType.CabinetInput, 16);
-				this.emulatorCachingService.applyCache(this);
-			});
+		const emulator = await WpcEmuApi.initVMwithRom(romData, gameEntry)
+
+		this.emulator = emulator;
+		this.emulator.reset();
+		// Let the ROM boot, run for 1000ms
+		this.emulator.executeCycleForTime(1000, 4);
+		// Set initial state for emulator and press ESC to remove the initial
+		// message that the RAM was cleared
+		this.emulatorCachingService.cacheState(CacheType.CabinetInput, 16);
+		this.emulatorCachingService.applyCache(this);
 	}
 
 	public isInitialized(): boolean {
