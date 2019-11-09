@@ -22,6 +22,7 @@ import { IEmulator } from '../game/iemulator';
 import { Vertex2D } from '../math/vertex2d';
 import { EmulatorMessageQueue, MessageType } from './emulator-message-queue';
 import { EmulatorState } from './emulator-state';
+import { OffsetIndex } from './offset-index';
 
 const WPC_EMU_INCLUDE_RAM_AND_VIDEORAM_DATA = false;
 
@@ -84,11 +85,17 @@ export class Emulator implements IEmulator {
 	}
 
 	public getSwitchInput(switchNr: number): number {
-		return this.emulatorState.getSwitchState(switchNr);
+		const index = OffsetIndex.fromWpcMatrix(switchNr);
+		return this.emulatorState.getSwitchState(index);
 	}
 
+	/**
+	 *
+	 * @param lampNr WPC-Numbering (11..88)
+	 */
 	public getLampState(lampNr: number): number {
-		return this.emulatorState.getLampState(lampNr);
+		const index = OffsetIndex.fromWpcMatrix(lampNr);
+		return this.emulatorState.getLampState(index);
 	}
 
 	public getSolenoidState(SolenoidNr: number): number {
