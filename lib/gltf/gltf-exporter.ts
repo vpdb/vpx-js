@@ -1064,7 +1064,7 @@ export class GLTFExporter {
 
 		if (originalNormal !== undefined && !this.isNormalizedNormalAttribute(originalNormal)) {
 			logger().warn('[GLTFExporter.processMesh] Creating normalized normal attribute from the non-normalized one (%s).', mesh.name);
-			(geometry as BufferGeometry).addAttribute('normal', this.createNormalizedNormalAttribute(originalNormal as BufferAttribute));
+			(geometry as BufferGeometry).setAttribute('normal', this.createNormalizedNormalAttribute(originalNormal as BufferAttribute));
 		}
 
 		// @QUESTION Detect if .vertexColors = VertexColors?
@@ -1100,7 +1100,7 @@ export class GLTFExporter {
 		}
 
 		if (originalNormal !== undefined) {
-			(geometry as BufferGeometry).addAttribute('normal', originalNormal);
+			(geometry as BufferGeometry).setAttribute('normal', originalNormal);
 		}
 
 		// Skip if no exportable attributes found

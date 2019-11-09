@@ -90,17 +90,17 @@ export class ThreeMeshGenerator {
 		const bufferGeometry = ThreeRenderApi.POOL.BufferGeometry.get();
 
 		bufferGeometry.name = mesh.name;
-		bufferGeometry.addAttribute('position', RecyclableFloat32BufferAttribute.claim(geometry.vertices, 3));
+		bufferGeometry.setAttribute('position', RecyclableFloat32BufferAttribute.claim(geometry.vertices, 3));
 
 		if (geometry.normals.length > 0) {
-			bufferGeometry.addAttribute('normal', RecyclableFloat32BufferAttribute.claim(geometry.normals, 3));
+			bufferGeometry.setAttribute('normal', RecyclableFloat32BufferAttribute.claim(geometry.normals, 3));
 
 		} else {
 			bufferGeometry.computeVertexNormals();
 		}
 
 		if (geometry.uvs.length > 0) {
-			bufferGeometry.addAttribute('uv', RecyclableFloat32BufferAttribute.claim(geometry.uvs, 2));
+			bufferGeometry.setAttribute('uv', RecyclableFloat32BufferAttribute.claim(geometry.uvs, 2));
 		}
 
 		ParserState.release(state);
@@ -276,7 +276,6 @@ class RecyclableFloat32BufferAttribute extends Float32BufferAttribute {
 		this.count = array.length / itemSize;
 		this.normalized = normalized === true;
 
-		this.dynamic = false;
 		this.updateRange.offset = 0;
 		this.updateRange.count = -1;
 

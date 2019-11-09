@@ -19,6 +19,11 @@
 
 import { VbsApi } from '../vbs-api';
 
+/**
+ * The global error object.
+ *
+ * @see https://docs.microsoft.com/en-us/dotnet/visual-basic/language-reference/statements/on-error-statement
+ */
 export class Err extends VbsApi {
 
 	/**
