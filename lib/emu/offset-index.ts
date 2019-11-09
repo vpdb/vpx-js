@@ -25,13 +25,31 @@ export class OffsetIndex {
 	public readonly wpcMatrixIndex: number;
 
 	public static fromZeroBased(zeroBasedIndex: number): OffsetIndex {
-		const wpcMatrixIndex = mapIndexToMatrixIndex(zeroBasedIndex);
+		const wpcMatrixIndex = OffsetIndex.mapIndexToMatrixIndex(zeroBasedIndex);
 		return new OffsetIndex(zeroBasedIndex, wpcMatrixIndex);
 	}
 
 	public static fromWpcMatrix(wpcMatrixIndex: number): OffsetIndex {
-		const zeroBasedIndex = mapMatrixIndexToIndex(wpcMatrixIndex);
+		const zeroBasedIndex = OffsetIndex.mapMatrixIndexToIndex(wpcMatrixIndex);
 		return new OffsetIndex(zeroBasedIndex, wpcMatrixIndex);
+	}
+
+ 	/**
+ 	 * convert zero based index to matrix input, 0 -> 11, 8 -> 21
+	 */
+	public static mapIndexToMatrixIndex(index: number): number {
+		const row = Math.floor(index / 8);
+		const column = Math.floor(index % 8);
+		return 10 * row + 11 + column;
+	}
+
+	/**
+ 	 * convert matrix index to zero based input, 11 -> 0, 21 -> 8
+ 	 */
+	public static mapMatrixIndexToIndex(index: number): number {
+		const row = Math.floor((index - 11) / 10);
+		const column = Math.floor((index - 11) % 10);
+		return 8 * row + column;
 	}
 
 	constructor(zeroBasedIndex: number, wpcMatrixIndex: number) {
@@ -41,22 +59,4 @@ export class OffsetIndex {
 			throw new Error('NEGATIVE_INDEX_DETECTED');
 		}
 	}
-}
-
- /**
- * convert zero based index to matrix input, 0 -> 11, 8 -> 21
- */
-function mapIndexToMatrixIndex(index: number): number {
-	const row = Math.floor(index / 8);
-	const column = Math.floor(index % 8);
-	return 10 * row + 11 + column;
-}
-
-/**
- * convert matrix index to zero based input, 11 -> 0, 21 -> 8
- */
-function mapMatrixIndexToIndex(index: number): number {
-	const row = Math.floor((index - 11) / 10);
-	const column = Math.floor((index - 11) % 10);
-	return 8 * row + column;
 }
