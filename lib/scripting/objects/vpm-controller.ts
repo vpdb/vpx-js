@@ -52,6 +52,11 @@ export class VpmController {
 			(index) => this.emulator.getSolenoidState(index), SET_NOP);
 		this.GIString = this.createGetSetNumberProxy('GI',
 			(index) => this.emulator.getGIState(index), SET_NOP);
+
+		// those function get called by the vbs-helper.ts script (getOrCall). To make sure
+		// their scope is correct, we bind them here!
+		this.Run = this.Run.bind(this);
+		this.Stop = this.Stop.bind(this);
 	}
 
 	// Control
