@@ -17,9 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Logger } from '../lib/util/logger';
+import { Logger, Progress } from '../lib/util/logger';
 
 before(() => {
+
 	// disable logging
 	Logger.setLogger({
 		debug(format: any, ...param: any[]): void {},
@@ -29,4 +30,12 @@ before(() => {
 		warn(format: any, ...param: any[]): void {},
 		wtf(format: any, ...param: any[]): void {}
 	});
+
+	// disable progress
+	Progress.setProgress({
+		details(details: string): void {},
+		end(id: string): void {},
+		show(action: string, details?: string): void {},
+		start(id: string, title: string): void {},
+	})
 });

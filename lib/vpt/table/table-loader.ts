@@ -51,7 +51,7 @@ export class TableLoader {
 	private doc!: OleCompoundDoc;
 
 	public async load(reader: IBinaryReader, opts: TableLoadOptions = {}): Promise<LoadedTable> {
-		progress().start('table.load', 'table', 'Loading data from VPX file');
+		progress().start('table.load', 'Loading VPX file');
 		const then = Date.now();
 		this.doc = await OleCompoundDoc.load(reader);
 		try {
@@ -134,13 +134,14 @@ export class TableLoader {
 		loadedTable.dispReels = [];
 
 		// go through all game items
+		progress().show('Loading game items');
 		for (let i = 0; i < numItems; i++) {
-			progress().start('table.load.item', 'table.load', `GameItem${i}`);
 			const itemName = `GameItem${i}`;
 			const itemData = await storage.read(itemName, 0, 4);
 			const itemType = itemData.readInt32LE(0);
 			const item = await this.loadItem(loadedTable, storage, itemName, itemType, opts);
 			if (item) {
+				progress().details(item.getName());
 				loadedTable.items[item.getName()] = item;
 			}
 			if (!stats[ItemData.getType(itemType)]) {
@@ -148,7 +149,6 @@ export class TableLoader {
 			} else {
 				stats[ItemData.getType(itemType)]++;
 			}
-			progress().end('table.load.item');
 		}
 		return stats;
 	}
@@ -281,13 +281,13 @@ export class TableLoader {
 	}
 
 	private async loadTextures(loadedTable: LoadedTable, storage: Storage, numItems: number): Promise<void> {
+		progress().show('Loading textures');
 		loadedTable.textures = [];
 		for (let i = 0; i < numItems; i++) {
-			progress().start('table.load.texture', 'table.load', `Image${i}`);
 			const itemName = `Image${i}`;
 			const texture = await Texture.fromStorage(storage, itemName);
 			loadedTable.textures.push(texture);
-			progress().end('table.load.texture');
+			progress().details(texture.getName());
 		}
 	}
 

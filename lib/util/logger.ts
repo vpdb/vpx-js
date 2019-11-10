@@ -69,29 +69,87 @@ export interface ILogger {
 	debug(format: any, ...param: any[]): void;
 }
 
+/**
+ * The main purpose of this is to indicate in the UI that stuff is being
+ * processed.
+ *
+ * This is currently only used for loading the table, but could be used
+ * anywhere. Typically, calling `start` will pop up a progress dialog and
+ * show what's going on.
+ */
 export class Progress implements IProgress {
+
+	private currentTitle?: string;
+	private currentAction?: string;
+
 	private static instance: IProgress = new Progress();
 
+	/**
+	 * Get the global instance.
+	 */
 	public static progress(): IProgress {
 		return Progress.instance;
 	}
 
-	public static setLogger(l: IProgress) {
-		Progress.instance = l;
+	/**
+	 * Set a new global instance. The default instance, this class,
+	 * just dumps it to the console.
+	 * @param p
+	 */
+	public static setProgress(p: IProgress) {
+		Progress.instance = p;
 	}
 
-	public start(name: string, parent: string | null, format: any, ...param: any[]): void {
-		console.debug.apply(console.log, [ `[progress:${name}] ${format}`, ...param ]);
+	/**
+	 * Indicate the beginning of a new major operation. This is typically the
+	 * title of the progress dialog.
+	 * @param id ID of the operation.
+	 * @param title Displayed text
+	 */
+	public start(id: string, title: string): void {
+		this.currentTitle = title;
 	}
 
-	public end(name: string): void {
+	/**
+	 * Ends a previously started operation. All operation must end, otherwise
+	 * the progress dialog won't hide!
+	 * @param id ID of the operation
+	 */
+	public end(id: string): void {
 	}
 
+	/**
+	 * Show what's currently going on. This is usually displayed on one line,
+	 * where the action is left-aligned, and the details, if given, on the
+	 * right.
+	 *
+	 * @param action Text to display on the left
+	 * @param details Details on the right
+	 */
+	public show(action: string, details?: string): void {
+		this.currentAction = action;
+		this.print(details);
+	}
+
+	/**
+	 * Show a new detail for the current action. This only updates the text
+	 * on the "right" side.
+	 * @param details Details on the right
+	 */
+	public details(details: string): void {
+		this.print(details);
+	}
+
+	private print(details?: string) {
+		logger().error('%s: %s%s', this.currentTitle, this.currentAction, details ? ' (' + details + ')' : '');
+	}
 }
 
 export interface IProgress {
-	start(name: string, parent: string | null, format: any, ...param: any[]): void;
-	end(name: string): void;
+	start(id: string, title: string): void;
+	end(id: string): void;
+	show(action: string, details?: string): void;
+	details(details: string): void;
 }
 
 export const logger = Logger.logger;

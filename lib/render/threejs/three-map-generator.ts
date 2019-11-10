@@ -18,7 +18,7 @@
  */
 
 import { Texture as ThreeTexture } from '../../refs.node';
-import { logger } from '../../util/logger';
+import { logger, progress } from '../../util/logger';
 import { Table } from '../../vpt/table/table';
 import { Texture } from '../../vpt/texture';
 import { ITextureLoader } from '../irender-api';
@@ -41,6 +41,7 @@ export class ThreeMapGenerator {
 		for (const texture of textures) {
 			try {
 				this.textureCache.set(texture.getName(), await texture.loadTexture(this.textureLoader, table));
+				progress().details(texture.getName());
 			} catch (err) {
 				logger().warn('[ThreeMapGenerator.loadTextures] Error loading texture %s (%s/%s): %s', texture.getName(), texture.storageName, texture.getName(), err.message);
 			}

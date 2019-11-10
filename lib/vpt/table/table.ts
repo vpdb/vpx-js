@@ -34,7 +34,7 @@ import { HitObject } from '../../physics/hit-object';
 import { HitPlane } from '../../physics/hit-plane';
 import { IRenderApi } from '../../render/irender-api';
 import { Transpiler } from '../../scripting/transpiler';
-import { logger } from '../../util/logger';
+import { logger, progress } from '../../util/logger';
 import { Bumper } from '../bumper/bumper';
 import { Collection } from '../collection/collection';
 import { Decal } from '../decal/decal';
@@ -417,6 +417,7 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 			logger().warn('Table script is not loaded!');
 			return;
 		}
+		progress().show('Transpiling and executing table script');
 		const transpiler = new Transpiler(this, player);
 		transpiler.execute(this.tableScript, scope);
 		logger().info('Table script loaded, transpiled and executed.');
