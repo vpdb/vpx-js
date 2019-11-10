@@ -20,6 +20,7 @@
 import { GamelistDB, WpcEmuApi, WpcEmuWebWorkerApi } from 'wpc-emu';
 import { IEmulator } from '../game/iemulator';
 import { Vertex2D } from '../math/vertex2d';
+import { logger } from '../util/logger';
 import { EmulatorMessageQueue, MessageType } from './emulator-message-queue';
 import { EmulatorState } from './emulator-state';
 import { OffsetIndex } from './offset-index';
@@ -34,6 +35,7 @@ export class Emulator implements IEmulator {
 	public readonly emulatorState: EmulatorState = new EmulatorState();
 	private readonly emulatorMessageQueue = new EmulatorMessageQueue();
 	private readonly dmdSize = new Vertex2D(128, 32);
+	private paused: boolean = false;
 	private emulator?: WpcEmuApi.Emulator;
 
 	constructor() {
@@ -62,6 +64,14 @@ export class Emulator implements IEmulator {
 		return WpcEmuApi.getVersion();
 	}
 
+	public setPaused(paused: boolean) {
+		this.paused = paused;
+	}
+
+	public getPaused(): boolean {
+		return this.paused;
+	}
+
 	public registerAudioConsumer(callbackFunction: (sampleId: number) => void): void {
 		// TODO store registerAudioConsumer, and use it when emu is started
 		if (!this.emulator) {
@@ -73,6 +83,10 @@ export class Emulator implements IEmulator {
 	public emuSimulateCycle(advanceByMs: number): number {
 		if (!this.emulator) {
 			this.emulatorMessageQueue.addMessage(MessageType.ExecuteTicks, advanceByMs);
+			return 0;
+		}
+		if (this.paused) {
+			logger().debug('PAUSED');
 			return 0;
 		}
 		const executedCycles: number = this.emulator.executeCycleForTime(advanceByMs, 16);
