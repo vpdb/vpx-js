@@ -1,4 +1,3 @@
-
 /*
  * VPDB - Virtual Pinball Database
  * Copyright (C) 2019 freezy <freezy@vpdb.io>
@@ -28,27 +27,20 @@ import { logger } from '../../util/logger';
  *
  * converted VBS will call this functions using bracket notation, like `Controller.Dip[0]` or `Controller.GameName`
  */
-
 export class VpmController {
 
-	private readonly player: Player;
 	private emulator: Emulator;
-	private gameName: string;
-	private splashInfoLine: string;
-	private paused: boolean;
+	private gameName: string = ''
+	private splashInfoLine: string = '';
+	private readonly player: Player;
 	public readonly Dip: { [index: number]: number };
 	public readonly Switch: { [index: number]: number };
 	public readonly Lamp: { [index: number]: number };
 	public readonly Solenoid: { [index: number]: number };
 	public readonly GIString: { [index: number]: number };
 
-	//private gameRomInfoPromise: Promise<Response>;
-
 	constructor(player: Player) {
 		this.player = player;
-		this.gameName = '';
-		this.splashInfoLine = '';
-		this.paused = false;
 		this.emulator = new Emulator();
 		// TODO route this to the emu
 		this.Dip = this.createDipGetter();
@@ -60,7 +52,6 @@ export class VpmController {
 			(index) => this.emulator.getSolenoidState(index), SET_NOP);
 		this.GIString = this.createGetSetNumberProxy('GI',
 			(index) => this.emulator.getGIState(index), SET_NOP);
-		//		this.gameRomInfoPromise = Promise.reject();
 	}
 
 	// Control
@@ -68,29 +59,30 @@ export class VpmController {
 		return this.gameName;
 	}
 	set GameName(gameName: string) {
+		logger().debug('SET GAMENAME:', gameName);
 		this.gameName = gameName;
-		logger().debug('GAMENAME:', gameName);
-		//TODO this is hardwired to test
-		downloadGameEntry(gameName)
-			.then((answer: LoadedGameEntry) => {
-				logger().info('LOADED', answer.wpcDbEntry);
-				return this.emulator.loadGame(answer.wpcDbEntry, answer.romFile);
-			})
-			.then(() => {
-				this.player.setEmulator(this.emulator);
-			})
+		// the VPX interface is sync while this call is async - download the game
+		this._loadGame(this.gameName)
 			.catch((error) => {
-				logger().error('ERROR FAILED', error.messages);
+				logger().error('DOWNLOAD_FAILED:', error.messages);
 			});
 	}
+
+	private async _loadGame(gameName: string) {
+		const answer = await downloadGameEntry(gameName);
+		logger().info('LOADED', answer.wpcDbEntry);
+		await this.emulator.loadGame(answer.wpcDbEntry, answer.romFile);
+		this.player.setEmulator(this.emulator);
+	}
+
 	get Running(): boolean {
-		return this.paused !== true && this.emulator.isInitialized();
+		return this.emulator.getPaused() && this.emulator.isInitialized();
 	}
 	get Pause(): boolean {
-		return this.paused;
+		return this.emulator.getPaused();
 	}
 	set Pause(paused: boolean) {
-		this.paused = paused;
+		this.emulator.setPaused(paused);
 	}
 	/**
 	 * Returns the version number of Visual PinMAME as an 8-digit string "vvmmbbrr":
@@ -119,7 +111,7 @@ export class VpmController {
 		return 0;
 	}
 	set HandleMechanics(mechanicNr: number) {
-		logger().debug('TODO HandleMechanics');
+		logger().debug('TODO HandleMechanics', mechanicNr);
 	}
 	/**
 	 * Determine if game uses WPC Numbering of Switches and Lamps
