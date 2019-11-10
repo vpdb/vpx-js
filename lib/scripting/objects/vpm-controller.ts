@@ -30,7 +30,7 @@ import { logger } from '../../util/logger';
 export class VpmController {
 
 	private emulator: Emulator;
-	private gameName: string = ''
+	private gameName: string = '';
 	private splashInfoLine: string = '';
 	private readonly player: Player;
 	public readonly Dip: { [index: number]: number };
@@ -283,19 +283,19 @@ export class VpmController {
 		getFunction: (prop: number) => number,
 		setFunction: (prop: number, value: boolean) => boolean,
 	): { [index: number]: number } {
-	const handler = {
-		get: (target: {[ index: number ]: number}, prop: number): number => {
-			logger().debug('GET', name, {target, prop});
-			return getFunction(prop);
-		},
+		const handler = {
+			get: (target: {[ index: number ]: number}, prop: number): number => {
+				logger().debug('GET', name, {target, prop});
+				return getFunction(prop);
+			},
 
-		set: (target: {[ index: number ]: number}, prop: number | string, value: boolean): boolean => {
-			logger().debug('SET', name, {target, prop, value});
-			return setFunction(parseInt(prop.toString(), 10), value);
-		},
-	};
-	return new Proxy<{ [index: number ]: number; }>({}, handler);
-}
+			set: (target: {[ index: number ]: number}, prop: number | string, value: boolean): boolean => {
+				logger().debug('SET', name, {target, prop, value});
+				return setFunction(parseInt(prop.toString(), 10), value);
+			},
+		};
+		return new Proxy<{ [index: number ]: number; }>({}, handler);
+		}
 }
 
 function SET_NOP(index: number, value: number): boolean {
