@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { downloadGameEntry, LoadedGameEntry } from '../../emu/rom-fetcher';
+import { downloadGameEntry } from '../../emu/rom-fetcher';
 import { Emulator } from '../../emu/wpc-emu';
 import { Player } from '../../game/player';
 import { logger } from '../../util/logger';
