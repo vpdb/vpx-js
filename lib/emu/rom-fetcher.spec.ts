@@ -19,8 +19,9 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import nock = require('nock');
-import { downloadGameEntry, LoadedGameEntry } from './rom-fetcher';
+import { downloadGameEntry } from './rom-fetcher';
+
+const nock = require('nock');
 const fetch = require('node-fetch');
 
 // Yes hacky way to pollute the global scope!
