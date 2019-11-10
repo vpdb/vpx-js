@@ -28,9 +28,8 @@ import { Table } from '../table/table';
 
 /* tslint:disable:no-unused-expression */
 import sinon = require('sinon');
-import sinonChai = require('sinon-chai');
 
-chai.use(sinonChai);
+chai.use(require('sinon-chai'));
 const three = new ThreeHelper();
 
 describe('The VPinball collection', () => {
@@ -136,7 +135,7 @@ describe('The VPinball collection', () => {
 		let i = 0;
 		for (const item of coll) {
 			i++;
-			expect(item.getName()).to.equal('SuppressEventsTimer' + i);
+			expect(item.Name).to.equal('SuppressEventsTimer' + i);
 		}
 	});
 

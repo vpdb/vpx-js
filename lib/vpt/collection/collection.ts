@@ -23,6 +23,7 @@ import { IScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { Storage } from '../../io/ole-doc';
 import { Item } from '../item';
+import { ItemApi } from '../item-api';
 import { ItemData } from '../item-data';
 import { Table } from '../table/table';
 import { CollectionApi } from './collection-api';
@@ -30,7 +31,7 @@ import { CollectionData } from './collection-data';
 
 export class Collection extends Item<CollectionData> implements IPlayable, IScriptable<CollectionApi> {
 
-	public readonly items: Array<Item<ItemData>> = []; // m_visel
+	public readonly items: Array<ItemApi<ItemData>> = []; // m_visel
 	private api?: CollectionApi;
 
 	// public props

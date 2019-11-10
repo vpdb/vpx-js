@@ -444,7 +444,7 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 				}
 				if (isScriptable(tableItem)) {
 					tableItem.getApi()._addCollection(collection, collection.items.length);
-					collection.items.push(tableItem);
+					collection.items.push(tableItem.getApi());
 				}
 			}
 		}

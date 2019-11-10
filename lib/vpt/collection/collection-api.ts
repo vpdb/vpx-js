@@ -20,16 +20,15 @@
 import { EventProxy } from '../../game/event-proxy';
 import { isScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
-import { Item } from '../item';
 import { ItemApi } from '../item-api';
 import { ItemData } from '../item-data';
 import { Table } from '../table/table';
 import { TimerHit } from '../timer/timer-hit';
 import { CollectionData } from './collection-data';
 
-export class CollectionApi extends ItemApi<CollectionData> implements IterableIterator<Item<ItemData>> {
+export class CollectionApi extends ItemApi<CollectionData> implements IterableIterator<ItemApi<ItemData>> {
 
-	private readonly items: Array<Item<ItemData>>;
+	private readonly items: Array<ItemApi<ItemData>>;
 	private pointer = 0;
 
 	/**
@@ -41,7 +40,7 @@ export class CollectionApi extends ItemApi<CollectionData> implements IterableIt
 	 * @param player
 	 * @param table
 	 */
-	public static getInstance(data: CollectionData, items: Array<Item<ItemData>>, events: EventProxy, player: Player, table: Table): CollectionApi {
+	public static getInstance(data: CollectionData, items: Array<ItemApi<ItemData>>, events: EventProxy, player: Player, table: Table): CollectionApi {
 		return new Proxy<CollectionApi>(new CollectionApi(data, items, events, player, table), {
 			get: (api, prop) => {
 				if (prop === 'length') {
@@ -50,11 +49,7 @@ export class CollectionApi extends ItemApi<CollectionData> implements IterableIt
 				try {
 					const intProp = parseInt(prop as string, 10);
 					if (!isNaN(intProp)) {
-						const child = api.items[intProp];
-						if (isScriptable(child)) {
-							return child.getApi();
-						}
-						return undefined; // non-scriptable children are not supported
+						return api.items[intProp];
 					}
 				} catch (err) {
 					// do nothing but return prop below.
@@ -73,12 +68,12 @@ export class CollectionApi extends ItemApi<CollectionData> implements IterableIt
 		});
 	}
 
-	private constructor(data: CollectionData, items: Array<Item<ItemData>>, events: EventProxy, player: Player, table: Table) {
+	private constructor(data: CollectionData, items: Array<ItemApi<ItemData>>, events: EventProxy, player: Player, table: Table) {
 		super(data, events, player, table);
 		this.items = items;
 	}
 
-	public next(): IteratorResult<Item<ItemData>> {
+	public next(): IteratorResult<ItemApi<ItemData>> {
 		if (this.pointer < this.items.length) {
 			return {
 				done: false,
@@ -97,7 +92,7 @@ export class CollectionApi extends ItemApi<CollectionData> implements IterableIt
 		return [];
 	}
 
-	public [Symbol.iterator](): IterableIterator<Item<ItemData>> {
+	public [Symbol.iterator](): IterableIterator<ItemApi<ItemData>> {
 		return this;
 	}
 
