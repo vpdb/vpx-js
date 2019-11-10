@@ -59,8 +59,8 @@ export class Ball implements IPlayable, IMovable, IRenderable<BallState>, IScrip
 	// ugly hacks
 	public oldVel: Vertex3D = new Vertex3D();
 
-	constructor(data: BallData, state: BallState, initialVelocity: Vertex3D, player: Player, table: Table) {
-		this.id = Ball.idCounter++;
+	constructor(id: number, data: BallData, state: BallState, initialVelocity: Vertex3D, player: Player, table: Table) {
+		this.id = id;
 		this.data = data;
 		this.state = state;
 		this.meshGenerator = new BallMeshGenerator(data);
