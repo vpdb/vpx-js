@@ -20,6 +20,7 @@
 import { IRenderable, RenderInfo } from '../../game/irenderable';
 import { Matrix3D } from '../../math/matrix3d';
 import { BufferGeometry, Group, Matrix4, MeshStandardMaterial, Object3D, PointLight } from '../../refs.node';
+import { progress } from '../../util/logger';
 import { Pool } from '../../util/object-pool';
 import { ItemState } from '../../vpt/item-state';
 import { LightData } from '../../vpt/light/light-data';
@@ -70,6 +71,7 @@ export class ThreeRenderApi implements IRenderApi<Object3D, BufferGeometry, Poin
 	}
 
 	public async preloadTextures(textures: Texture[], table: Table): Promise<void> {
+		progress().show('Pre-loading textures');
 		await this.mapGenerator.loadTextures(textures, table);
 	}
 

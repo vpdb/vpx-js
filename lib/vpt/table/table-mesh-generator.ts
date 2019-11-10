@@ -19,8 +19,8 @@
 
 /* tslint:disable:no-bitwise */
 import { IRenderable } from '../../game/irenderable';
-import { PointLightHelper } from '../../refs.node';
 import { IRenderApi } from '../../render/irender-api';
+import { progress } from '../../util/logger';
 import { Bumper } from '../bumper/bumper';
 import { Flipper } from '../flipper/flipper';
 import { ItemState } from '../item-state';
@@ -40,6 +40,7 @@ export class TableMeshGenerator {
 
 	public generateTableNode<NODE, GEOMETRY, POINT_LIGHT>(renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, opts: TableGenerateOptions = {}): NODE {
 
+		progress().show('Generating table nodes');
 		opts = Object.assign({}, defaultOptions, opts);
 		const tableNode = renderApi.createParentNode('playfield');
 		renderApi.transformScene(tableNode, this.table);
@@ -66,6 +67,7 @@ export class TableMeshGenerator {
 			if (!group.enabled) {
 				continue;
 			}
+			progress().details(group.name);
 			const itemTypeGroup = renderApi.createParentNode(group.name);
 			for (const renderable of group.meshes) {
 				const itemGroup = renderApi.createObjectFromRenderable(renderable, this.table, opts);
