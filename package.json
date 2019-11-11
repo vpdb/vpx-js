@@ -1,11 +1,17 @@
 {
 	"name": "vpx-js",
-	"version": "1.2.0",
+	"version": "1.2.2",
 	"description": "Visual Pinball for Node.js and the Browser",
+	"author": "freezy <freezy@vpdb.io>",
+	"contributors": [
+		"Jason Millard <jsm174@gmail.com>",
+		"Michael Vogt <michael@neeo.com>"
+	],
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/vpdb/vpx-js"
 	},
+	"license": "GPL-2.0",
 	"main": "dist/umd/lib/index.js",
 	"module": "dist/esm/lib/index.js",
 	"types": "dist/esm/lib/index.d.ts",
@@ -28,19 +34,6 @@
 		"lint": "tslint --format stylish --project ./tsconfig.json --config ./lib/tslint.json",
 		"test": "npm run compile && nyc mocha"
 	},
-	"files": [
-		"dist"
-	],
-	"keywords": [
-		"pinball",
-		"visual pinball",
-		"vp10",
-		"vpx",
-		"glb",
-		"gltf"
-	],
-	"author": "freezy <freezy@vpdb.io>",
-	"license": "GPL-2.0",
 	"dependencies": {
 		"buffer": "5.4.3",
 		"es6-promise-pool": "^2.5.0",
@@ -90,6 +83,14 @@
 		"url": "https://github.com/vpdb/vpx-js/issues"
 	},
 	"homepage": "https://github.com/vpdb/vpx-js#readme",
+	"keywords": [
+		"pinball",
+		"visual pinball",
+		"vp10",
+		"vpx",
+		"glb",
+		"gltf"
+	],
 	"nyc": {
 		"require": [
 			"ts-node/register"
