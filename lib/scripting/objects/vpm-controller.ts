@@ -45,7 +45,38 @@ export class VpmController {
 		// TODO route this to the emu
 		this.Dip = this.createDipGetter();
 		this.Switch = this.createGetSetBooleanProxy('SWITCH',
-			(index) => this.emulator.getSwitchInput(index), (switchNr, value) => this.emulator.setSwitchInput(switchNr, value));
+			(index) => this.emulator.getSwitchInput(index), (switchNr, value) => {
+				if (switchNr < 89) {
+					return this.emulator.setSwitchInput(switchNr, value);
+				}
+
+				switch (switchNr) {
+					case 112:
+						return this.emulator.setFliptronicsInput('F2', value);
+					case 114:
+						return this.emulator.setFliptronicsInput('F4', value);
+					case 116:
+						return this.emulator.setFliptronicsInput('F6', value);
+					case 118:
+						return this.emulator.setFliptronicsInput('F8', value);
+				}
+				logger().error('INVALID_SWITCH_ID:', switchNr);
+				return false;
+
+/*
+Const swLRFlip = 112
+Const swLLFlip = 114
+Const swURFlip = 116
+Const swULFlip = 118
+
+    { id: 'F1', name: 'R FLIPPER EOS' },
+    { id: 'F2', name: 'R FLIPPER BUTTON' },
+    { id: 'F3', name: 'L FLIPPER EOS' },
+    { id: 'F4', name: 'L FLIPPER BUTTON' },
+    { id: 'F6', name: 'UR FLIPPER BUT' },
+    { id: 'F8', name: 'UL FLIPPER BUT' },
+*/
+			});
 		this.Lamp = this.createGetSetNumberProxy('LAMP',
 			(index) => this.emulator.getLampState(index), SET_NOP);
 		this.Solenoid = this.createGetSetNumberProxy('SOLENOID',
