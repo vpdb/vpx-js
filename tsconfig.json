@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"target": "esnext",
 		"module": "commonjs",
-		"outDir": "./dist",
+		"outDir": "./dist/umd",
 		"strict": true,
 		"moduleResolution": "node",
 		"allowJs": true
