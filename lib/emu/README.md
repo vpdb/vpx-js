@@ -2,6 +2,53 @@
 
 ## Visual PinMAME Control
 
+### STATS:
+
+A quick evaluation of 357 VPX VBS files, showed this amount of API Calls
+
+#### Visual Pinball Calls
+- .Switch 9473
+- .Lamp 374
+- .Dip 16
+- .Solenoid 204
+- .GIString 0
+- .GameName 310
+- .Running 0
+- .Pause 447
+- .Version 278
+- .Run 359
+- .Stop 453
+- .HandleMechanics 292
+- .WPCNumbering 0
+- .SampleRate 0
+- .SplashInfoLine 306
+- .ShowFrame 308
+- .DoubleSize 3
+- .Antialias 0
+- .BorderSizeX 0
+- .BorderSizeY 0
+- .WindowPosX 0
+- .WindowPosY 0
+- .LockDisplay 1
+- .Hidden 270
+- .SetDisplayPosition 22
+- .ShowOptsDialog 1
+- .ShowPathesDialog 0
+- .ShowAboutDialog 0
+- .CheckROMS 0
+- .ChangedLamps 247
+- .ChangedSolenoids 2
+- .ChangedGI 11
+- .ChangedLEDs 56
+- .ShowDMDOnly 310
+- .HandleKeyboard 286
+- .ShowTitle 313
+
+#### Non Visual Pinball Calls
+- .SolMask 78
+- .B2SSetData 505
+- .GetMech 38
+
 ### STATE
 Should be implemented - BASIC
 
