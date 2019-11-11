@@ -65,6 +65,7 @@ export { ClampToEdgeWrapping, DoubleSide, FloatType, InterpolateDiscrete, Interp
 	RGBFormat, AdditiveBlending,
 } from 'three/src/constants';
 export { getTextFile } from './scripting/vbs-scripts.browser';
+export { ThreeTextureLoaderBrowser as ThreeTextureLoader } from './render/threejs/three-texture-loader-browser';
 
 // polyfills
 if (typeof(window) !== 'undefined') {

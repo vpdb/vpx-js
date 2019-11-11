@@ -34,6 +34,7 @@ export {
 	LoadingManager, DataTextureLoader, TextureDataType, DefaultLoadingManager, HalfFloatType, LinearEncoding,
 	RGBEEncoding, RGBEFormat, RGBFormat, AdditiveBlending, PointLightHelper,
 } from 'three';
+export { ThreeTextureLoaderNode as ThreeTextureLoader } from './render/threejs/three-texture-loader-node';
 
 /*
  * Here we patch three.js' file loader to accept buffers directly.
