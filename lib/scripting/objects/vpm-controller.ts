@@ -286,7 +286,7 @@ export class VpmController {
 
 	private createGetSetBooleanProxy(name: string,
 		getFunction: (prop: number) => number,
-		setFunction: (prop: number, value: boolean) => boolean,
+		setFunction: (prop: number, value?: boolean) => boolean,
 	): { [index: number]: number } {
 		const handler = {
 			get: (target: {[ index: number ]: number}, prop: number): number => {
@@ -294,9 +294,15 @@ export class VpmController {
 				return getFunction(prop);
 			},
 
-			set: (target: {[ index: number ]: number}, prop: number | string, value: boolean): boolean => {
+			set: (target: {[ index: number ]: number}, prop: number | string, value: number | boolean): boolean => {
 				logger().debug('SET', name, {target, prop, value});
-				return setFunction(parseInt(prop.toString(), 10), value);
+				if (value === 1 || value === true) {
+					return setFunction(parseInt(prop.toString(), 10), true);
+				}
+				if (value === 0 || value === false) {
+					return setFunction(parseInt(prop.toString(), 10), false);
+				}
+				return setFunction(parseInt(prop.toString(), 10));
 			},
 		};
 		return new Proxy<{ [index: number ]: number; }>({}, handler);

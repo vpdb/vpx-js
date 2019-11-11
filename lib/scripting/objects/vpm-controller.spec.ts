@@ -18,23 +18,34 @@
  */
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { TableBuilder } from '../../../test/table-builder';
+import { Emulator } from '../../emu/wpc-emu';
 import { Player } from '../../game/player';
 import { Table } from '../../vpt/table/table';
 import { VpmController } from './vpm-controller';
+import { SinonStub } from 'sinon';
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
 describe('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 
+	const sandbox = sinon.createSandbox();
 	let vpmController: VpmController;
+	let setSwitchInputSpy: SinonStub;
 
 	beforeEach(() => {
+		setSwitchInputSpy = sandbox.stub(Emulator.prototype, 'setSwitchInput').returns(true);
+
 		const table: Table = new TableBuilder().build();
 		const player: Player = new Player(table);
 		vpmController = new VpmController(player);
 	});
+
+	afterEach(() => {
+		sandbox.restore()
+	  });
 
 	//TODO this fails due wpc-emu module loader
 	it('should set and get GameName', () => {
@@ -111,18 +122,34 @@ describe('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 		expect(foo).to.equal(undefined);
 	});
 
-	it('get Switch 0', () => {
+	it('get Switch 0 (offset 11)', () => {
 		const result = vpmController.Switch[11];
 		expect(result).to.deep.equal(0);
 	});
 
-	it.skip('set Switch 0', () => {
-		vpmController.Switch[0] = 5;
-		const result = vpmController.Switch[0];
-		expect(result).to.deep.equal(5);
+	it('validate setSwitchInput is called with the correct settings, using 1 as input', () => {
+		vpmController.Switch[11] = 1;
+		expect(setSwitchInputSpy.args[0]).to.deep.equal([ 11, true ]);
 	});
 
-	it('get Lamp 0', () => {
+	it('validate setSwitchInput is called with the correct settings, using 0 as input', () => {
+		vpmController.Switch[11] = 0;
+		expect(setSwitchInputSpy.args[0]).to.deep.equal([ 11, false ]);
+	});
+
+	it('validate setSwitchInput is called with the correct settings, using true as input', () => {
+		// @ts-ignore
+		vpmController.Switch[11] = true;
+		expect(setSwitchInputSpy.args[0]).to.deep.equal([ 11, true ]);
+	});
+
+	it('validate setSwitchInput is called with the correct settings, using false as input', () => {
+		// @ts-ignore
+		vpmController.Switch[11] = false;
+		expect(setSwitchInputSpy.args[0]).to.deep.equal([ 11, false ]);
+	});
+
+	it('get Lamp 0 (offset 11)', () => {
 		const result = vpmController.Lamp[11];
 		expect(result).to.deep.equal(0);
 	});
