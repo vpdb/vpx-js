@@ -29,7 +29,7 @@ import { VpmController } from './vpm-controller';
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
-describe('The VpmController - VISUAL PINMAME COM OBJECT', () => {
+describe.only('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 
 	const sandbox = sinon.createSandbox();
 	let vpmController: VpmController;
@@ -135,6 +135,11 @@ describe('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 	it('validate setSwitchInput is called with the correct settings, using 0 as input', () => {
 		vpmController.Switch[11] = 0;
 		expect(setSwitchInputSpy.args[0]).to.deep.equal([ 11, false ]);
+	});
+
+	it('validate setFliptronicsInput is called with the correct settings, using 0 as input', () => {
+		vpmController.Switch[112] = 0;
+		expect(setSwitchInputSpy.args[0]).to.deep.equal([ 112, false ]);
 	});
 
 	it('validate setSwitchInput is called with the correct settings, using true as input', () => {

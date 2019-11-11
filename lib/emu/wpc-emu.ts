@@ -148,10 +148,11 @@ export class Emulator implements IEmulator {
 		this.emulator.setCabinetInput(value);
 	}
 
-	public setFliptronicsInput(value: string): void {
+	public setFliptronicsInput(value: string, optionalEnableSwitch?: boolean): void {
 		if (!this.emulator) {
 			return;
 		}
+		//TODO support optionalEnableSwitch
 		this.emulator.setFliptronicsInput(value);
 	}
 
