@@ -15,6 +15,10 @@
 	"main": "dist/umd/lib/index.js",
 	"module": "dist/esm/lib/index.js",
 	"types": "dist/esm/lib/index.d.ts",
+	"files": [
+		"dist/esm/**",
+		"dist/umd/**"
+	],
 	"bin": {
 		"vbs2js": "./dist/umd/bin/vbs2js.js",
 		"vpt2glb": "./dist/umd/bin/vpt2glb.js",
