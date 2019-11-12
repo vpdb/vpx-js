@@ -18,17 +18,17 @@
  */
 
 import * as chai from 'chai';
-import * as sinon from 'sinon';
 import { expect } from 'chai';
+import * as sinon from 'sinon';
+import { GamelistDB, WpcEmuApi, WpcEmuWebWorkerApi } from 'wpc-emu';
 import { Vertex2D } from '../math/vertex2d';
 import { Emulator } from './wpc-emu';
-import { GamelistDB, WpcEmuApi, WpcEmuWebWorkerApi } from 'wpc-emu';
 
 const mockGameEntry: GamelistDB.GameEntry = {
 	name: 'foo',
 	rom: {
-		u06: 'lala'
-	}
+		u06: 'lala',
+	},
 };
 
 /* tslint:disable:no-unused-expression no-string-literal */
@@ -47,7 +47,7 @@ describe('WPC-EMU', () => {
 
 	afterEach(() => {
 		sandbox.restore();
-	})
+	});
 
 	it('should getVersion', () => {
 		const result: string = emulator.getVersion();
@@ -134,10 +134,10 @@ class MockWpcEmulator implements WpcEmuApi.Emulator {
 	public cabinetInput: number[] = [];
 	public fliptronicsInput: string[] = [];
 	public switchInput: number[] = [];
-	start(): void {
-		throw new Error("Method not implemented.");
+	public start(): void {
+		throw new Error('Method not implemented.');
 	}
-	getUiState(includeExpensiveData?: boolean): WpcEmuWebWorkerApi.EmuState {
+	public getUiState(includeExpensiveData?: boolean): WpcEmuWebWorkerApi.EmuState {
 		return {
 			asic: {
 				sound: {
@@ -170,7 +170,7 @@ class MockWpcEmulator implements WpcEmuApi.Emulator {
 				dmd: {
 					scanline: 16,
 					dmdPageMapping: [],
-				}
+				},
 			},
 			cpuState: {
 				regPC: 44,
@@ -191,41 +191,41 @@ class MockWpcEmulator implements WpcEmuApi.Emulator {
 			},
 			opsMs: 100,
 			protectedMemoryWriteAttempts: 101,
-		    runtime: 102,
-		    ticksIrq: 103,
-		    version: 104,
-		}
+		 runtime: 102,
+		 ticksIrq: 103,
+		 version: 104,
+		};
 	}
-	getState(): WpcEmuWebWorkerApi.EmuState {
-		throw new Error("Method not implemented.");
+	public getState(): WpcEmuWebWorkerApi.EmuState {
+		throw new Error('Method not implemented.');
 	}
-	setState(stateObject: WpcEmuWebWorkerApi.EmuState): void {
-		throw new Error("Method not implemented.");
+	public setState(stateObject: WpcEmuWebWorkerApi.EmuState): void {
+		throw new Error('Method not implemented.');
 	}
-	registerAudioConsumer(callbackFunction: (sampleId: number) => void): void {
+	public registerAudioConsumer(callbackFunction: (sampleId: number) => void): void {
 		callbackFunction(123);
 	}
-	executeCycle(ticksToRun: number, tickSteps: number): number {
-		throw new Error("Method not implemented.");
+	public executeCycle(ticksToRun: number, tickSteps: number): number {
+		throw new Error('Method not implemented.');
 	}
-	executeCycleForTime(advanceByMs: number, tickSteps: number): number {
+	public executeCycleForTime(advanceByMs: number, tickSteps: number): number {
 		this.executedCyclesMs += advanceByMs;
 		return 0;
 	}
-	setCabinetInput(value: number): void {
+	public setCabinetInput(value: number): void {
 		this.cabinetInput.push(value);
 	}
-	setSwitchInput(switchNr: number, optionalValue?: boolean): void {
+	public setSwitchInput(switchNr: number, optionalValue?: boolean): void {
 		this.switchInput.push(switchNr);
 	}
-	setFliptronicsInput(value: string): void {
-		this.fliptronicsInput.push(value)
+	public setFliptronicsInput(value: string): void {
+		this.fliptronicsInput.push(value);
 	}
-	toggleMidnightMadnessMode(): void {
-		throw new Error("Method not implemented.");
+	public toggleMidnightMadnessMode(): void {
+		throw new Error('Method not implemented.');
 	}
-	reset(): void {	}
-	version(): string {
-		throw new Error("Method not implemented.");
+	public reset(): void {	}
+	public version(): string {
+		throw new Error('Method not implemented.');
 	}
 }

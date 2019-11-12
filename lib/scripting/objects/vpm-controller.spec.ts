@@ -18,14 +18,14 @@
  */
 
 import * as chai from 'chai';
-import * as sinon from 'sinon';
 import { expect } from 'chai';
+import * as sinon from 'sinon';
+import { SinonStub } from 'sinon';
 import { TableBuilder } from '../../../test/table-builder';
 import { Emulator } from '../../emu/wpc-emu';
 import { Player } from '../../game/player';
 import { Table } from '../../vpt/table/table';
 import { VpmController } from './vpm-controller';
-import { SinonStub } from 'sinon';
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
@@ -33,7 +33,7 @@ describe('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 
 	const sandbox = sinon.createSandbox();
 	let vpmController: VpmController;
-	let setSwitchInputSpy: SinonStub;
+	let setSwitchInputSpy: SinonStub<[number, (boolean | undefined)?]>;
 
 	beforeEach(() => {
 		setSwitchInputSpy = sandbox.stub(Emulator.prototype, 'setSwitchInput').returns(true);
@@ -44,8 +44,8 @@ describe('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 	});
 
 	afterEach(() => {
-		sandbox.restore()
-	  });
+		sandbox.restore();
+	});
 
 	//TODO this fails due wpc-emu module loader
 	it('should set and get GameName', () => {
