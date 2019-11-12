@@ -12,32 +12,32 @@
 		"url": "https://github.com/vpdb/vpx-js"
 	},
 	"license": "GPL-2.0",
-	"main": "dist/umd/lib/index.js",
+	"main": "dist/cjs/lib/index.js",
 	"module": "dist/esm/lib/index.js",
 	"types": "dist/esm/lib/index.d.ts",
 	"files": [
 		"dist/esm/bin/**",
 		"dist/esm/lib/**",
 		"dist/esm/res/**",
-		"dist/umd/bin/**",
-		"dist/umd/lib/**",
-		"dist/umd/res/**"
+		"dist/cjs/bin/**",
+		"dist/cjs/lib/**",
+		"dist/cjs/res/**"
 	],
 	"bin": {
-		"vbs2js": "./dist/umd/bin/vbs2js.js",
-		"vpt2glb": "./dist/umd/bin/vpt2glb.js",
-		"vptscript": "./dist/umd/bin/vptscript.js"
+		"vbs2js": "./dist/cjs/bin/vbs2js.js",
+		"vpt2glb": "./dist/cjs/bin/vpt2glb.js",
+		"vptscript": "./dist/cjs/bin/vptscript.js"
 	},
 	"browser": {
 		"./dist/esm/lib/refs.node.js": "./dist/esm/lib/refs.browser.js"
 	},
 	"scripts": {
-		"build": "rimraf dist && npm run compile && npm run build:esm && npm run build:umd && npm run build:declarations && npm run build:cp",
+		"build": "rimraf dist && npm run compile && npm run build:esm && npm run build:cjs && npm run build:declarations && npm run build:cp",
 		"build:esm": "tsc --module es2015 --outDir ./dist/esm",
-		"build:umd": "tsc --module commonjs --outDir ./dist/umd",
+		"build:cjs": "tsc --module commonjs --outDir ./dist/cjs",
 		"build:declarations": "tsc --module es2015 --outDir ./dist/esm --declaration true --allowJs false",
 		"build:watch": "npm run compile && npm run build:cp && tsc --watch --module es2015 --outDir ./dist/esm",
-		"build:cp": "cp -r res dist/esm && cp -r res dist/umd",
+		"build:cp": "cp -r res dist/esm && cp -r res dist/cjs",
 		"compile": "nearleyc lib/scripting/vbscript.ne -o lib/scripting/vbscript.ts",
 		"lint": "tslint --format stylish --project ./tsconfig.json --config ./lib/tslint.json",
 		"test": "npm run compile && nyc mocha"
