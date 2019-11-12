@@ -152,8 +152,7 @@ export class Emulator implements IEmulator {
 		if (!this.emulator) {
 			return;
 		}
-		//TODO support optionalEnableSwitch
-		this.emulator.setFliptronicsInput(value);
+		this.emulator.setFliptronicsInput(value, optionalEnableSwitch);
 	}
 
 	public getDmdDimensions(): Vertex2D {
