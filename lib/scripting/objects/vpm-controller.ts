@@ -44,39 +44,32 @@ export class VpmController {
 		this.emulator = new Emulator();
 		// TODO route this to the emu
 		this.Dip = this.createDipGetter();
+
 		this.Switch = this.createGetSetBooleanProxy('SWITCH',
-			(index) => this.emulator.getSwitchInput(index), (switchNr, value) => {
+			(index) => this.emulator.getSwitchInput(index),
+			(switchNr: number, value?: boolean) => {
 				if (switchNr < 89) {
 					return this.emulator.setSwitchInput(switchNr, value);
 				}
-
 				switch (switchNr) {
 					case 112:
-						return this.emulator.setFliptronicsInput('F2', value);
+						this.emulator.setFliptronicsInput('F2', value);
+						return true;
 					case 114:
-						return this.emulator.setFliptronicsInput('F4', value);
+						this.emulator.setFliptronicsInput('F4', value);
+						return true;
 					case 116:
-						return this.emulator.setFliptronicsInput('F6', value);
+						this.emulator.setFliptronicsInput('F6', value);
+						return true;
 					case 118:
-						return this.emulator.setFliptronicsInput('F8', value);
+						this.emulator.setFliptronicsInput('F8', value);
+						return true;
 				}
 				logger().error('INVALID_SWITCH_ID:', switchNr);
 				return false;
+			}
+		);
 
-/*
-Const swLRFlip = 112
-Const swLLFlip = 114
-Const swURFlip = 116
-Const swULFlip = 118
-
-    { id: 'F1', name: 'R FLIPPER EOS' },
-    { id: 'F2', name: 'R FLIPPER BUTTON' },
-    { id: 'F3', name: 'L FLIPPER EOS' },
-    { id: 'F4', name: 'L FLIPPER BUTTON' },
-    { id: 'F6', name: 'UR FLIPPER BUT' },
-    { id: 'F8', name: 'UL FLIPPER BUT' },
-*/
-			});
 		this.Lamp = this.createGetSetNumberProxy('LAMP',
 			(index) => this.emulator.getLampState(index), SET_NOP);
 		this.Solenoid = this.createGetSetNumberProxy('SOLENOID',
@@ -316,24 +309,24 @@ Const swULFlip = 118
 	}
 
 	private createGetSetBooleanProxy(name: string,
-		getFunction: (prop: number) => number,
-		setFunction: (prop: number, value?: boolean) => boolean,
+		getFunction: (switchNr: number) => number,
+		setFunction: (switchNr: number, value?: boolean) => boolean,
 	): { [index: number]: number } {
 		const handler = {
-			get: (target: {[ index: number ]: number}, prop: number): number => {
-				logger().debug('GET', name, {target, prop});
-				return getFunction(prop);
+			get: (target: {[ index: number ]: number}, switchNr: number): number => {
+				logger().debug('GET', name, {target, switchNr});
+				return getFunction(switchNr);
 			},
 
-			set: (target: {[ index: number ]: number}, prop: number | string, value: number | boolean): boolean => {
-				logger().debug('SET', name, {target, prop, value});
+			set: (target: {[ index: number ]: number}, switchNr: number | string, value?: number | boolean): boolean => {
+				logger().debug('SET', name, {target, switchNr, value});
 				if (value === 1 || value === true) {
-					return setFunction(parseInt(prop.toString(), 10), true);
+					return setFunction(parseInt(switchNr.toString(), 10), true);
 				}
 				if (value === 0 || value === false) {
-					return setFunction(parseInt(prop.toString(), 10), false);
+					return setFunction(parseInt(switchNr.toString(), 10), false);
 				}
-				return setFunction(parseInt(prop.toString(), 10));
+				return setFunction(parseInt(switchNr.toString(), 10));
 			},
 		};
 		return new Proxy<{ [index: number ]: number; }>({}, handler);
