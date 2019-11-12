@@ -95,3 +95,7 @@ that the host application will need more than that (for starters, a renderer),
 it might finally not be worth the effort and we can go back to 
 `import {} from 'three';`. However, the *examples* problem will always persist
 because there just isn't any Node.js compatible version packaged in three.js.
+
+**Note 3:** We ended up using the ESM version of three.js everywhere because it
+ended up in the build anyway (for unknown reasons) and thus resulted in shipping
+most of the code twice.
