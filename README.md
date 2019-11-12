@@ -62,21 +62,24 @@ cover many games already.
 Given this is a lib, you'll need an actual web application to test. There is a 
 simple one we're currently using for development [here](https://github.com/freezy/vpweb).
 
-To get the library set up and re-compiling on changes:
+This *vpweb* project retrieves VPX-JS from NPM, so in order to iterate rapidly,
+we'll link it to your local working copy.
 
 ```bash
 git clone https://github.com/vpdb/vpx-js.git
 cd vpx-js
 npm ci
+npm link
 npm run build:watch
 ```
 
-And the host application:
+And the vpweb host application:
 
 ```bash
 git clone https://github.com/freezy/vpweb.git
 cd vpweb
 npm ci
+npm link vpx-js
 npm start
 ```
 
