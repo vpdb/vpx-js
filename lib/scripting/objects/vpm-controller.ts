@@ -67,7 +67,7 @@ export class VpmController {
 				}
 				logger().error('INVALID_SWITCH_ID:', switchNr);
 				return false;
-			}
+			},
 		);
 
 		this.Lamp = this.createGetSetNumberProxy('LAMP',
