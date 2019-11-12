@@ -1,7 +1,7 @@
 name: Deploy to Firebase
 on:
   push:
-    branches: 
+    branches:
       - master
 jobs:
   build:
@@ -25,9 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone VPWeb
-        run: |
-          git clone https://github.com/freezy/vpweb.git
-          cd vpweb
+        run: git clone https://github.com/freezy/vpweb.git .
       - name: Install Dependencies
         run: npm ci
       - name: Clean VPX-JS
@@ -38,7 +36,7 @@ jobs:
           name: vpx-js
           path: node_modules/vpx-js/
       - name: Build
-        run: npm run build             
+        run: npm run build
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
