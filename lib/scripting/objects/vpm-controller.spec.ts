@@ -33,8 +33,8 @@ describe('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 
 	const sandbox = sinon.createSandbox();
 	let vpmController: VpmController;
-	let setSwitchInputSpy: SinonStub<[number, (boolean | undefined)?]>;
-	let setFliptronicsInputSpy: SinonStub;
+	let setSwitchInputSpy: SinonStub<[number, boolean?]>;
+	let setFliptronicsInputSpy: SinonStub<[string, boolean?]>;
 
 	beforeEach(() => {
 		setSwitchInputSpy = sandbox.stub(Emulator.prototype, 'setSwitchInput').returns(true);
@@ -46,7 +46,7 @@ describe('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 	});
 
 	afterEach(() => {
-		sandbox.restore()
+		sandbox.restore();
 	  });
 
 	//TODO this fails due wpc-emu module loader
