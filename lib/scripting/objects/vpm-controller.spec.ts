@@ -29,14 +29,16 @@ import { VpmController } from './vpm-controller';
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
-describe.only('The VpmController - VISUAL PINMAME COM OBJECT', () => {
+describe('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 
 	const sandbox = sinon.createSandbox();
 	let vpmController: VpmController;
 	let setSwitchInputSpy: SinonStub<[number, (boolean | undefined)?]>;
+	let setFliptronicsInputSpy: SinonStub;
 
 	beforeEach(() => {
 		setSwitchInputSpy = sandbox.stub(Emulator.prototype, 'setSwitchInput').returns(true);
+		setFliptronicsInputSpy = sandbox.stub(Emulator.prototype, 'setFliptronicsInput');
 
 		const table: Table = new TableBuilder().build();
 		const player: Player = new Player(table);
@@ -44,8 +46,8 @@ describe.only('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 	});
 
 	afterEach(() => {
-		sandbox.restore();
-	});
+		sandbox.restore()
+	  });
 
 	//TODO this fails due wpc-emu module loader
 	it('should set and get GameName', () => {
@@ -137,9 +139,20 @@ describe.only('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 		expect(setSwitchInputSpy.args[0]).to.deep.equal([ 11, false ]);
 	});
 
-	it('validate setFliptronicsInput is called with the correct settings, using 0 as input', () => {
+	it('validate setFliptronicsInput is called (F2), using 0 as input', () => {
 		vpmController.Switch[112] = 0;
-		expect(setSwitchInputSpy.args[0]).to.deep.equal([ 112, false ]);
+		expect(setFliptronicsInputSpy.args[0]).to.deep.equal([ 'F2', false ]);
+	});
+
+	it('validate setFliptronicsInput is called (F6), using 1 as input', () => {
+		vpmController.Switch[116] = 1;
+		expect(setFliptronicsInputSpy.args[0]).to.deep.equal([ 'F6', true ]);
+	});
+
+	it('validate setFliptronicsInput is called (F8), using false as input', () => {
+		// @ts-ignore
+		vpmController.Switch[118] = false;
+		expect(setFliptronicsInputSpy.args[0]).to.deep.equal([ 'F8', false ]);
 	});
 
 	it('validate setSwitchInput is called with the correct settings, using true as input', () => {
