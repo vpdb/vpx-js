@@ -34,7 +34,7 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: vpx-js
-          path: node_modules/vpx-js/
+          path: node_modules/vpx-js/dist
       - name: Build
         run: npm run build
       - name: Deploy to Firebase
