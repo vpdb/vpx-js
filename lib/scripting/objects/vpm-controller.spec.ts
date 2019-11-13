@@ -47,7 +47,7 @@ describe('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 
 	afterEach(() => {
 		sandbox.restore();
-	  });
+	});
 
 	//TODO this fails due wpc-emu module loader
 	it('should set and get GameName', () => {
