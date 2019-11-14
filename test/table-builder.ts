@@ -17,35 +17,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Material } from '../lib/vpt/material';
-import { TableData } from '../lib/vpt/table/table-data';
-import { RampData } from '../lib/vpt/ramp/ramp-data';
-import { Ramp } from '../lib/vpt/ramp/ramp';
-import { LoadedTable, TableLoader } from '../lib/vpt/table/table-loader';
-import { Table } from '../lib/vpt/table/table';
 import { DragPoint } from '../lib/math/dragpoint';
-import { Vertex3D } from '../lib/math/vertex3d';
-import { PrimitiveData } from '../lib/vpt/primitive/primitive-data';
-import { Primitive } from '../lib/vpt/primitive/primitive';
-import { BumperData } from '../lib/vpt/bumper/bumper-data';
 import { Vertex2D } from '../lib/math/vertex2d';
+import { Vertex3D } from '../lib/math/vertex3d';
 import { Bumper } from '../lib/vpt/bumper/bumper';
-import { FlipperData } from '../lib/vpt/flipper/flipper-data';
+import { BumperData } from '../lib/vpt/bumper/bumper-data';
 import { Flipper } from '../lib/vpt/flipper/flipper';
-import { GateData } from '../lib/vpt/gate/gate-data';
+import { FlipperData } from '../lib/vpt/flipper/flipper-data';
 import { Gate } from '../lib/vpt/gate/gate';
-import { HitTargetData } from '../lib/vpt/hit-target/hit-target-data';
+import { GateData } from '../lib/vpt/gate/gate-data';
 import { HitTarget } from '../lib/vpt/hit-target/hit-target';
-import { KickerData } from '../lib/vpt/kicker/kicker-data';
+import { HitTargetData } from '../lib/vpt/hit-target/hit-target-data';
 import { Kicker } from '../lib/vpt/kicker/kicker';
-import { RubberData } from '../lib/vpt/rubber/rubber-data';
+import { KickerData } from '../lib/vpt/kicker/kicker-data';
+import { Material } from '../lib/vpt/material';
+import { Primitive } from '../lib/vpt/primitive/primitive';
+import { PrimitiveData } from '../lib/vpt/primitive/primitive-data';
+import { Ramp } from '../lib/vpt/ramp/ramp';
+import { RampData } from '../lib/vpt/ramp/ramp-data';
 import { Rubber } from '../lib/vpt/rubber/rubber';
-import { SpinnerData } from '../lib/vpt/spinner/spinner-data';
+import { RubberData } from '../lib/vpt/rubber/rubber-data';
 import { Spinner } from '../lib/vpt/spinner/spinner';
-import { SurfaceData } from '../lib/vpt/surface/surface-data';
+import { SpinnerData } from '../lib/vpt/spinner/spinner-data';
 import { Surface } from '../lib/vpt/surface/surface';
-import { TriggerData } from '../lib/vpt/trigger/trigger-data';
+import { SurfaceData } from '../lib/vpt/surface/surface-data';
+import { Table } from '../lib/vpt/table/table';
+import { TableData } from '../lib/vpt/table/table-data';
+import { LoadedTable, TableLoader } from '../lib/vpt/table/table-loader';
 import { Trigger } from '../lib/vpt/trigger/trigger';
+import { TriggerData } from '../lib/vpt/trigger/trigger-data';
 
 export class TableBuilder {
 
