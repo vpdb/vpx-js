@@ -40,7 +40,7 @@
 		"build:cp": "cp -r res dist/esm && cp -r res dist/cjs",
 		"compile": "nearleyc lib/scripting/vbscript.ne -o lib/scripting/vbscript.ts",
 		"lint": "tslint --format stylish --project ./tsconfig.json --config ./lib/tslint.json",
-		"test": "npm run compile && TS_NODE_TRANSPILE_ONLY=true nyc mocha"
+		"test": "npm run compile && cross-env TS_NODE_TRANSPILE_ONLY=true nyc mocha"
 	},
 	"dependencies": {
 		"buffer": "5.4.3",
@@ -73,6 +73,7 @@
 		"@types/sinon": "7.5.0",
 		"@types/sinon-chai": "3.2.3",
 		"chai": "4.2.0",
+		"cross-env": "^6.0.3",
 		"esm": "3.2.25",
 		"looks-same": "7.2.2",
 		"microtime": "3.0.0",
