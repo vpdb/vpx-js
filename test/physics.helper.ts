@@ -59,6 +59,7 @@ export function createBall(player: Player, x: number, y: number, z: number, vx =
 export function debugBall(player: PlayerPhysics, ball: Ball, numCycles = 300, cycleLength = 5, t = 0) {
 	for (let i = 0; i <= numCycles; i++) {
 		player.updatePhysics(t + i * cycleLength);
+		// tslint:disable-next-line:no-console
 		console.log('[%sms] (%s, %s, %s)', t + i * cycleLength, ball.getState().pos.x, ball.getState().pos.y, ball.getState().pos.z);
 	}
 }
