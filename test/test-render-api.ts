@@ -28,6 +28,7 @@ import { Mesh } from '../lib/vpt/mesh';
 import { Table, TableGenerateOptions } from '../lib/vpt/table/table';
 import { Texture } from '../lib/vpt/texture';
 
+// tslint:disable:no-empty
 export class TestRenderApi implements IRenderApi<any, any, any> {
 	public addChildToParent(parent: any, child: any): void {
 	}

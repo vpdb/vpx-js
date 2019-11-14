@@ -21,7 +21,7 @@ jobs:
       run: |
         npm ci
         time npm test
-        npm run lint || true
+        npm run lint
         npm run build
       env:
         CI: true

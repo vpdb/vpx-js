@@ -21,8 +21,7 @@ import { resolve } from 'path';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Box3, Mesh, Object3D } from '../lib/refs.node';
 
-//(global as any).TextDecoder = require('util').TextDecoder;
-
+// tslint:disable:no-shadowed-variable
 export class ThreeHelper {
 
 	private readonly loader: any;

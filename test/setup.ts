@@ -19,6 +19,7 @@
 
 import { Logger, Progress } from '../lib/util/logger';
 
+// tslint:disable:no-empty
 before(() => {
 
 	// disable logging
