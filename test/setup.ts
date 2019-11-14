@@ -28,7 +28,7 @@ before(() => {
 		info(format: any, ...param: any[]): void {},
 		verbose(format: any, ...param: any[]): void {},
 		warn(format: any, ...param: any[]): void {},
-		wtf(format: any, ...param: any[]): void {}
+		wtf(format: any, ...param: any[]): void {},
 	});
 
 	// disable progress
@@ -37,5 +37,5 @@ before(() => {
 		end(id: string): void {},
 		show(action: string, details?: string): void {},
 		start(id: string, title: string): void {},
-	})
+	});
 });

@@ -17,75 +17,74 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-
+import { IRenderable, RenderInfo } from '../lib/game/irenderable';
+import { Matrix3D } from '../lib/math/matrix3d';
 import { IRenderApi } from '../lib/render/irender-api';
+import { ItemState } from '../lib/vpt/item-state';
+import { LightData } from '../lib/vpt/light/light-data';
 import { LightState } from '../lib/vpt/light/light-state';
 import { Material } from '../lib/vpt/material';
-import { Matrix3D } from '../lib/math/matrix3d';
 import { Mesh } from '../lib/vpt/mesh';
-import { LightData } from '../lib/vpt/light/light-data';
 import { Table, TableGenerateOptions } from '../lib/vpt/table/table';
-import { IRenderable, RenderInfo } from '../lib/game/irenderable';
-import { ItemState } from '../lib/vpt/item-state';
 import { Texture } from '../lib/vpt/texture';
 
 export class TestRenderApi implements IRenderApi<any, any, any> {
-	addChildToParent(parent: any, child: any): void {
+	public addChildToParent(parent: any, child: any): void {
 	}
 
-	applyLighting(state: LightState, initialIntensity: number, node: any | undefined): void {
+	public applyLighting(state: LightState, initialIntensity: number, node: any | undefined): void {
 	}
 
-	applyMaterial(node: any | undefined, material?: Material, map?: string, normalMap?: string, envMap?: string, emissiveMap?: string): void {
+	public applyMaterial(node: any | undefined, material?: Material, map?: string, normalMap?: string, envMap?: string, emissiveMap?: string): void {
 	}
 
-	applyMatrixToNode(matrix: Matrix3D, node: any | undefined): void {
+	public applyMatrixToNode(matrix: Matrix3D, node: any | undefined): void {
 	}
 
-	applyMeshToNode(mesh: Mesh, node: any | undefined): void {
+	public applyMeshToNode(mesh: Mesh, node: any | undefined): void {
 	}
 
-	applyVisibility(isVisible: boolean, node: any | undefined): void {
+	public applyVisibility(isVisible: boolean, node: any | undefined): void {
 	}
 
-	createLightGeometry(lightData: LightData, table: Table): any {
+	public createLightGeometry(lightData: LightData, table: Table): any {
 		return {};
 	}
 
-	createMesh(obj: RenderInfo<any>): any {
+	public createMesh(obj: RenderInfo<any>): any {
 		return {};
 	}
 
-	createObjectFromRenderable(renderable: IRenderable<ItemState>, table: Table, opts: TableGenerateOptions): any {
+	public createObjectFromRenderable(renderable: IRenderable<ItemState>, table: Table, opts: TableGenerateOptions): any {
 		return {};
 	}
 
-	createParentNode(name: string): any {
+	public createParentNode(name: string): any {
 		return {};
 	}
 
-	createPlayfieldGeometry(table: Table, opts: TableGenerateOptions): any {
+	public createPlayfieldGeometry(table: Table, opts: TableGenerateOptions): any {
 		return {};
 	}
 
-	createPointLight(lightData: LightData): any {
+	public createPointLight(lightData: LightData): any {
 		return undefined;
 	}
 
-	findInGroup(parent: any, name: string): any | undefined {
+	public findInGroup(parent: any, name: string): any | undefined {
 		return {};
 	}
 
-	preloadTextures(textures: Texture[], table: Table): Promise<void> {
+	public preloadTextures(textures: Texture[], table: Table): Promise<void> {
 		return Promise.resolve();
 	}
 
-	removeChildren(node: any | undefined): void {
+	public removeChildren(node: any | undefined): void {
 	}
 
-	removeFromParent(parent: any, child: any | undefined): void {
+	public removeFromParent(parent: any, child: any | undefined): void {
 	}
 
-	transformScene(scene: any, table: Table): void {
+	public transformScene(scene: any, table: Table): void {
 	}
 }

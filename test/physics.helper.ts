@@ -17,10 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { PlayerPhysics } from '../lib/game/player-physics';
-import { Ball } from '../lib/vpt/ball/ball';
-import { Vertex3D } from '../lib/math/vertex3d';
 import { Player } from '../lib/game/player';
+import { PlayerPhysics } from '../lib/game/player-physics';
+import { Vertex3D } from '../lib/math/vertex3d';
+import { Ball } from '../lib/vpt/ball/ball';
 import { Table } from '../lib/vpt/table/table';
 
 /**

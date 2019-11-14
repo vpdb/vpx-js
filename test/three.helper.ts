@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-
 import { resolve } from 'path';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Box3, Mesh, Object3D } from '../lib/refs.node';
@@ -32,7 +31,7 @@ export class ThreeHelper {
 		this.loader = new GLTFLoader();
 	}
 
-	async loadGlb(glb: Buffer): Promise<GLTF> {
+	public async loadGlb(glb: Buffer): Promise<GLTF> {
 		return new Promise((resolve, reject) => this.loader.parse(toArrayBuffer(glb), '', resolve, reject));
 	}
 
@@ -153,8 +152,8 @@ export class ThreeHelper {
 	public expectVerticesInArray(vertices: number[][], array: number[], accuracy?: number): void {
 		accuracy = accuracy || 3;
 		// create hash map of vertices
-		let vertexHashes: { [key: string]: boolean } = {};
-		for (let i = 0; i < array.length; i +=3) {
+		const vertexHashes: { [key: string]: boolean } = {};
+		for (let i = 0; i < array.length; i += 3) {
 			vertexHashes[this.hashVertex(array.slice(i, i + 3), accuracy)] = true;
 		}
 		for (const expectedVertex of vertices) {
@@ -191,7 +190,7 @@ export class ThreeHelper {
 	public getBoundingBox(object3D: Object3D): Box3 {
 		let box: Box3 | null = null;
 		object3D.traverse(obj3D => {
-			let geometry = (obj3D as Mesh).geometry;
+			const geometry = (obj3D as Mesh).geometry;
 			if (geometry === undefined) {
 				return;
 			}

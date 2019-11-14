@@ -8,9 +8,12 @@
 		"allowJs": true
 	},
 	"exclude": [
+		".nyc_output",
 		"node_modules",
 		"dist",
-		"test",
+		"coverage",
+		"res",
+		"test/fixtures",
 		"**/*.spec.*"
 	]
 }
