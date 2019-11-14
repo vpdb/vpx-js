@@ -228,4 +228,10 @@ class MockWpcEmulator implements WpcEmuApi.Emulator {
 	public version(): string {
 		throw new Error('Method not implemented.');
 	}
+	public setDipSwitchByte(dipSwitch: number): void {
+		throw new Error('Method not implemented.');
+	}
+	public getDipSwitchByte(): number {
+		throw new Error('Method not implemented.');
+	}
 }
