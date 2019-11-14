@@ -1,6 +1,6 @@
 --require ts-node/register
---require esm
---sourcemap
+--bail
+--color
 --timeout 10000
 --file test/setup.ts
 lib/**/*.spec.ts
