@@ -73,7 +73,7 @@ export class VpmController {
 			(unusedDipIndex: number, value: number) => {
 				this.emulator.setDipSwitchByte(value);
 				return true;
-			}
+			},
 		);
 		this.Lamp = this.createGetSetNumberProxy('LAMP',
 			(index) => this.emulator.getLampState(index), SET_NOP);
