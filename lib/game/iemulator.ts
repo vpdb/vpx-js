@@ -61,4 +61,10 @@ export interface IEmulator {
 	 * @param optionalEnableSwitch if this parameter is missing, the switch will be toggled, else set to the defined state
 	 */
 	setSwitchInput(switchNr: number, optionalEnableSwitch?: boolean): void;
+
+	/**
+	 * update emulator language setting
+	 * @param dipSwitch new uint8 byte value
+	 */
+	setDipSwitchByte(dipSwitch: number): void;
 }

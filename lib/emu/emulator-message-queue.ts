@@ -64,6 +64,9 @@ export class EmulatorMessageQueue {
 				case MessageType.ExecuteTicks:
 					emulator.emuSimulateCycle(item.value);
 					break;
+				case MessageType.SetDipByte:
+					emulator.setDipSwitchByte(item.value);
+					break;
 				default:
 					logger().warn('UNKNOWN CACHE TYPE', item.cacheType);
 			}
@@ -77,6 +80,7 @@ export enum MessageType {
 	ToggleSwitchInput,
 	CabinetInput,
 	ExecuteTicks,
+	SetDipByte,
 }
 
 interface QueueItem {

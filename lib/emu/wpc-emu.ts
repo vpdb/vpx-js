@@ -167,4 +167,19 @@ export class Emulator implements IEmulator {
 		return this.emulatorState.getDmdScreen();
 	}
 
+	public getDipSwitchByte(): number {
+		if (!this.emulator) {
+			return 0;
+		}
+		return this.emulator.getDipSwitchByte();
+	}
+
+	public setDipSwitchByte(dipSwitch: number): void {
+		if (!this.emulator) {
+			this.emulatorMessageQueue.addMessage(MessageType.SetDipByte, dipSwitch);
+			return;
+		}
+		this.emulator.setDipSwitchByte(dipSwitch);
+	}
+
 }

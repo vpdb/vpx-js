@@ -81,6 +81,7 @@ describe('WPC-EMU', () => {
 		emulator.setSwitchInput(4, true);
 		emulator.setSwitchInput(4, false);
 		emulator.setCabinetInput(4);
+		emulator.setDipSwitchByte(44);
 		emulator.setFliptronicsInput('FOO');
 		const executedSteps = emulator.emuSimulateCycle(200);
 		expect(executedSteps).to.equal(0);
@@ -110,6 +111,17 @@ describe('WPC-EMU', () => {
 		expect(mockEmu.fliptronicsInput).to.deep.equal([ 'A123' ]);
 	});
 
+	it('should call WPC-Emu set DipSwitchByte when initialized', async () => {
+		await emulator.loadGame(mockGameEntry, new Uint8Array());
+		emulator.setDipSwitchByte(44);
+		expect(mockEmu.dipSwitchInput).to.deep.equal([ 44 ]);
+	});
+
+	it('should get DipSwitchByte when emu is not initialized', async () => {
+		const result = emulator.getDipSwitchByte();
+		expect(result).to.equal(0);
+	});
+
 	it('should call WPC-Emu registerAudioConsumer when initialized', async () => {
 		await emulator.loadGame(mockGameEntry, new Uint8Array());
 		let playSampleId = -1;
@@ -125,6 +137,7 @@ describe('WPC-EMU', () => {
 		expect(emulator.getLampState(12)).to.equal(0);
 		expect(emulator.getSolenoidState(0)).to.equal(11);
 		expect(emulator.getGIState(0)).to.equal(8);
+		expect(emulator.getDipSwitchByte()).to.equal(23);
 	});
 
 });
@@ -134,6 +147,7 @@ class MockWpcEmulator implements WpcEmuApi.Emulator {
 	public cabinetInput: number[] = [];
 	public fliptronicsInput: string[] = [];
 	public switchInput: number[] = [];
+	public dipSwitchInput: number[] = [];
 	public start(): void {
 		throw new Error('Method not implemented.');
 	}
@@ -224,14 +238,16 @@ class MockWpcEmulator implements WpcEmuApi.Emulator {
 	public toggleMidnightMadnessMode(): void {
 		throw new Error('Method not implemented.');
 	}
-	public reset(): void {	}
+	public reset(): void {
+		// ignored
+	}
 	public version(): string {
 		throw new Error('Method not implemented.');
 	}
 	public setDipSwitchByte(dipSwitch: number): void {
-		throw new Error('Method not implemented.');
+		this.dipSwitchInput.push(dipSwitch);
 	}
 	public getDipSwitchByte(): number {
-		throw new Error('Method not implemented.');
+		return 23;
 	}
 }
