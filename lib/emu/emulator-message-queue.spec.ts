@@ -86,6 +86,16 @@ describe('The WPC-EMU message queue', () => {
 		const addedToQueue = messageQueue.addMessage(MessageType.SetSwitchInput, 42);
 		expect(addedToQueue).to.equal(false);
 	});
+
+	it('should add dipswitch to queue and replay it', () => {
+		const addedToQueue = messageQueue.addMessage(MessageType.SetDipByte, 21);
+		messageQueue.replayMessages(mockEmulator);
+		expect(addedToQueue).to.equal(true);
+		expect(queue).to.deep.equal([{
+			dipSwitch: 21,
+		}]);
+	});
+
 });
 
 class MockEmulator implements IEmulator {
@@ -107,5 +117,8 @@ class MockEmulator implements IEmulator {
 	}
 	public setSwitchInput(switchNr: number, optionalEnableSwitch?: boolean): void {
 		this.messages.push({switchNr, optionalEnableSwitch});
+	}
+	public setDipSwitchByte(dipSwitch: number): void {
+		this.messages.push({dipSwitch});
 	}
 }
