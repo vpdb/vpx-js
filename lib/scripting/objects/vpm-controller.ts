@@ -42,8 +42,6 @@ export class VpmController {
 	constructor(player: Player) {
 		this.player = player;
 		this.emulator = new Emulator();
-		// TODO route this to the emu
-		this.Dip = this.createDipGetter();
 
 		this.Switch = this.createGetSetBooleanProxy('SWITCH',
 			(index) => this.emulator.getSwitchInput(index),
@@ -70,6 +68,13 @@ export class VpmController {
 			},
 		);
 
+		this.Dip = this.createGetSetNumberProxy('DIP',
+			() => this.emulator.getDipSwitchByte(),
+			(unusedDipIndex: number, value: number) => {
+				this.emulator.setDipSwitchByte(value);
+				return true;
+			}
+		);
 		this.Lamp = this.createGetSetNumberProxy('LAMP',
 			(index) => this.emulator.getLampState(index), SET_NOP);
 		this.Solenoid = this.createGetSetNumberProxy('SOLENOID',
@@ -272,22 +277,6 @@ export class VpmController {
 	}
 	set ShowTitle(show: boolean) {
 		logger().debug('ShowTitle', show);
-	}
-
-	private createDipGetter(): { [index: number]: number } {
-		const handler = {
-			get: (target: {[ index: number ]: number}, prop: number): number => {
-				logger().debug('GETDIP', {target, prop});
-				return prop in target ? target[prop] : 0;
-			},
-
-			set: (target: {[ index: number ]: number}, prop: number, value: number): boolean => {
-				target[prop] = value;
-				logger().debug('SETDIP', {target, prop, value});
-				return true;
-			},
-		};
-		return new Proxy<{ [index: number ]: number; }>({}, handler);
 	}
 
 	private createGetSetNumberProxy(name: string,

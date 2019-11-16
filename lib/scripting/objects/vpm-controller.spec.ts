@@ -35,10 +35,12 @@ describe('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 	let vpmController: VpmController;
 	let setSwitchInputSpy: SinonStub<[number, boolean?]>;
 	let setFliptronicsInputSpy: SinonStub<[string, boolean?]>;
+	let setDipSwitchByteSpy: SinonStub<[number]>;
 
 	beforeEach(() => {
 		setSwitchInputSpy = sandbox.stub(Emulator.prototype, 'setSwitchInput').returns(true);
 		setFliptronicsInputSpy = sandbox.stub(Emulator.prototype, 'setFliptronicsInput');
+		setDipSwitchByteSpy = sandbox.stub(Emulator.prototype, 'setDipSwitchByte');
 
 		const table: Table = new TableBuilder().build();
 		const player: Player = new Player(table);
@@ -76,16 +78,10 @@ describe('The VpmController - VISUAL PINMAME COM OBJECT', () => {
 		expect(vpmController.Running).to.equal(false);
 	});
 
-	it('should set and get Dip[0]', () => {
+	it('should set and get Dip[0] - note the Dip index is ignored, as WPC has only one!', () => {
 		const VALUE: number = 0x55;
 		vpmController.Dip[0] = VALUE;
-		expect(vpmController.Dip[0]).to.equal(VALUE);
-	});
-
-	it('should set and get Dip[40]', () => {
-		const VALUE: number = 0x5;
-		vpmController.Dip[40] = VALUE;
-		expect(vpmController.Dip[40]).to.equal(VALUE);
+		expect(setDipSwitchByteSpy.args[0]).to.deep.equal([ VALUE ]);
 	});
 
 	it('no changed lamps detected', () => {
