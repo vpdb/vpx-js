@@ -1,6 +1,6 @@
 # Command Line Tools
 
-VPX-JS comes with two command line tools:
+VPX-JS comes with command line tools. Make sure to run `npm run compile` first, then change to the compiled output directory (`dist/cjs/bin`) when you use Node.js. Another option is transpile the TypeScript file on the fly and execute it using `npx ts-node bin/vptscript.ts`.
 
 ### Extract Table Script
 
@@ -16,10 +16,10 @@ Using the API:
 const { Table } = require(`vpx-toolbox`);
 
 (async () => {
-	
+
 	// parse the table
 	const vpt = await Table.load('my-table.vpx');
-	
+
 	// read script
 	const script = vpt.getTableScript();
 	console.log(script);
@@ -37,9 +37,9 @@ vpt2glb <source.vpx> [<destination.glb>]
 Additional options are `--compress-vertices`, `--skip-optimize`, `--no-textures`,
 `--no-materials` and `--no-lights`. You can also skip generation of individual
 item types by using `--no-primitives`, `--no-triggers`, `--no-kickers`, `--no-gates`,
-`--no-targets`, `--no-flippers`, `--no-bumpers`, `--no-ramps`, `--no-surfaces`, 
-`--no-rubbers`, `--no-bulbs`, `--no-surface-lights` and `--no-playfield`.    
-    
+`--no-targets`, `--no-flippers`, `--no-bumpers`, `--no-ramps`, `--no-surfaces`,
+`--no-rubbers`, `--no-bulbs`, `--no-surface-lights` and `--no-playfield`.
+
 Otherwise, the API is quite simple:
 
 ```js
@@ -47,7 +47,7 @@ const { writeFileSync } = require('fs');
 const { Table } = require(`vpx-toolbox`);
 
 (async () => {
-	
+
 	// parse the table
 	const vpt = await Table.load('my-table.vpx');
 
@@ -74,16 +74,16 @@ const { Table } = require(`vpx-toolbox`);
 	});
 
 	// write to disk
-	writeFileSync('my-table.glb', glb);	
+	writeFileSync('my-table.glb', glb);
 })();
 ```
- 
+
 ## Result
 
 For a quick check you can use one of the [various](https://sandbox.babylonjs.com/)
-[online](https://threejs.org/editor/) [viewers](https://gltf-viewer.donmccurdy.com/). 
+[online](https://threejs.org/editor/) [viewers](https://gltf-viewer.donmccurdy.com/).
 The default Windows [3D Viewer](https://en.wikipedia.org/wiki/Microsoft_3D_Viewer) comes
-with GLTF support as well, however it doesn't support the Dracos extensions, so 
+with GLTF support as well, however it doesn't support the Dracos extensions, so
 you'll need to disable mesh compression if you want to open it with 3D Viewer.
 
 VPDB uses this to display 3D models in the browser:
@@ -100,10 +100,10 @@ Run tests with:
 npm run test
 ```
 
-Most of the tests are related to the mesh generation. We basically take Visual 
+Most of the tests are related to the mesh generation. We basically take Visual
 Pinball's OBJ export as a base line and verify that the vertices in the GLTF file
-are the same. We do that for every playfield item and their variations. We also 
-apply transformations to test the matrices. We test textures by feeding multiple 
+are the same. We do that for every playfield item and their variations. We also
+apply transformations to test the matrices. We test textures by feeding multiple
 formats into VPX and comparing the exported result using [looks-same](https://github.com/gemini-testing/looks-same).
 What's currently not tested are:
 
