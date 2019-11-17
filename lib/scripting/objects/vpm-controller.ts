@@ -284,9 +284,9 @@ export class VpmController {
 			setFunction: (prop: number, value: number) => boolean,
 		): { [index: number]: number } {
 		const handler = {
-			get: (target: {[ index: number ]: number}, prop: number): number => {
+			get: (target: {[ index: number ]: number}, prop: number | string): number => {
 				logger().debug('GET', name, {target, prop});
-				return getFunction(prop);
+				return getFunction(parseInt(prop.toString(), 10));
 			},
 
 			set: (target: {[ index: number ]: number}, prop: number | string, value: number): boolean => {
