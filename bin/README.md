@@ -1,6 +1,6 @@
 # Command Line Tools
 
-VPX-JS comes with command line tools. Make sure to run `npm run compile` first, then change to the compiled output directory (`dist/cjs/bin`) when you use Node.js. Another option is transpile the TypeScript file on the fly and execute it using `npx ts-node bin/vptscript.ts`.
+VPX-JS comes with command line tools. Make sure to run `npm run build` first, then change to the compiled output directory (`dist/cjs/bin`) when you use Node.js. Another option is transpile the TypeScript file on the fly and execute it using `npx ts-node bin/vptscript.ts`.
 
 ### Extract Table Script
 
