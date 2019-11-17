@@ -101,12 +101,6 @@ npm run test
 
 For more infos about how tests are written, see [here](https://github.com/vpdb/vpx-js/tree/master/test#readme)
 
-## VPX Fileformat
-
-VPX files using Microsoft OLE2 files (also called Structured Storage, Compound File Binary Format or Compound Document File Format). Some links to work (extract/repack) those files:
-- [oletools]: https://www.decalage.info/python/oletools
-- [Visual Pinball]: https://vpinball.com/
-
 ## Credits
 
 * @jsm174 for getting the Nearley grammar right and his work on translating VBScript to JavaScript
