@@ -9,7 +9,7 @@
 ## Features
 
 This isn't a ready-to-use game. It's a library of loosely-coupled components that
-together implement [Visual Pinball](https://sourceforge.net/projects/vpinball/)'s 
+together implement [Visual Pinball](https://sourceforge.net/projects/vpinball/)'s
 player for the web.
 
 The player can be split into three parts:
@@ -17,15 +17,15 @@ The player can be split into three parts:
 1. The rendering engine
 2. The physics engine
 3. The scripting engine
-    
+
 This library provides an abstraction layer for rendering with [three.js](https://threejs.org/),
 which covers the first point. A physics loop is implemented by the `Player`
-class. Collision detection and rigid body dynamics are fully ported, covering the 
+class. Collision detection and rigid body dynamics are fully ported, covering the
 second part. Work on scripting has begun with the wiring set up and the default
-table script working. More info about how we go about this can be found 
-[here](https://github.com/freezy/vpweb/issues/1).  
-    
-### Rendering 
+table script working. More info about how we go about this can be found
+[here](https://github.com/freezy/vpweb/issues/1).
+
+### Rendering
 
 VPX-JS reads Visual Pinball's VPX format and extracts all meshes in VP's internal
 format. Using an abstraction layer, any WebGL framework can convert this format
@@ -48,18 +48,18 @@ export doesn't, for example:
 ### Physics
 
 VPX-JS uses the same physics code than Visual Pinball. That means the gameplay
-is identical in the browser than when running VPX. 
+is identical in the browser than when running VPX.
 
 ### Scripting and VPM
 
 For scripting, see [this issue](https://github.com/freezy/vpweb/issues/1). About
 VPM, there isn't a JavaScript implementation of PinMAME yet. However, @neophob
 wrote a [WPC emulator](https://github.com/neophob/wpc-emu) from scratch that will
-cover many games already. 
+cover many games already.
 
 ## Development Setup
 
-Given this is a lib, you'll need an actual web application to test. There is a 
+Given this is a lib, you'll need an actual web application to test. There is a
 simple one we're currently using for development [here](https://github.com/freezy/vpweb).
 
 This *vpweb* project retrieves VPX-JS from NPM, so in order to iterate rapidly,
@@ -83,7 +83,7 @@ npm link vpx-js
 npm start
 ```
 
-Then connect to `http://localhost:8080` and drag a VPX file into it. Note that 
+Then connect to `http://localhost:8080` and drag a VPX file into it. Note that
 the scripting engine is still limited. However, the table script of the default
 table should now work.
 
@@ -100,6 +100,12 @@ npm run test
 ```
 
 For more infos about how tests are written, see [here](https://github.com/vpdb/vpx-js/tree/master/test#readme)
+
+## VPX Fileformat
+
+VPX files using Microsoft OLE2 files (also called Structured Storage, Compound File Binary Format or Compound Document File Format). Some links to work (extract/repack) those files:
+- [oletools]: https://www.decalage.info/python/oletools
+- [Visual Pinball]: https://vpinball.com/
 
 ## Credits
 
