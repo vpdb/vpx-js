@@ -24,6 +24,7 @@ import { SinonStub } from 'sinon';
 import { TableBuilder } from '../../../test/table-builder';
 import { Player } from '../../game/player';
 import { Emulator } from '../../emu/wpc-emu';
+import { EmulatorState } from '../../emu/emulator-state';
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
@@ -34,12 +35,20 @@ describe('VpmController integration test', () => {
 	let setDipSwitchByteSpy: SinonStub<[number]>;
 	let getSolenoidSpy: SinonStub<[number]>;
 	let getLampSpy: SinonStub<[number]>;
+	let getChangedLampsSpy: SinonStub<any>;
+	let getChangedSolenoidsSpy: SinonStub<any>;
+	let getChangedGISpy: SinonStub<any>;
+	let getChangedLEDsSpy: SinonStub<any>;
 
 	beforeEach(() => {
 		setSwitchInputSpy = sandbox.stub(Emulator.prototype, 'setSwitchInput').returns(true);
 		setDipSwitchByteSpy = sandbox.stub(Emulator.prototype, 'setDipSwitchByte');
 		getSolenoidSpy = sandbox.stub(Emulator.prototype, 'getSolenoidState');
 		getLampSpy = sandbox.stub(Emulator.prototype, 'getLampState');
+		getChangedLampsSpy = sandbox.stub(EmulatorState.prototype, 'getChangedLamps');
+		getChangedSolenoidsSpy = sandbox.stub(EmulatorState.prototype, 'getChangedSolenoids');
+		getChangedGISpy = sandbox.stub(EmulatorState.prototype, 'getChangedGI');
+		getChangedLEDsSpy = sandbox.stub(EmulatorState.prototype, 'getChangedLEDs');
 	});
 
 	afterEach(() => {
@@ -90,6 +99,38 @@ describe('VpmController integration test', () => {
 
 		expect(getLampSpy.args.length).to.equal(1);
 		expect(getLampSpy.args[0]).to.deep.equal([ 3 ]);
+	});
+
+	it('VBS should read changed lamp, Controller.ChangedLamps', () => {
+		const vbs = `Dim Controller\nSet Controller = CreateObject("VPinMAME.Controller")\nController.ChangedLamps`;
+		setupPlayerTable(vbs);
+
+		expect(getChangedLampsSpy.args.length).to.equal(1);
+		expect(getChangedLampsSpy.args[0]).to.deep.equal([  ]);
+	});
+
+	it('VBS should read changed lamp, Controller.ChangedGI', () => {
+		const vbs = `Dim Controller\nSet Controller = CreateObject("VPinMAME.Controller")\nController.ChangedGI`;
+		setupPlayerTable(vbs);
+
+		expect(getChangedGISpy.args.length).to.equal(1);
+		expect(getChangedGISpy.args[0]).to.deep.equal([  ]);
+	});
+
+	it('VBS should read changed lamp, Controller.ChangedSolenoids', () => {
+		const vbs = `Dim Controller\nSet Controller = CreateObject("VPinMAME.Controller")\nController.ChangedSolenoids`;
+		setupPlayerTable(vbs);
+
+		expect(getChangedSolenoidsSpy.args.length).to.equal(1);
+		expect(getChangedSolenoidsSpy.args[0]).to.deep.equal([  ]);
+	});
+
+	it('VBS should read changed lamp, Controller.ChangedLEDs', () => {
+		const vbs = `Dim Controller\nSet Controller = CreateObject("VPinMAME.Controller")\nController.ChangedLEDs`;
+		setupPlayerTable(vbs);
+
+		expect(getChangedLEDsSpy.args.length).to.equal(1);
+		expect(getChangedLEDsSpy.args[0]).to.deep.equal([  ]);
 	});
 
 });

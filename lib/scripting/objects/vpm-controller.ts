@@ -260,7 +260,7 @@ export class VpmController {
 		return this.emulator.emulatorState.getChangedGI();
 	}
 	get ChangedLEDs(): number[][] {
-		return this.emulator.emulatorState.ChangedLEDs();
+		return this.emulator.emulatorState.getChangedLEDs();
 	}
 
 	// Debugging

@@ -100,7 +100,7 @@ export class EmulatorState {
 	}
 
 	// NOT IMPLEMENTED YET - needed for alphanumeric games only!
-	public ChangedLEDs(): number[][] {
+	public getChangedLEDs(): number[][] {
 		return [];
 	}
 

@@ -148,8 +148,8 @@ describe('The EmulatorState - handle state changes', () => {
 		expect(emulatorState.getChangedLamps()).to.deep.equal([]);
 	});
 
-	it('should return empty array after fetching ChangedLEDs - not implemented used for Alphanumeric displays only', () => {
-		const result: number[][] = emulatorState.ChangedLEDs();
+	it('should return empty array after fetching getChangedLEDs - not implemented used for Alphanumeric displays only', () => {
+		const result: number[][] = emulatorState.getChangedLEDs();
 		expect(result).to.deep.equal([]);
 	});
 
