@@ -64,6 +64,7 @@ export class PlayerPhysics {
 	public lastPlungerHit: number = 0;
 	public ballControl = false;
 	public bcTarget?: Vertex3D;
+	public isPaused: boolean = false;
 
 	private readonly table: Table;
 	private readonly pinInput: PinInput;
@@ -321,6 +322,12 @@ export class PlayerPhysics {
 	public updatePhysics(time?: number): number {
 
 		const initialTimeUsec = time !== undefined ? time * 1000 : Math.floor(this.now() * 1000);
+
+		if (this.isPaused) {
+			// Shift whole game forward in time
+			this.startTimeUsec += initialTimeUsec - this.curPhysicsFrameTime;
+			this.curPhysicsFrameTime = initialTimeUsec; // 0 time frame
+		}
 
 //#ifdef FPS
 		this.lastFrameDuration = initialTimeUsec - this.lastTimeUsec;
