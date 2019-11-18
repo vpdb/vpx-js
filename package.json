@@ -73,7 +73,7 @@
 		"@types/sinon": "7.5.0",
 		"@types/sinon-chai": "3.2.3",
 		"chai": "4.2.0",
-		"cross-env": "^6.0.3",
+		"cross-env": "6.0.3",
 		"esm": "3.2.25",
 		"looks-same": "7.2.2",
 		"microtime": "3.0.0",
