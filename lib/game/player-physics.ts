@@ -326,6 +326,7 @@ export class PlayerPhysics {
 		if (this.isPaused) {
 			// Shift whole game forward in time
 			this.startTimeUsec += initialTimeUsec - this.curPhysicsFrameTime;
+			this.nextPhysicsFrameTime += initialTimeUsec - this.curPhysicsFrameTime;
 			this.curPhysicsFrameTime = initialTimeUsec; // 0 time frame
 		}
 
