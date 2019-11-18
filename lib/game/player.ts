@@ -249,6 +249,14 @@ export class Player extends EventEmitter {
 		this.width = width;
 		this.height = height;
 	}
+
+	public pause(): void {
+		this.physics.isPaused = true;
+	}
+
+	public resume(): void {
+		this.physics.isPaused = false;
+	}
 }
 
 export interface IBallCreationPosition {
