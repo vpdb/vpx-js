@@ -27,7 +27,7 @@ import { Emulator } from '../../emu/wpc-emu';
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
-describe.only('VpmController integration test', () => {
+describe('VpmController integration test', () => {
 
 	const sandbox = sinon.createSandbox();
 	let setSwitchInputSpy: SinonStub<[number, boolean?]>;
@@ -46,52 +46,47 @@ describe.only('VpmController integration test', () => {
 		sandbox.restore();
 	});
 
-	it('VBS should update switch, Controller.Switch()', () => {
+	function setupPlayerTable(vbs) {
 		const scope = {};
-		const vbs = `Dim Controller\nSet Controller = CreateObject("VPinMAME.Controller")\nController.Switch(49) = 0\nController.Switch(51) = 1`;
 		const table = new TableBuilder().withTableScript(vbs).build('Table1');
 		new Player(table).init(scope);
+	}
 
+	it('VBS should update switch, Controller.Switch()', () => {
+		const vbs = `Dim Controller\nSet Controller = CreateObject("VPinMAME.Controller")\nController.Switch(49) = 0\nController.Switch(51) = 1`;
+		setupPlayerTable(vbs);
 		expect(setSwitchInputSpy.args.length).to.equal(2);
 		expect(setSwitchInputSpy.args[0]).to.deep.equal([ 49, false ]);
 		expect(setSwitchInputSpy.args[1]).to.deep.equal([ 51, true ]);
 	});
 
-	it.skip('VBS should update language setting, Controller.DIP()', () => {
-		const scope = {};
+	it('VBS should update language setting, Controller.DIP()', () => {
 		const vbs = `Dim Controller\nSet Controller = CreateObject("VPinMAME.Controller")\nController.DIP(0) = &H00`;
-		const table = new TableBuilder().withTableScript(vbs).build('Table1');
-		new Player(table).init(scope);
+		setupPlayerTable(vbs);
 
 		expect(setDipSwitchByteSpy.args.length).to.equal(1);
 		expect(setDipSwitchByteSpy.args[0]).to.deep.equal([ 0 ]);
 	});
 
 	it('VBS should update language setting, Controller.Dip()', () => {
-		const scope = {};
 		const vbs = `Dim Controller\nSet Controller = CreateObject("VPinMAME.Controller")\nController.Dip(0) = &H70`;
-		const table = new TableBuilder().withTableScript(vbs).build('Table1');
-		new Player(table).init(scope);
+		setupPlayerTable(vbs);
 
 		expect(setDipSwitchByteSpy.args.length).to.equal(1);
 		expect(setDipSwitchByteSpy.args[0]).to.deep.equal([ 112 ]);
 	});
 
 	it('VBS should read solenoid, Controller.Solenoid()', () => {
-		const scope = {};
 		const vbs = `Dim Controller\nSet Controller = CreateObject("VPinMAME.Controller")\nController.Solenoid(4)`;
-		const table = new TableBuilder().withTableScript(vbs).build('Table1');
-		new Player(table).init(scope);
+		setupPlayerTable(vbs);
 
 		expect(getSolenoidSpy.args.length).to.equal(1);
 		expect(getSolenoidSpy.args[0]).to.deep.equal([ 4 ]);
 	});
 
 	it('VBS should read lamp, Controller.Lamp()', () => {
-		const scope = {};
 		const vbs = `Dim Controller\nSet Controller = CreateObject("VPinMAME.Controller")\nController.Lamp(3)`;
-		const table = new TableBuilder().withTableScript(vbs).build('Table1');
-		new Player(table).init(scope);
+		setupPlayerTable(vbs);
 
 		expect(getLampSpy.args.length).to.equal(1);
 		expect(getLampSpy.args[0]).to.deep.equal([ 3 ]);

@@ -2,7 +2,7 @@
 
 ## Visual PinMAME Control
 
-### STATS:
+### STATS
 
 A quick evaluation of 357 VPX VBS files, showed this amount of API Calls
 
@@ -49,43 +49,6 @@ A quick evaluation of 357 VPX VBS files, showed this amount of API Calls
 - .B2SSetData 505
 - .GetMech 38
 
-### STATE
-Should be implemented - BASIC
-
-#### PoC
-
-```
-const Control = {
-	gameName: '',
-	running: false,
-	pause: false,
-	get GameName() {
-		return this.gameName;
-	},
-	set GameName(gameName) {
-		this.gameName = gameName;
-	},
-	get Running() {
-		return this.running;
-	},
-	get Pause() {
-		return this.pause;
-	},
-	set Pause(pause) {
-		this.pause = pause;
-	},
-	get Version() {
-		return '1.10.11';
-	},
-	Run() {
-		console.log('BOO HOO');
-	},
-	Stop() {
-		console.log('STOP');
-	}
-}
-```
-
 ### Properties
 
 - GameName, Read/Write: Initializes VPinMAME for game "gameName". Example Controller.GameName = "tz_94h"
@@ -102,28 +65,6 @@ minVersion: Minimum version of Visual PinMAME (e.g. 100 for 1.00) required to ru
 
 ## Game Settings
 
-### STATE
-Should be implemented.
-
-#### PoC
-
-```
-const GameSetting = {
-	get Dip() {
-		//TODO unclear
-	},
-	set Dip(dipBankNumber) {
-		//TODO unclear
-	},
-	get WPCNumbering() {
-		return this.pause;
-	},
-	get SampleRate() {
-		return 22050;
-	},
-}
-```
-
 ### Properties
 
 - Dip (Dip Bank Number), Read/Write, Sets/Gets the Dip switch settings for the current game. Dip Bank Number: dip 1-8 = bank 0, dip 9-16 = bank 1 ... value: binary value to set the dips 1=On, 0=Off. Example: Controller.Dip(0) = &H55, Controller.Dip(1) = &Haa
@@ -132,9 +73,6 @@ const GameSetting = {
 - SampleRate, Read/Write, Sets/Gets the sample rate, Example: Controller.SampleRate = 22050
 
 ## Customization
-
-### STATE
-Will skip implementation unless we need.
 
 ### Properties
 
@@ -169,35 +107,11 @@ Controller.CheckROMS(0,hWnd) : Displays the results of the ROM check (hWnd = Han
 
 ## Aggregate Polling Functions
 
-
 These properties return a matrix with everything that has changed since the last call.
 The array contains the following info
 Matrix(0,0) Number of first changed item
 Matrix(0,1) New status of first item
 Matrix(1,0) Number of second changed item
-
-### STATE
-Should be implemented - BASIC
-
-#### PoC
-
-```
-const AggregatePollingFunctions = {
-	get ChangedLamps() {
-		return x;
-	},
-	get ChangedSolenoids() {
-		return x;
-	},
-	get ChangedGI() {
-		return x;
-	},
-	get ChangedLEDs() {
-		return '1.10.11';
-	},
-}
-```
-
 
 ### Properties
 
@@ -208,28 +122,6 @@ const AggregatePollingFunctions = {
 
 ## Game Input/Output
 
-### STATE
-Should be implemented - BASIC
-
-#### PoC
-
-```
-const GameInputOutput = {
-	get Lamp(number) {
-		return x;
-	},
-	get Solenoid(number) {
-		return x;
-	},
-	get GIString(number) {
-		return x;
-	},
-	get Switch(number) {
-		return x;
-	},
-}
-```
-
 ### Properties
 
 - Lamp(number), Read Only, Get status of a single lamp, return: True = Lamp on, False = Lamp off
@@ -239,9 +131,6 @@ const GameInputOutput = {
 
 ## Debugging
 
-### STATE
-Will skip implementation unless we need.
-
 ### Properties
 
 - ShowDMDOnly, Read/Write, Enable/disable VPinMAME status matrices.
@@ -249,9 +138,6 @@ Will skip implementation unless we need.
 - ShowTitle, Read/Write, Show title bar on VPinMAME output window (to move it around)
 
 ## Events
-
-### STATE
-Will skip implementation unless we need.
 
 May not be supported in all scripting environments!
 

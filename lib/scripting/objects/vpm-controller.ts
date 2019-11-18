@@ -34,6 +34,7 @@ export class VpmController {
 	private splashInfoLine: string = '';
 	private readonly player: Player;
 	public readonly Dip: { [index: number]: number };
+	public readonly DIP: { [index: number]: number };
 	public readonly Switch: { [index: number]: number };
 	public readonly Lamp: { [index: number]: number };
 	public readonly Solenoid: { [index: number]: number };
@@ -75,6 +76,9 @@ export class VpmController {
 				return true;
 			},
 		);
+		// See https://github.com/vpdb/vpx-js/issues/163
+		this.DIP = this.Dip;
+
 		this.Lamp = this.createGetSetNumberProxy('LAMP',
 			(index) => this.emulator.getLampState(index), SET_NOP);
 		this.Solenoid = this.createGetSetNumberProxy('SOLENOID',
