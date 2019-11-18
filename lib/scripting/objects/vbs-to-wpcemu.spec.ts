@@ -20,7 +20,6 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import { SinonStub } from 'sinon';
 import { TableBuilder } from '../../../test/table-builder';
 import { Player } from '../../game/player';
 import { Emulator } from '../../emu/wpc-emu';
@@ -31,25 +30,6 @@ chai.use(require('sinon-chai'));
 describe('VpmController integration test', () => {
 
 	const sandbox = sinon.createSandbox();
-	let setSwitchInputSpy: SinonStub<[number, boolean?]>;
-	let setDipSwitchByteSpy: SinonStub<[number]>;
-	let getSolenoidSpy: SinonStub<[number]>;
-	let getLampSpy: SinonStub<[number]>;
-	let getChangedLampsSpy: SinonStub<any>;
-	let getChangedSolenoidsSpy: SinonStub<any>;
-	let getChangedGISpy: SinonStub<any>;
-	let getChangedLEDsSpy: SinonStub<any>;
-
-	beforeEach(() => {
-		setSwitchInputSpy = sandbox.stub(Emulator.prototype, 'setSwitchInput').returns(true);
-		setDipSwitchByteSpy = sandbox.stub(Emulator.prototype, 'setDipSwitchByte');
-		getSolenoidSpy = sandbox.stub(Emulator.prototype, 'getSolenoidState');
-		getLampSpy = sandbox.stub(Emulator.prototype, 'getLampState');
-		getChangedLampsSpy = sandbox.stub(EmulatorState.prototype, 'getChangedLamps');
-		getChangedSolenoidsSpy = sandbox.stub(EmulatorState.prototype, 'getChangedSolenoids');
-		getChangedGISpy = sandbox.stub(EmulatorState.prototype, 'getChangedGI');
-		getChangedLEDsSpy = sandbox.stub(EmulatorState.prototype, 'getChangedLEDs');
-	});
 
 	afterEach(() => {
 		sandbox.restore();
@@ -62,14 +42,17 @@ describe('VpmController integration test', () => {
 	}
 
 	it('VBS should update switch, Controller.Switch()', () => {
+		const setSwitchInputSpy = sandbox.stub(Emulator.prototype, 'setSwitchInput').returns(true);
 		const vbs = `Dim Controller\nSet Controller = CreateObject("VPinMAME.Controller")\nController.Switch(49) = 0\nController.Switch(51) = 1`;
 		setupPlayerTable(vbs);
+
 		expect(setSwitchInputSpy.args.length).to.equal(2);
 		expect(setSwitchInputSpy.args[0]).to.deep.equal([ 49, false ]);
 		expect(setSwitchInputSpy.args[1]).to.deep.equal([ 51, true ]);
 	});
 
 	it('VBS should update language setting, Controller.DIP()', () => {
+		const setDipSwitchByteSpy = sandbox.stub(Emulator.prototype, 'setDipSwitchByte');
 		const vbs = `Dim Controller\nSet Controller = CreateObject("VPinMAME.Controller")\nController.DIP(0) = &H00`;
 		setupPlayerTable(vbs);
 
@@ -78,6 +61,7 @@ describe('VpmController integration test', () => {
 	});
 
 	it('VBS should update language setting, Controller.Dip()', () => {
+		const setDipSwitchByteSpy = sandbox.stub(Emulator.prototype, 'setDipSwitchByte');
 		const vbs = `Dim Controller\nSet Controller = CreateObject("VPinMAME.Controller")\nController.Dip(0) = &H70`;
 		setupPlayerTable(vbs);
 
@@ -86,6 +70,7 @@ describe('VpmController integration test', () => {
 	});
 
 	it('VBS should read solenoid, Controller.Solenoid()', () => {
+		const getSolenoidSpy = sandbox.stub(Emulator.prototype, 'getSolenoidState');
 		const vbs = `Dim Controller\nSet Controller = CreateObject("VPinMAME.Controller")\nController.Solenoid(4)`;
 		setupPlayerTable(vbs);
 
@@ -94,6 +79,7 @@ describe('VpmController integration test', () => {
 	});
 
 	it('VBS should read lamp, Controller.Lamp()', () => {
+		const getLampSpy = sandbox.stub(Emulator.prototype, 'getLampState');
 		const vbs = `Dim Controller\nSet Controller = CreateObject("VPinMAME.Controller")\nController.Lamp(3)`;
 		setupPlayerTable(vbs);
 
@@ -102,6 +88,7 @@ describe('VpmController integration test', () => {
 	});
 
 	it('VBS should read changed lamp, Controller.ChangedLamps', () => {
+		const getChangedLampsSpy = sandbox.stub(EmulatorState.prototype, 'getChangedLamps');
 		const vbs = `Dim Controller\nSet Controller = CreateObject("VPinMAME.Controller")\nController.ChangedLamps`;
 		setupPlayerTable(vbs);
 
@@ -110,6 +97,7 @@ describe('VpmController integration test', () => {
 	});
 
 	it('VBS should read changed lamp, Controller.ChangedGI', () => {
+		const getChangedGISpy = sandbox.stub(EmulatorState.prototype, 'getChangedGI');
 		const vbs = `Dim Controller\nSet Controller = CreateObject("VPinMAME.Controller")\nController.ChangedGI`;
 		setupPlayerTable(vbs);
 
@@ -118,6 +106,7 @@ describe('VpmController integration test', () => {
 	});
 
 	it('VBS should read changed lamp, Controller.ChangedSolenoids', () => {
+		const getChangedSolenoidsSpy = sandbox.stub(EmulatorState.prototype, 'getChangedSolenoids');
 		const vbs = `Dim Controller\nSet Controller = CreateObject("VPinMAME.Controller")\nController.ChangedSolenoids`;
 		setupPlayerTable(vbs);
 
@@ -126,6 +115,7 @@ describe('VpmController integration test', () => {
 	});
 
 	it('VBS should read changed lamp, Controller.ChangedLEDs', () => {
+		const getChangedLEDsSpy = sandbox.stub(EmulatorState.prototype, 'getChangedLEDs');
 		const vbs = `Dim Controller\nSet Controller = CreateObject("VPinMAME.Controller")\nController.ChangedLEDs`;
 		setupPlayerTable(vbs);
 
