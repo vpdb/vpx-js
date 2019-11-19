@@ -260,11 +260,13 @@ export class Player extends EventEmitter {
 	public pause(): void {
 		this.physics.isPaused = true;
 		this.table.fireVoidEvent(Event.GameEventsPaused);
+		this.emit('paused');
 	}
 
 	public resume(): void {
 		this.physics.isPaused = false;
 		this.table.fireVoidEvent(Event.GameEventsUnPaused);
+		this.emit('resumed');
 	}
 }
 
