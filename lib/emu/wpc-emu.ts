@@ -54,6 +54,10 @@ export class Emulator implements IEmulator {
 		// message that the RAM was cleared
 		this.emulatorMessageQueue.addMessage(MessageType.CabinetInput, 16);
 		this.emulatorMessageQueue.replayMessages(this);
+
+		this.registerAudioConsumer((audioCallback) => {
+			logger().debug('audioCallback', audioCallback);
+		});
 	}
 
 	public isInitialized(): boolean {
@@ -72,8 +76,7 @@ export class Emulator implements IEmulator {
 		return this.paused;
 	}
 
-	public registerAudioConsumer(callbackFunction: (sampleId: number) => void): void {
-		// TODO store registerAudioConsumer, and use it when emu is started
+	public registerAudioConsumer(callbackFunction: (audioCallback: WpcEmuApi.AudioMessage) => void): void {
 		if (!this.emulator) {
 			return;
 		}
