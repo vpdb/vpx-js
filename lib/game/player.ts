@@ -87,6 +87,7 @@ export class Player extends EventEmitter {
 	 * @param dTime Time to simulate in ms
 	 */
 	public simulateTime(dTime: number) {
+		/* istanbul ignore next: This is for my future self when writing tests! */
 		if (!this.isInitialized) {
 			throw new Error('Player must be initialized before simulating time!');
 		}
