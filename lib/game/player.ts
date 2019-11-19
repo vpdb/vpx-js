@@ -24,11 +24,11 @@ import { Pool } from '../util/object-pool';
 import { Ball } from '../vpt/ball/ball';
 import { ItemState } from '../vpt/item-state';
 import { Table } from '../vpt/table/table';
+import { Event } from './event';
 import { IEmulator } from './iemulator';
 import { AssignKey, keyEventToDirectInputKey } from './key-code';
 import { PinInput } from './pin-input';
 import { PlayerPhysics } from './player-physics';
-import { Event } from './event';
 
 export class Player extends EventEmitter {
 
@@ -88,7 +88,7 @@ export class Player extends EventEmitter {
 	 */
 	public simulateTime(dTime: number) {
 		if (!this.isInitialized) {
-			throw new Error('Player must be initialized before simulating time!')
+			throw new Error('Player must be initialized before simulating time!');
 		}
 		const FPS = 60;
 		const timePerFrameMs = 1000 / FPS;

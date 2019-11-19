@@ -21,9 +21,9 @@ import * as chai from 'chai';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { TableBuilder } from '../../../test/table-builder';
-import { Player } from '../../game/player';
-import { Emulator } from '../../emu/wpc-emu';
 import { EmulatorState } from '../../emu/emulator-state';
+import { Emulator } from '../../emu/wpc-emu';
+import { Player } from '../../game/player';
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
