@@ -61,4 +61,23 @@ describe('The VBScript proxy handler', () => {
 		expect(wss.CurrentDirectory).to.equal('/bar');
 	});
 
+	it('should get a case insensitive getter', () => {
+		const vpm = getObject<any>('VPinMAME.Controller', player);
+		expect(vpm.Pause).to.equal(false);
+		expect(vpm.PAUSE).to.equal(false);
+		expect(vpm.paUsE).to.equal(false);
+	});
+
+	it('should set a case insensitive setter', () => {
+		const vpm = getObject<any>('VPinMAME.Controller', player);
+		vpm.Pause = true;
+		expect(vpm.Pause).to.equal(true);
+
+		vpm.PAUSE = false;
+		expect(vpm.Pause).to.equal(false);
+
+		vpm['paUsE'] = true;
+		expect(vpm.Pause).to.equal(true);
+	});
+
 });

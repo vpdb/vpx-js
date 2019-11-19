@@ -44,12 +44,12 @@ export class Emulator implements IEmulator {
 
 	public async loadGame(gameEntry: GamelistDB.GameEntry, romContent: Uint8Array) {
 		const romData: GamelistDB.RomData = { u06: romContent };
-		const emulator = await WpcEmuApi.initVMwithRom(romData, gameEntry);
-
-		this.emulator = emulator;
+		this.emulator = await WpcEmuApi.initVMwithRom(romData, gameEntry);
 		this.emulator.reset();
+
 		// Let the ROM boot, run for 1000ms
 		this.emulator.executeCycleForTime(1000, 4);
+
 		// Set initial state for emulator and press ESC to remove the initial
 		// message that the RAM was cleared
 		this.emulatorMessageQueue.addMessage(MessageType.CabinetInput, 16);

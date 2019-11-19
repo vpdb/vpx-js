@@ -8,14 +8,3 @@ script:
 - npm run test
 after_success:
 - codecov
-before_deploy:
-- npm run build
-deploy:
-  skip_cleanup: true
-  provider: npm
-  email: freezy@vpdb.io
-  api_key:
-    secure: XGaYsv1LEJEu0vfDOCAS2ZWa2uQfv1a1nKDzqT/mpVuCSHAajWPUMx/LTLds+RHR9zMABD4otgvkM0AKDDmMd83s8ACiny6kiVV15s/jhAqJY9qd/ndjb61xeyC8m82IZo4UXjJqQgK5xENR8O0Slpd8iZue9QYy+673PNLw24XK9DTPXx3spzaa0ru7LrApBXZ9PLradKWrmQDPTl4KQDHLYxTMYawlhGYlCv1sOkmk1eAPsZiBD3khqhVcSi9pTmM+mphSUHJkyEwYpqNA8jeP6ZP4B7gaOBoN7FAhR42zFh/OTUbC2CLlAprqxNg/ovTsceP9uANbG5zIb/uz1PS1gI/cjs+SZaBPcwt13m9Fklmh17UTIt3EtpOTItzl0rVJOBdVYDD8ofKAZSXMpHcNv8LD2EU9VWJHQRoZKzgMSNSZJ3zlmXD92iWeSNToX3nvv6Z96BylW/2AIusnrasQt1Qd+F1mFZeli6u080iRTjnb587bDdPWdYFE2O/Hl6f33nrrlkoX4MTF9dejDtYkjZqz4ZZG6YFD22PXu3asWjJMphIu3g4KcTfAbhb3omDbZOLLnlmvRzQebmBEIzqcYJpnr22dFoHSB07qQ6MjN/At6kk5JEG6Poc7bSJDeU5T6Qe7UGKA6hski8CpvBYsgRwj/DD9DZ1AukUZxso=
-  on:
-    tags: true
-    repo: vpdb/vpx-js
