@@ -34,7 +34,6 @@ export class VpmController {
 	private splashInfoLine: string = '';
 	private readonly player: Player;
 	public readonly Dip: { [index: number]: number };
-	public readonly DIP: { [index: number]: number };
 	public readonly Switch: { [index: number]: number };
 	public readonly Lamp: { [index: number]: number };
 	public readonly Solenoid: { [index: number]: number };
