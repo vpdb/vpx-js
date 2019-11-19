@@ -28,6 +28,7 @@ import { IEmulator } from './iemulator';
 import { AssignKey, keyEventToDirectInputKey } from './key-code';
 import { PinInput } from './pin-input';
 import { PlayerPhysics } from './player-physics';
+import { Event } from './event';
 
 export class Player extends EventEmitter {
 
@@ -257,10 +258,12 @@ export class Player extends EventEmitter {
 
 	public pause(): void {
 		this.physics.isPaused = true;
+		this.table.fireVoidEvent(Event.GameEventsPaused);
 	}
 
 	public resume(): void {
 		this.physics.isPaused = false;
+		this.table.fireVoidEvent(Event.GameEventsUnPaused);
 	}
 }
 

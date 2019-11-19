@@ -430,6 +430,11 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 		}
 	}
 
+	public fireVoidEvent(event: Event): this {
+		this.events!.fireVoidEvent(event);
+		return this;
+	}
+
 	public setupCollections() {
 		for (const tableItem of Object.keys(this.items)) {
 			if (isScriptable(tableItem)) {
