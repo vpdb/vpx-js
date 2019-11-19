@@ -84,10 +84,10 @@ async function load(mimeType: string, objectUrl: string): Promise<ThreeTexture> 
 	if (mimeType === 'application/octet-stream') {
 		return await loadHdrTexture(objectUrl);
 	}
-	return Promise.resolve(loadLdrTexture(objectUrl));
+	return loadLdrTexture(objectUrl);
 }
 
-async function loadLdrTexture(objectUrl: string): ThreeTexture {
+async function loadLdrTexture(objectUrl: string): Promise<ThreeTexture> {
 	console.log('loadLdrTexture', objectUrl);
     return new Promise((resolve, reject) => {
 		const texture = new ThreeTexture();
