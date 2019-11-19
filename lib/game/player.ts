@@ -34,6 +34,7 @@ export class Player extends EventEmitter {
 	private readonly table: Table;
 	private readonly pinInput: PinInput;
 	private readonly physics: PlayerPhysics;
+	private isInitialized = false;
 
 	get balls() { return this.physics.balls; }
 
@@ -60,6 +61,7 @@ export class Player extends EventEmitter {
 		this.table.prepareToPlay();
 		this.table.runTableScript(this, scope);
 		this.table.broadcastInit();
+		this.isInitialized = true;
 		return this;
 	}
 
@@ -84,6 +86,9 @@ export class Player extends EventEmitter {
 	 * @param dTime Time to simulate in ms
 	 */
 	public simulateTime(dTime: number) {
+		if (!this.isInitialized) {
+			throw new Error('Player must be initialized before simulating time!')
+		}
 		const FPS = 60;
 		const timePerFrameMs = 1000 / FPS;
 		while (this.simulatedTimeMs <= dTime) {
