@@ -88,14 +88,11 @@ async function load(mimeType: string, objectUrl: string): Promise<ThreeTexture> 
 }
 
 async function loadLdrTexture(objectUrl: string): Promise<ThreeTexture> {
-	console.log('loadLdrTexture', objectUrl);
     return new Promise((resolve, reject) => {
 		const texture = new ThreeTexture();
 		texture.image = new Image();
 		texture.image.addEventListener('load', () => resolve(texture));
-		texture.image.addEventListener('error', () => {
-		  reject(new Error(`Failed to load image's URL: ${objectUrl}`));
-		});
+		texture.image.addEventListener('error', reject);
 		texture.image.src = objectUrl;
 	  });
 
