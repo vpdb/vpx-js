@@ -44,7 +44,6 @@ import {
 	NearestMipMapLinearFilter,
 	NearestMipMapNearestFilter,
 	Object3D,
-	PixelFormat,
 	PropertyBinding,
 	RepeatWrapping,
 	Scene,
@@ -746,11 +745,10 @@ export class GLTFExporter {
 	/**
 	 * Process image
 	 * @param  image image to process
-	 * @param  format of the image (e.g. RGBFormat, RGBAFormat etc)
 	 * @param  flipY before writing out the image
 	 * @return Index of the processed texture in the "images" array
 	 */
-	private processImage(image: NodeImage, format: PixelFormat, flipY: boolean) {
+	private processImage(image: NodeImage, flipY: boolean) {
 
 		const mimeType = image.getMimeType();
 		if (!this.outputJSON.images) {
@@ -835,7 +833,7 @@ export class GLTFExporter {
 
 		const gltfTexture = {
 			sampler: this.processSampler(map),
-			source: this.processImage(map.image, map.format, map.flipY),
+			source: this.processImage(map.image, map.flipY),
 		};
 		this.outputJSON.textures.push(gltfTexture);
 		const index = this.outputJSON.textures.length - 1;

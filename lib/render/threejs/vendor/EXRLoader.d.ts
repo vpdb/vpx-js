@@ -1,11 +1,10 @@
-import { DataTextureLoader, LoadingManager, PixelFormat, TextureDataType } from '../../../refs.node';
+import { DataTextureLoader, LoadingManager, TextureDataType } from '../../../refs.node';
 
 export interface EXR {
 	header: object;
 	width: number;
 	height: number;
 	data: Float32Array;
-	format: PixelFormat;
 	type: TextureDataType;
 }
 

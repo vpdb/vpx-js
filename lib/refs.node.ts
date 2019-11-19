@@ -26,7 +26,7 @@ export { getTextFile } from './scripting/vbs-scripts.node';
 export {
 	Object3D, Mesh, Box3, Scene, AnimationClip, KeyframeTrack, PropertyBinding, Camera, ClampToEdgeWrapping,
 	DoubleSide, InterpolateDiscrete, InterpolateLinear, LinearFilter, LinearMipMapLinearFilter, LinearMipMapNearestFilter,
-	MirroredRepeatWrapping, NearestFilter, NearestMipMapLinearFilter, NearestMipMapNearestFilter, PixelFormat,
+	MirroredRepeatWrapping, NearestFilter, NearestMipMapLinearFilter, NearestMipMapNearestFilter,
 	RepeatWrapping, TriangleFanDrawMode, TriangleStripDrawMode, BufferAttribute, BufferGeometry, Geometry,
 	InterleavedBufferAttribute, Light, Material, Color, Matrix4, Vector3, Bone, Texture, Math,
 	PointLight, Group, MeshStandardMaterial, Face3, Matrix3, Vector2, Path, Shape, ExtrudeBufferGeometry,

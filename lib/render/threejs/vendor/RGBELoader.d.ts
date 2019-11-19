@@ -1,4 +1,4 @@
-import { DataTextureLoader, LoadingManager, PixelFormat, TextureDataType } from '../../../refs.node';
+import { DataTextureLoader, LoadingManager, TextureDataType } from '../../../refs.node';
 
 export interface RGBE {
 	width: number;
@@ -7,7 +7,6 @@ export interface RGBE {
 	header: string;
 	gamma: number;
 	exposure: number;
-	format: PixelFormat;
 	type: TextureDataType;
 }
 
