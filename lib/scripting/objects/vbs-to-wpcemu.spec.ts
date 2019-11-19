@@ -35,7 +35,7 @@ describe('VpmController integration test', () => {
 		sandbox.restore();
 	});
 
-	function setupPlayerTable(vbs) {
+	function setupPlayerTable(vbs: string) {
 		const scope = {};
 		const table = new TableBuilder().withTableScript(vbs).build('Table1');
 		new Player(table).init(scope);
