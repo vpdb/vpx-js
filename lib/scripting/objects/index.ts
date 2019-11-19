@@ -19,17 +19,30 @@
 
 import { Player } from '../../game/player';
 import { ERR } from '../stdlib/err';
+import { VbsProxyHandler } from '../vbs-proxy-handler';
 import { Dictionary } from './dictionary';
 import { FileSystemObject } from './file-system-object';
 import { VpmController } from './vpm-controller';
 import { WshShell } from './wsh-shell';
 
-export function getObject(name: string, player: Player): any {
+export function getObject<T>(name: string, player: Player): T | void {
+
 	switch (name.toLowerCase()) {
-		case 'scripting.dictionary': return new Dictionary();
-		case 'scripting.filesystemobject': return new FileSystemObject();
-		case 'vpinmame.controller': return new VpmController(player);
-		case 'wscript.shell': return new WshShell();
+		case 'scripting.dictionary':
+			const dictionary = new Dictionary();
+			return new Proxy(dictionary, new VbsProxyHandler(dictionary, Dictionary.prototype));
+
+		case 'scripting.filesystemobject':
+			const fso = new FileSystemObject();
+			return new Proxy(fso, new VbsProxyHandler(fso, FileSystemObject.prototype));
+
+		case 'vpinmame.controller':
+			const vpc = new VpmController(player);
+			return new Proxy(vpc, new VbsProxyHandler(vpc, VpmController.prototype));
+
+		case 'wscript.shell':
+			const wss = new WshShell();
+			return new Proxy(wss, new VbsProxyHandler(wss, WshShell.prototype));
 	}
 	ERR.Raise(429, undefined, "ActiveX component can't create object");
 }
