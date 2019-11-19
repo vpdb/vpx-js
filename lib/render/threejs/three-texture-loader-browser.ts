@@ -41,14 +41,14 @@ export class ThreeTextureLoaderBrowser implements ITextureLoader<ThreeTexture> {
 		if (!imageMap[key]) {
 			throw new Error('Unknown local texture "' + key + '".');
 		}
-		return Promise.resolve(new TextureLoader().load(imageMap[key]));
+		return new TextureLoader().load(imageMap[key]);
 	}
 
 	public async loadRawTexture(name: string, data: Buffer, width: number, height: number): Promise<ThreeTexture> {
 		const texture = new DataTexture(data, width, height, RGBAFormat);
 		texture.flipY = true;
 		texture.needsUpdate = true;
-		return Promise.resolve(texture);
+		return texture;
 	}
 
 	public async loadTexture(name: string, ext: string, data: Buffer): Promise<ThreeTexture> {
@@ -61,7 +61,7 @@ export class ThreeTextureLoaderBrowser implements ITextureLoader<ThreeTexture> {
 		texture.name = `texture:${name}`;
 		texture.needsUpdate = true;
 		texture.anisotropy = 4;
-		return Promise.resolve(texture);
+		return texture;
 	}
 }
 
@@ -87,11 +87,18 @@ async function load(mimeType: string, objectUrl: string): Promise<ThreeTexture> 
 	return Promise.resolve(loadLdrTexture(objectUrl));
 }
 
-function loadLdrTexture(objectUrl: string): ThreeTexture {
-	const texture = new ThreeTexture();
-	texture.image = new Image();
-	texture.image.src = objectUrl;
-	return texture;
+async function loadLdrTexture(objectUrl: string): ThreeTexture {
+	console.log('loadLdrTexture', objectUrl);
+    return new Promise((resolve, reject) => {
+		const texture = new ThreeTexture();
+		texture.image = new Image();
+		texture.image.addEventListener('load', () => resolve(texture));
+		texture.image.addEventListener('error', () => {
+		  reject(new Error(`Failed to load image's URL: ${objectUrl}`));
+		});
+		texture.image.src = objectUrl;
+	  });
+
 }
 
 async function loadHdrTexture(objectUrl: string): Promise<ThreeTexture> {
