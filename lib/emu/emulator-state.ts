@@ -18,6 +18,7 @@
  */
 
 import { WpcEmuWebWorkerApi } from 'wpc-emu';
+import { VbsArray } from '../scripting/vbs-array';
 import { OffsetIndex } from './offset-index';
 
 function getEmptyUint8Array(size: number = 64) {
@@ -78,10 +79,10 @@ export class EmulatorState {
 	/**
 	 * return changed lamps, index starts at 11..18, 21..28.. up to index 88
 	 */
-	public getChangedLamps(): number[][] {
+	public getChangedLamps(): VbsArray<number[]> {
 		const result: number[][] = this.getArrayDiff(this.lastSentLampState, this.currentLampState, OffsetIndex.mapIndexToMatrixIndex);
 		this.lastSentLampState = this.currentLampState;
-		return result;
+		return new VbsArray(result);
 	}
 
 	/**

@@ -21,6 +21,7 @@ import { downloadGameEntry } from '../../emu/rom-fetcher';
 import { Emulator } from '../../emu/wpc-emu';
 import { Player } from '../../game/player';
 import { logger } from '../../util/logger';
+import { VbsArray } from '../vbs-array';
 
 /**
  * Implementation of the VISUAL PINMAME COM OBJECT PROPERTY/METHOD
@@ -245,8 +246,8 @@ export class VpmController {
 	}
 
 	// AggregatePollingFunctions
-	get ChangedLamps(): number[][] {
-		const changedLamps: number[][] = this.emulator.emulatorState.getChangedLamps();
+	get ChangedLamps(): VbsArray<number[]> {
+		const changedLamps: VbsArray<number[]> = this.emulator.emulatorState.getChangedLamps();
 		return changedLamps;
 	}
 	get ChangedSolenoids(): number[][] {

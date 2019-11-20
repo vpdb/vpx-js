@@ -60,6 +60,11 @@ export class Err extends VbsApi {
 
 	/**
 	 * Generates a run-time error.
+	 * @param codeOrError Error to be thrown
+	 */
+	public Raise(codeOrError: Error): void;
+	/**
+	 * Generates a run-time error.
 	 * @param code Long integer that identifies the nature of the error. Visual Basic errors (both Visual Basic-defined and user-defined errors) are in the range 0–65535. The range 0–512 is reserved for system errors; the range 513–65535 is available for user-defined errors.
 	 * @param source String expression naming the object or application that generated the error. When setting the Source property for an object, use the form project.class. If source is not specified, the programmatic ID of the current Visual Basic project is used.
 	 * @param description String expression describing the error. If unspecified, the value in Number is examined. If it can be mapped to a Visual Basic run-time error code, the string that would be returned by the Error function is used as Description. If there is no Visual Basic error corresponding to Number, the "Application-defined or object-defined error" message is used.
@@ -67,11 +72,15 @@ export class Err extends VbsApi {
 	 * @param helpcontext The context ID identifying a topic within helpfile that provides help for the error. If omitted, the Visual Basic Help file context ID for the error corresponding to the Number property is used, if it exists
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/raise-method
 	 */
-	public Raise(code: number, source: string = '', description: string = '', helpfile: string = '', helpcontext: string = ''): void {
+	public Raise(code: number, source?: string, description?: string, helpfile?: string, helpcontext?: string): void;
+	public Raise(codeOrError: number | Error, source: string = '', description: string = '', helpfile: string = '', helpcontext: string = ''): void {
 		if (this.doThrow) {
-			throw new Error(`Error ${code}: ${description}`);
+			if (typeof codeOrError === 'number') {
+				throw new Error(`Error ${codeOrError}: ${description}`);
+			}
+			throw codeOrError;
 		}
-		this.Number = code;
+		this.Number = typeof codeOrError === 'number' ? codeOrError : 0;
 		this.Source = source;
 		this.Description = description;
 		this.HelpFile = helpfile;
