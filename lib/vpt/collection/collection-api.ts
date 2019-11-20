@@ -18,7 +18,6 @@
  */
 
 import { EventProxy } from '../../game/event-proxy';
-import { isScriptable } from '../../game/iscriptable';
 import { Player } from '../../game/player';
 import { ItemApi } from '../item-api';
 import { ItemData } from '../item-data';

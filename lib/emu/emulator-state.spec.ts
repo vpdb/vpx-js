@@ -102,7 +102,8 @@ describe('The EmulatorState - handle state changes', () => {
 	});
 
 	it('should return empty array for initially unchanged lamps', () => {
-		expect(emulatorState.getChangedLamps()).to.deep.equal([]);
+		expect(emulatorState.getChangedLamps()).to.be.an('array');
+		expect(emulatorState.getChangedLamps()).to.be.empty;
 	});
 
 	it('should return empty array for initially unchanged solenoids', () => {
@@ -119,7 +120,7 @@ describe('The EmulatorState - handle state changes', () => {
 			[ 18, 1 ],
 		];
 		emulatorState.updateState(stateOne);
-		const result: number[][] = emulatorState.getChangedLamps();
+		const result = emulatorState.getChangedLamps();
 		expect(result).to.deep.equal(expectedDiff);
 	});
 
@@ -131,14 +132,14 @@ describe('The EmulatorState - handle state changes', () => {
 		emulatorState.updateState(stateOne);
 		emulatorState.getChangedLamps();
 		emulatorState.updateState(stateTwo);
-		const result: number[][] = emulatorState.getChangedLamps();
+		const result = emulatorState.getChangedLamps();
 		expect(result).to.deep.equal(expectedDiff);
 	});
 
 	it('should return empty array when transition from empty state -> state 1 -> state 2, without fetching state', () => {
 		emulatorState.updateState(stateOne);
 		emulatorState.updateState(stateTwo);
-		const result: number[][] = emulatorState.getChangedLamps();
+		const result = emulatorState.getChangedLamps();
 		expect(result).to.deep.equal([]);
 	});
 
