@@ -82,7 +82,7 @@ function getMimeType(data: Buffer, ext: string): string | null {
 
 async function load(mimeType: string, objectUrl: string): Promise<ThreeTexture> {
 	if (mimeType === 'application/octet-stream') {
-		return await loadHdrTexture(objectUrl);
+		return loadHdrTexture(objectUrl);
 	}
 	return loadLdrTexture(objectUrl);
 }
