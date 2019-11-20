@@ -43,7 +43,9 @@ export class VbsProxyHandler implements ProxyHandler<any> {
 		}
 		if (obj) {
 			for (const name of Object.getOwnPropertyNames(obj)) {
-				this.__names[name.toLowerCase()] = name;
+				if (!this.__names[name.toLowerCase()]) {
+					this.__names[name.toLowerCase()] = name;
+				}
 			}
 		}
 	}
