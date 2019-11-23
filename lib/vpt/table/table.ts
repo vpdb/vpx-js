@@ -68,6 +68,7 @@ import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
 import { TableState } from './table-state';
 import { TableUpdater } from './table-updater';
+import { PinSound } from '../sound/pin-sound';
 
 /**
  * A Visual Pinball table.
@@ -88,6 +89,7 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 	private itemIndex?: { [key: string]: string };
 
 	public readonly textures: { [key: string]: Texture } = {};
+	public readonly sounds: { [key: string]: PinSound } = {};
 	public readonly collections: { [key: string]: Collection } = {};
 
 	public readonly bumpers: { [key: string]: Bumper } = {};
@@ -141,6 +143,7 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 		}
 		const mapping: Array<[any, any]> = [
 			[loadedTable.textures, this.textures],
+			[loadedTable.sounds, this.sounds],
 			[loadedTable.collections, this.collections],
 			[loadedTable.bumpers, this.bumpers],
 			[loadedTable.flippers, this.flippers],

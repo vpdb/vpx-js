@@ -45,6 +45,7 @@ import { Timer } from '../timer/timer';
 import { Trigger } from '../trigger/trigger';
 import { TableLoadOptions } from './table';
 import { TableData } from './table-data';
+import { PinSound } from '../sound/pin-sound';
 
 export class TableLoader {
 
@@ -72,6 +73,9 @@ export class TableLoader {
 
 					// load images
 					await this.loadTextures(loadedTable, gameStorage, loadedTable.data.numTextures);
+
+					// load sounds
+					await this.loadSounds(loadedTable, gameStorage, loadedTable.data.numSounds);
 
 					// load collections
 					await this.loadCollections(loadedTable, gameStorage, loadedTable.data.numCollections);
@@ -291,6 +295,17 @@ export class TableLoader {
 		}
 	}
 
+	private async loadSounds(loadedTable: LoadedTable, storage: Storage, numItems: number) {
+		progress().show('Loading sounds');
+		loadedTable.sounds = [];
+		for (let i = 0; i < numItems; i++) {
+			const itemName = `Sound${i}`;
+			const sound = await PinSound.fromStorage(storage, itemName);
+			loadedTable.sounds.push(sound);
+			progress().details(sound.getName());
+		}
+	}
+
 	private async loadTableInfo(loadedTable: LoadedTable) {
 		const tableInfoStorage = this.doc.storage('TableInfo');
 		loadedTable.info = {};
@@ -320,6 +335,7 @@ export interface LoadedTable {
 
 	tableScript?: string;
 	textures?: Texture[];
+	sounds?: PinSound[];
 	collections?: Collection[];
 
 	surfaces?: Surface[];
