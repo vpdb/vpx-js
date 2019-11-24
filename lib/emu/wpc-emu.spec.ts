@@ -65,7 +65,7 @@ describe('WPC-EMU', () => {
 	});
 
 	it('should ignore registerAudioConsumer when emu is not initialized', () => {
-		emulator.registerAudioConsumer((id) => {
+		emulator.registerAudioConsumer((audioJSON: WpcEmuApi.AudioMessage) => {
 			// do nothing
 		});
 	});
@@ -125,7 +125,7 @@ describe('WPC-EMU', () => {
 	it('should call WPC-Emu registerAudioConsumer when initialized', async () => {
 		await emulator.loadGame(mockGameEntry, new Uint8Array());
 		let playSampleId = -1;
-		emulator.registerAudioConsumer((sampleId) => playSampleId = sampleId);
+		emulator.registerAudioConsumer((audioJSON: WpcEmuApi.AudioMessage) => playSampleId = audioJSON.id);
 		expect(playSampleId).to.equal(123);
 	});
 
@@ -216,8 +216,8 @@ class MockWpcEmulator implements WpcEmuApi.Emulator {
 	public setState(stateObject: WpcEmuWebWorkerApi.EmuState): void {
 		throw new Error('Method not implemented.');
 	}
-	public registerAudioConsumer(callbackFunction: (sampleId: number) => void): void {
-		callbackFunction(123);
+	registerAudioConsumer(callbackFunction: (audioJSON: WpcEmuApi.AudioMessage) => void): void {
+		callbackFunction({ command: 'FOO', id: 123 });
 	}
 	public executeCycle(ticksToRun: number, tickSteps: number): number {
 		throw new Error('Method not implemented.');
