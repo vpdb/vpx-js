@@ -51,6 +51,7 @@
 		"estraverse": "^4.3.0",
 		"gltf-pipeline": "github:freezy/gltf-pipeline#hotfix/dedupe",
 		"gm": "^1.23.1",
+		"howler": "^2.1.2",
 		"moo": "^0.5.1",
 		"nearley": "^2.19.0",
 		"pngquant": "^3.0.0",
