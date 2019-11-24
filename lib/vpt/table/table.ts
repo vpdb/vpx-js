@@ -54,6 +54,7 @@ import { Plunger } from '../plunger/plunger';
 import { Primitive } from '../primitive/primitive';
 import { Ramp } from '../ramp/ramp';
 import { Rubber } from '../rubber/rubber';
+import { PinSound } from '../sound/pin-sound';
 import { Spinner } from '../spinner/spinner';
 import { Surface } from '../surface/surface';
 import { Textbox } from '../textbox/textbox';
@@ -68,7 +69,6 @@ import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
 import { TableState } from './table-state';
 import { TableUpdater } from './table-updater';
-import { PinSound } from '../sound/pin-sound';
 
 /**
  * A Visual Pinball table.

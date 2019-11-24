@@ -37,6 +37,7 @@ import { Plunger } from '../plunger/plunger';
 import { Primitive } from '../primitive/primitive';
 import { Ramp } from '../ramp/ramp';
 import { Rubber } from '../rubber/rubber';
+import { PinSound } from '../sound/pin-sound';
 import { Spinner } from '../spinner/spinner';
 import { Surface } from '../surface/surface';
 import { Textbox } from '../textbox/textbox';
@@ -45,7 +46,6 @@ import { Timer } from '../timer/timer';
 import { Trigger } from '../trigger/trigger';
 import { TableLoadOptions } from './table';
 import { TableData } from './table-data';
-import { PinSound } from '../sound/pin-sound';
 
 export class TableLoader {
 
