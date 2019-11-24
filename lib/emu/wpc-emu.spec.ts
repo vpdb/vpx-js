@@ -209,9 +209,9 @@ class MockWpcEmulator implements WpcEmuApi.Emulator {
 			},
 			opsMs: 100,
 			protectedMemoryWriteAttempts: 101,
-		 runtime: 102,
-		 ticksIrq: 103,
-		 version: 104,
+			runtime: 102,
+			ticksIrq: 103,
+			version: 104,
 		};
 	}
 	public getState(): WpcEmuWebWorkerApi.EmuState {
@@ -220,7 +220,7 @@ class MockWpcEmulator implements WpcEmuApi.Emulator {
 	public setState(stateObject: WpcEmuWebWorkerApi.EmuState): void {
 		throw new Error('Method not implemented.');
 	}
-	registerAudioConsumer(callbackFunction: (audioJSON: WpcEmuApi.AudioMessage) => void): void {
+	public registerAudioConsumer(callbackFunction: (audioJSON: WpcEmuApi.AudioMessage) => void): void {
 		callbackFunction({ command: 'FOO', id: 123 });
 	}
 	public executeCycle(ticksToRun: number, tickSteps: number): number {
