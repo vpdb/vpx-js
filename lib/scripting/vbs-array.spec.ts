@@ -37,12 +37,11 @@ describe('The VBScript array', () => {
 		ERR.OnErrorGoto0();
 	});
 
-	it('should execute a case-insensitive function', () => {
-
-		const arr = new VbsArray<any>();
-		// arr.push('val1');
-		// arr.push('val2');
-
+	it('should initialize correctly', () => {
+		const arr = new VbsArray<number | string>([1, 'two', 3]);
+		expect(arr[0]).to.equal(1);
+		expect(arr[1]).to.equal('two');
+		expect(arr[2]).to.equal(3);
 	});
 
 });
