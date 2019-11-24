@@ -125,7 +125,11 @@ describe('WPC-EMU', () => {
 	it('should call WPC-Emu registerAudioConsumer when initialized', async () => {
 		await emulator.loadGame(mockGameEntry, new Uint8Array());
 		let playSampleId = -1;
-		emulator.registerAudioConsumer((audioJSON: WpcEmuApi.AudioMessage) => playSampleId = audioJSON.id);
+		emulator.registerAudioConsumer((audioJSON: WpcEmuApi.AudioMessage) => {
+			if (audioJSON.id) {
+				playSampleId = audioJSON.id;
+			}
+		});
 		expect(playSampleId).to.equal(123);
 	});
 
