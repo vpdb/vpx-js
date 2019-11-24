@@ -37,7 +37,7 @@ export class VbsArray<T> implements ProxyHandler<VbsArray<T>> {
 	}
 
 	public get(target: any, key: any): T | VbsUndefined {
-		return target[key] ? target[key] : new VbsUndefined(
+		return target[key] !== undefined ? target[key] : new VbsUndefined(
 			new VbsError(`ReferenceError: Cannot set ${String(key)} from undefined.`, 9),
 			new VbsError(`ReferenceError: Cannot get ${String(key)} from undefined.`, 9),
 		);
