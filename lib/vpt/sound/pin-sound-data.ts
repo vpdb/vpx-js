@@ -19,6 +19,7 @@
 
 import { Storage } from '../..';
 import { ReadResult } from '../../io/ole-doc';
+import { SoundOutTypes } from '../enums';
 import { ItemData } from '../item-data';
 
 export class PinSoundData extends ItemData {
@@ -38,6 +39,10 @@ export class PinSoundData extends ItemData {
 	public len: number = 0;
 
 	private i = 0;
+	private outputTarget: number = SoundOutTypes.Table;
+	private volume!: number;
+	private balance!: number;
+	private fade!: number;
 
 	public static async fromStorage(storage: Storage, itemName: string): Promise<PinSoundData> {
 		const soundData = new PinSoundData(itemName);
@@ -57,6 +62,11 @@ export class PinSoundData extends ItemData {
 				this.len = this.getInt(result.data);
 				this.offset = result.storageOffset + 4;
 				return this.len + 4;
+			case 6: this.outputTarget = result.data.readUInt8(0); return 1;
+			case 7: this.volume = this.getInt(result.data); return 4;
+			case 8: this.balance = this.getInt(result.data); return 4;
+			case 9: this.fade = this.getInt(result.data); return 4;
+			case 10: this.volume = this.getInt(result.data); return 4;
 		}
 		return null;
 	}

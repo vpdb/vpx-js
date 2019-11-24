@@ -49,6 +49,11 @@ export class ItemType {
 	public static readonly Invalid = 0xffffffff;
 }
 
+export class SoundOutTypes {
+	public static readonly Table = 0;
+	public static readonly Backglass = 1;
+}
+
 export class LightStatus extends VbsApi {
 	public readonly LightStateOff = 0;
 	public readonly LightStateOn = 1;
