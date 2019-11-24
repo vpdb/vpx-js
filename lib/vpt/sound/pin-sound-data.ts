@@ -50,7 +50,11 @@ export class PinSoundData extends ItemData {
 		return soundData;
 	}
 
-	public async stream(result: ReadResult): Promise<number | null> {
+	public constructor(itemName: string) {
+		super(itemName);
+	}
+
+	private async stream(result: ReadResult): Promise<number | null> {
 		const len = this.getInt(result.data);
 		this.i++;
 		switch (this.i) {
@@ -69,10 +73,6 @@ export class PinSoundData extends ItemData {
 			case 10: this.volume = this.getInt(result.data); return 4;
 		}
 		return null;
-	}
-
-	public constructor(itemName: string) {
-		super(itemName);
 	}
 }
 
@@ -123,8 +123,4 @@ export class WaveFormat {
 		this.bitsPerSample = data.readUInt16LE(14);
 		this.cbSize = data.readUInt16LE(16);
 	}
-}
-
-function readUInt64LE(buffer: Buffer, offset: number) {
-	return buffer.readUInt32LE(offset) + 0x100000000 * buffer.readUInt32LE(offset + 4);
 }
