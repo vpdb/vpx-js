@@ -18,6 +18,7 @@
  */
 
 /* tslint:disable:variable-name no-bitwise */
+import { VbsError } from './stdlib/err';
 import { VbsUndefined } from './vbs-undefined';
 
 /**
@@ -59,12 +60,9 @@ export class VbsArray<T> implements IterableIterator<T>, ProxyHandler<VbsArray<T
 	}
 
 	public get(target: any, key: any): T | VbsUndefined {
-		if (typeof key === 'symbol') {
-			console.log('Got a symbol: ', String(key));
-		}
-		return typeof key !== 'symbol' || target[key] ? target[key] : new VbsUndefined(
-			new Error(`ReferenceError: Cannot set ${String(key)} from undefined.`),
-			new Error(`ReferenceError: Cannot get ${String(key)} from undefined.`),
+		return target[key] ? target[key] : new VbsUndefined(
+			new VbsError(`ReferenceError: Cannot set ${String(key)} from undefined.`, 9),
+			new VbsError(`ReferenceError: Cannot get ${String(key)} from undefined.`, 9),
 		);
 	}
 
