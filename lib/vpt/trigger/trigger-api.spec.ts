@@ -19,8 +19,8 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import sinon = require('sinon');
-import sinonChai = require('sinon-chai');
+import * as sinon from 'sinon';
+import * as sinonChai from 'sinon-chai';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Player } from '../../game/player';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
