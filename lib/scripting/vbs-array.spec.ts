@@ -43,7 +43,9 @@ describe('The VBScript array', () => {
 	});
 
 	it('should loop correctly', () => {
-		const arr = new VbsArray<number | string>([1, 'two']);
+		const arr = new VbsArray<number | string>() as any;
+		arr[0] = 1;
+		arr[1] = 'two';
 		arr[2] = 3;
 		let i = 0;
 		for (const val of arr) {
@@ -57,7 +59,7 @@ describe('The VBScript array', () => {
 	});
 
 	it('should count correctly', () => {
-		const arr = new VbsArray<number | string>([1, 'two', 3]);
+		const arr = new VbsArray<number | string>([1, 'two', 3]) as any;
 		expect(arr.length).to.equal(3);
 	});
 
