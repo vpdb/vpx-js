@@ -62,7 +62,7 @@ export class Err extends VbsApi {
 	 * Generates a run-time error.
 	 * @param codeOrError Error to be thrown
 	 */
-	public Raise(codeOrError: Error): void;
+	public Raise(codeOrError: VbsError): void;
 	/**
 	 * Generates a run-time error.
 	 * @param code Long integer that identifies the nature of the error. Visual Basic errors (both Visual Basic-defined and user-defined errors) are in the range 0–65535. The range 0–512 is reserved for system errors; the range 513–65535 is available for user-defined errors.
@@ -73,14 +73,14 @@ export class Err extends VbsApi {
 	 * @see https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/raise-method
 	 */
 	public Raise(code: number, source?: string, description?: string, helpfile?: string, helpcontext?: string): void;
-	public Raise(codeOrError: number | Error, source: string = '', description: string = '', helpfile: string = '', helpcontext: string = ''): void {
+	public Raise(codeOrError: number | VbsError, source: string = '', description: string = '', helpfile: string = '', helpcontext: string = ''): void {
 		if (this.doThrow) {
 			if (typeof codeOrError === 'number') {
 				throw new Error(`Error ${codeOrError}: ${description}`);
 			}
 			throw codeOrError;
 		}
-		this.Number = typeof codeOrError === 'number' ? codeOrError : 0;
+		this.Number = typeof codeOrError === 'number' ? codeOrError : codeOrError.code;
 		this.Source = source;
 		this.Description = description;
 		this.HelpFile = helpfile;
@@ -118,3 +118,11 @@ export class Err extends VbsApi {
 }
 
 export const ERR = new Err();
+
+export class VbsError extends Error {
+	public readonly code: number;
+	constructor(message: string, code: number) {
+		super(message);
+		this.code = code;
+	}
+}

@@ -19,11 +19,9 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import { Player, Table } from '..';
-import { TableBuilder } from '../../test/table-builder';
-import { getObject } from './objects';
 import { ERR } from './stdlib/err';
 import { VbsArray } from './vbs-array';
+import { VbsUndefined } from './vbs-undefined';
 
 /* tslint:disable:no-unused-expression no-string-literal */
 chai.use(require('sinon-chai'));
@@ -44,4 +42,44 @@ describe('The VBScript array', () => {
 		expect(arr[2]).to.equal(3);
 	});
 
+	it('should loop correctly', () => {
+		const arr = new VbsArray<number | string>([1, 'two']);
+		arr[2] = 3;
+		let i = 0;
+		for (const val of arr) {
+			switch (i) {
+				case 0: expect(val).to.equal(1); break;
+				case 1: expect(val).to.equal('two'); break;
+				case 2: expect(val).to.equal(3); break;
+			}
+			i++;
+		}
+	});
+
+	it('should count correctly', () => {
+		const arr = new VbsArray<number | string>([1, 'two', 3]);
+		expect(arr.length).to.equal(3);
+	});
+
+	it('should return a fake object for unknown indices', () => {
+		const arr = new VbsArray<number | string>([1, 'two', 3]);
+		const none = arr[99] as any;
+		expect(none).to.be.an.instanceof(VbsUndefined);
+	});
+
+	it('should register an error when getting a value from an undefined array value', () => {
+		const arr = new VbsArray<number | string>([1, 'two', 3]);
+		const none = arr[99] as any;
+		expect(() => none.foo).not.to.throw();
+		expect(() => none.foo.bar).not.to.throw();
+		expect(ERR.Number).to.equal(9);
+	});
+
+	it('should register an error when setting a value from an undefined array value', () => {
+		const arr = new VbsArray<number | string>([1, 'two', 3]);
+		const none = arr[99] as any;
+		expect(() => none.foo = 10).not.to.throw();
+		expect(() => none.foo.bar = 10).not.to.throw();
+		expect(ERR.Number).to.equal(9);
+	});
 });

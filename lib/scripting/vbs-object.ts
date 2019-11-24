@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { VbsError } from './stdlib/err';
 import { VbsUndefined } from './vbs-undefined';
 
 /* tslint:disable:variable-name */
@@ -37,8 +38,8 @@ export class VbsObject<K extends string | number = string, V = any> implements P
 			realName = this.__names[normName];
 		}
 		return target[realName] || new VbsUndefined(
-			new Error(`ReferenceError: Cannot set ${String(realName)} from undefined.`),
-			new Error(`ReferenceError: Cannot get ${String(realName)} from undefined.`),
+			new VbsError(`ReferenceError: Cannot set ${String(realName)} from undefined.`, 9),
+			new VbsError(`ReferenceError: Cannot get ${String(realName)} from undefined.`, 9),
 		);
 	}
 
