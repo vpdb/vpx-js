@@ -23,6 +23,7 @@ import { TableBuilder } from '../../test/table-builder';
 import { Player } from '../game/player';
 import { Transpiler } from './transpiler';
 import { VBSHelper } from './vbs-helper';
+import { VbsUndefined } from './vbs-undefined';
 
 chai.use(require('sinon-chai'));
 
@@ -48,7 +49,7 @@ describe('The scripting VBS Helper', () => {
 		js[51] = 'Test';
 		js = vbsHelper.redim(js, [50], true);
 		expect(js[50]).to.equal(`Test`);
-		expect(js[51]).to.equal(undefined);
+		expect(js[51]).to.be.an.instanceof(VbsUndefined);
 		expect(js.length).to.equal(51);
 	});
 
@@ -56,7 +57,7 @@ describe('The scripting VBS Helper', () => {
 		let js = vbsHelper.dim([100]);
 		js[100] = 'Test';
 		js = vbsHelper.redim(js, [150]);
-		expect(js[100]).to.equal(undefined);
+		expect(js[100]).to.be.an.instanceof(VbsUndefined);
 		expect(js.length).to.equal(151);
 	});
 
@@ -76,10 +77,8 @@ describe('The scripting VBS Helper', () => {
 	});
 
 	it('should test upper bounds of a three-dimension array', () => {
-		expect(() => {
-			const js = vbsHelper.dim([4, 3, 2]);
-			js[4][4][2] = 'Test';
-		}).to.throw(`Cannot set property '2' of undefined`);
+		const js = vbsHelper.dim([4, 3, 2]);
+		expect(() => js[4][4][2] = 'Test').to.throw(`ReferenceError: Cannot set 4 from undefined.`);
 	});
 
 	it('should test invalid dimension change of a three-dimension array', () => {
@@ -99,8 +98,8 @@ describe('The scripting VBS Helper', () => {
 				expect(js[index1][index2].length).to.equal(2);
 			}
 		}
-		expect(js[0][0][1]).to.equal(undefined);
-		expect(js[0][0][2]).to.equal(undefined);
+		expect(js[0][0][1]).to.be.an.instanceof(VbsUndefined);
+		expect(js[0][0][2]).to.be.an.instanceof(VbsUndefined);
 	});
 
 	it('should reduce and preserve a three-dimension array', () => {
@@ -114,14 +113,14 @@ describe('The scripting VBS Helper', () => {
 			}
 		}
 		expect(js[0][0][1]).to.equal(`Test`);
-		expect(js[0][0][2]).to.equal(undefined);
+		expect(js[0][0][2]).to.be.an.instanceof(VbsUndefined);
 	});
 
 	it('should expand a three-dimension array', () => {
 		let js = vbsHelper.dim([2, 2, 3]);
 		js[0][0][3] = 'Test';
 		js = vbsHelper.redim(js, [2, 2, 4]);
-		expect(js[0][0][3]).to.equal(undefined);
+		expect(js[0][0][3]).to.be.an.instanceof(VbsUndefined);
 		for (let index1 = 0; index1 <= 2; index1++) {
 			for (let index2 = 0; index2 <= 2; index2++) {
 				expect(js[index1][index2].length).to.equal(5);

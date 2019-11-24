@@ -18,6 +18,7 @@
  */
 
 import { Transpiler } from './transpiler';
+import { VbsArray } from './vbs-array';
 
 export class VBSHelper {
 
@@ -34,13 +35,13 @@ export class VBSHelper {
 
 	public dim(dimensions: number[], position: number = 0): any[] {
 		const dimension = dimensions && dimensions.length ? dimensions[position] + 1 : 0;
-		const array = new Array(dimension).fill(undefined);
+		const array = new VbsArray(new Array(dimension).fill(undefined));
 		if (++position < dimensions.length) {
 			for (let index = 0; index < dimension; index++) {
 				array[index] = this.dim(dimensions, position);
 			}
 		}
-		return array;
+		return array as unknown as any[];
 	}
 
 	/**
@@ -59,7 +60,7 @@ export class VBSHelper {
 		if (!preserve) {
 			return this.dim(dimensions);
 		}
-		return this.redim_resize(array, dimensions);
+		return this.redimResize(array, dimensions);
 	}
 
 	public transpileInline(vbs: string) {
@@ -75,18 +76,14 @@ export class VBSHelper {
 	 * Recursive helper function to resize a multi-dimension array.
 	 */
 
-	private redim_resize(array: any[], dimensions: number[], position: number = 0): any[] {
+	private redimResize(array: any[], dimensions: number[], position: number = 0): any[] {
 		const dimension = dimensions[position] + 1;
 		if (position === dimensions.length - 1) {
-			if (array.length > dimension) {
-				array.splice(-(array.length - dimension));
-			} else if (array.length < dimension) {
-				array = array.concat(new Array(dimension - array.length).fill(undefined));
-			}
+			array.length = dimension;
 		}
 		if (++position < dimensions.length) {
 			for (let index = 0; index < dimension; index++) {
-				array[index] = this.redim_resize(array[index], dimensions, position);
+				array[index] = this.redimResize(array[index], dimensions, position);
 			}
 		}
 		return array;
