@@ -20,7 +20,7 @@
 import { expect } from 'chai';
 import { readFileSync, writeFileSync } from 'fs';
 import { createDiff } from 'looks-same';
-import looksSame = require('looks-same');
+import * as looksSame from 'looks-same';
 import * as sharp from 'sharp';
 import { NodeBinaryReader } from '../../lib/io/binary-reader.node';
 import { ThreeTextureLoaderNode } from '../../lib/render/threejs/three-texture-loader-node';

@@ -27,7 +27,7 @@ import { ItemData } from '../item-data';
 import { Table } from '../table/table';
 
 /* tslint:disable:no-unused-expression */
-import sinon = require('sinon');
+import * as sinon from 'sinon';
 
 chai.use(require('sinon-chai'));
 const three = new ThreeHelper();

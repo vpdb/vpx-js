@@ -19,7 +19,7 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import sinonChai = require('sinon-chai');
+import * as sinonChai from 'sinon-chai';
 import { ThreeHelper } from '../../test/three.helper';
 import {
 	DIK_1,

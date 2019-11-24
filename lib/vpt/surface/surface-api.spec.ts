@@ -25,8 +25,8 @@ import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../table/table';
 
 /* tslint:disable:no-unused-expression */
-import sinon = require('sinon');
-import sinonChai = require('sinon-chai');
+import * as sinon from 'sinon';
+import * as sinonChai from 'sinon-chai';
 
 chai.use(sinonChai);
 const three = new ThreeHelper();
