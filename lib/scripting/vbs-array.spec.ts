@@ -53,6 +53,7 @@ describe('The VBScript array', () => {
 				case 0: expect(val).to.equal(1); break;
 				case 1: expect(val).to.equal('two'); break;
 				case 2: expect(val).to.equal(3); break;
+				default: throw new Error('Out of range!');
 			}
 			i++;
 		}
