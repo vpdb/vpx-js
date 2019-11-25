@@ -7,7 +7,7 @@ export class Transformer {
 	public static ENUMS_NAME = '__enums';
 	public static GLOBAL_NAME = '__global';
 	public static STDLIB_NAME = '__stdlib';
-	public static VBSHELPER_NAME = '__vbsHelper';
+	public static VBSHELPER_NAME = '__vbs';
 	public static PLAYER_NAME = '__player';
 
 	protected readonly ast: Program;
