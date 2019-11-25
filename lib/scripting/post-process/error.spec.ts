@@ -19,12 +19,13 @@
 
 import { expect } from 'chai';
 import { vbsToJs } from '../../../test/script.helper';
+import { Transformer } from '../transformer/transformer';
 
 describe('The VBScript transpiler - Error', () => {
 	it('should transpile an On Error Resume Next statement', () => {
 		const vbs = `On Error Resume Next\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal(';    // On Error Resume Next\n');
+		expect(js).to.equal(`${Transformer.VBSHELPER_NAME}.onErrorResumeNext();`);
 	});
 });
 
@@ -32,6 +33,6 @@ describe('The VBScript transpiler - Error', () => {
 	it('should transpile an On Error GoTo statement', () => {
 		const vbs = `On Error Goto 1\n`;
 		const js = vbsToJs(vbs);
-		expect(js).to.equal(';    // On Error Goto 1\n');
+		expect(js).to.equal(`${Transformer.VBSHELPER_NAME}.onErrorGoto(1);`);
 	});
 });

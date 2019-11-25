@@ -22,15 +22,14 @@ import { f4 } from '../../math/float';
 import { logger } from '../../util/logger';
 import { getObject } from '../objects';
 import { VbsApi } from '../vbs-api';
-import { Err } from './err';
+import { ERR } from './err';
 import { VbsMath } from './math';
 
 export class Stdlib extends VbsApi {
 
 	private readonly math = new VbsMath();
-	private readonly err = new Err();
 
-	get Err() { return this.err; }
+	get Err() { return ERR; }
 	get Math() { return this.math; }
 
 	/**
