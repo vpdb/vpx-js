@@ -114,7 +114,7 @@ Special thanks go to JetBrains for their awesome IDE and support of the Open Sou
 
 GPLv2, see [LICENSE](LICENSE).
 
-[travis-image]: https://img.shields.io/travis/vpdb/vpx-js.svg?style=flat-square
+[travis-image]: https://img.shields.io/travis/vpdb/vpx-js/master?style=flat-square
 [travis-url]: https://travis-ci.org/vpdb/vpx-js
 [dependencies-image]: https://david-dm.org/vpdb/vpx-js.svg?style=flat-square
 [dependencies-url]: https://david-dm.org/vpdb/vpx-js
