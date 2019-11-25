@@ -17,22 +17,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { EmptyStatement, Literal } from 'estree';
+import { EmptyStatement, ExpressionStatement, Literal } from 'estree';
 import { Token } from 'moo';
 import * as estree from '../estree';
+import { Transformer } from '../transformer/transformer';
 
-export function stmt1(result: [Token, null, Token, null, Token, null, Token]): EmptyStatement {
-	const on = result[0].text;
-	const error = result[2].text;
-	const resume = result[4].text;
-	const next = result[6].text;
-	return estree.emptyStatement([estree.comment('Line', ' ' + on + ' ' + error + ' ' + resume + ' ' + next)]);
+export function stmt1(result: [Token, null, Token, null, Token, null, Token]): ExpressionStatement {
+	return estree.expressionStatement(
+		estree.callExpression(
+			estree.memberExpression(
+				estree.identifier(Transformer.VBSHELPER_NAME),
+				estree.identifier('onErrorResumeNext'),
+			),
+			[],
+		),
+	);
 }
 
-export function stmt2(result: [Token, null, Token, null, Token, null, Literal]): EmptyStatement {
-	const on = result[0].text;
-	const error = result[2].text;
-	const goto = result[4].text;
-	const literal = result[6].value;
-	return estree.emptyStatement([estree.comment('Line', ' ' + on + ' ' + error + ' ' + goto + ' ' + literal)]);
+export function stmt2(result: [Token, null, Token, null, Token, null, Literal]): ExpressionStatement {
+	const arg = result[6];
+	return estree.expressionStatement(
+		estree.callExpression(
+			estree.memberExpression(
+				estree.identifier(Transformer.VBSHELPER_NAME),
+				estree.identifier('onErrorGoto'),
+			),
+			[ arg ],
+		),
+	);
 }

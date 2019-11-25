@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { logger } from '../util/logger';
+import { ERR } from './stdlib/err';
 import { Transpiler } from './transpiler';
 import { VbsArray } from './vbs-array';
 
@@ -97,5 +99,17 @@ export class VBSHelper {
 			obj = obj[param];
 		}
 		return obj;
+	}
+
+	public onErrorResumeNext() {
+		ERR.OnErrorResumeNext();
+	}
+
+	public onErrorGoto(n: number) {
+		if (n === 0) {
+			ERR.OnErrorGoto0();
+		} else {
+			logger().warn('Cannot go to %s on error...', n);
+		}
 	}
 }
