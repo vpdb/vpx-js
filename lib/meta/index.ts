@@ -17,16 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-export const VP_VERSION_MAJOR = 10; // X Digits
-export const VP_VERSION_MINOR = 6;  // Max 2 Digits
-export const VP_VERSION_REV = 0;  // Max 1 Digit
+const version = 'DEV';
+const buildTimestamp = 0;
 
-export { Table } from './vpt/table/table';
-export { Player } from './game/player';
-export { OleCompoundDoc, Storage } from './io/ole-doc';
-export { BrowserBinaryReader } from './io/binary-reader.browser';
-export { Logger, Progress, progress } from './util/logger';
-export { Ball } from './vpt/ball/ball';
-export { ThreeRenderApi } from './render/threejs/three-render-api';
-export { ThreeTextureLoader } from './refs.node';
-export { getVersion, getUtcBuildTime} from './meta';
+export function getVersion(): string {
+	return version;
+}
+
+export function getUtcBuildTime(): number {
+	return buildTimestamp;
+}

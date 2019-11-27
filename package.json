@@ -5,7 +5,7 @@
 	"author": "freezy <freezy@vpdb.io>",
 	"contributors": [
 		"Jason Millard <jsm174@gmail.com>",
-		"Michael Vogt <michael@neeo.com>"
+		"Michael Vogt <michu@neophob.com>"
 	],
 	"repository": {
 		"type": "git",
@@ -37,7 +37,7 @@
 		"build:cjs": "tsc --module commonjs --outDir ./dist/cjs",
 		"build:declarations": "tsc --module es2015 --outDir ./dist/esm --declaration true --allowJs false",
 		"build:watch": "npm run compile && npm run build:cp && tsc --watch --module es2015 --outDir ./dist/esm",
-		"build:cp": "cp -r res dist/esm && cp -r res dist/cjs",
+		"build:cp": "cp -r res dist/esm && cp -r res dist/cjs && node build/updateBuildInformationInDistDir.js",
 		"compile": "nearleyc lib/scripting/vbscript.ne -o lib/scripting/vbscript.ts",
 		"lint": "tslint --format stylish --project ./tsconfig.json --config ./lib/tslint.json",
 		"test": "npm run compile && tsc && cross-env TS_NODE_TRANSPILE_ONLY=true nyc mocha"

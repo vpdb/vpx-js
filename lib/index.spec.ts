@@ -17,16 +17,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-export const VP_VERSION_MAJOR = 10; // X Digits
-export const VP_VERSION_MINOR = 6;  // Max 2 Digits
-export const VP_VERSION_REV = 0;  // Max 1 Digit
+import * as chai from 'chai';
+import { expect } from 'chai';
+import { getUtcBuildTime, getVersion } from './index';
 
-export { Table } from './vpt/table/table';
-export { Player } from './game/player';
-export { OleCompoundDoc, Storage } from './io/ole-doc';
-export { BrowserBinaryReader } from './io/binary-reader.browser';
-export { Logger, Progress, progress } from './util/logger';
-export { Ball } from './vpt/ball/ball';
-export { ThreeRenderApi } from './render/threejs/three-render-api';
-export { ThreeTextureLoader } from './refs.node';
-export { getVersion, getUtcBuildTime} from './meta';
+/* tslint:disable:no-unused-expression no-string-literal */
+chai.use(require('sinon-chai'));
+describe('Main API Facade', () => {
+
+	it('should get library version', () => {
+		const result = getVersion();
+		expect(result).to.equal('DEV');
+	});
+
+	it('should get library UtcBuildTime', () => {
+		const result = getUtcBuildTime();
+		expect(result).to.equal(0);
+	});
+
+});
