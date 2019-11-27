@@ -10,6 +10,7 @@
 	"exclude": [
 		".nyc_output",
 		"node_modules",
+		"build",
 		"dist",
 		"coverage",
 		"res",
