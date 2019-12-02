@@ -63,7 +63,7 @@
 		"@types/chai": "4.2.5",
 		"@types/escodegen": "0.0.6",
 		"@types/estraverse": "0.0.6",
-		"@types/estree": "0.0.39",
+		"@types/estree": "0.0.40",
 		"@types/gm": "1.18.6",
 		"@types/microtime": "2.1.0",
 		"@types/mocha": "5.2.7",
