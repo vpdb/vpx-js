@@ -7,7 +7,8 @@ only provides tools and APIs that make it easy to integrate.
 The `ISoundAdapter` interface is the link between the framework and the VPX-JS
 engine. It makes the following assumptions:
 
-- TODO
-- TODO: Document how to load / preload the audio
+- TODO: move howler implementation to frontend
+- TODO: add message types to send information from worker to main thread
+- TODO: also send wpc-emu related sound event to main thread
 
 VPX-JS ships with [howler.js](https://github.com/goldfire/howler.js) adapters.
