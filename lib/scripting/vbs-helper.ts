@@ -91,6 +91,22 @@ export class VBSHelper {
 		return array;
 	}
 
+	/**
+	 * Erase helper function to erase a multi-dimension array.
+	 */
+
+	public erase(array: any[]): any[] {
+		const dimensions = [];
+		for (;;) {
+			dimensions.push(array.length - 1);
+			if (!Array.isArray(array[0])) {
+				break;
+			}
+			array = array[0];
+		}
+		return this.dim(dimensions);
+	}
+
 	public getOrCall(obj: any, ...params: number[]) {
 		if (typeof obj === 'function') {
 			return obj.bind(obj)(...params);
