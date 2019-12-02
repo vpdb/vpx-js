@@ -120,7 +120,7 @@ function ppForStatement(node: ESIToken): any {
 					binaryExpression('<', step, literal(0)),
 					binaryExpression('>=', id, expr2),
 					binaryExpression('<=', id, expr2),
-			  )
+			)
 			: binaryExpression('<=', id, expr2),
 		assignmentExpression(id, '+=', step ? step : literal(1)),
 		block ? block : blockStatement([]),
