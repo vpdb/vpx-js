@@ -19,6 +19,7 @@
 
 import { expect } from 'chai';
 import { Grammar } from '../grammar/grammar';
+import { Transformer } from '../transformer/transformer';
 
 let grammar: Grammar;
 
@@ -26,28 +27,26 @@ before(async () => {
 	grammar = new Grammar();
 });
 
-describe('The VBScript transpiler - Const', () => {
-	it('should transpile a single Const declaration', () => {
-		const vbs = `Const pi = 3.14`;
+describe('The VBScript transpiler - Branch', () => {
+	it('should transpile an Exit Sub', () => {
+		const vbs = `If mTimers = 0 Then x = 5 : Exit Sub`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('const pi = 3.14;');
+		expect(js).to.equal(`if (mTimers == 0) {\n    x = 5;\n    return;\n}`);
 	});
 
-	it('should transpile a single "Private" Const declaration', () => {
-		const vbs = `Private Const test = 20`;
+	it('should transpile an Exit Function', () => {
+		const vbs = `Function test(x)\nIf x = 1 Then Exit Function\nx = 5\nEnd Function`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('const test = 20;');
+		expect(js).to.equal(
+			`function test(x) {\n    let test = null;\n    if (x == 1) {\n        return test;\n    }\n    x = 5;\n    return test;\n}`,
+		);
 	});
 
-	it('should transpile a multiple Const declaration', () => {
-		const vbs = `Const test1 = 3.14, test2 = 4, test3 = -5.2, test4 = True, test5 = "STRING"`;
+	it('should transpile an Exit For', () => {
+		const vbs = `For j = 1 To 20 Step x\nIf j = 10 Then Exit For\nNext`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal("const test1 = 3.14, test2 = 4, test3 = -5.2, test4 = true, test5 = 'STRING';");
-	});
-
-	it('should transpile a Const declaration with literal in parenthesis', () => {
-		const vbs = `Const test1 = (5)`;
-		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('const test1 = 5;');
+		expect(js).to.equal(
+			`for (j = 1; x < 0 ? j >= 20 : j <= 20; j += x) {\n    if (j == 10) {\n        break;\n    }\n}`,
+		);
 	});
 });

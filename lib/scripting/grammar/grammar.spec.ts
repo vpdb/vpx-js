@@ -17,8 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import * as chai from 'chai';
 import { expect } from 'chai';
-import { Grammar } from '../grammar/grammar';
+import { Grammar } from './grammar';
+
+chai.use(require('sinon-chai'));
 
 let grammar: Grammar;
 
@@ -26,28 +29,34 @@ before(async () => {
 	grammar = new Grammar();
 });
 
-describe('The VBScript transpiler - Const', () => {
-	it('should transpile a single Const declaration', () => {
-		const vbs = `Const pi = 3.14`;
-		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('const pi = 3.14;');
+describe('The scripting grammar formatter', () => {
+	it('should remove whitespace', () => {
+		const vbs = `Dim   x`;
+		const js = grammar.format(vbs);
+		expect(js).to.equal(`Dim x\n`);
 	});
 
-	it('should transpile a single "Private" Const declaration', () => {
-		const vbs = `Private Const test = 20`;
-		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('const test = 20;');
+	it('should remove comments', () => {
+		const vbs = `Dim   x ' Test comment`;
+		const js = grammar.format(vbs);
+		expect(js).to.equal(`Dim x\n`);
 	});
 
-	it('should transpile a multiple Const declaration', () => {
-		const vbs = `Const test1 = 3.14, test2 = 4, test3 = -5.2, test4 = True, test5 = "STRING"`;
-		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal("const test1 = 3.14, test2 = 4, test3 = -5.2, test4 = true, test5 = 'STRING';");
+	it('should standardize keywords', () => {
+		const vbs = `ReDiM x(2) : DiM x2`;
+		const js = grammar.format(vbs);
+		expect(js).to.equal(`ReDim x(2):Dim x2\n`);
 	});
 
-	it('should transpile a Const declaration with literal in parenthesis', () => {
-		const vbs = `Const test1 = (5)`;
-		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('const test1 = 5;');
+	it('should join line continuation', () => {
+		const vbs = `x = x +_\n5`;
+		const js = grammar.format(vbs);
+		expect(js).to.equal(`x=x+5\n`);
+	});
+
+	it('should remove blank lines', () => {
+		const vbs = `x = x + 5\n\n\nx = x + 10\n\n\n`;
+		const js = grammar.format(vbs);
+		expect(js).to.equal(`x=x+5\nx=x+10\n`);
 	});
 });

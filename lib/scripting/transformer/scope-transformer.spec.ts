@@ -19,7 +19,7 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import { astToVbs, vbsToAst } from '../../../test/script.helper';
+import { ScriptHelper } from '../../../test/script.helper';
 import { ScopeTransformer } from './scope-transformer';
 import { Transformer } from './transformer';
 
@@ -85,7 +85,8 @@ describe('The scripting scope transformer', () => {
 });
 
 function transform(vbs: string): string {
-	const ast = vbsToAst(vbs);
+	const scriptHelper = new ScriptHelper();
+	const ast = scriptHelper.vbsToAst(vbs);
 	const eventAst = new ScopeTransformer(ast).transform();
-	return astToVbs(eventAst);
+	return scriptHelper.astToVbs(eventAst);
 }

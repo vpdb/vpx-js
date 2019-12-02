@@ -18,21 +18,27 @@
  */
 
 import { expect } from 'chai';
-import { vbsToJs } from '../../../test/script.helper';
+import { Grammar } from '../grammar/grammar';
 import { Transformer } from '../transformer/transformer';
+
+let grammar: Grammar;
+
+before(async () => {
+	grammar = new Grammar();
+});
 
 describe('The VBScript transpiler - Error', () => {
 	it('should transpile an On Error Resume Next statement', () => {
-		const vbs = `On Error Resume Next\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `On Error Resume Next`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(`${Transformer.VBSHELPER_NAME}.onErrorResumeNext();`);
 	});
 });
 
 describe('The VBScript transpiler - Error', () => {
 	it('should transpile an On Error GoTo statement', () => {
-		const vbs = `On Error Goto 1\n`;
-		const js = vbsToJs(vbs);
-		expect(js).to.equal(`${Transformer.VBSHELPER_NAME}.onErrorGoto(1);`);
+		const vbs = `On Error Goto 0`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal(`${Transformer.VBSHELPER_NAME}.onErrorGoto(0);`);
 	});
 });

@@ -17,138 +17,256 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BinaryOperator, Expression, UnaryExpression, UnaryOperator } from 'estree';
-import { Token } from 'moo';
-import * as estree from '../estree';
+import { replace } from 'estraverse';
+import { BinaryOperator, UnaryOperator } from 'estree';
+import {
+	binaryExpression,
+	callExpression,
+	identifier,
+	logicalExpression,
+	memberExpression,
+	newExpression,
+	unaryExpression,
+} from '../estree';
+import { ESIToken } from '../grammar/grammar';
 
-export function intDiv(result: [Expression, null, Token, null, Expression]): Expression {
-	const leftExpr = result[0] ? [result[0]] : [];
-	const rightExpr = result[4] ? [result[4]] : [];
-	const mathFloorExpression = estree.memberExpression(estree.identifier('Math'), estree.identifier('floor'));
-	return estree.callExpression(mathFloorExpression, [
-		estree.binaryExpression(
-			'/',
-			estree.callExpression(mathFloorExpression, leftExpr),
-			estree.callExpression(mathFloorExpression, rightExpr),
-		),
-	]);
+export function ppExpr(node: ESIToken): any {
+	let estree = null;
+	if (node.children.length > 1) {
+		if (node.type === 'LogicalOperatorExpression') {
+			estree = ppLogicalExpression(node);
+		} else if (node.type === 'RelationalOperatorExpression') {
+			estree = ppRelationalExpression(node);
+		} else if (node.type === 'AdditionOperatorExpression') {
+			estree = ppBinaryExpression(node);
+		} else if (node.type === 'ModuloOperatorExpression') {
+			estree = ppModuloExpression(node);
+		} else if (node.type === 'MultiplicationOperatorExpression') {
+			estree = ppBinaryExpression(node);
+		} else if (node.type === 'IntegerDivisionOperatorExpression') {
+			estree = ppIntegerDivisionExpression(node);
+		} else if (node.type === 'ExponentOperatorExpression') {
+			estree = ppExponentExpression(node);
+		} else if (node.type === 'ConcatenationOperatorExpression') {
+			estree = ppConcatExpression(node);
+		} else if (node.type === 'TypeExpression') {
+			estree = ppTypeExpression(node);
+		} else if (node.type === 'SubExpression') {
+			estree = ppSubExpression(node);
+		}
+	}
+	if (estree === null) {
+		if (node.type === 'InvocationExpression') {
+			estree = ppInvocationExpression(node);
+		} else if (node.type === 'LogicalNotOperatorExpression') {
+			estree = ppLogicalNotExpression(node);
+		} else if (node.type === 'UnaryExpression') {
+			estree = ppUnaryExpression(node);
+		} else if (node.type === 'ParenthesizedExpression') {
+			estree = ppParenthesizedExpression(node);
+		} else if (node.type === 'MemberAccessExpression') {
+			estree = ppMemberAccessExpression(node);
+		} else if (node.type === 'NewExpression') {
+			estree = ppNewExpression(node);
+		}
+	}
+	return estree;
 }
 
-export function eqv(result: [Expression, null, Token, null, Expression]): UnaryExpression {
-	const leftExpr = result[0];
-	const rightExpr = result[4];
-	return estree.unaryExpression('~', estree.binaryExpression('^', leftExpr, rightExpr));
+function ppBinaryExpression(node: ESIToken): any {
+	let estree = node.children[0].estree;
+	let index = node.children[0].text.length;
+	for (let loop = 1; loop < node.children.length; loop++) {
+		const operator = node.text.charAt(index) as BinaryOperator;
+		estree = binaryExpression(operator, estree, node.children[loop].estree);
+		index += node.children[loop].text.length + 1;
+	}
+	return estree;
 }
 
-export function exp(result: [Expression, null, Token, null, Expression]): Expression {
-	const leftExpr = result[0];
-	const rightExpr = result[4];
-	return estree.callExpression(estree.memberExpression(estree.identifier('Math'), estree.identifier('pow')), [
-		leftExpr,
-		rightExpr,
-	]);
+function ppIntegerDivisionExpression(node: ESIToken): any {
+	let estree = node.children[0].estree;
+	const mathFloorExpression = memberExpression(identifier('Math'), identifier('floor'));
+	for (let loop = 1; loop < node.children.length; loop++) {
+		estree = callExpression(mathFloorExpression, [
+			binaryExpression(
+				'/',
+				callExpression(mathFloorExpression, [estree]),
+				callExpression(mathFloorExpression, [node.children[loop].estree]),
+			),
+		]);
+	}
+	return estree;
 }
 
-export function xor(result: [Expression, null, Token, null, Expression]): Expression {
-	const leftExpr = result[0];
-	const rightExpr = result[4];
-	return estree.binaryExpression('^', leftExpr, rightExpr);
+export function ppModuloExpression(node: ESIToken): any {
+	let estree = node.children[0].estree;
+	for (let loop = 1; loop < node.children.length; loop++) {
+		estree = binaryExpression('%', estree, node.children[loop].estree);
+	}
+	return estree;
 }
 
-export function or(result: [Expression, null, Token, null, Expression]): Expression {
-	const leftExpr = result[0];
-	const rightExpr = result[4];
-	return estree.logicalExpression('||', leftExpr, rightExpr);
+export function ppExponentExpression(node: ESIToken): any {
+	let estree = node.children[0].estree;
+	for (let loop = 1; loop < node.children.length; loop++) {
+		estree = callExpression(memberExpression(identifier('Math'), identifier('pow')), [
+			estree,
+			node.children[loop].estree,
+		]);
+	}
+	return estree;
 }
 
-export function and(result: [Expression, null, Token, null, Expression]): Expression {
-	const leftExpr = result[0];
-	const rightExpr = result[4];
-	return estree.logicalExpression('&&', leftExpr, rightExpr);
+export function ppConcatExpression(node: ESIToken): any {
+	let estree = node.children[0].estree;
+	for (let loop = 1; loop < node.children.length; loop++) {
+		estree = binaryExpression('+', estree, node.children[loop].estree);
+	}
+	return estree;
 }
 
-export function not(result: [Token, null, Expression]): Expression {
-	const expr = result[2];
-	return estree.unaryExpression('!', expr);
+function ppLogicalExpression(node: ESIToken): any {
+	let estree = node.children[0].estree;
+	let index = node.children[0].text.length;
+	for (let loop = 1; loop < node.children.length; loop++) {
+		if (node.text.substr(index).startsWith(' And ')) {
+			estree = logicalExpression('&&', estree, node.children[loop].estree);
+			index += node.children[loop].text.length + 5;
+		} else if (node.text.substr(index).startsWith(' Or ')) {
+			estree = logicalExpression('||', estree, node.children[loop].estree);
+			index += node.children[loop].text.length + 4;
+		} else if (node.text.substr(index).startsWith(' Xor ')) {
+			estree = logicalExpression(
+				'||',
+				logicalExpression('&&', estree, unaryExpression('!', node.children[loop].estree)),
+				logicalExpression('&&', unaryExpression('!', estree), node.children[loop].estree),
+			);
+			index += node.children[loop].text.length + 5;
+		} else if (node.text.substr(index).startsWith(' Eqv ')) {
+			estree = unaryExpression('~', binaryExpression('^', estree, node.children[loop].estree));
+			index += node.children[loop].text.length + 5;
+		}
+	}
+	return estree;
 }
 
-export function add(result: [Expression, null, Token, null, Expression]): Expression {
-	const leftExpr = result[0];
-	const operator = result[2].text as BinaryOperator;
-	const rightExpr = result[4];
-	return estree.binaryExpression(operator, leftExpr, rightExpr);
+function ppRelationalExpression(node: ESIToken): any {
+	let estree = node.children[0].estree;
+	let index = node.children[0].text.length;
+	for (let loop = 1; loop < node.children.length; loop++) {
+		if (node.text.substr(index).startsWith('<>')) {
+			estree = binaryExpression('!=', estree, node.children[loop].estree);
+			index += node.children[loop].text.length + 2;
+		} else if (node.text.substr(index).startsWith('<=')) {
+			estree = binaryExpression('<=', estree, node.children[loop].estree);
+			index += node.children[loop].text.length + 2;
+		} else if (node.text.substr(index).startsWith('>=')) {
+			estree = binaryExpression('>=', estree, node.children[loop].estree);
+			index += node.children[loop].text.length + 2;
+		} else if (node.text.substr(index).startsWith('=')) {
+			estree = binaryExpression('==', estree, node.children[loop].estree);
+			index += node.children[loop].text.length + 1;
+		} else {
+			estree = binaryExpression(node.text.charAt(index) as BinaryOperator, estree, node.children[loop].estree);
+			index += node.children[loop].text.length + 1;
+		}
+	}
+	return estree;
 }
 
-export function mod(result: [Expression, null, Token, null, Expression]): Expression {
-	const leftExpr = result[0];
-	const rightExpr = result[4];
-	return estree.binaryExpression('%', leftExpr, rightExpr);
+function ppTypeExpression(node: ESIToken): any {
+	let estree = node.children[0].estree;
+	let index = node.children[0].text.length;
+	for (let loop = 1; loop < node.children.length; loop++) {
+		if (node.text.substr(index).startsWith(' Is ')) {
+			estree = binaryExpression('==', estree, node.children[loop].estree);
+			index += node.children[loop].text.length + 4;
+		}
+	}
+	return estree;
 }
 
-export function mult(result: [Expression, null, Token, null, Expression]): Expression {
-	const leftExpr = result[0];
-	const operator = result[2].text as BinaryOperator;
-	const rightExpr = result[4];
-	return estree.binaryExpression(operator, leftExpr, rightExpr);
+function ppUnaryExpression(node: ESIToken): any {
+	return unaryExpression(node.text.charAt(0) as UnaryOperator, node.children[0].estree);
 }
 
-export function unary(result: [Token, null, Expression]): Expression {
-	const operator = result[0].text as UnaryOperator;
-	const expr = result[2];
-	return estree.unaryExpression(operator, expr);
+function ppLogicalNotExpression(node: ESIToken): any {
+	return unaryExpression('!', node.children[0].estree);
 }
 
-export function concat(result: [Expression, null, Token, null, Expression]): Expression {
-	const leftExpr = result[0];
-	const operator = result[2].text as BinaryOperator;
-	const rightExpr = result[4];
-	return estree.binaryExpression('+', leftExpr, rightExpr);
+function ppParenthesizedExpression(node: ESIToken): any {
+	return node.children[1].estree;
 }
 
-export function is(result: [Expression, null, Token, null, Expression]): Expression {
-	const leftExpr = result[0];
-	const rightExpr = result[4];
-	return estree.binaryExpression('==', leftExpr, rightExpr);
+function ppMemberAccessExpression(node: ESIToken) {
+	return identifier('.' + node.children[1].estree.name);
 }
 
-export function isNot(result: [Expression, null, Token, null, Token, null, Expression]): Expression {
-	const leftExpr = result[0];
-	const rightExpr = result[6];
-	return estree.binaryExpression('!=', leftExpr, rightExpr);
+function ppSubExpression(node: ESIToken): any {
+	let id: any = null;
+	let args = null;
+	let expr = null;
+	for (const child of node.children) {
+		if (child.type === 'MemberAccessExpression' || child.type === 'SimpleNameExpression') {
+			id = child.estree;
+		} else if (child.type === 'OpenParenthesis') {
+			args = [];
+		} else if (child.type === 'ArgumentList') {
+			args = child.estree;
+		} else if (child.type === 'SubExpression') {
+			expr = child.estree;
+		}
+	}
+	let estree = args != null ? callExpression(id, args) : id;
+	if (expr != null) {
+		let found = false;
+		estree = replace(expr, {
+			enter: astNode => {
+				if (!found) {
+					if (astNode.type === 'Identifier') {
+						found = true;
+						return memberExpression(estree, identifier(astNode.name.substr(1)));
+					}
+				}
+			},
+		});
+	}
+	return estree;
 }
 
-export function gte(result: [Expression, null, Token, null, Expression]): Expression {
-	const leftExpr = result[0];
-	const rightExpr = result[4];
-	return estree.binaryExpression('>=', leftExpr, rightExpr);
+function ppInvocationExpression(node: ESIToken): any {
+	let id: any = null;
+	let args = null;
+	let expr = null;
+	for (const child of node.children) {
+		if (child.type === 'MemberAccessExpression' || child.type === 'SimpleNameExpression') {
+			id = child.estree;
+		} else if (child.type === 'OpenParenthesis') {
+			args = [];
+		} else if (child.type === 'ArgumentList') {
+			args = child.estree;
+		} else if (child.type === 'InvocationExpression') {
+			expr = child.estree;
+		}
+	}
+	let estree = args != null ? callExpression(id, args) : id;
+	if (expr != null) {
+		let found = false;
+		estree = replace(expr, {
+			enter: astNode => {
+				if (!found) {
+					if (astNode.type === 'Identifier') {
+						found = true;
+						return memberExpression(estree, identifier(astNode.name.substr(1)));
+					}
+				}
+			},
+		});
+	}
+	return estree;
 }
 
-export function lte(result: [Expression, null, Token, null, Expression]): Expression {
-	const leftExpr = result[0];
-	const rightExpr = result[4];
-	return estree.binaryExpression('<=', leftExpr, rightExpr);
-}
-
-export function gt(result: [Expression, null, Token, null, Expression]): Expression {
-	const leftExpr = result[0];
-	const rightExpr = result[4];
-	return estree.binaryExpression('>', leftExpr, rightExpr);
-}
-
-export function lt(result: [Expression, null, Token, null, Expression]): Expression {
-	const leftExpr = result[0];
-	const rightExpr = result[4];
-	return estree.binaryExpression('<', leftExpr, rightExpr);
-}
-
-export function gtlt(result: [Expression, null, Token, null, Expression]): Expression {
-	const leftExpr = result[0];
-	const rightExpr = result[4];
-	return estree.binaryExpression('!=', leftExpr, rightExpr);
-}
-
-export function eq(result: [Expression, null, Token, null, Expression]): Expression {
-	const leftExpr = result[0];
-	const rightExpr = result[4];
-	return estree.binaryExpression('==', leftExpr, rightExpr);
+function ppNewExpression(node: ESIToken): any {
+	return newExpression(node.children[0].estree, []);
 }

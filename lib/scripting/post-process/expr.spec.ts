@@ -18,150 +18,138 @@
  */
 
 import { expect } from 'chai';
-import { vbsToJs } from '../../../test/script.helper';
+import { Grammar } from '../grammar/grammar';
+
+let grammar: Grammar;
+
+before(async () => {
+	grammar = new Grammar();
+});
 
 describe('The VBScript transpiler - Expressions', () => {
 	it('should transpile a "Eqv" expression', () => {
-		const vbs = `EnableBallControl = 10 Eqv 8\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `EnableBallControl = 10 Eqv 8`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = ~(10 ^ 8);');
 	});
 
 	it('should transpile a "Xor" expression', () => {
-		const vbs = `EnableBallControl = 10 Xor 8\n`;
-		const js = vbsToJs(vbs);
-		expect(js).to.equal('EnableBallControl = 10 ^ 8;');
+		const vbs = `EnableBallControl = 10 Xor 8`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal('EnableBallControl = 10 && !8 || !10 && 8;');
 	});
 
 	it('should transpile a "Or" expression', () => {
-		const vbs = `If test = 5 Or Err Then test = 6\n`;
-		const js = vbsToJs(vbs);
-		expect(js).to.equal('if (test == 5 || Err)\n    test = 6;');
+		const vbs = `If test = 5 Or Err Then test = 6`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal('if (test == 5 || Err) {\n    test = 6;\n}');
 	});
 
 	it('should transpile a "And" expression', () => {
 		const vbs = `If test = 5 And Err Then test = 6`;
-		const js = vbsToJs(vbs);
-		expect(js).to.equal('if (test == 5 && Err)\n    test = 6;');
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal('if (test == 5 && Err) {\n    test = 6;\n}');
 	});
 
 	it('should transpile a "Not" expression', () => {
-		const vbs = `EnableBallControl = Not EnableBallControl\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `EnableBallControl = Not EnableBallControl`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = !EnableBallControl;');
 	});
 
 	it('should transpile a "+" expression', () => {
-		const vbs = `EnableBallControl = EnableBallControl + 1\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `EnableBallControl = EnableBallControl + 1`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = EnableBallControl + 1;');
 	});
 
 	it('should transpile a "-" expression', () => {
-		const vbs = `EnableBallControl = EnableBallControl - 1\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `EnableBallControl = EnableBallControl - 1`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = EnableBallControl - 1;');
 	});
 
 	it('should transpile a "Mod" expression', () => {
-		const vbs = `EnableBallControl = EnableBallControl Mod 2\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `EnableBallControl = EnableBallControl Mod 2`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = EnableBallControl % 2;');
 	});
 
 	it('should transpile a "\\" expression', () => {
-		const vbs = `EnableBallControl = EnableBallControl \\ 2\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `EnableBallControl = EnableBallControl \\ 2`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = Math.floor(Math.floor(EnableBallControl) / Math.floor(2));');
 	});
 
 	it('should transpile a "*" expression', () => {
-		const vbs = `EnableBallControl = EnableBallControl * 2\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `EnableBallControl = EnableBallControl * 2`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = EnableBallControl * 2;');
 	});
 
 	it('should transpile a "*" unary expression', () => {
-		const vbs = `EnableBallControl = EnableBallControl * -2\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `EnableBallControl = EnableBallControl * -2`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = EnableBallControl * -2;');
 	});
 
 	it('should transpile a "/" expression', () => {
-		const vbs = `EnableBallControl = EnableBallControl / 2\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `EnableBallControl = EnableBallControl / 2`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = EnableBallControl / 2;');
 	});
 
 	it('should transpile a "^" expression', () => {
-		const vbs = `EnableBallControl = EnableBallControl ^ 2\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `EnableBallControl = EnableBallControl ^ 2`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = Math.pow(EnableBallControl, 2);');
 	});
 
 	it('should transpile a "&" concat expression', () => {
-		const vbs = `EnableBallControl = "ENABLE" & "OFF"\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `EnableBallControl = "ENABLE" & "OFF"`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal("EnableBallControl = 'ENABLE' + 'OFF';");
 	});
 
 	it('should transpile a "Is" expression', () => {
-		const vbs = `EnableBallControl = EnableBallControl Is 2\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `EnableBallControl = EnableBallControl Is 2`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = EnableBallControl == 2;');
 	});
 
-	it('should transpile a "Is Not" expression', () => {
-		const vbs = `EnableBallControl = EnableBallControl Is Not 2\n`;
-		const js = vbsToJs(vbs);
-		expect(js).to.equal('EnableBallControl = EnableBallControl != 2;');
-	});
-
 	it('should transpile a ">=" expression', () => {
-		const vbs = `EnableBallControl = EnableBallControl >= 2\n`;
-		const js = vbsToJs(vbs);
-		expect(js).to.equal('EnableBallControl = EnableBallControl >= 2;');
-	});
-
-	it('should transpile a "=>" expression', () => {
-		const vbs = `EnableBallControl = EnableBallControl => 2\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `EnableBallControl = EnableBallControl >= 2`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = EnableBallControl >= 2;');
 	});
 
 	it('should transpile a "<=" expression', () => {
-		const vbs = `EnableBallControl = EnableBallControl <= 2\n`;
-		const js = vbsToJs(vbs);
-		expect(js).to.equal('EnableBallControl = EnableBallControl <= 2;');
-	});
-
-	it('should transpile a "=<" expression', () => {
-		const vbs = `EnableBallControl = EnableBallControl =< 2\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `EnableBallControl = EnableBallControl <= 2`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = EnableBallControl <= 2;');
 	});
 
 	it('should transpile a ">" expression', () => {
-		const vbs = `EnableBallControl = EnableBallControl > 2\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `EnableBallControl = EnableBallControl > 2`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = EnableBallControl > 2;');
 	});
 
 	it('should transpile a "<" expression', () => {
-		const vbs = `EnableBallControl = EnableBallControl < 2\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `EnableBallControl = EnableBallControl < 2`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = EnableBallControl < 2;');
 	});
 
 	it('should transpile a "<>" expression', () => {
-		const vbs = `EnableBallControl = EnableBallControl <> 2\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `EnableBallControl = EnableBallControl <> 2`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = EnableBallControl != 2;');
 	});
 
 	it('should transpile a "=" expression', () => {
-		const vbs = `EnableBallControl = EnableBallControl = 2\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `EnableBallControl = EnableBallControl = 2`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = EnableBallControl == 2;');
 	});
 });

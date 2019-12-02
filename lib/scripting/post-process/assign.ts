@@ -17,26 +17,34 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Expression, ExpressionStatement, MemberExpression } from 'estree';
-import { Token } from 'moo';
-import * as estree from '../estree';
+import { assignmentExpression, expressionStatement, identifier, newExpression } from '../estree';
+import { ESIToken } from '../grammar/grammar';
 
-export function stmt1(result: [MemberExpression, null, Token, null, Expression]): ExpressionStatement {
-	const left = result[0];
-	const right = result[4];
-	return estree.expressionStatement(estree.assignmentExpression(left, '=', right));
+export function ppAssign(node: ESIToken): any {
+	let estree = null;
+	if (node.type === 'RegularAssignmentStatement' || node.type === 'RegularAssignmentStatementInline') {
+		estree = ppRegularAssignmentStatement(node);
+	} else if (node.type === 'SetAssignmentStatement' || node.type === 'SetAssignmentStatementInline') {
+		estree = ppSetAssignmentStatement(node);
+	}
+	return estree;
 }
 
-export function stmt2(result: [Token, null, MemberExpression, null, Token, null, Expression]): ExpressionStatement {
-	const left = result[2];
-	const right = result[6];
-	return estree.expressionStatement(estree.assignmentExpression(left, '=', right));
+function ppRegularAssignmentStatement(node: ESIToken): any {
+	const expr = node.children[0].estree;
+	const rightExpr = node.children[2].estree;
+	return expressionStatement(assignmentExpression(expr, '=', rightExpr));
 }
 
-export function stmt3(
-	result: [Token, null, MemberExpression, null, Token, null, Token, null, Expression],
-): ExpressionStatement {
-	const left = result[2];
-	const right = result[8];
-	return estree.expressionStatement(estree.assignmentExpression(left, '=', estree.newExpression(right, [])));
+function ppSetAssignmentStatement(node: ESIToken): any {
+	const stmts = [];
+	const expr = node.children[0].estree;
+	const rightExpr = node.children[2].estree;
+	stmts.push(expressionStatement(assignmentExpression(expr, '=', rightExpr)));
+	if (rightExpr.type === 'NewExpression') {
+		if (node.children[3].type === 'NothingLiteral') {
+			stmts.push(expressionStatement(assignmentExpression(expr, '=', node.children[3].estree)));
+		}
+	}
+	return stmts;
 }

@@ -18,28 +18,32 @@
  */
 
 import { expect } from 'chai';
-import { vbsToJs } from '../../../test/script.helper';
+import { Grammar } from '../grammar/grammar';
+
+let grammar: Grammar;
+
+before(async () => {
+	grammar = new Grammar();
+});
 
 describe('The VBScript transpiler - With', () => {
 	it('should transpile a "With...End With" statement with an assignment expression', () => {
-		const vbs = `With x\n.value = 5\n.type = \"TEST\"\nEnd With\n`;
-		const js = vbsToJs(vbs);
-		expect(js).to.equal("{\n    x.value = 5;\n    x.type = 'TEST';\n}");
+		const vbs = `With x\n.value = 5\n.type = \"TEST\"\nEnd With`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal("x.value = 5;\nx.type = 'TEST';");
 	});
 
 	it('should transpile a "With...End With" statement with a call expression', () => {
-		const vbs = `With Controller\nSelect Case keycode\nCase keyReset .Stop\nEnd Select\nEnd With\n`;
-		const js = vbsToJs(vbs);
-		expect(js).to.equal(
-			'{\n    switch (keycode) {\n    case keyReset:\n        Controller.Stop();\n        break;\n    }\n}',
-		);
+		const vbs = `With Controller\nSelect Case keycode\nCase keyReset .Stop\nEnd Select\nEnd With`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal('switch (keycode) {\ncase keyReset:\n    Controller.Stop();\n    break;\n}');
 	});
 
 	it('should transpile a "With...End With" statement with a unary expression', () => {
-		const vbs = `With Controller\nSelect Case keycode\nCase keyFrame .LockDisplay = Not .LockDisplay\nEnd Select\nEnd With\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `With Controller\nSelect Case keycode\nCase keyFrame .LockDisplay = Not .LockDisplay\nEnd Select\nEnd With`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(
-			'{\n    switch (keycode) {\n    case keyFrame:\n        Controller.LockDisplay = !Controller.LockDisplay;\n        break;\n    }\n}',
+			'switch (keycode) {\ncase keyFrame:\n    Controller.LockDisplay = !Controller.LockDisplay;\n    break;\n}',
 		);
 	});
 });

@@ -19,13 +19,13 @@
  */
 
 import { existsSync, readFileSync } from 'fs';
-import { vbsToJs } from '../test/script.helper';
+import { ScriptHelper } from '../test/script.helper';
 
 /* tslint:disable: no-console */
 (() => {
 
 	try {
-
+		const scriptHelper = new ScriptHelper();
 		const argVbs = process.argv[2];
 
 		if (!argVbs) {
@@ -37,7 +37,7 @@ import { vbsToJs } from '../test/script.helper';
 		}
 
 		const vbs = readFileSync(argVbs);
-		console.log(vbsToJs(vbs.toString()));
+		console.log(scriptHelper.vbsToJs(vbs.toString()));
 
 	} catch (err) {
 		console.error(err);

@@ -17,45 +17,59 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Comment, Identifier, Literal, VariableDeclaration, VariableDeclarator } from 'estree';
-import { Token } from 'moo';
-import * as estree from '../estree';
+import { CallExpression, VariableDeclarator } from 'estree';
+import {
+	arrayExpression,
+	callExpression,
+	identifier,
+	memberExpression,
+	variableDeclaration,
+	variableDeclarator,
+} from '../estree';
+import { ESIToken } from '../grammar/grammar';
 import { Transformer } from '../transformer/transformer';
 
-export function varDecl(
-	result: [Token, null, VariableDeclarator, null, VariableDeclarator[], Comment[]],
-): VariableDeclaration {
-	const firstVarDecl = result[2];
-	const otherVarDecls = result[4] || [];
-	const comments = result[5] || [];
-	const declarators = [firstVarDecl, ...otherVarDecls];
-	return estree.variableDeclaration('let', declarators, comments);
+export function ppDim(node: ESIToken): any {
+	let estree = null;
+	if (node.type === 'DimDeclarationStatement' || node.type === 'DimDeclarationStatementInline') {
+		estree = ppDimDeclarationStatement(node);
+	} else if (node.type === 'DimVariableDeclarators') {
+		estree = ppDimVariableDeclarators(node);
+	} else if (node.type === 'DimVariableDeclarator') {
+		estree = ppDimVariableDeclarator(node);
+	}
+	return estree;
 }
 
-export function varName1(result: [Identifier, null, Token, null, Literal[], null, Token]): VariableDeclarator {
-	const identifier = result[0];
-	const literals = result[4] || [];
-	return estree.variableDeclarator(
-		identifier,
-		estree.callExpression(
-			estree.memberExpression(
-				estree.identifier(Transformer.VBSHELPER_NAME),
-				estree.identifier('dim'),
-			),
-			[ estree.arrayExpression(literals) ],
-		),
-	);
+function ppDimDeclarationStatement(node: ESIToken): any {
+	const varDecls =
+		node.children[0].type === 'DimVariableDeclarators' ? node.children[0].estree : node.children[1].estree;
+	return variableDeclaration('let', varDecls);
 }
 
-export function varName2(result: [Identifier]): VariableDeclarator {
-	const identifier = result[0];
-	return estree.variableDeclarator(identifier, null);
+function ppDimVariableDeclarators(node: ESIToken): any {
+	const estree = [];
+	for (const child of node.children) {
+		if (child.type === 'DimVariableDeclarator') {
+			estree.push(child.estree);
+		}
+	}
+	return estree;
 }
 
-export function otherVarsOpt(
-	result: [Token, null, VariableDeclarator, null, VariableDeclarator[]],
-): VariableDeclarator[] {
-	const firstVarDecl = result[2];
-	const otherVarDecls = result[4] || [];
-	return [firstVarDecl, ...otherVarDecls];
+function ppDimVariableDeclarator(node: ESIToken): any {
+	const id = node.children[0].estree;
+	let expr: CallExpression | null = null;
+	if (node.children.length > 1) {
+		const args = [];
+		for (const child of node.children) {
+			if (child.type === 'IntegerLiteral') {
+				args.push(child.estree);
+			}
+		}
+		expr = callExpression(memberExpression(identifier(Transformer.VBSHELPER_NAME), identifier('dim')), [
+			arrayExpression(args),
+		]);
+	}
+	return variableDeclarator(id, expr);
 }

@@ -19,28 +19,24 @@
 
 import { generate } from 'escodegen';
 import { Program } from 'estree';
-import { Grammar, Parser } from 'nearley';
-import vbsGrammar from '../lib/scripting/vbscript';
+import { Grammar } from '../lib/scripting/grammar/grammar';
 
-/**
- * A function that transpiles VBScript to JavaScript.
- */
-export function vbsToJs(vbs: string): string {
-	return astToVbs(vbsToAst(vbs));
-}
+export class ScriptHelper {
+	private readonly grammar: Grammar;
 
-export function vbsToAst(vbs: string): Program {
-	const parser = new Parser(Grammar.fromCompiled(vbsGrammar));
-	parser.feed(vbs.trim() + '\n');
-	/* istanbul ignore if */
-	if (parser.results.length === 0) {
-		throw new Error('Parser returned no results.');
+	public constructor() {
+		this.grammar = new Grammar();
 	}
-	return parser.results[0] as Program;
-}
 
-export function astToVbs(ast: Program): string {
-	return generate(ast, {
-		comment: true,
-	});
+	public vbsToJs(vbs: string): string {
+		return this.grammar.vbsToJs(vbs);
+	}
+
+	public vbsToAst(vbs: string): Program {
+		return this.grammar.transpile(vbs);
+	}
+
+	public astToVbs(ast: Program): string {
+		return generate(ast);
+	}
 }

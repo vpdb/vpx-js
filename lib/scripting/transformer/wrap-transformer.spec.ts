@@ -19,7 +19,7 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import { astToVbs, vbsToAst } from '../../../test/script.helper';
+import { ScriptHelper } from '../../../test/script.helper';
 import { ThreeHelper } from '../../../test/three.helper';
 import { NodeBinaryReader } from '../../io/binary-reader.node';
 import { Table } from '../../vpt/table/table';
@@ -46,8 +46,9 @@ describe('The scripting wrap transformer', () => {
 });
 
 function transform(vbs: string, fctName: string, table: Table): string {
-	const ast = vbsToAst(vbs);
+	const scriptHelper = new ScriptHelper();
+	const ast = scriptHelper.vbsToAst(vbs);
 	const scriptTransformer = new WrapTransformer(ast);
 	const eventAst = scriptTransformer.transform(fctName, 'window');
-	return astToVbs(eventAst);
+	return scriptHelper.astToVbs(eventAst);
 }

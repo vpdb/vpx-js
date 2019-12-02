@@ -17,32 +17,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { EmptyStatement, ExpressionStatement, Literal } from 'estree';
-import { Token } from 'moo';
-import * as estree from '../estree';
+import { Expression } from 'estree';
+import { callExpression, expressionStatement, identifier, literal, memberExpression } from '../estree';
+import { ESIToken } from '../grammar/grammar';
 import { Transformer } from '../transformer/transformer';
 
-export function stmt1(result: [Token, null, Token, null, Token, null, Token]): ExpressionStatement {
-	return estree.expressionStatement(
-		estree.callExpression(
-			estree.memberExpression(
-				estree.identifier(Transformer.VBSHELPER_NAME),
-				estree.identifier('onErrorResumeNext'),
-			),
-			[],
-		),
-	);
+export function ppError(node: ESIToken): any {
+	let estree = null;
+	if (node.type === 'OnErrorStatement') {
+		estree = ppOnErrorStatement(node);
+	}
+	return estree;
 }
 
-export function stmt2(result: [Token, null, Token, null, Token, null, Literal]): ExpressionStatement {
-	const arg = result[6];
-	return estree.expressionStatement(
-		estree.callExpression(
-			estree.memberExpression(
-				estree.identifier(Transformer.VBSHELPER_NAME),
-				estree.identifier('onErrorGoto'),
-			),
-			[ arg ],
-		),
-	);
+function ppOnErrorStatement(node: ESIToken): any {
+	let expr: Expression;
+	if (node.text.indexOf('GoTo') !== -1) {
+		expr = callExpression(memberExpression(identifier(Transformer.VBSHELPER_NAME), identifier('onErrorGoto')), [
+			literal(0),
+		]);
+	} else {
+		expr = callExpression(
+			memberExpression(identifier(Transformer.VBSHELPER_NAME), identifier('onErrorResumeNext')),
+			[],
+		);
+	}
+	return expressionStatement(expr);
 }

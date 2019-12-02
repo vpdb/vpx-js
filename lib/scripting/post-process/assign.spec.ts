@@ -18,48 +18,66 @@
  */
 
 import { expect } from 'chai';
-import { vbsToJs } from '../../../test/script.helper';
+import { Grammar } from '../grammar/grammar';
+
+let grammar: Grammar;
+
+before(async () => {
+	grammar = new Grammar();
+});
 
 describe('The VBScript transpiler - Assign', () => {
 	it('should transpile an assignment statement', () => {
-		const vbs = `EnableBallControl = 0\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `EnableBallControl = 0`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = 0;');
 	});
 
 	it('should transpile an assignment statement with function call', () => {
-		const vbs = `AudioFade = Csng(-((- tmp) ^10), 20)\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `AudioFade = Csng(-((- tmp) ^10), 20)`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('AudioFade = Csng(-Math.pow(-tmp, 10), 20);');
 	});
 
 	it('should transpile a "Set" assignment statement', () => {
-		const vbs = `Set EnableBallControl = 0\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `Set EnableBallControl = 0`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('EnableBallControl = 0;');
 	});
 
 	it('should transpile a "New" object assignment statement', () => {
-		const vbs = `Set vpmDips = New cvpmDips\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `Set vpmDips = New cvpmDips`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('vpmDips = new cvpmDips();');
 	});
 
-	it('should transpile an assignment statement with left indexed parameters', () => {
-		const vbs = `J(2,3,9,4) = X\nJ(2,3,9)(4) = X\nJ(2)(3)(9)(4) = X\n`;
-		const js = vbsToJs(vbs);
-		expect(js).to.equal('J(2, 3, 9, 4) = X;\nJ(2, 3, 9, 4) = X;\nJ(2, 3, 9, 4) = X;');
+	it('should transpile a "New/Nothing" object assignment statement', () => {
+		const vbs = `Set vpmDips = New cvpmDips Nothing`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal('vpmDips = new cvpmDips();\nvpmDips = undefined;');
 	});
 
-	it('should transpile an assignment statement with right indexed parameters', () => {
-		const vbs = `X = J(2,3,9,4)\nX = J(2,3,9)(4)\nX = J(2)(3)(9)(4)\n`;
-		const js = vbsToJs(vbs);
-		expect(js).to.equal('X = J(2, 3, 9, 4);\nX = J(2, 3, 9, 4);\nX = J(2, 3, 9, 4);');
+	it('should transpile an assignment statement with left parameters', () => {
+		const vbs = `J(2,3,9,4) = X`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal('J(2, 3, 9, 4) = X;');
 	});
 
-	it('should transpile an assignment statement with right indexed parameters', () => {
-		const vbs = `J(,,,4,) = X\n`;
-		const js = vbsToJs(vbs);
-		expect(js).to.equal('J(null, null, null, 4, null) = X;');
+	it('should transpile an assignment statement with missing left parameters', () => {
+		const vbs = `J(,1,,,4,)=X`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal('J(undefined, 1, undefined, undefined, 4, undefined) = X;');
+	});
+
+	it('should transpile an assignment statement with right parameters', () => {
+		const vbs = `X = J(2,3,9,4)`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal('X = J(2, 3, 9, 4);');
+	});
+
+	it('should transpile an assignment statement with missing right parameters', () => {
+		const vbs = `X = J(,2,,9,,4,)`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal('X = J(undefined, 2, undefined, 9, undefined, 4, undefined);');
 	});
 });

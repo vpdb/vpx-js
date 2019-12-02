@@ -17,59 +17,130 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BlockStatement, Comment, DoWhileStatement, Expression, WhileStatement } from 'estree';
-import { Token } from 'moo';
-import * as estree from '../estree';
+import {
+	assignmentExpression,
+	binaryExpression,
+	blockStatement,
+	breakStatement,
+	conditionalExpression,
+	doWhileStatement,
+	forOfStatement,
+	forStatement,
+	ifStatement,
+	literal,
+	whileStatement,
+} from '../estree';
+import { ESIToken } from '../grammar/grammar';
 
-export function stmt1(
-	result: [Token, null, Token, null, Expression, Comment[], BlockStatement, Token, Comment[]],
-): WhileStatement | DoWhileStatement {
-	const type = result[2].type;
-	const test = result[4];
-	const body = result[6];
-	const leadingComments = result[5] || [];
-	const trailingComments = result[8] || [];
-	if (type === 'kw_while') {
-		return estree.whileStatement(test, body, leadingComments, trailingComments);
+export function ppLoop(node: ESIToken): any {
+	let estree = null;
+	if (node.type === 'WhileStatement') {
+		estree = ppWhileStatement(node);
+	} else if (node.type === 'DoTopLoopStatement') {
+		estree = ppDoTopLoopStatement(node);
+	} else if (node.type === 'DoBottomLoopStatement') {
+		estree = ppDoBottomLoopStatement(node);
+	} else if (node.type === 'ForStatement') {
+		estree = ppForStatement(node);
+	} else if (node.type === 'ForEachStatement') {
+		estree = ppForEachStatement(node);
+	}
+	return estree;
+}
+
+function ppWhileStatement(node: ESIToken): any {
+	const expr = node.children[0].estree;
+	const block = node.children[2].type === 'Block' ? node.children[2].estree : null;
+	return whileStatement(expr, block ? block : blockStatement([]));
+}
+
+function ppDoTopLoopStatement(node: ESIToken): any {
+	if (node.children[0].type === 'WhileOrUntil') {
+		if (node.children[0].text === 'While') {
+			const expr = node.children[1].estree;
+			const block = node.children[3].type === 'Block' ? node.children[3].estree : null;
+
+			return whileStatement(expr, block ? block : blockStatement([]));
+		} else {
+			const expr = node.children[1].estree;
+			let block = node.children[3].type === 'Block' ? node.children[3].estree : null;
+
+			if (block === null) {
+				block = blockStatement([]);
+			}
+
+			block.body.unshift(ifStatement(expr, breakStatement(), null));
+
+			return doWhileStatement(block, literal(true));
+		}
 	} else {
-		return estree.doWhileStatement(
-			estree.blockStatement([estree.ifStatement(test, estree.breakStatement(), null), ...body.body]),
-			estree.literal(true),
-			leadingComments,
-			trailingComments,
-		);
+		const block = node.children[1].type === 'Block' ? node.children[1].estree : null;
+
+		return doWhileStatement(block ? block : blockStatement([]), literal(true));
 	}
 }
 
-export function stmt2(result: [Token, Comment[], BlockStatement, Token, null, Token, null, Expression, Comment[]]) {
-	const body = result[2];
-	const type = result[5].type;
-	const test = result[7];
-	const leadingComments = result[1] || [];
-	const trailingComments = result[8] || [];
-	if (type === 'kw_while') {
-		return estree.doWhileStatement(body, test, leadingComments, trailingComments);
+function ppDoBottomLoopStatement(node: ESIToken): any {
+	let block = node.children[1].type === 'Block' ? node.children[1].estree : null;
+	let whileOrUntil;
+	let expr;
+	if (block !== null) {
+		whileOrUntil = node.children[2].text;
+		expr = node.children[3].estree;
 	} else {
-		return estree.doWhileStatement(
-			estree.blockStatement([...body.body, estree.ifStatement(test, estree.breakStatement(), null)]),
-			estree.literal(true),
-			leadingComments,
-			trailingComments,
-		);
+		whileOrUntil = node.children[1].text;
+		expr = node.children[2].estree;
+	}
+	if (whileOrUntil === 'While') {
+		return doWhileStatement(block ? block : blockStatement([]), expr);
+	} else {
+		if (block === null) {
+			block = blockStatement([]);
+		}
+
+		block.body.push(ifStatement(expr, breakStatement(), null));
+
+		return doWhileStatement(block, literal(true));
 	}
 }
 
-export function stmt3(result: [Token, Comment[], BlockStatement, Token, Comment[]]): DoWhileStatement {
-	const body = result[2];
-	const leadingComments = result[1] || [];
-	const trailingComments = result[4] || [];
-	return estree.doWhileStatement(body, estree.literal(true), leadingComments, trailingComments);
+function ppForStatement(node: ESIToken): any {
+	const id = node.children[0].estree;
+	const expr = node.children[2].estree;
+	const expr2 = node.children[3].estree;
+	let step = null;
+	if (node.children[4].type === 'Expression') {
+		step = node.children[4].estree;
+	}
+	const block = step ? node.children[6].estree : node.children[5].estree;
+	return forStatement(
+		assignmentExpression(id, '=', expr),
+		step
+			? conditionalExpression(
+					binaryExpression('<', step, literal(0)),
+					binaryExpression('>=', id, expr2),
+					binaryExpression('<=', id, expr2),
+			  )
+			: binaryExpression('<=', id, expr2),
+		assignmentExpression(id, '+=', step ? step : literal(1)),
+		block ? block : blockStatement([]),
+	);
 }
 
-export function stmt4(result: [Token, null, Expression, Comment[], BlockStatement, Token, Comment[]]): WhileStatement {
-	const test = result[2];
-	const body = result[4];
-	const leadingComments = result[3] || [];
-	const trailingComments = result[6] || [];
-	return estree.whileStatement(test, body, leadingComments, trailingComments);
+function ppForEachStatement(node: ESIToken): any {
+	const id = node.children[0].estree;
+	let expr;
+	let block = null;
+	if (node.children[1].type === 'Expression') {
+		expr = node.children[1].estree;
+		if (node.children[3].type === 'Block') {
+			block = node.children[3].estree;
+		}
+	} else {
+		expr = node.children[2].estree;
+		if (node.children[4].type === 'Block') {
+			block = node.children[4].estree;
+		}
+	}
+	return forOfStatement(id, expr, block ? block : blockStatement([]));
 }

@@ -18,75 +18,86 @@
  */
 
 import { expect } from 'chai';
-import { vbsToJs } from '../../../test/script.helper';
-import { Transformer } from '../transformer/transformer';
+import { Grammar } from '../grammar/grammar';
 
-describe('The VBScript transpiler - Subcall', () => {
+let grammar: Grammar;
+
+before(async () => {
+	grammar = new Grammar();
+});
+
+describe('The VBScript transpiler - Call', () => {
+	/*it('should transpile a call statement', () => {
+		const vbs = `Call mQue(ii)(3)(mQue(ii)(2))`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal('BallRelease();');
+	});*/
+
 	it('should transpile a subcall statement without params', () => {
-		const vbs = `BallRelease\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `BallRelease`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('BallRelease();');
 	});
 
 	it('should transpile a subcall statement with params', () => {
-		const vbs = `BallRelease 5, -2\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `BallRelease 5, -2`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('BallRelease(5, -2);');
 	});
 
 	it('should transpile an object.property subcall statement without params', () => {
-		const vbs = `BallRelease.CreateBall\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `BallRelease.CreateBall`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('BallRelease.CreateBall();');
 	});
 
-	it('should transpile an object.property subcall statement without params with parenthesis', () => {
-		const vbs = `BallRelease.CreateBall()\n`;
-		const js = vbsToJs(vbs);
+	/*it('should transpile an object.property subcall statement without params with parenthesis', () => {
+		const vbs = `BallRelease.CreateBall()`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('BallRelease.CreateBall();');
-	});
+	});*/
 
 	it('should transpile an object.property subcall statement with params', () => {
-		const vbs = `BallRelease.KickBall 0, -2\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `BallRelease.KickBall 0, -2`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('BallRelease.KickBall(0, -2);');
 	});
 
 	it('should transpile an object.property subcall statement with params', () => {
-		const vbs = `BallRelease.KickBall (0), -2\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `BallRelease.KickBall (0), -2`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('BallRelease.KickBall(0, -2);');
 	});
 
 	it('should transpile an object.property subcall statement with params', () => {
-		const vbs = `BallRelease.KickBall 0, (-2)\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `BallRelease.KickBall 0, (-2)`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('BallRelease.KickBall(0, -2);');
 	});
 
 	it('should transpile an object.property subcall statement with params', () => {
-		const vbs = `BallRelease.KickBall (0), (-2)\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `BallRelease.KickBall (0), (-2)`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('BallRelease.KickBall(0, -2);');
 	});
 
 	it('should transpile an object.object.property subcall statement with params', () => {
-		const vbs = `BallRelease.Kicker.KickBall (0), (-2)\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `BallRelease.Kicker.KickBall (0), (-2)`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('BallRelease.Kicker.KickBall(0, -2);');
 	});
 
 	it('should transpile an subcall statement with function call params', () => {
-		const vbs = `PlaySound SoundFX("fx_flipperup",DOFFlippers), 0, .67, AudioPan(RightFlipper), 0.05,0,0,1,AudioFade(RightFlipper)\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `PlaySound SoundFX("fx_flipperup",DOFFlippers), 0, .67, AudioPan(RightFlipper), 0.05,0,0,1,AudioFade(RightFlipper)`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(
 			`PlaySound(SoundFX('fx_flipperup', DOFFlippers), 0, 0.67, AudioPan(RightFlipper), 0.05, 0, 0, 1, AudioFade(RightFlipper));`,
 		);
 	});
 
-	it('should transpile multiple object subcalls', () => {
-		const vbs = `a.b(1,2).c(3)(4).d(3,  5)\n`;
-		const js = vbsToJs(vbs);
+	/*it('should transpile multiple object subcalls', () => {
+		const vbs = `a.b(1,2).c(3)(4).d(3,  5)`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('a.b(1, 2).c(3, 4).d(3, 5);');
-	});
+	});*/
 });

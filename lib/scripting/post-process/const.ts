@@ -17,38 +17,39 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Comment, Expression, Identifier, UnaryOperator, VariableDeclaration, VariableDeclarator } from 'estree';
-import { Token } from 'moo';
-import * as estree from '../estree';
+import { variableDeclaration, variableDeclarator } from '../estree';
+import { ESIToken } from '../grammar/grammar';
 
-export function constDecl(result: [Token, Token, null, VariableDeclarator[], Comment[]]): VariableDeclaration {
-	const declarators = result[3];
-	const comments = result[4] || [];
-	return estree.variableDeclaration('const', declarators, comments);
+export function ppConst(node: ESIToken): any {
+	let estree = null;
+	if (node.type === 'ConstDeclarationStatement' || node.type === 'ConstDeclarationStatementInline') {
+		estree = ppConstDeclarationStatement(node);
+	} else if (node.type === 'ConstVariableDeclarators') {
+		estree = ppConstVariableDeclarators(node);
+	} else if (node.type === 'ConstVariableDeclarator') {
+		estree = ppConstVariableDeclarator(node);
+	}
+	return estree;
 }
 
-export function constList1(
-	result: [Identifier, null, Token, null, Expression, null, Token, null, VariableDeclarator[]],
-): VariableDeclarator[] {
-	const identifier = result[0];
-	const expr = result[4];
-	const otherVarDecl = result[8] || [];
-	return [estree.variableDeclarator(identifier, expr), ...otherVarDecl];
+function ppConstDeclarationStatement(node: ESIToken): any {
+	const varDecls =
+		node.children[0].type === 'ConstVariableDeclarators' ? node.children[0].estree : node.children[1].estree;
+	return variableDeclaration('const', varDecls);
 }
 
-export function constList2(result: [Identifier, null, Token, null, Expression]): VariableDeclarator[] {
-	const identifier = result[0];
-	const expr = result[4];
-	return [estree.variableDeclarator(identifier, expr)];
+function ppConstVariableDeclarators(node: ESIToken): any {
+	const estree = [];
+	for (const child of node.children) {
+		if (child.type === 'ConstVariableDeclarator') {
+			estree.push(child.estree);
+		}
+	}
+	return estree;
 }
 
-export function constExprDef1(result: [Token, null, Expression, null, Token]): Expression {
-	const expr = result[2];
-	return expr;
-}
-
-export function constExprDef2(result: [Token, null, Expression]): Expression {
-	const operator = result[0].text as UnaryOperator;
-	const expr = result[2];
-	return estree.unaryExpression(operator, expr);
+function ppConstVariableDeclarator(node: ESIToken): any {
+	const id = node.children[0].estree;
+	const literal = node.children[2].estree;
+	return variableDeclarator(id, literal);
 }
