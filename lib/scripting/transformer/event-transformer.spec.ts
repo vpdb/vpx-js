@@ -19,7 +19,7 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import { astToVbs, vbsToAst } from '../../../test/script.helper';
+import { ScriptHelper } from '../../../test/script.helper';
 import { TableBuilder } from '../../../test/table-builder';
 import { ThreeHelper } from '../../../test/three.helper';
 import { Table } from '../../vpt/table/table';
@@ -79,8 +79,9 @@ describe('The scripting event transformer', () => {
 });
 
 function transform(vbs: string, table: Table): string {
-	const ast = vbsToAst(vbs);
+	const scriptHelper = new ScriptHelper();
+	const ast = scriptHelper.vbsToAst(vbs);
 	const eventTransformer = new EventTransformer(ast, table.getElements());
 	const eventAst = eventTransformer.transform();
-	return astToVbs(eventAst);
+	return scriptHelper.astToVbs(eventAst);
 }

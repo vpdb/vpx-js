@@ -19,7 +19,7 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import { astToVbs, vbsToAst } from '../../../test/script.helper';
+import { ScriptHelper } from '../../../test/script.helper';
 import { TableBuilder } from '../../../test/table-builder';
 import { Player } from '../../game/player';
 import { Enums } from '../../vpt/enums';
@@ -117,8 +117,9 @@ describe('The scripting reference transformer', () => {
 });
 
 function transform(vbs: string, table: Table, player: Player): string {
-	const ast = vbsToAst(vbs);
+	const scriptHelper = new ScriptHelper();
+	const ast = scriptHelper.vbsToAst(vbs);
 	const referenceTransformer = new ReferenceTransformer(ast, table, table.getElementApis(), Enums, new GlobalApi(table, player), new Stdlib());
 	const eventAst = referenceTransformer.transform();
-	return astToVbs(eventAst);
+	return scriptHelper.astToVbs(eventAst);
 }

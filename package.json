@@ -39,12 +39,13 @@
 		"build:watch": "npm run compile && npm run build:cp && npm run build:post && tsc --watch --module es2015 --outDir ./dist/esm",
 		"build:cp": "cp -r res dist/esm && cp -r res dist/cjs",
 		"build:post": "node build/write-info.js",
-		"compile": "nearleyc lib/scripting/vbscript.ne -o lib/scripting/vbscript.ts",
 		"lint": "tslint --format stylish --project ./tsconfig.json --config ./lib/tslint.json",
-		"test": "npm run compile && tsc && cross-env TS_NODE_TRANSPILE_ONLY=true nyc mocha"
+		"test": "tsc && cross-env TS_NODE_TRANSPILE_ONLY=true nyc mocha"
 	},
 	"dependencies": {
 		"buffer": "5.4.3",
+		"dash-ast": "^1.0.0",
+		"ebnf": "^1.6.3",
 		"es6-promise-pool": "^2.5.0",
 		"escodegen": "^1.12.0",
 		"escope": "^3.6.0",
@@ -52,7 +53,6 @@
 		"gltf-pipeline": "github:freezy/gltf-pipeline#hotfix/dedupe",
 		"gm": "^1.23.1",
 		"moo": "^0.5.1",
-		"nearley": "^2.19.0",
 		"pngquant": "^3.0.0",
 		"sharp": "0.23.4",
 		"text-encoding": "^0.7.0",

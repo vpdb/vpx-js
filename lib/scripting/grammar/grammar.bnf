@@ -1,0 +1,213 @@
+/* This file is derived from information found at:                                     */
+/* https://blogs.msdn.microsoft.com/lucian/2010/04/19/vb-and-c-grammar-for-vs2010/     */
+/* https://bottlecaps.de/convert/                                                      */
+/* https://menduz.com/ebnf-highlighter/                                                */
+/* https://github.com/dotnet/vblang/tree/master/spec                                   */
+
+start ::= Transpile
+
+Format ::= LogicalLine*
+Transpile ::= OptionStatement? (Statement | MethodDeclaration)*
+
+/* 13.1 Lexical Grammar */
+
+LogicalLine ::= LogicalLineElement* Comment? LineTerminator
+LogicalLineElement ::= LineContinuation | WS | Token
+Token ::= Identifier | Keyword | Literal | Separator | Operator
+
+/* 13.1.1 Characters and Lines */
+
+Character ::= [^#x0d#x0a]
+LineTerminator ::= [#x0d] [#x0a] | [#x0d] | [#x0a]
+LineContinuation ::= WS* '_' WS* LineTerminator
+Comma ::= ',' LineTerminator?
+Period ::= '.' LineTerminator?
+OpenParenthesis ::= '(' LineTerminator?
+CloseParenthesis ::= LineTerminator? ')'
+Equals ::= '=' LineTerminator?
+WS ::= [#x09] | [#x20]
+Comment ::= CommentMarker Character*
+CommentMarker ::= SingleQuoteCharacter | 'REM'
+SingleQuoteCharacter ::= "'"
+
+/* 13.1.2 Identifiers */
+
+Identifier ::= NonEscapedIdentifier 
+NonEscapedIdentifier ::= !Keyword IdentifierName
+IdentifierName ::= IdentifierStart IdentifierCharacter* 
+IdentifierStart ::= AlphaCharacter | UnderscoreCharacter IdentifierCharacter {fragment=true}
+IdentifierCharacter ::= UnderscoreCharacter | AlphaCharacter | NumericCharacter {fragment=true}
+AlphaCharacter ::= [A-Za-z] {fragment=true}
+NumericCharacter ::= [0-9] {fragment=true}
+UnderscoreCharacter ::= '_'
+IdentifierOrKeyword ::= Identifier | Keyword
+
+/* 13.1.3 Keywords */
+
+Keywords ::= 'And' | 'ByVal' | 'ByRef' | 'Case' | 'Call' | 'Class' | 'Const' | 'Default' | 'Dim' | 'Do' | 'Each' | 'ElseIf' | 'Else' | 'Empty' | 'End' | 'Erase' | 'Error' | 'Eqv' | 'Exit' | 'Explicit' | 'False' | 'For' | 'Function' | 'Get' | 'GoTo' | 'If' | 'In' | 'Is' | 'Let' | 'Loop' | 'Mod' | 'New' | 'Next' | 'Nothing' | 'Not' | 'Null' | 'On' | 'Option' | 'Or' | 'Preserve' | 'Private' | 'Property' | 'Public' | 'ReDim' | 'Resume' | 'Select' | 'Set' | 'Step' | 'Sub' | 'Then' | 'To' | 'True' | 'Until' | 'While' | 'WEnd' | 'With' | 'Xor'
+Keyword ::= Keywords ![A-Za-z0-9_]
+
+/* 13.1.4 Literals */
+
+Literal ::= BooleanLiteral | FloatingPointLiteral | IntegerLiteral | StringLiteral | DateLiteral | NothingLiteral | EmptyLiteral | NullLiteral
+BooleanLiteral ::= 'True' | 'False'
+IntegerLiteral ::= IntegralLiteralValue
+IntegralLiteralValue ::= IntLiteral | HexLiteral | OctalLiteral {fragment=true}
+IntLiteral ::= Digit+
+HexLiteral ::= '&' 'H' HexDigit+
+OctalLiteral ::= '&' 'O' OctalDigit+
+Digit ::= [0-9] {fragment=true}
+HexDigit ::= [0-9A-F] {fragment=true}
+OctalDigit ::= [0-7] {fragment=true}
+FloatingPointLiteral ::= FloatingPointLiteralValue
+FloatingPointLiteralValue ::= IntLiteral ( '.' IntLiteral Exponent? | Exponent ) | '.' IntLiteral Exponent?
+Exponent ::= 'E' Sign? IntLiteral
+Sign ::= '+' | '-'
+StringLiteral ::= DoubleQuoteCharacter StringCharacter* DoubleQuoteCharacter 
+DoubleQuoteCharacter ::= '"' {fragment=true}
+StringCharacter ::= [^"] | DoubleQuoteCharacter DoubleQuoteCharacter {fragment=true}
+DateLiteral ::= '#' WS* DateOrTime WS* '#'
+DateOrTime ::= DateValue ( WS+ TimeValue )? | TimeValue
+DateValue ::= MonthValue ( '/' DayValue '/' | '-' DayValue '-' ) YearValue
+TimeValue ::= HourValue ( ':' MinuteValue ( ':' SecondValue )? WS* AMPM? | WS* AMPM )
+MonthValue ::= IntLiteral
+DayValue ::= IntLiteral
+YearValue ::= IntLiteral
+HourValue ::= IntLiteral
+MinuteValue ::= IntLiteral
+SecondValue ::= IntLiteral
+AMPM ::= 'AM' | 'PM'
+NothingLiteral ::= 'Nothing'
+EmptyLiteral ::= 'Empty'
+NullLiteral ::= 'Null'
+Separator ::= '(' | ')' | '{' | '}' | '!' | '#' | ',' | '.' | ':' | '?'
+Operator ::= '&' | '*' | '+' | '-' | '/' | '\\' | '^' | '<' | '=' | '>'
+
+/* 13.3 Syntactic Grammar */
+
+AccessModifier ::= 'Public' | 'Private'
+
+/* 13.3.2 Source Files and Namespaces */
+
+StatementTerminator ::= LineTerminator | ':' 
+
+OptionStatement ::= OptionExplicitStatement
+OptionExplicitStatement ::= 'Option' 'Explicit' OnOff? StatementTerminator 
+OnOff ::= 'On' | 'Off'
+
+/* 13.3.4 Type Members */
+
+MethodDeclaration ::= SubDeclaration | SubDeclarationInline | FunctionDeclaration | FunctionDeclarationInline
+SubSignature ::= 'Sub' WS Identifier ( OpenParenthesis ParameterList? CloseParenthesis )? 
+FunctionSignature ::= 'Function' WS Identifier ( OpenParenthesis ParameterList? CloseParenthesis )? 
+SubDeclaration ::= (AccessModifier WS)? SubSignature StatementTerminator Block 'End' WS 'Sub' StatementTerminator 
+SubDeclarationInline ::= (AccessModifier WS)? SubSignature WS StatementsInline WS 'End' WS 'Sub' StatementTerminator 
+FunctionDeclaration ::= (AccessModifier WS)? FunctionSignature StatementTerminator Block 'End' WS 'Function' StatementTerminator 
+FunctionDeclarationInline ::= (AccessModifier WS)? FunctionSignature WS StatementsInline WS 'End' WS 'Function' StatementTerminator 
+
+ParameterList ::= Parameter ( Comma Parameter )*
+Parameter ::= ParameterModifier? ParameterIdentifier ( Equals ConstantExpression )? 
+ParameterModifier ::= 'ByVal' | 'ByRef'
+ParameterIdentifier ::= Identifier
+
+ArraySizeInitializationModifier ::= OpenParenthesis BoundList CloseParenthesis
+BoundList ::= Bound ( Comma Bound )*
+Bound ::= Expression
+
+DimVariableDeclarators ::= DimVariableDeclarator ( Comma DimVariableDeclarator )* 
+DimVariableDeclarator ::= Identifier ( OpenParenthesis (IntegerLiteral (Comma IntegerLiteral)*)? CloseParenthesis )? 
+
+ConstVariableDeclarators ::= ConstVariableDeclarator ( Comma ConstVariableDeclarator )* 
+ConstVariableDeclarator ::= Identifier Equals Expression 
+
+/* 13.3.5 Statements */
+
+Statement ::= DimDeclarationStatement | ConstDeclarationStatement | WithStatement | AssignmentStatement | InvocationStatement | ArrayHandlingStatement  | LoopStatement | ConditionalStatement | ErrorHandlingStatement | BranchStatement
+StatementInline ::= DimDeclarationStatementInline | ConstDeclarationStatementInline | AssignmentStatementInline | BranchStatementInline | InvocationStatementInline
+Block ::= Statements*
+Statements ::= Statement? ( ':' Statement? )* 
+StatementsInline ::= StatementInline? ( ':' StatementInline? )* 
+
+DimDeclarationStatement ::= (AccessModifier WS)? 'Dim' WS DimVariableDeclarators StatementTerminator 
+DimDeclarationStatementInline ::= (AccessModifier WS)? 'Dim' WS DimVariableDeclarators 
+
+ConstDeclarationStatement ::= (AccessModifier WS)? 'Const' WS ConstVariableDeclarators StatementTerminator 
+ConstDeclarationStatementInline ::= (AccessModifier WS)? 'Const' WS ConstVariableDeclarators 
+
+WithStatement ::= 'With' WS Expression StatementTerminator Block? 'End' WS 'With' StatementTerminator 
+AssignmentStatement ::= SetAssignmentStatement | RegularAssignmentStatement
+AssignmentStatementInline ::= RegularAssignmentStatementInline | SetAssignmentStatementInline
+RegularAssignmentStatement ::= SubExpression Equals Expression StatementTerminator 
+RegularAssignmentStatementInline ::= SubExpression Equals Expression 
+SetAssignmentStatement ::= 'Set' WS SubExpression Equals (NewExpression (WS NothingLiteral)?| Expression) StatementTerminator 
+SetAssignmentStatementInline ::= 'Set' WS SubExpression Equals (NewExpression (WS NothingLiteral)? | Expression) 
+NewExpression ::= 'New' WS Identifier
+InvocationStatement ::= ('Call' WS)? InvocationExpression StatementTerminator
+InvocationStatementInline ::= ('Call' WS)? InvocationExpression
+ConditionalStatement ::= IfStatement | SelectStatement
+IfStatement ::= LineIfThenStatement | BlockIfStatement 
+BlockIfStatement ::= 'If' WS BooleanExpression (WS? 'Then')? StatementTerminator Block? ElseIfStatement* ElseStatement? 'End' WS 'If' StatementTerminator 
+ElseIfStatement ::= 'ElseIf' WS BooleanExpression (WS? 'Then')? StatementTerminator Block? 
+ElseStatement ::= 'Else' StatementTerminator Block? 
+LineIfThenStatement ::= 'If' WS BooleanExpression WS 'Then' WS StatementsInline (WS 'Else' WS StatementsInline)? (WS 'End' WS 'If')? StatementTerminator 
+SelectStatement ::= 'Select' WS 'Case' WS Expression StatementTerminator CaseStatement* CaseElseStatement? 'End' WS 'Select' StatementTerminator 
+CaseStatement ::= 'Case' WS CaseClauses WS? StatementTerminator? Block? 
+CaseClauses ::= CaseClause ( Comma CaseClause )* 
+CaseClause ::= Expression
+CaseElseStatement ::= 'Case' WS 'Else' WS? StatementTerminator? Block? 
+LoopStatement ::= WhileStatement | DoLoopStatement | ForStatement | ForEachStatement
+WhileStatement ::= 'While' WS BooleanExpression StatementTerminator Block? 'WEnd' StatementTerminator 
+DoLoopStatement ::= DoTopLoopStatement | DoBottomLoopStatement
+DoTopLoopStatement ::= 'Do' ( WS WhileOrUntil WS BooleanExpression )? StatementTerminator Block? 'Loop' StatementTerminator 
+DoBottomLoopStatement ::= 'Do' StatementTerminator Block? 'Loop' WS WhileOrUntil WS BooleanExpression StatementTerminator 
+WhileOrUntil ::= 'While' | 'Until'
+ForStatement ::= 'For' WS LoopControlVariable Equals Expression WS 'To' WS Expression ( WS 'Step' WS Expression )? StatementTerminator Block? 'Next' StatementTerminator 
+LoopControlVariable ::= Identifier | Expression 
+ForEachStatement ::= 'For' WS 'Each' WS LoopControlVariable WS 'In' WS? LineTerminator? Expression StatementTerminator Block? 'Next' StatementTerminator 
+ErrorHandlingStatement ::= UnstructuredErrorStatement
+UnstructuredErrorStatement ::= OnErrorStatement
+OnErrorStatement ::= 'On' WS 'Error' WS ErrorClause StatementTerminator 
+ErrorClause ::= 'GoTo' WS '0' | 'Resume' WS 'Next' 
+BranchStatement ::= ExitStatement
+BranchStatementInline ::= ExitStatementInline
+ExitStatement ::= 'Exit' WS ExitKind StatementTerminator 
+ExitStatementInline ::= 'Exit' WS ExitKind 
+ExitKind ::= 'Do' | 'For'  | 'Sub' | 'Function' | 'Property'
+
+ArrayHandlingStatement ::= RedimStatement | EraseStatement
+RedimStatement ::= 'ReDim' (WS 'Preserve')? WS RedimClauses StatementTerminator 
+RedimClauses ::= RedimClause ( Comma RedimClause )*
+RedimClause  ::= Identifier ArraySizeInitializationModifier
+EraseStatement ::= 'Erase' WS EraseExpressions StatementTerminator 
+EraseExpressions ::= Expression ( Comma Expression )*
+
+/* 13.3.6 Expressions */
+
+Expression ::= LogicalOperatorExpression
+ConstantExpression ::= Expression
+SimpleExpression ::= LiteralExpression | ParenthesizedExpression | SimpleNameExpression
+LiteralExpression ::= Literal
+ParenthesizedExpression ::= OpenParenthesis Expression CloseParenthesis
+SimpleNameExpression ::= Identifier
+MemberAccessExpression ::= Period IdentifierOrKeyword
+
+InvocationExpression ::= (SimpleNameExpression | MemberAccessExpression) InvocationExpression? ArgumentList?
+ArgumentList ::= WS? Comma? Expression (Comma ArgumentList?)*
+
+LogicalOperatorExpression ::= RelationalOperatorExpression (WS ('And' | 'Or' | 'Xor' | 'Eqv') WS? LineTerminator? RelationalOperatorExpression)*  
+RelationalOperatorExpression ::= AdditionOperatorExpression (( '=' | '<' ( '>' | '=' )? | '>' '='?) LineTerminator? AdditionOperatorExpression)*
+AdditionOperatorExpression ::= ModuloOperatorExpression (('+' | '-') LineTerminator? ModuloOperatorExpression)*
+ModuloOperatorExpression ::= IntegerDivisionOperatorExpression (WS 'Mod' WS? LineTerminator? IntegerDivisionOperatorExpression)* 
+IntegerDivisionOperatorExpression ::= MultiplicationOperatorExpression ('\\' LineTerminator? MultiplicationOperatorExpression)*
+MultiplicationOperatorExpression ::= ExponentOperatorExpression (('*' | '/') LineTerminator? ExponentOperatorExpression)*
+ExponentOperatorExpression ::= ConcatenationOperatorExpression ('^' LineTerminator? ConcatenationOperatorExpression)* 
+ConcatenationOperatorExpression ::= TypeExpression ('&' LineTerminator? TypeExpression)*
+TypeExpression ::= Value (WS 'Is' WS LineTerminator? Value)*
+LogicalNotOperatorExpression ::= 'Not' WS Value 
+UnaryExpression ::= ('+' | '-') Value 
+
+SubExpression ::= (SimpleNameExpression | MemberAccessExpression) (OpenParenthesis ArgumentList? CloseParenthesis)? SubExpression? 
+
+Value ::= LogicalNotOperatorExpression | UnaryExpression | SubExpression | SimpleExpression
+
+BooleanExpression ::= Expression

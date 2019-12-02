@@ -19,7 +19,7 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
-import { astToVbs, vbsToAst } from '../../../test/script.helper';
+import { ScriptHelper } from '../../../test/script.helper';
 import { TableBuilder } from '../../../test/table-builder';
 import { Player } from '../../game/player';
 import { Table } from '../../vpt/table/table';
@@ -47,7 +47,8 @@ describe('The scripting cleanup transformer', () => {
 });
 
 function transform(vbs: string): string {
-	const ast = vbsToAst(vbs);
+	const scriptHelper = new ScriptHelper();
+	const ast = scriptHelper.vbsToAst(vbs);
 	const eventAst = new CleanupTransformer(ast).transform();
-	return astToVbs(eventAst);
+	return scriptHelper.astToVbs(eventAst);
 }

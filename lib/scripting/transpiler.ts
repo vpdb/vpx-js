@@ -19,12 +19,12 @@
 
 import { generate } from 'escodegen';
 import { Program } from 'estree';
-import { Grammar, Parser } from 'nearley';
 import { Player } from '../game/player';
 import { logger } from '../util/logger';
 import { Enums, EnumsApi } from '../vpt/enums';
 import { GlobalApi } from '../vpt/global-api';
 import { Table } from '../vpt/table/table';
+import { Grammar } from './grammar/grammar';
 import { Stdlib } from './stdlib';
 import { AmbiguityTransformer } from './transformer/ambiguity-transformer';
 import { CleanupTransformer } from './transformer/cleanup-transformer';
@@ -35,7 +35,6 @@ import { ScopeTransformer } from './transformer/scope-transformer';
 import { WrapTransformer } from './transformer/wrap-transformer';
 import { VBSHelper } from './vbs-helper';
 import { VbsProxyHandler } from './vbs-proxy-handler';
-import vbsGrammar from './vbscript';
 
 //self.escodegen = require('escodegen');
 
@@ -50,6 +49,7 @@ export class Transpiler {
 	private readonly enumApis: EnumsApi;
 	private readonly globalApi: GlobalApi;
 	private readonly stdlib: Stdlib;
+	private readonly grammar: Grammar;
 
 	constructor(table: Table, player: Player) {
 		this.table = table;
@@ -58,13 +58,14 @@ export class Transpiler {
 		this.enumApis = Enums;
 		this.globalApi = new GlobalApi(this.table, player);
 		this.stdlib = new Stdlib();
+		this.grammar = new Grammar();
 	}
 
 	public transpile(vbs: string, globalFunction?: string, globalObject?: string) {
 
 		//logger().debug(vbs);
 		const then = Date.now();
-		let ast = this.parse(vbs + '\n');
+		let ast = this.parse(vbs);
 		logger().info('[Transpiler.transpile]: Parsed in %sms', Date.now() - then);
 
 		let now = Date.now();
@@ -97,14 +98,7 @@ export class Transpiler {
 	}
 
 	private parse(vbs: string): Program {
-
-		const parser = new Parser(Grammar.fromCompiled(vbsGrammar));
-		parser.feed(vbs);
-		/* istanbul ignore if */
-		if (parser.results.length === 0) {
-			throw new Error('Parser returned no results.');
-		}
-		return parser.results[0];
+		return this.grammar.transpile(vbs);
 	}
 
 	private generate(ast: Program): string {

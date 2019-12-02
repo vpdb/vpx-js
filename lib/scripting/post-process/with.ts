@@ -17,35 +17,37 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { traverse } from 'estraverse';
-import { BlockStatement, Comment, Expression } from 'estree';
-import { Token } from 'moo';
-import * as estree from '../estree';
+import { replace } from 'estraverse';
+import { BlockStatement } from 'estree';
+import { identifier, memberExpression } from '../estree';
+import { ESIToken } from '../grammar/grammar';
 
-export function stmt(
-	result: [Token, null, Expression, Comment[], BlockStatement, Token, null, Token, Comment[]],
-): BlockStatement {
-	const identifier = result[2];
-	const body = result[4];
-	const leadingComments = result[3] || [];
-	const trailingComments = result[8] || [];
-	traverse(body, {
-		enter: (node, parentNode) => {
-			if (node.type === 'Identifier' && node.name.startsWith('.')) {
-				if (parentNode != null) {
-					node.name = node.name.substr(1);
-					if (parentNode.type === 'AssignmentExpression') {
-						parentNode.left = estree.memberExpression(identifier, parentNode.left as Expression);
-					} else if (parentNode.type === 'CallExpression') {
-						parentNode.callee = estree.memberExpression(identifier, parentNode.callee as Expression);
-					} else if (parentNode.type === 'UnaryExpression') {
-						parentNode.argument = estree.memberExpression(identifier, node);
+export function ppWith(node: ESIToken): any {
+	let estree = null;
+	if (node.type === 'WithStatement') {
+		estree = ppWithStatement(node);
+	}
+	return estree;
+}
+
+function ppWithStatement(node: ESIToken): any {
+	let estree: any = [];
+	const expr = node.children[0].estree;
+	for (const child of node.children) {
+		if (child.type === 'Block') {
+			const block = replace(child.estree, {
+				leave: astNode => {
+					if (astNode != null) {
+						if (astNode.type === 'Identifier') {
+							if (astNode.name.startsWith('.')) {
+								return memberExpression(expr, identifier(astNode.name.substr(1)));
+							}
+						}
 					}
-				}
-			}
-		},
-	});
-	body.leadingComments = leadingComments;
-	body.trailingComments = trailingComments;
-	return body;
+				},
+			});
+			estree = (block as BlockStatement).body;
+		}
+	}
+	return estree;
 }

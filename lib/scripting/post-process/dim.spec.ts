@@ -18,43 +18,49 @@
  */
 
 import { expect } from 'chai';
-import { vbsToJs } from '../../../test/script.helper';
+import { Grammar } from '../grammar/grammar';
 import { Transformer } from '../transformer/transformer';
+
+let grammar: Grammar;
+
+before(async () => {
+	grammar = new Grammar();
+});
 
 describe('The VBScript transpiler - Dim', () => {
 	it('should transpile a single variable declaration', () => {
-		const vbs = `Dim test1\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `Dim test1`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('let test1;');
 	});
 
 	it('should transpile a multiple variable declaration', () => {
-		const vbs = `Dim test1, test2, test3\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `Dim test1, test2, test3`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('let test1, test2, test3;');
 	});
 
 	it('should transpile an empty dimension variable declaration', () => {
-		const vbs = `Dim myarray()\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `Dim myarray()`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(`let myarray = ${Transformer.VBSHELPER_NAME}.dim([]);`);
 	});
 
 	it('should transpile a one-dimension variable declaration', () => {
-		const vbs = `Dim myarray(200)\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `Dim myarray(200)`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(`let myarray = ${Transformer.VBSHELPER_NAME}.dim([200]);`);
 	});
 
 	it('should transpile a multi-dimension variable declaration', () => {
-		const vbs = `Dim myarray(2,4,3)\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `Dim myarray(2,4,3)`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(`let myarray = ${Transformer.VBSHELPER_NAME}.dim([\n    2,\n    4,\n    3\n]);`);
 	});
 
 	it('should transpile multiple multi-dimension variable declaration', () => {
-		const vbs = `Dim myarray(2,4,3), myarray2(3,4)\n`;
-		const js = vbsToJs(vbs);
+		const vbs = `Dim myarray(2,4,3), myarray2(3,4)`;
+		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(
 			`let myarray = ${Transformer.VBSHELPER_NAME}.dim([\n        2,\n        4,\n        3\n    ]), myarray2 = ${Transformer.VBSHELPER_NAME}.dim([\n        3,\n        4\n    ]);`,
 		);
