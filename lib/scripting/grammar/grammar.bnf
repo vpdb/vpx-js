@@ -106,7 +106,7 @@ FunctionDeclaration ::= (AccessModifier WS)? FunctionSignature StatementTerminat
 FunctionDeclarationInline ::= (AccessModifier WS)? FunctionSignature WS StatementsInline WS 'End' WS 'Function' StatementTerminator 
 
 ParameterList ::= Parameter ( Comma Parameter )*
-Parameter ::= ParameterModifier? ParameterIdentifier ( Equals ConstantExpression )? 
+Parameter ::= (ParameterModifier WS)? ParameterIdentifier ( Equals ConstantExpression )? 
 ParameterModifier ::= 'ByVal' | 'ByRef'
 ParameterIdentifier ::= Identifier
 

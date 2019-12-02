@@ -85,7 +85,12 @@ export class Grammar {
 		const statements: Statement[] = [];
 
 		const formattedScript = this.format(script);
+
 		const vbsAst = this.parser.getAST(formattedScript, this.GRAMMAR_TARGET_TRANSPILE);
+
+		if (vbsAst === null) {
+			throw new Error('Unable to transpile script:\n\n' + formattedScript);
+		}
 
 		const postProcessors = this.postProcessors;
 
@@ -182,7 +187,9 @@ export class Grammar {
 								setToken.text !== 'Null' &&
 								setToken.text !== 'Empty' &&
 								setToken.text !== 'Not' &&
-								setToken.text !== 'New'
+								setToken.text !== 'New' &&
+								setToken.text !== 'ByVal' &&
+								setToken.text !== 'ByRef'
 							) {
 								addWhitespace = true;
 							}
