@@ -160,7 +160,7 @@ export class ScopeTransformer extends Transformer {
 	private replaceUsages() {
 		replace(this.ast, {
 			enter: (node, parent: any) => {
-				if (node.type === 'Identifier') {
+				if (node.type === 'Identifier' && node.name !== 'undefined') {
 					const varScope = this.findScope(this.getVarName(node, parent), (node as any).__scope);
 					const inRootScope = !varScope || varScope === this.rootScope; // !varScope because we can't find the declaration, in which case it's part of an external file, where we assume it was declared in the root scope.
 					if (!this.isKnown(node, parent) && inRootScope) {

@@ -26,19 +26,16 @@ import {
 	returnStatement,
 	variableDeclaration,
 	variableDeclarator,
+	identifier,
 } from '../estree';
 import { ESIToken } from '../grammar/grammar';
 
 export function ppMethod(node: ESIToken): any {
 	let estree = null;
-	if (node.type === 'SubDeclaration') {
+	if (node.type === 'SubDeclaration' || node.type === 'SubDeclarationInline') {
 		estree = ppSubDeclaration(node);
-	} else if (node.type === 'SubDeclarationInline') {
-		estree = ppSubDeclarationInline(node);
-	} else if (node.type === 'FunctionDeclaration') {
+	} else if (node.type === 'FunctionDeclaration' || node.type === 'FunctionDeclarationInline') {
 		estree = ppFunctionDeclaration(node);
-	} else if (node.type === 'FunctionDeclarationInline') {
-		estree = ppFunctionDeclarationInline(node);
 	} else if (node.type === 'ParameterList') {
 		estree = ppParameterList(node);
 	}
@@ -46,107 +43,65 @@ export function ppMethod(node: ESIToken): any {
 }
 
 function ppSubDeclaration(node: ESIToken): any {
-	let signature: ESIToken;
-	let block: BlockStatement;
-	if (node.children[0].type === 'AccessModifier') {
-		signature = node.children[1];
-		block = node.children[3].estree;
-	} else {
-		signature = node.children[0];
-		block = node.children[2].estree;
-	}
-	const id = signature.children[0].estree;
+	let id: Identifier | undefined;
 	let params: Identifier[] = [];
-	for (const child of signature.children) {
-		if (child.type === 'ParameterList') {
-			params = child.estree;
-			break;
+	let block: BlockStatement | undefined;
+	for (const child of node.children) {
+		if (child.type === 'SubSignature') {
+			id = child.estree;
+			for (const subChild of child.children) {
+				if (subChild.type === 'ParameterList') {
+					params = subChild.estree;
+					break;
+				}
+			}
+		} else if (child.type === 'Block') {
+			block = child.estree;
+		} else if (child.type === 'StatementsInline') {
+			block = blockStatement(child.estree);
 		}
 	}
-	return functionDeclaration(id, params, block);
-}
-
-function ppSubDeclarationInline(node: ESIToken): any {
-	let signature: ESIToken;
-	let block: BlockStatement;
-	if (node.children[0].type === 'AccessModifier') {
-		signature = node.children[1];
-		block = blockStatement(node.children[2].estree);
-	} else {
-		signature = node.children[0];
-		block = blockStatement(node.children[1].estree);
+	if (!id) {
+		throw new Error('Missing Identifier');
 	}
-	const id = signature.children[0].estree;
-	let params: Identifier[] = [];
-	for (const child of signature.children) {
-		if (child.type === 'ParameterList') {
-			params = child.estree;
-			break;
-		}
-	}
-	return functionDeclaration(id, params, block);
+	return functionDeclaration(id, params, block ? block : blockStatement([]));
 }
 
 function ppFunctionDeclaration(node: ESIToken): any {
-	let signature: ESIToken;
-	let block: BlockStatement;
-	if (node.children[0].type === 'AccessModifier') {
-		signature = node.children[1];
-		block = node.children[3].estree;
-	} else {
-		signature = node.children[0];
-		block = node.children[2].estree;
-	}
-	const id = signature.children[0].estree;
+	let id: Identifier | undefined;
 	let params: Identifier[] = [];
-	for (const child of signature.children) {
-		if (child.type === 'ParameterList') {
-			params = child.estree;
-			break;
+	let block: BlockStatement | undefined;
+	for (const child of node.children) {
+		if (child.type === 'FunctionSignature') {
+			id = child.estree;
+			for (const subChild of child.children) {
+				if (subChild.type === 'ParameterList') {
+					params = subChild.estree;
+					break;
+				}
+			}
+		} else if (child.type === 'Block') {
+			block = child.estree;
+		} else if (child.type === 'StatementsInline') {
+			block = blockStatement(child.estree);
 		}
 	}
-	replace(block, {
-		enter: node2 => {
-			if (node2.type === 'ReturnStatement') {
-				node2.argument = id;
-				return node2;
-			}
-		},
-	});
-	block.body.unshift(variableDeclaration('let', [variableDeclarator(id, literal(null))]));
-	if (block.body[block.body.length - 1].type !== 'ReturnStatement') {
-		block.body.push(returnStatement(id));
+	if (!id) {
+		throw new Error('Missing Identifier');
 	}
-	return functionDeclaration(id, params, block);
-}
-
-function ppFunctionDeclarationInline(node: ESIToken): any {
-	let signature: ESIToken;
-	let block: BlockStatement;
-	if (node.children[0].type === 'AccessModifier') {
-		signature = node.children[1];
-		block = blockStatement(node.children[2].estree);
+	if (block) {
+		block = replace(block, {
+			enter: node2 => {
+				if (node2.type === 'ReturnStatement') {
+					node2.argument = id;
+					return node2;
+				}
+			},
+		}) as BlockStatement;
 	} else {
-		signature = node.children[0];
-		block = blockStatement(node.children[1].estree);
+		block = blockStatement([]);
 	}
-	const id = signature.children[0].estree;
-	let params: Identifier[] = [];
-	for (const child of signature.children) {
-		if (child.type === 'ParameterList') {
-			params = child.estree;
-			break;
-		}
-	}
-	replace(block, {
-		enter: node2 => {
-			if (node2.type === 'ReturnStatement') {
-				node2.argument = id;
-				return node2;
-			}
-		},
-	});
-	block.body.unshift(variableDeclaration('let', [variableDeclarator(id, literal(null))]));
+	block.body.unshift(variableDeclaration('let', [variableDeclarator(id, identifier('undefined'))]));
 	if (block.body[block.body.length - 1].type !== 'ReturnStatement') {
 		block.body.push(returnStatement(id));
 	}

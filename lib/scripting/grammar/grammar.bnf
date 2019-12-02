@@ -92,7 +92,7 @@ AccessModifier ::= 'Public' | 'Private'
 StatementTerminator ::= LineTerminator | ':' 
 
 OptionStatement ::= OptionExplicitStatement
-OptionExplicitStatement ::= 'Option' 'Explicit' OnOff? StatementTerminator 
+OptionExplicitStatement ::= 'Option' WS 'Explicit' OnOff? StatementTerminator 
 OnOff ::= 'On' | 'Off'
 
 /* 13.3.4 Type Members */
@@ -100,9 +100,9 @@ OnOff ::= 'On' | 'Off'
 MethodDeclaration ::= SubDeclaration | SubDeclarationInline | FunctionDeclaration | FunctionDeclarationInline
 SubSignature ::= 'Sub' WS Identifier ( OpenParenthesis ParameterList? CloseParenthesis )? 
 FunctionSignature ::= 'Function' WS Identifier ( OpenParenthesis ParameterList? CloseParenthesis )? 
-SubDeclaration ::= (AccessModifier WS)? SubSignature StatementTerminator Block 'End' WS 'Sub' StatementTerminator 
+SubDeclaration ::= (AccessModifier WS)? SubSignature StatementTerminator Block? 'End' WS 'Sub' StatementTerminator 
 SubDeclarationInline ::= (AccessModifier WS)? SubSignature WS StatementsInline WS 'End' WS 'Sub' StatementTerminator 
-FunctionDeclaration ::= (AccessModifier WS)? FunctionSignature StatementTerminator Block 'End' WS 'Function' StatementTerminator 
+FunctionDeclaration ::= (AccessModifier WS)? FunctionSignature StatementTerminator Block? 'End' WS 'Function' StatementTerminator 
 FunctionDeclarationInline ::= (AccessModifier WS)? FunctionSignature WS StatementsInline WS 'End' WS 'Function' StatementTerminator 
 
 ParameterList ::= Parameter ( Comma Parameter )*
