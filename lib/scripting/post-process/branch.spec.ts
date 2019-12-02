@@ -38,7 +38,7 @@ describe('The VBScript transpiler - Branch', () => {
 		const vbs = `Function test(x)\nIf x = 1 Then Exit Function\nx = 5\nEnd Function`;
 		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(
-			`function test(x) {\n    let test = null;\n    if (x == 1) {\n        return test;\n    }\n    x = 5;\n    return test;\n}`,
+			`function test(x) {\n    let test = undefined;\n    if (x == 1) {\n        return test;\n    }\n    x = 5;\n    return test;\n}`,
 		);
 	});
 
