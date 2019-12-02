@@ -22,11 +22,10 @@ import { BlockStatement, Identifier } from 'estree';
 import {
 	blockStatement,
 	functionDeclaration,
-	literal,
+	identifier,
 	returnStatement,
 	variableDeclaration,
 	variableDeclarator,
-	identifier,
 } from '../estree';
 import { ESIToken } from '../grammar/grammar';
 

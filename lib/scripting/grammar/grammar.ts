@@ -21,7 +21,7 @@ import { Grammars, IToken, Parser } from 'ebnf';
 import { generate } from 'escodegen';
 import { Program, Statement } from 'estree';
 import { readFileSync } from 'fs';
-import { program, identifier } from '../estree';
+import { program } from '../estree';
 import { ppArray } from '../post-process/array';
 import { ppAssign } from '../post-process/assign';
 import { ppBranch } from '../post-process/branch';
@@ -36,7 +36,6 @@ import { ppLiteral } from '../post-process/literal';
 import { ppLoop } from '../post-process/loop';
 import { ppMethod } from '../post-process/method';
 import { ppWith } from '../post-process/with';
-import { replace } from 'estraverse';
 const dashAst = require('dash-ast');
 
 export interface ESIToken extends IToken {
