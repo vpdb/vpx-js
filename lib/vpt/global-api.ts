@@ -78,23 +78,19 @@ export class GlobalApi extends VbsApi {
 	}
 
 	public PlaySound(sampleName: string, loopCount: number, volume: number, pan: number, randomPitch: number, pitch: number, useSame: boolean, restart: boolean, frontRearFade: number) {
-		console.log('TODO PlaySound', { sampleName, loopCount, volume, pan, randomPitch, pitch, useSame, restart, frontRearFade });
-		this.player.sendMessageToMainThread('playsound', { sampleName, loopCount, volume, pan, randomPitch, pitch, useSame, restart, frontRearFade });
+		this.player.emit('playSound', { sampleName, loopCount, volume, pan, randomPitch, pitch, useSame, restart, frontRearFade });
 	}
 
 	public StopSound(sampleName: string) {
-		console.log('TODO StopSound', { sampleName });
-		// TODO implement sound
+		this.player.emit('stopSound', { sampleName });
 	}
 
 	public PlayMusic(music: string, volume: number) {
-		console.log('TODO PlayMusic', { music, volume });
-		// TODO implement sound
+		this.player.emit('playMusic', { music, volume });
 	}
 
 	public EndMusic(music: string) {
-		console.log('TODO EndMusic', { music });
-		// TODO implement sound
+		this.player.emit('endMusic', { music });
 	}
 
 	public FireKnocker(count: number) {

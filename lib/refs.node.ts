@@ -35,6 +35,7 @@ export {
 	RGBEEncoding, RGBEFormat, RGBFormat, AdditiveBlending, PointLightHelper,
 } from 'three';
 export { ThreeTextureLoaderNode as ThreeTextureLoader } from './render/threejs/three-texture-loader-node';
+export { NodeSoundAdapter as SoundAdapter } from './audio/node-adapter';
 
 /*
  * Here we patch three.js' file loader to accept buffers directly.

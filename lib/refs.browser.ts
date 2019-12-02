@@ -34,6 +34,7 @@ export {
 } from 'three';
 export { getTextFile } from './scripting/vbs-scripts.browser';
 export { ThreeTextureLoaderBrowser as ThreeTextureLoader } from './render/threejs/three-texture-loader-browser';
+export { HowlerSoundAdapter as SoundAdapter } from './audio/howler/howler-adapter';
 
 // polyfills
 if (typeof(window) !== 'undefined') {

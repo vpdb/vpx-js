@@ -69,6 +69,7 @@ import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
 import { TableState } from './table-state';
 import { TableUpdater } from './table-updater';
+import { ISoundAdapter, PlaybackSettings } from '../../audio/sound-adapter';
 
 /**
  * A Visual Pinball table.
@@ -405,8 +406,18 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 	 * @param opts Which elements to generate
 	 */
 	public async generateTableNode<NODE, GEOMETRY, POINT_LIGHT>(renderApi: IRenderApi<NODE, GEOMETRY, POINT_LIGHT>, opts: TableExportOptions = {}): Promise<NODE> {
+		// preload textures
 		await renderApi.preloadTextures(Object.values(this.textures), this);
+
+		// generate node
 		return this.meshGenerator!.generateTableNode(renderApi, opts);
+	}
+
+	public async setupAudio(adapter: ISoundAdapter<any>): Promise<void> {
+		// preload sounds
+		for (const sound of Object.values(this.sounds)) {
+			await sound.loadSound(this, adapter);
+		}
 	}
 
 	public prepareToPlay() {
@@ -462,7 +473,6 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 	public getItems(): Array<Item<ItemData>> {
 		return Object.values(this.items);
 	}
-
 }
 
 function isLoaded(items: any[] | undefined) {

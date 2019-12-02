@@ -1,4 +1,14 @@
-export interface ISoundAdapter {
+
+import { Table } from '../vpt/table/table';
+
+export interface ISoundAdapter<T> {
+
+	/**
+	 * Loads the sound in order to play it later
+	 * @param name Name of the sound
+	 * @param data Binary data of the sound
+	 */
+	loadSound(name: string, data: Buffer): Promise<T>;
 
 	/**
 	 * Play an audio sample OR modify an already playing sample (increase/decrease the frequency of an already playing samples)
@@ -12,18 +22,9 @@ export interface ISoundAdapter {
 	 */
 	stopSound(sampleName: string): void;
 
-	//TODO unclear if we need to handle play music or if we can reuse sound
-	//PlayMusic(string, float volume) - volume 0..1
+	// playMusic(params: { music: string, volume: number }): void;
+	// endMusic(params: { music: string }): void;
 	//MusicVolume(float volume) - 0..1
-	//EndMusic()
-
-	/**
-	 * TODO UNCLEAR - but we need to define how to preload audio sample
-	 * @param sampleName internal identifier
-	 * @param url where to download this data.. TODO might be an iunt8array instead an url too...
-	 */
-	preloadSample(sampleName: string, url: string): Promise<boolean>;
-
 }
 
 export interface PlaybackSettings {

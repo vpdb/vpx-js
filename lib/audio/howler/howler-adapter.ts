@@ -2,7 +2,9 @@ import { Howl, Howler } from 'howler';
 import { logger } from '../../util/logger';
 import { ISoundAdapter, PlaybackSettings } from '../sound-adapter';
 
-export class HowlerSoundAdapter implements ISoundAdapter {
+export class HowlerSoundAdapter implements ISoundAdapter<string> {
+
+	private readonly samples: { [key: string]: string } = {};
 
 	/**
 	 * once all audio samples are loaded, soundEnabled should be set to true
@@ -27,9 +29,9 @@ export class HowlerSoundAdapter implements ISoundAdapter {
 		}
 	}
 
-	public preloadSample(sampleName: string, url: string): Promise<boolean> {
-		logger().debug('NOT IMPLEMENTED!');
-		return Promise.reject();
+	public loadSound(name: string, data: Buffer): Promise<string> {
+		this.samples[name] = URL.createObjectURL(new Blob([data.buffer], {type: 'audio/wave'}));
+		logger().debug('loaded sample %s', this.samples[name]);
+		return Promise.resolve(this.samples[name]);
 	}
-
 }

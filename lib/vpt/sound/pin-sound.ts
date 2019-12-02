@@ -17,8 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Storage } from '../..';
+import { ISoundAdapter } from '../../audio/sound-adapter';
+import { Storage } from '../../io/ole-doc';
 import { Item } from '../item';
+import { Table } from '../table/table';
 import { PinSoundData } from './pin-sound-data';
 
 export class PinSound extends Item<PinSoundData> {
@@ -30,5 +32,27 @@ export class PinSound extends Item<PinSoundData> {
 
 	public constructor(data: PinSoundData) {
 		super(data);
+	}
+
+	public async loadSound<T>(table: Table, loader: ISoundAdapter<T>): Promise<T> {
+		const data = await table.streamStorage<Buffer>('GameStg', storage => this.streamSound(storage, this.data.itemName));
+		if (!data || !data.length) {
+			throw new Error(`Cannot load sound data for texture ${this.getName()}`);
+		}
+		return await loader.loadSound(this.getName(), data);
+	}
+
+	private async streamSound(storage: Storage, storageName?: string): Promise<Buffer> {
+		const strm = storage.stream(storageName!, this.data.offset, this.data.len);
+		return new Promise<Buffer>((resolve, reject) => {
+			const bufs: Buffer[] = [];
+			/* istanbul ignore if */
+			if (!strm) {
+				return reject(new Error('No such stream "' + storageName + '".'));
+			}
+			strm.on('error', reject);
+			strm.on('data', (buf: Buffer) => bufs.push(buf));
+			strm.on('end', () => resolve(Buffer.concat(bufs)));
+		});
 	}
 }

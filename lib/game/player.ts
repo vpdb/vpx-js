@@ -268,10 +268,6 @@ export class Player extends EventEmitter {
 		this.table.fireVoidEvent(Event.GameEventsUnPaused);
 		this.emit('resumed');
 	}
-
-	public sendMessageToMainThread(name: string, jsonObject: object) {
-		this.emit(name, jsonObject);
-	}
 }
 
 export interface IBallCreationPosition {
@@ -312,3 +308,4 @@ export class ChangedStates<STATE extends ItemState = ItemState> {
 		ChangedStates.POOL.release(this);
 	}
 }
+

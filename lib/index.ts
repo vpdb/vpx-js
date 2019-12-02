@@ -29,3 +29,4 @@ export { Logger, Progress, progress } from './util/logger';
 export { Ball } from './vpt/ball/ball';
 export { ThreeRenderApi } from './render/threejs/three-render-api';
 export { ThreeTextureLoader } from './refs.node';
+export { SoundAdapter } from './refs.node';
