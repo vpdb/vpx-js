@@ -28,13 +28,13 @@ import { ppBranch } from '../post-process/branch';
 import { ppCall } from '../post-process/call';
 import { ppConditional } from '../post-process/conditional';
 import { ppConst } from '../post-process/const';
-import { ppDim } from '../post-process/dim';
 import { ppError } from '../post-process/error';
 import { ppExpr } from '../post-process/expr';
 import { ppHelpers } from '../post-process/helpers';
 import { ppLiteral } from '../post-process/literal';
 import { ppLoop } from '../post-process/loop';
 import { ppMethod } from '../post-process/method';
+import { ppVarDecl } from '../post-process/vardecl';
 import { ppWith } from '../post-process/with';
 const dashAst = require('dash-ast');
 
@@ -57,7 +57,7 @@ export class Grammar {
 		ppHelpers,
 		ppLiteral,
 		ppExpr,
-		ppDim,
+		ppVarDecl,
 		ppConst,
 		ppArray,
 		ppError,
@@ -133,22 +133,22 @@ export class Grammar {
 	}
 
 	public format(script: string): string {
-		const ast = this.parser.getAST(script.trim() + '\n', this.GRAMMAR_TARGET_FORMAT);
-
-		let tokens: string[];
-		let prevToken: IToken | null;
-		let setToken: IToken;
 		let output = '';
 
 		const keywords = this.keywords;
 
+		let tokens: string[];
+		let prevToken: IToken | undefined;
 		let separator = false;
+
+		const ast = this.parser.getAST(script.trim() + '\n', this.GRAMMAR_TARGET_FORMAT);
 
 		dashAst(ast, {
 			enter(node: IToken, parent: IToken) {
 				if (node.type === 'LogicalLine') {
 					tokens = [];
-					prevToken = null;
+					prevToken = undefined;
+					separator = false;
 				} else if (node.type === 'Keyword') {
 					node.text = keywords[node.text.toLowerCase()];
 				}
@@ -163,71 +163,62 @@ export class Grammar {
 						separator = true;
 					}
 				} else if (node.type === 'Token') {
-					if (prevToken !== null) {
-						let addWhitespace = false;
-
-						if (prevToken.type === 'Identifier') {
-							if (setToken.type !== 'Separator' && setToken.type !== 'Operator') {
-								addWhitespace = true;
-							}
-						}
-
-						if (prevToken.type === 'Keyword') {
-							if (prevToken.text !== 'True' && prevToken.text !== 'False') {
-								addWhitespace = true;
-							}
-						}
-
-						if (setToken.type === 'Keyword' && prevToken.text !== ':') {
+					const token = node.children[0];
+					if (prevToken) {
+						if (token.type === 'Keyword') {
+							/**
+							 * Add spaces for the following:
+							 * 1) Keyword Keyword - End Sub
+							 * 2) Identifier Keyword - For j=x To 20
+							 * 3) Literal Keyword - For j=1 To 20
+							 * 4) ) Keyword - Function MyFunction(value) End Function
+							 */
 							if (
-								setToken.text !== 'True' &&
-								setToken.text !== 'False' &&
-								setToken.text !== 'Nothing' &&
-								setToken.text !== 'Null' &&
-								setToken.text !== 'Empty' &&
-								setToken.text !== 'Not' &&
-								setToken.text !== 'New' &&
-								setToken.text !== 'ByVal' &&
-								setToken.text !== 'ByRef'
+								prevToken.type === 'Keyword' ||
+								prevToken.type === 'Identifier' ||
+								prevToken.type === 'Literal' ||
+								prevToken.text === ')'
 							) {
-								addWhitespace = true;
+								tokens.push(' ');
 							}
-						}
-
-						if (setToken.type === 'Separator') {
-							if (setToken.text === '.') {
-								if (separator) {
-									addWhitespace = true;
-								}
-							} else if (setToken.text === '(' && prevToken.type === 'Identifier' && separator) {
-								addWhitespace = true;
+						} else if (token.type === 'Identifier') {
+							/**
+							 * Add spaces for the following:
+							 * 1) Keyword Identifier - Sub BallRelease()
+							 * 2) Identifier Identifier - PlaySound SoundFX("fx_flipperup", ...
+							 * 3) ) Identifier - Sub BallRelease_Hit() BallRelease.CreateBall
+							 */
+							if (
+								prevToken.type === 'Keyword' ||
+								prevToken.type === 'Identifier' ||
+								prevToken.text === ')'
+							) {
+								tokens.push(' ');
 							}
-						}
-
-						if (setToken.type === 'Identifier') {
-							if (prevToken.text === ')') {
-								addWhitespace = true;
+						} else if (token.type === 'Literal') {
+							/**
+							 * Add spaces for the following:
+							 * 1) Keyword Literal - For j=1 To 20
+							 * 2) Identifier Literal - BallRelease 5, -2
+							 */
+							if (prevToken.type === 'Keyword' || prevToken.type === 'Identifier') {
+								tokens.push(' ');
 							}
-						}
-
-						if (addWhitespace === true) {
-							if (tokens[tokens.length - 1] !== ' ') {
+						} else if (token.text === '.') {
+							/**
+							 * Add space for the following:
+							 * 1) <Space>. - case keyReset .Stop
+							 * Do not add a space for the following:
+							 * 1) :<Space>. - Case keyDown swCopy=swDown: .Switch(swCopy)=False
+							 */
+							if (separator && prevToken.text !== ':') {
 								tokens.push(' ');
 							}
 						}
 					}
-
-					tokens.push(setToken.text);
-					prevToken = setToken;
+					tokens.push(token.text);
+					prevToken = token;
 					separator = false;
-				} else if (
-					node.type === 'Identifier' ||
-					node.type === 'Keyword' ||
-					node.type === 'Literal' ||
-					node.type === 'Separator' ||
-					node.type === 'Operator'
-				) {
-					setToken = node;
 				}
 			},
 		});

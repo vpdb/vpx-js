@@ -30,6 +30,8 @@ export function ppHelpers(node: ESIToken): any {
 		estree = ppBlock(node);
 	} else if (node.type === 'VariableIdentifiers') {
 		estree = ppVariableIdentifiers(node);
+	} else if (node.type === 'ArrayTypeModifiers') {
+		estree = ppArrayTypeModifiers(node);
 	} else if (node.type === 'ArraySizeInitializationModifier') {
 		estree = ppArraySizeInitializationModifier(node);
 	} else if (node.type === 'BoundList') {
@@ -53,7 +55,11 @@ function ppStatements(node: ESIToken): any {
 function ppBlock(node: ESIToken): any {
 	let stmts: Statement[] = [];
 	for (const child of node.children) {
-		stmts = stmts.concat(child.estree);
+		if (!Array.isArray(child.estree)) {
+			stmts.push(child.estree);
+		} else {
+			stmts = stmts.concat(...child.estree);
+		}
 	}
 	return blockStatement(stmts);
 }
@@ -93,6 +99,10 @@ function ppArgumentList(node: ESIToken): any {
 		}
 	}
 	return estree;
+}
+
+function ppArrayTypeModifiers(node: ESIToken): any {
+	return [];
 }
 
 function ppArraySizeInitializationModifier(node: ESIToken): any {

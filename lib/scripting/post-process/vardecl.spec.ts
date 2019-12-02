@@ -27,7 +27,7 @@ before(async () => {
 	grammar = new Grammar();
 });
 
-describe('The VBScript transpiler - Dim', () => {
+describe('The VBScript transpiler - Variable Declaration', () => {
 	it('should transpile a single variable declaration', () => {
 		const vbs = `Dim test1`;
 		const js = grammar.vbsToJs(vbs);
@@ -64,5 +64,35 @@ describe('The VBScript transpiler - Dim', () => {
 		expect(js).to.equal(
 			`let myarray = ${Transformer.VBSHELPER_NAME}.dim([\n        2,\n        4,\n        3\n    ]), myarray2 = ${Transformer.VBSHELPER_NAME}.dim([\n        3,\n        4\n    ]);`,
 		);
+	});
+
+	it('should transpile a public variable declaration', () => {
+		const vbs = `Public test1`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal('let test1;');
+	});
+
+	it('should transpile multiple public variable declarations', () => {
+		const vbs = `public test1, test2`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal('let test1, test2;');
+	});
+
+	it('should transpile a public multi-dimension variable declaration', () => {
+		const vbs = `public test(100, 200)`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal(`let test = ${Transformer.VBSHELPER_NAME}.dim([\n    100,\n    200\n]);`);
+	});
+
+	it('should transpile a single private variable declaration', () => {
+		const vbs = `Private test1`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal('let test1;');
+	});
+
+	it('should transpile multiple private variable declarations', () => {
+		const vbs = `Private test1, test2`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal('let test1, test2;');
 	});
 });

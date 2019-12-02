@@ -57,7 +57,7 @@ IntLiteral ::= Digit+
 HexLiteral ::= '&' 'H' HexDigit+
 OctalLiteral ::= '&' 'O' OctalDigit+
 Digit ::= [0-9] {fragment=true}
-HexDigit ::= [0-9A-F] {fragment=true}
+HexDigit ::= [0-9A-Fa-f] {fragment=true}
 OctalDigit ::= [0-7] {fragment=true}
 FloatingPointLiteral ::= FloatingPointLiteralValue
 FloatingPointLiteralValue ::= IntLiteral ( '.' IntLiteral Exponent? | Exponent ) | '.' IntLiteral Exponent?
@@ -95,6 +95,15 @@ OptionStatement ::= OptionExplicitStatement
 OptionExplicitStatement ::= 'Option' WS 'Explicit' OnOff? StatementTerminator 
 OnOff ::= 'On' | 'Off'
 
+/* 13.3.3 Types */
+
+IdentifierModifiers ::= ArrayNameModifier?
+
+ArrayTypeModifiers ::= ArrayTypeModifier+
+ArrayTypeModifier ::= OpenParenthesis RankList? CloseParenthesis
+RankList ::= Comma*
+ArrayNameModifier ::= ArrayTypeModifiers | ArraySizeInitializationModifier
+
 /* 13.3.4 Type Members */
 
 MethodDeclaration ::= SubDeclaration | SubDeclarationInline | FunctionDeclaration | FunctionDeclarationInline
@@ -110,26 +119,27 @@ Parameter ::= (ParameterModifier WS)? ParameterIdentifier ( Equals ConstantExpre
 ParameterModifier ::= 'ByVal' | 'ByRef'
 ParameterIdentifier ::= Identifier
 
+VariableMemberDeclaration ::= VariableModifier WS VariableDeclarators StatementTerminator
+VariableModifier ::= AccessModifier | 'Dim'
+VariableDeclarators ::= VariableDeclarator ( Comma VariableDeclarator )*
+VariableDeclarator ::= VariableIdentifiers
+VariableIdentifiers ::= VariableIdentifier ( Comma VariableIdentifier )*
+VariableIdentifier ::= Identifier IdentifierModifiers?
+
 ArraySizeInitializationModifier ::= OpenParenthesis BoundList CloseParenthesis
 BoundList ::= Bound ( Comma Bound )*
 Bound ::= Expression
-
-DimVariableDeclarators ::= DimVariableDeclarator ( Comma DimVariableDeclarator )* 
-DimVariableDeclarator ::= Identifier ( OpenParenthesis (IntegerLiteral (Comma IntegerLiteral)*)? CloseParenthesis )? 
 
 ConstVariableDeclarators ::= ConstVariableDeclarator ( Comma ConstVariableDeclarator )* 
 ConstVariableDeclarator ::= Identifier Equals Expression 
 
 /* 13.3.5 Statements */
 
-Statement ::= DimDeclarationStatement | ConstDeclarationStatement | WithStatement | AssignmentStatement | InvocationStatement | ArrayHandlingStatement  | LoopStatement | ConditionalStatement | ErrorHandlingStatement | BranchStatement
-StatementInline ::= DimDeclarationStatementInline | ConstDeclarationStatementInline | AssignmentStatementInline | BranchStatementInline | InvocationStatementInline
+Statement ::= VariableMemberDeclaration | ConstDeclarationStatement | WithStatement | AssignmentStatement | InvocationStatement | ArrayHandlingStatement  | LoopStatement | ConditionalStatement | ErrorHandlingStatement | BranchStatement
+StatementInline ::= ConstDeclarationStatementInline | AssignmentStatementInline | BranchStatementInline | InvocationStatementInline
 Block ::= Statements*
 Statements ::= Statement? ( ':' Statement? )* 
 StatementsInline ::= StatementInline? ( ':' StatementInline? )* 
-
-DimDeclarationStatement ::= (AccessModifier WS)? 'Dim' WS DimVariableDeclarators StatementTerminator 
-DimDeclarationStatementInline ::= (AccessModifier WS)? 'Dim' WS DimVariableDeclarators 
 
 ConstDeclarationStatement ::= (AccessModifier WS)? 'Const' WS ConstVariableDeclarators StatementTerminator 
 ConstDeclarationStatementInline ::= (AccessModifier WS)? 'Const' WS ConstVariableDeclarators 
