@@ -78,18 +78,22 @@ export class GlobalApi extends VbsApi {
 	}
 
 	public PlaySound(sampleName: string, loopCount: number, volume: number, pan: number, randomPitch: number, pitch: number, useSame: boolean, restart: boolean, frontRearFade: number) {
+		console.log('TODO PlaySound', { sampleName, loopCount, volume, pan, randomPitch, pitch, useSame, restart, frontRearFade });
 		// TODO implement sound
 	}
 
 	public StopSound(sampleName: string) {
+		console.log('TODO StopSound', { sampleName });
 		// TODO implement sound
 	}
 
 	public PlayMusic(music: string, volume: number) {
+		console.log('TODO PlayMusic', { music, volume });
 		// TODO implement sound
 	}
 
 	public EndMusic(music: string) {
+		console.log('TODO EndMusic', { music });
 		// TODO implement sound
 	}
 
