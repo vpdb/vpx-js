@@ -32,7 +32,7 @@
 		"./dist/esm/lib/refs.node.js": "./dist/esm/lib/refs.browser.js"
 	},
 	"scripts": {
-		"build": "rimraf dist && npm run compile && npm run build:esm && npm run build:cjs && npm run build:declarations && npm run build:cp && npm run build:post",
+		"build": "rimraf dist && npm run build:esm && npm run build:cjs && npm run build:declarations && npm run build:cp && npm run build:post",
 		"build:esm": "tsc --module es2015 --outDir ./dist/esm",
 		"build:cjs": "tsc --module commonjs --outDir ./dist/cjs",
 		"build:declarations": "tsc --module es2015 --outDir ./dist/esm --declaration true --allowJs false",

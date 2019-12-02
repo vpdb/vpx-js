@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { CallExpression, VariableDeclarator } from 'estree';
+import { CallExpression, Expression } from 'estree';
 import {
 	arrayExpression,
 	callExpression,
@@ -29,44 +29,38 @@ import {
 import { ESIToken } from '../grammar/grammar';
 import { Transformer } from '../transformer/transformer';
 
-export function ppDim(node: ESIToken): any {
+export function ppVarDecl(node: ESIToken): any {
 	let estree = null;
-	if (node.type === 'DimDeclarationStatement' || node.type === 'DimDeclarationStatementInline') {
-		estree = ppDimDeclarationStatement(node);
-	} else if (node.type === 'DimVariableDeclarators') {
-		estree = ppDimVariableDeclarators(node);
-	} else if (node.type === 'DimVariableDeclarator') {
-		estree = ppDimVariableDeclarator(node);
+	if (node.type === 'VariableMemberDeclaration') {
+		estree = ppVariableMemberDeclaration(node);
+	} else if (node.type === 'VariableIdentifiers') {
+		estree = ppVariableIdentifiers(node);
+	} else if (node.type === 'VariableIdentifier') {
+		estree = ppVariableIdentifier(node);
 	}
 	return estree;
 }
 
-function ppDimDeclarationStatement(node: ESIToken): any {
-	const varDecls =
-		node.children[0].type === 'DimVariableDeclarators' ? node.children[0].estree : node.children[1].estree;
+function ppVariableMemberDeclaration(node: ESIToken): any {
+	const varDecls = node.children[1].estree;
 	return variableDeclaration('let', varDecls);
 }
 
-function ppDimVariableDeclarators(node: ESIToken): any {
+function ppVariableIdentifiers(node: ESIToken): any {
 	const estree = [];
 	for (const child of node.children) {
-		if (child.type === 'DimVariableDeclarator') {
+		if (child.type === 'VariableIdentifier') {
 			estree.push(child.estree);
 		}
 	}
 	return estree;
 }
 
-function ppDimVariableDeclarator(node: ESIToken): any {
+function ppVariableIdentifier(node: ESIToken): any {
 	const id = node.children[0].estree;
 	let expr: CallExpression | null = null;
 	if (node.children.length > 1) {
-		const args = [];
-		for (const child of node.children) {
-			if (child.type === 'IntegerLiteral') {
-				args.push(child.estree);
-			}
-		}
+		const args: Expression[] = node.children[1].estree;
 		expr = callExpression(memberExpression(identifier(Transformer.VBSHELPER_NAME), identifier('dim')), [
 			arrayExpression(args),
 		]);
