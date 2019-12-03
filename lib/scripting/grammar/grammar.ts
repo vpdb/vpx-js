@@ -26,6 +26,7 @@ import { ppArray } from '../post-process/array';
 import { ppAssign } from '../post-process/assign';
 import { ppBranch } from '../post-process/branch';
 import { ppCall } from '../post-process/call';
+import { ppClass } from '../post-process/class';
 import { ppConditional } from '../post-process/conditional';
 import { ppConst } from '../post-process/const';
 import { ppError } from '../post-process/error';
@@ -68,6 +69,7 @@ export class Grammar {
 		ppWith,
 		ppMethod,
 		ppCall,
+		ppClass,
 	];
 
 	constructor() {
@@ -98,7 +100,8 @@ export class Grammar {
 				if (
 					(node.type === 'Statement' ||
 						node.type === 'StatementInline' ||
-						node.type === 'MethodDeclaration') &&
+						node.type === 'MethodDeclaration' ||
+						node.type === 'ClassDecl') &&
 					parent.type === 'Transpile'
 				) {
 					if (node.children[0].estree) {
@@ -112,14 +115,12 @@ export class Grammar {
 					}
 				} else {
 					let estree: any = null;
-
 					for (const postProcessor of postProcessors) {
 						estree = postProcessor(node);
 						if (estree) {
 							break;
 						}
 					}
-
 					if (estree !== null) {
 						node.estree = estree;
 					} else if (node.children[0]) {
