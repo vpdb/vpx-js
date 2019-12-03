@@ -27,6 +27,8 @@ import {
 	BlockStatement,
 	BreakStatement,
 	CallExpression,
+	ClassBody,
+	ClassDeclaration,
 	ConditionalExpression,
 	DoWhileStatement,
 	Expression,
@@ -41,6 +43,7 @@ import {
 	LogicalExpression,
 	LogicalOperator,
 	MemberExpression,
+	MethodDefinition,
 	NewExpression,
 	Pattern,
 	Program,
@@ -80,6 +83,13 @@ export function literal(value: string | boolean | number | null, raw?: string | 
 	};
 }
 
+export function classBody(body: MethodDefinition[]): ClassBody {
+	return {
+		type: 'ClassBody',
+		body,
+	};
+}
+
 export function variableDeclarator(id: Identifier, init: Expression | null): VariableDeclarator {
 	return {
 		type: 'VariableDeclarator',
@@ -88,6 +98,13 @@ export function variableDeclarator(id: Identifier, init: Expression | null): Var
 	};
 }
 
+export function classDeclaration(id: Identifier, body: ClassBody): ClassDeclaration {
+	return {
+		type: 'ClassDeclaration',
+		id,
+		body,
+	};
+}
 export function functionDeclaration(id: Identifier, params: Identifier[], body: BlockStatement): FunctionDeclaration {
 	return {
 		type: 'FunctionDeclaration',
@@ -98,11 +115,29 @@ export function functionDeclaration(id: Identifier, params: Identifier[], body: 
 	};
 }
 
-export function variableDeclaration(kind: 'var' | 'let' | 'const', declarations: VariableDeclarator[]): VariableDeclaration {
+export function variableDeclaration(
+	kind: 'var' | 'let' | 'const',
+	declarations: VariableDeclarator[],
+): VariableDeclaration {
 	return {
 		type: 'VariableDeclaration',
 		kind,
 		declarations,
+	};
+}
+
+export function methodDefinition(
+	key: Expression,
+	kind: 'constructor' | 'method' | 'get' | 'set',
+	value: FunctionExpression,
+): MethodDefinition {
+	return {
+		type: 'MethodDefinition',
+		key,
+		kind,
+		value,
+		static: false,
+		computed: false,
 	};
 }
 
@@ -113,7 +148,11 @@ export function arrayExpression(elements: Expression[] | SpreadElement[]): Array
 	};
 }
 
-export function arrowFunctionExpression(expression: boolean, body: BlockStatement | Expression, params: Pattern[] = []): ArrowFunctionExpression {
+export function arrowFunctionExpression(
+	expression: boolean,
+	body: BlockStatement | Expression,
+	params: Pattern[] = [],
+): ArrowFunctionExpression {
 	return {
 		type: 'ArrowFunctionExpression',
 		expression,
@@ -152,7 +191,11 @@ export function callExpression(callee: Expression, args: Expression[] | SpreadEl
 	};
 }
 
-export function conditionalExpression(test: Expression, consequent: Expression, alternate: Expression): ConditionalExpression {
+export function conditionalExpression(
+	test: Expression,
+	consequent: Expression,
+	alternate: Expression,
+): ConditionalExpression {
 	return {
 		type: 'ConditionalExpression',
 		test,
@@ -232,7 +275,11 @@ export function expressionStatement(expression: Expression): ExpressionStatement
 	};
 }
 
-export function forOfStatement(left: VariableDeclaration | Pattern, right: Expression, body: Statement): ForOfStatement {
+export function forOfStatement(
+	left: VariableDeclaration | Pattern,
+	right: Expression,
+	body: Statement,
+): ForOfStatement {
 	return {
 		type: 'ForOfStatement',
 		left,
@@ -241,7 +288,12 @@ export function forOfStatement(left: VariableDeclaration | Pattern, right: Expre
 	};
 }
 
-export function forStatement(init: Expression | null, test: Expression | null, update: Expression | null, body: Statement): ForStatement {
+export function forStatement(
+	init: Expression | null,
+	test: Expression | null,
+	update: Expression | null,
+	body: Statement,
+): ForStatement {
 	return {
 		type: 'ForStatement',
 		init,

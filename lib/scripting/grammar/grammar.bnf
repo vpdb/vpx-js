@@ -7,7 +7,7 @@
 start ::= Transpile
 
 Format ::= LogicalLine*
-Transpile ::= OptionStatement? (Statement | MethodDeclaration)*
+Transpile ::= OptionStatement? (Statement | MethodDeclaration | ClassDecl)*
 
 /* 13.1 Lexical Grammar */
 
@@ -97,7 +97,15 @@ OnOff ::= 'On' | 'Off'
 
 /* 13.3.3 Types */
 
+TypeModifier ::= AccessModifier
 IdentifierModifiers ::= ArrayNameModifier?
+
+ClassDecl ::= ClassDeclaration
+
+ClassDeclaration ::= (ClassModifier WS)? 'Class' WS Identifier StatementTerminator ClassMemberDeclaration* 'End' WS 'Class' StatementTerminator
+ClassModifier ::= TypeModifier
+
+ClassMemberDeclaration ::= VariableMemberDeclaration | ConstantMemberDeclaration | ConstructorMemberDeclaration
 
 ArrayTypeModifiers ::= ArrayTypeModifier+
 ArrayTypeModifier ::= OpenParenthesis RankList? CloseParenthesis
@@ -118,6 +126,9 @@ ParameterList ::= Parameter ( Comma Parameter )*
 Parameter ::= (ParameterModifier WS)? ParameterIdentifier ( Equals ConstantExpression )? 
 ParameterModifier ::= 'ByVal' | 'ByRef'
 ParameterIdentifier ::= Identifier
+
+ConstructorMemberDeclaration ::= (ConstructorModifier? WS) 'Sub' WS 'Class_Initialize' ( OpenParenthesis CloseParenthesis )? LineTerminator Block? 'End' WS 'Sub' StatementTerminator
+ConstructorModifier ::= AccessModifier
 
 ConstantMemberDeclaration ::= (ConstantModifier WS)? 'Const' WS ConstantDeclarators StatementTerminator
 ConstantModifier ::= AccessModifier
