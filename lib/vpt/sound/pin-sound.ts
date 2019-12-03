@@ -37,7 +37,7 @@ export class PinSound extends Item<PinSoundData> {
 	public async loadSound<T>(table: Table, loader: ISoundAdapter<T>): Promise<T> {
 		const data = await table.streamStorage<Buffer>('GameStg', storage => this.streamSound(storage, this.data.itemName));
 		if (!data || !data.length) {
-			throw new Error(`Cannot load sound data for texture ${this.getName()}`);
+			throw new Error(`Cannot load sound data for sound ${this.getName()}`);
 		}
 		return await loader.loadSound(this.getName(), data);
 	}
