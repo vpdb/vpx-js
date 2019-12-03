@@ -22,34 +22,34 @@ import { ESIToken } from '../grammar/grammar';
 
 export function ppConst(node: ESIToken): any {
 	let estree = null;
-	if (node.type === 'ConstDeclarationStatement' || node.type === 'ConstDeclarationStatementInline') {
-		estree = ppConstDeclarationStatement(node);
-	} else if (node.type === 'ConstVariableDeclarators') {
-		estree = ppConstVariableDeclarators(node);
-	} else if (node.type === 'ConstVariableDeclarator') {
-		estree = ppConstVariableDeclarator(node);
+	if (node.type === 'ConstantMemberDeclaration') {
+		estree = ppConstantMemberDeclaration(node);
+	} else if (node.type === 'ConstantDeclarators') {
+		estree = ppConstantDeclarators(node);
+	} else if (node.type === 'ConstantDeclarator') {
+		estree = ppConstantDeclarator(node);
 	}
 	return estree;
 }
 
-function ppConstDeclarationStatement(node: ESIToken): any {
-	const varDecls =
-		node.children[0].type === 'ConstVariableDeclarators' ? node.children[0].estree : node.children[1].estree;
-	return variableDeclaration('const', varDecls);
+function ppConstantMemberDeclaration(node: ESIToken): any {
+	const constDecls =
+		node.children[0].type === 'ConstantDeclarators' ? node.children[0].estree : node.children[1].estree;
+	return variableDeclaration('const', constDecls);
 }
 
-function ppConstVariableDeclarators(node: ESIToken): any {
+function ppConstantDeclarators(node: ESIToken): any {
 	const estree = [];
 	for (const child of node.children) {
-		if (child.type === 'ConstVariableDeclarator') {
+		if (child.type === 'ConstantDeclarator') {
 			estree.push(child.estree);
 		}
 	}
 	return estree;
 }
 
-function ppConstVariableDeclarator(node: ESIToken): any {
+function ppConstantDeclarator(node: ESIToken): any {
 	const id = node.children[0].estree;
-	const literal = node.children[2].estree;
-	return variableDeclarator(id, literal);
+	const expr = node.children[2].estree;
+	return variableDeclarator(id, expr);
 }

@@ -119,6 +119,11 @@ Parameter ::= (ParameterModifier WS)? ParameterIdentifier ( Equals ConstantExpre
 ParameterModifier ::= 'ByVal' | 'ByRef'
 ParameterIdentifier ::= Identifier
 
+ConstantMemberDeclaration ::= (ConstantModifier WS)? 'Const' WS ConstantDeclarators StatementTerminator
+ConstantModifier ::= AccessModifier
+ConstantDeclarators ::= ConstantDeclarator ( Comma ConstantDeclarator )*
+ConstantDeclarator ::= Identifier Equals ConstantExpression
+
 VariableMemberDeclaration ::= VariableModifier WS VariableDeclarators StatementTerminator
 VariableModifier ::= AccessModifier | 'Dim'
 VariableDeclarators ::= VariableDeclarator ( Comma VariableDeclarator )*
@@ -130,19 +135,13 @@ ArraySizeInitializationModifier ::= OpenParenthesis BoundList CloseParenthesis
 BoundList ::= Bound ( Comma Bound )*
 Bound ::= Expression
 
-ConstVariableDeclarators ::= ConstVariableDeclarator ( Comma ConstVariableDeclarator )* 
-ConstVariableDeclarator ::= Identifier Equals Expression 
-
 /* 13.3.5 Statements */
 
-Statement ::= VariableMemberDeclaration | ConstDeclarationStatement | WithStatement | AssignmentStatement | InvocationStatement | ArrayHandlingStatement  | LoopStatement | ConditionalStatement | ErrorHandlingStatement | BranchStatement
-StatementInline ::= ConstDeclarationStatementInline | AssignmentStatementInline | BranchStatementInline | InvocationStatementInline
+Statement ::= VariableMemberDeclaration | ConstantMemberDeclaration | WithStatement | AssignmentStatement | InvocationStatement | ArrayHandlingStatement  | LoopStatement | ConditionalStatement | ErrorHandlingStatement | BranchStatement
+StatementInline ::= AssignmentStatementInline | BranchStatementInline | InvocationStatementInline
 Block ::= Statements*
 Statements ::= Statement? ( ':' Statement? )* 
 StatementsInline ::= StatementInline? ( ':' StatementInline? )* 
-
-ConstDeclarationStatement ::= (AccessModifier WS)? 'Const' WS ConstVariableDeclarators StatementTerminator 
-ConstDeclarationStatementInline ::= (AccessModifier WS)? 'Const' WS ConstVariableDeclarators 
 
 WithStatement ::= 'With' WS Expression StatementTerminator Block? 'End' WS 'With' StatementTerminator 
 AssignmentStatement ::= SetAssignmentStatement | RegularAssignmentStatement
