@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { ISoundAdapter, PlaybackSettings } from '../../audio/sound-adapter';
 import { Event } from '../../game/event';
 import { EventProxy } from '../../game/event-proxy';
 import { IAnimatable, isAnimatable } from '../../game/ianimatable';
@@ -69,7 +70,6 @@ import { LoadedTable, TableLoader } from './table-loader';
 import { TableMeshGenerator } from './table-mesh-generator';
 import { TableState } from './table-state';
 import { TableUpdater } from './table-updater';
-import { ISoundAdapter, PlaybackSettings } from '../../audio/sound-adapter';
 
 /**
  * A Visual Pinball table.

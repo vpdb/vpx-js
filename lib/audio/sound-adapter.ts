@@ -1,6 +1,3 @@
-
-import { Table } from '../vpt/table/table';
-
 export interface ISoundAdapter<T> {
 
 	/**

@@ -308,4 +308,3 @@ export class ChangedStates<STATE extends ItemState = ItemState> {
 		ChangedStates.POOL.release(this);
 	}
 }
-
