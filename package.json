@@ -36,7 +36,7 @@
 		"build:esm": "tsc --module es2015 --outDir ./dist/esm",
 		"build:cjs": "tsc --module commonjs --outDir ./dist/cjs",
 		"build:declarations": "tsc --module es2015 --outDir ./dist/esm --declaration true --allowJs false",
-		"build:watch": "npm run compile && npm run build:cp && tsc --watch --module es2015 --outDir ./dist/esm",
+		"build:watch": "npm run compile && npm run build:cp && npm run build:post && tsc --watch --module es2015 --outDir ./dist/esm",
 		"build:cp": "cp -r res dist/esm && cp -r res dist/cjs",
 		"build:post": "node build/write-info.js",
 		"compile": "nearleyc lib/scripting/vbscript.ne -o lib/scripting/vbscript.ts",
