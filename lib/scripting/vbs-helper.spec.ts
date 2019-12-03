@@ -57,7 +57,7 @@ describe('The scripting VBS Helper', () => {
 		let js = vbsHelper.dim([100]);
 		js[100] = 'Test';
 		js = vbsHelper.redim(js, [150]);
-		expect(js[100]).to.be.an.instanceof(VbsUndefined);
+		expect(js[100]).to.be.equal(null);
 		expect(js.length).to.equal(151);
 	});
 
@@ -98,7 +98,7 @@ describe('The scripting VBS Helper', () => {
 				expect(js[index1][index2].length).to.equal(2);
 			}
 		}
-		expect(js[0][0][1]).to.be.an.instanceof(VbsUndefined);
+		expect(js[0][0][1]).to.be.null;
 		expect(js[0][0][2]).to.be.an.instanceof(VbsUndefined);
 	});
 
@@ -120,7 +120,7 @@ describe('The scripting VBS Helper', () => {
 		let js = vbsHelper.dim([2, 2, 3]);
 		js[0][0][3] = 'Test';
 		js = vbsHelper.redim(js, [2, 2, 4]);
-		expect(js[0][0][3]).to.be.an.instanceof(VbsUndefined);
+		expect(js[0][0][3]).to.be.null;
 		for (let index1 = 0; index1 <= 2; index1++) {
 			for (let index2 = 0; index2 <= 2; index2++) {
 				expect(js[index1][index2].length).to.equal(5);

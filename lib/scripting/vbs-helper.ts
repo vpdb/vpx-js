@@ -37,7 +37,7 @@ export class VBSHelper {
 
 	public dim(dimensions: number[], position: number = 0): any[] {
 		const dimension = dimensions && dimensions.length ? dimensions[position] + 1 : 0;
-		const array = new VbsArray(new Array(dimension).fill(undefined));
+		const array = new VbsArray(new Array(dimension).fill(null)); // undefined will throw, because the proxy tests against undefined
 		if (++position < dimensions.length) {
 			for (let index = 0; index < dimension; index++) {
 				array[index] = this.dim(dimensions, position);
