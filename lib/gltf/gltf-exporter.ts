@@ -1588,10 +1588,11 @@ export class GLTFExporter {
 			}
 		}
 
-		if (!skipNode) {
-			this.outputJSON.nodes.push(gltfNode);
+		if (skipNode) {
+			return null;
 		}
 
+		this.outputJSON.nodes.push(gltfNode);
 		const nodeIndex = this.outputJSON.nodes.length - 1;
 		this.nodeMap.set(object, nodeIndex);
 

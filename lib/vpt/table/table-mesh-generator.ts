@@ -63,10 +63,7 @@ export class TableMeshGenerator {
 		];
 
 		// meshes
-		for (const group of renderGroups) {
-			if (!group.enabled) {
-				continue;
-			}
+		for (const group of renderGroups.filter(g => g.enabled)) {
 			progress().details(group.name);
 			const itemTypeGroup = renderApi.createParentNode(group.name);
 			for (const renderable of group.meshes) {
