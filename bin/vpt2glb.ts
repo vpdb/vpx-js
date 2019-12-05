@@ -22,7 +22,7 @@ import { existsSync, writeFileSync } from 'fs';
 import { basename, dirname, resolve } from 'path';
 import { NodeBinaryReader } from '../lib/io/binary-reader.node';
 import { ThreeTextureLoaderNode } from '../lib/render/threejs/three-texture-loader-node';
-import { Logger } from '../lib/util/logger';
+import { Logger, Progress } from '../lib/util/logger';
 import { Table } from '../lib/vpt/table/table';
 import { TableExporter } from '../lib/vpt/table/table-exporter';
 
@@ -58,13 +58,20 @@ import { TableExporter } from '../lib/vpt/table/table-exporter';
 		const exportSpinners = !process.argv.includes('--no-spinners');
 
 		// silence logs
-		Logger.setLogger({
-			debug(format: any, ...param: any[]): void {},
-			error(format: any, ...param: any[]): void {},
-			info(format: any, ...param: any[]): void {},
-			verbose(format: any, ...param: any[]): void {},
-			warn(format: any, ...param: any[]): void {},
-			wtf(format: any, ...param: any[]): void {},
+		// Logger.setLogger({
+		// 	debug(format: any, ...param: any[]): void {},
+		// 	error(format: any, ...param: any[]): void {},
+		// 	info(format: any, ...param: any[]): void {},
+		// 	verbose(format: any, ...param: any[]): void {},
+		// 	warn(format: any, ...param: any[]): void {},
+		// 	wtf(format: any, ...param: any[]): void {},
+		// });
+
+		Progress.setProgress({
+			show(action: string, details?: string): void { },
+			details(details: string): void { },
+			end(id: string): void { },
+			start(id: string, title: string): void { },
 		});
 
 		const start = Date.now();

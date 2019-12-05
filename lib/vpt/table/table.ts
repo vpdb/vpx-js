@@ -109,6 +109,7 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 	public readonly decals: { [key: string]: Decal } = {};
 	public readonly lightSeqs: { [key: string]: LightSeq } = {};
 	public readonly dispReels: { [key: string]: DispReel } = {};
+	private readonly playfieldPrimitive?: Primitive;
 
 	private readonly meshGenerator?: TableMeshGenerator;
 	private readonly hitGenerator?: TableHitGenerator;
@@ -168,6 +169,12 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 					m[1][item.getName()] = item;
 				}
 			}
+		}
+
+		// pull out playfield primitive if avail
+		this.playfieldPrimitive = this.primitives.playfield_mesh;
+		if (this.playfieldPrimitive) {
+			delete this.primitives.playfield_mesh;
 		}
 	}
 
@@ -384,15 +391,19 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 		if (!this.data) {
 			throw new Error('Table data is not loaded. Load table with tableDataOnly = false.');
 		}
-		const geometry = this.meshGenerator!.getPlayfieldMesh(renderApi, opts);
-		return {
+		const meshes: Meshes<GEOMETRY> = {
 			playfield: {
 				isVisible: true,
-				geometry,
 				material: this.getMaterial(this.data.szPlayfieldMaterial),
 				map: this.getTexture(this.data.szImage),
 			},
 		};
+		if (this.playfieldPrimitive) {
+			meshes.playfield.mesh = this.playfieldPrimitive.getMeshes<GEOMETRY>(this).primitive.mesh;
+		} else {
+			meshes.playfield.geometry = this.meshGenerator!.getPlayfieldMesh(renderApi, opts);
+		}
+		return meshes;
 	}
 
 	/**

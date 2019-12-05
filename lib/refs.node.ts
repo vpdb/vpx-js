@@ -32,7 +32,7 @@ export {
 	PointLight, Group, MeshStandardMaterial, Face3, Matrix3, Vector2, Path, Shape, ExtrudeBufferGeometry,
 	Float32BufferAttribute, Line, RGBAFormat, UnsignedByteType, TextureLoader, DataTexture, FloatType, SpotLight,
 	LoadingManager, DataTextureLoader, TextureDataType, DefaultLoadingManager, HalfFloatType, LinearEncoding,
-	RGBEEncoding, RGBEFormat, RGBFormat, AdditiveBlending, PointLightHelper,
+	RGBEEncoding, RGBEFormat, RGBFormat, AdditiveBlending, PointLightHelper, FrontSide, BackSide,
 } from 'three';
 export { ThreeTextureLoaderNode as ThreeTextureLoader } from './render/threejs/three-texture-loader-node';
 

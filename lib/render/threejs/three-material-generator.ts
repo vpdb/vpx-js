@@ -19,9 +19,11 @@
 
 import { RenderInfo } from '../../game/irenderable';
 import {
+	BackSide,
 	BufferGeometry,
 	Color,
 	DoubleSide,
+	FrontSide,
 	Material as ThreeMaterial,
 	MeshStandardMaterial,
 } from '../../refs.node';
