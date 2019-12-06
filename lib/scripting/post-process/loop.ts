@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { BlockStatement } from 'estree';
+import { BlockStatement, Expression, Identifier } from 'estree';
 import {
 	assignmentExpression,
 	binaryExpression,
@@ -27,6 +27,7 @@ import {
 	doWhileStatement,
 	forOfStatement,
 	forStatement,
+	identifier,
 	ifStatement,
 	literal,
 	whileStatement,
@@ -60,23 +61,18 @@ function ppDoTopLoopStatement(node: ESIToken): any {
 		if (node.children[0].text === 'While') {
 			const expr = node.children[1].estree;
 			const block = node.children[3].type === 'Block' ? node.children[3].estree : null;
-
 			return whileStatement(expr, block ? block : blockStatement([]));
 		} else {
 			const expr = node.children[1].estree;
 			let block = node.children[3].type === 'Block' ? node.children[3].estree : null;
-
 			if (block === null) {
 				block = blockStatement([]);
 			}
-
 			block.body.unshift(ifStatement(expr, breakStatement(), null));
-
 			return doWhileStatement(block, literal(true));
 		}
 	} else {
 		const block = node.children[1].type === 'Block' ? node.children[1].estree : null;
-
 		return doWhileStatement(block ? block : blockStatement([]), literal(true));
 	}
 }
@@ -98,9 +94,7 @@ function ppDoBottomLoopStatement(node: ESIToken): any {
 		if (block === null) {
 			block = blockStatement([]);
 		}
-
 		block.body.push(ifStatement(expr, breakStatement(), null));
-
 		return doWhileStatement(block, literal(true));
 	}
 }
@@ -136,18 +130,16 @@ function ppForStatement(node: ESIToken): any {
 }
 
 function ppForEachStatement(node: ESIToken): any {
-	const id = node.children[0].estree;
-	let expr;
-	let block = null;
-	if (node.children[1].type === 'Expression') {
-		expr = node.children[1].estree;
-		if (node.children[3].type === 'Block') {
-			block = node.children[3].estree;
-		}
-	} else {
-		expr = node.children[2].estree;
-		if (node.children[4].type === 'Block') {
-			block = node.children[4].estree;
+	let id: Identifier = identifier('undefined');
+	let expr: Expression = identifier('undefined');
+	let block: BlockStatement | undefined;
+	for (const child of node.children) {
+		if (child.type === 'LoopControlVariable') {
+			id = child.estree;
+		} else if (child.type === 'Expression') {
+			expr = child.estree;
+		} else if (child.type === 'Block') {
+			block = child.estree;
 		}
 	}
 	return forOfStatement(id, expr, block ? block : blockStatement([]));

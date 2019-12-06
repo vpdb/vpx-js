@@ -28,8 +28,6 @@ export function ppHelpers(node: ESIToken): any {
 		estree = ppStatements(node);
 	} else if (node.type === 'Block') {
 		estree = ppBlock(node);
-	} else if (node.type === 'VariableIdentifiers') {
-		estree = ppVariableIdentifiers(node);
 	} else if (node.type === 'ArrayTypeModifiers') {
 		estree = ppArrayTypeModifiers(node);
 	} else if (node.type === 'ArraySizeInitializationModifier') {
@@ -70,16 +68,6 @@ function ppBlock(node: ESIToken): any {
 
 function ppIdentifier(node: ESIToken): any {
 	return identifier(node.text);
-}
-
-function ppVariableIdentifiers(node: ESIToken): any {
-	const estree = [];
-	for (const child of node.children) {
-		if (child.type === 'VariableIdentifier') {
-			estree.push(child.estree);
-		}
-	}
-	return estree;
 }
 
 function ppArgumentList(node: ESIToken): any {

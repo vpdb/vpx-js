@@ -73,6 +73,14 @@ describe('The VBScript transpiler - Method - Function', () => {
 		);
 	});
 
+	it('should transpile an empty function with empty params', () => {
+		const vbs = `Function BallRelease_Hit()\nEnd Function`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal(
+			'function BallRelease_Hit() {\n    let BallRelease_Hit = undefined;\n    return BallRelease_Hit;\n}',
+		);
+	});
+
 	it('should transpile an inline function with empty params', () => {
 		const vbs = `Function BallRelease_Hit() BallRelease_Hit = BallRelease.CreateBall End Function`;
 		const js = grammar.vbsToJs(vbs);
@@ -86,6 +94,14 @@ describe('The VBScript transpiler - Method - Function', () => {
 		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(
 			'function BallRelease_Hit(value1, value2, value3) {\n    let BallRelease_Hit = undefined;\n    BallRelease.CreateBall();\n    return BallRelease_Hit;\n}',
+		);
+	});
+
+	it('should transpile a function with "ByVal/ByRef" params', () => {
+		const vbs = `Function BallRelease_Hit(ByVal value1, ByRef value2)\nBallRelease.CreateBall\nEnd Function`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal(
+			'function BallRelease_Hit(value1, value2) {\n    let BallRelease_Hit = undefined;\n    BallRelease.CreateBall();\n    return BallRelease_Hit;\n}',
 		);
 	});
 

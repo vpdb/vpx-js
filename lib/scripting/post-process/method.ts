@@ -42,7 +42,7 @@ export function ppMethod(node: ESIToken): any {
 }
 
 function ppSubDeclaration(node: ESIToken): any {
-	let id: Identifier | undefined;
+	let id: Identifier = identifier('undefined');
 	let params: Identifier[] = [];
 	let block: BlockStatement | undefined;
 	for (const child of node.children) {
@@ -58,14 +58,11 @@ function ppSubDeclaration(node: ESIToken): any {
 			block = child.estree;
 		}
 	}
-	if (!id) {
-		throw new Error('Missing Identifier');
-	}
 	return functionDeclaration(id, params, block ? block : blockStatement([]));
 }
 
 function ppFunctionDeclaration(node: ESIToken): any {
-	let id: Identifier | undefined;
+	let id: Identifier = identifier('undefined');
 	let params: Identifier[] = [];
 	let block: BlockStatement | undefined;
 	for (const child of node.children) {
@@ -81,15 +78,12 @@ function ppFunctionDeclaration(node: ESIToken): any {
 			block = child.estree;
 		}
 	}
-	if (!id) {
-		throw new Error('Missing Identifier');
-	}
 	if (block) {
 		block = replace(block, {
-			enter: node2 => {
-				if (node2.type === 'ReturnStatement') {
-					node2.argument = id;
-					return node2;
+			enter: blockNode => {
+				if (blockNode.type === 'ReturnStatement') {
+					blockNode.argument = id;
+					return blockNode;
 				}
 			},
 		}) as BlockStatement;

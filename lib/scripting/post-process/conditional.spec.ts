@@ -113,6 +113,12 @@ describe('The VBScript transpiler - Conditional', () => {
 		);
 	});
 
+	it('should transpile an empty "Select Case...Case...End Select" statement', () => {
+		const vbs = `Select Case day\nCase "Sunday"\nEnd Select`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal("switch (day) {\ncase 'Sunday':\n    break;\n}");
+	});
+
 	it('should transpile a "Select Case/Case...End Select" statement', () => {
 		const vbs = `Select Case text\nCase "Saturday", "Sunday"\nweekend=1\nCase "Monday"\nweekend=0\nEnd Select`;
 		const js = grammar.vbsToJs(vbs);

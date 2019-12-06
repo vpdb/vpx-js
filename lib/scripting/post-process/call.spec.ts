@@ -27,12 +27,6 @@ before(async () => {
 });
 
 describe('The VBScript transpiler - Call', () => {
-	/*it('should transpile a call statement', () => {
-		const vbs = `Call mQue(ii)(3)(mQue(ii)(2))`;
-		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('BallRelease();');
-	});*/
-
 	it('should transpile a subcall statement without params', () => {
 		const vbs = `BallRelease`;
 		const js = grammar.vbsToJs(vbs);
@@ -50,12 +44,6 @@ describe('The VBScript transpiler - Call', () => {
 		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal('BallRelease.CreateBall();');
 	});
-
-	/*it('should transpile an object.property subcall statement without params with parenthesis', () => {
-		const vbs = `BallRelease.CreateBall()`;
-		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('BallRelease.CreateBall();');
-	});*/
 
 	it('should transpile an object.property subcall statement with params', () => {
 		const vbs = `BallRelease.KickBall 0, -2`;
@@ -95,9 +83,15 @@ describe('The VBScript transpiler - Call', () => {
 		);
 	});
 
-	/*it('should transpile multiple object subcalls', () => {
-		const vbs = `a.b(1,2).c(3)(4).d(3,  5)`;
+	it('should transpile a call statement with one param', () => {
+		const vbs = `Call mQue(ii)`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('a.b(1, 2).c(3, 4).d(3, 5);');
-	});*/
+		expect(js).to.equal('mQue(ii);');
+	});
+
+	it('should transpile a call statement with multiple params', () => {
+		const vbs = `Call mQue(ii)(3)(mQue(ii)(2))`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal('mQue(ii)(3)(mQue(ii)(2));');
+	});
 });
