@@ -22,7 +22,7 @@ import { ESIToken } from '../grammar/grammar';
 
 export function ppConst(node: ESIToken): any {
 	let estree = null;
-	if (node.type === 'ConstantMemberDeclaration') {
+	if (node.type === 'ConstantMemberDeclaration' || node.type === 'ConstantMemberDeclarationInline') {
 		estree = ppConstantMemberDeclaration(node);
 	} else if (node.type === 'ConstantDeclarators') {
 		estree = ppConstantDeclarators(node);

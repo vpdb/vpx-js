@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { CallExpression, Expression, VariableDeclarator } from 'estree';
+import { AssignmentExpression, CallExpression, Expression, Statement } from 'estree';
 import {
 	arrayExpression,
 	assignmentExpression,
@@ -26,21 +26,19 @@ import {
 	identifier,
 	literal,
 	memberExpression,
-	variableDeclaration,
-	variableDeclarator,
 } from '../estree';
 import { ESIToken } from '../grammar/grammar';
 import { Transformer } from '../transformer/transformer';
 
 export function ppArray(node: ESIToken): any {
 	let estree = null;
-	if (node.type === 'RedimStatement') {
+	if (node.type === 'RedimStatement' || node.type === 'RedimStatementInline') {
 		estree = ppRedimStatement(node);
 	} else if (node.type === 'RedimClauses') {
 		estree = ppRedimClauses(node);
 	} else if (node.type === 'RedimClause') {
 		estree = ppRedimClause(node);
-	} else if (node.type === 'EraseStatement') {
+	} else if (node.type === 'EraseStatement' || node.type === 'EraseStatementInline') {
 		estree = ppEraseStatement(node);
 	} else if (node.type === 'EraseExpressions') {
 		estree = ppEraseExpressions(node);
@@ -49,13 +47,15 @@ export function ppArray(node: ESIToken): any {
 }
 
 function ppRedimStatement(node: ESIToken): any {
-	const varDecls = node.children[0].estree as VariableDeclarator[];
-	if (node.text.startsWith('ReDim Preserve ')) {
-		for (const varDecl of varDecls) {
-			(varDecl.init as CallExpression).arguments.push(literal(true));
+	const stmts: Statement[] = [];
+	const exprs: AssignmentExpression[] = node.children[0].estree;
+	for (const expr of exprs) {
+		if (node.text.startsWith('ReDim Preserve ')) {
+			(expr.right as CallExpression).arguments.push(literal(true));
 		}
+		stmts.push(expressionStatement(expr));
 	}
-	return variableDeclaration('let', varDecls);
+	return stmts;
 }
 
 function ppRedimClauses(node: ESIToken): any {
@@ -71,8 +71,9 @@ function ppRedimClauses(node: ESIToken): any {
 function ppRedimClause(node: ESIToken): any {
 	const id = node.children[0].estree;
 	const args = node.children[1].estree;
-	return variableDeclarator(
+	return assignmentExpression(
 		id,
+		'=',
 		callExpression(memberExpression(identifier(Transformer.VBSHELPER_NAME), identifier('redim')), [
 			id,
 			arrayExpression(args),

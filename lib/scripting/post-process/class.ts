@@ -17,18 +17,209 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { classBody, classDeclaration } from '../estree';
+import { replace } from 'estraverse';
+import {
+	BlockStatement,
+	ClassBody,
+	FunctionDeclaration,
+	Identifier,
+	MethodDefinition,
+	Statement,
+	VariableDeclaration,
+} from 'estree';
+import {
+	assignmentExpression,
+	blockStatement,
+	classBody,
+	classDeclaration,
+	expressionStatement,
+	functionExpression,
+	identifier,
+	memberExpression,
+	methodDefinition,
+	returnStatement,
+	thisExpression,
+	variableDeclaration,
+	variableDeclarator,
+} from '../estree';
 import { ESIToken } from '../grammar/grammar';
 
 export function ppClass(node: ESIToken): any {
 	let estree = null;
 	if (node.type === 'ClassDeclaration') {
 		estree = ppClassDeclaration(node);
+	} else if (node.type === 'ConstructorMemberDeclaration') {
+		estree = ppConstructorMemberDeclaration(node);
+	} else if (node.type === 'RegularPropertyMemberDeclaration') {
+		estree = ppRegularPropertyMemberDeclaration(node);
+	} else if (node.type === 'PropertyGetDeclaration') {
+		estree = ppPropertyGetDeclaration(node);
+	} else if (node.type === 'PropertyLetDeclaration') {
+		estree = ppPropertyLetDeclaration(node);
+	} else if (node.type === 'PropertySetDeclaration') {
+		estree = ppPropertySetDeclaration(node);
 	}
 	return estree;
 }
 
 function ppClassDeclaration(node: ESIToken): any {
 	const id = node.children[0].type === 'Identifier' ? node.children[0].estree : node.children[1].estree;
-	return classDeclaration(id, classBody([]));
+	let constructor: MethodDefinition | undefined;
+	const methodDefinitions: MethodDefinition[] = [];
+	const varStmts: Statement[] = [];
+	const ids: string[] = [];
+	for (const child of node.children) {
+		if (child.type === 'ClassMemberDeclaration') {
+			const memberDecl = child.children[0];
+			if (memberDecl.type === 'ConstructorMemberDeclaration') {
+				constructor = memberDecl.estree;
+			} else if (memberDecl.type === 'MethodMemberDeclaration') {
+				const functionDecl = memberDecl.estree as FunctionDeclaration;
+				const functionId = functionDecl.id as Identifier;
+				methodDefinitions.push(
+					methodDefinition(functionId, 'method', functionExpression(functionDecl.body, functionDecl.params)),
+				);
+				ids.push(functionId.name);
+			} else if (memberDecl.type === 'PropertyMemberDeclaration') {
+				methodDefinitions.push(memberDecl.estree);
+			} else if (
+				memberDecl.type === 'VariableMemberDeclaration' ||
+				memberDecl.type === 'ConstantMemberDeclaration'
+			) {
+				for (const varDecl of (memberDecl.estree as VariableDeclaration).declarations) {
+					const varId = varDecl.id as Identifier;
+					varStmts.push(
+						expressionStatement(
+							assignmentExpression(
+								memberExpression(thisExpression(), varId),
+								'=',
+								varDecl.init ? varDecl.init : identifier('undefined'),
+							),
+						),
+					);
+					ids.push(varId.name);
+				}
+			}
+		}
+	}
+	if (!constructor) {
+		constructor = methodDefinition(
+			identifier('constructor'),
+			'constructor',
+			functionExpression(blockStatement([]), []),
+		);
+	}
+	let body: ClassBody = classBody([constructor, ...methodDefinitions]);
+	body = replace(body, {
+		leave: (bodyNode, parentNode) => {
+			if (bodyNode.type === 'Identifier') {
+				if (parentNode !== null && parentNode.type !== 'MethodDefinition') {
+					if (ids.includes(bodyNode.name)) {
+						if (parentNode.type === 'MemberExpression') {
+							if (parentNode.object.type === 'Identifier') {
+								if (parentNode.object.name === bodyNode.name) {
+									return memberExpression(thisExpression(), bodyNode);
+								}
+							}
+						} else {
+							return memberExpression(thisExpression(), bodyNode);
+						}
+					}
+				}
+			}
+		},
+	}) as ClassBody;
+	body.body[0].value.body.body.unshift(...varStmts);
+	return classDeclaration(id, body);
+}
+
+function ppConstructorMemberDeclaration(node: ESIToken): any {
+	let block: BlockStatement | undefined;
+	for (const child of node.children) {
+		if (child.type === 'Block') {
+			block = child.estree;
+		}
+	}
+	return methodDefinition(
+		identifier('constructor'),
+		'constructor',
+		functionExpression(block ? block : blockStatement([]), []),
+	);
+}
+
+function ppRegularPropertyMemberDeclaration(node: ESIToken): any {
+	return node.children[1].estree;
+}
+
+function ppPropertyGetDeclaration(node: ESIToken): any {
+	let id: Identifier | undefined;
+	let params: Identifier[] = [];
+	let block: BlockStatement | undefined;
+	for (const child of node.children) {
+		if (child.type === 'Identifier') {
+			id = child.estree;
+		} else if (child.type === 'ParameterList') {
+			params = child.estree;
+		} else if (child.type === 'Block') {
+			block = child.estree;
+		}
+	}
+	if (!id) {
+		throw new Error('Missing Identifier');
+	}
+	if (block) {
+		block = replace(block, {
+			enter: blockNode => {
+				if (blockNode.type === 'ReturnStatement') {
+					blockNode.argument = id;
+					return blockNode;
+				}
+			},
+		}) as BlockStatement;
+	} else {
+		block = blockStatement([]);
+	}
+	block.body.unshift(variableDeclaration('let', [variableDeclarator(id, identifier('undefined'))]));
+	if (block.body[block.body.length - 1].type !== 'ReturnStatement') {
+		block.body.push(returnStatement(id));
+	}
+	return methodDefinition(id, 'get', functionExpression(block, params));
+}
+
+function ppPropertyLetDeclaration(node: ESIToken): any {
+	let id: Identifier | undefined;
+	let params: Identifier[] = [];
+	let block: BlockStatement | undefined;
+	for (const child of node.children) {
+		if (child.type === 'Identifier') {
+			id = child.estree;
+		} else if (child.type === 'ParameterList') {
+			params = child.estree;
+		} else if (child.type === 'Block') {
+			block = child.estree;
+		}
+	}
+	if (!id) {
+		throw new Error('Missing Identifier');
+	}
+	return methodDefinition(id, 'set', functionExpression(block ? block : blockStatement([]), params));
+}
+
+function ppPropertySetDeclaration(node: ESIToken): any {
+	let id: Identifier | undefined;
+	let params: Identifier[] = [];
+	let block: BlockStatement | undefined;
+	for (const child of node.children) {
+		if (child.type === 'Identifier') {
+			id = child.estree;
+		} else if (child.type === 'ParameterList') {
+			params = child.estree;
+		} else if (child.type === 'Block') {
+			block = child.estree;
+		}
+	}
+	if (!id) {
+		throw new Error('Missing Identifier');
+	}
+	return methodDefinition(id, 'set', functionExpression(block ? block : blockStatement([]), params));
 }

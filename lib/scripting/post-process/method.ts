@@ -31,9 +31,9 @@ import { ESIToken } from '../grammar/grammar';
 
 export function ppMethod(node: ESIToken): any {
 	let estree = null;
-	if (node.type === 'SubDeclaration' || node.type === 'SubDeclarationInline') {
+	if (node.type === 'SubDeclaration') {
 		estree = ppSubDeclaration(node);
-	} else if (node.type === 'FunctionDeclaration' || node.type === 'FunctionDeclarationInline') {
+	} else if (node.type === 'FunctionDeclaration') {
 		estree = ppFunctionDeclaration(node);
 	} else if (node.type === 'ParameterList') {
 		estree = ppParameterList(node);
@@ -56,8 +56,6 @@ function ppSubDeclaration(node: ESIToken): any {
 			}
 		} else if (child.type === 'Block') {
 			block = child.estree;
-		} else if (child.type === 'StatementsInline') {
-			block = blockStatement(child.estree);
 		}
 	}
 	if (!id) {
@@ -81,8 +79,6 @@ function ppFunctionDeclaration(node: ESIToken): any {
 			}
 		} else if (child.type === 'Block') {
 			block = child.estree;
-		} else if (child.type === 'StatementsInline') {
-			block = blockStatement(child.estree);
 		}
 	}
 	if (!id) {

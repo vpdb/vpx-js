@@ -53,6 +53,7 @@ import {
 	Super,
 	SwitchCase,
 	SwitchStatement,
+	ThisExpression,
 	UnaryExpression,
 	UnaryOperator,
 	VariableDeclaration,
@@ -235,6 +236,12 @@ export function newExpression(callee: Expression | Super, args: Expression[] | S
 		type: 'NewExpression',
 		callee,
 		arguments: args,
+	};
+}
+
+export function thisExpression(): ThisExpression {
+	return {
+		type: 'ThisExpression',
 	};
 }
 

@@ -3,11 +3,12 @@
 /* https://bottlecaps.de/convert/                                                      */
 /* https://menduz.com/ebnf-highlighter/                                                */
 /* https://github.com/dotnet/vblang/tree/master/spec                                   */
-
-start ::= Transpile
+ 
+start ::= Program
 
 Format ::= LogicalLine*
-Transpile ::= OptionStatement? (Statement | MethodDeclaration | ClassDecl)*
+Program ::= OptionStatement? (Statement | MethodDeclaration | ClassDeclaration)*
+
 
 /* 13.1 Lexical Grammar */
 
@@ -82,14 +83,16 @@ EmptyLiteral ::= 'Empty'
 NullLiteral ::= 'Null'
 Separator ::= '(' | ')' | '{' | '}' | '!' | '#' | ',' | '.' | ':' | '?'
 Operator ::= '&' | '*' | '+' | '-' | '/' | '\\' | '^' | '<' | '=' | '>'
+ElseIf ::= 'ElseIf' | 'Else' WS 'If'
 
 /* 13.3 Syntactic Grammar */
 
-AccessModifier ::= 'Public' | 'Private'
+AccessModifier ::= 'Public' WS 'Default' | 'Public' | 'Private'
 
 /* 13.3.2 Source Files and Namespaces */
 
-StatementTerminator ::= LineTerminator | ':' 
+StatementTerminator ::= LineTerminator | ':'
+StatementTerminatorInline ::= ':'
 
 OptionStatement ::= OptionExplicitStatement
 OptionExplicitStatement ::= 'Option' WS 'Explicit' OnOff? StatementTerminator 
@@ -97,15 +100,11 @@ OnOff ::= 'On' | 'Off'
 
 /* 13.3.3 Types */
 
-TypeModifier ::= AccessModifier
 IdentifierModifiers ::= ArrayNameModifier?
 
-ClassDecl ::= ClassDeclaration
+ClassDeclaration ::= 'Class' WS Identifier StatementTerminator ClassMemberDeclaration* 'End' WS 'Class' StatementTerminator
 
-ClassDeclaration ::= (ClassModifier WS)? 'Class' WS Identifier StatementTerminator ClassMemberDeclaration* 'End' WS 'Class' StatementTerminator
-ClassModifier ::= TypeModifier
-
-ClassMemberDeclaration ::= VariableMemberDeclaration | ConstantMemberDeclaration | ConstructorMemberDeclaration
+ClassMemberDeclaration ::= VariableMemberDeclaration | ConstantMemberDeclaration | ConstructorMemberDeclaration | MethodMemberDeclaration | PropertyMemberDeclaration
 
 ArrayTypeModifiers ::= ArrayTypeModifier+
 ArrayTypeModifier ::= OpenParenthesis RankList? CloseParenthesis
@@ -114,28 +113,29 @@ ArrayNameModifier ::= ArrayTypeModifiers | ArraySizeInitializationModifier
 
 /* 13.3.4 Type Members */
 
-MethodDeclaration ::= SubDeclaration | SubDeclarationInline | FunctionDeclaration | FunctionDeclarationInline
+MethodMemberDeclaration ::= MethodDeclaration
+MethodDeclaration ::= SubDeclaration | FunctionDeclaration
 SubSignature ::= 'Sub' WS Identifier ( OpenParenthesis ParameterList? CloseParenthesis )? 
 FunctionSignature ::= 'Function' WS Identifier ( OpenParenthesis ParameterList? CloseParenthesis )? 
-SubDeclaration ::= (AccessModifier WS)? SubSignature StatementTerminator Block? 'End' WS 'Sub' StatementTerminator 
-SubDeclarationInline ::= (AccessModifier WS)? SubSignature WS StatementsInline WS 'End' WS 'Sub' StatementTerminator 
-FunctionDeclaration ::= (AccessModifier WS)? FunctionSignature StatementTerminator Block? 'End' WS 'Function' StatementTerminator 
-FunctionDeclarationInline ::= (AccessModifier WS)? FunctionSignature WS StatementsInline WS 'End' WS 'Function' StatementTerminator 
+SubDeclaration ::= (AccessModifier WS)? SubSignature (WS | StatementTerminator) Block? 'End' WS 'Sub' StatementTerminator 
+FunctionDeclaration ::= (AccessModifier WS)? FunctionSignature (WS | StatementTerminator) Block? 'End' WS 'Function' StatementTerminator 
 
 ParameterList ::= Parameter ( Comma Parameter )*
 Parameter ::= (ParameterModifier WS)? ParameterIdentifier ( Equals ConstantExpression )? 
 ParameterModifier ::= 'ByVal' | 'ByRef'
 ParameterIdentifier ::= Identifier
 
-ConstructorMemberDeclaration ::= (ConstructorModifier? WS) 'Sub' WS 'Class_Initialize' ( OpenParenthesis CloseParenthesis )? LineTerminator Block? 'End' WS 'Sub' StatementTerminator
+ConstructorMemberDeclaration ::= (ConstructorModifier? WS) 'Sub' WS 'Class_Initialize' ( OpenParenthesis CloseParenthesis )? StatementTerminator Block? 'End' WS 'Sub' StatementTerminator
 ConstructorModifier ::= AccessModifier
 
 ConstantMemberDeclaration ::= (ConstantModifier WS)? 'Const' WS ConstantDeclarators StatementTerminator
+ConstantMemberDeclarationInline ::= (ConstantModifier WS)? 'Const' WS ConstantDeclarators
 ConstantModifier ::= AccessModifier
 ConstantDeclarators ::= ConstantDeclarator ( Comma ConstantDeclarator )*
 ConstantDeclarator ::= Identifier Equals ConstantExpression
 
 VariableMemberDeclaration ::= VariableModifier WS VariableDeclarators StatementTerminator
+VariableMemberDeclarationInline ::= VariableModifier WS VariableDeclarators
 VariableModifier ::= AccessModifier | 'Dim'
 VariableDeclarators ::= VariableDeclarator ( Comma VariableDeclarator )*
 VariableDeclarator ::= VariableIdentifiers
@@ -146,42 +146,56 @@ ArraySizeInitializationModifier ::= OpenParenthesis BoundList CloseParenthesis
 BoundList ::= Bound ( Comma Bound )*
 Bound ::= Expression
 
+PropertyMemberDeclaration ::= RegularPropertyMemberDeclaration
+RegularPropertyMemberDeclaration ::= PropertyModifier WS 'Property' WS PropertyAccessorDeclaration 'End' WS 'Property' StatementTerminator
+AutoPropertyModifier ::= AccessModifier
+PropertyModifier ::= AutoPropertyModifier
+PropertyAccessorDeclaration ::= PropertyGetDeclaration | PropertyLetDeclaration | PropertySetDeclaration
+PropertyGetDeclaration ::= 'Get' WS Identifier ( OpenParenthesis ParameterList? CloseParenthesis )? StatementTerminator Block?
+PropertyLetDeclaration ::= 'Let' WS Identifier ( OpenParenthesis ParameterList? CloseParenthesis )? StatementTerminator Block?
+PropertySetDeclaration ::= 'Set' WS Identifier ( OpenParenthesis ParameterList? CloseParenthesis )? StatementTerminator Block?
+
 /* 13.3.5 Statements */
 
-Statement ::= VariableMemberDeclaration | ConstantMemberDeclaration | WithStatement | AssignmentStatement | InvocationStatement | ArrayHandlingStatement  | LoopStatement | ConditionalStatement | ErrorHandlingStatement | BranchStatement
-StatementInline ::= AssignmentStatementInline | BranchStatementInline | InvocationStatementInline
-Block ::= Statements*
-Statements ::= Statement? ( ':' Statement? )* 
-StatementsInline ::= StatementInline? ( ':' StatementInline? )* 
+Statement ::= VariableMemberDeclaration | ConstantMemberDeclaration | WithStatement | AssignmentStatement | InvocationStatement | ArrayHandlingStatement | LoopStatement | ConditionalStatement | ErrorHandlingStatement | BranchStatement
+StatementInline ::= VariableMemberDeclarationInline | ConstantMemberDeclarationInline | AssignmentStatementInline | InvocationStatementInline | ArrayHandlingStatementInline | BranchStatementInline | LoopStatementInline | ConditionalStatementInline
 
-WithStatement ::= 'With' WS Expression StatementTerminator Block? 'End' WS 'With' StatementTerminator 
+Block ::= Statements* (StatementInline WS)?
+Statements ::= Statement? ( ':' Statement? )*
+StatementsInline ::= StatementInline? ( ':' StatementInline? )*
+
+WithStatement ::= 'With' WS Expression StatementTerminator Block? 'End' WS 'With' StatementTerminator
 AssignmentStatement ::= SetAssignmentStatement | RegularAssignmentStatement
-AssignmentStatementInline ::= RegularAssignmentStatementInline | SetAssignmentStatementInline
+AssignmentStatementInline ::= SetAssignmentStatementInline | RegularAssignmentStatementInline
 RegularAssignmentStatement ::= SubExpression Equals Expression StatementTerminator 
 RegularAssignmentStatementInline ::= SubExpression Equals Expression 
 SetAssignmentStatement ::= 'Set' WS SubExpression Equals (NewExpression (WS NothingLiteral)?| Expression) StatementTerminator 
-SetAssignmentStatementInline ::= 'Set' WS SubExpression Equals (NewExpression (WS NothingLiteral)? | Expression) 
+SetAssignmentStatementInline ::= 'Set' WS SubExpression Equals (NewExpression (WS NothingLiteral)?| Expression)
 NewExpression ::= 'New' WS Identifier
 InvocationStatement ::= ('Call' WS)? InvocationExpression StatementTerminator
 InvocationStatementInline ::= ('Call' WS)? InvocationExpression
 ConditionalStatement ::= IfStatement | SelectStatement
-IfStatement ::= LineIfThenStatement | BlockIfStatement 
-BlockIfStatement ::= 'If' WS BooleanExpression (WS? 'Then')? StatementTerminator Block? ElseIfStatement* ElseStatement? 'End' WS 'If' StatementTerminator 
-ElseIfStatement ::= 'ElseIf' WS BooleanExpression (WS? 'Then')? StatementTerminator Block? 
-ElseStatement ::= 'Else' StatementTerminator Block? 
-LineIfThenStatement ::= 'If' WS BooleanExpression WS 'Then' WS StatementsInline (WS 'Else' WS StatementsInline)? (WS 'End' WS 'If')? StatementTerminator 
+ConditionalStatementInline ::= IfStatementInline
+IfStatement ::= BlockIfStatement | LineIfThenStatement
+IfStatementInline ::= LineIfThenStatement
+BlockIfStatement ::= 'If' WS BooleanExpression (WS 'Then')? StatementTerminator Block? ElseIfStatement* ElseStatement? 'End' WS 'If' StatementTerminator
+ElseIfStatement ::= ElseIf WS BooleanExpression (WS 'Then')? StatementTerminator Block?
+ElseStatement ::= 'Else' StatementTerminator Block?
+LineIfThenStatement ::= 'If' WS BooleanExpression WS 'Then' WS StatementsInline (WS? 'Else' WS StatementsInline )? (WS? 'End' WS 'If')? LineTerminator?
 SelectStatement ::= 'Select' WS 'Case' WS Expression StatementTerminator CaseStatement* CaseElseStatement? 'End' WS 'Select' StatementTerminator 
 CaseStatement ::= 'Case' WS CaseClauses WS? StatementTerminator? Block? 
 CaseClauses ::= CaseClause ( Comma CaseClause )* 
 CaseClause ::= Expression
 CaseElseStatement ::= 'Case' WS 'Else' WS? StatementTerminator? Block? 
 LoopStatement ::= WhileStatement | DoLoopStatement | ForStatement | ForEachStatement
+LoopStatementInline ::= ForStatementInline
 WhileStatement ::= 'While' WS BooleanExpression StatementTerminator Block? 'WEnd' StatementTerminator 
 DoLoopStatement ::= DoTopLoopStatement | DoBottomLoopStatement
 DoTopLoopStatement ::= 'Do' ( WS WhileOrUntil WS BooleanExpression )? StatementTerminator Block? 'Loop' StatementTerminator 
 DoBottomLoopStatement ::= 'Do' StatementTerminator Block? 'Loop' WS WhileOrUntil WS BooleanExpression StatementTerminator 
 WhileOrUntil ::= 'While' | 'Until'
 ForStatement ::= 'For' WS LoopControlVariable Equals Expression WS 'To' WS Expression ( WS 'Step' WS Expression )? StatementTerminator Block? 'Next' StatementTerminator 
+ForStatementInline ::= 'For' WS LoopControlVariable Equals Expression WS 'To' WS Expression ( WS 'Step' WS Expression )? StatementTerminatorInline StatementsInline 'Next' 
 LoopControlVariable ::= Identifier | Expression 
 ForEachStatement ::= 'For' WS 'Each' WS LoopControlVariable WS 'In' WS? LineTerminator? Expression StatementTerminator Block? 'Next' StatementTerminator 
 ErrorHandlingStatement ::= UnstructuredErrorStatement
@@ -190,15 +204,18 @@ OnErrorStatement ::= 'On' WS 'Error' WS ErrorClause StatementTerminator
 ErrorClause ::= 'GoTo' WS '0' | 'Resume' WS 'Next' 
 BranchStatement ::= ExitStatement
 BranchStatementInline ::= ExitStatementInline
-ExitStatement ::= 'Exit' WS ExitKind StatementTerminator 
+ExitStatement ::= 'Exit' WS ExitKind StatementTerminator
 ExitStatementInline ::= 'Exit' WS ExitKind 
 ExitKind ::= 'Do' | 'For'  | 'Sub' | 'Function' | 'Property'
 
 ArrayHandlingStatement ::= RedimStatement | EraseStatement
+ArrayHandlingStatementInline ::= RedimStatementInline | EraseStatementInline
 RedimStatement ::= 'ReDim' (WS 'Preserve')? WS RedimClauses StatementTerminator 
+RedimStatementInline ::= 'ReDim' (WS 'Preserve')? WS RedimClauses
 RedimClauses ::= RedimClause ( Comma RedimClause )*
 RedimClause  ::= Identifier ArraySizeInitializationModifier
-EraseStatement ::= 'Erase' WS EraseExpressions StatementTerminator 
+EraseStatement ::= 'Erase' WS EraseExpressions StatementTerminator
+EraseStatementInline ::= 'Erase' WS EraseExpressions
 EraseExpressions ::= Expression ( Comma Expression )*
 
 /* 13.3.6 Expressions */
@@ -211,7 +228,7 @@ ParenthesizedExpression ::= OpenParenthesis Expression CloseParenthesis
 SimpleNameExpression ::= Identifier
 MemberAccessExpression ::= Period IdentifierOrKeyword
 
-InvocationExpression ::= (SimpleNameExpression | MemberAccessExpression) InvocationExpression? ArgumentList?
+InvocationExpression ::= (SimpleNameExpression | MemberAccessExpression) InvocationExpression? ArgumentList*
 ArgumentList ::= WS? Comma? Expression (Comma ArgumentList?)*
 
 LogicalOperatorExpression ::= RelationalOperatorExpression (WS ('And' | 'Or' | 'Xor' | 'Eqv') WS? LineTerminator? RelationalOperatorExpression)*  
@@ -226,7 +243,7 @@ TypeExpression ::= Value (WS 'Is' WS LineTerminator? Value)*
 LogicalNotOperatorExpression ::= 'Not' WS Value 
 UnaryExpression ::= ('+' | '-') Value 
 
-SubExpression ::= (SimpleNameExpression | MemberAccessExpression) (OpenParenthesis ArgumentList? CloseParenthesis)? SubExpression? 
+SubExpression ::= (SimpleNameExpression | MemberAccessExpression) (OpenParenthesis ArgumentList? CloseParenthesis)* SubExpression? 
 
 Value ::= LogicalNotOperatorExpression | UnaryExpression | SubExpression | SimpleExpression
 

@@ -45,9 +45,13 @@ export function ppHelpers(node: ESIToken): any {
 }
 
 function ppStatements(node: ESIToken): any {
-	const stmts: Statement[] = [];
+	let stmts: Statement[] = [];
 	for (const child of node.children) {
-		stmts.push(child.estree);
+		if (!Array.isArray(child.estree)) {
+			stmts.push(child.estree);
+		} else {
+			stmts = stmts.concat(...child.estree);
+		}
 	}
 	return stmts;
 }

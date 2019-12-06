@@ -49,7 +49,7 @@ export class Grammar {
 	private TOKEN_TERMINAL_KEYWORDS = 'Keywords ::= ';
 
 	private GRAMMAR_TARGET_FORMAT = 'Format';
-	private GRAMMAR_TARGET_TRANSPILE = 'Transpile';
+	private GRAMMAR_TARGET_PROGRAM = 'Program';
 
 	private parser: Parser;
 	private keywords: { [index: string]: string } = {};
@@ -83,11 +83,11 @@ export class Grammar {
 	}
 
 	public transpile(script: string): Program {
-		const statements: Statement[] = [];
+		const stmts: Statement[] = [];
 
 		const formattedScript = this.format(script);
 
-		const vbsAst = this.parser.getAST(formattedScript, this.GRAMMAR_TARGET_TRANSPILE);
+		const vbsAst = this.parser.getAST(formattedScript, this.GRAMMAR_TARGET_PROGRAM);
 
 		if (vbsAst === null) {
 			throw new Error('Unable to transpile script:\n\n' + formattedScript);
@@ -97,19 +97,15 @@ export class Grammar {
 
 		dashAst(vbsAst, {
 			leave(node: ESIToken, parent: ESIToken) {
-				if (
-					(node.type === 'Statement' ||
-						node.type === 'StatementInline' ||
-						node.type === 'MethodDeclaration' ||
-						node.type === 'ClassDecl') &&
-					parent.type === 'Transpile'
-				) {
-					if (node.children[0].estree) {
-						if (!Array.isArray(node.children[0].estree)) {
-							statements.push(node.children[0].estree as Statement);
-						} else {
-							for (const statement of node.children[0].estree as Statement[]) {
-								statements.push(statement);
+				if (node.type === 'Program') {
+					for (const child of node.children) {
+						if (child.estree) {
+							if (!Array.isArray(child.estree)) {
+								stmts.push(child.estree);
+							} else {
+								for (const statement of child.estree as Statement[]) {
+									stmts.push(statement);
+								}
 							}
 						}
 					}
@@ -130,7 +126,7 @@ export class Grammar {
 			},
 		});
 
-		return program(statements);
+		return program(stmts);
 	}
 
 	public format(script: string): string {
@@ -205,14 +201,25 @@ export class Grammar {
 							if (prevToken.type === 'Keyword' || prevToken.type === 'Identifier') {
 								tokens.push(' ');
 							}
+						} else if (token.text === '(' || token.text === '-') {
+							/**
+							 * Add spaces for the following:
+							 * 1) Keyword '(' - For ii=(oldSize*2)+1 To(newSize*2):mSlot(ii)=0:Next
+							 * 2) Keyword '-' - For ii=UBound(mSlot) To 0 Step -1:str=str&mSlot(ii):Next
+							 */
+							if (prevToken.type === 'Keyword') {
+								tokens.push(' ');
+							}
 						} else if (token.text === '.') {
 							/**
 							 * Add space for the following:
 							 * 1) <Space>. - case keyReset .Stop
 							 * Do not add a space for the following:
 							 * 1) :<Space>. - Case keyDown swCopy=swDown: .Switch(swCopy)=False
+							 * 2) =<Space>. - If .Exists(aBall) Then .Item(aBall)=.Item(aBall)+1
+							 * 3) +<Space>. - dips(0)=.Dip(0)+.Dip(1)*256+ .Dip(2)*65536+(.Dip(3) And &H7f)*&H1000000
 							 */
-							if (separator && prevToken.text !== ':') {
+							if (separator && (prevToken.type !== 'Operator' && prevToken.text !== ':')) {
 								tokens.push(' ');
 							}
 						}

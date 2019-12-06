@@ -30,6 +30,46 @@ describe('The VBScript transpiler - Class', () => {
 	it('should transpile an empty class', () => {
 		const vbs = `Class cvpmDictionary\nEnd Class`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('class cvpmDictionary {\n}');
+		expect(js).to.equal('class cvpmDictionary {\n    constructor() {\n    }\n}');
+	});
+
+	it('should transpile a class with private members', () => {
+		const vbs = `Class cvpmImpulseP\nPrivate mEnabled, mBalls\nEnd Class`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal(
+			'class cvpmImpulseP {\n    constructor() {\n        this.mEnabled = undefined;\n        this.mBalls = undefined;\n    }\n}',
+		);
+	});
+
+	it('should transpile a class with a get property', () => {
+		const vbs = `Class cvpmImpulseP\nPrivate mEnabled, mBalls\nEnd Class`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal(
+			'class cvpmImpulseP {\n    constructor() {\n        this.mEnabled = undefined;\n        this.mBalls = undefined;\n    }\n}',
+		);
+	});
+
+	it('should transpile a class with a let property', () => {
+		const vbs = `Class cvpmTimer\nPrivate mDebug\nPublic Property Let isDebug(enabled):mDebug=enabled:End Property\nEnd Class`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal(
+			'class cvpmTimer {\n    constructor() {\n        this.mDebug = undefined;\n    }\n    set isDebug(enabled) {\n        this.mDebug = enabled;\n    }\n}',
+		);
+	});
+
+	it('should transpile a class with method declaration', () => {
+		const vbs = `Class cvpmImpulseP\nPrivate mEntrySnd\nPublic Sub InitEntrySnd(aNoBall):mEntrySnd=aNoBall:End Sub\nEnd Class`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal(
+			'class cvpmImpulseP {\n    constructor() {\n        this.mEntrySnd = undefined;\n    }\n    InitEntrySnd(aNoBall) {\n        this.mEntrySnd = aNoBall;\n    }\n}',
+		);
+	});
+
+	it('should transpile a class with identifiers that match member identifiers', () => {
+		const vbs = `Class cvpmTimer\nPublic mBalls\nPublic Property Get Balls():Balls=mBalls.Keys:Test=x.mBalls:End Property\nEnd Class`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal(
+			'class cvpmTimer {\n    constructor() {\n        this.mBalls = undefined;\n    }\n    get Balls() {\n        let Balls = undefined;\n        Balls = this.mBalls.Keys;\n        Test = x.mBalls;\n        return Balls;\n    }\n}',
+		);
 	});
 });
