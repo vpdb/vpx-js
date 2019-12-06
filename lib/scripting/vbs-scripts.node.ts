@@ -33,6 +33,7 @@ function getLocalPath(fileName: string): string {
 		case 'core.vbs': return resolve(__dirname, '../../res/scripts/core.vbs');
 		case 'vpmkeys.vbs': return resolve(__dirname, '../../res/scripts/VPMKeys.vbs');
 		case 'wpc.vbs': return resolve(__dirname, '../../res/scripts/WPC.vbs');
+		case 'grammar.bnf': return resolve(__dirname, './grammar/grammar.bnf');
 	}
 	throw new Error(`Cannot find text file ${fileName}`);
 }
