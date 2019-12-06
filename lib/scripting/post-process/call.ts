@@ -29,6 +29,6 @@ export function ppCall(node: ESIToken): any {
 }
 
 function ppInvocationStatement(node: ESIToken): any {
-	const estree = node.children[0].type === 'InvocationExpression' ? node.children[0].estree : node.children[1].estree;
-	return expressionStatement(estree.type === 'CallExpression' ? estree : callExpression(estree, []));
+	const expr = node.children[0].estree;
+	return expressionStatement(expr.type === 'CallExpression' ? expr : callExpression(expr, []));
 }
