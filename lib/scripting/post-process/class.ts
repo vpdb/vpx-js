@@ -63,13 +63,15 @@ export function ppClass(node: ESIToken): any {
 }
 
 function ppClassDeclaration(node: ESIToken): any {
-	const id = node.children[0].type === 'Identifier' ? node.children[0].estree : node.children[1].estree;
+	let id = identifier('undefined');
 	let constructor: MethodDefinition | undefined;
 	const methodDefinitions: MethodDefinition[] = [];
 	const varStmts: Statement[] = [];
 	const ids: string[] = [];
 	for (const child of node.children) {
-		if (child.type === 'ClassMemberDeclaration') {
+		if (child.type === 'Identifier') {
+			id = child.estree;
+		} else if (child.type === 'ClassMemberDeclaration') {
 			const memberDecl = child.children[0];
 			if (memberDecl.type === 'ConstructorMemberDeclaration') {
 				constructor = memberDecl.estree;
@@ -152,7 +154,7 @@ function ppRegularPropertyMemberDeclaration(node: ESIToken): any {
 }
 
 function ppPropertyGetDeclaration(node: ESIToken): any {
-	let id: Identifier | undefined;
+	let id: Identifier = identifier('undefined');
 	let params: Identifier[] = [];
 	let block: BlockStatement | undefined;
 	for (const child of node.children) {
@@ -163,9 +165,6 @@ function ppPropertyGetDeclaration(node: ESIToken): any {
 		} else if (child.type === 'Block') {
 			block = child.estree;
 		}
-	}
-	if (!id) {
-		throw new Error('Missing Identifier');
 	}
 	if (block) {
 		block = replace(block, {
@@ -187,7 +186,7 @@ function ppPropertyGetDeclaration(node: ESIToken): any {
 }
 
 function ppPropertyLetDeclaration(node: ESIToken): any {
-	let id: Identifier | undefined;
+	let id: Identifier = identifier('undefined');
 	let params: Identifier[] = [];
 	let block: BlockStatement | undefined;
 	for (const child of node.children) {
@@ -198,15 +197,12 @@ function ppPropertyLetDeclaration(node: ESIToken): any {
 		} else if (child.type === 'Block') {
 			block = child.estree;
 		}
-	}
-	if (!id) {
-		throw new Error('Missing Identifier');
 	}
 	return methodDefinition(id, 'set', functionExpression(block ? block : blockStatement([]), params));
 }
 
 function ppPropertySetDeclaration(node: ESIToken): any {
-	let id: Identifier | undefined;
+	let id: Identifier = identifier('undefined');
 	let params: Identifier[] = [];
 	let block: BlockStatement | undefined;
 	for (const child of node.children) {
@@ -217,9 +213,6 @@ function ppPropertySetDeclaration(node: ESIToken): any {
 		} else if (child.type === 'Block') {
 			block = child.estree;
 		}
-	}
-	if (!id) {
-		throw new Error('Missing Identifier');
 	}
 	return methodDefinition(id, 'set', functionExpression(block ? block : blockStatement([]), params));
 }

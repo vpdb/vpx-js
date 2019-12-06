@@ -140,6 +140,20 @@ describe('The scripting VBS Helper', () => {
 		}
 	});
 
+	it('should erase a three-dimension array', () => {
+		let js = vbsHelper.dim([2, 2, 3]);
+		js[0][0][3] = 'Test';
+		js = vbsHelper.erase(js);
+		expect(js[0][0][3]).to.be.equal(null);
+		for (let index1 = 0; index1 <= 2; index1++) {
+			for (let index2 = 0; index2 <= 2; index2++) {
+				for (let index3 = 0; index3 <= 3; index3++) {
+					expect(js[index1][index2][index3]).to.be.equal(null);
+				}
+			}
+		}
+	});
+
 	it('should get a value in a single-dimension array using "getOrCall"', () => {
 		const js = vbsHelper.dim([20]);
 		js[20] = 'Test';
