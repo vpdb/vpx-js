@@ -20,7 +20,7 @@
 import { Grammars, IToken, Parser } from 'ebnf';
 import { generate } from 'escodegen';
 import { Program, Statement } from 'estree';
-import { readFileSync } from 'fs';
+import { getTextFile } from '../../refs.node';
 import { program } from '../estree';
 import { ppArray } from '../post-process/array';
 import { ppAssign } from '../post-process/assign';
@@ -37,6 +37,7 @@ import { ppLoop } from '../post-process/loop';
 import { ppMethod } from '../post-process/method';
 import { ppVarDecl } from '../post-process/vardecl';
 import { ppWith } from '../post-process/with';
+
 const dashAst = require('dash-ast');
 
 export interface ESIToken extends IToken {
@@ -73,7 +74,7 @@ export class Grammar {
 	];
 
 	constructor() {
-		let grammar = readFileSync('./lib/scripting/grammar/grammar.bnf').toString();
+		let grammar = getTextFile('grammar.bnf');
 
 		this.setKeywords(grammar);
 

@@ -21,6 +21,7 @@ import controller from '../../res/scripts/controller.vbs';
 import core from '../../res/scripts/core.vbs';
 import VPMKeys from '../../res/scripts/VPMKeys.vbs';
 import WPC from '../../res/scripts/WPC.vbs';
+import grammar from './grammar/grammar.bnf';
 
 export function getTextFile(fileName: string): string {
 	switch (fileName.toLowerCase()) {
@@ -28,6 +29,7 @@ export function getTextFile(fileName: string): string {
 		case 'core.vbs': return core;
 		case 'vpmkeys.vbs': return VPMKeys;
 		case 'wpc.vbs': return WPC;
+		case 'grammar.bnf': return grammar;
 	}
 	throw new Error(`Cannot find text file ${fileName}`);
 }
