@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import { BlockStatement } from 'estree';
 import {
 	assignmentExpression,
 	binaryExpression,
@@ -40,7 +41,7 @@ export function ppLoop(node: ESIToken): any {
 		estree = ppDoTopLoopStatement(node);
 	} else if (node.type === 'DoBottomLoopStatement') {
 		estree = ppDoBottomLoopStatement(node);
-	} else if (node.type === 'ForStatement') {
+	} else if (node.type === 'ForStatement' || node.type === 'ForStatementInline') {
 		estree = ppForStatement(node);
 	} else if (node.type === 'ForEachStatement') {
 		estree = ppForEachStatement(node);
@@ -112,7 +113,14 @@ function ppForStatement(node: ESIToken): any {
 	if (node.children[4].type === 'Expression') {
 		step = node.children[4].estree;
 	}
-	const block = step ? node.children[6].estree : node.children[5].estree;
+	let block: BlockStatement | undefined;
+	for (const child of node.children) {
+		if (child.type === 'Block') {
+			block = child.estree;
+		} else if (child.type === 'StatementsInline') {
+			block = blockStatement(child.estree);
+		}
+	}
 	return forStatement(
 		assignmentExpression(id, '=', expr),
 		step

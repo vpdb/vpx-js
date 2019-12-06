@@ -31,7 +31,7 @@ import { Transformer } from '../transformer/transformer';
 
 export function ppVarDecl(node: ESIToken): any {
 	let estree = null;
-	if (node.type === 'VariableMemberDeclaration') {
+	if (node.type === 'VariableMemberDeclaration' || node.type === 'VariableMemberDeclarationInline') {
 		estree = ppVariableMemberDeclaration(node);
 	} else if (node.type === 'VariableIdentifiers') {
 		estree = ppVariableIdentifiers(node);

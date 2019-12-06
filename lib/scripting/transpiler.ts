@@ -27,7 +27,6 @@ import { Table } from '../vpt/table/table';
 import { Grammar } from './grammar/grammar';
 import { Stdlib } from './stdlib';
 import { AmbiguityTransformer } from './transformer/ambiguity-transformer';
-import { CleanupTransformer } from './transformer/cleanup-transformer';
 import { EventTransformer } from './transformer/event-transformer';
 import { FunctionHoistTransformer } from './transformer/function-hoist-transformer';
 import { ReferenceTransformer } from './transformer/reference-transformer';
@@ -69,7 +68,6 @@ export class Transpiler {
 		logger().info('[Transpiler.transpile]: Parsed in %sms', Date.now() - then);
 
 		let now = Date.now();
-		ast = new CleanupTransformer(ast).transform();
 		ast = new FunctionHoistTransformer(ast).transform();
 		ast = new EventTransformer(ast, this.table.getElements()).transform();
 		ast = new ReferenceTransformer(ast, this.table, this.itemApis, this.enumApis, this.globalApi, this.stdlib).transform();

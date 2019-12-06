@@ -31,26 +31,26 @@ describe('The VBScript transpiler - Array', () => {
 	it('should transpile a one-dimension redim', () => {
 		const vbs = `Redim myarray(2)`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal(`let myarray = ${Transformer.VBSHELPER_NAME}.redim(myarray, [2]);`);
+		expect(js).to.equal(`myarray = ${Transformer.VBSHELPER_NAME}.redim(myarray, [2]);`);
 	});
 
 	it('should transpile a one-dimension redim with preserve', () => {
 		const vbs = `Redim Preserve myarray(2)`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal(`let myarray = ${Transformer.VBSHELPER_NAME}.redim(myarray, [2], true);`);
+		expect(js).to.equal(`myarray = ${Transformer.VBSHELPER_NAME}.redim(myarray, [2], true);`);
 	});
 
 	it('should transpile a multi-dimension redim', () => {
 		const vbs = `Redim myarray(2,4,3)`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal(`let myarray = ${Transformer.VBSHELPER_NAME}.redim(myarray, [\n    2,\n    4,\n    3\n]);`);
+		expect(js).to.equal(`myarray = ${Transformer.VBSHELPER_NAME}.redim(myarray, [\n    2,\n    4,\n    3\n]);`);
 	});
 
 	it('should transpile a multi-dimension redim with preserve', () => {
 		const vbs = `Redim Preserve myarray(2,4,3)`;
 		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(
-			`let myarray = ${Transformer.VBSHELPER_NAME}.redim(myarray, [\n    2,\n    4,\n    3\n], true);`,
+			`myarray = ${Transformer.VBSHELPER_NAME}.redim(myarray, [\n    2,\n    4,\n    3\n], true);`,
 		);
 	});
 
@@ -58,7 +58,7 @@ describe('The VBScript transpiler - Array', () => {
 		const vbs = `Redim myarray(2,4,3), myarray2(100)`;
 		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(
-			`let myarray = ${Transformer.VBSHELPER_NAME}.redim(myarray, [\n        2,\n        4,\n        3\n    ]), myarray2 = ${Transformer.VBSHELPER_NAME}.redim(myarray2, [100]);`,
+			`myarray = ${Transformer.VBSHELPER_NAME}.redim(myarray, [\n    2,\n    4,\n    3\n]);\nmyarray2 = ${Transformer.VBSHELPER_NAME}.redim(myarray2, [100]);`,
 		);
 	});
 
@@ -66,7 +66,7 @@ describe('The VBScript transpiler - Array', () => {
 		const vbs = `Redim Preserve myarray(2,4,3), myarray2(100)`;
 		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(
-			`let myarray = ${Transformer.VBSHELPER_NAME}.redim(myarray, [\n        2,\n        4,\n        3\n    ], true), myarray2 = ${Transformer.VBSHELPER_NAME}.redim(myarray2, [100], true);`,
+			`myarray = ${Transformer.VBSHELPER_NAME}.redim(myarray, [\n    2,\n    4,\n    3\n], true);\nmyarray2 = ${Transformer.VBSHELPER_NAME}.redim(myarray2, [100], true);`,
 		);
 	});
 

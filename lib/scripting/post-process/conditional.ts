@@ -65,7 +65,7 @@ function ppBlockIfStatement(node: ESIToken): any {
 }
 
 function ppElseIfStatement(node: ESIToken): any {
-	const expr = node.children[0].estree;
+	const expr = node.children[1].estree;
 	let block = null;
 	for (const child of node.children) {
 		if (child.type === 'Block') {
@@ -88,7 +88,7 @@ function ppElseStatement(node: ESIToken): any {
 function ppLineIfThenStatement(node: ESIToken): any {
 	const expr = node.children[0].estree;
 	const stmts = node.children[1].estree;
-	const elseStmts = node.children[2].estree;
+	const elseStmts = node.children.length > 2 ? node.children[2].estree : null;
 	return ifStatement(expr, blockStatement(stmts), elseStmts ? blockStatement(elseStmts) : null);
 }
 

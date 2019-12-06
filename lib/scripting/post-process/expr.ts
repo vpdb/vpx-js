@@ -205,8 +205,9 @@ function ppMemberAccessExpression(node: ESIToken) {
 
 function ppSubExpression(node: ESIToken): any {
 	let id: any = null;
-	let args = null;
+	const argLists = [];
 	let expr = null;
+	let args;
 	for (const child of node.children) {
 		if (child.type === 'MemberAccessExpression' || child.type === 'SimpleNameExpression') {
 			id = child.estree;
@@ -214,11 +215,20 @@ function ppSubExpression(node: ESIToken): any {
 			args = [];
 		} else if (child.type === 'ArgumentList') {
 			args = child.estree;
+		} else if (child.type === 'CloseParenthesis') {
+			argLists.push(args);
 		} else if (child.type === 'SubExpression') {
 			expr = child.estree;
 		}
 	}
-	let estree = args != null ? callExpression(id, args) : id;
+	let estree: any;
+	if (argLists.length > 0) {
+		for (const argList of argLists) {
+			estree = callExpression(estree ? estree : id, argList);
+		}
+	} else {
+		estree = id;
+	}
 	if (expr != null) {
 		let found = false;
 		estree = replace(expr, {
@@ -237,20 +247,25 @@ function ppSubExpression(node: ESIToken): any {
 
 function ppInvocationExpression(node: ESIToken): any {
 	let id: any = null;
-	let args = null;
+	const argLists = [];
 	let expr = null;
 	for (const child of node.children) {
 		if (child.type === 'MemberAccessExpression' || child.type === 'SimpleNameExpression') {
 			id = child.estree;
-		} else if (child.type === 'OpenParenthesis') {
-			args = [];
 		} else if (child.type === 'ArgumentList') {
-			args = child.estree;
+			argLists.push(child.estree);
 		} else if (child.type === 'InvocationExpression') {
 			expr = child.estree;
 		}
 	}
-	let estree = args != null ? callExpression(id, args) : id;
+	let estree: any;
+	if (argLists.length > 0) {
+		for (const argList of argLists) {
+			estree = callExpression(estree ? estree : id, argList);
+		}
+	} else {
+		estree = id;
+	}
 	if (expr != null) {
 		let found = false;
 		estree = replace(expr, {
