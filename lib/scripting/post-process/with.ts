@@ -36,12 +36,10 @@ function ppWithStatement(node: ESIToken): any {
 	for (const child of node.children) {
 		if (child.type === 'Block') {
 			const block = replace(child.estree, {
-				leave: astNode => {
-					if (astNode != null) {
-						if (astNode.type === 'Identifier') {
-							if (astNode.name.startsWith('.')) {
-								return memberExpression(expr, identifier(astNode.name.substr(1)));
-							}
+				leave: blockNode => {
+					if (blockNode.type === 'Identifier') {
+						if (blockNode.name.startsWith('.')) {
+							return memberExpression(expr, identifier(blockNode.name.substr(1)));
 						}
 					}
 				},

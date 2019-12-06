@@ -57,23 +57,26 @@ function ppWhileStatement(node: ESIToken): any {
 }
 
 function ppDoTopLoopStatement(node: ESIToken): any {
+	let block: BlockStatement | undefined;
+	for (const child of node.children) {
+		if (child.type === 'Block') {
+			block = child.estree;
+		}
+	}
+	if (!block) {
+		block = blockStatement([]);
+	}
 	if (node.children[0].type === 'WhileOrUntil') {
 		if (node.children[0].text === 'While') {
 			const expr = node.children[1].estree;
-			const block = node.children[3].type === 'Block' ? node.children[3].estree : null;
-			return whileStatement(expr, block ? block : blockStatement([]));
+			return whileStatement(expr, block);
 		} else {
 			const expr = node.children[1].estree;
-			let block = node.children[3].type === 'Block' ? node.children[3].estree : null;
-			if (block === null) {
-				block = blockStatement([]);
-			}
 			block.body.unshift(ifStatement(expr, breakStatement(), null));
 			return doWhileStatement(block, literal(true));
 		}
 	} else {
-		const block = node.children[1].type === 'Block' ? node.children[1].estree : null;
-		return doWhileStatement(block ? block : blockStatement([]), literal(true));
+		return doWhileStatement(block, literal(true));
 	}
 }
 

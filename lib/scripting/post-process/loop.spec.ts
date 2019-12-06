@@ -33,6 +33,12 @@ describe('The VBScript transpiler - Loop', () => {
 		expect(js).to.equal('for (j = 1; j <= 20; j += 1) {\n    total = total + 1;\n}');
 	});
 
+	it('should transpile an empty "For...Next" statement', () => {
+		const vbs = `For j = 1 To 20\nNext`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal('for (j = 1; j <= 20; j += 1) {\n}');
+	});
+
 	it('should transpile an inline "For...Next" statement', () => {
 		const vbs = `If mBalls Then For ii = 1 to mBalls : x = 5 : Next`;
 		const js = grammar.vbsToJs(vbs);

@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { assignmentExpression, expressionStatement, identifier, newExpression } from '../estree';
+import { assignmentExpression, expressionStatement } from '../estree';
 import { ESIToken } from '../grammar/grammar';
 
 export function ppAssign(node: ESIToken): any {
