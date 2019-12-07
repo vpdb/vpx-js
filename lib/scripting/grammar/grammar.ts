@@ -83,53 +83,6 @@ export class Grammar {
 		this.parser = new Parser(Grammars.Custom.getRules(grammar), {});
 	}
 
-	public transpile(script: string): Program {
-		const stmts: Statement[] = [];
-
-		const formattedScript = this.format(script);
-
-		const vbsAst = this.parser.getAST(formattedScript, this.GRAMMAR_TARGET_PROGRAM);
-
-		if (vbsAst === null) {
-			throw new Error('Unable to transpile script:\n\n' + formattedScript);
-		}
-
-		const postProcessors = this.postProcessors;
-
-		dashAst(vbsAst, {
-			leave(node: ESIToken, parent: ESIToken) {
-				if (node.type === 'Program') {
-					for (const child of node.children) {
-						if (child.estree) {
-							if (!Array.isArray(child.estree)) {
-								stmts.push(child.estree);
-							} else {
-								for (const statement of child.estree as Statement[]) {
-									stmts.push(statement);
-								}
-							}
-						}
-					}
-				} else {
-					let estree: any = null;
-					for (const postProcessor of postProcessors) {
-						estree = postProcessor(node);
-						if (estree) {
-							break;
-						}
-					}
-					if (estree !== null) {
-						node.estree = estree;
-					} else if (node.children[0]) {
-						node.estree = node.children[0].estree;
-					}
-				}
-			},
-		});
-
-		return program(stmts);
-	}
-
 	public format(script: string): string {
 		let output = '';
 
@@ -140,6 +93,14 @@ export class Grammar {
 		let separator = false;
 
 		const ast = this.parser.getAST(script.trim() + '\n', this.GRAMMAR_TARGET_FORMAT);
+
+		/**
+		 * Reformat the script by parsing into logical lines and tokens.
+		 * This will remove comments and REM statements, case correct keywords,
+		 * join lines that use line continuation (_), and remove all unnecessary
+		 * whitespace. Removing whitespace significantly improves performance.
+		 * Rules for including whitespace are commented inline below.
+		 */
 
 		dashAst(ast, {
 			enter(node: IToken, parent: IToken) {
@@ -233,6 +194,58 @@ export class Grammar {
 		});
 
 		return output;
+	}
+
+	public transpile(script: string): Program {
+		const stmts: Statement[] = [];
+
+		const formattedScript = this.format(script);
+
+		const vbsAst = this.parser.getAST(formattedScript, this.GRAMMAR_TARGET_PROGRAM);
+
+		if (vbsAst === null) {
+			throw new Error('Unable to transpile script:\n\n' + formattedScript);
+		}
+
+		const postProcessors = this.postProcessors;
+
+		dashAst(vbsAst, {
+			leave(node: ESIToken, parent: ESIToken) {
+				if (node.type === 'Program') {
+					for (const child of node.children) {
+						if (child.estree) {
+							if (!Array.isArray(child.estree)) {
+								stmts.push(child.estree);
+							} else {
+								stmts.push(...child.estree);
+							}
+						}
+					}
+				} else {
+					let estree: any = null;
+					/**
+					 * Loop through all registered post processors until an estree
+					 * is returned. If no post processors can handle the node, and
+					 * the node has a child, copy it's estree. This will allow estrees
+					 * to get propagated to parents, and we wont need to have
+					 * post-processors for every single rule in the grammar.
+					 */
+					for (const postProcessor of postProcessors) {
+						estree = postProcessor(node);
+						if (estree) {
+							break;
+						}
+					}
+					if (estree !== null) {
+						node.estree = estree;
+					} else if (node.children[0]) {
+						node.estree = node.children[0].estree;
+					}
+				}
+			},
+		});
+
+		return program(stmts);
 	}
 
 	public vbsToJs(script: string): string {

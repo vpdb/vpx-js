@@ -30,15 +30,15 @@ import {
 import { ESIToken } from '../grammar/grammar';
 
 export function ppMethod(node: ESIToken): any {
-	let estree = null;
-	if (node.type === 'SubDeclaration') {
-		estree = ppSubDeclaration(node);
-	} else if (node.type === 'FunctionDeclaration') {
-		estree = ppFunctionDeclaration(node);
-	} else if (node.type === 'ParameterList') {
-		estree = ppParameterList(node);
+	switch (node.type) {
+		case 'SubDeclaration':
+			return ppSubDeclaration(node);
+		case 'FunctionDeclaration':
+			return ppFunctionDeclaration(node);
+		case 'ParameterList':
+			return ppParameterList(node);
 	}
-	return estree;
+	return null;
 }
 
 function ppSubDeclaration(node: ESIToken): any {

@@ -21,25 +21,25 @@ import { blockStatement, breakStatement, ifStatement, switchCase, switchStatemen
 import { ESIToken } from '../grammar/grammar';
 
 export function ppConditional(node: ESIToken): any {
-	let estree = null;
-	if (node.type === 'BlockIfStatement') {
-		estree = ppBlockIfStatement(node);
-	} else if (node.type === 'ElseIfStatement') {
-		estree = ppElseIfStatement(node);
-	} else if (node.type === 'ElseStatement') {
-		estree = ppElseStatement(node);
-	} else if (node.type === 'LineIfThenStatement') {
-		estree = ppLineIfThenStatement(node);
-	} else if (node.type === 'SelectStatement') {
-		estree = ppSelectStatement(node);
-	} else if (node.type === 'CaseStatement') {
-		estree = ppCaseStatement(node);
-	} else if (node.type === 'CaseClauses') {
-		estree = ppCaseClauses(node);
-	} else if (node.type === 'CaseElseStatement') {
-		estree = ppCaseElseStatement(node);
+	switch (node.type) {
+		case 'BlockIfStatement':
+			return ppBlockIfStatement(node);
+		case 'ElseIfStatement':
+			return ppElseIfStatement(node);
+		case 'ElseStatement':
+			return ppElseStatement(node);
+		case 'LineIfThenStatement':
+			return ppLineIfThenStatement(node);
+		case 'SelectStatement':
+			return ppSelectStatement(node);
+		case 'CaseStatement':
+			return ppCaseStatement(node);
+		case 'CaseClauses':
+			return ppCaseClauses(node);
+		case 'CaseElseStatement':
+			return ppCaseElseStatement(node);
 	}
-	return estree;
+	return null;
 }
 
 function ppBlockIfStatement(node: ESIToken): any {

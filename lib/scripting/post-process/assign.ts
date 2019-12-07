@@ -21,13 +21,15 @@ import { assignmentExpression, expressionStatement } from '../estree';
 import { ESIToken } from '../grammar/grammar';
 
 export function ppAssign(node: ESIToken): any {
-	let estree = null;
-	if (node.type === 'RegularAssignmentStatement' || node.type === 'RegularAssignmentStatementInline') {
-		estree = ppRegularAssignmentStatement(node);
-	} else if (node.type === 'SetAssignmentStatement' || node.type === 'SetAssignmentStatementInline') {
-		estree = ppSetAssignmentStatement(node);
+	switch (node.type) {
+		case 'RegularAssignmentStatement':
+		case 'RegularAssignmentStatementInline':
+			return ppRegularAssignmentStatement(node);
+		case 'SetAssignmentStatement':
+		case 'SetAssignmentStatementInline':
+			return ppSetAssignmentStatement(node);
 	}
-	return estree;
+	return null;
 }
 
 function ppRegularAssignmentStatement(node: ESIToken): any {

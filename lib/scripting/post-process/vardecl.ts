@@ -30,15 +30,16 @@ import { ESIToken } from '../grammar/grammar';
 import { Transformer } from '../transformer/transformer';
 
 export function ppVarDecl(node: ESIToken): any {
-	let estree = null;
-	if (node.type === 'VariableMemberDeclaration' || node.type === 'VariableMemberDeclarationInline') {
-		estree = ppVariableMemberDeclaration(node);
-	} else if (node.type === 'VariableIdentifiers') {
-		estree = ppVariableIdentifiers(node);
-	} else if (node.type === 'VariableIdentifier') {
-		estree = ppVariableIdentifier(node);
+	switch (node.type) {
+		case 'VariableMemberDeclaration':
+		case 'VariableMemberDeclarationInline':
+			return ppVariableMemberDeclaration(node);
+		case 'VariableIdentifiers':
+			return ppVariableIdentifiers(node);
+		case 'VariableIdentifier':
+			return ppVariableIdentifier(node);
 	}
-	return estree;
+	return null;
 }
 
 function ppVariableMemberDeclaration(node: ESIToken): any {

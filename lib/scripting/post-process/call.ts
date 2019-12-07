@@ -21,11 +21,12 @@ import { callExpression, expressionStatement } from '../estree';
 import { ESIToken } from '../grammar/grammar';
 
 export function ppCall(node: ESIToken): any {
-	let estree = null;
-	if (node.type === 'InvocationStatement' || node.type === 'InvocationStatementInline') {
-		estree = ppInvocationStatement(node);
+	switch (node.type) {
+		case 'InvocationStatement':
+		case 'InvocationStatementInline':
+			return ppInvocationStatement(node);
 	}
-	return estree;
+	return null;
 }
 
 function ppInvocationStatement(node: ESIToken): any {

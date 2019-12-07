@@ -21,11 +21,12 @@ import { breakStatement, returnStatement } from '../estree';
 import { ESIToken } from '../grammar/grammar';
 
 export function ppBranch(node: ESIToken): any {
-	let estree = null;
-	if (node.type === 'ExitStatement' || node.type === 'ExitStatementInline') {
-		estree = ppExitStatement(node);
+	switch (node.type) {
+		case 'ExitStatement':
+		case 'ExitStatementInline':
+			return ppExitStatement(node);
 	}
-	return estree;
+	return null;
 }
 
 function ppExitStatement(node: ESIToken): any {
