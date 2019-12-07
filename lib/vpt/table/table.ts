@@ -414,10 +414,9 @@ export class Table implements IScriptable<TableApi>, IRenderable<TableState> {
 	}
 
 	public async setupAudio(adapter: ISoundAdapter<any>): Promise<void> {
-		// preload sounds
-		for (const sound of Object.values(this.sounds)) {
-			await sound.loadSound(this, adapter);
-		}
+		const promiseMap: Promise<any>[] = Object.values(this.sounds).map((sound => sound.loadSound(this, adapter)));
+		return Promise.all(promiseMap)
+			.then(() => adapter.initializeSound());
 	}
 
 	public prepareToPlay() {

@@ -8,6 +8,12 @@ export interface ISoundAdapter<T> {
 	loadSound(name: string, data: Buffer): Promise<T>;
 
 	/**
+	 * signals the loader that all sounds are loaded using the loadSound function
+	 * TODO: merge initialize sound with load sound?
+	 */
+	initializeSound(): Promise<any>;
+
+	/**
 	 * Play an audio sample OR modify an already playing sample (increase/decrease the frequency of an already playing samples)
 	 * @param sample
 	 */
