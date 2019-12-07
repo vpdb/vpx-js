@@ -21,6 +21,7 @@ import { Grammars, IToken, Parser } from 'ebnf';
 import { generate } from 'escodegen';
 import { Program, Statement } from 'estree';
 import { getTextFile } from '../../refs.node';
+import { logger, progress } from '../../util/logger';
 import { program } from '../estree';
 import { ppArray } from '../post-process/array';
 import { ppAssign } from '../post-process/assign';
@@ -199,16 +200,23 @@ export class Grammar {
 	public transpile(script: string): Program {
 		const stmts: Statement[] = [];
 
+		let now = Date.now();
+		progress().details('formatting');
 		const formattedScript = this.format(script);
+		logger().info('[Grammar.transpile] Formatted in %sms', Date.now() - now);
 
+		now = Date.now();
+		progress().details('transpiling');
 		const vbsAst = this.parser.getAST(formattedScript, this.GRAMMAR_TARGET_PROGRAM);
+		logger().info('[Grammar.transpile] Parsed in %sms', Date.now() - now);
 
 		if (vbsAst === null) {
 			throw new Error('Unable to transpile script:\n\n' + formattedScript);
 		}
 
 		const postProcessors = this.postProcessors;
-
+		now = Date.now();
+		progress().details('post-processing');
 		dashAst(vbsAst, {
 			leave(node: ESIToken, parent: ESIToken) {
 				if (node.type === 'Program') {
@@ -244,6 +252,7 @@ export class Grammar {
 				}
 			},
 		});
+		logger().info('[Grammar.transpile] Post-processed in %sms', Date.now() - now);
 
 		return program(stmts);
 	}
