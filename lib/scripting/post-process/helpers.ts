@@ -45,24 +45,24 @@ export function ppHelpers(node: ESIToken): any {
 }
 
 function ppStatements(node: ESIToken): any {
-	let stmts: Statement[] = [];
+	const stmts: Statement[] = [];
 	for (const child of node.children) {
 		if (!Array.isArray(child.estree)) {
 			stmts.push(child.estree);
 		} else {
-			stmts = stmts.concat(...child.estree);
+			stmts.push(...child.estree);
 		}
 	}
 	return stmts;
 }
 
 function ppBlock(node: ESIToken): any {
-	let stmts: Statement[] = [];
+	const stmts: Statement[] = [];
 	for (const child of node.children) {
 		if (!Array.isArray(child.estree)) {
 			stmts.push(child.estree);
 		} else {
-			stmts = stmts.concat(...child.estree);
+			stmts.push(...child.estree);
 		}
 	}
 	return blockStatement(stmts);
