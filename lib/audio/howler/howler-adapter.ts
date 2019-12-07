@@ -5,6 +5,7 @@ import { ISoundAdapter, PlaybackSettings } from '../sound-adapter';
 export class HowlerSoundAdapter implements ISoundAdapter<string> {
 
 	private readonly sounds: { [key: string]: string } = {};
+	private readonly dataUriArray: string[] = [];
 
 	/**
 	 * once all audio samples are loaded, soundEnabled should be set to true
@@ -31,32 +32,48 @@ export class HowlerSoundAdapter implements ISoundAdapter<string> {
 		}
 	}
 
-	public loadSound(name: string, data: Buffer): Promise<string> {
-		this.sounds[name] = URL.createObjectURL(new Blob([data.buffer], {type: 'audio/wave'}));
+	private loadBlob(file): Promise<string> {
+		return new Promise((resolve) => {
+			const fileReader = new FileReader();
+			fileReader.onload = () => { resolve(fileReader.result + '')};
+			fileReader.readAsDataURL(file);
+		});
+	}
+
+	public async loadSound(name: string, data: Buffer): Promise<string> {
+/*		this.sounds[name] = URL.createObjectURL(new Blob([data.buffer], {type: 'audio/wave'}));
+		this.dataUriArray.push(this.sounds[name]);
+//		const rawAudio = window.btoa(data.buffer.toString());
+//		this.dataUriArray.push('data:audio/wave;base64,' + rawAudio);
 		logger().debug('loaded sample %s', this.sounds[name]);
-		return Promise.resolve('');
+		return Promise.resolve('');*/
+		console.log('data.buffer',data.buffer.byteLength);
+		const loadedData = await this.loadBlob(new Blob([data.buffer], { type: 'audio/wave' }));
+		console.log('loadedData', loadedData.substr(0, 50));
+		this.dataUriArray.push(loadedData);
 	}
 
 	public initializeSound(): Promise<any> {
-		logger().debug('initializeSound %s', this.sounds.length);
+		logger().debug('initializeSound %s', this.dataUriArray.length);
 
 		return new Promise((resolve, reject) => {
 			const startTs: number = Date.now();
 			this.player = new Howl({
-				src: this.sounds[name],
-				format: ['wav', 'mp3' ],
+				src: this.dataUriArray,
+				format: ['wav'],
+				html5: false,
 				onplayerror: (soundId, error) => {
-				  console.log('SOUND PLAYER ERROR', error, soundId);
+					logger().error('SOUND PLAYER ERROR', error, soundId);
 				},
-				onloaderror: (soundId, error) => {
-				  console.log('SOUND PLAYER LOAD ERROR', error, soundId);
-				  reject(error);
+				onloaderror: (soundId, errorMsg) => {
+					logger().error('SOUND LOAD ERROR', errorMsg, soundId);
+					reject(new Error(errorMsg));
 				},
 				onload: () => {
-				  this.soundEnabled = true;
-				  const loadTimeMs = Date.now() - startTs;
-				  console.log('SOUND LOADED', loadTimeMs);
-				  resolve();
+					this.soundEnabled = true;
+					const loadTimeMs = Date.now() - startTs;
+					logger().debug('SOUND LOADED', loadTimeMs);
+					resolve();
 				},
 			});
 		});
