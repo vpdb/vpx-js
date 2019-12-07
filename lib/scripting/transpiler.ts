@@ -20,7 +20,7 @@
 import { generate } from 'escodegen';
 import { Program } from 'estree';
 import { Player } from '../game/player';
-import { logger } from '../util/logger';
+import { logger, progress } from '../util/logger';
 import { Enums, EnumsApi } from '../vpt/enums';
 import { GlobalApi } from '../vpt/global-api';
 import { Table } from '../vpt/table/table';
@@ -90,9 +90,15 @@ export class Transpiler {
 		globalObject = globalObject || (typeof window !== 'undefined' ? 'window' : (typeof self !== 'undefined' ? 'self' : 'global'));
 		const js = this.transpile(vbs, 'play', globalObject);
 
+		let now = Date.now();
+		progress().details('evaluating');
 		// tslint:disable-next-line:no-eval
 		eval('//@ sourceURL=tablescript.js\n' + js);
+		logger().info('[Transpiler.execute] Evaluated in %sms', Date.now() - now);
+		progress().details('executing');
+		now = Date.now();
 		play(new Proxy(globalScope, new VbsProxyHandler()), this.itemApis, this.enumApis, this.globalApi, this.stdlib, new VBSHelper(this), this.player);
+		logger().info('[Transpiler.execute] Executed in %sms', Date.now() - now);
 	}
 
 	private parse(vbs: string): Program {
