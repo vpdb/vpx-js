@@ -236,6 +236,11 @@ function ppSubExpression(node: ESIToken): any {
 	} else {
 		estree = id;
 	}
+	/**
+	 * As additional subexpressions are added, only wrap the first found
+	 * identifier in a memberExpression. Also, strip the dot from the
+	 * identifier, so we don't get a..b .
+	 */
 	if (expr != null) {
 		let found = false;
 		estree = replace(expr, {
@@ -273,6 +278,11 @@ function ppInvocationExpression(node: ESIToken): any {
 	} else {
 		estree = id;
 	}
+	/**
+	 * As additional expressions are added, only wrap the first found
+	 * identifier in a memberExpression. Also, strip the dot from the
+	 * identifier, so we don't get a..b .
+	 */
 	if (expr != null) {
 		let found = false;
 		estree = replace(expr, {

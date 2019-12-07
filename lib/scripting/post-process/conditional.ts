@@ -94,10 +94,10 @@ function ppLineIfThenStatement(node: ESIToken): any {
 
 function ppSelectStatement(node: ESIToken): any {
 	const expr = node.children[0].estree;
-	let cases: any = [];
+	const cases: any = [];
 	for (const child of node.children) {
 		if (child.type === 'CaseStatement') {
-			cases = cases.concat([...child.estree]);
+			cases.push(...child.estree);
 		} else if (child.type === 'CaseElseStatement') {
 			cases.push(child.estree);
 		}

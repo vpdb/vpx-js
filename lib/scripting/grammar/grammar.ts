@@ -47,15 +47,15 @@ export interface ESIToken extends IToken {
 }
 
 export class Grammar {
-	private TOKEN_TERMINAL_KEYWORDS = 'Keywords ::= ';
+	private readonly TOKEN_TERMINAL_KEYWORDS = 'Keywords ::= ';
 
-	private GRAMMAR_TARGET_FORMAT = 'Format';
-	private GRAMMAR_TARGET_PROGRAM = 'Program';
+	private readonly GRAMMAR_TARGET_FORMAT = 'Format';
+	private readonly GRAMMAR_TARGET_PROGRAM = 'Program';
 
-	private parser: Parser;
-	private keywords: { [index: string]: string } = {};
+	private readonly parser: Parser;
+	private readonly keywords: { [index: string]: string } = {};
 
-	private postProcessors = [
+	private readonly postProcessors = [
 		ppHelpers,
 		ppLiteral,
 		ppExpr,
@@ -251,6 +251,14 @@ export class Grammar {
 	public vbsToJs(script: string): string {
 		return generate(this.transpile(script));
 	}
+
+	/**
+	 * To keep the grammar readable, keywords are defined matching the case
+	 * from MS documentation. Each keyword is stored in a lookup table, and
+	 * then turned into a case insensitive version. For example, 'ByVal' will
+	 * become (B|b)(Y|y)(V|v)(A|a)(L|l). During the format process, all
+	 * keywords will be standardized using the lookup table.
+	 */
 
 	private setKeywords(grammar: string) {
 		const startIndex = grammar.indexOf(this.TOKEN_TERMINAL_KEYWORDS) + this.TOKEN_TERMINAL_KEYWORDS.length;
