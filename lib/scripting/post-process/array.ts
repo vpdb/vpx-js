@@ -31,19 +31,21 @@ import { ESIToken } from '../grammar/grammar';
 import { Transformer } from '../transformer/transformer';
 
 export function ppArray(node: ESIToken): any {
-	let estree = null;
-	if (node.type === 'RedimStatement' || node.type === 'RedimStatementInline') {
-		estree = ppRedimStatement(node);
-	} else if (node.type === 'RedimClauses') {
-		estree = ppRedimClauses(node);
-	} else if (node.type === 'RedimClause') {
-		estree = ppRedimClause(node);
-	} else if (node.type === 'EraseStatement' || node.type === 'EraseStatementInline') {
-		estree = ppEraseStatement(node);
-	} else if (node.type === 'EraseExpressions') {
-		estree = ppEraseExpressions(node);
+	switch (node.type) {
+		case 'RedimStatement':
+		case 'RedimStatementInline':
+			return ppRedimStatement(node);
+		case 'RedimClauses':
+			return ppRedimClauses(node);
+		case 'RedimClause':
+			return ppRedimClause(node);
+		case 'EraseStatement':
+		case 'EraseStatementInline':
+			return ppEraseStatement(node);
+		case 'EraseExpressions':
+			return ppEraseExpressions(node);
 	}
-	return estree;
+	return null;
 }
 
 function ppRedimStatement(node: ESIToken): any {

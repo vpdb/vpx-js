@@ -45,21 +45,21 @@ import {
 import { ESIToken } from '../grammar/grammar';
 
 export function ppClass(node: ESIToken): any {
-	let estree = null;
-	if (node.type === 'ClassDeclaration') {
-		estree = ppClassDeclaration(node);
-	} else if (node.type === 'ConstructorMemberDeclaration') {
-		estree = ppConstructorMemberDeclaration(node);
-	} else if (node.type === 'RegularPropertyMemberDeclaration') {
-		estree = ppRegularPropertyMemberDeclaration(node);
-	} else if (node.type === 'PropertyGetDeclaration') {
-		estree = ppPropertyGetDeclaration(node);
-	} else if (node.type === 'PropertyLetDeclaration') {
-		estree = ppPropertyLetDeclaration(node);
-	} else if (node.type === 'PropertySetDeclaration') {
-		estree = ppPropertySetDeclaration(node);
+	switch (node.type) {
+		case 'ClassDeclaration':
+			return ppClassDeclaration(node);
+		case 'ConstructorMemberDeclaration':
+			return ppConstructorMemberDeclaration(node);
+		case 'RegularPropertyMemberDeclaration':
+			return ppRegularPropertyMemberDeclaration(node);
+		case 'PropertyGetDeclaration':
+			return ppPropertyGetDeclaration(node);
+		case 'PropertyLetDeclaration':
+			return ppPropertyLetDeclaration(node);
+		case 'PropertySetDeclaration':
+			return ppPropertySetDeclaration(node);
 	}
-	return estree;
+	return null;
 }
 
 function ppClassDeclaration(node: ESIToken): any {

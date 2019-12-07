@@ -23,11 +23,11 @@ import { identifier, memberExpression } from '../estree';
 import { ESIToken } from '../grammar/grammar';
 
 export function ppWith(node: ESIToken): any {
-	let estree = null;
-	if (node.type === 'WithStatement') {
-		estree = ppWithStatement(node);
+	switch (node.type) {
+		case 'WithStatement':
+			return ppWithStatement(node);
 	}
-	return estree;
+	return null;
 }
 
 function ppWithStatement(node: ESIToken): any {

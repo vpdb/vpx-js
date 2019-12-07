@@ -23,23 +23,25 @@ import { ESIToken } from '../grammar/grammar';
 import { Transformer } from '../transformer/transformer';
 
 export function ppHelpers(node: ESIToken): any {
-	let estree = null;
-	if (node.type === 'Statements' || node.type === 'StatementsInline') {
-		estree = ppStatements(node);
-	} else if (node.type === 'Block') {
-		estree = ppBlock(node);
-	} else if (node.type === 'ArrayTypeModifiers') {
-		estree = ppArrayTypeModifiers(node);
-	} else if (node.type === 'ArraySizeInitializationModifier') {
-		estree = ppArraySizeInitializationModifier(node);
-	} else if (node.type === 'BoundList') {
-		estree = ppBoundList(node);
-	} else if (node.type === 'Identifier' || node.type === 'IdentifierOrKeyword') {
-		estree = ppIdentifier(node);
-	} else if (node.type === 'ArgumentList') {
-		estree = ppArgumentList(node);
+	switch (node.type) {
+		case 'Statements':
+		case 'StatementsInline':
+			return ppStatements(node);
+		case 'Block':
+			return ppBlock(node);
+		case 'ArrayTypeModifiers':
+			return ppArrayTypeModifiers(node);
+		case 'ArraySizeInitializationModifier':
+			return ppArraySizeInitializationModifier(node);
+		case 'BoundList':
+			return ppBoundList(node);
+		case 'Identifier':
+		case 'IdentifierOrKeyword':
+			return ppIdentifier(node);
+		case 'ArgumentList':
+			return ppArgumentList(node);
 	}
-	return estree;
+	return null;
 }
 
 function ppStatements(node: ESIToken): any {

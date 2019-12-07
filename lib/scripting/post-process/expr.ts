@@ -31,46 +31,53 @@ import {
 import { ESIToken } from '../grammar/grammar';
 
 export function ppExpr(node: ESIToken): any {
-	let estree = null;
 	if (node.children.length > 1) {
-		if (node.type === 'LogicalOperatorExpression') {
-			estree = ppLogicalExpression(node);
-		} else if (node.type === 'RelationalOperatorExpression') {
-			estree = ppRelationalExpression(node);
-		} else if (node.type === 'AdditionOperatorExpression') {
-			estree = ppBinaryExpression(node);
-		} else if (node.type === 'ModuloOperatorExpression') {
-			estree = ppModuloExpression(node);
-		} else if (node.type === 'MultiplicationOperatorExpression') {
-			estree = ppBinaryExpression(node);
-		} else if (node.type === 'IntegerDivisionOperatorExpression') {
-			estree = ppIntegerDivisionExpression(node);
-		} else if (node.type === 'ExponentOperatorExpression') {
-			estree = ppExponentExpression(node);
-		} else if (node.type === 'ConcatenationOperatorExpression') {
-			estree = ppConcatExpression(node);
-		} else if (node.type === 'TypeExpression') {
-			estree = ppTypeExpression(node);
-		} else if (node.type === 'SubExpression') {
-			estree = ppSubExpression(node);
+		switch (node.type) {
+			case 'LogicalOperatorExpression':
+				return ppLogicalExpression(node);
+			case 'RelationalOperatorExpression':
+				return ppRelationalExpression(node);
+			case 'AdditionOperatorExpression':
+				return ppBinaryExpression(node);
+			case 'ModuloOperatorExpression':
+				return ppModuloExpression(node);
+			case 'MultiplicationOperatorExpression':
+				return ppBinaryExpression(node);
+			case 'IntegerDivisionOperatorExpression':
+				return ppIntegerDivisionExpression(node);
+			case 'ExponentOperatorExpression':
+				return ppExponentExpression(node);
+			case 'ConcatenationOperatorExpression':
+				return ppConcatExpression(node);
+			case 'TypeExpression':
+				return ppTypeExpression(node);
+			case 'SubExpression':
+				return ppSubExpression(node);
 		}
 	}
-	if (estree === null) {
-		if (node.type === 'InvocationExpression') {
-			estree = ppInvocationExpression(node);
-		} else if (node.type === 'LogicalNotOperatorExpression') {
-			estree = ppLogicalNotExpression(node);
-		} else if (node.type === 'UnaryExpression') {
-			estree = ppUnaryExpression(node);
-		} else if (node.type === 'ParenthesizedExpression') {
-			estree = ppParenthesizedExpression(node);
-		} else if (node.type === 'MemberAccessExpression') {
-			estree = ppMemberAccessExpression(node);
-		} else if (node.type === 'NewExpression') {
-			estree = ppNewExpression(node);
-		}
+	switch (node.type) {
+		case 'InvocationExpression':
+			return ppInvocationExpression(node);
+		case 'LogicalNotOperatorExpression':
+			return ppLogicalNotExpression(node);
+		case 'UnaryExpression':
+			return ppUnaryExpression(node);
+		case 'ParenthesizedExpression':
+			return ppParenthesizedExpression(node);
+		case 'MemberAccessExpression':
+			return ppMemberAccessExpression(node);
+		case 'NewExpression':
+			return ppNewExpression(node);
+		case 'ExponentOperatorExpression':
+			return ppExponentExpression(node);
+		case 'ConcatenationOperatorExpression':
+			return ppConcatExpression(node);
+		case 'TypeExpression':
+			return ppTypeExpression(node);
+		case 'SubExpression':
+			return ppSubExpression(node);
 	}
-	return estree;
+	return null;
 }
 
 function ppBinaryExpression(node: ESIToken): any {

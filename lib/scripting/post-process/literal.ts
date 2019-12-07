@@ -21,29 +21,29 @@ import { identifier, literal, newExpression } from '../estree';
 import { ESIToken } from '../grammar/grammar';
 
 export function ppLiteral(node: ESIToken): any {
-	let estree = null;
-	if (node.type === 'BooleanLiteral') {
-		estree = ppBooleanLiteral(node);
-	} else if (node.type === 'FloatingPointLiteral') {
-		estree = ppFloatingPointLiteral(node);
-	} else if (node.type === 'IntLiteral') {
-		estree = ppIntLiteral(node);
-	} else if (node.type === 'HexLiteral') {
-		estree = ppHexLiteral(node);
-	} else if (node.type === 'OctalLiteral') {
-		estree = ppOctalLiteral(node);
-	} else if (node.type === 'StringLiteral') {
-		estree = ppStringLiteral(node);
-	} else if (node.type === 'DateLiteral') {
-		estree = ppDateLiteral(node);
-	} else if (node.type === 'NothingLiteral') {
-		estree = ppNothingLiteral(node);
-	} else if (node.type === 'EmptyLiteral') {
-		estree = ppEmptyLiteral(node);
-	} else if (node.type === 'NullLiteral') {
-		estree = ppNullLiteral(node);
+	switch (node.type) {
+		case 'BooleanLiteral':
+			return ppBooleanLiteral(node);
+		case 'FloatingPointLiteral':
+			return ppFloatingPointLiteral(node);
+		case 'IntLiteral':
+			return ppIntLiteral(node);
+		case 'HexLiteral':
+			return ppHexLiteral(node);
+		case 'OctalLiteral':
+			return ppOctalLiteral(node);
+		case 'StringLiteral':
+			return ppStringLiteral(node);
+		case 'DateLiteral':
+			return ppDateLiteral(node);
+		case 'NothingLiteral':
+			return ppNothingLiteral(node);
+		case 'EmptyLiteral':
+			return ppEmptyLiteral(node);
+		case 'NullLiteral':
+			return ppNullLiteral(node);
 	}
-	return estree;
+	return null;
 }
 
 function ppBooleanLiteral(node: ESIToken): any {

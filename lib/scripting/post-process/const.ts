@@ -21,15 +21,16 @@ import { variableDeclaration, variableDeclarator } from '../estree';
 import { ESIToken } from '../grammar/grammar';
 
 export function ppConst(node: ESIToken): any {
-	let estree = null;
-	if (node.type === 'ConstantMemberDeclaration' || node.type === 'ConstantMemberDeclarationInline') {
-		estree = ppConstantMemberDeclaration(node);
-	} else if (node.type === 'ConstantDeclarators') {
-		estree = ppConstantDeclarators(node);
-	} else if (node.type === 'ConstantDeclarator') {
-		estree = ppConstantDeclarator(node);
+	switch (node.type) {
+		case 'ConstantMemberDeclaration':
+		case 'ConstantMemberDeclarationInline':
+			return ppConstantMemberDeclaration(node);
+		case 'ConstantDeclarators':
+			return ppConstantDeclarators(node);
+		case 'ConstantDeclarator':
+			return ppConstantDeclarator(node);
 	}
-	return estree;
+	return null;
 }
 
 function ppConstantMemberDeclaration(node: ESIToken): any {

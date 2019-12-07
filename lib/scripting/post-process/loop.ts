@@ -35,19 +35,20 @@ import {
 import { ESIToken } from '../grammar/grammar';
 
 export function ppLoop(node: ESIToken): any {
-	let estree = null;
-	if (node.type === 'WhileStatement') {
-		estree = ppWhileStatement(node);
-	} else if (node.type === 'DoTopLoopStatement') {
-		estree = ppDoTopLoopStatement(node);
-	} else if (node.type === 'DoBottomLoopStatement') {
-		estree = ppDoBottomLoopStatement(node);
-	} else if (node.type === 'ForStatement' || node.type === 'ForStatementInline') {
-		estree = ppForStatement(node);
-	} else if (node.type === 'ForEachStatement') {
-		estree = ppForEachStatement(node);
+	switch (node.type) {
+		case 'WhileStatement':
+			return ppWhileStatement(node);
+		case 'DoTopLoopStatement':
+			return ppDoTopLoopStatement(node);
+		case 'DoBottomLoopStatement':
+			return ppDoBottomLoopStatement(node);
+		case 'ForStatement':
+		case 'ForStatementInline':
+			return ppForStatement(node);
+		case 'ForEachStatement':
+			return ppForEachStatement(node);
 	}
-	return estree;
+	return null;
 }
 
 function ppWhileStatement(node: ESIToken): any {

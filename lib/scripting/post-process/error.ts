@@ -23,11 +23,11 @@ import { ESIToken } from '../grammar/grammar';
 import { Transformer } from '../transformer/transformer';
 
 export function ppError(node: ESIToken): any {
-	let estree = null;
-	if (node.type === 'OnErrorStatement') {
-		estree = ppOnErrorStatement(node);
+	switch (node.type) {
+		case 'OnErrorStatement':
+			return ppOnErrorStatement(node);
 	}
-	return estree;
+	return null;
 }
 
 function ppOnErrorStatement(node: ESIToken): any {
