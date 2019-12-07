@@ -63,8 +63,11 @@ export class Transpiler {
 	public transpile(vbs: string, globalFunction?: string, globalObject?: string) {
 
 		//logger().debug(vbs);
+		const then = Date.now();
 		let ast = this.parse(vbs + '\n');
+		logger().info('[Transpiler.transpile]: Parsed in %sms', Date.now() - then);
 
+		let now = Date.now();
 		ast = new CleanupTransformer(ast).transform();
 		ast = new FunctionHoistTransformer(ast).transform();
 		ast = new EventTransformer(ast, this.table.getElements()).transform();
@@ -72,9 +75,12 @@ export class Transpiler {
 		ast = new ScopeTransformer(ast).transform();
 		ast = new AmbiguityTransformer(ast, this.itemApis, this.enumApis, this.globalApi, this.stdlib).transform();
 		ast = new WrapTransformer(ast).transform(globalFunction, globalObject);
+		logger().info('[Transpiler.transpile]: Transformed in %sms', Date.now() - now);
 		//logger().debug('AST:', ast);
 
+		now = Date.now();
 		const js = this.generate(ast);
+		logger().info('[Transpiler.transpile]: Generated in %sms (total transpilation time: %sms)', Date.now() - now, Date.now() - then);
 		logger().debug(js);
 
 		return js;
