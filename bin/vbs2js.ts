@@ -19,26 +19,32 @@
  */
 
 import { existsSync, readFileSync } from 'fs';
-import { ScriptHelper } from '../test/script.helper';
+import { Grammar } from '../lib/scripting/grammar/grammar';
 
 /* tslint:disable: no-console */
 (() => {
 
 	try {
-		const scriptHelper = new ScriptHelper();
+		const grammar = new Grammar();
+
 		const argVbs = process.argv[2];
+		const formatOnly = (process.argv[3] === '--format-only');
 
 		if (!argVbs) {
-			throw new Error('USAGE: vbs2js <script.vbs>');
+			throw new Error('USAGE: vbs2js <script.vbs> --format-only');
 		}
 
 		if (!existsSync(argVbs)) {
 			throw new Error(`Cannot find "${argVbs}".`);
 		}
 
-		const vbs = readFileSync(argVbs);
-		console.log(scriptHelper.vbsToJs(vbs.toString()));
+		const vbs = readFileSync(argVbs).toString();
 
+		if (!formatOnly) {
+			console.log(grammar.vbsToJs(vbs));
+		} else {
+			console.log(grammar.format(vbs));
+		}
 	} catch (err) {
 		console.error(err);
 
