@@ -20,7 +20,6 @@
 import { replace } from 'estraverse';
 import { FunctionDeclaration, Program } from 'estree';
 import { IScriptable } from '../../game/iscriptable';
-import { Table } from '../../vpt/table/table';
 import {
 	arrowFunctionExpression,
 	callExpression,
