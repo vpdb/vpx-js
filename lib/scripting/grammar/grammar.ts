@@ -87,17 +87,16 @@ export class Grammar {
 	public format(script: string): string {
 		let output = '';
 
-		const now = Date.now();
-		progress().details('formatting');
-
 		const keywords = this.keywords;
 
 		let hasLine: boolean = false;
 		let prevToken: IToken | undefined;
 		let separator = false;
 
+		let now = Date.now();
+		progress().details('formatting');
 		const ast = this.parser.getAST(script.trim() + '\n', this.GRAMMAR_TARGET_FORMAT);
-		logger().info('[Grammar.format] trim and ast time in %sms', Date.now() - now);
+		logger().info('[Grammar.format] Parsed in %sms', Date.now() - now);
 
 		/**
 		 * Reformat the script by parsing into logical lines and tokens.
@@ -107,6 +106,8 @@ export class Grammar {
 		 * Rules for including whitespace are commented inline below.
 		 */
 
+		now = Date.now();
+		progress().details('standardizing');
 		dashAst(ast, {
 			enter(node: IToken, parent: IToken) {
 				if (node.type === 'LogicalLine') {
@@ -198,7 +199,7 @@ export class Grammar {
 				}
 			},
 		});
-		logger().info('[Grammar.format] Formatted in %sms', Date.now() - now);
+		logger().info('[Grammar.format] Standardized in %sms', Date.now() - now);
 
 		return output;
 	}
@@ -206,8 +207,9 @@ export class Grammar {
 	public transpile(script: string): Program {
 		const stmts: Statement[] = [];
 
-		let now = Date.now();
 		const formattedScript = this.format(script);
+
+		let now = Date.now();
 
 		progress().details('transpiling');
 		const vbsAst = this.parser.getAST(formattedScript, this.GRAMMAR_TARGET_PROGRAM);
