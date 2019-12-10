@@ -87,13 +87,17 @@ export class Grammar {
 	public format(script: string): string {
 		let output = '';
 
+		const now = Date.now();
+		progress().details('formatting');
+
 		const keywords = this.keywords;
 
-		let tokens: string[];
+		let hasLine: boolean = false;
 		let prevToken: IToken | undefined;
 		let separator = false;
 
 		const ast = this.parser.getAST(script.trim() + '\n', this.GRAMMAR_TARGET_FORMAT);
+		logger().info('[Grammar.format] trim and ast time in %sms', Date.now() - now);
 
 		/**
 		 * Reformat the script by parsing into logical lines and tokens.
@@ -106,7 +110,7 @@ export class Grammar {
 		dashAst(ast, {
 			enter(node: IToken, parent: IToken) {
 				if (node.type === 'LogicalLine') {
-					tokens = [];
+					hasLine = false;
 					prevToken = undefined;
 					separator = false;
 				} else if (node.type === 'Keyword') {
@@ -115,8 +119,8 @@ export class Grammar {
 			},
 			leave(node: IToken, parent: IToken) {
 				if (node.type === 'LogicalLine') {
-					if (tokens.length > 0) {
-						output += tokens.join('') + '\n';
+					if (hasLine) {
+						output += '\n';
 					}
 				} else if (node.type === 'LogicalLineElement') {
 					if (node.text === ' ') {
@@ -139,7 +143,7 @@ export class Grammar {
 								prevToken.type === 'Literal' ||
 								prevToken.text === ')'
 							) {
-								tokens.push(' ');
+								output += ' ';
 							}
 						} else if (token.type === 'Identifier') {
 							/**
@@ -153,7 +157,7 @@ export class Grammar {
 								prevToken.type === 'Identifier' ||
 								prevToken.text === ')'
 							) {
-								tokens.push(' ');
+								output += ' ';
 							}
 						} else if (token.type === 'Literal') {
 							/**
@@ -162,7 +166,7 @@ export class Grammar {
 							 * 2) Identifier Literal - BallRelease 5, -2
 							 */
 							if (prevToken.type === 'Keyword' || prevToken.type === 'Identifier') {
-								tokens.push(' ');
+								output += ' ';
 							}
 						} else if (token.text === '(' || token.text === '-') {
 							/**
@@ -171,7 +175,7 @@ export class Grammar {
 							 * 2) Keyword '-' - For ii=UBound(mSlot) To 0 Step -1:str=str&mSlot(ii):Next
 							 */
 							if (prevToken.type === 'Keyword') {
-								tokens.push(' ');
+								output += ' ';
 							}
 						} else if (token.text === '.') {
 							/**
@@ -183,16 +187,18 @@ export class Grammar {
 							 * 3) +<Space>. - dips(0)=.Dip(0)+.Dip(1)*256+ .Dip(2)*65536+(.Dip(3) And &H7f)*&H1000000
 							 */
 							if (separator && (prevToken.type !== 'Operator' && prevToken.text !== ':')) {
-								tokens.push(' ');
+								output += ' ';
 							}
 						}
 					}
-					tokens.push(token.text);
+					output += token.text;
+					hasLine = true;
 					prevToken = token;
 					separator = false;
 				}
 			},
 		});
+		logger().info('[Grammar.format] Formatted in %sms', Date.now() - now);
 
 		return output;
 	}
@@ -201,11 +207,8 @@ export class Grammar {
 		const stmts: Statement[] = [];
 
 		let now = Date.now();
-		progress().details('formatting');
 		const formattedScript = this.format(script);
-		logger().info('[Grammar.transpile] Formatted in %sms', Date.now() - now);
 
-		now = Date.now();
 		progress().details('transpiling');
 		const vbsAst = this.parser.getAST(formattedScript, this.GRAMMAR_TARGET_PROGRAM);
 		logger().info('[Grammar.transpile] Parsed in %sms', Date.now() - now);
@@ -271,7 +274,7 @@ export class Grammar {
 
 	private setKeywords(grammar: string) {
 		const startIndex = grammar.indexOf(this.TOKEN_TERMINAL_KEYWORDS) + this.TOKEN_TERMINAL_KEYWORDS.length;
-		const endIndex = grammar.indexOf('\n', startIndex);
+		const endIndex = grammar.indexOf(' {', startIndex);
 
 		for (let keyword of grammar.substr(startIndex, endIndex - startIndex).split('|')) {
 			keyword = keyword.trim().slice(1, -1);
@@ -283,16 +286,15 @@ export class Grammar {
 		const caseInsensitiveKeywords: string[] = [];
 
 		const startIndex = grammar.indexOf(this.TOKEN_TERMINAL_KEYWORDS) + this.TOKEN_TERMINAL_KEYWORDS.length;
-		const endIndex = grammar.indexOf('\n', startIndex);
+		const endIndex = grammar.indexOf(' {', startIndex);
 
 		for (const key of Object.keys(this.keywords)) {
 			let caseInsensitiveKeyword = '';
 			for (const letter of key) {
-				caseInsensitiveKeyword += "('" + letter.toUpperCase() + "'|'" + letter.toLowerCase() + "')";
+				caseInsensitiveKeyword += '[' + letter.toUpperCase() + letter.toLowerCase() + ']';
 			}
 			caseInsensitiveKeywords.push(caseInsensitiveKeyword);
 		}
-
-		return grammar.substr(0, startIndex) + caseInsensitiveKeywords.join(' | ') + grammar.substr(endIndex);
+		return grammar.substr(0, startIndex) + caseInsensitiveKeywords.join('|') + grammar.substr(endIndex);
 	}
 }

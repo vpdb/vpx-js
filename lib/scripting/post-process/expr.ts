@@ -266,6 +266,8 @@ function ppInvocationExpression(node: ESIToken): any {
 			id = child.estree;
 		} else if (child.type === 'ArgumentList') {
 			argLists.push(child.estree);
+		} else if (child.type === 'EmptyArgument') {
+			argLists.push([]);
 		} else if (child.type === 'InvocationExpression') {
 			expr = child.estree;
 		}
