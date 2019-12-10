@@ -33,6 +33,18 @@ describe('The VBScript transpiler - Call', () => {
 		expect(js).to.equal('BallRelease();');
 	});
 
+	it('should transpile a subcall statement without params using empty param', () => {
+		const vbs = `BallRelease()`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal('BallRelease();');
+	});
+
+	it('should transpile a subcall statement without params using empty params', () => {
+		const vbs = `BallRelease()()`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal('BallRelease()();');
+	});
+
 	it('should transpile a subcall statement with params', () => {
 		const vbs = `BallRelease 5, -2`;
 		const js = grammar.vbsToJs(vbs);

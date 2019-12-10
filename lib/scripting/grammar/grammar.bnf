@@ -18,7 +18,7 @@ Token ::= Identifier | Keyword | Literal | Separator | Operator
 
 /* 13.1.1 Characters and Lines */
 
-Character ::= [^#x0d#x0a]
+Character ::= [^#x0d#x0a] {fragment=true}
 LineTerminator ::= [#x0d] [#x0a] | [#x0d] | [#x0a]
 LineContinuation ::= WS* '_' WS* LineTerminator
 Comma ::= ',' LineTerminator?
@@ -28,24 +28,24 @@ CloseParenthesis ::= LineTerminator? ')'
 Equals ::= '=' LineTerminator?
 WS ::= [#x09] | [#x20]
 Comment ::= CommentMarker Character*
-CommentMarker ::= SingleQuoteCharacter | 'REM'
-SingleQuoteCharacter ::= "'"
+CommentMarker ::= SingleQuoteCharacter | 'REM' {fragment=true}
+SingleQuoteCharacter ::= "'" {fragment=true}
 
 /* 13.1.2 Identifiers */
 
 Identifier ::= NonEscapedIdentifier 
-NonEscapedIdentifier ::= !Keyword IdentifierName
-IdentifierName ::= IdentifierStart IdentifierCharacter* 
+NonEscapedIdentifier ::= !Keyword IdentifierName {fragment=true}
+IdentifierName ::= IdentifierStart IdentifierCharacter* {fragment=true}
 IdentifierStart ::= AlphaCharacter | UnderscoreCharacter IdentifierCharacter {fragment=true}
 IdentifierCharacter ::= UnderscoreCharacter | AlphaCharacter | NumericCharacter {fragment=true}
 AlphaCharacter ::= [A-Za-z] {fragment=true}
 NumericCharacter ::= [0-9] {fragment=true}
-UnderscoreCharacter ::= '_'
+UnderscoreCharacter ::= '_' {fragment=true}
 IdentifierOrKeyword ::= Identifier | Keyword
 
 /* 13.1.3 Keywords */
 
-Keywords ::= 'And' | 'ByVal' | 'ByRef' | 'Case' | 'Call' | 'Class' | 'Const' | 'Default' | 'Dim' | 'Do' | 'Each' | 'ElseIf' | 'Else' | 'Empty' | 'End' | 'Erase' | 'Error' | 'Eqv' | 'Exit' | 'Explicit' | 'False' | 'For' | 'Function' | 'Get' | 'GoTo' | 'If' | 'In' | 'Is' | 'Let' | 'Loop' | 'Mod' | 'New' | 'Next' | 'Nothing' | 'Not' | 'Null' | 'On' | 'Option' | 'Or' | 'Preserve' | 'Private' | 'Property' | 'Public' | 'ReDim' | 'Resume' | 'Select' | 'Set' | 'Step' | 'Sub' | 'Then' | 'To' | 'True' | 'Until' | 'While' | 'WEnd' | 'With' | 'Xor'
+Keywords ::= 'And' | 'ByVal' | 'ByRef' | 'Case' | 'Call' | 'Class' | 'Const' | 'Default' | 'Dim' | 'Do' | 'Each' | 'ElseIf' | 'Else' | 'Empty' | 'End' | 'Erase' | 'Error' | 'Eqv' | 'Exit' | 'Explicit' | 'False' | 'For' | 'Function' | 'Get' | 'GoTo' | 'If' | 'In' | 'Is' | 'Let' | 'Loop' | 'Mod' | 'New' | 'Next' | 'Nothing' | 'Not' | 'Null' | 'On' | 'Option' | 'Or' | 'Preserve' | 'Private' | 'Property' | 'Public' | 'ReDim' | 'Resume' | 'Select' | 'Set' | 'Step' | 'Sub' | 'Then' | 'To' | 'True' | 'Until' | 'While' | 'WEnd' | 'With' | 'Xor' {fragment=true}
 Keyword ::= Keywords ![A-Za-z0-9_]
 
 /* 13.1.4 Literals */
@@ -228,7 +228,8 @@ ParenthesizedExpression ::= OpenParenthesis Expression CloseParenthesis
 SimpleNameExpression ::= Identifier
 MemberAccessExpression ::= Period IdentifierOrKeyword
 
-InvocationExpression ::= (SimpleNameExpression | MemberAccessExpression) InvocationExpression? ArgumentList*
+InvocationExpression ::= (SimpleNameExpression | MemberAccessExpression) InvocationExpression? (EmptyArgument* | ArgumentList*)? 
+EmptyArgument ::= OpenParenthesis CloseParenthesis
 ArgumentList ::= WS? Comma? Expression (Comma ArgumentList?)*
 
 LogicalOperatorExpression ::= RelationalOperatorExpression (WS ('And' | 'Or' | 'Xor' | 'Eqv') WS? LineTerminator? RelationalOperatorExpression)*  
