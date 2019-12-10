@@ -39,7 +39,7 @@ export class PinSound extends Item<PinSoundData> {
 		if (!data || !data.length) {
 			throw new Error(`Cannot load sound data for sound ${this.getName()}`);
 		}
-		return await loader.loadSound(this.getName(), data);
+		return await loader.loadSound(this.getName(), Buffer.concat([ this.data.getHeader(), data ]));
 	}
 
 	private async streamSound(storage: Storage, storageName?: string): Promise<Buffer> {

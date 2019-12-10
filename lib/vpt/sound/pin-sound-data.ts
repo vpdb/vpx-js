@@ -54,6 +54,24 @@ export class PinSoundData extends ItemData {
 		super(itemName);
 	}
 
+	public getHeader(): Buffer {
+		const header = Buffer.alloc(44);
+		header.write('RIFF', 0);
+		header.writeInt32LE(this.len + 36, 4); // 9411670
+		header.write('WAVE', 8);
+		header.write('fmt ', 12);
+		header.writeInt32LE(16, 16);
+		header.writeInt16LE(this.wfx.formatTag, 20);
+		header.writeInt16LE(this.wfx.channels, 22);
+		header.writeInt32LE(this.wfx.samplesPerSec, 24);
+		header.writeInt32LE(this.wfx.samplesPerSec * this.wfx.bitsPerSample * this.wfx.channels / 8, 28);
+		header.writeInt16LE(this.wfx.blockAlign, 32);
+		header.writeInt16LE(this.wfx.bitsPerSample, 34);
+		header.write('data', 36);
+		header.writeInt32LE(this.len, 40);
+		return header;
+	}
+
 	private async stream(result: ReadResult): Promise<number | null> {
 		const len = this.getInt(result.data);
 		this.i++;
