@@ -45,7 +45,7 @@
 	"dependencies": {
 		"buffer": "5.4.3",
 		"dash-ast": "^1.0.0",
-		"ebnf": "^1.6.3",
+		"ebnf": "^1.7.0",
 		"es6-promise-pool": "^2.5.0",
 		"escodegen": "^1.12.0",
 		"escope": "^3.6.0",
