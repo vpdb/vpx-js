@@ -41,7 +41,7 @@
 		"build:cp": "cp -r res dist/esm && cp -r res dist/cjs && cp lib/scripting/grammar/grammar.bnf dist/cjs/lib/scripting/grammar  && cp lib/scripting/grammar/grammar.bnf dist/esm/lib/scripting/grammar",
 		"build:pre": "rimraf dist && mkdirp dist/esm/lib/scripting/grammar && mkdirp dist/cjs/lib/scripting/grammar && node build/write-info.js && node build/compile-rules.js",
 		"lint": "tslint --format stylish --project ./tsconfig.json --config ./lib/tslint.json",
-		"test": "tsc && cross-env TS_NODE_TRANSPILE_ONLY=true nyc mocha"
+		"test": "node build/compile-rules.js && tsc && cross-env TS_NODE_TRANSPILE_ONLY=true nyc mocha"
 	},
 	"dependencies": {
 		"buffer": "5.4.3",
