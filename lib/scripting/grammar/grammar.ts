@@ -38,6 +38,7 @@ import { ppLoop } from '../post-process/loop';
 import { ppMethod } from '../post-process/method';
 import { ppVarDecl } from '../post-process/vardecl';
 import { ppWith } from '../post-process/with';
+import { RULES } from './rules';
 
 const dashAst = require('dash-ast');
 
@@ -75,17 +76,15 @@ export class Grammar {
 	];
 
 	constructor() {
-		let grammar = getTextFile('grammar.bnf');
-
-		this.setKeywords(grammar);
-
-		grammar = this.addCaseInsensitiveKeywords(grammar);
-
-		this.parser = new Parser(Grammars.Custom.getRules(grammar), {});
-	}
-
-	public compile() {
-
+		// toggle between real-time compilation and pre-compiled rules
+		if (true) {
+			let grammar = getTextFile('grammar.bnf');
+			this.setKeywords(grammar);
+			grammar = this.addCaseInsensitiveKeywords(grammar);
+			this.parser = new Parser(Grammars.Custom.getRules(grammar), {});
+		} else {
+			this.parser = new Parser(RULES, {});
+		}
 	}
 
 	public format(script: string): string {

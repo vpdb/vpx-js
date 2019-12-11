@@ -77,7 +77,7 @@ export class TableHitGenerator {
 		ph3dpoly.calcHitBBox();
 		hitObjects.push(ph3dpoly);
 
-		logger().info('[Player] Playfield hit objects set.', hitObjects);
+		logger().debug('[Player] Playfield hit objects set.', hitObjects);
 		return hitObjects;
 	}
 }

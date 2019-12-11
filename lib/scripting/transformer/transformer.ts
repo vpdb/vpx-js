@@ -1,4 +1,5 @@
-import { BaseNode, CallExpression, Identifier, MemberExpression, Program } from 'estree';
+import { BaseNode, Identifier, MemberExpression, Program } from 'estree';
+import { inspect } from 'util';
 
 export class Transformer {
 
@@ -64,6 +65,13 @@ export class Transformer {
 			if (obj.callee.type === 'Identifier') {
 				return obj.callee.name;
 			}
+			if (obj.callee.type === 'CallExpression') {
+				return this.getTopMemberName(obj.callee.callee);
+			}
+			throw new Error(`Unknown callee type "${obj.callee.type}" when looking for top member name: ${inspect(obj, {depth: Infinity})}`);
+		}
+		if (obj.type === 'ThisExpression') {
+			return 'this';
 		}
 		throw new Error(`Unknown node "${obj.type}" when looking for top member name.`);
 	}
