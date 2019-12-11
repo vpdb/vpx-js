@@ -45,8 +45,8 @@ IdentifierOrKeyword ::= Identifier | Keyword
 
 /* 13.1.3 Keywords */
 
-Keywords ::= 'And' | 'ByVal' | 'ByRef' | 'Case' | 'Call' | 'Class' | 'Const' | 'Default' | 'Dim' | 'Do' | 'Each' | 'ElseIf' | 'Else' | 'Empty' | 'End' | 'Erase' | 'Error' | 'Eqv' | 'Exit' | 'Explicit' | 'False' | 'For' | 'Function' | 'Get' | 'GoTo' | 'If' | 'In' | 'Is' | 'Let' | 'Loop' | 'Mod' | 'New' | 'Next' | 'Nothing' | 'Not' | 'Null' | 'On' | 'Option' | 'Or' | 'Preserve' | 'Private' | 'Property' | 'Public' | 'ReDim' | 'Resume' | 'Select' | 'Set' | 'Step' | 'Sub' | 'Then' | 'To' | 'True' | 'Until' | 'While' | 'WEnd' | 'With' | 'Xor' {fragment=true}
-Keyword ::= Keywords ![A-Za-z0-9_]
+Keywords ::= 'And' | 'ByVal' | 'ByRef' | 'Case' | 'Call' | 'Class' | 'Const' | 'Default' | 'Dim' | 'Do' | 'Each' | 'ElseIf' | 'Else' | 'Empty' | 'End' | 'Erase' | 'Error' | 'Eqv' | 'Exit' | 'Explicit' | 'False' | 'For' | 'Function' | 'Get' | 'GoTo' | 'If' | 'In' | 'Is' | 'Let' | 'Loop' | 'Mod' | 'New' | 'Next' | 'Nothing' | 'Not' | 'Null' | 'On' | 'Option' | 'Or' | 'Preserve' | 'Private' | 'Property' | 'Public' | 'ReDim' | 'Resume' | 'Select' | 'Set' | 'Sub' | 'Then' | 'To' | 'True' | 'Until' | 'While' | 'WEnd' | 'With' | 'Xor' {fragment=true}
+Keyword ::= Keywords ![A-Za-z0-9_\.]
 
 /* 13.1.4 Literals */
 
@@ -91,7 +91,7 @@ AccessModifier ::= 'Public' WS 'Default' | 'Public' | 'Private'
 
 /* 13.3.2 Source Files and Namespaces */
 
-StatementTerminator ::= LineTerminator | ':'
+StatementTerminator ::= LineTerminator | ':' LineTerminator | ':'
 StatementTerminatorInline ::= ':'
 
 OptionStatement ::= OptionExplicitStatement
@@ -178,8 +178,9 @@ ConditionalStatement ::= IfStatement | SelectStatement
 ConditionalStatementInline ::= IfStatementInline
 IfStatement ::= BlockIfStatement | LineIfThenStatement
 IfStatementInline ::= LineIfThenStatement
-BlockIfStatement ::= 'If' WS BooleanExpression (WS 'Then')? StatementTerminator Block? ElseIfStatement* ElseStatement? 'End' WS 'If' StatementTerminator
-ElseIfStatement ::= ElseIf WS BooleanExpression (WS 'Then')? StatementTerminator Block?
+BlockIfStatement ::= 'If' WS BooleanExpression WS 'Then' StatementTerminator Block? (ElseIfStatement | ElseIfStatementInline)* ElseStatement? 'End' WS 'If' StatementTerminator
+ElseIfStatement ::= ElseIf WS BooleanExpression WS 'Then' StatementTerminator Block?
+ElseIfStatementInline ::= ElseIf WS BooleanExpression WS 'Then' WS StatementsInline LineTerminator
 ElseStatement ::= 'Else' StatementTerminator Block?
 LineIfThenStatement ::= 'If' WS BooleanExpression WS 'Then' WS StatementsInline (WS? 'Else' WS StatementsInline )? (WS? 'End' WS 'If')? LineTerminator?
 SelectStatement ::= 'Select' WS 'Case' WS Expression StatementTerminator CaseStatement* CaseElseStatement? 'End' WS 'Select' StatementTerminator 
@@ -188,16 +189,17 @@ CaseClauses ::= CaseClause ( Comma CaseClause )*
 CaseClause ::= Expression
 CaseElseStatement ::= 'Case' WS 'Else' WS? StatementTerminator? Block? 
 LoopStatement ::= WhileStatement | DoLoopStatement | ForStatement | ForEachStatement
-LoopStatementInline ::= ForStatementInline
+LoopStatementInline ::= ForStatementInline | ForEachStatementInline
 WhileStatement ::= 'While' WS BooleanExpression StatementTerminator Block? 'WEnd' StatementTerminator 
 DoLoopStatement ::= DoTopLoopStatement | DoBottomLoopStatement
 DoTopLoopStatement ::= 'Do' ( WS WhileOrUntil WS BooleanExpression )? StatementTerminator Block? 'Loop' StatementTerminator 
 DoBottomLoopStatement ::= 'Do' StatementTerminator Block? 'Loop' WS WhileOrUntil WS BooleanExpression StatementTerminator 
 WhileOrUntil ::= 'While' | 'Until'
-ForStatement ::= 'For' WS LoopControlVariable Equals Expression WS 'To' WS Expression ( WS 'Step' WS Expression )? StatementTerminator Block? 'Next' StatementTerminator 
-ForStatementInline ::= 'For' WS LoopControlVariable Equals Expression WS 'To' WS Expression ( WS 'Step' WS Expression )? StatementTerminatorInline StatementsInline 'Next' 
+ForStatement ::= 'For' WS LoopControlVariable Equals Expression WS 'To' WS Expression ( WS [Ss][Tt][Ee][Pp] WS Expression )? StatementTerminator Block? 'Next' StatementTerminator 
+ForStatementInline ::= 'For' WS LoopControlVariable Equals Expression WS 'To' WS Expression ( WS [Ss][Tt][Ee][Pp] WS Expression )? StatementTerminatorInline StatementsInline 'Next' 
 LoopControlVariable ::= Identifier | Expression 
-ForEachStatement ::= 'For' WS 'Each' WS LoopControlVariable WS 'In' WS? LineTerminator? Expression StatementTerminator Block? 'Next' StatementTerminator 
+ForEachStatement ::= 'For' WS 'Each' WS LoopControlVariable WS 'In' WS Expression StatementTerminator Block? 'Next' StatementTerminator 
+ForEachStatementInline ::= 'For' WS 'Each' WS LoopControlVariable WS 'In' WS Expression StatementTerminatorInline StatementsInline 'Next' 
 ErrorHandlingStatement ::= UnstructuredErrorStatement
 UnstructuredErrorStatement ::= OnErrorStatement
 OnErrorStatement ::= 'On' WS 'Error' WS ErrorClause StatementTerminator 
@@ -233,7 +235,7 @@ EmptyArgument ::= OpenParenthesis CloseParenthesis
 ArgumentList ::= WS? Comma? Expression (Comma ArgumentList?)*
 
 LogicalOperatorExpression ::= RelationalOperatorExpression (WS ('And' | 'Or' | 'Xor' | 'Eqv') WS? LineTerminator? RelationalOperatorExpression)*  
-RelationalOperatorExpression ::= AdditionOperatorExpression (( '=' | '<' ( '>' | '=' )? | '>' '='?) LineTerminator? AdditionOperatorExpression)*
+RelationalOperatorExpression ::= AdditionOperatorExpression (('<=' | '=<' | '>=' | '=>' | '<>' | '<' | '>' | '=') LineTerminator? AdditionOperatorExpression)*
 AdditionOperatorExpression ::= ModuloOperatorExpression (('+' | '-') LineTerminator? ModuloOperatorExpression)*
 ModuloOperatorExpression ::= IntegerDivisionOperatorExpression (WS 'Mod' WS? LineTerminator? IntegerDivisionOperatorExpression)* 
 IntegerDivisionOperatorExpression ::= MultiplicationOperatorExpression ('\\' LineTerminator? MultiplicationOperatorExpression)*

@@ -59,7 +59,6 @@ describe('The scripting grammar - format', () => {
 		const js = grammar.format(vbs);
 		expect(js).to.equal(`x=x+5\nx=x+10\n`);
 	});
-
 });
 
 describe('The scripting grammar - transpile', () => {
@@ -71,5 +70,11 @@ describe('The scripting grammar - transpile', () => {
 	it('should throw an exception for invalid syntax', () => {
 		const vbs = `test()\ntest2\ntest3() 1,2\n`;
 		expect(() => grammar.transpile(vbs)).to.throw(Error);
+	});
+
+	it('should allow lines to end with a ":" statement terminator', () => {
+		const vbs = `SLLPos=0:Me.TimerEnabled=1:\n`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal(`SLLPos = 0;\nMe.TimerEnabled = 1;`);
 	});
 });

@@ -165,17 +165,20 @@ function ppRelationalExpression(node: ESIToken): any {
 		if (node.text.substr(index).startsWith('<>')) {
 			estree = binaryExpression('!=', estree, node.children[loop].estree);
 			index += node.children[loop].text.length + 2;
-		} else if (node.text.substr(index).startsWith('<=')) {
+		} else if (node.text.substr(index).startsWith('<=') || node.text.substr(index).startsWith('=<')) {
 			estree = binaryExpression('<=', estree, node.children[loop].estree);
 			index += node.children[loop].text.length + 2;
-		} else if (node.text.substr(index).startsWith('>=')) {
+		} else if (node.text.substr(index).startsWith('>=') || node.text.substr(index).startsWith('=>')) {
 			estree = binaryExpression('>=', estree, node.children[loop].estree);
 			index += node.children[loop].text.length + 2;
 		} else if (node.text.substr(index).startsWith('=')) {
 			estree = binaryExpression('==', estree, node.children[loop].estree);
 			index += node.children[loop].text.length + 1;
-		} else {
-			estree = binaryExpression(node.text.charAt(index) as BinaryOperator, estree, node.children[loop].estree);
+		} else if (node.text.substr(index).startsWith('<')) {
+			estree = binaryExpression('<', estree, node.children[loop].estree);
+			index += node.children[loop].text.length + 1;
+		} else if (node.text.substr(index).startsWith('>')) {
+			estree = binaryExpression('>', estree, node.children[loop].estree);
 			index += node.children[loop].text.length + 1;
 		}
 	}

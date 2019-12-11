@@ -25,6 +25,7 @@ export function ppConditional(node: ESIToken): any {
 		case 'BlockIfStatement':
 			return ppBlockIfStatement(node);
 		case 'ElseIfStatement':
+		case 'ElseIfStatementInline':
 			return ppElseIfStatement(node);
 		case 'ElseStatement':
 			return ppElseStatement(node);
@@ -49,7 +50,11 @@ function ppBlockIfStatement(node: ESIToken): any {
 	for (const child of node.children) {
 		if (child.type === 'Block') {
 			block = child.estree;
-		} else if (child.type === 'ElseIfStatement' || child.type === 'ElseStatement') {
+		} else if (
+			child.type === 'ElseIfStatement' ||
+			child.type === 'ElseIfStatementInline' ||
+			child.type === 'ElseStatement'
+		) {
 			if (alternate === null) {
 				alternate = child.estree;
 			} else {
@@ -70,6 +75,8 @@ function ppElseIfStatement(node: ESIToken): any {
 	for (const child of node.children) {
 		if (child.type === 'Block') {
 			block = child.estree;
+		} else if (child.type === 'StatementsInline') {
+			block = blockStatement(child.estree);
 		}
 	}
 	return ifStatement(expr, block ? block : blockStatement([]), null);

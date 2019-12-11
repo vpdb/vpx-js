@@ -45,6 +45,14 @@ describe('The VBScript transpiler - Loop', () => {
 		expect(js).to.equal('if (mBalls) {\n    for (ii = 1; ii <= mBalls; ii += 1) {\n        x = 5;\n    }\n}');
 	});
 
+	it('should transpile an inline "For/Each...Next" statement', () => {
+		const vbs = `If BallsInPlay>=1 Then For Each x In BulbP:x.image="Bulb_On":x.TriggerSingleUpdate:Next`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal(
+			"if (BallsInPlay >= 1) {\n    for (x of BulbP) {\n        x.image = 'Bulb_On';\n        x.TriggerSingleUpdate();\n    }\n}",
+		);
+	});
+
 	it('should transpile a "For/Step...Next" increment statement ', () => {
 		const vbs = `For j = 1 To 20 Step 3\ntotal = total + 1\nNext`;
 		const js = grammar.vbsToJs(vbs);
