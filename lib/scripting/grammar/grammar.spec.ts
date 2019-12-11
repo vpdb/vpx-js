@@ -29,7 +29,7 @@ before(async () => {
 	grammar = new Grammar();
 });
 
-describe('The scripting grammar formatter', () => {
+describe('The scripting grammar - format', () => {
 	it('should remove whitespace', () => {
 		const vbs = `Dim   x`;
 		const js = grammar.format(vbs);
@@ -58,5 +58,18 @@ describe('The scripting grammar formatter', () => {
 		const vbs = `x = x + 5\n\n\nx = x + 10\n\n\n`;
 		const js = grammar.format(vbs);
 		expect(js).to.equal(`x=x+5\nx=x+10\n`);
+	});
+
+});
+
+describe('The scripting grammar - transpile', () => {
+	it('should throw an exception for an empty script', () => {
+		const vbs = ``;
+		expect(() => grammar.transpile(vbs)).to.throw(Error);
+	});
+
+	it('should throw an exception for invalid syntax', () => {
+		const vbs = `test()\ntest2\ntest3() 1,2\n`;
+		expect(() => grammar.transpile(vbs)).to.throw(Error);
 	});
 });
