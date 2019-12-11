@@ -77,13 +77,73 @@ export class Grammar {
 
 	constructor() {
 		// toggle between real-time compilation and pre-compiled rules
-		if (true) {
+		if (false) {
 			let grammar = getTextFile('grammar.bnf');
 			this.setKeywords(grammar);
 			grammar = this.addCaseInsensitiveKeywords(grammar);
 			this.parser = new Parser(Grammars.Custom.getRules(grammar), {});
 		} else {
 			this.parser = new Parser(RULES, {});
+			for (const keyword of [
+				'And',
+				'ByVal',
+				'ByRef',
+				'Case',
+				'Call',
+				'Class',
+				'Const',
+				'Default',
+				'Dim',
+				'Do',
+				'Each',
+				'ElseIf',
+				'Else',
+				'Empty',
+				'End',
+				'Erase',
+				'Error',
+				'Eqv',
+				'Exit',
+				'Explicit',
+				'False',
+				'For',
+				'Function',
+				'Get',
+				'GoTo',
+				'If',
+				'In',
+				'Is',
+				'Let',
+				'Loop',
+				'Mod',
+				'New',
+				'Next',
+				'Nothing',
+				'Not',
+				'Null',
+				'On',
+				'Option',
+				'Or',
+				'Preserve',
+				'Private',
+				'Property',
+				'Public',
+				'ReDim',
+				'Resume',
+				'Select',
+				'Set',
+				'Sub',
+				'Then',
+				'To',
+				'True',
+				'Until',
+				'While',
+				'WEnd',
+				'With',
+				'Xor',
+			]) {
+				this.keywords[keyword.toLowerCase()] = keyword;
+			}
 		}
 	}
 
@@ -205,7 +265,6 @@ export class Grammar {
 			},
 		});
 		logger().info('[Grammar.format] Standardized in %sms', Date.now() - now);
-
 		return output;
 	}
 
