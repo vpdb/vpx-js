@@ -44,10 +44,10 @@ function getKeywords(grammar) {
 	const TOKEN_TERMINAL_KEYWORDS = 'Keywords ::= ';
 	const startIndex = grammar.indexOf(TOKEN_TERMINAL_KEYWORDS) + TOKEN_TERMINAL_KEYWORDS.length;
 	const endIndex = grammar.indexOf(' {', startIndex);
-	const keywords = {};
+	const keywords = [];
 	for (let keyword of grammar.substr(startIndex, endIndex - startIndex).split('|')) {
 		keyword = keyword.trim().slice(1, -1);
-		keywords[keyword.toLowerCase()] = keyword;
+		keywords.push(keyword.toLowerCase());
 	}
 	return keywords;
 }
@@ -58,7 +58,7 @@ function addCaseInsensitiveKeywords(grammar, keywords) {
 	const startIndex = grammar.indexOf(TOKEN_TERMINAL_KEYWORDS) + TOKEN_TERMINAL_KEYWORDS.length;
 	const endIndex = grammar.indexOf(' {', startIndex);
 
-	for (const key of Object.keys(keywords)) {
+	for (const key of keywords) {
 		let caseInsensitiveKeyword = '';
 		for (const letter of key) {
 			caseInsensitiveKeyword += '[' + letter.toUpperCase() + letter.toLowerCase() + ']';
