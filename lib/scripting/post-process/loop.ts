@@ -46,6 +46,7 @@ export function ppLoop(node: ESIToken): any {
 		case 'ForStatementInline':
 			return ppForStatement(node);
 		case 'ForEachStatement':
+		case 'ForEachStatementInline':
 			return ppForEachStatement(node);
 	}
 	return null;
@@ -144,6 +145,8 @@ function ppForEachStatement(node: ESIToken): any {
 			expr = child.estree;
 		} else if (child.type === 'Block') {
 			block = child.estree;
+		} else if (child.type === 'StatementsInline') {
+			block = blockStatement(child.estree);
 		}
 	}
 	return forOfStatement(id, expr, block ? block : blockStatement([]));

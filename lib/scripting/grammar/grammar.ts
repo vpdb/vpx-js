@@ -38,7 +38,6 @@ import { ppLoop } from '../post-process/loop';
 import { ppMethod } from '../post-process/method';
 import { ppVarDecl } from '../post-process/vardecl';
 import { ppWith } from '../post-process/with';
-import { AssertionError } from 'assert';
 
 const dashAst = require('dash-ast');
 
@@ -153,10 +152,12 @@ export class Grammar {
 							 * 1) Keyword Identifier - Sub BallRelease()
 							 * 2) Identifier Identifier - PlaySound SoundFX("fx_flipperup", ...
 							 * 3) ) Identifier - Sub BallRelease_Hit() BallRelease.CreateBall
+							 * 4) Literal Identifier - For j=1 To 20 step x
 							 */
 							if (
 								prevToken.type === 'Keyword' ||
 								prevToken.type === 'Identifier' ||
+								prevToken.type === 'Literal' ||
 								prevToken.text === ')'
 							) {
 								output += ' ';
@@ -217,8 +218,11 @@ export class Grammar {
 		if (ast === null) {
 			throw new Error('Unable to transpile script.');
 		} else if (ast.rest && ast.rest.length) {
-			const start =  formattedScript.length - ast.rest.length;
-			throw new Error('Unable to transpile script. Syntax error at: ' + formattedScript.substr(start, formattedScript.indexOf('\n', start)));
+			const start = formattedScript.length - ast.rest.length;
+			throw new Error(
+				'Unable to transpile script. Syntax error at: ' +
+					formattedScript.substr(start, formattedScript.indexOf('\n', start)),
+			);
 		}
 		logger().info('[Grammar.transpile] Parsed in %sms', Date.now() - now);
 

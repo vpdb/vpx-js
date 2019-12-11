@@ -85,19 +85,19 @@ describe('The VBScript transpiler - Conditional', () => {
 		);
 	});
 
-	/*it('should transpile a mixed block/inline "If/Then...ElseIf/Then...Else..End If" statement', () => {
-		const vbs = `If x = 1 Then\nx = 2\nElseIf x = 3 Then x = 4\nElse x = 5\nEnd If`;
-		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('if (x == 1) {\n    x = 2;\n} else if (x == 3)\n    x = 4;\nelse\n    x = 5;');
-	});*/
-
-	/*it('should transpile multiple inline "If/Then" statement', () => {
-		const vbs = `If VPMver > "" Then If Controller.Version < VPMver Or Err Then MsgBox "VPinMAME ver " & VPMver & " required."`;
+	it('should transpile an "If/Then" with inline "ElseIf" statements', () => {
+		const vbs = `If Lampstate(130)=0 Then\nColorGradeImage="ColorGrade_off"\nElseIf LampState(130)>0 Then ColorGradeImage="ColorGrade_red"\nElseIf LampState(130)=0 Then ColorGradeImage="ColorGrade_blue":x=5\nElse\nColorGradeImage="ColorGrade_on"\nEnd If`;
 		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(
-			"if (VPMver > '')\n    if (Controller.Version < VPMver || Err)\n        MsgBox('VPinMAME ver ' + VPMver + ' required.');",
+			"if (Lampstate(130) == 0) {\n    ColorGradeImage = 'ColorGrade_off';\n} else if (LampState(130) > 0) {\n    ColorGradeImage = 'ColorGrade_red';\n} else if (LampState(130) == 0) {\n    ColorGradeImage = 'ColorGrade_blue';\n    x = 5;\n} else {\n    ColorGradeImage = 'ColorGrade_on';\n}",
 		);
-	});*/
+	});
+
+	it('should transpile an "If/Then" statement with a member expression that matches a keyword', () => {
+		const vbs = `If Error.Number<>0 Then UltraDMD=Null:Exit Function`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal('if (Error.Number != 0) {\n    UltraDMD = null;\n    return;\n}');
+	});
 
 	it('should transpile an empty "Select Case...End Select" statement', () => {
 		const vbs = `Select Case day\nEnd Select`;
