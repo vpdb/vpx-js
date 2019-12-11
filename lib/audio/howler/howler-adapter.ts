@@ -23,11 +23,11 @@ export class HowlerSoundAdapter implements ISoundAdapter<string> {
 			logger().debug('playSound: audio is not enabled!');
 			return;
 		}
-		if (!this.howls[sample.sampleName]) {
+		if (!this.howls[sample.sampleName.toLowerCase()]) {
 			logger().warn('[HowlerSoundAdapter.playSound]: No such sound "%s".', sample.sampleName);
 			return;
 		}
-		this.howls[sample.sampleName].play();
+		this.howls[sample.sampleName.toLowerCase()].play();
 	}
 
 	public stopSound(sampleName: string): void {
@@ -39,6 +39,7 @@ export class HowlerSoundAdapter implements ISoundAdapter<string> {
 
 	public async loadSound(name: string, data: Buffer): Promise<string> {
 		const startTs = Date.now();
+		name = name.toLowerCase();
 		this.sounds[name] = URL.createObjectURL(new Blob([data.buffer], {type: 'audio/wave'}));
 		this.howls[name] = await new Promise<Howl>((resolve, reject) => new Howl({
 			src: [ this.sounds[name] ],
