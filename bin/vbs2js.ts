@@ -20,15 +20,23 @@
 
 import { existsSync, readFileSync } from 'fs';
 import { Grammar } from '../lib/scripting/grammar/grammar';
+import { Progress } from '../lib';
 
 /* tslint:disable: no-console */
 (() => {
 
 	try {
 		const grammar = new Grammar();
-
 		const argVbs = process.argv[2];
 		const formatOnly = (process.argv[3] === '--format-only');
+
+		// mute progress logs
+		Progress.setProgress({
+			details(details: string): void { },
+			end(id: string): void { },
+			show(action: string, details?: string): void { },
+			start(id: string, title: string): void { },
+		});
 
 		if (!argVbs) {
 			throw new Error('USAGE: vbs2js <script.vbs> --format-only');

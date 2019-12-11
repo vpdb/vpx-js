@@ -32,12 +32,14 @@
 		"./dist/esm/lib/refs.node.js": "./dist/esm/lib/refs.browser.js"
 	},
 	"scripts": {
-		"build": "rimraf dist && npm run build:esm && npm run build:cjs && npm run build:declarations && npm run build:cp && npm run build:post",
+		"build": "rimraf dist && npm run build:esm && build:pre && npm run build:cjs && npm run build:declarations && npm run build:cp && npm run build:post",
 		"build:esm": "tsc --module es2015 --outDir ./dist/esm",
 		"build:cjs": "tsc --module commonjs --outDir ./dist/cjs",
 		"build:declarations": "tsc --module es2015 --outDir ./dist/esm --declaration true --allowJs false",
-		"build:watch": "npm run build:cp && npm run build:post && tsc --watch --module es2015 --outDir ./dist/esm",
+		"build:watch": "npm run build:cp && build:pre && npm run build:post && tsc --watch --module es2015 --outDir ./dist/esm",
+		"build:watch:cjs": "npm run build:cp && build:pre && npm run build:post && tsc --watch  --module commonjs --outDir ./dist/cjs",
 		"build:cp": "cp -r res dist/esm && cp -r res dist/cjs && cp lib/scripting/grammar/grammar.bnf dist/cjs/lib/scripting/grammar  && cp lib/scripting/grammar/grammar.bnf dist/esm/lib/scripting/grammar",
+		"build:pre": "node build/compile-rules.js",
 		"build:post": "node build/write-info.js",
 		"lint": "tslint --format stylish --project ./tsconfig.json --config ./lib/tslint.json",
 		"test": "tsc && cross-env TS_NODE_TRANSPILE_ONLY=true nyc mocha"

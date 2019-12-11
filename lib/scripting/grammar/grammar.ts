@@ -84,6 +84,10 @@ export class Grammar {
 		this.parser = new Parser(Grammars.Custom.getRules(grammar), {});
 	}
 
+	public compile() {
+
+	}
+
 	public format(script: string): string {
 		let output = '';
 

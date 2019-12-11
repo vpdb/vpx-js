@@ -3,3 +3,4 @@
 coverage
 dist
 node_modules
+lib/scripting/grammar/rules.ts
