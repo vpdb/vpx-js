@@ -38,6 +38,7 @@ import { ppLoop } from '../post-process/loop';
 import { ppMethod } from '../post-process/method';
 import { ppVarDecl } from '../post-process/vardecl';
 import { ppWith } from '../post-process/with';
+import { AssertionError } from 'assert';
 
 const dashAst = require('dash-ast');
 
@@ -212,17 +213,19 @@ export class Grammar {
 		let now = Date.now();
 
 		progress().details('transpiling');
-		const vbsAst = this.parser.getAST(formattedScript, this.GRAMMAR_TARGET_PROGRAM);
-		logger().info('[Grammar.transpile] Parsed in %sms', Date.now() - now);
-
-		if (vbsAst === null) {
-			throw new Error('Unable to transpile script:\n\n' + formattedScript);
+		const ast = this.parser.getAST(formattedScript, this.GRAMMAR_TARGET_PROGRAM);
+		if (ast === null) {
+			throw new Error('Unable to transpile script.');
+		} else if (ast.rest && ast.rest.length) {
+			const start =  formattedScript.length - ast.rest.length;
+			throw new Error('Unable to transpile script. Syntax error at: ' + formattedScript.substr(start, formattedScript.indexOf('\n', start)));
 		}
+		logger().info('[Grammar.transpile] Parsed in %sms', Date.now() - now);
 
 		const postProcessors = this.postProcessors;
 		now = Date.now();
 		progress().details('post-processing');
-		dashAst(vbsAst, {
+		dashAst(ast, {
 			leave(node: ESIToken, parent: ESIToken) {
 				if (node.type === 'Program') {
 					for (const child of node.children) {
