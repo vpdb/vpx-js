@@ -20,9 +20,9 @@
 
 import { existsSync, readFileSync } from 'fs';
 import { Player, Progress } from '../lib';
-import { TableBuilder } from '../test/table-builder';
 import { Transpiler } from '../lib/scripting/transpiler';
 import { logger } from '../lib/util/logger';
+import { TableBuilder } from '../test/table-builder';
 
 /* tslint:disable: no-console */
 (() => {
@@ -32,12 +32,12 @@ import { logger } from '../lib/util/logger';
 
 		// mute progress logs
 		Progress.setProgress({
-			details(details: string): void { },
-			end(id: string): void { },
-			show(action: string, details?: string): void { },
-			start(id: string, title: string): void { },
+			details(details: string): void { /* do nothing */ },
+			end(id: string): void { /* do nothing */ },
+			show(action: string, details?: string): void { /* do nothing */ },
+			start(id: string, title: string): void { /* do nothing */ },
 		});
-		logger().debug = () => {};
+		logger().debug = () => { /* do nothing */ };
 
 		if (!argVbs) {
 			throw new Error('USAGE: vbs-benchmark <script.vbs>');

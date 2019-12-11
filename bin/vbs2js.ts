@@ -19,8 +19,8 @@
  */
 
 import { existsSync, readFileSync } from 'fs';
-import { Grammar } from '../lib/scripting/grammar/grammar';
 import { Progress } from '../lib';
+import { Grammar } from '../lib/scripting/grammar/grammar';
 
 /* tslint:disable: no-console */
 (() => {
@@ -32,10 +32,10 @@ import { Progress } from '../lib';
 
 		// mute progress logs
 		Progress.setProgress({
-			details(details: string): void { },
-			end(id: string): void { },
-			show(action: string, details?: string): void { },
-			start(id: string, title: string): void { },
+			details(details: string): void { /* do nothing */ },
+			end(id: string): void { /* do nothing */ },
+			show(action: string, details?: string): void { /* do nothing */ },
+			start(id: string, title: string): void { /* do nothing */ },
 		});
 
 		if (!argVbs) {
