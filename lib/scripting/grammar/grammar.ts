@@ -38,7 +38,7 @@ import { ppLoop } from '../post-process/loop';
 import { ppMethod } from '../post-process/method';
 import { ppVarDecl } from '../post-process/vardecl';
 import { ppWith } from '../post-process/with';
-import { RULES } from './rules';
+import { KEYWORD_MAP, RULES } from './rules';
 
 const dashAst = require('dash-ast');
 
@@ -77,73 +77,15 @@ export class Grammar {
 
 	constructor() {
 		// toggle between real-time compilation and pre-compiled rules
-		if (false) {
+		if (true) {
 			let grammar = getTextFile('grammar.bnf');
 			this.setKeywords(grammar);
 			grammar = this.addCaseInsensitiveKeywords(grammar);
 			this.parser = new Parser(Grammars.Custom.getRules(grammar), {});
+
 		} else {
 			this.parser = new Parser(RULES, {});
-			for (const keyword of [
-				'And',
-				'ByVal',
-				'ByRef',
-				'Case',
-				'Call',
-				'Class',
-				'Const',
-				'Default',
-				'Dim',
-				'Do',
-				'Each',
-				'ElseIf',
-				'Else',
-				'Empty',
-				'End',
-				'Erase',
-				'Error',
-				'Eqv',
-				'Exit',
-				'Explicit',
-				'False',
-				'For',
-				'Function',
-				'Get',
-				'GoTo',
-				'If',
-				'In',
-				'Is',
-				'Let',
-				'Loop',
-				'Mod',
-				'New',
-				'Next',
-				'Nothing',
-				'Not',
-				'Null',
-				'On',
-				'Option',
-				'Or',
-				'Preserve',
-				'Private',
-				'Property',
-				'Public',
-				'ReDim',
-				'Resume',
-				'Select',
-				'Set',
-				'Sub',
-				'Then',
-				'To',
-				'True',
-				'Until',
-				'While',
-				'WEnd',
-				'With',
-				'Xor',
-			]) {
-				this.keywords[keyword.toLowerCase()] = keyword;
-			}
+			this.keywords = KEYWORD_MAP;
 		}
 	}
 
