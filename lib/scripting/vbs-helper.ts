@@ -65,13 +65,15 @@ export class VBSHelper {
 		return this.redimResize(array, dimensions);
 	}
 
-	public transpileInline(vbs: string) {
+	public transpileInline(vbs: string, filename?: string) {
 		// don't show oneliners in devtools
-		if (vbs.length > 150) {
-			return `//@ sourceURL=inline${this.transpileCount++}.js\n${this.transpiler.transpile(vbs)}`;
-		} else {
-			return this.transpiler.transpile(vbs);
+		let firstLine = '';
+		if (filename) {
+			firstLine = `//@ sourceURL=${filename}.js\n`;
+		} else if (vbs.length > 150) {
+			firstLine = `//@ sourceURL=inline${this.transpileCount++}.js\n`;
 		}
+		return firstLine + this.transpiler.transpile(vbs);
 	}
 
 	/**
