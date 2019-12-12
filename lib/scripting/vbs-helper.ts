@@ -69,9 +69,9 @@ export class VBSHelper {
 		// don't show oneliners in devtools
 		let firstLine = '';
 		if (filename) {
-			firstLine = `//@ sourceURL=${filename}.js\n`;
+			firstLine = `//@ sourceURL=game:///${filename}.js\n`;
 		} else if (vbs.length > 150) {
-			firstLine = `//@ sourceURL=inline${this.transpileCount++}.js\n`;
+			firstLine = `//@ sourceURL=game:///inline${this.transpileCount++}.js\n`;
 		}
 		return firstLine + this.transpiler.transpile(vbs);
 	}
