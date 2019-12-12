@@ -18,7 +18,7 @@
  */
 
 import { replace } from 'estraverse';
-import { CallExpression, Expression, Identifier, MemberExpression, Program } from 'estree';
+import { CallExpression, Expression, Identifier, Literal, MemberExpression, Program } from 'estree';
 import { logger } from '../../util/logger';
 import { EnumsApi } from '../../vpt/enums';
 import { GlobalApi } from '../../vpt/global-api';
@@ -202,12 +202,18 @@ export class ReferenceTransformer extends Transformer {
 				if (node.type === 'CallExpression') {
 					if (node.callee.type === 'Identifier' && (['executeglobal', 'execute'].includes(node.callee.name.toLowerCase()) )) {
 						node.callee.name = 'eval';
+						const args =  [ node.arguments[0] as Expression ];
+
+						// if it's a "getTextFile", we want to know which and pass it to the transpiler
+						if (isCallToGetTextFile(node)) {
+							args.push((node as any).arguments[0].arguments[0]);
+						}
 						node.arguments[0] = callExpression(
 							memberExpression(
 								identifier(Transformer.VBSHELPER_NAME),
 								identifier('transpileInline'),
 							),
-							[ node.arguments[0] as Expression ],
+							args,
 						);
 					}
 				}
@@ -215,4 +221,14 @@ export class ReferenceTransformer extends Transformer {
 			},
 		});
 	}
+}
+
+function isCallToGetTextFile(node: any): boolean {
+	return node.arguments.length > 0
+		&& node.arguments[0].type === 'CallExpression'
+		&& node.arguments[0].callee.property
+		&& node.arguments[0].callee.property.type === 'Identifier'
+		&& node.arguments[0].callee.property.name === 'GetTextFile'
+		&& node.arguments[0].arguments.length > 0
+		&& node.arguments[0].arguments[0].type === 'Literal';
 }
