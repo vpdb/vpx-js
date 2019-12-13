@@ -70,7 +70,7 @@ function ppBlockIfStatement(node: ESIToken): any {
 }
 
 function ppElseIfStatement(node: ESIToken): any {
-	const expr = node.children[1].estree;
+	const expr = node.children[0].estree;
 	let block = null;
 	for (const child of node.children) {
 		if (child.type === 'Block') {

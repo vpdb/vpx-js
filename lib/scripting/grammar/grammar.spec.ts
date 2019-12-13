@@ -19,6 +19,7 @@
 
 import * as chai from 'chai';
 import { expect } from 'chai';
+import { getTextFile } from '../vbs-scripts.node';
 import { Grammar } from './grammar';
 
 chai.use(require('sinon-chai'));
@@ -76,5 +77,15 @@ describe('The scripting grammar - transpile', () => {
 		const vbs = `SLLPos=0:Me.TimerEnabled=1:\n`;
 		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(`SLLPos = 0;\nMe.TimerEnabled = 1;`);
+	});
+
+	it('should transpile controller.vbs successfully', () => {
+		const vbs = getTextFile('controller.vbs');
+		expect(() => grammar.transpile(vbs)).not.to.throw(Error);
+	});
+
+	it('should transpile core.vbs successfully', () => {
+		const vbs = getTextFile('core.vbs');
+		expect(() => grammar.transpile(vbs)).not.to.throw(Error);
 	});
 });

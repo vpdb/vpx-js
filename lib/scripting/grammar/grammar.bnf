@@ -19,14 +19,14 @@ Token ::= Identifier | Keyword | Literal | Separator | Operator
 /* 13.1.1 Characters and Lines */
 
 Character ::= [^#x0d#x0a] {fragment=true}
-LineTerminator ::= [#x0d] [#x0a] | [#x0d] | [#x0a]
+LineTerminator ::= [#x0d] [#x0a] | [#x0d#x0a]
 LineContinuation ::= WS* '_' WS* LineTerminator
-Comma ::= ',' LineTerminator?
-Period ::= '.' LineTerminator?
-OpenParenthesis ::= '(' LineTerminator?
-CloseParenthesis ::= LineTerminator? ')'
-Equals ::= '=' LineTerminator?
-WS ::= [#x09] | [#x20]
+Comma ::= ','
+Period ::= '.'
+OpenParenthesis ::= '('
+CloseParenthesis ::= ')'
+Equals ::= '='
+WS ::= [#x09#x20]
 Comment ::= CommentMarker Character*
 CommentMarker ::= SingleQuoteCharacter | 'REM' {fragment=true}
 SingleQuoteCharacter ::= "'" {fragment=true}
@@ -81,9 +81,8 @@ AMPM ::= 'AM' | 'PM'
 NothingLiteral ::= 'Nothing'
 EmptyLiteral ::= 'Empty'
 NullLiteral ::= 'Null'
-Separator ::= '(' | ')' | '{' | '}' | '!' | '#' | ',' | '.' | ':' | '?'
-Operator ::= '&' | '*' | '+' | '-' | '/' | '\\' | '^' | '<' | '=' | '>'
-ElseIf ::= 'ElseIf' | 'Else' WS 'If'
+Separator ::= [(){}!#,.:?]
+Operator ::= [&*+\-/\\\^<=>]
 
 /* 13.3 Syntactic Grammar */
 
@@ -179,8 +178,8 @@ ConditionalStatementInline ::= IfStatementInline
 IfStatement ::= BlockIfStatement | LineIfThenStatement
 IfStatementInline ::= LineIfThenStatement
 BlockIfStatement ::= 'If' WS BooleanExpression WS 'Then' StatementTerminator Block? (ElseIfStatement | ElseIfStatementInline)* ElseStatement? 'End' WS 'If' StatementTerminator
-ElseIfStatement ::= ElseIf WS BooleanExpression WS 'Then' StatementTerminator Block?
-ElseIfStatementInline ::= ElseIf WS BooleanExpression WS 'Then' WS StatementsInline LineTerminator
+ElseIfStatement ::= 'ElseIf' WS BooleanExpression WS 'Then' StatementTerminator Block?
+ElseIfStatementInline ::= 'ElseIf' WS BooleanExpression WS 'Then' WS StatementsInline LineTerminator
 ElseStatement ::= 'Else' StatementTerminator Block?
 LineIfThenStatement ::= 'If' WS BooleanExpression WS 'Then' WS StatementsInline (WS? 'Else' WS StatementsInline )? (WS? 'End' WS 'If')? LineTerminator?
 SelectStatement ::= 'Select' WS 'Case' WS Expression StatementTerminator CaseStatement* CaseElseStatement? 'End' WS 'Select' StatementTerminator
@@ -234,17 +233,17 @@ InvocationExpression ::= (SimpleNameExpression | MemberAccessExpression) Invocat
 EmptyArgument ::= OpenParenthesis CloseParenthesis
 ArgumentList ::= WS? Comma? Expression (Comma ArgumentList?)*
 
-LogicalOperatorExpression ::= RelationalOperatorExpression (WS ('And' | 'Or' | 'Xor' | 'Eqv') WS? LineTerminator? RelationalOperatorExpression)*
-RelationalOperatorExpression ::= AdditionOperatorExpression (('<=' | '=<' | '>=' | '=>' | '<>' | '<' | '>' | '=') LineTerminator? AdditionOperatorExpression)*
-AdditionOperatorExpression ::= ModuloOperatorExpression (('+' | '-') LineTerminator? ModuloOperatorExpression)*
-ModuloOperatorExpression ::= IntegerDivisionOperatorExpression (WS 'Mod' WS? LineTerminator? IntegerDivisionOperatorExpression)*
-IntegerDivisionOperatorExpression ::= MultiplicationOperatorExpression ('\\' LineTerminator? MultiplicationOperatorExpression)*
-MultiplicationOperatorExpression ::= ExponentOperatorExpression (('*' | '/') LineTerminator? ExponentOperatorExpression)*
-ExponentOperatorExpression ::= ConcatenationOperatorExpression ('^' LineTerminator? ConcatenationOperatorExpression)*
-ConcatenationOperatorExpression ::= TypeExpression ('&' LineTerminator? TypeExpression)*
-TypeExpression ::= Value (WS 'Is' WS LineTerminator? Value)*
+LogicalOperatorExpression ::= RelationalOperatorExpression (WS ('And' | 'Or' | 'Xor' | 'Eqv') WS? RelationalOperatorExpression)*
+RelationalOperatorExpression ::= AdditionOperatorExpression (('<=' | '=<' | '>=' | '=>' | '<>' | '<' | '>' | '=') AdditionOperatorExpression)*
+AdditionOperatorExpression ::= ModuloOperatorExpression ([+\-] ModuloOperatorExpression)*
+ModuloOperatorExpression ::= IntegerDivisionOperatorExpression (WS 'Mod' WS? IntegerDivisionOperatorExpression)*
+IntegerDivisionOperatorExpression ::= MultiplicationOperatorExpression ('\\' MultiplicationOperatorExpression)*
+MultiplicationOperatorExpression ::= ExponentOperatorExpression ([*/] ExponentOperatorExpression)*
+ExponentOperatorExpression ::= ConcatenationOperatorExpression ('^' ConcatenationOperatorExpression)*
+ConcatenationOperatorExpression ::= TypeExpression ('&' TypeExpression)*
+TypeExpression ::= Value (WS 'Is' WS Value)*
 LogicalNotOperatorExpression ::= 'Not' WS Value
-UnaryExpression ::= ('+' | '-') Value
+UnaryExpression ::= [+\-] Value
 
 SubExpression ::= (SimpleNameExpression | MemberAccessExpression) (OpenParenthesis ArgumentList? CloseParenthesis)* SubExpression?
 
