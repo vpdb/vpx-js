@@ -72,7 +72,7 @@ export class AmbiguityTransformer extends Transformer {
 			enter: (node, parent: any) => {
 				if (node.type === 'CallExpression') {
 
-					// if any of the parameters are a string, it's not an array index
+					// if any of the parameters is a string, it's not an array index
 					for (const argument of node.arguments) {
 						if (argument.type === 'Literal' && typeof argument.value === 'string') {
 							return node;
@@ -164,7 +164,12 @@ export class AmbiguityTransformer extends Transformer {
 					}
 
 					// already replaced?
-					if (parent && parent.type === 'CallExpression' && parent.callee.type === 'MemberExpression' && parent.callee.object.name === Transformer.VBSHELPER_NAME) {
+					if (parent
+						&& parent.type === 'CallExpression'
+						&& parent.callee.type === 'MemberExpression'
+						&& parent.callee.object.name === Transformer.VBSHELPER_NAME
+						&& parent.callee.property.type === 'Identifier'
+						&& parent.callee.property.name === 'getOrCall') {
 						return node;
 					}
 
@@ -210,7 +215,7 @@ function getValue(obj: any, ast: MemberExpression, path: string[] = []): any {
 /**
  * Creates a callExpression to the "getOrCall" vbs-helper.
  * @param callee Object
- * @param ...args Arguments
+ * @param args Arguments
  */
 function getOrCall(callee: Expression, ...args: Expression[]): CallExpression {
 	return callExpression(
