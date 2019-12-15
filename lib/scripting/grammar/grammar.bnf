@@ -20,16 +20,16 @@ Token ::= Identifier | Keyword | Literal | Separator | Operator
 
 Character ::= [^#x0d#x0a] {fragment=true}
 LineTerminator ::= [#x0d] [#x0a] | [#x0d#x0a]
-LineContinuation ::= WS* '_' WS* LineTerminator
-Comma ::= ','
-Period ::= '.'
-OpenParenthesis ::= '('
-CloseParenthesis ::= ')'
-Equals ::= '='
+LineContinuation ::= WS* [_] WS* LineTerminator
+Comma ::= [,]
+Period ::= [.]
+OpenParenthesis ::= [(]
+CloseParenthesis ::= [)]
+Equals ::= [=]
 WS ::= [#x09#x20]
 Comment ::= CommentMarker Character*
-CommentMarker ::= SingleQuoteCharacter | 'REM' {fragment=true}
-SingleQuoteCharacter ::= "'" {fragment=true}
+CommentMarker ::= SingleQuoteCharacter | [R][E][M] {fragment=true}
+SingleQuoteCharacter ::= ['] {fragment=true}
 
 /* 13.1.2 Identifiers */
 
@@ -40,7 +40,7 @@ IdentifierStart ::= AlphaCharacter | UnderscoreCharacter IdentifierCharacter {fr
 IdentifierCharacter ::= UnderscoreCharacter | AlphaCharacter | NumericCharacter {fragment=true}
 AlphaCharacter ::= [A-Za-z] {fragment=true}
 NumericCharacter ::= [0-9] {fragment=true}
-UnderscoreCharacter ::= '_' {fragment=true}
+UnderscoreCharacter ::= [_] {fragment=true}
 IdentifierOrKeyword ::= Identifier | Keyword
 
 /* 13.1.3 Keywords */
@@ -55,17 +55,17 @@ BooleanLiteral ::= 'True' | 'False'
 IntegerLiteral ::= IntegralLiteralValue
 IntegralLiteralValue ::= IntLiteral | HexLiteral | OctalLiteral {fragment=true}
 IntLiteral ::= Digit+
-HexLiteral ::= '&' 'H' HexDigit+
-OctalLiteral ::= '&' 'O' OctalDigit+
+HexLiteral ::= [&] [Hh] HexDigit+
+OctalLiteral ::= [&] [Oo] OctalDigit+
 Digit ::= [0-9] {fragment=true}
 HexDigit ::= [0-9A-Fa-f] {fragment=true}
 OctalDigit ::= [0-7] {fragment=true}
 FloatingPointLiteral ::= FloatingPointLiteralValue
-FloatingPointLiteralValue ::= IntLiteral ( '.' IntLiteral Exponent? | Exponent ) | '.' IntLiteral Exponent?
-Exponent ::= 'E' Sign? IntLiteral
-Sign ::= '+' | '-'
+FloatingPointLiteralValue ::= IntLiteral ( [.] IntLiteral Exponent? | Exponent ) | [.] IntLiteral Exponent?
+Exponent ::= [E] Sign? IntLiteral
+Sign ::= [+\-]
 StringLiteral ::= DoubleQuoteCharacter StringCharacter* DoubleQuoteCharacter
-DoubleQuoteCharacter ::= '"' {fragment=true}
+DoubleQuoteCharacter ::= ["] {fragment=true}
 StringCharacter ::= [^"] | DoubleQuoteCharacter DoubleQuoteCharacter {fragment=true}
 DateLiteral ::= '#' WS* DateOrTime WS* '#'
 DateOrTime ::= DateValue ( WS+ TimeValue )? | TimeValue
@@ -90,8 +90,8 @@ AccessModifier ::= 'Public' WS 'Default' | 'Public' | 'Private'
 
 /* 13.3.2 Source Files and Namespaces */
 
-StatementTerminator ::= LineTerminator | ':' LineTerminator | ':'
-StatementTerminatorInline ::= ':'
+StatementTerminator ::= [:]? LineTerminator | [:]
+StatementTerminatorInline ::= [:]
 
 OptionStatement ::= OptionExplicitStatement
 OptionExplicitStatement ::= 'Option' WS 'Explicit' OnOff? StatementTerminator
@@ -160,8 +160,8 @@ Statement ::= VariableMemberDeclaration | ConstantMemberDeclaration | WithStatem
 StatementInline ::= VariableMemberDeclarationInline | ConstantMemberDeclarationInline | AssignmentStatementInline | InvocationStatementInline | ArrayHandlingStatementInline | BranchStatementInline | LoopStatementInline | ConditionalStatementInline
 
 Block ::= Statements* (StatementInline WS)?
-Statements ::= Statement? ( ':' Statement? )*
-StatementsInline ::= StatementInline? ( ':' StatementInline? )*
+Statements ::= Statement? ( [:] Statement? )*
+StatementsInline ::= StatementInline? ( [:] StatementInline? )*
 
 WithStatement ::= 'With' WS Expression StatementTerminator Block? 'End' WS 'With' StatementTerminator
 AssignmentStatement ::= SetAssignmentStatement | RegularAssignmentStatement
@@ -234,13 +234,13 @@ EmptyArgument ::= OpenParenthesis CloseParenthesis
 ArgumentList ::= WS? Comma? Expression (Comma ArgumentList?)*
 
 LogicalOperatorExpression ::= RelationalOperatorExpression (WS ('And' | 'Or' | 'Xor' | 'Eqv') WS? RelationalOperatorExpression)*
-RelationalOperatorExpression ::= AdditionOperatorExpression (('<=' | '=<' | '>=' | '=>' | '<>' | '<' | '>' | '=') AdditionOperatorExpression)*
+RelationalOperatorExpression ::= AdditionOperatorExpression (([<][=>]? | [>][=]? | [=][><]?) AdditionOperatorExpression)*
 AdditionOperatorExpression ::= ModuloOperatorExpression ([+\-] ModuloOperatorExpression)*
 ModuloOperatorExpression ::= IntegerDivisionOperatorExpression (WS 'Mod' WS? IntegerDivisionOperatorExpression)*
-IntegerDivisionOperatorExpression ::= MultiplicationOperatorExpression ('\\' MultiplicationOperatorExpression)*
+IntegerDivisionOperatorExpression ::= MultiplicationOperatorExpression ([\\] MultiplicationOperatorExpression)*
 MultiplicationOperatorExpression ::= ExponentOperatorExpression ([*/] ExponentOperatorExpression)*
-ExponentOperatorExpression ::= ConcatenationOperatorExpression ('^' ConcatenationOperatorExpression)*
-ConcatenationOperatorExpression ::= TypeExpression ('&' TypeExpression)*
+ExponentOperatorExpression ::= ConcatenationOperatorExpression ([\^] ConcatenationOperatorExpression)*
+ConcatenationOperatorExpression ::= TypeExpression ([&] TypeExpression)*
 TypeExpression ::= Value (WS 'Is' WS Value)*
 LogicalNotOperatorExpression ::= 'Not' WS Value
 UnaryExpression ::= [+\-] Value
