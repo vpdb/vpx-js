@@ -119,6 +119,17 @@ export class VBSHelper {
 		return obj;
 	}
 
+	public getOrCallBound(parent: any, prop: string, ...params: number[]) {
+		let obj = parent[prop];
+		if (typeof obj === 'function') {
+			return obj.bind(parent)(...params);
+		}
+		for (const param of params) {
+			obj = obj[param];
+		}
+		return obj;
+	}
+
 	public onErrorResumeNext() {
 		ERR.OnErrorResumeNext();
 	}

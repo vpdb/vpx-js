@@ -57,7 +57,7 @@ describe('The scripting ambiguity transformer', () => {
 		it('should not use the helper for known calls', () => {
 			const vbs = `x = UBound(X)\n`;
 			const js = transpiler.transpile(vbs);
-			expect(js).to.equal(`${Transformer.SCOPE_NAME}.x = ${Transformer.STDLIB_NAME}.UBound(${Transformer.VBSHELPER_NAME}.getOrCall(${Transformer.SCOPE_NAME}.X));`);
+			expect(js).to.equal(`${Transformer.SCOPE_NAME}.x = ${Transformer.STDLIB_NAME}.UBound(${Transformer.VBSHELPER_NAME}.getOrCallBound(${Transformer.SCOPE_NAME}, 'X'));`);
 		});
 
 		it('should not use the helper for known calls of an object', () => {
@@ -76,14 +76,14 @@ describe('The scripting ambiguity transformer', () => {
 			const vbs = `x = DOFeffects(Effect)\n`;
 			const js = transpiler.transpile(vbs);
 			expect(js).to.equal(
-				`${Transformer.SCOPE_NAME}.x = ${Transformer.VBSHELPER_NAME}.getOrCall(${Transformer.SCOPE_NAME}.DOFeffects, ${Transformer.SCOPE_NAME}.Effect);`,
+				`${Transformer.SCOPE_NAME}.x = ${Transformer.VBSHELPER_NAME}.getOrCallBound(${Transformer.SCOPE_NAME}, 'DOFeffects', ${Transformer.SCOPE_NAME}.Effect);`,
 			);
 		});
 
 		it('should use the helper if already wrapped in a different helper function', () => {
 			const vbs = `Sub LoadCore\nDim fso\nSet fso = CreateObject("Scripting.FileSystemObject")\nExecuteGlobal fso.OpenTextFile("core.vbs", 1).ReadAll\nEnd Sub\n`;
 			const js = transpiler.transpile(vbs);
-			expect(js).to.equal(`${Transformer.SCOPE_NAME}.LoadCore = function () {\n    let fso;\n    fso = ${Transformer.STDLIB_NAME}.CreateObject('Scripting.FileSystemObject', ${Transformer.PLAYER_NAME});\n    eval(${Transformer.VBSHELPER_NAME}.transpileInline(${Transformer.VBSHELPER_NAME}.getOrCall(fso.OpenTextFile('core.vbs', 1).ReadAll)));\n};`);
+			expect(js).to.equal(`${Transformer.SCOPE_NAME}.LoadCore = function () {\n    let fso;\n    fso = ${Transformer.STDLIB_NAME}.CreateObject('Scripting.FileSystemObject', ${Transformer.PLAYER_NAME});\n    eval(${Transformer.VBSHELPER_NAME}.transpileInline(${Transformer.VBSHELPER_NAME}.getOrCallBound(fso.OpenTextFile('core.vbs', 1), 'ReadAll')));\n};`);
 		});
 
 		it('should handle multi-dim arrays', () => {
@@ -95,7 +95,7 @@ describe('The scripting ambiguity transformer', () => {
 		it('should pass the function and not the name to the helper', () => {
 			const vbs = `result = My.Fct(10, 2)`;
 			const js = transpiler.transpile(vbs);
-			expect(js).to.equal(`${Transformer.SCOPE_NAME}.result = ${Transformer.VBSHELPER_NAME}.getOrCall(${Transformer.SCOPE_NAME}.My.Fct, 10, 2);`);
+			expect(js).to.equal(`${Transformer.SCOPE_NAME}.result = ${Transformer.VBSHELPER_NAME}.getOrCallBound(${Transformer.SCOPE_NAME}.My, 'Fct', 10, 2);`);
 		});
 	});
 
@@ -128,7 +128,7 @@ describe('The scripting ambiguity transformer', () => {
 		it('should not use the helper left-hand side of a loop', () => {
 			const vbs = `For each xx in GI:xx.State = 1: Next\n`;
 			const js = transpiler.transpile(vbs);
-			expect(js).to.equal(`for (${Transformer.SCOPE_NAME}.xx of ${Transformer.VBSHELPER_NAME}.getOrCall(${Transformer.SCOPE_NAME}.GI)) {\n    ${Transformer.VBSHELPER_NAME}.getOrCall(${Transformer.SCOPE_NAME}.xx).State = 1;\n}`);
+			expect(js).to.equal(`for (${Transformer.SCOPE_NAME}.xx of ${Transformer.VBSHELPER_NAME}.getOrCallBound(${Transformer.SCOPE_NAME}, 'GI')) {\n    ${Transformer.VBSHELPER_NAME}.getOrCallBound(${Transformer.SCOPE_NAME}, 'xx').State = 1;\n}`);
 		});
 
 		it('should not use the helper for a property declared in a local scope', () => {
