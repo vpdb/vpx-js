@@ -18,10 +18,10 @@
  */
 
 import { replace } from 'estraverse';
-import { CallExpression, Expression, MemberExpression, Program } from 'estree';
+import { CallExpression, Expression, Identifier, MemberExpression, Program } from 'estree';
 import { EnumsApi } from '../../vpt/enums';
 import { GlobalApi } from '../../vpt/global-api';
-import { callExpression, identifier, memberExpression } from '../estree';
+import { callExpression, identifier, literal, memberExpression } from '../estree';
 import { Stdlib } from '../stdlib';
 import { Transformer } from './transformer';
 
@@ -169,7 +169,7 @@ export class AmbiguityTransformer extends Transformer {
 						&& parent.callee.type === 'MemberExpression'
 						&& parent.callee.object.name === Transformer.VBSHELPER_NAME
 						&& parent.callee.property.type === 'Identifier'
-						&& parent.callee.property.name === 'getOrCall') {
+						&& (parent.callee.property.name === 'getOrCall' || parent.callee.property.name === 'getOrCallBound')) {
 						return node;
 					}
 
@@ -218,11 +218,21 @@ function getValue(obj: any, ast: MemberExpression, path: string[] = []): any {
  * @param args Arguments
  */
 function getOrCall(callee: Expression, ...args: Expression[]): CallExpression {
-	return callExpression(
-		memberExpression(
-			identifier(Transformer.VBSHELPER_NAME),
-			identifier('getOrCall'),
-		),
-		[ callee, ...args ],
-	);
+	if (callee.type === 'MemberExpression' && callee.property.type === 'Identifier') {
+		return callExpression(
+			memberExpression(
+				identifier(Transformer.VBSHELPER_NAME),
+				identifier('getOrCallBound'),
+			),
+			[ callee.object as Expression, literal(callee.property.name), ...args ],
+		);
+	} else {
+		return callExpression(
+			memberExpression(
+				identifier(Transformer.VBSHELPER_NAME),
+				identifier('getOrCall'),
+			),
+			[ callee, ...args ],
+		);
+	}
 }
