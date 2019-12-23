@@ -83,7 +83,7 @@
 		"node-fetch": "2.6.0",
 		"nyc": "14.1.1",
 		"rimraf": "3.0.0",
-		"sinon": "7.5.0",
+		"sinon": "8.0.1",
 		"sinon-chai": "3.3.0",
 		"ts-node": "8.5.4",
 		"tslint": "5.20.1",
