@@ -64,7 +64,7 @@ export class ReferenceTransformer extends Transformer {
 	private readonly stdlib: Stdlib;
 
 	constructor(ast: Program, table: Table, itemApis: { [p: string]: any }, enumApis: EnumsApi, globalApi: GlobalApi, stdlib: Stdlib) {
-		super(ast);
+		super(ast, true);
 		this.table = table;
 		this.itemApis = itemApis;
 		this.enumApis = enumApis;
@@ -73,6 +73,7 @@ export class ReferenceTransformer extends Transformer {
 	}
 
 	public transform(): Program {
+		this.addScope();
 		this.replaceElementObjectNames(this.ast);
 		this.replaceEnumObjectNames(this.ast);
 		this.replaceStdlibNames(this.ast);
@@ -88,10 +89,12 @@ export class ReferenceTransformer extends Transformer {
 	public replaceElementObjectNames(ast: Program): void {
 		replace(ast, {
 			enter: (node, parent: any) => {
+				const isFunctionDeclaration = parent && parent.type === 'FunctionDeclaration';
 				const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === Transformer.ITEMS_NAME;
-				if (!alreadyReplaced && node.type === 'Identifier') {
+				if (!alreadyReplaced && !isFunctionDeclaration && node.type === 'Identifier') {
 					const elementName = this.table.getElementApiName(node.name);
-					if (elementName) {
+					const isLocalVariable = this.isLocalVariable(node);
+					if (elementName && !isLocalVariable) {
 						// patch property
 						if (parent.property && parent.property.name) {
 							const propName = this.itemApis[elementName]._getPropertyName(parent.property.name);
@@ -143,9 +146,11 @@ export class ReferenceTransformer extends Transformer {
 	public replaceGlobalApiNames(ast: Program): void {
 		replace(ast, {
 			enter: (node, parent: any) => {
+				const isFunctionDeclaration = parent && parent.type === 'FunctionDeclaration';
 				if (!this.isKnown(node, parent) && node.type === 'Identifier') {
 					const name =  this.globalApi._getPropertyName(node.name);
-					if (name) {
+					const isLocalVariable = this.isLocalVariable(node);
+					if (name && !isLocalVariable) {
 						return memberExpression(
 							identifier(Transformer.GLOBAL_NAME),
 							identifier(name),

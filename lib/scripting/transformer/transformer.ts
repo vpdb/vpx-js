@@ -1,5 +1,9 @@
+import { traverse } from 'estraverse';
 import { BaseNode, Identifier, MemberExpression, Program } from 'estree';
 import { inspect } from 'util';
+import { logger } from '../../util/logger';
+
+const { analyze } = require('escope');
 
 export class Transformer {
 
@@ -13,8 +17,15 @@ export class Transformer {
 
 	protected readonly ast: Program;
 
-	constructor(ast: Program) {
+	private readonly scopeManager: any;
+	protected readonly rootScope: any;
+
+	constructor(ast: Program, analyzeScope = false) {
 		this.ast = ast;
+		if (analyzeScope) {
+			this.scopeManager = analyze(ast);
+			this.rootScope = this.scopeManager.acquire(ast);
+		}
 	}
 
 	protected isKnown(node: BaseNode, parent: BaseNode): boolean {
@@ -48,6 +59,42 @@ export class Transformer {
 			Transformer.VBSHELPER_NAME,
 			Transformer.PLAYER_NAME,
 		].includes(this.getTopMemberName(parent as MemberExpression));
+	}
+
+	protected isLocalVariable(node: any): boolean {
+		if (!node.name) {
+			return false;
+		}
+		if (!node.__scope) {
+			throw new Error('No scope to check!');
+		}
+		return !!node.__scope.variables.find( (v: any) => v.name.toLowerCase() === node.name.toLowerCase());
+	}
+
+	/**
+	 * Using `escope`, we acquire the current scope for each node and attach it
+	 * to the node for later usage.
+	 *
+	 * This is a separate run because it's done when *leaving* the node.
+	 */
+	protected addScope(): void {
+		if (!this.rootScope) {
+			throw new Error('Need to instantiate with analyzeScope = true when using addScope!');
+		}
+		let currentScope = this.rootScope;
+		traverse(this.ast, {
+			enter: node => {
+				(node as any).__scope = currentScope;
+				if (/Function/.test(node.type)) {
+					currentScope = this.scopeManager.acquire(node);
+				}
+			},
+			leave: node => {
+				if (/Function/.test(node.type)) {
+					currentScope = currentScope.upper;
+				}
+			},
+		});
 	}
 
 	protected getTopMemberName(node: any): string {
