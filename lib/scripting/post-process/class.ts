@@ -81,7 +81,7 @@ function ppClassDeclaration(node: ESIToken): any {
 				methodDefinitions.push(
 					methodDefinition(functionId, 'method', functionExpression(functionDecl.body, functionDecl.params)),
 				);
-				ids.push(functionId.name);
+				//ids.push(functionId.name);
 			} else if (memberDecl.type === 'PropertyMemberDeclaration') {
 				methodDefinitions.push(memberDecl.estree);
 			} else if (
@@ -182,7 +182,7 @@ function ppPropertyGetDeclaration(node: ESIToken): any {
 	if (block.body[block.body.length - 1].type !== 'ReturnStatement') {
 		block.body.push(returnStatement(id));
 	}
-	return methodDefinition(id, 'get', functionExpression(block, params));
+	return methodDefinition(id, 'method', functionExpression(block, params));
 }
 
 function ppPropertyLetDeclaration(node: ESIToken): any {
@@ -198,7 +198,7 @@ function ppPropertyLetDeclaration(node: ESIToken): any {
 			block = child.estree;
 		}
 	}
-	return methodDefinition(id, 'set', functionExpression(block ? block : blockStatement([]), params));
+	return methodDefinition(id, 'method', functionExpression(block ? block : blockStatement([]), params));
 }
 
 function ppPropertySetDeclaration(node: ESIToken): any {
@@ -214,5 +214,5 @@ function ppPropertySetDeclaration(node: ESIToken): any {
 			block = child.estree;
 		}
 	}
-	return methodDefinition(id, 'set', functionExpression(block ? block : blockStatement([]), params));
+	return methodDefinition(id,  'method', functionExpression(block ? block : blockStatement([]), params));
 }

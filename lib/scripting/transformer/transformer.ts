@@ -81,17 +81,30 @@ export class Transformer {
 		if (!this.rootScope) {
 			throw new Error('Need to instantiate with analyzeScope = true when using addScope!');
 		}
+		let ignoreClass = false;
 		let currentScope = this.rootScope;
 		traverse(this.ast, {
 			enter: node => {
-				(node as any).__scope = currentScope;
-				if (/Function/.test(node.type)) {
-					currentScope = this.scopeManager.acquire(node);
+				if (!ignoreClass) {
+					if (node.type === 'ClassDeclaration') {
+						ignoreClass = true;
+					} else {
+						(node as any).__scope = currentScope;
+						if (/Function/.test(node.type)) {
+							currentScope = this.scopeManager.acquire(node);
+						}
+					}
 				}
 			},
 			leave: node => {
-				if (/Function/.test(node.type)) {
-					currentScope = currentScope.upper;
+				if (node.type === 'ClassDeclaration') {
+					ignoreClass = false;
+				} else {
+					if (!ignoreClass) {
+						if (/Function/.test(node.type)) {
+							currentScope = currentScope.upper;
+						}
+					}
 				}
 			},
 		});

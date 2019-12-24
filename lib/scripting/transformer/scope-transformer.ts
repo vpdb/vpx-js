@@ -65,42 +65,54 @@ export class ScopeTransformer extends Transformer {
 	 * case.
 	 */
 	private replaceDeclarations(): void {
+		let ignoreClass = false;
 		replace(this.ast, {
 			enter: (node, parent) => {
-				const isRootScope = (node as any).__scope === this.rootScope;
-				if (isRootScope) {
+				if (!ignoreClass) {
+					if (node.type === 'ClassDeclaration') {
+						ignoreClass = true;
+					} else {
+						const isRootScope = (node as any).__scope === this.rootScope;
+						if (isRootScope) {
 
-					// variable declarations
-					const isLoopVarDecl = parent && /^For.*Statement$/.test(parent.type);
-					if (node.type === 'VariableDeclaration' && !isLoopVarDecl) {
-						const declarationNode = node as VariableDeclaration;
-						const nodes = [];
-						for (const declaration of declarationNode.declarations as any[]) {
-							nodes.push(this.wrapAssignment(
-								identifier(declaration.id ? declaration.id.name : declaration.name), // fixme
-								declaration.init || literal(null),
-							));
+							// variable declarations
+							const isLoopVarDecl = parent && /^For.*Statement$/.test(parent.type);
+							if (node.type === 'VariableDeclaration' && !isLoopVarDecl) {
+								const declarationNode = node as VariableDeclaration;
+								const nodes = [];
+								for (const declaration of declarationNode.declarations as any[]) {
+									nodes.push(this.wrapAssignment(
+										identifier(declaration.id ? declaration.id.name : declaration.name), // fixme
+										declaration.init || literal(null),
+									));
+								}
+								return {
+									type: 'Program',
+									body: nodes,
+								} as Program;
+							}
+
+							// function declarations
+							if (node.type === 'FunctionDeclaration') {
+								return this.wrapAssignment(
+									node.id!,
+									functionExpression(
+										node.body,
+										node.params,
+									),
+								);
+							}
+
+							// TODO class declarations (and probably others)
 						}
-						return {
-							type: 'Program',
-							body: nodes,
-						} as Program;
+						return node;
 					}
-
-					// function declarations
-					if (node.type === 'FunctionDeclaration') {
-						return this.wrapAssignment(
-							node.id!,
-							functionExpression(
-								node.body,
-								node.params,
-							),
-						);
-					}
-
-					// TODO class declarations (and probably others)
 				}
-				return node;
+			},
+			leave: (node, parent: any) => {
+				if (node.type === 'ClassDeclaration') {
+					ignoreClass = false;
+				}
 			},
 		});
 	}
@@ -128,21 +140,33 @@ export class ScopeTransformer extends Transformer {
 	 *    2. Is *not* part of the "known" objects
 	 */
 	private replaceUsages() {
+		let ignoreClass = false;
 		replace(this.ast, {
 			enter: (node, parent: any) => {
-				if (node.type === 'Identifier' && node.name !== 'undefined') {
-					const varScope = this.findScope(this.getVarName(node, parent), (node as any).__scope);
-					const inRootScope = !varScope || varScope === this.rootScope; // !varScope because we can't find the declaration, in which case it's part of an external file, where we assume it was declared in the root scope.
-					if (!this.isKnown(node, parent) && inRootScope) {
-						if (parent && !['FunctionDeclaration', 'ClassDeclaration'].includes(parent.type)) {
-							return memberExpression(
-								identifier(Transformer.SCOPE_NAME),
-								node,
-							);
+				if (!ignoreClass) {
+					if (node.type === 'ClassDeclaration') {
+						ignoreClass = true;
+					} else {
+						if (node.type === 'Identifier' && node.name !== 'undefined') {
+							const varScope = this.findScope(this.getVarName(node, parent), (node as any).__scope);
+							const inRootScope = !varScope || varScope === this.rootScope; // !varScope because we can't find the declaration, in which case it's part of an external file, where we assume it was declared in the root scope.
+							if (!this.isKnown(node, parent) && inRootScope) {
+								if (parent && !['FunctionDeclaration', 'ClassDeclaration'].includes(parent.type)) {
+									return memberExpression(
+										identifier(Transformer.SCOPE_NAME),
+										node,
+									);
+								}
+							}
 						}
+						return node;
 					}
 				}
-				return node;
+			},
+			leave: (node, parent: any) => {
+				if (node.type === 'ClassDeclaration') {
+					ignoreClass = false;
+				}
 			},
 		});
 	}
