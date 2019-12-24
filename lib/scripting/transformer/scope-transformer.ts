@@ -29,8 +29,6 @@ import {
 } from '../estree';
 import { Transformer } from './transformer';
 
-const { analyze } = require('escope');
-
 /**
  * In VBScript, running `ExecuteGlobal()` is like including code directly where
  * that statement was called. For example, a variable declared in the executed
@@ -48,13 +46,8 @@ const { analyze } = require('escope');
  */
 export class ScopeTransformer extends Transformer {
 
-	private readonly scopeManager: any;
-	private readonly rootScope: any;
-
 	constructor(ast: Program) {
-		super(ast);
-		this.scopeManager = analyze(ast);
-		this.rootScope = this.scopeManager.acquire(ast);
+		super(ast, true);
 	}
 
 	public transform(): Program {
@@ -62,29 +55,6 @@ export class ScopeTransformer extends Transformer {
 		this.replaceDeclarations();
 		this.replaceUsages();
 		return this.ast;
-	}
-
-	/**
-	 * Using `escope`, we acquire the current scope for each node and attach it
-	 * to the node for later usage.
-	 *
-	 * This is a separate run because it's done when *leaving* the node.
-	 */
-	private addScope(): void {
-		let currentScope = this.rootScope;
-		traverse(this.ast, {
-			enter: node => {
-				(node as any).__scope = currentScope;
-				if (/Function/.test(node.type)) {
-					currentScope = this.scopeManager.acquire(node);
-				}
-			},
-			leave: node => {
-				if (/Function/.test(node.type)) {
-					currentScope = currentScope.upper;
-				}
-			},
-		});
 	}
 
 	/**
@@ -177,7 +147,7 @@ export class ScopeTransformer extends Transformer {
 		});
 	}
 
-	private wrapAssignment(left: Expression, right: Expression): ExpressionStatement {
+	private wrapAssignment(left: Identifier, right: Expression): ExpressionStatement {
 		return expressionStatement(
 			assignmentExpression(
 				memberExpression(

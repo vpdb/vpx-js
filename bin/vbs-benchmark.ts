@@ -48,11 +48,11 @@ import { TableBuilder } from '../test/table-builder';
 		}
 
 		const vbs = readFileSync(argVbs).toString();
-		const table = new TableBuilder().build();
+		const table = new TableBuilder().addFlipper("F1").build();
 		const player = new Player(table).init();
 
 		const transpiler = new Transpiler(table, player);
-		transpiler.transpile(vbs);
+		console.log(transpiler.transpile(vbs));
 
 	} catch (err) {
 		console.error(err);
