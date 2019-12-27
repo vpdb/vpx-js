@@ -18,7 +18,7 @@
  */
 
 import { replace } from 'estraverse';
-import { BinaryOperator, UnaryOperator } from 'estree';
+import { BinaryOperator, Identifier, UnaryOperator } from 'estree';
 import {
 	binaryExpression,
 	callExpression,
@@ -58,6 +58,8 @@ export function ppExpr(node: ESIToken): any {
 	switch (node.type) {
 		case 'InvocationExpression':
 			return ppInvocationExpression(node);
+		case 'InvocationMemberAccessExpression':
+			return ppInvocationMemberAccessExpression(node);
 		case 'LogicalNotOperatorExpression':
 			return ppLogicalNotExpression(node);
 		case 'UnaryExpression':
@@ -261,49 +263,86 @@ function ppSubExpression(node: ESIToken): any {
 }
 
 function ppInvocationExpression(node: ESIToken): any {
-	let id: any = null;
-	const argLists = [];
-	let expr = null;
-	for (const child of node.children) {
-		if (child.type === 'MemberAccessExpression' || child.type === 'SimpleNameExpression') {
-			id = child.estree;
-		} else if (child.type === 'ArgumentList') {
-			argLists.push(child.estree);
+	let expr: any = null;
+	for (let index = 0; index < node.children.length; index++) {
+		const child = node.children[index];
+		if (child.type === 'SimpleNameExpression') {
+			expr = node.children[index].estree;
 		} else if (child.type === 'EmptyArgument') {
-			argLists.push([]);
-		} else if (child.type === 'InvocationExpression') {
-			expr = child.estree;
+			expr = callExpression(expr, []);
+		} else if (child.type === 'ArgumentList') {
+			expr = callExpression(expr, child.estree);
+		} else if (child.type === 'InvocationMemberAccessExpression') {
+			if (expr === null) {
+				expr = child.estree;
+			} else {
+				expr = ppPrepend(child.estree, expr);
+			}
 		}
 	}
-	let estree: any;
-	if (argLists.length > 0) {
-		for (const argList of argLists) {
-			estree = callExpression(estree ? estree : id, argList);
+	return ppReplaceDots(expr);
+}
+
+function ppInvocationMemberAccessExpression(node: ESIToken): any {
+	let expr: any = null;
+	let currentExpr: any = null;
+	for (let index = 0; index < node.children.length; index++) {
+		if (node.children[index].type === 'MemberAccessExpression') {
+			if (currentExpr !== null) {
+				expr = ppAppend(expr, currentExpr);
+			}
+			currentExpr = node.children[index].estree;
+		} else if (node.children[index].type === 'EmptyArgument') {
+			currentExpr = callExpression(currentExpr, []);
+		} else if (node.children[index].type === 'ArgumentList') {
+			currentExpr = callExpression(currentExpr, node.children[index].estree);
 		}
-	} else {
-		estree = id;
 	}
-	/**
-	 * As additional expressions are added, only wrap the first found
-	 * identifier in a memberExpression. Also, strip the dot from the
-	 * identifier, so we don't get a..b .
-	 */
-	if (expr != null) {
-		let found = false;
-		estree = replace(expr, {
-			enter: astNode => {
-				if (!found) {
-					if (astNode.type === 'Identifier') {
-						found = true;
-						return memberExpression(estree, identifier(astNode.name.substr(1)));
-					}
-				}
-			},
-		});
-	}
-	return estree;
+	return ppAppend(expr, currentExpr);
 }
 
 function ppNewExpression(node: ESIToken): any {
 	return newExpression(node.children[0].estree, []);
+}
+
+function ppPrepend(source: any, node: any): any {
+	let found = false;
+	return replace(source, {
+		leave: astNode => {
+			if (!found) {
+				found = true;
+				return memberExpression(node, astNode as Identifier);
+			}
+		},
+	});
+}
+
+function ppAppend(source: any, node: any): any {
+	if (source === null) {
+		source = node;
+	} else {
+		if (node.type === 'Identifier') {
+			source = memberExpression(source, node);
+		} else if (node.type === 'CallExpression') {
+			source = callExpression(memberExpression(source, node.callee), node.arguments);
+		}
+	}
+	return source;
+}
+
+function ppReplaceDots(source: any): any {
+	let first = true;
+	return replace(source, {
+		enter: astNode => {
+			if (astNode.type === 'Identifier') {
+				if (!first) {
+					if (astNode.name.startsWith('.')) {
+						return identifier(astNode.name.substr(1));
+					}
+				} else {
+					first = false;
+				}
+			}
+		},
+	});
 }

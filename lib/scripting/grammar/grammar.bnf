@@ -229,7 +229,8 @@ ParenthesizedExpression ::= OpenParenthesis Expression CloseParenthesis
 SimpleNameExpression ::= Identifier
 MemberAccessExpression ::= Period IdentifierOrKeyword
 
-InvocationExpression ::= (SimpleNameExpression | MemberAccessExpression) InvocationExpression? (EmptyArgument* | ArgumentList*)?
+InvocationExpression ::= InvocationMemberAccessExpression | SimpleNameExpression ( ( OpenParenthesis ArgumentList CloseParenthesis )? InvocationMemberAccessExpression | WS ArgumentList | ArgumentList+ | EmptyArgument+ InvocationMemberAccessExpression? )?
+InvocationMemberAccessExpression ::= MemberAccessExpression ( ( OpenParenthesis ArgumentList CloseParenthesis | EmptyArgument )? MemberAccessExpression )* ( WS ArgumentList | ArgumentList+ | EmptyArgument+ )?
 EmptyArgument ::= OpenParenthesis CloseParenthesis
 ArgumentList ::= WS? Comma? Expression (Comma ArgumentList?)*
 
