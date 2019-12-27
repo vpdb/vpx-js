@@ -49,7 +49,7 @@ export interface ESIToken extends IToken {
 }
 
 export class Grammar {
-	private readonly TOKEN_TERMINAL_KEYWORDS = 'Keywords ::= ';
+	private readonly TOKEN_TERMINAL_KEYWORD = 'Keyword ::=';
 
 	private readonly GRAMMAR_TARGET_FORMAT = 'Format';
 	private readonly GRAMMAR_TARGET_PROGRAM = 'Program';
@@ -82,7 +82,6 @@ export class Grammar {
 			this.setKeywords(grammar);
 			grammar = this.addCaseInsensitiveKeywords(grammar);
 			this.parser = new Parser(Grammars.Custom.getRules(grammar), {});
-
 		} else {
 			this.parser = new Parser(RULES, {});
 			this.keywords = KEYWORD_MAP;
@@ -115,94 +114,116 @@ export class Grammar {
 		progress().details('standardizing');
 		dashAst(ast, {
 			enter(node: IToken, parent: IToken) {
-				if (node.type === 'LogicalLine') {
-					hasLine = false;
-					prevToken = undefined;
-					separator = false;
-				} else if (node.type === 'Keyword') {
-					node.text = keywords[node.text.toLowerCase()];
+				switch (node.type) {
+					case 'LogicalLine':
+						hasLine = false;
+						prevToken = undefined;
+						separator = false;
+						break;
+
+					case 'Keyword':
+						node.text = keywords[node.text.toLowerCase()];
+						break;
 				}
 			},
 			leave(node: IToken, parent: IToken) {
-				if (node.type === 'LogicalLine') {
-					if (hasLine) {
-						output += '\n';
-					}
-				} else if (node.type === 'LogicalLineElement') {
-					if (node.text === ' ') {
-						separator = true;
-					}
-				} else if (node.type === 'Token') {
-					const token = node.children[0];
-					if (prevToken) {
-						if (token.type === 'Keyword') {
-							/**
-							 * Add spaces for the following:
-							 * 1) Keyword Keyword - End Sub
-							 * 2) Identifier Keyword - For j=x To 20
-							 * 3) Literal Keyword - For j=1 To 20
-							 * 4) ) Keyword - Function MyFunction(value) End Function
-							 */
-							if (
-								prevToken.type === 'Keyword' ||
-								prevToken.type === 'Identifier' ||
-								prevToken.type === 'Literal' ||
-								prevToken.text === ')'
-							) {
-								output += ' ';
-							}
-						} else if (token.type === 'Identifier') {
-							/**
-							 * Add spaces for the following:
-							 * 1) Keyword Identifier - Sub BallRelease()
-							 * 2) Identifier Identifier - PlaySound SoundFX("fx_flipperup", ...
-							 * 3) ) Identifier - Sub BallRelease_Hit() BallRelease.CreateBall
-							 * 4) Literal Identifier - For j=1 To 20 step x
-							 */
-							if (
-								prevToken.type === 'Keyword' ||
-								prevToken.type === 'Identifier' ||
-								prevToken.type === 'Literal' ||
-								prevToken.text === ')'
-							) {
-								output += ' ';
-							}
-						} else if (token.type === 'Literal') {
-							/**
-							 * Add spaces for the following:
-							 * 1) Keyword Literal - For j=1 To 20
-							 * 2) Identifier Literal - BallRelease 5, -2
-							 */
-							if (prevToken.type === 'Keyword' || prevToken.type === 'Identifier') {
-								output += ' ';
-							}
-						} else if (token.text === '(' || token.text === '-') {
-							/**
-							 * Add spaces for the following:
-							 * 1) Keyword '(' - For ii=(oldSize*2)+1 To(newSize*2):mSlot(ii)=0:Next
-							 * 2) Keyword '-' - For ii=UBound(mSlot) To 0 Step -1:str=str&mSlot(ii):Next
-							 */
-							if (prevToken.type === 'Keyword') {
-								output += ' ';
-							}
-						} else if (token.text === '.') {
-							/**
-							 * Add space for the following:
-							 * 1) <Space>. - case keyReset .Stop
-							 * Do not add a space for the following:
-							 * 1) :<Space>. - Case keyDown swCopy=swDown: .Switch(swCopy)=False
-							 * 2) =<Space>. - If .Exists(aBall) Then .Item(aBall)=.Item(aBall)+1
-							 * 3) +<Space>. - dips(0)=.Dip(0)+.Dip(1)*256+ .Dip(2)*65536+(.Dip(3) And &H7f)*&H1000000
-							 */
-							if (separator && (prevToken.type !== 'Operator' && prevToken.text !== ':')) {
-								output += ' ';
+				switch (node.type) {
+					case 'LogicalLine':
+						if (hasLine) {
+							output += '\n';
+						}
+						break;
+					case 'LogicalLineElement':
+						if (node.text === ' ') {
+							separator = true;
+						}
+						break;
+					case 'Token':
+						const token = node.children[0];
+						if (prevToken) {
+							switch (token.type) {
+								case 'Keyword':
+									/**
+									 * Add spaces for the following:
+									 * 1) Keyword Keyword - End Sub
+									 * 2) Identifier Keyword - For j=x To 20
+									 * 3) Literal Keyword - For j=1 To 20
+									 * 4) ) Keyword - Function MyFunction(value) End Function
+									 */
+									if (
+										prevToken.type === 'Keyword' ||
+										prevToken.type === 'Identifier' ||
+										prevToken.type === 'Literal' ||
+										prevToken.text === ')'
+									) {
+										output += ' ';
+									}
+									break;
+								case 'Identifier':
+									/**
+									 * Add spaces for the following:
+									 * 1) Keyword Identifier - Sub BallRelease()
+									 * 2) Identifier Identifier - PlaySound SoundFX("fx_flipperup", ...
+									 * 3) ) Identifier - Sub BallRelease_Hit() BallRelease.CreateBall
+									 * 4) Literal Identifier - For j=1 To 20 step x
+									 */
+									if (
+										prevToken.type === 'Keyword' ||
+										prevToken.type === 'Identifier' ||
+										prevToken.type === 'Literal' ||
+										prevToken.text === ')'
+									) {
+										output += ' ';
+									}
+									break;
+								case 'Literal':
+									/**
+									 * Add spaces for the following:
+									 * 1) Keyword Literal - For j=1 To 20
+									 * 2) Identifier Literal - BallRelease 5, -2
+									 */
+									if (prevToken.type === 'Keyword' || prevToken.type === 'Identifier') {
+										output += ' ';
+									}
+									break;
+								default:
+									switch (token.text) {
+										case '(':
+										case '-':
+											/**
+											 * Add spaces for the following:
+											 * 1) Keyword '(' - For ii=(oldSize*2)+1 To(newSize*2):mSlot(ii)=0:Next
+											 * 2) Keyword '-' - For ii=UBound(mSlot) To 0 Step -1:str=str&mSlot(ii):Next
+											 */
+											if (prevToken.type === 'Keyword') {
+												output += ' ';
+											}
+											break;
+										case '.':
+											/**
+											 * Add space for the following:
+											 * 1) <Space>. - case keyReset .Stop
+											 * Do not add a space for the following:
+											 * 1) :<Space>. - Case keyDown swCopy=swDown: .Switch(swCopy)=False
+											 * 2) =<Space>. - If .Exists(aBall) Then .Item(aBall)=.Item(aBall)+1
+											 * 3) +<Space>. - dips(0)=.Dip(0)+.Dip(1)*256+ .Dip(2)*65536+(.Dip(3) And &H7f)*&H1000000
+											 */
+											if (
+												separator &&
+												(prevToken.type !== 'Operator' && prevToken.text !== ':')
+											) {
+												output += ' ';
+											}
+											break;
+									}
+									break;
 							}
 						}
-					}
-					output += token.text;
-					hasLine = true;
-					prevToken = token;
-					separator = false;
+						output += token.text;
+						hasLine = true;
+						prevToken = token;
+						separator = false;
+						break;
 				}
 			},
 		});
@@ -281,13 +302,13 @@ export class Grammar {
 	 * To keep the grammar readable, keywords are defined matching the case
 	 * from MS documentation. Each keyword is stored in a lookup table, and
 	 * then turned into a case insensitive version. For example, 'ByVal' will
-	 * become (B|b)(Y|y)(V|v)(A|a)(L|l). During the format process, all
+	 * become [B|b][Y|y][V|v][A|a][L|l]. During the format process, all
 	 * keywords will be standardized using the lookup table.
 	 */
 
 	private setKeywords(grammar: string) {
-		const startIndex = grammar.indexOf(this.TOKEN_TERMINAL_KEYWORDS) + this.TOKEN_TERMINAL_KEYWORDS.length;
-		const endIndex = grammar.indexOf(' {', startIndex);
+		const startIndex = grammar.indexOf('(', grammar.indexOf(this.TOKEN_TERMINAL_KEYWORD)) + 1;
+		const endIndex = grammar.indexOf(')', startIndex);
 
 		for (let keyword of grammar.substr(startIndex, endIndex - startIndex).split('|')) {
 			keyword = keyword.trim().slice(1, -1);
@@ -298,8 +319,8 @@ export class Grammar {
 	private addCaseInsensitiveKeywords(grammar: string): string {
 		const caseInsensitiveKeywords: string[] = [];
 
-		const startIndex = grammar.indexOf(this.TOKEN_TERMINAL_KEYWORDS) + this.TOKEN_TERMINAL_KEYWORDS.length;
-		const endIndex = grammar.indexOf(' {', startIndex);
+		const startIndex = grammar.indexOf('(', grammar.indexOf(this.TOKEN_TERMINAL_KEYWORD)) + 1;
+		const endIndex = grammar.indexOf(')', startIndex);
 
 		for (const key of Object.keys(this.keywords)) {
 			let caseInsensitiveKeyword = '';
