@@ -1032,17 +1032,7 @@ export class GLTFExporter {
 				geometryTemp.fromGeometry(geometry as Geometry);
 				geometry = geometryTemp as any;
 			}
-
-			if (mesh.drawMode === TriangleFanDrawMode) {
-				logger().warn('[GLTFExporter.processMesh] TriangleFanDrawMode and wireframe incompatible.');
-				mode = WEBGL_CONSTANTS.TRIANGLE_FAN;
-
-			} else if (mesh.drawMode === TriangleStripDrawMode) {
-				mode = (mesh.material as MaterialInternal).wireframe ? WEBGL_CONSTANTS.LINE_STRIP : WEBGL_CONSTANTS.TRIANGLE_STRIP;
-
-			} else {
-				mode = (mesh.material as MaterialInternal).wireframe ? WEBGL_CONSTANTS.LINES : WEBGL_CONSTANTS.TRIANGLES;
-			}
+			mode = (mesh.material as MaterialInternal).wireframe ? WEBGL_CONSTANTS.LINES : WEBGL_CONSTANTS.TRIANGLES;
 		}
 
 		const gltfMesh: GltfMesh = { primitives: [] };
@@ -1238,13 +1228,12 @@ export class GLTFExporter {
 				primitive.targets = targets;
 			}
 			if ((geometry as BufferGeometry).index !== null) {
-
-				if (this.cachedData.attributes.has((geometry as BufferGeometry).index)) {
-					primitive.indices = this.cachedData.attributes.get((geometry as BufferGeometry).index);
+				if (this.cachedData.attributes.has((geometry as BufferGeometry).index as BufferAttribute)) {
+					primitive.indices = this.cachedData.attributes.get((geometry as BufferGeometry).index as BufferAttribute);
 
 				} else {
-					primitive.indices = this.processAccessor((geometry as BufferGeometry).index, (geometry as BufferGeometry), groups[i].start, groups[i].count)!;
-					this.cachedData.attributes.set((geometry as BufferGeometry).index, primitive.indices);
+					primitive.indices = this.processAccessor((geometry as BufferGeometry).index as BufferAttribute, (geometry as BufferGeometry), groups[i].start, groups[i].count)!;
+					this.cachedData.attributes.set((geometry as BufferGeometry).index as BufferAttribute, primitive.indices);
 				}
 			}
 
