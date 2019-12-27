@@ -77,14 +77,17 @@ function ppArgumentList(node: ESIToken): any {
 	if (node.children.length > 0) {
 		let prevArgument: ESIToken | null = null;
 		for (const child of node.children) {
-			if (child.type === 'Expression') {
-				estree.push(child.estree);
-			} else if (child.type === 'ArgumentList') {
-				estree.push(...child.estree);
-			} else if (child.type === 'Comma') {
-				if (prevArgument === null || prevArgument.type === 'Comma') {
-					estree.push(identifier('undefined'));
-				}
+			switch (child.type) {
+				case 'Expression':
+					estree.push(child.estree);
+					break;
+				case 'ArgumentList':
+					estree.push(...child.estree);
+					break;
+				case 'Comma':
+					if (prevArgument === null || prevArgument.type === 'Comma') {
+						estree.push(identifier('undefined'));
+					}
 			}
 			prevArgument = child;
 		}
