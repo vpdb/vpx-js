@@ -48,22 +48,23 @@ function ppBlockIfStatement(node: ESIToken): any {
 	let block = null;
 	let alternate = null;
 	for (const child of node.children) {
-		if (child.type === 'Block') {
-			block = child.estree;
-		} else if (
-			child.type === 'ElseIfStatement' ||
-			child.type === 'ElseIfStatementInline' ||
-			child.type === 'ElseStatement'
-		) {
-			if (alternate === null) {
-				alternate = child.estree;
-			} else {
-				let tmpAlternate = alternate;
-				while (tmpAlternate.alternate !== null) {
-					tmpAlternate = tmpAlternate.alternate;
+		switch (child.type) {
+			case 'Block':
+				block = child.estree;
+				break;
+			case 'ElseIfStatement':
+			case 'ElseIfStatementInline':
+			case 'ElseStatement':
+				if (alternate === null) {
+					alternate = child.estree;
+				} else {
+					let tmpAlternate = alternate;
+					while (tmpAlternate.alternate !== null) {
+						tmpAlternate = tmpAlternate.alternate;
+					}
+					tmpAlternate.alternate = child.estree;
 				}
-				tmpAlternate.alternate = child.estree;
-			}
+				break;
 		}
 	}
 	return ifStatement(expr, block ? block : blockStatement([]), alternate);
@@ -73,10 +74,13 @@ function ppElseIfStatement(node: ESIToken): any {
 	const expr = node.children[0].estree;
 	let block = null;
 	for (const child of node.children) {
-		if (child.type === 'Block') {
-			block = child.estree;
-		} else if (child.type === 'StatementsInline') {
-			block = blockStatement(child.estree);
+		switch (child.type) {
+			case 'Block':
+				block = child.estree;
+				break;
+			case 'StatementsInline':
+				block = blockStatement(child.estree);
+				break;
 		}
 	}
 	return ifStatement(expr, block ? block : blockStatement([]), null);
@@ -103,10 +107,13 @@ function ppSelectStatement(node: ESIToken): any {
 	const expr = node.children[0].estree;
 	const cases: any = [];
 	for (const child of node.children) {
-		if (child.type === 'CaseStatement') {
-			cases.push(...child.estree);
-		} else if (child.type === 'CaseElseStatement') {
-			cases.push(child.estree);
+		switch (child.type) {
+			case 'CaseStatement':
+				cases.push(...child.estree);
+				break;
+			case 'CaseElseStatement':
+				cases.push(child.estree);
+				break;
 		}
 	}
 	return switchStatement(expr, cases);

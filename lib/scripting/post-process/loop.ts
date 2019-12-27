@@ -114,10 +114,13 @@ function ppForStatement(node: ESIToken): any {
 	}
 	let block: BlockStatement | undefined;
 	for (const child of node.children) {
-		if (child.type === 'Block') {
-			block = child.estree;
-		} else if (child.type === 'StatementsInline') {
-			block = blockStatement(child.estree);
+		switch (child.type) {
+			case 'Block':
+				block = child.estree;
+				break;
+			case 'StatementsInline':
+				block = blockStatement(child.estree);
+				break;
 		}
 	}
 	return forStatement(
@@ -139,14 +142,19 @@ function ppForEachStatement(node: ESIToken): any {
 	let expr: Expression = identifier('undefined');
 	let block: BlockStatement | undefined;
 	for (const child of node.children) {
-		if (child.type === 'LoopControlVariable') {
-			id = child.estree;
-		} else if (child.type === 'Expression') {
-			expr = child.estree;
-		} else if (child.type === 'Block') {
-			block = child.estree;
-		} else if (child.type === 'StatementsInline') {
-			block = blockStatement(child.estree);
+		switch (child.type) {
+			case 'LoopControlVariable':
+				id = child.estree;
+				break;
+			case 'Expression':
+				expr = child.estree;
+				break;
+			case 'Block':
+				block = child.estree;
+				break;
+			case 'StatementsInline':
+				block = blockStatement(child.estree);
+				break;
 		}
 	}
 	return forOfStatement(id, expr, block ? block : blockStatement([]));

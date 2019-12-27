@@ -46,16 +46,19 @@ function ppSubDeclaration(node: ESIToken): any {
 	let params: Identifier[] = [];
 	let block: BlockStatement | undefined;
 	for (const child of node.children) {
-		if (child.type === 'SubSignature') {
-			id = child.estree;
-			for (const subChild of child.children) {
-				if (subChild.type === 'ParameterList') {
-					params = subChild.estree;
-					break;
+		switch (child.type) {
+			case 'SubSignature':
+				id = child.estree;
+				for (const subChild of child.children) {
+					if (subChild.type === 'ParameterList') {
+						params = subChild.estree;
+						break;
+					}
 				}
-			}
-		} else if (child.type === 'Block') {
-			block = child.estree;
+				break;
+			case 'Block':
+				block = child.estree;
+				break;
 		}
 	}
 	return functionDeclaration(id, params, block ? block : blockStatement([]));
@@ -66,16 +69,19 @@ function ppFunctionDeclaration(node: ESIToken): any {
 	let params: Identifier[] = [];
 	let block: BlockStatement | undefined;
 	for (const child of node.children) {
-		if (child.type === 'FunctionSignature') {
-			id = child.estree;
-			for (const subChild of child.children) {
-				if (subChild.type === 'ParameterList') {
-					params = subChild.estree;
-					break;
+		switch (child.type) {
+			case 'FunctionSignature':
+				id = child.estree;
+				for (const subChild of child.children) {
+					if (subChild.type === 'ParameterList') {
+						params = subChild.estree;
+						break;
+					}
 				}
-			}
-		} else if (child.type === 'Block') {
-			block = child.estree;
+				break;
+			case 'Block':
+				block = child.estree;
+				break;
 		}
 	}
 	if (block) {

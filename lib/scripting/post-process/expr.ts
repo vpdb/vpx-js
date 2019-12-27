@@ -18,7 +18,7 @@
  */
 
 import { replace } from 'estraverse';
-import { BinaryOperator, Identifier, UnaryOperator } from 'estree';
+import { BinaryOperator, Expression, Identifier, UnaryOperator } from 'estree';
 import {
 	binaryExpression,
 	callExpression,
@@ -83,120 +83,119 @@ export function ppExpr(node: ESIToken): any {
 }
 
 function ppBinaryExpression(node: ESIToken): any {
-	let estree = node.children[0].estree;
+	let expr = node.children[0].estree;
 	let index = node.children[0].text.length;
-	for (let loop = 1; loop < node.children.length; loop++) {
+	for (const child of node.children.slice(1)) {
 		const operator = node.text.charAt(index) as BinaryOperator;
-		estree = binaryExpression(operator, estree, node.children[loop].estree);
-		index += node.children[loop].text.length + 1;
+		expr = binaryExpression(operator, expr, child.estree);
+		index += child.text.length + 1;
 	}
-	return estree;
+	return expr;
 }
 
 function ppIntegerDivisionExpression(node: ESIToken): any {
-	let estree = node.children[0].estree;
+	let expr = node.children[0].estree;
 	const mathFloorExpression = memberExpression(identifier('Math'), identifier('floor'));
-	for (let loop = 1; loop < node.children.length; loop++) {
-		estree = callExpression(mathFloorExpression, [
+	for (const child of node.children.slice(1)) {
+		expr = callExpression(mathFloorExpression, [
 			binaryExpression(
 				'/',
-				callExpression(mathFloorExpression, [estree]),
-				callExpression(mathFloorExpression, [node.children[loop].estree]),
+				callExpression(mathFloorExpression, [expr]),
+				callExpression(mathFloorExpression, [child.estree]),
 			),
 		]);
 	}
-	return estree;
+	return expr;
 }
 
 export function ppModuloExpression(node: ESIToken): any {
-	let estree = node.children[0].estree;
-	for (let loop = 1; loop < node.children.length; loop++) {
-		estree = binaryExpression('%', estree, node.children[loop].estree);
+	let expr = node.children[0].estree;
+	for (const child of node.children.slice(1)) {
+		expr = binaryExpression('%', expr, child.estree);
 	}
-	return estree;
+	return expr;
 }
 
 export function ppExponentExpression(node: ESIToken): any {
-	let estree = node.children[0].estree;
-	for (let loop = 1; loop < node.children.length; loop++) {
-		estree = callExpression(memberExpression(identifier('Math'), identifier('pow')), [
-			estree,
-			node.children[loop].estree,
-		]);
+	let expr = node.children[0].estree;
+	for (const child of node.children.slice(1)) {
+		expr = callExpression(memberExpression(identifier('Math'), identifier('pow')), [expr, child.estree]);
 	}
-	return estree;
+	return expr;
 }
 
 export function ppConcatExpression(node: ESIToken): any {
-	let estree = node.children[0].estree;
-	for (let loop = 1; loop < node.children.length; loop++) {
-		estree = binaryExpression('+', estree, node.children[loop].estree);
+	let expr = node.children[0].estree;
+	for (const child of node.children.slice(1)) {
+		expr = binaryExpression('+', expr, child.estree);
 	}
-	return estree;
+	return expr;
 }
 
 function ppLogicalExpression(node: ESIToken): any {
-	let estree = node.children[0].estree;
+	let expr = node.children[0].estree;
 	let index = node.children[0].text.length;
-	for (let loop = 1; loop < node.children.length; loop++) {
-		if (node.text.substr(index).startsWith(' And ')) {
-			estree = logicalExpression('&&', estree, node.children[loop].estree);
-			index += node.children[loop].text.length + 5;
-		} else if (node.text.substr(index).startsWith(' Or ')) {
-			estree = logicalExpression('||', estree, node.children[loop].estree);
-			index += node.children[loop].text.length + 4;
-		} else if (node.text.substr(index).startsWith(' Xor ')) {
-			estree = logicalExpression(
+	for (const child of node.children.slice(1)) {
+		const text = node.text.substr(index);
+		if (text.startsWith(' And ')) {
+			expr = logicalExpression('&&', expr, child.estree);
+			index += child.text.length + 5;
+		} else if (text.startsWith(' Or ')) {
+			expr = logicalExpression('||', expr, child.estree);
+			index += child.text.length + 4;
+		} else if (text.startsWith(' Xor ')) {
+			expr = logicalExpression(
 				'||',
-				logicalExpression('&&', estree, unaryExpression('!', node.children[loop].estree)),
-				logicalExpression('&&', unaryExpression('!', estree), node.children[loop].estree),
+				logicalExpression('&&', expr, unaryExpression('!', child.estree)),
+				logicalExpression('&&', unaryExpression('!', expr), child.estree),
 			);
-			index += node.children[loop].text.length + 5;
-		} else if (node.text.substr(index).startsWith(' Eqv ')) {
-			estree = unaryExpression('~', binaryExpression('^', estree, node.children[loop].estree));
-			index += node.children[loop].text.length + 5;
+			index += child.text.length + 5;
+		} else if (text.startsWith(' Eqv ')) {
+			expr = unaryExpression('~', binaryExpression('^', expr, child.estree));
+			index += child.text.length + 5;
 		}
 	}
-	return estree;
+	return expr;
 }
 
 function ppRelationalExpression(node: ESIToken): any {
-	let estree = node.children[0].estree;
+	let expr = node.children[0].estree;
 	let index = node.children[0].text.length;
-	for (let loop = 1; loop < node.children.length; loop++) {
-		if (node.text.substr(index).startsWith('<>')) {
-			estree = binaryExpression('!=', estree, node.children[loop].estree);
-			index += node.children[loop].text.length + 2;
-		} else if (node.text.substr(index).startsWith('<=') || node.text.substr(index).startsWith('=<')) {
-			estree = binaryExpression('<=', estree, node.children[loop].estree);
-			index += node.children[loop].text.length + 2;
-		} else if (node.text.substr(index).startsWith('>=') || node.text.substr(index).startsWith('=>')) {
-			estree = binaryExpression('>=', estree, node.children[loop].estree);
-			index += node.children[loop].text.length + 2;
-		} else if (node.text.substr(index).startsWith('=')) {
-			estree = binaryExpression('==', estree, node.children[loop].estree);
-			index += node.children[loop].text.length + 1;
-		} else if (node.text.substr(index).startsWith('<')) {
-			estree = binaryExpression('<', estree, node.children[loop].estree);
-			index += node.children[loop].text.length + 1;
-		} else if (node.text.substr(index).startsWith('>')) {
-			estree = binaryExpression('>', estree, node.children[loop].estree);
-			index += node.children[loop].text.length + 1;
+	for (const child of node.children.slice(1)) {
+		const text = node.text.substr(index);
+		if (text.startsWith('<>')) {
+			expr = binaryExpression('!=', expr, child.estree);
+			index += child.text.length + 2;
+		} else if (text.startsWith('<=') || text.startsWith('=<')) {
+			expr = binaryExpression('<=', expr, child.estree);
+			index += child.text.length + 2;
+		} else if (text.startsWith('>=') || text.startsWith('=>')) {
+			expr = binaryExpression('>=', expr, child.estree);
+			index += child.text.length + 2;
+		} else if (text.startsWith('=')) {
+			expr = binaryExpression('==', expr, child.estree);
+			index += child.text.length + 1;
+		} else if (text.startsWith('<')) {
+			expr = binaryExpression('<', expr, child.estree);
+			index += child.text.length + 1;
+		} else if (text.startsWith('>')) {
+			expr = binaryExpression('>', expr, child.estree);
+			index += child.text.length + 1;
 		}
 	}
-	return estree;
+	return expr;
 }
 
 function ppTypeExpression(node: ESIToken): any {
-	let estree = node.children[0].estree;
+	let expr = node.children[0].estree;
 	let index = node.children[0].text.length;
-	for (let loop = 1; loop < node.children.length; loop++) {
+	for (const child of node.children.slice(1)) {
 		if (node.text.substr(index).startsWith(' Is ')) {
-			estree = binaryExpression('==', estree, node.children[loop].estree);
-			index += node.children[loop].text.length + 4;
+			expr = binaryExpression('==', expr, child.estree);
+			index += child.text.length + 4;
 		}
 	}
-	return estree;
+	return expr;
 }
 
 function ppUnaryExpression(node: ESIToken): any {
@@ -221,16 +220,23 @@ function ppSubExpression(node: ESIToken): any {
 	let expr = null;
 	let args;
 	for (const child of node.children) {
-		if (child.type === 'MemberAccessExpression' || child.type === 'SimpleNameExpression') {
-			id = child.estree;
-		} else if (child.type === 'OpenParenthesis') {
-			args = [];
-		} else if (child.type === 'ArgumentList') {
-			args = child.estree;
-		} else if (child.type === 'CloseParenthesis') {
-			argLists.push(args);
-		} else if (child.type === 'SubExpression') {
-			expr = child.estree;
+		switch (child.type) {
+			case 'MemberAccessExpression':
+			case 'SimpleNameExpression':
+				id = child.estree;
+				break;
+			case 'OpenParenthesis':
+				args = [];
+				break;
+			case 'ArgumentList':
+				args = child.estree;
+				break;
+			case 'CloseParenthesis':
+				argLists.push(args);
+				break;
+			case 'SubExpression':
+				expr = child.estree;
+				break;
 		}
 	}
 	let estree: any;
@@ -263,49 +269,57 @@ function ppSubExpression(node: ESIToken): any {
 }
 
 function ppInvocationExpression(node: ESIToken): any {
-	let expr: any = null;
-	for (let index = 0; index < node.children.length; index++) {
-		const child = node.children[index];
-		if (child.type === 'SimpleNameExpression') {
-			expr = node.children[index].estree;
-		} else if (child.type === 'EmptyArgument') {
-			expr = callExpression(expr, []);
-		} else if (child.type === 'ArgumentList') {
-			expr = callExpression(expr, child.estree);
-		} else if (child.type === 'InvocationMemberAccessExpression') {
-			if (expr === null) {
+	let expr: Expression | undefined;
+	for (const child of node.children) {
+		switch (child.type) {
+			case 'SimpleNameExpression':
 				expr = child.estree;
-			} else {
-				expr = ppPrepend(child.estree, expr);
-			}
+				break;
+			case 'EmptyArgument':
+				expr = callExpression(expr as Expression, []);
+				break;
+			case 'ArgumentList':
+				expr = callExpression(expr as Expression, child.estree);
+				break;
+			case 'InvocationMemberAccessExpression':
+				expr = expr ? ppPrepend(child.estree, expr) : child.estree;
+				break;
 		}
 	}
-	return ppReplaceDots(expr);
+	return ppReplaceDots(expr as Expression);
 }
 
 function ppInvocationMemberAccessExpression(node: ESIToken): any {
-	let expr: any = null;
-	let currentExpr: any = null;
-	for (let index = 0; index < node.children.length; index++) {
-		if (node.children[index].type === 'MemberAccessExpression') {
-			if (currentExpr !== null) {
-				expr = ppAppend(expr, currentExpr);
-			}
-			currentExpr = node.children[index].estree;
-		} else if (node.children[index].type === 'EmptyArgument') {
-			currentExpr = callExpression(currentExpr, []);
-		} else if (node.children[index].type === 'ArgumentList') {
-			currentExpr = callExpression(currentExpr, node.children[index].estree);
+	let expr: Expression | undefined;
+	let currentExpr: Expression | undefined;
+	for (const child of node.children) {
+		switch (child.type) {
+			case 'MemberAccessExpression':
+				if (currentExpr) {
+					expr = ppAppend(expr, currentExpr);
+				}
+				currentExpr = child.estree;
+				break;
+			case 'EmptyArgument':
+				currentExpr = callExpression(currentExpr as Expression, []);
+				break;
+			case 'ArgumentList':
+				currentExpr = callExpression(currentExpr as Expression, child.estree);
+				break;
 		}
 	}
-	return ppAppend(expr, currentExpr);
+	return ppAppend(expr, currentExpr as Expression);
 }
 
 function ppNewExpression(node: ESIToken): any {
 	return newExpression(node.children[0].estree, []);
 }
 
-function ppPrepend(source: any, node: any): any {
+/**
+ * Prepend an expression with an expression.
+ * Example: `b(1,2)` prepended with `a` would become `a.b(1,2)`
+ */
+function ppPrepend(source: Expression, node: Expression): any {
 	let found = false;
 	return replace(source, {
 		leave: astNode => {
@@ -317,27 +331,38 @@ function ppPrepend(source: any, node: any): any {
 	});
 }
 
-function ppAppend(source: any, node: any): any {
-	if (source === null) {
-		source = node;
-	} else {
+/**
+ * Append an expression with an expression.
+ * Example: `b(1,2)` appended with `c(3,4)` would become `b(1,2).c(3,4)`
+ */
+function ppAppend(source: Expression | undefined, node: Expression): any {
+	if (source) {
 		if (node.type === 'Identifier') {
 			source = memberExpression(source, node);
 		} else if (node.type === 'CallExpression') {
-			source = callExpression(memberExpression(source, node.callee), node.arguments);
+			source = callExpression(memberExpression(source, node.callee as Expression), node.arguments as [
+				Expression,
+			]);
 		}
+	} else {
+		source = node;
 	}
 	return source;
 }
 
-function ppReplaceDots(source: any): any {
+/**
+ * Remove any identifiers that begin with a period except for the first one.
+ * If an invocation statement is inside a with statement, it can begin with
+ * a period.
+ */
+function ppReplaceDots(source: Expression): any {
 	let first = true;
 	return replace(source, {
-		enter: astNode => {
-			if (astNode.type === 'Identifier') {
+		enter: node => {
+			if (node.type === 'Identifier') {
 				if (!first) {
-					if (astNode.name.startsWith('.')) {
-						return identifier(astNode.name.substr(1));
+					if (node.name.startsWith('.')) {
+						return identifier(node.name.substr(1));
 					}
 				} else {
 					first = false;
