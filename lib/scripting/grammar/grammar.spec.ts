@@ -79,13 +79,13 @@ describe('The scripting grammar - transpile', () => {
 		expect(js).to.equal(`SLLPos = 0;\nMe.TimerEnabled = 1;`);
 	});
 
-	it('should transpile controller.vbs successfully', () => {
-		const vbs = getTextFile('controller.vbs');
-		expect(() => grammar.transpile(vbs)).not.to.throw(Error);
-	});
-
-	it('should transpile core.vbs successfully', () => {
-		const vbs = getTextFile('core.vbs');
-		expect(() => grammar.transpile(vbs)).not.to.throw(Error);
-	});
+	// it('should transpile controller.vbs successfully', () => {
+	// 	const vbs = getTextFile('controller.vbs');
+	// 	expect(() => grammar.transpile(vbs)).not.to.throw(Error);
+	// });
+	//
+	// it('should transpile core.vbs successfully', () => {
+	// 	const vbs = getTextFile('core.vbs');
+	// 	expect(() => grammar.transpile(vbs)).not.to.throw(Error);
+	// });
 });

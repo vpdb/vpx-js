@@ -70,10 +70,22 @@ describe('The scripting scope transformer', () => {
 		expect(js).to.equal(`for (${Transformer.SCOPE_NAME}.xx of ${Transformer.SCOPE_NAME}.GI) {\n    ${Transformer.SCOPE_NAME}.xx.State = 1;\n}`);
 	});
 
+	it('should change a function declaration to an expression', () => {
+		const vbs = `Sub Foo\nEnd Sub`;
+		const js = transform(vbs);
+		expect(js).to.equal(`${Transformer.SCOPE_NAME}.Foo = function () {\n};`);
+	});
+
+	it('should change a class declaration to an expression', () => {
+		const vbs = `Class Foo\nEnd Class`;
+		const js = transform(vbs);
+		expect(js).to.equal(`${Transformer.SCOPE_NAME}.Foo = class {\n    constructor() {\n    }\n};`);
+	});
+
 	it('should not the scope to a member call in a function', () => {
 		const vbs = `Function AudioPan(tableobj)\nDim tmp\ntmp = tableobj.x * 2 / table1.width-1\nEnd Function`;
 		const js = transform(vbs);
-		expect(js).to.equal(`__scope.AudioPan = function (tableobj) {\n    let AudioPan = undefined;\n    let tmp;\n    tmp = tableobj.x * 2 / __scope.table1.width - 1;\n    return AudioPan;\n};`);
+		expect(js).to.equal(`${Transformer.SCOPE_NAME}.AudioPan = function (tableobj) {\n    let AudioPan = undefined;\n    let tmp;\n    tmp = tableobj.x * 2 / ${Transformer.SCOPE_NAME}.table1.width - 1;\n    return AudioPan;\n};`);
 	});
 
 	it('should not add the scope to a function-level variable assignment', () => {
