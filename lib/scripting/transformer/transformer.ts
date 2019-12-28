@@ -86,7 +86,7 @@ export class Transformer {
 		traverse(this.ast, {
 			enter: node => {
 				if (!ignoreClass) {
-					if (node.type === 'ClassDeclaration') {
+					if (node.type.startsWith('Class')) {
 						ignoreClass = true;
 					} else {
 						(node as any).__scope = currentScope;
@@ -97,7 +97,7 @@ export class Transformer {
 				}
 			},
 			leave: node => {
-				if (node.type === 'ClassDeclaration') {
+				if (node.type.startsWith('Class')) {
 					ignoreClass = false;
 				} else {
 					if (!ignoreClass) {

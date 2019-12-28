@@ -28,7 +28,7 @@ import {
 	BreakStatement,
 	CallExpression,
 	ClassBody,
-	ClassDeclaration,
+	ClassDeclaration, ClassExpression,
 	ConditionalExpression,
 	DoWhileStatement,
 	Expression,
@@ -106,6 +106,14 @@ export function classDeclaration(id: Identifier, body: ClassBody): ClassDeclarat
 		body,
 	};
 }
+
+export function classExpression(body: ClassBody): ClassExpression {
+	return {
+		type: 'ClassExpression',
+		body,
+	};
+}
+
 export function functionDeclaration(id: Identifier, params: Identifier[], body: BlockStatement): FunctionDeclaration {
 	return {
 		type: 'FunctionDeclaration',

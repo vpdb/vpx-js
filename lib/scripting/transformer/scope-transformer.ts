@@ -17,10 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { replace, traverse } from 'estraverse';
-import { Expression, ExpressionStatement, Identifier, MemberExpression, Program, VariableDeclaration } from 'estree';
+import { replace } from 'estraverse';
+import { Expression, ExpressionStatement, Identifier, Program, VariableDeclaration } from 'estree';
 import {
 	assignmentExpression,
+	classExpression,
 	expressionStatement,
 	functionExpression,
 	identifier,
@@ -69,8 +70,12 @@ export class ScopeTransformer extends Transformer {
 		replace(this.ast, {
 			enter: (node, parent) => {
 				if (!ignoreClass) {
-					if (node.type === 'ClassDeclaration') {
+					if (node.type === 'ClassDeclaration' || node.type === 'ClassExpression') {
 						ignoreClass = true;
+						return this.wrapAssignment(
+							node.id!,
+							classExpression(node.body),
+						);
 					} else {
 						const isRootScope = (node as any).__scope === this.rootScope;
 						if (isRootScope) {
@@ -110,7 +115,7 @@ export class ScopeTransformer extends Transformer {
 				}
 			},
 			leave: (node, parent: any) => {
-				if (node.type === 'ClassDeclaration') {
+				if (node.type.startsWith('Class')) {
 					ignoreClass = false;
 				}
 			},
@@ -144,7 +149,7 @@ export class ScopeTransformer extends Transformer {
 		replace(this.ast, {
 			enter: (node, parent: any) => {
 				if (!ignoreClass) {
-					if (node.type === 'ClassDeclaration') {
+					if (node.type.startsWith('Class')) {
 						ignoreClass = true;
 					} else {
 						if (node.type === 'Identifier' && node.name !== 'undefined') {
@@ -153,6 +158,7 @@ export class ScopeTransformer extends Transformer {
 							if ([Transformer.STDLIB_NAME, Transformer.SCOPE_NAME, Transformer.ENUMS_NAME, Transformer.GLOBAL_NAME, Transformer.ITEMS_NAME, Transformer.PLAYER_NAME, Transformer.VBSHELPER_NAME].includes(node.name)) {
 								return node;
 							}
+
 							const varScope = this.findScope(this.getVarName(node, parent), (node as any).__scope);
 							const inRootScope = !varScope || varScope === this.rootScope; // !varScope because we can't find the declaration, in which case it's part of an external file, where we assume it was declared in the root scope.
 							if (!this.isKnown(node, parent) && inRootScope) {
@@ -169,7 +175,7 @@ export class ScopeTransformer extends Transformer {
 				}
 			},
 			leave: (node, parent: any) => {
-				if (node.type === 'ClassDeclaration') {
+				if (node.type.startsWith('Class')) {
 					ignoreClass = false;
 				}
 			},

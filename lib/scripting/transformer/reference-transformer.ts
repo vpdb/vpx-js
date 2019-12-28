@@ -110,7 +110,7 @@ export class ReferenceTransformer extends Transformer {
 		replace(ast, {
 			enter: (node, parent: any) => {
 				if (!ignoreClass) {
-					if (node.type === 'ClassDeclaration') {
+					if (node.type.startsWith('Class')) {
 						ignoreClass = true;
 					} else {
 						const isFunctionDeclaration = parent && parent.type === 'FunctionDeclaration';
@@ -137,7 +137,7 @@ export class ReferenceTransformer extends Transformer {
 				}
 			},
 			leave: (node, parent: any) => {
-				if (node.type === 'ClassDeclaration') {
+				if (node.type.startsWith('Class')) {
 					ignoreClass = false;
 				}
 			},
@@ -149,7 +149,7 @@ export class ReferenceTransformer extends Transformer {
 		replace(ast, {
 			enter: (node, parent: any) => {
 				if (!ignoreClass) {
-					if (node.type === 'ClassDeclaration') {
+					if (node.type.startsWith('Class')) {
 						ignoreClass = true;
 					} else {
 						const isFunction = parent && parent.type === 'CallExpression';
@@ -179,7 +179,7 @@ export class ReferenceTransformer extends Transformer {
 				}
 			},
 			leave: (node, parent: any) => {
-				if (node.type === 'ClassDeclaration') {
+				if (node.type.startsWith('Class')) {
 					ignoreClass = false;
 				}
 			},
@@ -191,7 +191,7 @@ export class ReferenceTransformer extends Transformer {
 		replace(ast, {
 			enter: (node, parent: any) => {
 				if (!ignoreClass) {
-					if (node.type === 'ClassDeclaration') {
+					if (node.type.startsWith('Class')) {
 						ignoreClass = true;
 					} else {
 						const isFunctionDeclaration = parent && parent.type === 'FunctionDeclaration';
@@ -210,7 +210,7 @@ export class ReferenceTransformer extends Transformer {
 				}
 			},
 			leave: (node, parent: any) => {
-				if (node.type === 'ClassDeclaration') {
+				if (node.type.startsWith('Class')) {
 					ignoreClass = false;
 				}
 			},
@@ -222,7 +222,7 @@ export class ReferenceTransformer extends Transformer {
 		replace(ast, {
 			enter: (node, parent: any) => {
 				if (!ignoreClass) {
-					if (node.type === 'ClassDeclaration') {
+					if (node.type.startsWith('Class')) {
 						ignoreClass = true;
 					} else {
 						if (!this.isKnown(node, parent) && node.type === 'Identifier') {
@@ -250,7 +250,7 @@ export class ReferenceTransformer extends Transformer {
 				}
 			},
 			leave: (node, parent: any) => {
-				if (node.type === 'ClassDeclaration') {
+				if (node.type.startsWith('Class')) {
 					ignoreClass = false;
 				}
 			},
@@ -273,7 +273,7 @@ export class ReferenceTransformer extends Transformer {
 		replace(ast, {
 			enter: (node, parent: any) => {
 				if (!ignoreClass) {
-					if (node.type === 'ClassDeclaration') {
+					if (node.type.startsWith('Class')) {
 						ignoreClass = true;
 					} else {
 						if (node.type === 'CallExpression') {
@@ -299,7 +299,7 @@ export class ReferenceTransformer extends Transformer {
 				}
 			},
 			leave: (node, parent: any) => {
-				if (node.type === 'ClassDeclaration') {
+				if (node.type.startsWith('Class')) {
 					ignoreClass = false;
 				}
 			},

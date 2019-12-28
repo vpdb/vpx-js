@@ -136,6 +136,11 @@ export class AmbiguityTransformer extends Transformer {
 						return node;
 					}
 
+					// if it's a class instantiation, ignore
+					if (parent && parent.type === 'NewExpression') {
+						return node;
+					}
+
 					// now, if it's a prop of something we already know, check if it's a function.
 					const topMemberName = this.getTopMemberName(node);
 					let api: any;
