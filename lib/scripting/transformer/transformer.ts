@@ -78,6 +78,8 @@ export class Transformer {
 	 * This is a separate run because it's done when *leaving* the node.
 	 */
 	protected addScope(): void {
+
+		/* istanbul ignore next */
 		if (!this.rootScope) {
 			throw new Error('Need to instantiate with analyzeScope = true when using addScope!');
 		}
