@@ -114,6 +114,24 @@ describe('The scripting reference transformer', () => {
 		expect(js).to.equal(`x = ${Transformer.ENUMS_NAME}.GateType.GateWireRectangle;`);
 	});
 
+	it('should convert Execute to eval()', () => {
+		const vbs = `x = Execute("1")\n`;
+		const js = transform(vbs, table, player);
+		expect(js).to.equal(`x = eval(__vbs.transpileInline('1'));`);
+	});
+
+	it('should convert ExecuteGlobal to eval()', () => {
+		const vbs = `x = ExecuteGlobal("1")\n`;
+		const js = transform(vbs, table, player);
+		expect(js).to.equal(`x = eval(__vbs.transpileInline('1'));`);
+	});
+
+	it('should convert Eval to eval()', () => {
+		const vbs = `x = Eval("1")\n`;
+		const js = transform(vbs, table, player);
+		expect(js).to.equal(`x = eval(__vbs.transpileInline('1'));`);
+	});
+
 });
 
 function transform(vbs: string, table: Table, player: Player): string {
