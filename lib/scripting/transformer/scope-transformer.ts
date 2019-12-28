@@ -148,6 +148,11 @@ export class ScopeTransformer extends Transformer {
 						ignoreClass = true;
 					} else {
 						if (node.type === 'Identifier' && node.name !== 'undefined') {
+
+							// ignore identifiers we added ourselves
+							if ([Transformer.STDLIB_NAME, Transformer.SCOPE_NAME, Transformer.ENUMS_NAME, Transformer.GLOBAL_NAME, Transformer.ITEMS_NAME, Transformer.PLAYER_NAME, Transformer.VBSHELPER_NAME].includes(node.name)) {
+								return node;
+							}
 							const varScope = this.findScope(this.getVarName(node, parent), (node as any).__scope);
 							const inRootScope = !varScope || varScope === this.rootScope; // !varScope because we can't find the declaration, in which case it's part of an external file, where we assume it was declared in the root scope.
 							if (!this.isKnown(node, parent) && inRootScope) {

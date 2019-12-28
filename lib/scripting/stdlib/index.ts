@@ -69,6 +69,10 @@ export class Stdlib extends VbsApi {
 		// Initializes the random-number generator in VBScript. Nothing to initialize here.
 	}
 
+	public GetRef(proc: string, scope: any): any {
+		return scope[proc];
+	}
+
 	public CreateObject(name: string, player: Player): any {
 		return getObject(name, player);
 	}

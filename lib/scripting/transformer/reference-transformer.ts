@@ -78,8 +78,27 @@ export class ReferenceTransformer extends Transformer {
 		this.replaceEnumObjectNames(this.ast);
 		this.replaceStdlibNames(this.ast);
 		this.replaceGlobalApiNames(this.ast);
+		this.replaceGetRef(this.ast);
 		this.replaceExecuteGlobal(this.ast);
 		return this.ast;
+	}
+
+	public replaceGetRef(ast: Program): void {
+		replace(ast, {
+			enter: (node, parent: any) => {
+				if (node.type === 'CallExpression') {
+					if (node.callee.type === 'MemberExpression'
+						&& node.callee.object.type === 'Identifier'
+						&& node.callee.object.name === ReferenceTransformer.STDLIB_NAME
+						&& node.callee.property.type === 'Identifier'
+						&& node.callee.property.name.toLowerCase() === 'getref') {
+
+						node.arguments.push(identifier(ReferenceTransformer.SCOPE_NAME));
+					}
+				}
+				return node;
+			},
+		});
 	}
 
 	/**
