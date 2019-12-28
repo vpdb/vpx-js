@@ -109,8 +109,8 @@ function ppForStatement(node: ESIToken): any {
 	const expr = node.children[2].estree;
 	const expr2 = node.children[3].estree;
 	let step = null;
-	if (node.children[4].type === 'Expression') {
-		step = node.children[4].estree;
+	if (node.children[4].type === 'ForStep') {
+		step = node.children[5].estree;
 	}
 	let block: BlockStatement | undefined;
 	for (const child of node.children) {
