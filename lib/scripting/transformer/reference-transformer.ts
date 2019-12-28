@@ -258,7 +258,7 @@ export class ReferenceTransformer extends Transformer {
 						ignoreClass = true;
 					} else {
 						if (node.type === 'CallExpression') {
-							if (node.callee.type === 'Identifier' && ['executeglobal', 'execute'].includes(node.callee.name.toLowerCase())) {
+							if (node.callee.type === 'Identifier' && ['executeglobal', 'execute', 'eval'].includes(node.callee.name.toLowerCase())) {
 								node.callee.name = 'eval';
 								const args =  [ node.arguments[0] as Expression ];
 
