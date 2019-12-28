@@ -25,13 +25,13 @@ const { inspect } = require('util');
 const bnfGrammar = readFileSync(resolve(__dirname, '../lib/scripting/grammar/grammar.bnf')).toString();
 const fileDest = resolve(__dirname, '../lib/scripting/grammar/rules.ts');
 const rules = Grammars.Custom.getRules(bnfGrammar);
-const keywordsRule = rules.find(r => r.name === 'Keywords');
-const keywords = keywordsRule.bnf
+const keywordRule = rules.find(r => r.name === 'Keyword');
+const keywords = keywordRule.bnf
 	.map(r => r[0])
 	.map(r => r.substr(1, r.length - 2));
 const keywordMap = keywords.reduce((m, k) => { m[k.toLowerCase()] = k; return m; }, {});
 
-keywordsRule.bnf = keywordsRule.bnf
+keywordRule.bnf = keywordRule.bnf
 	.map(r => [ new RegExp(r[0].substr(1, r[0].length - 2), 'i') ]);
 
 const rulesExport = `import { IRule } from 'ebnf';

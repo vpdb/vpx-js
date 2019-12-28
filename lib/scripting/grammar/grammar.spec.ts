@@ -88,4 +88,29 @@ describe('The scripting grammar - transpile', () => {
 		const vbs = getTextFile('core.vbs');
 		expect(() => grammar.transpile(vbs)).not.to.throw(Error);
 	});
+
+	it('should transpile core.vbs successfully', () => {
+		const vbs = getTextFile('core.vbs');
+		expect(() => grammar.transpile(vbs)).not.to.throw(Error);
+	});
+
+	it('should transpile core.vbs successfully', () => {
+		const vbs = getTextFile('core.vbs');
+		expect(() => grammar.transpile(vbs)).not.to.throw(Error);
+	});
+
+	it('should transpile core.vbs successfully', () => {
+		const vbs = getTextFile('core.vbs');
+		expect(() => grammar.transpile(vbs)).not.to.throw(Error);
+	});
+
+	it('should transpile core.vbs successfully', () => {
+		const vbs = getTextFile('core.vbs');
+		expect(() => grammar.transpile(vbs)).not.to.throw(Error);
+	});
+
+	it('should transpile core.vbs successfully', () => {
+		const vbs = getTextFile('core.vbs');
+		expect(() => grammar.transpile(vbs)).not.to.throw(Error);
+	});
 });

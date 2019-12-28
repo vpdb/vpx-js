@@ -19,14 +19,14 @@ Token ::= Identifier | Keyword | Literal | Separator | Operator
 /* 13.1.1 Characters and Lines */
 
 LineTerminator ::= [#x0d] [#x0a] | [#x0d#x0a]
-LineContinuation ::= WS* [_] WS* LineTerminator
-Comma ::= [,]
-Period ::= [.]
-OpenParenthesis ::= [(]
-CloseParenthesis ::= [)]
-Equals ::= [=]
+LineContinuation ::= WS* '_' WS* LineTerminator
+Comma ::= ','
+Period ::= '.'
+OpenParenthesis ::= '('
+CloseParenthesis ::= ')'
+Equals ::= '='
 WS ::= [#x09#x20]
-Comment ::= (['] | [Rr][Ee][Mm]) [^#x0d#x0a]*
+Comment ::= ("'" | [Rr][Ee][Mm]) [^#x0d#x0a]*
 
 /* 13.1.2 Identifiers */
 
@@ -44,15 +44,13 @@ BooleanLiteral ::= 'True' | 'False'
 IntegerLiteral ::= IntegralLiteralValue
 IntegralLiteralValue ::= IntLiteral | HexLiteral | OctalLiteral {fragment=true}
 IntLiteral ::= [0-9]+
-HexLiteral ::= [&] [Hh] [0-9A-Fa-f]+
-OctalLiteral ::= [&] [Oo] [0-7]+
+HexLiteral ::= '&' [Hh] [0-9A-Fa-f]+
+OctalLiteral ::= '&' [Oo] [0-7]+
 FloatingPointLiteral ::= FloatingPointLiteralValue
-FloatingPointLiteralValue ::= IntLiteral ( [.] IntLiteral Exponent? | Exponent ) | [.] IntLiteral Exponent?
-Exponent ::= [E] Sign? IntLiteral
+FloatingPointLiteralValue ::= IntLiteral ( '.' IntLiteral Exponent? | Exponent ) | '.' IntLiteral Exponent?
+Exponent ::= 'E' Sign? IntLiteral
 Sign ::= [+\-]
-StringLiteral ::= DoubleQuoteCharacter StringCharacter* DoubleQuoteCharacter
-DoubleQuoteCharacter ::= ["] {fragment=true}
-StringCharacter ::= [^"] | DoubleQuoteCharacter DoubleQuoteCharacter {fragment=true}
+StringLiteral ::= '"' ([^"] | '""')* '"'
 DateLiteral ::= '#' WS* DateOrTime WS* '#'
 DateOrTime ::= DateValue ( WS+ TimeValue )? | TimeValue
 DateValue ::= MonthValue ( '/' DayValue '/' | '-' DayValue '-' ) YearValue
@@ -76,8 +74,8 @@ AccessModifier ::= 'Public' WS 'Default' | 'Public' | 'Private'
 
 /* 13.3.2 Source Files and Namespaces */
 
-StatementTerminator ::= [:]? LineTerminator | [:]
-StatementTerminatorInline ::= [:]
+StatementTerminator ::= ':'? LineTerminator | ':'
+StatementTerminatorInline ::= ':'
 
 OptionStatement ::= OptionExplicitStatement
 OptionExplicitStatement ::= 'Option' WS 'Explicit' OnOff? StatementTerminator
@@ -146,8 +144,8 @@ Statement ::= VariableMemberDeclaration | ConstantMemberDeclaration | WithStatem
 StatementInline ::= VariableMemberDeclarationInline | ConstantMemberDeclarationInline | AssignmentStatementInline | InvocationStatementInline | ArrayHandlingStatementInline | BranchStatementInline | LoopStatementInline | ConditionalStatementInline
 
 Block ::= Statements* (StatementInline WS)?
-Statements ::= Statement? ( [:] Statement? )*
-StatementsInline ::= StatementInline? ( [:] StatementInline? )*
+Statements ::= Statement? ( ':' Statement? )*
+StatementsInline ::= StatementInline? ( ':' StatementInline? )*
 
 WithStatement ::= 'With' WS Expression StatementTerminator Block? 'End' WS 'With' StatementTerminator
 AssignmentStatement ::= SetAssignmentStatement | RegularAssignmentStatement
@@ -180,8 +178,9 @@ DoLoopStatement ::= DoTopLoopStatement | DoBottomLoopStatement
 DoTopLoopStatement ::= 'Do' ( WS WhileOrUntil WS BooleanExpression )? StatementTerminator Block? 'Loop' StatementTerminator
 DoBottomLoopStatement ::= 'Do' StatementTerminator Block? 'Loop' WS WhileOrUntil WS BooleanExpression StatementTerminator
 WhileOrUntil ::= 'While' | 'Until'
-ForStatement ::= 'For' WS LoopControlVariable Equals Expression WS 'To' WS Expression ( WS [Ss][Tt][Ee][Pp] WS? Expression )? StatementTerminator Block? 'Next' StatementTerminator
-ForStatementInline ::= 'For' WS LoopControlVariable Equals Expression WS 'To' WS Expression ( WS [Ss][Tt][Ee][Pp] WS? Expression )? StatementTerminatorInline StatementsInline 'Next'
+ForStatement ::= 'For' WS LoopControlVariable Equals Expression WS 'To' WS Expression ( WS ForStep WS? Expression )? StatementTerminator Block? 'Next' StatementTerminator
+ForStatementInline ::= 'For' WS LoopControlVariable Equals Expression WS 'To' WS Expression ( WS ForStep WS? Expression )? StatementTerminatorInline StatementsInline 'Next'
+ForStep ::= [Ss][Tt][Ee][Pp]
 LoopControlVariable ::= Identifier | Expression
 ForEachStatement ::= 'For' WS 'Each' WS LoopControlVariable WS 'In' WS Expression StatementTerminator Block? 'Next' StatementTerminator
 ForEachStatementInline ::= 'For' WS 'Each' WS LoopControlVariable WS 'In' WS Expression StatementTerminatorInline StatementsInline 'Next'
@@ -221,13 +220,13 @@ EmptyArgument ::= OpenParenthesis CloseParenthesis
 ArgumentList ::= Comma? Expression (Comma ArgumentList?)*
 
 LogicalOperatorExpression ::= RelationalOperatorExpression (WS ('And' | 'Or' | 'Xor' | 'Eqv') WS? RelationalOperatorExpression)*
-RelationalOperatorExpression ::= AdditionOperatorExpression (([<][=>]? | [>][=]? | [=][><]?) AdditionOperatorExpression)*
+RelationalOperatorExpression ::= AdditionOperatorExpression ( ( ([<] [=>]?) | ([>] [=<]?) | ('=' [<>]?) ) AdditionOperatorExpression)*
 AdditionOperatorExpression ::= ModuloOperatorExpression ([+\-] ModuloOperatorExpression)*
 ModuloOperatorExpression ::= IntegerDivisionOperatorExpression (WS 'Mod' WS? IntegerDivisionOperatorExpression)*
-IntegerDivisionOperatorExpression ::= MultiplicationOperatorExpression ([\\] MultiplicationOperatorExpression)*
+IntegerDivisionOperatorExpression ::= MultiplicationOperatorExpression ('\' MultiplicationOperatorExpression)*
 MultiplicationOperatorExpression ::= ExponentOperatorExpression ([*/] ExponentOperatorExpression)*
-ExponentOperatorExpression ::= ConcatenationOperatorExpression ([\^] ConcatenationOperatorExpression)*
-ConcatenationOperatorExpression ::= TypeExpression ([&] TypeExpression)*
+ExponentOperatorExpression ::= ConcatenationOperatorExpression ('^' ConcatenationOperatorExpression)*
+ConcatenationOperatorExpression ::= TypeExpression ('&' TypeExpression)*
 TypeExpression ::= Value (WS 'Is' WS Value)*
 LogicalNotOperatorExpression ::= 'Not' WS Value
 UnaryExpression ::= [+\-] Value

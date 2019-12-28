@@ -48,7 +48,7 @@ import { TableBuilder } from '../test/table-builder';
 		}
 
 		const vbs = readFileSync(argVbs).toString();
-		const table = new TableBuilder().addFlipper("F1").build();
+		const table = new TableBuilder().addFlipper('F1').build();
 		const player = new Player(table).init();
 
 		const transpiler = new Transpiler(table, player);

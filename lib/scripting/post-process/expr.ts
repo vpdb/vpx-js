@@ -132,55 +132,66 @@ export function ppConcatExpression(node: ESIToken): any {
 	return expr;
 }
 
+const LOGICAL_OPERATORS: any = {
+	And: '&&',
+	Or: '||',
+	Eqv: 'Eqv',
+	Xor: 'Xor',
+};
+
 function ppLogicalExpression(node: ESIToken): any {
 	let expr = node.children[0].estree;
 	let index = node.children[0].text.length;
 	for (const child of node.children.slice(1)) {
 		const text = node.text.substr(index);
-		if (text.startsWith(' And ')) {
-			expr = logicalExpression('&&', expr, child.estree);
-			index += child.text.length + 5;
-		} else if (text.startsWith(' Or ')) {
-			expr = logicalExpression('||', expr, child.estree);
-			index += child.text.length + 4;
-		} else if (text.startsWith(' Xor ')) {
-			expr = logicalExpression(
-				'||',
-				logicalExpression('&&', expr, unaryExpression('!', child.estree)),
-				logicalExpression('&&', unaryExpression('!', expr), child.estree),
-			);
-			index += child.text.length + 5;
-		} else if (text.startsWith(' Eqv ')) {
-			expr = unaryExpression('~', binaryExpression('^', expr, child.estree));
-			index += child.text.length + 5;
+		for (const key in LOGICAL_OPERATORS) {
+			if (text.startsWith(' ' + key + ' ')) {
+				switch (key) {
+					case 'Eqv':
+						expr = unaryExpression('~', binaryExpression('^', expr, child.estree));
+						break;
+					case 'Xor':
+						expr = logicalExpression(
+							'||',
+							logicalExpression('&&', expr, unaryExpression('!', child.estree)),
+							logicalExpression('&&', unaryExpression('!', expr), child.estree),
+						);
+						break;
+					default:
+						expr = logicalExpression(LOGICAL_OPERATORS[key], expr, child.estree);
+						break;
+				}
+				index += child.text.length + key.length + 2;
+				break;
+			}
 		}
 	}
 	return expr;
 }
+
+const RELATIONAL_OPERATORS: any = {
+	'<>': '!=',
+	'><': '!=',
+	'<=': '<=',
+	'=<': '<=',
+	'>=': '>=',
+	'=>': '>=',
+	'>': '>',
+	'<': '<',
+	'=': '==',
+};
 
 function ppRelationalExpression(node: ESIToken): any {
 	let expr = node.children[0].estree;
 	let index = node.children[0].text.length;
 	for (const child of node.children.slice(1)) {
 		const text = node.text.substr(index);
-		if (text.startsWith('<>')) {
-			expr = binaryExpression('!=', expr, child.estree);
-			index += child.text.length + 2;
-		} else if (text.startsWith('<=') || text.startsWith('=<')) {
-			expr = binaryExpression('<=', expr, child.estree);
-			index += child.text.length + 2;
-		} else if (text.startsWith('>=') || text.startsWith('=>')) {
-			expr = binaryExpression('>=', expr, child.estree);
-			index += child.text.length + 2;
-		} else if (text.startsWith('=')) {
-			expr = binaryExpression('==', expr, child.estree);
-			index += child.text.length + 1;
-		} else if (text.startsWith('<')) {
-			expr = binaryExpression('<', expr, child.estree);
-			index += child.text.length + 1;
-		} else if (text.startsWith('>')) {
-			expr = binaryExpression('>', expr, child.estree);
-			index += child.text.length + 1;
+		for (const key in RELATIONAL_OPERATORS) {
+			if (text.startsWith(key)) {
+				expr = binaryExpression(RELATIONAL_OPERATORS[key], expr, child.estree);
+				index += child.text.length + key.length;
+				break;
+			}
 		}
 	}
 	return expr;

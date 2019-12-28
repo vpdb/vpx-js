@@ -159,6 +159,12 @@ describe('The VBScript transpiler - Expressions', () => {
 		expect(js).to.equal('EnableBallControl = EnableBallControl != 2;');
 	});
 
+	it('should transpile a "><" expression', () => {
+		const vbs = `EnableBallControl = EnableBallControl >< 2`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal('EnableBallControl = EnableBallControl != 2;');
+	});
+
 	it('should transpile a "=" expression', () => {
 		const vbs = `EnableBallControl = EnableBallControl = 2`;
 		const js = grammar.vbsToJs(vbs);
