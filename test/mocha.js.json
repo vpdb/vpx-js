@@ -1,0 +1,15 @@
+{
+	"require": [
+		"esm"
+	],
+	"bail": false,
+	"color": true,
+	"timeout": 10000,
+	"file": [
+		"dist/cjs/test/setup.js"
+	],
+	"watch": true,
+	"watch-files": [
+		"dist/cjs/**/*.js"
+	]
+}
