@@ -73,6 +73,54 @@ export class Stdlib extends VbsApi {
 		return scope[proc];
 	}
 
+	/**
+	 * The InStrRev function returns the position of the first occurrence of one string within another. The search begins from the end of string, but the position returned counts from the beginning of the string.
+	 *
+	 * The InStrRev function can return the following values:
+	 *   - If string1 is "" - InStrRev returns 0
+	 *   - If string1 is Null - InStrRev returns Null
+	 *   - If string2 is "" - InStrRev returns start
+	 *   - If string2 is Null - InStrRev returns Null
+	 *   - If string2 is not found - InStrRev returns 0
+	 *   - If string2 is found within string1 - InStrRev returns the position at which match is found
+	 *   - If start > Len(string1) - InStrRev returns 0
+	 *
+	 * @param string1 The string to be searched
+	 * @param string2 The string expression to search for
+	 * @param start Specifies the starting position for each search. The search begins at the last character position by default (-1)
+	 */
+	public InStrRev(string1: string, string2: string, start: number = -1): any {
+		if (string1 === '') {
+			return 0;
+		}
+		if (string1 === null) {
+			return null;
+		}
+		if (string2 === '') {
+			return start;
+		}
+		if (string2 === null) {
+			return null;
+		}
+		if (start > string1.length) {
+			return 0;
+		}
+		return string1.indexOf(string2, start + 1) + 1;
+	}
+
+	/**
+	 * The Left function returns a specified number of characters from the left side of a string.
+	 *
+	 * @param str The string to return characters from
+	 * @param length Specifies how many characters to return. If set to 0, an empty string ("") is returned. If set to greater than or equal to the length of the string, the entire string is returned
+	 */
+	public Left(str: string, length: number): string {
+		if (length > str.length) {
+			return str;
+		}
+		return str.substr(0, length);
+	}
+
 	public CreateObject(name: string, player: Player): any {
 		return getObject(name, player);
 	}
