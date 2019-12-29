@@ -149,74 +149,50 @@ export class ReferenceTransformer extends Transformer {
 	}
 
 	public replaceEnumObjectNames(ast: Program): void {
-		let ignoreClass = false;
 		replace(ast, {
 			enter: (node, parent: any) => {
-				if (!ignoreClass) {
-					if (node.type.startsWith('Class')) {
-						ignoreClass = true;
-					} else {
-						const isFunction = parent && parent.type === 'CallExpression';
-						const isIdentifier = node.type === 'MemberExpression' && node.object.type === 'Identifier' && node.property.type === 'Identifier';
-						if (isIdentifier && !isFunction) {
-							const enumNode = node as MemberExpression;
-							const enumObject = enumNode.object as Identifier;
-							const enumProperty = enumNode.property as Identifier;
-							const enumName = this.enumApis._getPropertyName(enumObject.name);
-							let propName: string | undefined;
-							if (enumName) {
-								propName = (this.enumApis as any)[enumName]._getPropertyName(enumProperty.name);
-								if (propName) {
-									enumNode.object = memberExpression(
-										identifier(Transformer.ENUMS_NAME),
-										identifier(enumName),
-									);
-									enumProperty.name = propName;
+				const isFunction = parent && parent.type === 'CallExpression';
+				const isIdentifier = node.type === 'MemberExpression' && node.object.type === 'Identifier' && node.property.type === 'Identifier';
+				if (isIdentifier && !isFunction) {
+					const enumNode = node as MemberExpression;
+					const enumObject = enumNode.object as Identifier;
+					const enumProperty = enumNode.property as Identifier;
+					const enumName = this.enumApis._getPropertyName(enumObject.name);
+					let propName: string | undefined;
+					if (enumName) {
+						propName = (this.enumApis as any)[enumName]._getPropertyName(enumProperty.name);
+						if (propName) {
+							enumNode.object = memberExpression(
+								identifier(Transformer.ENUMS_NAME),
+								identifier(enumName),
+							);
+							enumProperty.name = propName;
 
-								} else {
-									logger().warn(`[scripting] Unknown value "${enumProperty.name}" of enum ${enumName}.`);
-								}
-							}
+						} else {
+							logger().warn(`[scripting] Unknown value "${enumProperty.name}" of enum ${enumName}.`);
 						}
-						return node;
 					}
 				}
-			},
-			leave: (node, parent: any) => {
-				if (node.type.startsWith('Class')) {
-					ignoreClass = false;
-				}
+				return node;
 			},
 		});
 	}
 
 	public replaceGlobalApiNames(ast: Program): void {
-		let ignoreClass = false;
 		replace(ast, {
 			enter: (node, parent: any) => {
-				if (!ignoreClass) {
-					if (node.type.startsWith('Class')) {
-						ignoreClass = true;
-					} else {
-						const isFunctionDeclaration = parent && parent.type === 'FunctionDeclaration';
-						if (!this.isKnown(node, parent) && node.type === 'Identifier') {
-							const name =  this.globalApi._getPropertyName(node.name);
-							const isLocalVariable = this.isLocalVariable(node);
-							if (name && !isLocalVariable) {
-								return memberExpression(
-									identifier(Transformer.GLOBAL_NAME),
-									identifier(name),
-								);
-							}
-						}
-						return node;
+				const isFunctionDeclaration = parent && parent.type === 'FunctionDeclaration';
+				if (!this.isKnown(node, parent) && node.type === 'Identifier') {
+					const name =  this.globalApi._getPropertyName(node.name);
+					const isLocalVariable = this.isLocalVariable(node);
+					if (name && !isLocalVariable) {
+						return memberExpression(
+							identifier(Transformer.GLOBAL_NAME),
+							identifier(name),
+						);
 					}
 				}
-			},
-			leave: (node, parent: any) => {
-				if (node.type.startsWith('Class')) {
-					ignoreClass = false;
-				}
+				return node;
 			},
 		});
 	}
@@ -261,39 +237,27 @@ export class ReferenceTransformer extends Transformer {
 	 * @param ast
 	 */
 	public replaceExecuteGlobal(ast: Program): void {
-		let ignoreClass = false;
 		replace(ast, {
 			enter: (node, parent: any) => {
-				if (!ignoreClass) {
-					if (node.type.startsWith('Class')) {
-						ignoreClass = true;
-					} else {
-						if (node.type === 'CallExpression') {
-							if (node.callee.type === 'Identifier' && ['executeglobal', 'execute', 'eval'].includes(node.callee.name.toLowerCase())) {
-								node.callee.name = 'eval';
-								const args =  [ node.arguments[0] as Expression ];
+				if (node.type === 'CallExpression') {
+					if (node.callee.type === 'Identifier' && ['executeglobal', 'execute', 'eval'].includes(node.callee.name.toLowerCase())) {
+						node.callee.name = 'eval';
+						const args =  [ node.arguments[0] as Expression ];
 
-								// if it's a "getTextFile", we want to know which and pass it to the transpiler
-								if (isCallToGetTextFile(node)) {
-									args.push((node as any).arguments[0].arguments[0]);
-								}
-								node.arguments[0] = callExpression(
-									memberExpression(
-										identifier(Transformer.VBSHELPER_NAME),
-										identifier('transpileInline'),
-									),
-									args,
-								);
-							}
+						// if it's a "getTextFile", we want to know which and pass it to the transpiler
+						if (isCallToGetTextFile(node)) {
+							args.push((node as any).arguments[0].arguments[0]);
 						}
-						return node;
+						node.arguments[0] = callExpression(
+							memberExpression(
+								identifier(Transformer.VBSHELPER_NAME),
+								identifier('transpileInline'),
+							),
+							args,
+						);
 					}
 				}
-			},
-			leave: (node, parent: any) => {
-				if (node.type.startsWith('Class')) {
-					ignoreClass = false;
-				}
+				return node;
 			},
 		});
 	}
