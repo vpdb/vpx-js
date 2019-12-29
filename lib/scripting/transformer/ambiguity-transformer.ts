@@ -127,12 +127,17 @@ export class AmbiguityTransformer extends Transformer {
 					}
 
 					// if it's an assignment where its left is the node, it's definitely not a function call
-					if (parent && (parent.type === 'AssignmentExpression' || parent.type === 'ForOfStatement') && node === parent.left) {
+					if (parent && [ 'AssignmentExpression', 'ForOfStatement' ].includes(parent.type) && node === parent.left) {
 						return node;
 					}
 
 					// if we previously determined that this isn't a function, return.
 					if ((parent as any).__isProperty) {
+						return node;
+					}
+
+					// if it's a variable declaration, ignore
+					if (parent && parent.type === 'VariableDeclaration') {
 						return node;
 					}
 

@@ -43,7 +43,7 @@
 		"lint": "tslint --format stylish --project ./tsconfig.json --config ./lib/tslint.json",
 		"test": "node build/compile-rules.js && tsc && cross-env TS_NODE_TRANSPILE_ONLY=true nyc mocha --config test/mocha.ts.json lib/**/*.spec.ts",
 		"test:watch": "npm run build:pre && npm run build:cp && tsc-watch --module commonjs --outDir ./dist/cjs --onFirstSuccess \"mocha --config test/mocha.js.json dist/cjs/lib/**/*.spec.js\"",
-		"test:watch:debug": "npm run build:pre && npm run build:cp && tsc-watch --module commonjs --sourceMap --outDir ./dist/cjs --onFirstSuccess \"mocha --config test/mocha.js.json --inspect dist/cjs/lib/**/*.spec.js\""
+		"test:watch:debug": "npm run build:pre && npm run build:cp && tsc-watch --module commonjs --outDir ./dist/cjs --onFirstSuccess \"mocha --config test/mocha.js.json --inspect dist/cjs/lib/**/*.spec.js\""
 	},
 	"dependencies": {
 		"buffer": "5.4.3",
