@@ -29,7 +29,6 @@ import {
 	memberExpression,
 } from '../estree';
 import { Transformer } from './transformer';
-import { inspect } from 'util';
 
 /**
  * In VBScript, running `ExecuteGlobal()` is like including code directly where
