@@ -1,5 +1,13 @@
 import { traverse } from 'estraverse';
-import { BaseNode, BaseNodeWithoutComments, Comment, Identifier, MemberExpression, Program, Statement } from 'estree';
+import {
+	BaseNode,
+	BaseNodeWithoutComments,
+	Comment,
+	Identifier,
+	MemberExpression,
+	Program,
+	Statement,
+} from 'estree';
 import { inspect } from 'util';
 
 const { analyze } = require('escope');
@@ -117,6 +125,15 @@ export class Transformer {
 			body: nodes,
 			__scope: (node as any).__scope,
 		} as unknown as Program;
+	}
+	protected getTopParentNode(node: any): any {
+		if (!node) {
+			return null;
+		}
+		if (node.type === 'MemberExpression') {
+			return this.getTopParentNode(node.object);
+		}
+		return node;
 	}
 
 	protected getTopMemberName(node: any): string {

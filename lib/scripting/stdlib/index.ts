@@ -88,6 +88,7 @@ export class Stdlib extends VbsApi {
 	 * @param string1 The string to be searched
 	 * @param string2 The string expression to search for
 	 * @param start Specifies the starting position for each search. The search begins at the last character position by default (-1)
+	 * @see https://docs.microsoft.com/en-us/dotnet/api/microsoft.visualbasic.strings.instrrev?view=netframework-4.8
 	 */
 	public InStrRev(string1: string, string2: string, start: number = -1): any {
 		if (string1 === '') {

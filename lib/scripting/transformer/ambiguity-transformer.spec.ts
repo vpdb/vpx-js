@@ -143,6 +143,13 @@ describe('The scripting ambiguity transformer', () => {
 			expect(js).to.equal(`${Transformer.SCOPE_NAME}.x = new ${Transformer.SCOPE_NAME}.a();`);
 		});
 
+		it('should not use the helper on a class member', () => {
+			const vbs = `Class Foo\nPrivate arr\nPublic Sub Bar(aObj)  : arr.Add aObj, 0 : End Sub\nEnd Class\n`;
+			const js = transpiler.transpile(vbs);
+			expect(js).to.equal(`${Transformer.SCOPE_NAME}.Foo = class {\n    constructor() {\n        this.arr = undefined;\n    }\n    Bar(aObj) {\n        ${Transformer.VBSHELPER_NAME}.getOrCallBound(this.arr, 'Add', aObj, 0);\n    }\n};`);
+		});
+
+
 		it.skip('should not use the helper for a property in local scope', () => {
 			const vbs = `Dim objShell\nSet objShell = CreateObject("WScript.Shell")\nSub LoadController(TableType)\nobjShell.RegRead("")\nEnd Sub`;
 			const js = transpiler.transpile(vbs);
