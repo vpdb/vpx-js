@@ -150,7 +150,8 @@ export class ScopeTransformer extends Transformer {
 					}
 
 					// ignore "this"
-					if (parent && parent.type === 'MemberExpression' && parent.object.type === 'ThisExpression') {
+					const topParent = this.getTopParentNode(parent);
+					if (topParent && topParent.type === 'ThisExpression') {
 						return node;
 					}
 
