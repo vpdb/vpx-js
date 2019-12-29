@@ -179,11 +179,11 @@ export class ThreeHelper {
 	}
 
 	public fixturePath(filename: string): string {
-		return resolve(__dirname, 'fixtures', filename);
+		return resolve('test', 'fixtures', filename);
 	}
 
 	public resPath(filename: string): string {
-		return resolve(__dirname, '..', 'res', 'maps', filename);
+		return resolve('res', 'maps', filename);
 	}
 
 	public getBoundingBox(object3D: Object3D): Box3 {

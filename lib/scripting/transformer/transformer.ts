@@ -1,7 +1,6 @@
 import { traverse } from 'estraverse';
-import { BaseNode, Identifier, MemberExpression, Program } from 'estree';
+import { BaseNode, BaseNodeWithoutComments, Comment, Identifier, MemberExpression, Program, Statement } from 'estree';
 import { inspect } from 'util';
-import { logger } from '../../util/logger';
 
 const { analyze } = require('escope');
 
@@ -84,18 +83,40 @@ export class Transformer {
 			throw new Error('Need to instantiate with analyzeScope = true when using addScope!');
 		}
 		let currentScope = this.rootScope;
+
 		traverse(this.ast, {
 			enter: node => {
 				const scope = this.scopeManager.acquire(node);
 				currentScope = scope || currentScope;
 				(node as any).__scope = currentScope;
-			},
-			leave: node => {
-				if (/Function|Class/.test(node.type)) {
-					currentScope = currentScope ? currentScope.upper : this.rootScope;
-				}
+
+				//console.log(`%s %s [%s]`, new Array(i).map(v => '').join('  '), node.type,  (node as any).name || '', currentScope.constructor.name);
+
+				// (node as any).__scope = currentScope;
+				// if (/Function/.test(node.type)) {
+				// 	currentScope = this.scopeManager.acquire(node);
+				// }
 			},
 		});
+	}
+
+	protected isRootScope(node: any): boolean {
+		/* istanbul ignore next */
+		if (!node.__scope || !this.rootScope) {
+			throw new Error('Need to instantiate with analyzeScope = true when using addScope!');
+		}
+		if (/Function|Class/.test(node.type)) {
+			return node.__scope.upper === this.rootScope;
+		}
+		return node.__scope === this.rootScope;
+	}
+
+	protected replaceMany(nodes: Statement[], node: BaseNode): Program {
+		return {
+			type: 'Program',
+			body: nodes,
+			__scope: (node as any).__scope,
+		} as unknown as Program;
 	}
 
 	protected getTopMemberName(node: any): string {

@@ -18,7 +18,7 @@
  */
 
 import { replace } from 'estraverse';
-import { Expression, ExpressionStatement, Identifier, Program, VariableDeclaration } from 'estree';
+import { BaseNode, Expression, ExpressionStatement, Identifier, Program, VariableDeclaration } from 'estree';
 import {
 	assignmentExpression,
 	classExpression,
@@ -29,6 +29,7 @@ import {
 	memberExpression,
 } from '../estree';
 import { Transformer } from './transformer';
+import { inspect } from 'util';
 
 /**
  * In VBScript, running `ExecuteGlobal()` is like including code directly where
@@ -69,16 +70,16 @@ export class ScopeTransformer extends Transformer {
 		replace(this.ast, {
 			enter: (node, parent) => {
 
+				// class declarations
 				if (node.type === 'ClassDeclaration') {
 					return this.wrapAssignment(
 						node.id!,
-						classExpression(node.body),
+						classExpression(node.body, node),
+						node,
 					);
 				}
 
-				const isRootScope = (node as any).__scope === this.rootScope;
-				if (isRootScope) {
-
+				if (this.isRootScope(node)) {
 					// variable declarations
 					const isLoopVarDecl = parent && /^For.*Statement$/.test(parent.type);
 					if (node.type === 'VariableDeclaration' && !isLoopVarDecl) {
@@ -86,14 +87,12 @@ export class ScopeTransformer extends Transformer {
 						const nodes = [];
 						for (const declaration of declarationNode.declarations as any[]) {
 							nodes.push(this.wrapAssignment(
-								identifier(declaration.id ? declaration.id.name : declaration.name), // fixme
-								declaration.init || literal(null),
+								identifier(declaration.id ? declaration.id.name : declaration.name, node), // fixme
+								declaration.init || literal(null, undefined, node),
+								node,
 							));
 						}
-						return {
-							type: 'Program',
-							body: nodes,
-						} as Program;
+						return this.replaceMany(nodes, node);
 					}
 
 					// function declarations
@@ -103,7 +102,9 @@ export class ScopeTransformer extends Transformer {
 							functionExpression(
 								node.body,
 								node.params,
+								node,
 							),
+							node,
 						);
 					}
 				}
@@ -162,7 +163,9 @@ export class ScopeTransformer extends Transformer {
 					if (!this.isKnown(node, parent) && inRootScope) {
 						if (parent && !['FunctionDeclaration', 'FunctionExpression', 'ClassDeclaration', 'MethodDefinition'].includes(parent.type)) {
 							return memberExpression(
-								identifier(Transformer.SCOPE_NAME),
+								identifier(Transformer.SCOPE_NAME, node),
+								node,
+								false,
 								node,
 							);
 						}
@@ -178,16 +181,20 @@ export class ScopeTransformer extends Transformer {
 		});
 	}
 
-	private wrapAssignment(left: Identifier, right: Expression): ExpressionStatement {
+	private wrapAssignment(left: Identifier, right: Expression, node?: BaseNode): ExpressionStatement {
 		return expressionStatement(
 			assignmentExpression(
 				memberExpression(
-					identifier(Transformer.SCOPE_NAME),
+					identifier(Transformer.SCOPE_NAME, node),
 					left,
+					false,
+					node,
 				),
 				'=',
 				right,
+				node,
 			),
+			node,
 		);
 	}
 
