@@ -66,8 +66,12 @@ export class ScopeTransformer extends Transformer {
 	 * case.
 	 */
 	private replaceDeclarations(): void {
+		let i = 0;
 		replace(this.ast, {
 			enter: (node, parent) => {
+				i++;
+
+				//console.log(`%s %s [%s]`, new Array(i).map(v => '').join('  '), node.type,  (node as any).name || '', (node as any).__scope.constructor.name);
 
 				// class declarations
 				if (node.type === 'ClassDeclaration') {
@@ -109,6 +113,7 @@ export class ScopeTransformer extends Transformer {
 				}
 				return node;
 			},
+			leave: () => { i--; },
 		});
 	}
 
@@ -135,16 +140,8 @@ export class ScopeTransformer extends Transformer {
 	 *    2. Is *not* part of the "known" objects
 	 */
 	private replaceUsages() {
-		let ignoreClass = false;
 		replace(this.ast, {
 			enter: (node, parent: any) => {
-				// if (ignoreClass) {
-				// 	return node;
-				// }
-				if (node.type.startsWith('Class')) {
-					ignoreClass = true;
-					return node;
-				}
 				if (node.type === 'Identifier' && node.name !== 'undefined') {
 
 					// ignore identifiers we added ourselves
@@ -160,7 +157,7 @@ export class ScopeTransformer extends Transformer {
 					const varScope = this.findScope(this.getVarName(node, parent), (node as any).__scope);
 					const inRootScope = !varScope || varScope === this.rootScope; // !varScope because we can't find the declaration, in which case it's part of an external file, where we assume it was declared in the root scope.
 					if (!this.isKnown(node, parent) && inRootScope) {
-						if (parent && !['FunctionDeclaration', 'FunctionExpression', 'ClassDeclaration', 'MethodDefinition'].includes(parent.type)) {
+						if (parent && !['FunctionDeclaration', 'FunctionExpression', 'ClassDeclaration', 'MethodDefinition', 'VariableDeclarator'].includes(parent.type)) {
 							return memberExpression(
 								identifier(Transformer.SCOPE_NAME, node),
 								node,
@@ -171,11 +168,6 @@ export class ScopeTransformer extends Transformer {
 					}
 				}
 				return node;
-			},
-			leave: (node, parent: any) => {
-				if (node.type.startsWith('Class')) {
-					ignoreClass = false;
-				}
 			},
 		});
 	}

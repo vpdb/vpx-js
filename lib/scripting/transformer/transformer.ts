@@ -37,6 +37,7 @@ export class Transformer {
 		}
 		return [
 			'eval',
+			'constructor',
 			'Array',
 			Transformer.PLAYER_NAME,
 		].includes((node as Identifier).name);
@@ -86,16 +87,18 @@ export class Transformer {
 
 		traverse(this.ast, {
 			enter: node => {
+				const n = node as any;
 				const scope = this.scopeManager.acquire(node);
+
+				n.__scope = currentScope;
+				n.__nextScope = !!scope;
 				currentScope = scope || currentScope;
-				(node as any).__scope = currentScope;
-
-				//console.log(`%s %s [%s]`, new Array(i).map(v => '').join('  '), node.type,  (node as any).name || '', currentScope.constructor.name);
-
-				// (node as any).__scope = currentScope;
-				// if (/Function/.test(node.type)) {
-				// 	currentScope = this.scopeManager.acquire(node);
-				// }
+			},
+			leave: node => {
+				const n = node as any;
+				if (n.__nextScope) {
+					currentScope = currentScope.upper;
+				}
 			},
 		});
 	}
@@ -104,9 +107,6 @@ export class Transformer {
 		/* istanbul ignore next */
 		if (!node.__scope || !this.rootScope) {
 			throw new Error('Need to instantiate with analyzeScope = true when using addScope!');
-		}
-		if (/Function|Class/.test(node.type)) {
-			return node.__scope.upper === this.rootScope;
 		}
 		return node.__scope === this.rootScope;
 	}

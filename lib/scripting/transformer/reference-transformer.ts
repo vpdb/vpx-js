@@ -83,6 +83,10 @@ export class ReferenceTransformer extends Transformer {
 		return this.ast;
 	}
 
+	/**
+	 * Adds the scope as argument to the GetRef call so we can actually retrieve the reference.
+	 * @param ast
+	 */
 	public replaceGetRef(ast: Program): void {
 		replace(ast, {
 			enter: (node, parent: any) => {
@@ -218,41 +222,29 @@ export class ReferenceTransformer extends Transformer {
 	}
 
 	public replaceStdlibNames(ast: Program): void {
-		let ignoreClass = false;
 		replace(ast, {
 			enter: (node, parent: any) => {
-				if (!ignoreClass) {
-					if (node.type.startsWith('Class')) {
-						ignoreClass = true;
-					} else {
-						if (!this.isKnown(node, parent) && node.type === 'Identifier') {
-							const name = this.stdlib._getPropertyName(node.name);
-							if (name) {
-								// patch property
-								if (parent.property && parent.property.name && (this.stdlib as any)[name]) {
-									const propName = (this.stdlib as any)[name]._getPropertyName(parent.property.name);
-									if (propName) {
-										parent.property.name = propName;
-									}
-								}
-								// add player object to activeX instantiation
-								if (name === 'CreateObject') {
-									parent.arguments.push(identifier(Transformer.PLAYER_NAME));
-								}
-								return memberExpression(
-									identifier(Transformer.STDLIB_NAME),
-									identifier(name),
-								);
+				if (!this.isKnown(node, parent) && node.type === 'Identifier') {
+					const name = this.stdlib._getPropertyName(node.name);
+					if (name) {
+						// patch property
+						if (parent.property && parent.property.name && (this.stdlib as any)[name]) {
+							const propName = (this.stdlib as any)[name]._getPropertyName(parent.property.name);
+							if (propName) {
+								parent.property.name = propName;
 							}
 						}
-						return node;
+						// add player object to activeX instantiation
+						if (name === 'CreateObject') {
+							parent.arguments.push(identifier(Transformer.PLAYER_NAME));
+						}
+						return memberExpression(
+							identifier(Transformer.STDLIB_NAME),
+							identifier(name),
+						);
 					}
 				}
-			},
-			leave: (node, parent: any) => {
-				if (node.type.startsWith('Class')) {
-					ignoreClass = false;
-				}
+				return node;
 			},
 		});
 	}

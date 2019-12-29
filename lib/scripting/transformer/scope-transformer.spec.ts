@@ -20,6 +20,9 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 import { ScriptHelper } from '../../../test/script.helper';
+import { TableBuilder } from '../../../test/table-builder';
+import { Player } from '../../game/player';
+import { Transpiler } from '../transpiler';
 import { ScopeTransformer } from './scope-transformer';
 import { Transformer } from './transformer';
 
@@ -28,10 +31,20 @@ chai.use(require('sinon-chai'));
 /* tslint:disable:no-unused-expression */
 describe('The scripting scope transformer', () => {
 
+	const table = new TableBuilder().addFlipper('Flipper').build('Table1');
+	const player = new Player(table);
+	const transpiler = new Transpiler(table, player);
+
 	it('should add the scope to a top-level variable declaration', () => {
 		const vbs = `Dim x\n`;
 		const js = transform(vbs);
 		expect(js).to.equal(`${Transformer.SCOPE_NAME}.x = null;`);
+	});
+
+	it('should add the scope even if there is a defined function with a different scope', () => {
+		const vbs = `Dim Ballsize\nSub Table1_Init\nEnd Sub\n`;
+		const js = transpiler.transpile(vbs);
+		expect(js).to.equal(`${Transformer.ITEMS_NAME}.Table1.on('Init', () => {\n});\n${Transformer.SCOPE_NAME}.Ballsize = null;`);
 	});
 
 	it('should add the scope to a top-level variable assignment', () => {
@@ -94,11 +107,17 @@ describe('The scripting scope transformer', () => {
 		expect(js).to.equal(`${Transformer.SCOPE_NAME}.X = function () {\n    let x;\n};`);
 	});
 
+	it('should reference the stdlib when used in a class', () => {
+		const vbs = `Class cvpmDictionary\nPrivate mDict\nPrivate Sub Class_Initialize : Set mDict = CreateObject("Scripting.Dictionary") : End Sub\nEnd Class\n`;
+		const js = transpiler.transpile(vbs);
+		expect(js).to.equal(`${Transformer.SCOPE_NAME}.cvpmDictionary = class {\n    constructor() {\n        this.mDict = undefined;\n        this.mDict = __stdlib.CreateObject('Scripting.Dictionary', ${Transformer.PLAYER_NAME});\n    }\n};`);
+	});
+
 });
 
 function transform(vbs: string): string {
 	const scriptHelper = new ScriptHelper();
-	const ast = scriptHelper.vbsToAst(vbs);
-	const eventAst = new ScopeTransformer(ast).transform();
-	return scriptHelper.astToVbs(eventAst);
+	let ast = scriptHelper.vbsToAst(vbs);
+	ast = new ScopeTransformer(ast).transform();
+	return scriptHelper.astToVbs(ast);
 }
