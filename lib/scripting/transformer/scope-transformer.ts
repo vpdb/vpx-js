@@ -66,58 +66,48 @@ export class ScopeTransformer extends Transformer {
 	 * case.
 	 */
 	private replaceDeclarations(): void {
-		let ignoreClass = false;
 		replace(this.ast, {
 			enter: (node, parent) => {
-				if (!ignoreClass) {
-					if (node.type === 'ClassDeclaration' || node.type === 'ClassExpression') {
-						ignoreClass = true;
+
+				if (node.type === 'ClassDeclaration') {
+					return this.wrapAssignment(
+						node.id!,
+						classExpression(node.body),
+					);
+				}
+
+				const isRootScope = (node as any).__scope === this.rootScope;
+				if (isRootScope) {
+
+					// variable declarations
+					const isLoopVarDecl = parent && /^For.*Statement$/.test(parent.type);
+					if (node.type === 'VariableDeclaration' && !isLoopVarDecl) {
+						const declarationNode = node as VariableDeclaration;
+						const nodes = [];
+						for (const declaration of declarationNode.declarations as any[]) {
+							nodes.push(this.wrapAssignment(
+								identifier(declaration.id ? declaration.id.name : declaration.name), // fixme
+								declaration.init || literal(null),
+							));
+						}
+						return {
+							type: 'Program',
+							body: nodes,
+						} as Program;
+					}
+
+					// function declarations
+					if (node.type === 'FunctionDeclaration') {
 						return this.wrapAssignment(
 							node.id!,
-							classExpression(node.body),
+							functionExpression(
+								node.body,
+								node.params,
+							),
 						);
-					} else {
-						const isRootScope = (node as any).__scope === this.rootScope;
-						if (isRootScope) {
-
-							// variable declarations
-							const isLoopVarDecl = parent && /^For.*Statement$/.test(parent.type);
-							if (node.type === 'VariableDeclaration' && !isLoopVarDecl) {
-								const declarationNode = node as VariableDeclaration;
-								const nodes = [];
-								for (const declaration of declarationNode.declarations as any[]) {
-									nodes.push(this.wrapAssignment(
-										identifier(declaration.id ? declaration.id.name : declaration.name), // fixme
-										declaration.init || literal(null),
-									));
-								}
-								return {
-									type: 'Program',
-									body: nodes,
-								} as Program;
-							}
-
-							// function declarations
-							if (node.type === 'FunctionDeclaration') {
-								return this.wrapAssignment(
-									node.id!,
-									functionExpression(
-										node.body,
-										node.params,
-									),
-								);
-							}
-
-							// TODO class declarations (and probably others)
-						}
-						return node;
 					}
 				}
-			},
-			leave: (node, parent: any) => {
-				if (node.type.startsWith('Class')) {
-					ignoreClass = false;
-				}
+				return node;
 			},
 		});
 	}
@@ -148,31 +138,37 @@ export class ScopeTransformer extends Transformer {
 		let ignoreClass = false;
 		replace(this.ast, {
 			enter: (node, parent: any) => {
-				if (!ignoreClass) {
-					if (node.type.startsWith('Class')) {
-						ignoreClass = true;
-					} else {
-						if (node.type === 'Identifier' && node.name !== 'undefined') {
+				// if (ignoreClass) {
+				// 	return node;
+				// }
+				if (node.type.startsWith('Class')) {
+					ignoreClass = true;
+					return node;
+				}
+				if (node.type === 'Identifier' && node.name !== 'undefined') {
 
-							// ignore identifiers we added ourselves
-							if ([Transformer.STDLIB_NAME, Transformer.SCOPE_NAME, Transformer.ENUMS_NAME, Transformer.GLOBAL_NAME, Transformer.ITEMS_NAME, Transformer.PLAYER_NAME, Transformer.VBSHELPER_NAME].includes(node.name)) {
-								return node;
-							}
-
-							const varScope = this.findScope(this.getVarName(node, parent), (node as any).__scope);
-							const inRootScope = !varScope || varScope === this.rootScope; // !varScope because we can't find the declaration, in which case it's part of an external file, where we assume it was declared in the root scope.
-							if (!this.isKnown(node, parent) && inRootScope) {
-								if (parent && !['FunctionDeclaration', 'ClassDeclaration'].includes(parent.type)) {
-									return memberExpression(
-										identifier(Transformer.SCOPE_NAME),
-										node,
-									);
-								}
-							}
-						}
+					// ignore identifiers we added ourselves
+					if ([Transformer.STDLIB_NAME, Transformer.SCOPE_NAME, Transformer.ENUMS_NAME, Transformer.GLOBAL_NAME, Transformer.ITEMS_NAME, Transformer.PLAYER_NAME, Transformer.VBSHELPER_NAME].includes(node.name)) {
 						return node;
 					}
+
+					// ignore "this"
+					if (parent && parent.type === 'MemberExpression' && parent.object.type === 'ThisExpression') {
+						return node;
+					}
+
+					const varScope = this.findScope(this.getVarName(node, parent), (node as any).__scope);
+					const inRootScope = !varScope || varScope === this.rootScope; // !varScope because we can't find the declaration, in which case it's part of an external file, where we assume it was declared in the root scope.
+					if (!this.isKnown(node, parent) && inRootScope) {
+						if (parent && !['FunctionDeclaration', 'FunctionExpression', 'ClassDeclaration', 'MethodDefinition'].includes(parent.type)) {
+							return memberExpression(
+								identifier(Transformer.SCOPE_NAME),
+								node,
+							);
+						}
+					}
 				}
+				return node;
 			},
 			leave: (node, parent: any) => {
 				if (node.type.startsWith('Class')) {
