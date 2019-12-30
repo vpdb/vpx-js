@@ -231,11 +231,11 @@ export function logicalExpression(operator: LogicalOperator, left: Expression, r
 	};
 }
 
-export function memberExpression(object: Expression | Super, property: Expression, computed = false, node?: BaseNode): MemberExpression {
+export function memberExpression(object: Expression | Super, prop: Expression, computed = false, node?: BaseNode): MemberExpression {
 	return addScope({
 		type: 'MemberExpression',
 		object,
-		property,
+		property: prop,
 		computed,
 	}, node);
 }
