@@ -110,40 +110,35 @@ export class ReferenceTransformer extends Transformer {
 	 * expression given by an object name.
 	 */
 	public replaceElementObjectNames(ast: Program): void {
-		let ignoreClass = false;
 		replace(ast, {
 			enter: (node, parent: any) => {
-				if (!ignoreClass) {
-					if (node.type.startsWith('Class')) {
-						ignoreClass = true;
-					} else {
-						const isFunctionDeclaration = parent && parent.type === 'FunctionDeclaration';
-						const alreadyReplaced = parent !== node && parent.type === 'MemberExpression' && parent.object.name === Transformer.ITEMS_NAME;
-						if (!alreadyReplaced && !isFunctionDeclaration && node.type === 'Identifier') {
-							const elementName = this.table.getElementApiName(node.name);
-							const isLocalVariable = this.isLocalVariable(node);
-							if (elementName && !isLocalVariable) {
-								// patch property
-								if (parent.property && parent.property.name) {
-									const propName = this.itemApis[elementName]._getPropertyName(parent.property.name);
-									if (propName) {
-										parent.property.name = propName;
-									}
-								}
-								return memberExpression(
-									identifier(Transformer.ITEMS_NAME),
-									identifier(elementName),
-								);
-							}
-						}
-						return node;
+
+				if (!this.isEligible(node, parent)) {
+					return node;
+				}
+
+				// table items are no functions
+				if (parent && parent.type === 'FunctionDeclaration') {
+					return node;
+				}
+
+				// now check the item name
+				const elementName = this.table.getElementApiName((node as Identifier).name);
+				if (!elementName) {
+					return node;
+				}
+
+				// patch property
+				if (parent.property && parent.property.name) {
+					const propName = this.itemApis[elementName]._getPropertyName(parent.property.name);
+					if (propName) {
+						parent.property.name = propName;
 					}
 				}
-			},
-			leave: (node, parent: any) => {
-				if (node.type.startsWith('Class')) {
-					ignoreClass = false;
-				}
+				return memberExpression(
+					identifier(Transformer.ITEMS_NAME),
+					identifier(elementName),
+				);
 			},
 		});
 	}
@@ -181,18 +176,21 @@ export class ReferenceTransformer extends Transformer {
 	public replaceGlobalApiNames(ast: Program): void {
 		replace(ast, {
 			enter: (node, parent: any) => {
-				const isFunctionDeclaration = parent && parent.type === 'FunctionDeclaration';
-				if (!this.isKnown(node, parent) && node.type === 'Identifier') {
-					const name =  this.globalApi._getPropertyName(node.name);
-					const isLocalVariable = this.isLocalVariable(node);
-					if (name && !isLocalVariable) {
-						return memberExpression(
-							identifier(Transformer.GLOBAL_NAME),
-							identifier(name),
-						);
-					}
+
+				if (!this.isEligible(node, parent)) {
+					return node;
 				}
-				return node;
+
+				// now, check the global namespace
+				const name =  this.globalApi._getPropertyName((node as Identifier).name);
+				if (!name) {
+					return node;
+				}
+
+				return memberExpression(
+					identifier(Transformer.GLOBAL_NAME),
+					identifier(name),
+				);
 			},
 		});
 	}
@@ -200,29 +198,54 @@ export class ReferenceTransformer extends Transformer {
 	public replaceStdlibNames(ast: Program): void {
 		replace(ast, {
 			enter: (node, parent: any) => {
-				if (!this.isKnown(node, parent) && node.type === 'Identifier') {
-					const name = this.stdlib._getPropertyName(node.name);
-					if (name) {
-						// patch property
-						if (parent.property && parent.property.name && (this.stdlib as any)[name]) {
-							const propName = (this.stdlib as any)[name]._getPropertyName(parent.property.name);
-							if (propName) {
-								parent.property.name = propName;
-							}
-						}
-						// add player object to activeX instantiation
-						if (name === 'CreateObject') {
-							parent.arguments.push(identifier(Transformer.PLAYER_NAME));
-						}
-						return memberExpression(
-							identifier(Transformer.STDLIB_NAME),
-							identifier(name),
-						);
+
+				if (!this.isEligible(node, parent)) {
+					return node;
+				}
+
+				// check the name in stdlib's namespace
+				const name = this.stdlib._getPropertyName((node as Identifier).name);
+				if (!name) {
+					return node;
+				}
+				// patch property
+				if (parent.property && parent.property.name && (this.stdlib as any)[name]) {
+					const propName = (this.stdlib as any)[name]._getPropertyName(parent.property.name);
+					if (propName) {
+						parent.property.name = propName;
 					}
 				}
-				return node;
+
+				// add player object to activeX instantiation
+				if (name === 'CreateObject') {
+					parent.arguments.push(identifier(Transformer.PLAYER_NAME));
+				}
+				return memberExpression(
+					identifier(Transformer.STDLIB_NAME),
+					identifier(name),
+				);
 			},
 		});
+	}
+
+	private isEligible(node: any, parent: any): boolean {
+		// only look at identifiers
+		if (node.type !== 'Identifier') {
+			return false;
+		}
+
+		// if part of a member, must be the object (the left part).
+		if (parent && parent.type === 'MemberExpression' && parent.object !== node) {
+			return false;
+		}
+
+		// skip already known nodes
+		if (this.isKnown(node, parent)) {
+			return false;
+		}
+
+		// no locally declared variables either
+		return !this.isLocalVariable(node);
 	}
 
 	/**

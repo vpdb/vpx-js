@@ -42,76 +42,153 @@ describe('The scripting reference transformer', () => {
 		player = new Player(table);
 	});
 
-	it('should convert global to local variable if object exists', () => {
-		const vbs = `Flipper.SomeFunct\n`;
-		const js = transform(vbs, table, player);
-		expect(js).to.equal(`${Transformer.ITEMS_NAME}.Flipper.SomeFunct();`);
+	describe('for playfield items', () => {
+
+		it('should convert global to local variable if object exists', () => {
+			const vbs = `Flipper.SomeFunct\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`${Transformer.ITEMS_NAME}.Flipper.SomeFunct();`);
+		});
+
+		it('should not use an item variable for members', () => {
+			const vbs = `foo.Flipper = "bar"\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`foo.Flipper = 'bar';`);
+		});
+
+		it('should not use an item variable for members of members', () => {
+			const vbs = `foo.bar.Flipper = "toto"\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`foo.bar.Flipper = 'toto';`);
+		});
+
+		it('should use an item variable root object name', () => {
+			const vbs = `Flipper.Foo = "bar"\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`${Transformer.ITEMS_NAME}.Flipper.Foo = 'bar';`);
+		});
+
+		it('should convert a table element to correct case', () => {
+			const vbs = `fliPpeR.Length = 100\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`${Transformer.ITEMS_NAME}.Flipper.Length = 100;`);
+		});
+
+		it('should convert a table element property to correct case', () => {
+			const vbs = `Flipper.lEnGTh = 100\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`${Transformer.ITEMS_NAME}.Flipper.Length = 100;`);
+		});
+	});
+
+	describe('for enums', () => {
+
+		it('should not convert a function into an enum', () => {
+			const vbs = `TriggerShape.TriggerButton\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`TriggerShape.TriggerButton();`);
+		});
+
+		it('should convert an enum if enum exists', () => {
+			const vbs = `x = TriggerShape.TriggerButton\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`x = ${Transformer.ENUMS_NAME}.TriggerShape.TriggerButton;`);
+		});
+
+		it('should not use an enum for members', () => {
+			const vbs = `Set x = foo.TriggerShape.TriggerButton\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`x = foo.TriggerShape.TriggerButton;`);
+		});
+
+		it('should not use an enum for members of members', () => {
+			const vbs = `Set x = foo.bar.TriggerShape.TriggerButton\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`x = foo.bar.TriggerShape.TriggerButton;`);
+		});
+
+		it('should convert an enum name to correct case', () => {
+			const vbs = `x = gaTEtYPe.GateWireRectangle\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`x = ${Transformer.ENUMS_NAME}.GateType.GateWireRectangle;`);
+		});
+
+		it('should convert an enum value to correct case', () => {
+			const vbs = `x = GateType.gATeWirERecTAnGlE\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`x = ${Transformer.ENUMS_NAME}.GateType.GateWireRectangle;`);
+		});
+	});
+
+	describe('for the stdlib', () => {
+
+		it('should convert a stdlib call to correct case', () => {
+			const vbs = `x = INT(1.2)\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`x = ${Transformer.STDLIB_NAME}.Int(1.2);`);
+		});
+
+		it('should convert a stdlib property call to correct case', () => {
+			const vbs = `x = Math.PoW(12)\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`x = ${Transformer.STDLIB_NAME}.Math.pow(12);`);
+		});
+
+		it('should not use the stdlib for members', () => {
+			const vbs = `set x = vpmFlips.Math.Pi\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`x = vpmFlips.Math.Pi;`);
+		});
+
+		it('should not use the stdlib for members of members', () => {
+			const vbs = `set x = myObj.vpmFlips.Math.Pi\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`x = myObj.vpmFlips.Math.Pi;`);
+		});
+
+		it('should use the stdlib for root object names', () => {
+			const vbs = `set x = Math.Pi.Something\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`x = ${Transformer.STDLIB_NAME}.Math.Pi.Something;`);
+		});
+	});
+
+	describe('for the global API', () => {
+		it('should convert a global function if exists', () => {
+			const vbs = `PlaySound "test"\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`${Transformer.GLOBAL_NAME}.PlaySound('test');`);
+		});
+
+		it('should convert a global function to correct case', () => {
+			const vbs = `plaYSoUND "test"\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`${Transformer.GLOBAL_NAME}.PlaySound('test');`);
+		});
+
+		it('should not use a global variable for members', () => {
+			const vbs = `vpmFlips.Name = "vpmFlips"\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`vpmFlips.Name = 'vpmFlips';`);
+		});
+
+		it('should not use a global variable for members of members', () => {
+			const vbs = `myObj.vpmFlips.Name = "vpmFlips"\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`myObj.vpmFlips.Name = 'vpmFlips';`);
+		});
+
+		it('should use a global variable root object name', () => {
+			const vbs = `Name.Test = "vpmFlips"\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`${Transformer.GLOBAL_NAME}.Name.Test = 'vpmFlips';`);
+		});
 	});
 
 	it('should not convert global to local if object does not exist', () => {
 		const vbs = `NoExisto.SomeFunct\n`;
 		const js = transform(vbs, table, player);
 		expect(js).to.equal(`NoExisto.SomeFunct();`);
-	});
-
-	it('should not convert a function into an enum', () => {
-		const vbs = `TriggerShape.TriggerButton\n`;
-		const js = transform(vbs, table, player);
-		expect(js).to.equal(`TriggerShape.TriggerButton();`);
-	});
-
-	it('should convert an enum if enum exists', () => {
-		const vbs = `x = TriggerShape.TriggerButton\n`;
-		const js = transform(vbs, table, player);
-		expect(js).to.equal(`x = ${Transformer.ENUMS_NAME}.TriggerShape.TriggerButton;`);
-	});
-
-	it('should convert a global function if exists', () => {
-		const vbs = `PlaySound "test"\n`;
-		const js = transform(vbs, table, player);
-		expect(js).to.equal(`${Transformer.GLOBAL_NAME}.PlaySound('test');`);
-	});
-
-	it('should convert a global function to correct case', () => {
-		const vbs = `plaYSoUND "test"\n`;
-		const js = transform(vbs, table, player);
-		expect(js).to.equal(`${Transformer.GLOBAL_NAME}.PlaySound('test');`);
-	});
-
-	it('should convert a table element to correct case', () => {
-		const vbs = `fliPpeR.Length = 100\n`;
-		const js = transform(vbs, table, player);
-		expect(js).to.equal(`${Transformer.ITEMS_NAME}.Flipper.Length = 100;`);
-	});
-
-	it('should convert a table element property to correct case', () => {
-		const vbs = `Flipper.lEnGTh = 100\n`;
-		const js = transform(vbs, table, player);
-		expect(js).to.equal(`${Transformer.ITEMS_NAME}.Flipper.Length = 100;`);
-	});
-
-	it('should convert a stdlib call to correct case', () => {
-		const vbs = `x = INT(1.2)\n`;
-		const js = transform(vbs, table, player);
-		expect(js).to.equal(`x = ${Transformer.STDLIB_NAME}.Int(1.2);`);
-	});
-
-	it('should convert a stdlib property call to correct case', () => {
-		const vbs = `x = Math.PoW(12)\n`;
-		const js = transform(vbs, table, player);
-		expect(js).to.equal(`x = ${Transformer.STDLIB_NAME}.Math.pow(12);`);
-	});
-
-	it('should convert an enum name to correct case', () => {
-		const vbs = `x = gaTEtYPe.GateWireRectangle\n`;
-		const js = transform(vbs, table, player);
-		expect(js).to.equal(`x = ${Transformer.ENUMS_NAME}.GateType.GateWireRectangle;`);
-	});
-
-	it('should convert an enum value to correct case', () => {
-		const vbs = `x = GateType.gATeWirERecTAnGlE\n`;
-		const js = transform(vbs, table, player);
-		expect(js).to.equal(`x = ${Transformer.ENUMS_NAME}.GateType.GateWireRectangle;`);
 	});
 
 	it('should convert Execute to eval()', () => {
@@ -137,7 +214,6 @@ describe('The scripting reference transformer', () => {
 		const js = transform(vbs, table, player);
 		expect(js).to.equal(`x = ${Transformer.STDLIB_NAME}.GetRef('foo', ${Transformer.SCOPE_NAME});`);
 	});
-
 });
 
 function transform(vbs: string, table: Table, player: Player): string {

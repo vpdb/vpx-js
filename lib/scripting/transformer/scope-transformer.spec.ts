@@ -112,7 +112,6 @@ describe('The scripting scope transformer', () => {
 		const js = transpiler.transpile(vbs);
 		expect(js).to.equal(`${Transformer.SCOPE_NAME}.cvpmDictionary = class {\n    constructor() {\n        this.mDict = undefined;\n        this.mDict = __stdlib.CreateObject('Scripting.Dictionary', ${Transformer.PLAYER_NAME});\n    }\n};`);
 	});
-
 });
 
 function transform(vbs: string): string {
