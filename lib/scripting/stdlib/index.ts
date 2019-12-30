@@ -65,6 +65,10 @@ export class Stdlib extends VbsApi {
 		return (typeof v === 'undefined') || v === null;
 	}
 
+	public IsObject(v: any): boolean {
+		return (typeof v === 'object');
+	}
+
 	public Randomize(): void {
 		// Initializes the random-number generator in VBScript. Nothing to initialize here.
 	}

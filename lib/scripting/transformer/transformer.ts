@@ -126,6 +126,19 @@ export class Transformer {
 			__scope: (node as any).__scope,
 		} as unknown as Program;
 	}
+
+	protected getName(node: any): string {
+		if (node.name) {
+			return node.name;
+		}
+
+		if (node.id) {
+			return node.id.name;
+		}
+
+		throw new Error('Neither `name` or `id` found to determine name.');
+	}
+
 	protected getTopParentNode(node: any): any {
 		if (!node) {
 			return null;

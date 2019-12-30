@@ -36,7 +36,7 @@ export class FunctionHoistTransformer extends Transformer {
 		const functions: any[] = [];
 		const others: any[] = [];
 		for (const node of this.ast.body) {
-			if (node.type === 'FunctionDeclaration') {
+			if (['FunctionDeclaration', 'ClassDeclaration'].includes(node.type)) {
 				functions.push(node);
 			} else {
 				others.push(node);
