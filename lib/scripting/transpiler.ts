@@ -27,6 +27,7 @@ import { Table } from '../vpt/table/table';
 import { Grammar } from './grammar/grammar';
 import { Stdlib } from './stdlib';
 import { AmbiguityTransformer } from './transformer/ambiguity-transformer';
+import { ClassTransformer } from './transformer/class-transformer';
 import { EventTransformer } from './transformer/event-transformer';
 import { FunctionHoistTransformer } from './transformer/function-hoist-transformer';
 import { ReferenceTransformer } from './transformer/reference-transformer';
@@ -34,7 +35,6 @@ import { ScopeTransformer } from './transformer/scope-transformer';
 import { WrapTransformer } from './transformer/wrap-transformer';
 import { VBSHelper } from './vbs-helper';
 import { VbsProxyHandler } from './vbs-proxy-handler';
-import { ClassTransformer } from './transformer/class-transformer';
 
 //self.escodegen = require('escodegen');
 
