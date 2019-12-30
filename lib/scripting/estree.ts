@@ -44,9 +44,9 @@ import {
 	LogicalOperator,
 	MemberExpression,
 	MethodDefinition,
-	NewExpression,
+	NewExpression, ObjectExpression,
 	Pattern,
-	Program,
+	Program, Property,
 	ReturnStatement,
 	SpreadElement,
 	Statement,
@@ -238,6 +238,25 @@ export function memberExpression(object: Expression | Super, property: Expressio
 		property,
 		computed,
 	}, node);
+}
+
+export function objectExpression(properties: Property[]): ObjectExpression {
+	return {
+		type: 'ObjectExpression',
+		properties,
+	};
+}
+
+export function property(kind: 'init' | 'get' | 'set', key: Expression, value: Expression | Pattern): Property {
+	return {
+		type: 'Property',
+		kind,
+		key,
+		value,
+		method: false,
+		shorthand: false,
+		computed: false,
+	};
 }
 
 export function newExpression(callee: Expression | Super, args: Expression[] | SpreadElement[]): NewExpression {
