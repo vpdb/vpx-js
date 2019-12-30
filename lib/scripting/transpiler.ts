@@ -34,6 +34,7 @@ import { ScopeTransformer } from './transformer/scope-transformer';
 import { WrapTransformer } from './transformer/wrap-transformer';
 import { VBSHelper } from './vbs-helper';
 import { VbsProxyHandler } from './vbs-proxy-handler';
+import { ClassTransformer } from './transformer/class-transformer';
 
 //self.escodegen = require('escodegen');
 
@@ -69,6 +70,7 @@ export class Transpiler {
 
 		let now = Date.now();
 		ast = new FunctionHoistTransformer(ast).transform();
+		ast = new ClassTransformer(ast).transform();
 		ast = new EventTransformer(ast, this.table.getElements()).transform();
 		ast = new ReferenceTransformer(ast, this.table, this.itemApis, this.enumApis, this.globalApi, this.stdlib).transform();
 		ast = new ScopeTransformer(ast).transform();
