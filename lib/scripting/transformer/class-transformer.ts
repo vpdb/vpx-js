@@ -30,8 +30,8 @@ export class ClassTransformer extends Transformer {
 				}
 
 				// make method declarations lower case
-				if (node.type === 'MethodDefinition' && node.key.type === 'Identifier') {
-					node.key.name = node.key.name.toLowerCase();
+				if (node.type === 'Identifier' && parent && parent.type === 'MethodDefinition') {
+					return identifier(node.name.toLowerCase());
 				}
 
 				// make member usages lower case
