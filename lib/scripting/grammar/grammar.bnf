@@ -26,7 +26,7 @@ OpenParenthesis ::= '('
 CloseParenthesis ::= ')'
 Equals ::= '='
 WS ::= [#x09#x20]
-Comment ::= ("'" | [Rr][Ee][Mm]) [^#x0d#x0a]*
+Comment ::= ("'" | 'REM') [^#x0d#x0a]* {ignoreCase=true}
 
 /* 13.1.2 Identifiers */
 
@@ -35,7 +35,7 @@ IdentifierOrKeyword ::= Identifier | Keyword
 
 /* 13.1.3 Keywords */
 
-Keyword ::= ('And' | 'ByVal' | 'ByRef' | 'Case' | 'Call' | 'Class' | 'Const' | 'Default' | 'Dim' | 'Do' | 'Each' | 'ElseIf' | 'Else' | 'Empty' | 'End' | 'Erase' | 'Error' | 'Eqv' | 'Exit' | 'Explicit' | 'False' | 'For' | 'Function' | 'Get' | 'GoTo' | 'If' | 'In' | 'Is' | 'Let' | 'Loop' | 'Mod' | 'New' | 'Next' | 'Nothing' | 'Not' | 'Null' | 'On' | 'Option' | 'Or' | 'Preserve' | 'Private' | 'Property' | 'Public' | 'ReDim' | 'Resume' | 'Select' | 'Set' | 'Sub' | 'Then' | 'To' | 'True' | 'Until' | 'While' | 'WEnd' | 'With' | 'Xor') ![A-Za-z0-9_\.]
+Keyword ::= ('And' | 'ByVal' | 'ByRef' | 'Case' | 'Call' | 'Class' | 'Const' | 'Default' | 'Dim' | 'Do' | 'Each' | 'ElseIf' | 'Else' | 'Empty' | 'End' | 'Erase' | 'Error' | 'Eqv' | 'Exit' | 'Explicit' | 'False' | 'For' | 'Function' | 'Get' | 'GoTo' | 'If' | 'In' | 'Is' | 'Let' | 'Loop' | 'Mod' | 'New' | 'Next' | 'Nothing' | 'Not' | 'Null' | 'On' | 'Option' | 'Or' | 'Preserve' | 'Private' | 'Property' | 'Public' | 'ReDim' | 'Resume' | 'Select' | 'Set' | 'Sub' | 'Then' | 'To' | 'True' | 'Until' | 'While' | 'WEnd' | 'With' | 'Xor') ![A-Za-z0-9_\.] {ignoreCase=true}
 
 /* 13.1.4 Literals */
 
@@ -44,8 +44,8 @@ BooleanLiteral ::= 'True' | 'False'
 IntegerLiteral ::= IntegralLiteralValue
 IntegralLiteralValue ::= IntLiteral | HexLiteral | OctalLiteral {fragment=true}
 IntLiteral ::= [0-9]+
-HexLiteral ::= '&' [Hh] [0-9A-Fa-f]+
-OctalLiteral ::= '&' [Oo] [0-7]+
+HexLiteral ::= '&H' [0-9A-Fa-f]+ {ignoreCase=true}
+OctalLiteral ::= '&O' [0-7]+ {ignoreCase=true}
 FloatingPointLiteral ::= FloatingPointLiteralValue
 FloatingPointLiteralValue ::= IntLiteral ( '.' IntLiteral Exponent? | Exponent ) | '.' IntLiteral Exponent?
 Exponent ::= 'E' Sign? IntLiteral
@@ -178,9 +178,9 @@ DoLoopStatement ::= DoTopLoopStatement | DoBottomLoopStatement
 DoTopLoopStatement ::= 'Do' ( WS WhileOrUntil WS BooleanExpression )? StatementTerminator Block? 'Loop' StatementTerminator
 DoBottomLoopStatement ::= 'Do' StatementTerminator Block? 'Loop' WS WhileOrUntil WS BooleanExpression StatementTerminator
 WhileOrUntil ::= 'While' | 'Until'
+ForStep ::= 'Step' {ignoreCase=true}
 ForStatement ::= 'For' WS LoopControlVariable Equals Expression WS 'To' WS Expression ( WS ForStep WS? Expression )? StatementTerminator Block? 'Next' StatementTerminator
 ForStatementInline ::= 'For' WS LoopControlVariable Equals Expression WS 'To' WS Expression ( WS ForStep WS? Expression )? StatementTerminatorInline StatementsInline 'Next'
-ForStep ::= [Ss][Tt][Ee][Pp]
 LoopControlVariable ::= Identifier | Expression
 ForEachStatement ::= 'For' WS 'Each' WS LoopControlVariable WS 'In' WS Expression StatementTerminator Block? 'Next' StatementTerminator
 ForEachStatementInline ::= 'For' WS 'Each' WS LoopControlVariable WS 'In' WS Expression StatementTerminatorInline StatementsInline 'Next'

@@ -38,7 +38,7 @@ import { ppLoop } from '../post-process/loop';
 import { ppMethod } from '../post-process/method';
 import { ppVarDecl } from '../post-process/vardecl';
 import { ppWith } from '../post-process/with';
-import { KEYWORD_MAP, RULES } from './rules';
+import { RULES } from './rules';
 
 const dashAst = require('dash-ast');
 
@@ -49,13 +49,70 @@ export interface ESIToken extends IToken {
 }
 
 export class Grammar {
-	private readonly TOKEN_TERMINAL_KEYWORD = 'Keyword ::=';
+	private readonly GRAMMAR_KEYWORDS: string[] = [
+		'And',
+		'ByVal',
+		'ByRef',
+		'Case',
+		'Call',
+		'Class',
+		'Const',
+		'Default',
+		'Dim',
+		'Do',
+		'Each',
+		'ElseIf',
+		'Else',
+		'Empty',
+		'End',
+		'Erase',
+		'Error',
+		'Eqv',
+		'Exit',
+		'Explicit',
+		'False',
+		'For',
+		'Function',
+		'Get',
+		'GoTo',
+		'If',
+		'In',
+		'Is',
+		'Let',
+		'Loop',
+		'Mod',
+		'New',
+		'Next',
+		'Nothing',
+		'Not',
+		'Null',
+		'On',
+		'Option',
+		'Or',
+		'Preserve',
+		'Private',
+		'Property',
+		'Public',
+		'ReDim',
+		'Resume',
+		'Select',
+		'Set',
+		'Sub',
+		'Then',
+		'To',
+		'True',
+		'Until',
+		'While',
+		'WEnd',
+		'With',
+		'Xor',
+	];
 
 	private readonly GRAMMAR_TARGET_FORMAT = 'Format';
 	private readonly GRAMMAR_TARGET_PROGRAM = 'Program';
 
 	private readonly parser: Parser;
-	private readonly keywords: { [index: string]: string } = {};
+	private readonly keywordsMap: { [index: string]: string } = {};
 
 	private readonly postProcessors = [
 		ppHelpers,
@@ -76,22 +133,24 @@ export class Grammar {
 	];
 
 	constructor() {
+		/**
+		 * Create a lookup table of standardized keywords
+		 */
+		for (const key of this.GRAMMAR_KEYWORDS) {
+			this.keywordsMap[key.toLowerCase()] = key;
+		}
+
 		// toggle between real-time compilation and pre-compiled rules
-		if (true) {
-			let grammar = getTextFile('grammar.bnf');
-			this.setKeywords(grammar);
-			grammar = this.addCaseInsensitiveKeywords(grammar);
+		if (false) {
+			const grammar = getTextFile('grammar.bnf');
 			this.parser = new Parser(Grammars.Custom.getRules(grammar), {});
 		} else {
 			this.parser = new Parser(RULES, {});
-			this.keywords = KEYWORD_MAP;
 		}
 	}
 
 	public format(script: string): string {
 		let output = '';
-
-		const keywords = this.keywords;
 
 		let hasLine: boolean = false;
 		let prevToken: IToken | undefined;
@@ -112,6 +171,9 @@ export class Grammar {
 
 		now = Date.now();
 		progress().details('standardizing');
+
+		const keywordsMap = this.keywordsMap;
+
 		dashAst(ast, {
 			enter(node: IToken, parent: IToken) {
 				switch (node.type) {
@@ -122,7 +184,7 @@ export class Grammar {
 						break;
 
 					case 'Keyword':
-						node.text = keywords[node.text.toLowerCase()];
+						node.text = keywordsMap[node.text.toLowerCase()];
 						break;
 				}
 			},
@@ -296,39 +358,5 @@ export class Grammar {
 
 	public vbsToJs(script: string): string {
 		return generate(this.transpile(script));
-	}
-
-	/**
-	 * To keep the grammar readable, keywords are defined matching the case
-	 * from MS documentation. Each keyword is stored in a lookup table, and
-	 * then turned into a case insensitive version. For example, 'ByVal' will
-	 * become [B|b][Y|y][V|v][A|a][L|l]. During the format process, all
-	 * keywords will be standardized using the lookup table.
-	 */
-
-	private setKeywords(grammar: string) {
-		const startIndex = grammar.indexOf('(', grammar.indexOf(this.TOKEN_TERMINAL_KEYWORD)) + 1;
-		const endIndex = grammar.indexOf(')', startIndex);
-
-		for (let keyword of grammar.substr(startIndex, endIndex - startIndex).split('|')) {
-			keyword = keyword.trim().slice(1, -1);
-			this.keywords[keyword.toLowerCase()] = keyword;
-		}
-	}
-
-	private addCaseInsensitiveKeywords(grammar: string): string {
-		const caseInsensitiveKeywords: string[] = [];
-
-		const startIndex = grammar.indexOf('(', grammar.indexOf(this.TOKEN_TERMINAL_KEYWORD)) + 1;
-		const endIndex = grammar.indexOf(')', startIndex);
-
-		for (const key of Object.keys(this.keywords)) {
-			let caseInsensitiveKeyword = '';
-			for (const letter of key) {
-				caseInsensitiveKeyword += '[' + letter.toUpperCase() + letter.toLowerCase() + ']';
-			}
-			caseInsensitiveKeywords.push(caseInsensitiveKeyword);
-		}
-		return grammar.substr(0, startIndex) + caseInsensitiveKeywords.join('|') + grammar.substr(endIndex);
 	}
 }
