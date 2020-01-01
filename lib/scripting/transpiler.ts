@@ -70,12 +70,12 @@ export class Transpiler {
 
 		let now = Date.now();
 		ast = new FunctionHoistTransformer(ast).transform();
-		ast = new ClassTransformer(ast).transform();
 		ast = new EventTransformer(ast, this.table.getElements()).transform();
 		ast = new ReferenceTransformer(ast, this.table, this.itemApis, this.enumApis, this.globalApi, this.stdlib).transform();
 		ast = new ScopeTransformer(ast).transform();
 		ast = new AmbiguityTransformer(ast, this.itemApis, this.enumApis, this.globalApi, this.stdlib).transform();
 		ast = new WrapTransformer(ast).transform(globalFunction, globalObject);
+		ast = new ClassTransformer(ast).transform();
 		logger().info('[Transpiler.transpile]: Transformed in %sms', Date.now() - now);
 		//logger().debug('AST:', ast);
 
