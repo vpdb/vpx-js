@@ -25,20 +25,9 @@ const { inspect } = require('util');
 const bnfGrammar = readFileSync(resolve(__dirname, '../lib/scripting/grammar/grammar.bnf')).toString();
 const fileDest = resolve(__dirname, '../lib/scripting/grammar/rules.ts');
 const rules = Grammars.Custom.getRules(bnfGrammar);
-const keywordRule = rules.find(r => r.name === 'Keyword');
-const keywords = keywordRule.bnf
-	.map(r => r[0])
-	.map(r => r.substr(1, r.length - 2));
-const keywordMap = keywords.reduce((m, k) => { m[k.toLowerCase()] = k; return m; }, {});
-
-keywordRule.bnf = keywordRule.bnf
-	.map(r => [ new RegExp(r[0].substr(1, r[0].length - 2), 'i') ]);
-
 const rulesExport = `import { IRule } from 'ebnf';
 /* tslint:disable */
 export const RULES: IRule[] = ${inspect(rules, { depth: 20, maxArrayLength: null })} as IRule[];
-
-export const KEYWORD_MAP: { [key: string]: string } = ${inspect(keywordMap, { maxArrayLength: null })};
 `;
 
 writeFileSync(fileDest, rulesExport);
