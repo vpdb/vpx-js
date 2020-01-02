@@ -109,6 +109,22 @@ export class VBSHelper {
 		return this.dim(dimensions);
 	}
 
+	/**
+	 * Integer Division
+	 */
+
+	public intDiv(value1: number, value2: number): number {
+		return Math.floor(Math.floor(value1) / Math.floor(value2));
+	}
+
+	/**
+	 * Exponent
+	 */
+
+	public exponent(base: number, exponent: number): number {
+		return Math.pow(base, exponent);
+	}
+
 	public getOrCall(obj: any, ...params: number[]) {
 		if (typeof obj === 'function') {
 			return obj.bind(obj)(...params);

@@ -36,7 +36,7 @@ describe('The VBScript transpiler - Assign', () => {
 	it('should transpile an assignment statement with function call', () => {
 		const vbs = `AudioFade = Csng(-((- tmp) ^10), 20)`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('AudioFade = Csng(-Math.pow(-tmp, 10), 20);');
+		expect(js).to.equal('AudioFade = Csng(-__vbs.exponent(-tmp, 10), 20);');
 	});
 
 	it('should transpile a "Set" assignment statement', () => {
