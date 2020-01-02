@@ -146,7 +146,7 @@ describe('The scripting ambiguity transformer', () => {
 		it('should not use the helper on a class member', () => {
 			const vbs = `Class Foo\nPrivate arr\nPublic Sub Bar(aObj)  : arr.Add aObj, 0 : End Sub\nEnd Class\n`;
 			const js = transpiler.transpile(vbs);
-			expect(js).to.equal(`${Transformer.SCOPE_NAME}.Foo = class {\n    constructor() {\n        this.arr = undefined;\n        return new __scope.Proxy(this, { __vbs.getOrCallBound(__scope, 'get'): (t, p, r) => __vbs.getOrCallBound(__scope.Reflect, 'get', t, __vbs.getOrCallBound(p, 'toLowerCase'), r) });\n    }\n    bar(aObj) {\n        ${Transformer.VBSHELPER_NAME}.getOrCallBound(this.arr, 'Add', aObj, 0);\n    }\n};`);
+			expect(js).to.equal(`${Transformer.SCOPE_NAME}.Foo = class {\n    constructor() {\n        this.arr = undefined;\n        return new Proxy(this, { get: (t, p, r) => Reflect.get(t, p.toLowerCase(), r) });\n    }\n    bar(aObj) {\n        ${Transformer.VBSHELPER_NAME}.getOrCallBound(this.arr, 'Add', aObj, 0);\n    }\n};`);
 		});
 
 		it.skip('should not use the helper for a property in local scope', () => {

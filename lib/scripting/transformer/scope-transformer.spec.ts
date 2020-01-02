@@ -110,7 +110,7 @@ describe('The scripting scope transformer', () => {
 	it('should reference the stdlib when used in a class', () => {
 		const vbs = `Class cvpmDictionary\nPrivate mDict\nPrivate Sub Class_Initialize : Set mDict = CreateObject("Scripting.Dictionary") : End Sub\nEnd Class\n`;
 		const js = transpiler.transpile(vbs);
-		expect(js).to.equal(`${Transformer.SCOPE_NAME}.cvpmDictionary = class {\n    constructor() {\n        this.mdict = undefined;\n        this.mdict = ${Transformer.STDLIB_NAME}.CreateObject('Scripting.Dictionary', ${Transformer.PLAYER_NAME});\n        return new ${Transformer.SCOPE_NAME}.Proxy(this, { ${Transformer.VBSHELPER_NAME}.getOrCallBound(${Transformer.SCOPE_NAME}, 'get'): (t, p, r) => ${Transformer.VBSHELPER_NAME}.getOrCallBound(${Transformer.SCOPE_NAME}.Reflect, 'get', t, ${Transformer.VBSHELPER_NAME}.getOrCallBound(p, 'toLowerCase'), r) });\n    }\n};`);
+		expect(js).to.equal(`${Transformer.SCOPE_NAME}.cvpmDictionary = class {\n    constructor() {\n        this.mdict = undefined;\n        this.mdict = ${Transformer.STDLIB_NAME}.CreateObject('Scripting.Dictionary', ${Transformer.PLAYER_NAME});\n        return new Proxy(this, { get: (t, p, r) => Reflect.get(t, p.toLowerCase(), r) });\n    }\n};`);
 	});
 });
 
