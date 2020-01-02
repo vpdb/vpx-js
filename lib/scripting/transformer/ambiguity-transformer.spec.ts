@@ -149,6 +149,12 @@ describe('The scripting ambiguity transformer', () => {
 			expect(js).to.equal(`${Transformer.SCOPE_NAME}.Foo = class {\n    constructor() {\n        this.arr = undefined;\n        return new Proxy(this, { get: (t, p, r) => Reflect.get(t, p.toLowerCase(), r) });\n    }\n    bar(aObj) {\n        ${Transformer.VBSHELPER_NAME}.getOrCallBound(this.arr, 'Add', aObj, 0);\n    }\n};`);
 		});
 
+		it('should not use the helper when using redim', () => {
+			const vbs = `Dim vpmMultiLights() : ReDim vpmMultiLights(0)\n`;
+			const js = transpiler.transpile(vbs);
+			expect(js).to.equal(`__scope.vpmMultiLights = __vbs.dim([]);\n__scope.vpmMultiLights = __vbs.redim(__scope.vpmMultiLights, [0]);`);
+		});
+
 		it.skip('should not use the helper for a property in local scope', () => {
 			const vbs = `Dim objShell\nSet objShell = CreateObject("WScript.Shell")\nSub LoadController(TableType)\nobjShell.RegRead("")\nEnd Sub`;
 			const js = transpiler.transpile(vbs);
