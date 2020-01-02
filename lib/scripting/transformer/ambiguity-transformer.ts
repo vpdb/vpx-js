@@ -146,6 +146,13 @@ export class AmbiguityTransformer extends Transformer {
 						return node;
 					}
 
+					// if it's within a redim call, ignore
+					if (parent && parent.type === 'CallExpression' && parent.callee.type === 'MemberExpression'
+						&& parent.callee.object.type === 'Identifier' && parent.callee.object.name === Transformer.VBSHELPER_NAME
+						&& parent.callee.property.type === 'Identifier' && parent.callee.property.name === 'redim') {
+						return node;
+					}
+
 					// now, if it's a prop of something we already know, check if it's a function.
 					const topMemberName = this.getTopMemberName(node);
 					let api: any;
