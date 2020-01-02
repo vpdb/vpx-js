@@ -78,7 +78,7 @@ describe('The VBScript transpiler - Expressions', () => {
 	it('should transpile a "\\" expression', () => {
 		const vbs = `EnableBallControl = EnableBallControl \\ 2`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('EnableBallControl = Math.floor(Math.floor(EnableBallControl) / Math.floor(2));');
+		expect(js).to.equal('EnableBallControl = __vbs.intDiv(EnableBallControl, 2);');
 	});
 
 	it('should transpile a "*" expression', () => {
@@ -102,7 +102,7 @@ describe('The VBScript transpiler - Expressions', () => {
 	it('should transpile a "^" expression', () => {
 		const vbs = `EnableBallControl = EnableBallControl ^ 2`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('EnableBallControl = Math.pow(EnableBallControl, 2);');
+		expect(js).to.equal('EnableBallControl = __vbs.exponent(EnableBallControl, 2);');
 	});
 
 	it('should transpile a "&" concat expression', () => {

@@ -29,6 +29,7 @@ import {
 	unaryExpression,
 } from '../estree';
 import { ESIToken } from '../grammar/grammar';
+import { Transformer } from '../transformer/transformer';
 
 export function ppExpr(node: ESIToken): any {
 	if (node.children.length > 1) {
@@ -95,14 +96,10 @@ function ppBinaryExpression(node: ESIToken): any {
 
 function ppIntegerDivisionExpression(node: ESIToken): any {
 	let expr = node.children[0].estree;
-	const mathFloorExpression = memberExpression(identifier('Math'), identifier('floor'));
 	for (const child of node.children.slice(1)) {
-		expr = callExpression(mathFloorExpression, [
-			binaryExpression(
-				'/',
-				callExpression(mathFloorExpression, [expr]),
-				callExpression(mathFloorExpression, [child.estree]),
-			),
+		expr = callExpression(memberExpression(identifier(Transformer.VBSHELPER_NAME), identifier('intDiv')), [
+			expr,
+			child.estree,
 		]);
 	}
 	return expr;
@@ -119,7 +116,10 @@ export function ppModuloExpression(node: ESIToken): any {
 export function ppExponentExpression(node: ESIToken): any {
 	let expr = node.children[0].estree;
 	for (const child of node.children.slice(1)) {
-		expr = callExpression(memberExpression(identifier('Math'), identifier('pow')), [expr, child.estree]);
+		expr = callExpression(memberExpression(identifier(Transformer.VBSHELPER_NAME), identifier('exponent')), [
+			expr,
+			child.estree,
+		]);
 	}
 	return expr;
 }

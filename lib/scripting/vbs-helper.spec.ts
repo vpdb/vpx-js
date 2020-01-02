@@ -154,6 +154,16 @@ describe('The scripting VBS Helper', () => {
 		}
 	});
 
+	it('should perform integer division on two floating point numbers', () => {
+		const js = vbsHelper.intDiv(6.8, 3.2);
+		expect(js).to.be.equal(2);
+	});
+
+	it('should perform value of x to the power of y', () => {
+		const js = vbsHelper.exponent(3, 4);
+		expect(js).to.be.equal(81);
+	});
+
 	it('should get a value in a single-dimension array using "getOrCall"', () => {
 		const js = vbsHelper.dim([20]);
 		js[20] = 'Test';
