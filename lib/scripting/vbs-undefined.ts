@@ -22,23 +22,23 @@ import { ERR, VbsError } from './stdlib/err';
 export class VbsUndefined implements ProxyHandler<any> {
 
 	// tslint:disable-next-line:variable-name
-	private readonly __errSet: VbsError;
+	private readonly __errSet?: VbsError;
 	// tslint:disable-next-line:variable-name
-	private readonly __errGet: VbsError;
+	private readonly __errGet?: VbsError;
 
-	constructor(errSet: VbsError, errGet: VbsError) {
+	constructor(errSet?: VbsError, errGet?: VbsError) {
 		this.__errSet = errSet;
 		this.__errGet = errGet;
 		return new Proxy(this, this);
 	}
 
 	public get(target: any, p: string | number | symbol, receiver: any): any {
-		ERR.Raise(this.__errGet);
+		ERR.Raise(this.__errGet || new VbsError(`ReferenceError: Cannot get property "${String(p)}" of undefined array element.`, 9));
 		return this;
 	}
 
 	public set(target: any, p: string | number | symbol, value: any, receiver: any): boolean {
-		ERR.Raise(this.__errSet);
+		ERR.Raise(this.__errSet || new VbsError(`ReferenceError: Cannot set property "${String(p)}" of undefined array element.`, 9));
 		return true;
 	}
 }
