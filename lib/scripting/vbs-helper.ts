@@ -18,12 +18,14 @@
  */
 
 import { logger } from '../util/logger';
-import { ERR } from './stdlib/err';
+import { ERR, VbsError } from './stdlib/err';
 import { Transpiler } from './transpiler';
 import { VbsArray } from './vbs-array';
+import { VbsUndefined } from './vbs-undefined';
 
 export class VBSHelper {
 
+	private static readonly UNDEFINED = new VbsUndefined();
 	private readonly transpiler: Transpiler;
 	private transpileCount = 0;
 
@@ -34,10 +36,9 @@ export class VBSHelper {
 	/**
 	 * Recursive function to create a multi-dimension array.
 	 */
-
 	public dim(dimensions: number[], position: number = 0): any[] {
 		const dimension = dimensions && dimensions.length ? dimensions[position] + 1 : 0;
-		const array = new VbsArray(new Array(dimension).fill(null)); // undefined will throw, because the proxy tests against undefined
+		const array = new VbsArray(new Array(dimension).fill(VBSHelper.UNDEFINED));
 		if (++position < dimensions.length) {
 			for (let index = 0; index < dimension; index++) {
 				array[index] = this.dim(dimensions, position);
@@ -49,7 +50,6 @@ export class VBSHelper {
 	/**
 	 * Function to re-dimension an array and preserve values if requested.
 	 */
-
 	public redim(array: any[], dimensions: number[], preserve: boolean = false): any[] {
 		let tmpArray = array;
 		for (let index = 0; index < dimensions.length - 1; index++) {
@@ -79,7 +79,6 @@ export class VBSHelper {
 	/**
 	 * Recursive helper function to resize a multi-dimension array.
 	 */
-
 	private redimResize(array: any[], dimensions: number[], position: number = 0): any[] {
 		const dimension = dimensions[position] + 1;
 		if (position === dimensions.length - 1) {
@@ -96,7 +95,6 @@ export class VBSHelper {
 	/**
 	 * Erase helper function to erase a multi-dimension array.
 	 */
-
 	public erase(array: any[]): any[] {
 		const dimensions = [];
 		for (;;) {
@@ -112,7 +110,6 @@ export class VBSHelper {
 	/**
 	 * Integer Division
 	 */
-
 	public intDiv(value1: number, value2: number): number {
 		return Math.floor(Math.floor(value1) / Math.floor(value2));
 	}
@@ -120,7 +117,6 @@ export class VBSHelper {
 	/**
 	 * Exponent
 	 */
-
 	public exponent(base: number, exponent: number): number {
 		return Math.pow(base, exponent);
 	}
