@@ -157,8 +157,18 @@ export class Grammar {
 		let separator = false;
 
 		let now = Date.now();
+
 		progress().details('formatting');
 		const ast = this.parser.getAST(script.trim() + '\n', this.GRAMMAR_TARGET_FORMAT);
+		if (ast === null) {
+			throw new Error('Unable to format script.');
+		} else if (ast.rest && ast.rest.length) {
+			const start = script.length - ast.rest.length;
+			throw new Error(
+				'Unable to format script. Syntax error at: ' +
+					script.substr(start, script.indexOf('\n', start)),
+			);
+		}
 		logger().info('[Grammar.format] Parsed in %sms', Date.now() - now);
 
 		/**
