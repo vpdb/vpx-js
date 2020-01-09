@@ -69,7 +69,7 @@ describe('The VBScript transpiler - Class', () => {
 		const vbs = `Class cvpmDictionary\nPrivate mDict\nPublic Property Set Key(aKey)\nmDict=Nothing:End Property\nEnd Class`;
 		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(
-			'class cvpmDictionary {\n    constructor() {\n        this.mDict = undefined;\n    }\n    Key(aKey) {\n        this.mDict = undefined;\n    }\n}',
+			'class cvpmDictionary {\n    constructor() {\n        this.mDict = undefined;\n    }\n    Key(aKey) {\n        this.mDict = Nothing;\n    }\n}',
 		);
 	});
 

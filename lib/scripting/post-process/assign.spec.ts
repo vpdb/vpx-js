@@ -54,7 +54,7 @@ describe('The VBScript transpiler - Assign', () => {
 	it('should transpile a "New/Nothing" object assignment statement', () => {
 		const vbs = `Set vpmDips = New cvpmDips Nothing`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('vpmDips = new cvpmDips();\nvpmDips = undefined;');
+		expect(js).to.equal('vpmDips = new cvpmDips();\nvpmDips = Nothing;');
 	});
 
 	it('should transpile an assignment statement with left parameters', () => {

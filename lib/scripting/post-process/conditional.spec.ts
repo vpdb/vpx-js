@@ -96,7 +96,7 @@ describe('The VBScript transpiler - Conditional', () => {
 	it('should transpile an "If/Then" statement with a member expression that matches a keyword', () => {
 		const vbs = `If Error.Number<>0 Then UltraDMD=Null:Exit Function`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('if (Error.Number != 0) {\n    UltraDMD = null;\n    return;\n}');
+		expect(js).to.equal('if (Error.Number != 0) {\n    UltraDMD = Null;\n    return;\n}');
 	});
 
 	it('should transpile an empty "Select Case...End Select" statement', () => {

@@ -151,6 +151,24 @@ describe('The scripting reference transformer', () => {
 			const js = transform(vbs, table, player);
 			expect(js).to.equal(`x = ${Transformer.STDLIB_NAME}.Math.Pi.Something;`);
 		});
+
+		it('should use the stdlib for Empty literal', () => {
+			const vbs = `set x = Empty\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`x = ${Transformer.STDLIB_NAME}.Empty;`);
+		});
+
+		it('should use the stdlib for Nothing literal', () => {
+			const vbs = `set x = Nothing\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`x = ${Transformer.STDLIB_NAME}.Nothing;`);
+		});
+
+		it('should use the stdlib for Null literal', () => {
+			const vbs = `set x = Null\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`x = ${Transformer.STDLIB_NAME}.Null;`);
+		});
 	});
 
 	describe('for the global API', () => {

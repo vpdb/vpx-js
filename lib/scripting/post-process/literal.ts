@@ -88,13 +88,13 @@ function ppDateLiteral(node: ESIToken): any {
 }
 
 function ppNothingLiteral(node: ESIToken): any {
-	return identifier('undefined');
+	return identifier('Nothing');
 }
 
 function ppEmptyLiteral(node: ESIToken): any {
-	return literal(null);
+	return identifier('Empty');
 }
 
 function ppNullLiteral(node: ESIToken): any {
-	return literal(null);
+	return identifier('Null');
 }

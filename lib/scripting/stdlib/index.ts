@@ -29,6 +29,10 @@ export class Stdlib extends VbsApi {
 
 	private readonly math = new VbsMath();
 
+	get Empty() { return undefined; }
+	get Nothing() { return undefined; }
+	get Null() { return null; }
+
 	get Err() { return ERR; }
 	get Math() { return this.math; }
 
