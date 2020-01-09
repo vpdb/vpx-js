@@ -19,6 +19,7 @@
 
 import { expect } from 'chai';
 import { Grammar } from '../grammar/grammar';
+import { Transformer } from '../transformer/transformer';
 
 let grammar: Grammar;
 
@@ -30,26 +31,26 @@ describe('The VBScript transpiler - Conditional', () => {
 	it('should transpile an "If/Then...End If" statement', () => {
 		const vbs = `If EnableBallControl = 1 Then\nEnableBallControl = 0\nEnd If`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('if (EnableBallControl == 1) {\n    EnableBallControl = 0;\n}');
+		expect(js).to.equal(`if (${Transformer.VBSHELPER_NAME}.equals(EnableBallControl, 1)) {\n    EnableBallControl = 0;\n}`);
 	});
 
 	it('should transpile an inline "If/Then...End If" statement', () => {
 		const vbs = `If EnableBallControl = 1 Then EnableBallControl = 0 End If`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('if (EnableBallControl == 1) {\n    EnableBallControl = 0;\n}');
+		expect(js).to.equal(`if (${Transformer.VBSHELPER_NAME}.equals(EnableBallControl, 1)) {\n    EnableBallControl = 0;\n}`);
 	});
 
 	it('should transpile an inline "If/Then" statement', () => {
 		const vbs = `If EnableBallControl = 1 Then EnableBallControl = 0`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('if (EnableBallControl == 1) {\n    EnableBallControl = 0;\n}');
+		expect(js).to.equal(`if (${Transformer.VBSHELPER_NAME}.equals(EnableBallControl, 1)) {\n    EnableBallControl = 0;\n}`);
 	});
 
 	it('should transpile an inline "If/Then...Else...End If" statement', () => {
 		const vbs = `If EnableBallControl = 1 Then EnableBallControl = 0 Else EnableBallControl = 2 End If`;
 		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(
-			'if (EnableBallControl == 1) {\n    EnableBallControl = 0;\n} else {\n    EnableBallControl = 2;\n}',
+			`if (${Transformer.VBSHELPER_NAME}.equals(EnableBallControl, 1)) {\n    EnableBallControl = 0;\n} else {\n    EnableBallControl = 2;\n}`,
 		);
 	});
 
@@ -57,7 +58,7 @@ describe('The VBScript transpiler - Conditional', () => {
 		const vbs = `If EnableBallControl = 1 Then EnableBallControl = 0 Else EnableBallControl = 2`;
 		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(
-			'if (EnableBallControl == 1) {\n    EnableBallControl = 0;\n} else {\n    EnableBallControl = 2;\n}',
+			`if (${Transformer.VBSHELPER_NAME}.equals(EnableBallControl, 1)) {\n    EnableBallControl = 0;\n} else {\n    EnableBallControl = 2;\n}`,
 		);
 	});
 
@@ -65,7 +66,7 @@ describe('The VBScript transpiler - Conditional', () => {
 		const vbs = `If EnableBallControl = 1 Then\nEnableBallControl = 0\nEnableBallControl = 3\nElse\nEnableBallControl = 1\nEnableBallControl = 2\nEnd If`;
 		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(
-			'if (EnableBallControl == 1) {\n    EnableBallControl = 0;\n    EnableBallControl = 3;\n} else {\n    EnableBallControl = 1;\n    EnableBallControl = 2;\n}',
+			`if (${Transformer.VBSHELPER_NAME}.equals(EnableBallControl, 1)) {\n    EnableBallControl = 0;\n    EnableBallControl = 3;\n} else {\n    EnableBallControl = 1;\n    EnableBallControl = 2;\n}`,
 		);
 	});
 
@@ -73,7 +74,7 @@ describe('The VBScript transpiler - Conditional', () => {
 		const vbs = `If DayOfWeek = "MON" Then\nDay = 1\nElseIf DayOfWeek = "TUE" Then\nDay = 2\nElseIf DayOfWeek = "WED" Then\nDay=3\nEnd If`;
 		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(
-			"if (DayOfWeek == 'MON') {\n    Day = 1;\n} else if (DayOfWeek == 'TUE') {\n    Day = 2;\n} else if (DayOfWeek == 'WED') {\n    Day = 3;\n}",
+			`if (${Transformer.VBSHELPER_NAME}.equals(DayOfWeek, 'MON')) {\n    Day = 1;\n} else if (${Transformer.VBSHELPER_NAME}.equals(DayOfWeek, 'TUE')) {\n    Day = 2;\n} else if (${Transformer.VBSHELPER_NAME}.equals(DayOfWeek, 'WED')) {\n    Day = 3;\n}`,
 		);
 	});
 
@@ -81,7 +82,7 @@ describe('The VBScript transpiler - Conditional', () => {
 		const vbs = `If DayOfWeek = "MON" Then\nDay = 1\nElseIf DayOfWeek = "TUE" Then\nDay = 2\nElseIf DayOfWeek = "WED" Then\nDay=3\nElse\nDay = 0\nEnd If`;
 		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(
-			"if (DayOfWeek == 'MON') {\n    Day = 1;\n} else if (DayOfWeek == 'TUE') {\n    Day = 2;\n} else if (DayOfWeek == 'WED') {\n    Day = 3;\n} else {\n    Day = 0;\n}",
+			`if (${Transformer.VBSHELPER_NAME}.equals(DayOfWeek, 'MON')) {\n    Day = 1;\n} else if (${Transformer.VBSHELPER_NAME}.equals(DayOfWeek, 'TUE')) {\n    Day = 2;\n} else if (${Transformer.VBSHELPER_NAME}.equals(DayOfWeek, 'WED')) {\n    Day = 3;\n} else {\n    Day = 0;\n}`,
 		);
 	});
 
@@ -89,14 +90,14 @@ describe('The VBScript transpiler - Conditional', () => {
 		const vbs = `If Lampstate(130)=0 Then\nColorGradeImage="ColorGrade_off"\nElseIf LampState(130)>0 Then ColorGradeImage="ColorGrade_red"\nElseIf LampState(130)=0 Then ColorGradeImage="ColorGrade_blue":x=5\nElse\nColorGradeImage="ColorGrade_on"\nEnd If`;
 		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(
-			"if (Lampstate(130) == 0) {\n    ColorGradeImage = 'ColorGrade_off';\n} else if (LampState(130) > 0) {\n    ColorGradeImage = 'ColorGrade_red';\n} else if (LampState(130) == 0) {\n    ColorGradeImage = 'ColorGrade_blue';\n    x = 5;\n} else {\n    ColorGradeImage = 'ColorGrade_on';\n}",
+			`if (${Transformer.VBSHELPER_NAME}.equals(Lampstate(130), 0)) {\n    ColorGradeImage = 'ColorGrade_off';\n} else if (LampState(130) > 0) {\n    ColorGradeImage = 'ColorGrade_red';\n} else if (${Transformer.VBSHELPER_NAME}.equals(LampState(130), 0)) {\n    ColorGradeImage = 'ColorGrade_blue';\n    x = 5;\n} else {\n    ColorGradeImage = 'ColorGrade_on';\n}`,
 		);
 	});
 
 	it('should transpile an "If/Then" statement with a member expression that matches a keyword', () => {
 		const vbs = `If Error.Number<>0 Then UltraDMD=Null:Exit Function`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('if (Error.Number != 0) {\n    UltraDMD = Null;\n    return;\n}');
+		expect(js).to.equal(`if (!${Transformer.VBSHELPER_NAME}.equals(Error.Number, 0)) {\n    UltraDMD = Null;\n    return;\n}`);
 	});
 
 	it('should transpile an empty "Select Case...End Select" statement', () => {

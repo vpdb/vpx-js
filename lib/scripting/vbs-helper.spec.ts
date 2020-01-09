@@ -194,4 +194,23 @@ describe('The scripting VBS Helper', () => {
 		expect(value).to.equal(23);
 	});
 
+	it('should compare equals using "equals"', () => {
+		const value = vbsHelper.equals(5, 5);
+		expect(value).to.equal(true);
+	});
+
+	it('should compare not equal using "equals"', () => {
+		const value = vbsHelper.equals(5, 10);
+		expect(value).to.equal(false);
+	});
+
+	it('should compare object equals using "is"', () => {
+		const value = vbsHelper.is(5, 5);
+		expect(value).to.equal(true);
+	});
+
+	it('should compare object not equal using "is"', () => {
+		const value = vbsHelper.is(5, 10);
+		expect(value).to.equal(false);
+	});
 });

@@ -121,6 +121,22 @@ export class VBSHelper {
 		return Math.pow(base, exponent);
 	}
 
+	/**
+	 * equals
+	 */
+
+	public equals(value1: any, value2: any): boolean {
+		return (value1 === value2);
+	}
+
+	/**
+	 * is
+	 */
+
+	public is(value1: any, value2: any): boolean {
+		return (value1 === value2);
+	}
+
 	public getOrCall(obj: any, ...params: number[]) {
 		if (typeof obj === 'function') {
 			return obj.bind(obj)(...params);

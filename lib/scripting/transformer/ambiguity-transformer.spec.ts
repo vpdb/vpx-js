@@ -152,7 +152,7 @@ describe('The scripting ambiguity transformer', () => {
 		it('should not use the helper when using redim', () => {
 			const vbs = `Dim vpmMultiLights() : ReDim vpmMultiLights(0)\n`;
 			const js = transpiler.transpile(vbs);
-			expect(js).to.equal(`__scope.vpmMultiLights = __vbs.dim([]);\n__scope.vpmMultiLights = __vbs.redim(__scope.vpmMultiLights, [0]);`);
+			expect(js).to.equal(`${Transformer.SCOPE_NAME}.vpmMultiLights = ${Transformer.VBSHELPER_NAME}.dim([]);\n${Transformer.SCOPE_NAME}.vpmMultiLights = ${Transformer.VBSHELPER_NAME}.redim(${Transformer.SCOPE_NAME}.vpmMultiLights, [0]);`);
 		});
 
 		it.skip('should not use the helper for a property in local scope', () => {
