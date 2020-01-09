@@ -19,6 +19,7 @@
 
 import { expect } from 'chai';
 import { Grammar } from '../grammar/grammar';
+import { Transformer } from '../transformer/transformer';
 
 let grammar: Grammar;
 
@@ -92,13 +93,13 @@ describe('The VBScript transpiler - Loop', () => {
 	it('should transpile a "Do Until...Loop" statement', () => {
 		const vbs = `Dim x\nx = 1\nDo Until x = 5\nx = x + 1\nLoop`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('let x;\nx = 1;\ndo {\n    if (x == 5)\n        break;\n    x = x + 1;\n} while (true);');
+		expect(js).to.equal(`let x;\nx = 1;\ndo {\n    if (${Transformer.VBSHELPER_NAME}.equals(x, 5))\n        break;\n    x = x + 1;\n} while (true);`);
 	});
 
 	it('should transpile an empty "Do Until...Loop" statement', () => {
 		const vbs = `Dim x\nx = 1\nDo Until x = 5\nLoop`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('let x;\nx = 1;\ndo {\n    if (x == 5)\n        break;\n} while (true);');
+		expect(js).to.equal(`let x;\nx = 1;\ndo {\n    if (${Transformer.VBSHELPER_NAME}.equals(x, 5))\n        break;\n} while (true);`);
 	});
 
 	it('should transpile a "Do...Loop While" statement', () => {

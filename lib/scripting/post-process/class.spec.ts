@@ -19,6 +19,7 @@
 
 import { expect } from 'chai';
 import { Grammar } from '../grammar/grammar';
+import { Transformer } from '../transformer/transformer';
 
 let grammar: Grammar;
 
@@ -53,7 +54,7 @@ describe('The VBScript transpiler - Class', () => {
 		const vbs = `Class cvpmTest\nPrivate mEnabled\nPublic Property Get Balls(test):mEnabled=test:Balls=mEnabled:If Balls=1 Then Exit Property:End Property\nEnd Class`;
 		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(
-			'class cvpmTest {\n    constructor() {\n        this.mEnabled = undefined;\n    }\n    Balls(test) {\n        let Balls = undefined;\n        this.mEnabled = test;\n        Balls = this.mEnabled;\n        if (Balls == 1) {\n            return Balls;\n        }\n        return Balls;\n    }\n}',
+			`class cvpmTest {\n    constructor() {\n        this.mEnabled = undefined;\n    }\n    Balls(test) {\n        let Balls = undefined;\n        this.mEnabled = test;\n        Balls = this.mEnabled;\n        if (${Transformer.VBSHELPER_NAME}.equals(Balls, 1)) {\n            return Balls;\n        }\n        return Balls;\n    }\n}`,
 		);
 	});
 

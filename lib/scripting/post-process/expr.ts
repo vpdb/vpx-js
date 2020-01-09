@@ -146,7 +146,7 @@ function ppLogicalExpression(node: ESIToken): any {
 		const text = node.text.substr(index);
 		for (const key in LOGICAL_OPERATORS) {
 			if (text.startsWith(' ' + key + ' ')) {
-				switch (key) {
+				switch (LOGICAL_OPERATORS[key]) {
 					case 'Eqv':
 						expr = unaryExpression('~', binaryExpression('^', expr, child.estree));
 						break;
@@ -188,7 +188,21 @@ function ppRelationalExpression(node: ESIToken): any {
 		const text = node.text.substr(index);
 		for (const key in RELATIONAL_OPERATORS) {
 			if (text.startsWith(key)) {
-				expr = binaryExpression(RELATIONAL_OPERATORS[key], expr, child.estree);
+				switch (RELATIONAL_OPERATORS[key]) {
+					case '==':
+					case '!=':
+						expr = callExpression(memberExpression(identifier(Transformer.VBSHELPER_NAME), identifier('equals')), [
+							expr,
+							child.estree,
+						]);
+						if (RELATIONAL_OPERATORS[key] === '!=') {
+							expr = unaryExpression('!', expr);
+						}
+						break;
+					default:
+						expr = binaryExpression(RELATIONAL_OPERATORS[key], expr, child.estree);
+						break;
+				}
 				index += child.text.length + key.length;
 				break;
 			}
@@ -202,7 +216,10 @@ function ppTypeExpression(node: ESIToken): any {
 	let index = node.children[0].text.length;
 	for (const child of node.children.slice(1)) {
 		if (node.text.substr(index).startsWith(' Is ')) {
-			expr = binaryExpression('==', expr, child.estree);
+			expr = callExpression(memberExpression(identifier(Transformer.VBSHELPER_NAME), identifier('is')), [
+				expr,
+				child.estree,
+			]);
 			index += child.text.length + 4;
 		}
 	}
