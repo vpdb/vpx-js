@@ -33,6 +33,9 @@ export class VbsUndefined implements ProxyHandler<any> {
 	}
 
 	public get(target: any, p: string | number | symbol, receiver: any): any {
+		if (p === 'toString') {
+			return () => undefined;
+		}
 		if (typeof p === 'symbol' || ['valueOf', 'toString', 'inspect', '__errGet', '__errSet'].includes(p as string)) {
 			return Reflect.get(target, p);
 		}

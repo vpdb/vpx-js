@@ -31,4 +31,10 @@ describe('The VBScript undefined handler', () => {
 		expect(() => undef == 1).not.to.throw();
 	});
 
+	it('should return "undefined" as string', () => {
+		const undef = new VbsUndefined() as unknown;
+		// tslint:disable-next-line:triple-equals
+		expect('' + undef).to.equal('undefined');
+	});
+
 });

@@ -131,18 +131,31 @@ export class VBSHelper {
 			return true;
 		}
 
+		const undef1 = typeof value1 === 'object' && value1.__isUndefined;
+		const undef2 = typeof value2 === 'object' && value2.__isUndefined;
+
 		// VbsUndefined == undefined
-		if (typeof value1 === 'object' && value1.__isUndefined && typeof value2 === 'undefined') {
+		if (undef1 && typeof value2 === 'undefined') {
 			return true;
 		}
 
 		// undefined == VbsUndefined
-		if (typeof value2 === 'object' && value2.__isUndefined && typeof value1 === 'undefined') {
+		if (typeof value1 === 'undefined' && undef2) {
 			return true;
 		}
 
 		// VbsUndefined == VbsUndefined
-		if (typeof value1 === 'object' && value1.__isUndefined && typeof value2 === 'object' && value2.__isUndefined) {
+		if (undef1 && undef2) {
+			return true;
+		}
+
+		// '' == VbsUndefined
+		if (undef1 && value2 === '') {
+			return true;
+		}
+
+		// VbsUndefined == ''
+		if (value1 === '' && undef2) {
 			return true;
 		}
 
