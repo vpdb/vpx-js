@@ -66,19 +66,19 @@ describe('The VBScript transpiler - Literal', () => {
 	it('should transpile a "Nothing" assignment', () => {
 		const vbs = `test1 = Nothing`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('test1 = undefined;');
+		expect(js).to.equal('test1 = Nothing;');
 	});
 
 	it('should transpile a "Null" assignments', () => {
 		const vbs = `test1 = Null`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('test1 = null;');
+		expect(js).to.equal('test1 = Null;');
 	});
 
 	it('should transpile an "Empty" assignments', () => {
 		const vbs = `test1 = Empty`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal('test1 = null;');
+		expect(js).to.equal('test1 = Empty;');
 	});
 
 	it('should transpile "Date" assignments', () => {
