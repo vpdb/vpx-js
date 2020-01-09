@@ -199,6 +199,8 @@ describe('The scripting VBS Helper', () => {
 		expect(vbsHelper.equals(undefined, new VbsUndefined())).to.equal(true);
 		expect(vbsHelper.equals(new VbsUndefined(), undefined)).to.equal(true);
 		expect(vbsHelper.equals(new VbsUndefined(), new VbsUndefined())).to.equal(true);
+		expect(vbsHelper.equals(new VbsUndefined(), '')).to.equal(true);
+		expect(vbsHelper.equals('', new VbsUndefined())).to.equal(true);
 	});
 
 	it('should compare not equal using "equals"', () => {
