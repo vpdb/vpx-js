@@ -126,7 +126,27 @@ export class VBSHelper {
 	 */
 
 	public equals(value1: any, value2: any): boolean {
-		return (value1 === value2);
+		// tslint:disable-next-line:triple-equals
+		if (value1 == value2) {
+			return true;
+		}
+
+		// VbsUndefined == undefined
+		if (typeof value1 === 'object' && value1.__isUndefined && typeof value2 === 'undefined') {
+			return true;
+		}
+
+		// undefined == VbsUndefined
+		if (typeof value2 === 'object' && value2.__isUndefined && typeof value1 === 'undefined') {
+			return true;
+		}
+
+		// VbsUndefined == VbsUndefined
+		if (typeof value1 === 'object' && value1.__isUndefined && typeof value2 === 'object' && value2.__isUndefined) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
