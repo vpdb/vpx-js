@@ -28,6 +28,7 @@ import { Grammar } from './grammar/grammar';
 import { Stdlib } from './stdlib';
 import { AmbiguityTransformer } from './transformer/ambiguity-transformer';
 import { ClassTransformer } from './transformer/class-transformer';
+import { ErrorTransformer } from './transformer/error-transformer';
 import { EventTransformer } from './transformer/event-transformer';
 import { FunctionHoistTransformer } from './transformer/function-hoist-transformer';
 import { ReferenceTransformer } from './transformer/reference-transformer';
@@ -71,6 +72,7 @@ export class Transpiler {
 		let now = Date.now();
 		ast = new FunctionHoistTransformer(ast).transform();
 		ast = new EventTransformer(ast, this.table.getElements()).transform();
+		ast = new ErrorTransformer(ast).transform();
 		ast = new ReferenceTransformer(ast, this.table, this.itemApis, this.enumApis, this.globalApi, this.stdlib).transform();
 		ast = new ScopeTransformer(ast).transform();
 		ast = new AmbiguityTransformer(ast, this.itemApis, this.enumApis, this.globalApi, this.stdlib).transform();
