@@ -40,7 +40,7 @@ export class Stdlib extends VbsApi {
 	 * String Constants
 	 */
 	get vbCr() { return '\x0d'; }
-	get vbCrLf() { return '\x0a\x0d'; }
+	get vbCrLf() { return '\x0d\x0a'; }
 	get vbFormFeed() { return '\x0c'; }
 	get vbLf() { return '\x0a'; }
 	get vbNewLine() { return '\n'; }
