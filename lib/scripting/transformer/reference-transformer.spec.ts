@@ -169,6 +169,12 @@ describe('The scripting reference transformer', () => {
 			const js = transform(vbs, table, player);
 			expect(js).to.equal(`x = ${Transformer.STDLIB_NAME}.Null;`);
 		});
+
+		it('should use the stdlib for vb string constants', () => {
+			const vbs = `_vbCr = vbCr\n_vbCrLf = vbCrLf\n_vbFormFeed = vbFormFeed\n_vbLf = vbLf\n_vbNewLine = vbNewLine\n_vbNullChar = vbNullChar\n_vbNullString = vbNullString\n_vbTab = vbTab\n_vbVerticalTab = vbVerticalTab\n`;
+			const js = transform(vbs, table, player);
+			expect(js).to.equal(`_vbCr = ${Transformer.STDLIB_NAME}.vbCr;\n_vbCrLf = ${Transformer.STDLIB_NAME}.vbCrLf;\n_vbFormFeed = ${Transformer.STDLIB_NAME}.vbFormFeed;\n_vbLf = ${Transformer.STDLIB_NAME}.vbLf;\n_vbNewLine = ${Transformer.STDLIB_NAME}.vbNewLine;\n_vbNullChar = ${Transformer.STDLIB_NAME}.vbNullChar;\n_vbNullString = ${Transformer.STDLIB_NAME}.vbNullString;\n_vbTab = ${Transformer.STDLIB_NAME}.vbTab;\n_vbVerticalTab = ${Transformer.STDLIB_NAME}.vbVerticalTab;`);
+		});
 	});
 
 	describe('for the global API', () => {

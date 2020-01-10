@@ -127,4 +127,21 @@ describe('The VBScript stdlib', () => {
 		expect(scope.result).to.be.ok;
 	});
 
+	it('should provide vb string constants', () => {
+		const scope = {} as any;
+		const vbs = `_vbCr = vbCr\n_vbCrLf = vbCrLf\n_vbFormFeed = vbFormFeed\n_vbLf = vbLf\n_vbNewLine = vbNewLine\n_vbNullChar = vbNullChar\n_vbNullString = vbNullString\n_vbTab = vbTab\n_vbVerticalTab = vbVerticalTab`;
+		const transpiler = new Transpiler(table, player);
+		transpiler.execute(vbs, scope, 'global');
+
+		expect(scope._vbCr).to.equal('\x0d');
+		expect(scope._vbCrLf).to.equal('\x0a\x0d');
+		expect(scope._vbFormFeed).to.equal('\x0c');
+		expect(scope._vbLf).to.equal('\x0a');
+		expect(scope._vbNewLine).to.equal('\n');
+		expect(scope._vbNullChar).to.equal('\x00');
+		expect(scope._vbNullString).to.equal(null);
+		expect(scope._vbTab).to.equal('\x09');
+		expect(scope._vbVerticalTab).to.equal('\x0b');
+	});
+
 });

@@ -37,6 +37,19 @@ export class Stdlib extends VbsApi {
 	get Math() { return this.math; }
 
 	/**
+	 * String Constants
+	 */
+	get vbCr() { return '\x0d'; }
+	get vbCrLf() { return '\x0a\x0d'; }
+	get vbFormFeed() { return '\x0c'; }
+	get vbLf() { return '\x0a'; }
+	get vbNewLine() { return '\n'; }
+	get vbNullChar() { return '\x00'; }
+	get vbNullString() { return null; }
+	get vbTab() { return '\x09'; }
+	get vbVerticalTab() { return '\x0b'; }
+
+	/**
 	 * Converts to Single Data Type:
 	 *
 	 * -3.402823E+38 through -1.401298E-45 for negative values;
