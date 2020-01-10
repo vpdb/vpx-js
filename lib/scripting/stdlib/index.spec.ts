@@ -134,7 +134,7 @@ describe('The VBScript stdlib', () => {
 		transpiler.execute(vbs, scope, 'global');
 
 		expect(scope._vbCr).to.equal('\x0d');
-		expect(scope._vbCrLf).to.equal('\x0a\x0d');
+		expect(scope._vbCrLf).to.equal('\x0d\x0a');
 		expect(scope._vbFormFeed).to.equal('\x0c');
 		expect(scope._vbLf).to.equal('\x0a');
 		expect(scope._vbNewLine).to.equal('\n');
