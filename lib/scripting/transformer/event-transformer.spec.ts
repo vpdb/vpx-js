@@ -43,19 +43,19 @@ describe('The scripting event transformer', () => {
 	it('should transform a valid event on a valid item', () => {
 		const vbs = `Sub WireRectangle_Init()\nBallRelease.CreateBall\nEnd Sub\n`;
 		const js = transform(vbs, table);
-		expect(js).to.equal(`WireRectangle.on('Init', () => {\n    BallRelease.CreateBall();\n});`);
+		expect(js).to.equal(`WireRectangle.on('Init', function () {\n    BallRelease.CreateBall();\n});`);
 	});
 
 	it('should transform a an item with an underscore in its name', () => {
 		const vbs = `Sub Wire_Rectangle_Init()\nBallRelease.CreateBall\nEnd Sub\n`;
 		const js = transform(vbs, table);
-		expect(js).to.equal(`Wire_Rectangle.on('Init', () => {\n    BallRelease.CreateBall();\n});`);
+		expect(js).to.equal(`Wire_Rectangle.on('Init', function () {\n    BallRelease.CreateBall();\n});`);
 	});
 
 	it('should transform when the event name has a different case', () => {
 		const vbs = `Sub WireRectangle_init()\nBallRelease.CreateBall\nEnd Sub\n`;
 		const js = transform(vbs, table);
-		expect(js).to.equal(`WireRectangle.on('Init', () => {\n    BallRelease.CreateBall();\n});`);
+		expect(js).to.equal(`WireRectangle.on('Init', function () {\n    BallRelease.CreateBall();\n});`);
 	});
 
 	it('should not transform an invalid event on a valid item', () => {

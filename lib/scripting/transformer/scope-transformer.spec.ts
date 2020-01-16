@@ -44,7 +44,7 @@ describe('The scripting scope transformer', () => {
 	it('should add the scope even if there is a defined function with a different scope', () => {
 		const vbs = `Dim Ballsize\nSub Table1_Init\nEnd Sub\n`;
 		const js = transpiler.transpile(vbs);
-		expect(js).to.equal(`${Transformer.ITEMS_NAME}.Table1.on('Init', () => {\n});\n${Transformer.SCOPE_NAME}.Ballsize = null;`);
+		expect(js).to.equal(`${Transformer.ITEMS_NAME}.Table1.on('Init', function () {\n});\n${Transformer.SCOPE_NAME}.Ballsize = null;`);
 	});
 
 	it('should add the scope to a top-level variable assignment', () => {
