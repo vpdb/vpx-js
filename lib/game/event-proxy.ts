@@ -75,7 +75,8 @@ export class EventProxy {
 
 	private fireDispID(e: Event, ...params: any[]) {
 		if (isScriptable(this.playable)) {
-			this.playable.getApi().emit(getEventName(e), ...params);
+
+			this.playable.getApi().emit.call(this.playable.getApi(), getEventName(e), ...params);
 			//logger().info('[%s] fireDispID(%s)', this.playable.getName(), e);
 		}
 	}

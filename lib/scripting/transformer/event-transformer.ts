@@ -24,7 +24,7 @@ import { Table } from '../../vpt/table/table';
 import {
 	arrowFunctionExpression,
 	callExpression,
-	expressionStatement,
+	expressionStatement, functionDeclaration, functionExpression,
 	identifier,
 	literal,
 	memberExpression,
@@ -87,7 +87,7 @@ export class EventTransformer extends Transformer {
 					),
 					[
 						literal(existingEventName),
-						arrowFunctionExpression(false, functionNode.body, functionNode.params),
+						functionExpression(functionNode.body, functionNode.params),
 					],
 				));
 			},

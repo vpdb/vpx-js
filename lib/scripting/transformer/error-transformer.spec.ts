@@ -27,13 +27,13 @@ chai.use(require('sinon-chai'));
 /* tslint:disable:no-unused-expression */
 describe('The scripting error transformer', () => {
 
-	it.only('should update Err when used in an "If" statement', () => {
+	it('should update Err when used in an "If" statement', () => {
 		const vbs = `If Err Then MsgBox "Can't start Game" & cGameName & vbNewLine & Err.Description:Exit Sub`;
 		const js = transform(vbs);
 		expect(js).to.equal(`if (Err.Number) {\n    MsgBox('Can\\'t start Game' + cGameName + vbNewLine + Err.Description);\n    return;\n}`);
 	});
 
-	it.only('should update Err when used in a logical expression', () => {
+	it('should update Err when used in a logical expression', () => {
 		const vbs = `If aSw = 0 Or Err Then x = 5 End If`;
 		const js = transform(vbs);
 		expect(js).to.equal(`if (__vbs.equals(aSw, 0) || Err.Number) {\n    x = 5;\n}`);
