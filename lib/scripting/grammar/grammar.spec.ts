@@ -76,7 +76,7 @@ describe('The scripting grammar - transpile', () => {
 	it('should allow lines to end with a ":" statement terminator', () => {
 		const vbs = `SLLPos=0:Me.TimerEnabled=1:\n`;
 		const js = grammar.vbsToJs(vbs);
-		expect(js).to.equal(`SLLPos = 0;\nMe.TimerEnabled = 1;`);
+		expect(js).to.equal(`SLLPos = 0;\nthis.TimerEnabled = 1;`);
 	});
 
 	// it('should transpile controller.vbs successfully', () => {
