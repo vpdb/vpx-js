@@ -171,4 +171,10 @@ describe('The VBScript transpiler - Expressions', () => {
 		const js = grammar.vbsToJs(vbs);
 		expect(js).to.equal(`EnableBallControl = ${Transformer.VBSHELPER_NAME}.equals(EnableBallControl, 2);`);
 	});
+
+	it('should transpile a "Me" expression', () => {
+		const vbs = `EnableBallControl = Me`;
+		const js = grammar.vbsToJs(vbs);
+		expect(js).to.equal(`EnableBallControl = this;`);
+	});
 });

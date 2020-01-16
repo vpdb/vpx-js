@@ -18,7 +18,7 @@
  */
 
 import { CallExpression, Expression, Statement } from 'estree';
-import { blockStatement, callExpression, identifier, memberExpression } from '../estree';
+import { blockStatement, callExpression, identifier, memberExpression, thisExpression } from '../estree';
 import { ESIToken } from '../grammar/grammar';
 import { Transformer } from '../transformer/transformer';
 
@@ -69,7 +69,7 @@ function ppBlock(node: ESIToken): any {
 }
 
 function ppIdentifier(node: ESIToken): any {
-	return identifier(node.text);
+	return !node.text.match(/^Me$/i) ? identifier(node.text) : thisExpression();
 }
 
 function ppArgumentList(node: ESIToken): any {
