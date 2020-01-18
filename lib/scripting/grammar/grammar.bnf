@@ -35,7 +35,7 @@ IdentifierOrKeyword ::= Identifier | Keyword
 
 /* 13.1.3 Keywords */
 
-Keyword ::= ('And' | 'ByVal' | 'ByRef' | 'Case' | 'Call' | 'Class' | 'Const' | 'Default' | 'Dim' | 'Do' | 'Each' | 'ElseIf' | 'Else' | 'Empty' | 'End' | 'Erase' | 'Error' | 'Eqv' | 'Exit' | 'Explicit' | 'False' | 'For' | 'Function' | 'Get' | 'GoTo' | 'If' | 'In' | 'Is' | 'Let' | 'Loop' | 'Mod' | 'New' | 'Next' | 'Nothing' | 'Not' | 'Null' | 'On' | 'Option' | 'Or' | 'Preserve' | 'Private' | 'Property' | 'Public' | 'ReDim' | 'Resume' | 'Select' | 'Set' | 'Sub' | 'Then' | 'To' | 'True' | 'Until' | 'While' | 'WEnd' | 'With' | 'Xor') ![A-Za-z0-9_] {ignoreCase=true}
+Keyword ::= ('And' | 'ByVal' | 'ByRef' | 'Case' | 'Call' | 'Class' | 'Const' | 'Default' | 'Dim' | 'Do' | 'Each' | 'ElseIf' | 'Else' | 'Empty' | 'End' | 'Erase' | 'Error' | 'Eqv' | 'Exit' | 'Explicit' | 'False' | 'For' | 'Function' | 'Get' | 'GoTo' | 'If' | 'In' | 'Is' | 'Let' | 'Loop' | 'Mod' | 'New' | 'Next' | 'Nothing' | 'Not' | 'Null' | 'On' | 'Option' | 'Or' | 'Preserve' | 'Private' | 'Property' | 'Public' | 'ReDim' | 'Resume' | 'Select' | 'Set' | 'Sub' | 'Then' | 'To' | 'True' | 'Until' | 'While' | 'WEnd' | 'With' | 'Xor') ![A-Za-z0-9_\.] {ignoreCase=true}
 
 /* 13.1.4 Literals */
 
