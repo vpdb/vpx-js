@@ -231,11 +231,9 @@ export class Grammar {
 						break;
 					case 'Keyword':
 						/**
-						 * Standardize keyword when keyword isn't after a dot
+						 * Standardize keywords
 						 */
-						if (!prevToken || prevToken.text !== '.') {
-							node.text = keywordsMap[node.text.toLowerCase()];
-						}
+						node.text = keywordsMap[node.text.toLowerCase()];
 						break;
 					case 'Token':
 						const token = node.children[0];
