@@ -108,11 +108,16 @@ export class Grammar {
 		'Xor',
 	];
 
+	private readonly GRAMMAR_IDENTIFIERS: string[] = [
+		'Me',
+	];
+
 	private readonly GRAMMAR_TARGET_FORMAT = 'Format';
 	private readonly GRAMMAR_TARGET_PROGRAM = 'Program';
 
 	private readonly parser: Parser;
 	private readonly keywordsMap: { [index: string]: string } = {};
+	private readonly identifiersMap: { [index: string]: string } = {};
 
 	private readonly postProcessors = [
 		ppHelpers,
@@ -138,6 +143,13 @@ export class Grammar {
 		 */
 		for (const key of this.GRAMMAR_KEYWORDS) {
 			this.keywordsMap[key.toLowerCase()] = key;
+		}
+
+		/**
+		 * Create a lookup table of standardized identifiers
+		 */
+		for (const key of this.GRAMMAR_IDENTIFIERS) {
+			this.identifiersMap[key.toLowerCase()] = key;
 		}
 
 		// toggle between real-time compilation and pre-compiled rules
@@ -183,6 +195,7 @@ export class Grammar {
 		progress().details('standardizing');
 
 		const keywordsMap = this.keywordsMap;
+		const identifiersMap = this.identifiersMap;
 
 		dashAst(ast, {
 			enter(node: IToken, parent: IToken) {
@@ -191,10 +204,6 @@ export class Grammar {
 						hasLine = false;
 						prevToken = undefined;
 						separator = false;
-						break;
-
-					case 'Keyword':
-						node.text = keywordsMap[node.text.toLowerCase()];
 						break;
 				}
 			},
@@ -208,6 +217,24 @@ export class Grammar {
 					case 'LogicalLineElement':
 						if (node.text === ' ') {
 							separator = true;
+						}
+						break;
+					case 'Identifier':
+						/**
+						 * Standardize Me identifier when it isn't after a dot
+						 */
+						if (!prevToken || prevToken.text !== '.') {
+							if (identifiersMap[node.text.toLowerCase()]) {
+								node.text = identifiersMap[node.text.toLowerCase()];
+							}
+						}
+						break;
+					case 'Keyword':
+						/**
+						 * Standardize keyword when keyword isn't after a dot
+						 */
+						if (!prevToken || prevToken.text !== '.') {
+							node.text = keywordsMap[node.text.toLowerCase()];
 						}
 						break;
 					case 'Token':
