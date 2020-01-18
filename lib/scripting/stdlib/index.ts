@@ -94,6 +94,40 @@ export class Stdlib extends VbsApi {
 		return scope[proc];
 	}
 
+	public TypeName(obj: any): string {
+		if (typeof obj === 'string') {
+			return 'String';
+		}
+		if (obj === null) {
+			return 'Null';
+		}
+		if (typeof obj === 'undefined') {
+			return 'Nothing';
+		}
+		if (Number.isInteger(obj)) {
+			return 'Integer';
+		}
+		if (typeof obj === 'number') {
+			return 'Double';
+		}
+		if (typeof obj === 'boolean') {
+			return 'Boolean';
+		}
+		if (obj.constructor && obj.constructor.name) {
+			if (obj.constructor.name.endsWith('Api')) {
+				return obj.constructor.name.substr(0, obj.constructor.name.length - 3);
+			}
+			if (obj.constructor.name === 'VbsUndefined') {
+				return 'Nothing';
+			}
+			return obj.constructor.name;
+		}
+		if (typeof obj === 'object') {
+			return 'Object';
+		}
+		return 'Unknown';
+	}
+
 	/**
 	 * The InStrRev function returns the position of the first occurrence of one string within another. The search begins from the end of string, but the position returned counts from the beginning of the string.
 	 *
