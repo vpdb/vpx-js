@@ -239,7 +239,16 @@ function ppParenthesizedExpression(node: ESIToken): any {
 }
 
 function ppMemberAccessExpression(node: ESIToken) {
-	return identifier('.' + node.children[1].estree.name);
+	let name = '.';
+	switch (node.children[1].estree.type) {
+		case 'Identifier':
+			name += node.children[1].estree.name;
+			break;
+		case 'ThisExpression':
+			name += 'this';
+			break;
+	}
+	return identifier(name);
 }
 
 function ppSubExpression(node: ESIToken): any {

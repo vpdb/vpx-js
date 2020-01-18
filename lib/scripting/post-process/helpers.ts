@@ -69,7 +69,7 @@ function ppBlock(node: ESIToken): any {
 }
 
 function ppIdentifier(node: ESIToken): any {
-	return !node.text.match(/^Me$/i) ? identifier(node.text) : thisExpression();
+	return (node.text === 'Me') ? thisExpression() : identifier(node.text);
 }
 
 function ppArgumentList(node: ESIToken): any {
