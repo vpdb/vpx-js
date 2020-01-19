@@ -58,5 +58,6 @@ function transform(vbs: string): string {
 	const scriptHelper = new ScriptHelper();
 	let ast = scriptHelper.vbsToAst(vbs);
 	ast = new ClassTransformer(ast).transform();
+	ast = new ClassTransformer(ast).transformThisIdentifiers();
 	return scriptHelper.astToVbs(ast);
 }

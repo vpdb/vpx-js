@@ -66,11 +66,11 @@ describe('The scripting ambiguity transformer', () => {
 			expect(js).to.equal(`${Transformer.SCOPE_NAME}.result = __stdlib.Math.pow(10, 2);`);
 		});
 
-		it('should not use the helper string parameters', () => {
-			const vbs = `LoadController "EM"\n`;
-			const js = transpiler.transpile(vbs);
-			expect(js).to.equal(`${Transformer.SCOPE_NAME}.LoadController('EM');`);
-		});
+		// it('should not use the helper string parameters', () => {
+		// 	const vbs = `LoadController "EM"\n`;
+		// 	const js = transpiler.transpile(vbs);
+		// 	expect(js).to.equal(`${Transformer.SCOPE_NAME}.LoadController('EM');`);
+		// });
 
 		it('should use the helper to access scope variables', () => {
 			const vbs = `x = DOFeffects(Effect)\n`;
@@ -83,7 +83,7 @@ describe('The scripting ambiguity transformer', () => {
 		it('should use the helper if already wrapped in a different helper function', () => {
 			const vbs = `Sub LoadCore\nDim fso\nSet fso = CreateObject("Scripting.FileSystemObject")\nExecuteGlobal fso.OpenTextFile("core.vbs", 1).ReadAll\nEnd Sub\n`;
 			const js = transpiler.transpile(vbs);
-			expect(js).to.equal(`${Transformer.SCOPE_NAME}.LoadCore = function () {\n    let fso;\n    fso = ${Transformer.STDLIB_NAME}.CreateObject('Scripting.FileSystemObject', ${Transformer.PLAYER_NAME});\n    eval(${Transformer.VBSHELPER_NAME}.transpileInline(${Transformer.VBSHELPER_NAME}.getOrCallBound(fso.OpenTextFile('core.vbs', 1), 'ReadAll')));\n};`);
+			expect(js).to.equal(`${Transformer.SCOPE_NAME}.LoadCore = function () {\n    let fso;\n    fso = ${Transformer.STDLIB_NAME}.CreateObject('Scripting.FileSystemObject', ${Transformer.PLAYER_NAME});\n    eval(${Transformer.VBSHELPER_NAME}.transpileInline(${Transformer.VBSHELPER_NAME}.getOrCallBound(${Transformer.VBSHELPER_NAME}.getOrCallBound(fso, 'OpenTextFile', 'core.vbs', 1), 'ReadAll')));\n};`);
 		});
 
 		it('should handle multi-dim arrays', () => {

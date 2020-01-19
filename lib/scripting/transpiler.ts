@@ -75,8 +75,9 @@ export class Transpiler {
 		ast = new ErrorTransformer(ast).transform();
 		ast = new ReferenceTransformer(ast, this.table, this.itemApis, this.enumApis, this.globalApi, this.stdlib).transform();
 		ast = new ScopeTransformer(ast).transform();
-		ast = new ClassTransformer(ast).transform();
+		ast = new ClassTransformer(ast).transformThisIdentifiers();
 		ast = new AmbiguityTransformer(ast, this.itemApis, this.enumApis, this.globalApi, this.stdlib).transform();
+		ast = new ClassTransformer(ast).transform();
 		ast = new WrapTransformer(ast).transform(globalFunction, globalObject);
 		logger().info('[Transpiler.transpile]: Transformed in %sms', Date.now() - now);
 		//logger().debug('AST:', ast);
