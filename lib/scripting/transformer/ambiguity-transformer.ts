@@ -72,12 +72,13 @@ export class AmbiguityTransformer extends Transformer {
 			enter: (node, parent: any) => {
 				if (node.type === 'CallExpression') {
 
+					// EDIT: apparently, dictionaries are accessed by string.
 					// if any of the parameters is a string, it's not an array index
-					for (const argument of node.arguments) {
-						if (argument.type === 'Literal' && typeof argument.value === 'string') {
-							return node;
-						}
-					}
+					// for (const argument of node.arguments) {
+					// 	if (argument.type === 'Literal' && typeof argument.value === 'string') {
+					// 		return node;
+					// 	}
+					// }
 
 					// we know what `eval()` is..
 					if (node.callee.type === 'Identifier' && node.callee.name === 'eval') {

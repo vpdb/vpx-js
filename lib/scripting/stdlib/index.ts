@@ -128,6 +128,11 @@ export class Stdlib extends VbsApi {
 		return 'Unknown';
 	}
 
+	public RGB(r: number, g: number, b: number) {
+		// tslint:disable-next-line:no-bitwise
+		return (r << 16) + (g << 8) + (b);
+	}
+
 	/**
 	 * The InStrRev function returns the position of the first occurrence of one string within another. The search begins from the end of string, but the position returned counts from the beginning of the string.
 	 *
