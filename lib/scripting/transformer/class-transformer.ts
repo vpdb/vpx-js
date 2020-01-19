@@ -33,6 +33,13 @@ export class ClassTransformer extends Transformer {
 				if (node.type === 'Identifier' && parent && parent.type === 'MethodDefinition') {
 					return identifier(node.name.toLowerCase());
 				}
+			},
+		}) as Program;
+	}
+
+	public transformThisIdentifiers(): Program {
+		return replace(this.ast, {
+			enter: (node, parent: any) => {
 
 				// make member usages lower case
 				if (node.type === 'ThisExpression' && parent && parent.type === 'MemberExpression' && parent.property.type === 'Identifier') {
