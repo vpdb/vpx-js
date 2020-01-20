@@ -38,6 +38,24 @@ describe('The VBScript stdlib', () => {
 		player = new Player(table);
 	});
 
+	it('should provide the Abs function', () => {
+		const scope = {} as any;
+		const vbs = `result = Abs(-483.3)`;
+		const transpiler = new Transpiler(table, player);
+		transpiler.execute(vbs, scope, 'global');
+
+		expect(scope.result).to.equal(483.3);
+	});
+
+	it('should provide the Cos function', () => {
+		const scope = {} as any;
+		const vbs = `result = Cos(90)`;
+		const transpiler = new Transpiler(table, player);
+		transpiler.execute(vbs, scope, 'global');
+
+		expect(scope.result).to.equal(Math.cos(90));
+	});
+
 	it('should provide the Csng function', () => {
 		const scope = {} as any;
 		const vbs = `result = csng(1.3)`;
@@ -54,6 +72,15 @@ describe('The VBScript stdlib', () => {
 		transpiler.execute(vbs, scope, 'global');
 
 		expect(scope.result).to.equal(1);
+	});
+
+	it('should provide the Sin function', () => {
+		const scope = {} as any;
+		const vbs = `result = Sin(90)`;
+		const transpiler = new Transpiler(table, player);
+		transpiler.execute(vbs, scope, 'global');
+
+		expect(scope.result).to.equal(Math.sin(90));
 	});
 
 	it('should provide the Sqr function', () => {

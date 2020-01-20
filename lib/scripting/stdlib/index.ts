@@ -49,6 +49,14 @@ export class Stdlib extends VbsApi {
 	get vbTab() { return '\x09'; }
 	get vbVerticalTab() { return '\x0b'; }
 
+	public Abs(n: number): number {
+		return Math.abs(n);
+	}
+
+	public Cos(n: number): number {
+		return Math.cos(n);
+	}
+
 	/**
 	 * Converts to Single Data Type:
 	 *
@@ -64,6 +72,10 @@ export class Stdlib extends VbsApi {
 
 	public Int(n: number): number {
 		return Math.floor(n);
+	}
+
+	public Sin(n: number): number {
+		return Math.sin(n);
 	}
 
 	public Sqr(n: number): number {
