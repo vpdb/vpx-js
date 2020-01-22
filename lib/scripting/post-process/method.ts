@@ -100,7 +100,9 @@ function ppFunctionDeclaration(node: ESIToken): any {
 	if (block.body[block.body.length - 1].type !== 'ReturnStatement') {
 		block.body.push(returnStatement(id));
 	}
-	return functionDeclaration(id, params, block);
+	const estree = functionDeclaration(id, params, block);
+	(estree as any).funcDecl = true;
+	return estree;
 }
 
 function ppParameterList(node: ESIToken): any {
@@ -108,6 +110,9 @@ function ppParameterList(node: ESIToken): any {
 	for (const param of node.children) {
 		if (param.type === 'Parameter') {
 			if (param.children[0].type === 'ParameterModifier') {
+				if (param.children[0].text === 'ByVal') {
+					param.children[1].estree.byVal = true;
+				}
 				params.push(param.children[1].estree);
 			} else {
 				params.push(param.children[0].estree);

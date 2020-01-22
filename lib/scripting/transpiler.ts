@@ -31,6 +31,7 @@ import { ClassTransformer } from './transformer/class-transformer';
 import { ErrorTransformer } from './transformer/error-transformer';
 import { EventTransformer } from './transformer/event-transformer';
 import { FunctionHoistTransformer } from './transformer/function-hoist-transformer';
+import { ParameterTransformer } from './transformer/parameter-transformer';
 import { ReferenceTransformer } from './transformer/reference-transformer';
 import { ScopeTransformer } from './transformer/scope-transformer';
 import { WrapTransformer } from './transformer/wrap-transformer';
@@ -71,6 +72,7 @@ export class Transpiler {
 
 		let now = Date.now();
 		ast = new FunctionHoistTransformer(ast).transform();
+		ast = new ParameterTransformer(ast).transform();
 		ast = new EventTransformer(ast, this.table.getElements()).transform();
 		ast = new ErrorTransformer(ast).transform();
 		ast = new ReferenceTransformer(ast, this.table, this.itemApis, this.enumApis, this.globalApi, this.stdlib).transform();
