@@ -81,7 +81,7 @@
 		"esm": "3.2.25",
 		"looks-same": "7.2.2",
 		"microtime": "3.0.0",
-		"mkdirp": "0.5.1",
+		"mkdirp": "1.0.3",
 		"mocha": "6.2.2",
 		"nock": "11.7.2",
 		"node-fetch": "2.6.0",
