@@ -18,7 +18,7 @@
  */
 
 import {
-	ArrayExpression,
+	ArrayExpression, ArrayPattern,
 	ArrowFunctionExpression,
 	AssignmentExpression,
 	AssignmentOperator, BaseNode,
@@ -153,6 +153,13 @@ export function methodDefinition(
 export function arrayExpression(elements: Expression[] | SpreadElement[]): ArrayExpression {
 	return {
 		type: 'ArrayExpression',
+		elements,
+	};
+}
+
+export function arrayPattern(elements: Pattern[]): ArrayPattern {
+	return {
+		type: 'ArrayPattern',
 		elements,
 	};
 }

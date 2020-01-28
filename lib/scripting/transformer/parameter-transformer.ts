@@ -1,16 +1,86 @@
-import { replace } from 'estraverse';
-import { Identifier, MemberExpression, Program, VariableDeclaration } from 'estree';
-import { identifier, literal, memberExpression, variableDeclaration, variableDeclarator } from '../estree';
+import { replace, traverse, VisitorOption } from 'estraverse';
+import {
+	CallExpression,
+	Expression,
+	Identifier,
+	MemberExpression,
+	Pattern,
+	Program,
+	VariableDeclaration
+} from 'estree';
+import {
+	arrayExpression, arrayPattern, assignmentExpression, expressionStatement,
+	identifier,
+	literal,
+	memberExpression,
+	variableDeclaration,
+	variableDeclarator
+} from '../estree';
 import { Transformer } from './transformer';
 
 export class ParameterTransformer extends Transformer {
+
 	constructor(ast: Program) {
 		super(ast);
 	}
 
 	public transform(): Program {
+		this.transformCallee();
+		this.transformCaller();
+
+		return this.ast;
+	}
+
+	public transformCaller(): void {
+		traverse(this.ast, {
+			enter: (node, parent) => {
+				if (node.type === 'Program' || node.type === 'BlockStatement') {
+					let indent = 0;
+					const callExpressionNodes: CallExpression[] = [];
+					let callExpressionParent: any = null;
+					replace(node, {
+						enter: (innerNode, innerParent) => {
+							//console.log('%senter %s', new Array(indent++ * 3).join(' '), innerNode.type);
+							if (innerNode.type === 'CallExpression' && !callExpressionNodes.includes(innerNode)) {
+								callExpressionNodes.push(innerNode);
+								callExpressionParent = callExpressionParent || innerParent;
+							}
+						},
+						leave: innerNode => {
+							if (innerNode.type === 'CallExpression') {
+								const paramName = '__args' + (callExpressionNodes.length - 1);
+								const before = variableDeclaration('const', [
+									variableDeclarator(identifier(paramName), arrayExpression(innerNode.arguments as Expression[])),
+								]);
+								const after = expressionStatement(
+									assignmentExpression(
+										arrayPattern(innerNode.arguments.map(n => n.type === 'Identifier' ? n : null) as Pattern[]),
+										'=',
+										identifier(paramName),
+									),
+								);
+								innerNode.arguments = [ identifier(paramName) ];
+								node.body.splice(node.body.indexOf(callExpressionParent as any), 0, before);
+								node.body.splice(node.body.indexOf(callExpressionParent as any) + 1, 0, after);
+
+								callExpressionNodes.splice(callExpressionNodes.indexOf(innerNode), 1);
+								if (callExpressionNodes.length === 0) {
+									callExpressionParent = null;
+								}
+							}
+							//console.log('%sleave %s', new Array(--indent * 3).join(' '), innerNode.type);
+						},
+					});
+					// TODO handle nested blocks
+					return VisitorOption.Break;
+				}
+			},
+		});
+	}
+
+	public transformCallee(): void {
 		const paramsId = identifier( '__params' );
-		return replace(this.ast, {
+		replace(this.ast, {
 			enter: node => {
 				if ((node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression') && node.params.length > 0) {
 					const byRefs: { [index: string]: MemberExpression } = {};
@@ -69,6 +139,6 @@ export class ParameterTransformer extends Transformer {
 					return node;
 				}
 			},
-		}) as Program;
+		});
 	}
 }

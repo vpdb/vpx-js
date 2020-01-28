@@ -34,10 +34,9 @@ describe('The scripting parameter transformer', () => {
 		);
 	});
 
-	it.only('should update params for a function declaration', () => {
+	it('should update params for a function declaration', () => {
 		const vbs = `Private Function foo(ByRef x, ByVal y)\nx = "returned"\ny = 2\ny = y + 2\nx = x & "Bar"\nEnd Function`;
 		const js = transform(vbs);
-		console.log(js);
 		expect(js).to.equal(
 			`function foo(__params) {\n    let foo = undefined;\n    let y = __params[1];\n    __params[0] = 'returned';\n    y = 2;\n    y = y + 2;\n    __params[0] = __params[0] + 'Bar';\n    return foo;\n}`,
 		);
@@ -64,6 +63,38 @@ describe('The scripting parameter transformer', () => {
 		const js = transform(vbs);
 		expect(js).to.equal(
 			`class cvpmTest {\n    constructor() {\n        this.mEnabled = undefined;\n    }\n    Balls(__params) {\n        let test2 = __params[1];\n        let Balls = undefined;\n        this.mEnabled = __params[0];\n        Balls = this.mEnabled;\n        if (__vbs.equals(Balls, 1)) {\n            return Balls;\n        }\n        return Balls;\n    }\n}`,
+		);
+	});
+
+	it.only('should run pack and unpack identifiers params before function calls', () => {
+		const vbs = 'vpmSetArray tmp, aKicker';
+		const js = transform(vbs);
+		expect(js).to.equal(
+			`const __args0 = [\n    tmp,\n    aKicker\n];\nvpmSetArray(__args0);\n[tmp, aKicker] = __args0;`,
+		);
+	});
+
+	it.only('should run pack but not unpack literals params before function calls', () => {
+		const vbs = 'vpmSetArray tmp, 2, tmp2';
+		const js = transform(vbs);
+		expect(js).to.equal(
+			`const __args0 = [\n    tmp,\n    2,\n    tmp2\n];\nvpmSetArray(__args0);\n[tmp, , tmp2] = __args0;`,
+		);
+	});
+
+	it.only('should run pack and unpack nested params before function calls', () => {
+		const vbs = 'vpmSetArray tmp, foo(tmp2)';
+		const js = transform(vbs);
+		expect(js).to.equal(
+			`const __args1 = [tmp2];\nconst __args0 = [\n    tmp,\n    foo(__args1)\n];\nvpmSetArray(__args0);\n[tmp, ,] = __args0;\n[tmp2] = __args1;`,
+		);
+	});
+
+	it.only('should run pack and unpack a function expression', () => {
+		const vbs = 'if vpmSetArray(tmp) then\nend if';
+		const js = transform(vbs);
+		expect(js).to.equal(
+			`const __args0 = [tmp];\nif (vpmSetArray(__args0)) {\n    [tmp] = __args0;\n}`,
 		);
 	});
 });
