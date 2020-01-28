@@ -26,7 +26,7 @@ chai.use(require('sinon-chai'));
 
 /* tslint:disable:no-unused-expression */
 describe('The scripting parameter transformer', () => {
-	it('should update params for sub declaration', () => {
+	it('should update params for a sub declaration', () => {
 		const vbs = `Private Sub foo(ByRef x, ByVal y)\nx = "returned"\ny = 2\ny = y + 2\nx = x & "Bar"\nEnd Sub`;
 		const js = transform(vbs);
 		expect(js).to.equal(
@@ -34,9 +34,10 @@ describe('The scripting parameter transformer', () => {
 		);
 	});
 
-	it('should update params for function declaration', () => {
+	it.only('should update params for a function declaration', () => {
 		const vbs = `Private Function foo(ByRef x, ByVal y)\nx = "returned"\ny = 2\ny = y + 2\nx = x & "Bar"\nEnd Function`;
 		const js = transform(vbs);
+		console.log(js);
 		expect(js).to.equal(
 			`function foo(__params) {\n    let foo = undefined;\n    let y = __params[1];\n    __params[0] = 'returned';\n    y = 2;\n    y = y + 2;\n    __params[0] = __params[0] + 'Bar';\n    return foo;\n}`,
 		);
@@ -55,6 +56,14 @@ describe('The scripting parameter transformer', () => {
 		const js = transform(vbs);
 		expect(js).to.equal(
 			`function foo() {\n    x = 'returned';\n    y = 2;\n    y = y + 2;\n    x = x + 'Bar';\n}`,
+		);
+	});
+
+	it('should update params in class functions', () => {
+		const vbs = `Class cvpmTest\nPrivate mEnabled\nPublic Property Get Balls(test, ByVal test2):mEnabled=test:Balls=mEnabled:If Balls=1 Then Exit Property:End Property\nEnd Class`;
+		const js = transform(vbs);
+		expect(js).to.equal(
+			`class cvpmTest {\n    constructor() {\n        this.mEnabled = undefined;\n    }\n    Balls(__params) {\n        let test2 = __params[1];\n        let Balls = undefined;\n        this.mEnabled = __params[0];\n        Balls = this.mEnabled;\n        if (__vbs.equals(Balls, 1)) {\n            return Balls;\n        }\n        return Balls;\n    }\n}`,
 		);
 	});
 });

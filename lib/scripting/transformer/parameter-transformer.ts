@@ -12,7 +12,7 @@ export class ParameterTransformer extends Transformer {
 		const paramsId = identifier( '__params' );
 		return replace(this.ast, {
 			enter: node => {
-				if (node.type === 'FunctionDeclaration' && node.params.length > 0) {
+				if ((node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression') && node.params.length > 0) {
 					const byRefs: { [index: string]: MemberExpression } = {};
 					const byVals: VariableDeclaration[] = [];
 					let index = 0;
