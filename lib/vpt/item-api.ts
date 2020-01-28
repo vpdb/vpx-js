@@ -39,6 +39,9 @@ export abstract class ItemApi<DATA extends ItemData> extends EventEmitter {
 	protected readonly collectionsItemPos: number[] = [];
 	private propertyMap?: { [key: string]: string };
 
+	// tslint:disable-next-line:variable-name
+	public readonly __isEngineApi = true;
+
 	private hitTimer?: TimerHit;
 
 	protected abstract _getPropertyNames(): string[];

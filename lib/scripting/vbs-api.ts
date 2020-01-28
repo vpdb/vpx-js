@@ -21,6 +21,9 @@ export abstract class VbsApi {
 
 	private propertyMap?: { [key: string]: string };
 
+	// tslint:disable-next-line:variable-name
+	public __isEngineApi = true;
+
 	protected abstract _getPropertyNames(): string[];
 
 	public _getPropertyName(vbScriptName: string): string {

@@ -1,3 +1,5 @@
+/* tslint:disable:variable-name */
+
 /*
  * VPDB - Virtual Pinball Database
  * Copyright (C) 2019 freezy <freezy@vpdb.io>
@@ -23,8 +25,8 @@
  */
 export class VbsProxyHandler implements ProxyHandler<any> {
 
-	// tslint:disable-next-line:variable-name
 	private readonly __names: { [key: string]: string | number | symbol } = {};
+	private readonly __isEngineApi: boolean;
 
 	/**
 	 * Creates the handler. Pass in prototype and object instance if available.
@@ -34,8 +36,10 @@ export class VbsProxyHandler implements ProxyHandler<any> {
 	 *
 	 * @param obj Object instance
 	 * @param proto Prototype of object instance
+	 * @param isEngineApi If set to true, this proxy is marked as a known API class, and function params won't be passed as an array.
 	 */
-	constructor(obj?: any, proto?: any) {
+	constructor(obj?: any, proto?: any, isEngineApi: boolean = false) {
+		this.__isEngineApi = isEngineApi;
 		if (proto) {
 			for (const name of Object.getOwnPropertyNames(proto)) {
 				this.__names[name.toLowerCase()] = name;
@@ -51,6 +55,9 @@ export class VbsProxyHandler implements ProxyHandler<any> {
 	}
 
 	public get(target: any, name: string | number | symbol, receiver: any): any {
+		if (name === '__isEngineApi') {
+			return this.__isEngineApi;
+		}
 		const normName = typeof name === 'string' ? name.toLowerCase() : name.toString();
 		let realName = name;
 		if (!this.__names[normName]) {

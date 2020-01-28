@@ -170,9 +170,10 @@ export class VBSHelper {
 		return (value1 === value2);
 	}
 
-	public getOrCall(obj: any, ...params: number[]) {
+	public getOrCall(obj: any, ...params: any[]) {
 		if (typeof obj === 'function') {
-			return obj.bind(obj)(...params);
+			// todo spread params if "own" api
+			return obj.bind(obj)(params);
 		}
 		for (const param of params) {
 			obj = obj[param];
@@ -183,7 +184,11 @@ export class VBSHelper {
 	public getOrCallBound(parent: any, prop: string, ...params: number[]) {
 		let obj = parent[prop];
 		if (typeof obj === 'function') {
-			return obj.bind(parent)(...params);
+			if (parent.__isEngineApi) {
+				return obj.bind(parent)(...params);
+			} else {
+				return obj.bind(parent)(params);
+			}
 		}
 		for (const param of params) {
 			obj = obj[param];

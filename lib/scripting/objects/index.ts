@@ -30,19 +30,19 @@ export function getObject<T>(name: string, player: Player): T | void {
 	switch (name.toLowerCase()) {
 		case 'scripting.dictionary':
 			const dictionary = new Dictionary();
-			return new Proxy(dictionary, new VbsProxyHandler(dictionary, Dictionary.prototype));
+			return new Proxy(dictionary, new VbsProxyHandler(dictionary, Dictionary.prototype, true));
 
 		case 'scripting.filesystemobject':
 			const fso = new FileSystemObject();
-			return new Proxy(fso, new VbsProxyHandler(fso, FileSystemObject.prototype));
+			return new Proxy(fso, new VbsProxyHandler(fso, FileSystemObject.prototype, true));
 
 		case 'vpinmame.controller':
 			const vpc = new VpmController(player);
-			return new Proxy(vpc, new VbsProxyHandler(vpc, VpmController.prototype));
+			return new Proxy(vpc, new VbsProxyHandler(vpc, VpmController.prototype, true));
 
 		case 'wscript.shell':
 			const wss = new WshShell();
-			return new Proxy(wss, new VbsProxyHandler(wss, WshShell.prototype));
+			return new Proxy(wss, new VbsProxyHandler(wss, WshShell.prototype, true));
 	}
 	ERR.Raise(429, undefined, "ActiveX component can't create object");
 }
