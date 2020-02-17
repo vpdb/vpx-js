@@ -63,7 +63,7 @@
 		"wpc-emu": "0.34.5"
 	},
 	"devDependencies": {
-		"@types/chai": "4.2.8",
+		"@types/chai": "4.2.9",
 		"@types/escodegen": "0.0.6",
 		"@types/estraverse": "0.0.6",
 		"@types/estree": "0.0.42",
