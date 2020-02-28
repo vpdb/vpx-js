@@ -92,7 +92,7 @@
 		"ts-node": "8.6.2",
 		"tsc-watch": "4.1.0",
 		"tslint": "5.20.1",
-		"typescript": "3.7.5"
+		"typescript": "3.8.3"
 	},
 	"bugs": {
 		"url": "https://github.com/vpdb/vpx-js/issues"
