@@ -46,7 +46,7 @@
 		"test:watch:debug": "npm run build:pre && npm run build:cp && tsc-watch --module commonjs --outDir ./dist/cjs --onFirstSuccess \"mocha --config test/mocha.js.json --inspect dist/cjs/lib/**/*.spec.js\""
 	},
 	"dependencies": {
-		"buffer": "5.4.3",
+		"buffer": "5.5.0",
 		"dash-ast": "^1.0.0",
 		"ebnf": "^1.7.4",
 		"es6-promise-pool": "^2.5.0",
