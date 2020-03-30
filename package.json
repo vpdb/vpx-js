@@ -82,7 +82,7 @@
 		"looks-same": "7.2.2",
 		"microtime": "3.0.0",
 		"mkdirp": "1.0.3",
-		"mocha": "6.2.2",
+		"mocha": "6.2.3",
 		"nock": "12.0.3",
 		"node-fetch": "2.6.0",
 		"nyc": "15.0.0",
