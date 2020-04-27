@@ -72,7 +72,7 @@
 		"@types/mocha": "5.2.7",
 		"@types/moo": "0.5.3",
 		"@types/nearley": "2.11.1",
-		"@types/node": "12.12.36",
+		"@types/node": "12.12.37",
 		"@types/sharp": "0.24.0",
 		"@types/sinon": "9.0.0",
 		"@types/sinon-chai": "3.2.4",
