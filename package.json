@@ -67,7 +67,7 @@
 		"@types/escodegen": "0.0.6",
 		"@types/estraverse": "0.0.6",
 		"@types/estree": "0.0.42",
-		"@types/gm": "1.18.7",
+		"@types/gm": "1.18.8",
 		"@types/microtime": "2.1.0",
 		"@types/mocha": "5.2.7",
 		"@types/moo": "0.5.3",
