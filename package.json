@@ -57,7 +57,7 @@
 		"gm": "^1.23.1",
 		"moo": "^0.5.1",
 		"pngquant": "^3.0.0",
-		"sharp": "0.25.4",
+		"sharp": "0.26.2",
 		"text-encoding": "^0.7.0",
 		"three": "^0.112.1",
 		"wpc-emu": "0.34.5"
@@ -73,7 +73,7 @@
 		"@types/moo": "0.5.3",
 		"@types/nearley": "2.11.1",
 		"@types/node": "12.12.47",
-		"@types/sharp": "0.25.0",
+		"@types/sharp": "0.26.0",
 		"@types/sinon": "9.0.4",
 		"@types/sinon-chai": "3.2.4",
 		"chai": "4.2.0",
