@@ -57,7 +57,7 @@ describe('The VPinball texture parser', () => {
 		const threeTexture = await texture.loadTexture(loader, vpt);
 		const jpg = await threeTexture.image.getImage(false, 100);
 		const png = await sharp(jpg).png().toBuffer();
-		const match = await comparePngs(png, testPng);
+		const match = await comparePngs(png, testPng, 30);
 		expect(match).to.equal(true);
 	});
 
@@ -66,7 +66,7 @@ describe('The VPinball texture parser', () => {
 		const threeTexture = await texture.loadTexture(loader, vpt);
 		const jpg = await threeTexture.image.getImage(false, 100);
 		const png = await sharp(jpg).png().toBuffer();
-		const match = await comparePngs(png, testPng);
+		const match = await comparePngs(png, testPng, 30);
 		expect(match).to.equal(true);
 	});
 
@@ -75,7 +75,7 @@ describe('The VPinball texture parser', () => {
 		const threeTexture = await texture.loadTexture(loader, vpt);
 		const jpg = await threeTexture.image.getImage(false, 100);
 		const png = await sharp(jpg).png().toBuffer();
-		const match = await comparePngs(png, testPng);
+		const match = await comparePngs(png, testPng, 30);
 		expect(match).to.equal(true);
 	});
 
@@ -84,7 +84,7 @@ describe('The VPinball texture parser', () => {
 		const threeTexture = await texture.loadTexture(loader, vpt);
 		const jpg = await threeTexture.image.getImage(false, 100);
 		const png = await sharp(jpg).png().toBuffer();
-		const match = await comparePngs(png, testPng);
+		const match = await comparePngs(png, testPng, 30);
 		expect(match).to.equal(true);
 	});
 
@@ -94,7 +94,7 @@ describe('The VPinball texture parser', () => {
 		threeTexture.image.resize(1024, 512);
 		const jpg = await threeTexture.image.getImage(false, 100);
 		const png = await sharp(jpg).png().toBuffer();
-		const match = await comparePngs(png, testPngPow2, 20);
+		const match = await comparePngs(png, testPngPow2, 50);
 		expect(match).to.equal(true);
 	});
 
@@ -131,7 +131,7 @@ describe('The VPinball texture parser', () => {
 
 		const jpg = await threeTexture.image.getImage(false, 100);
 		const png = await sharp(jpg).png().toBuffer();
-		const match = await comparePngs(png, testLocalGottliebKicker);
+		const match = await comparePngs(png, testLocalGottliebKicker, 30);
 		expect(match).to.equal(true);
 	});
 
