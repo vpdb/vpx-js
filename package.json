@@ -61,7 +61,7 @@
 		"sharp": "^0.26.2",
 		"text-encoding": "^0.7.0",
 		"three": "^0.112.1",
-		"wpc-emu": "0.34.5"
+		"wpc-emu": "0.36.7"
 	},
 	"devDependencies": {
 		"@types/chai": "^4.2.14",
