@@ -1,6 +1,6 @@
 {
 	"name": "vpx-js",
-	"version": "1.3.3",
+	"version": "1.3.4",
 	"description": "Visual Pinball for Node.js and the Browser",
 	"author": "freezy <freezy@vpdb.io>",
 	"contributors": [
