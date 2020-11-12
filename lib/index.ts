@@ -28,4 +28,4 @@ export { BrowserBinaryReader } from './io/binary-reader.browser';
 export { Logger, Progress, progress } from './util/logger';
 export { Ball } from './vpt/ball/ball';
 export { ThreeRenderApi } from './render/threejs/three-render-api';
-export { ThreeTextureLoader } from './refs.node';
+export { ThreeTextureLoader, BinaryReader, storage } from './refs.node';
