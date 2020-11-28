@@ -50,7 +50,7 @@
 		"dash-ast": "^2.0.0",
 		"ebnf": "^1.9.0",
 		"es6-promise-pool": "^2.5.0",
-		"escodegen": "^1.12.0",
+		"escodegen": "^2.0.0",
 		"escope": "^3.6.0",
 		"estraverse": "^5.0.0",
 		"gltf-pipeline": "github:freezy/gltf-pipeline#hotfix/dedupe",
