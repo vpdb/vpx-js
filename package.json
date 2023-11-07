@@ -65,7 +65,7 @@
 	},
 	"devDependencies": {
 		"@types/chai": "^4.2.14",
-		"@types/escodegen": "0.0.6",
+		"@types/escodegen": "0.0.10",
 		"@types/estraverse": "0.0.6",
 		"@types/estree": "0.0.42",
 		"@types/gm": "^1.18.9",
