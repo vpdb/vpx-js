@@ -69,7 +69,7 @@
 		"@types/estraverse": "0.0.6",
 		"@types/estree": "0.0.42",
 		"@types/gm": "^1.18.9",
-		"@types/microtime": "2.1.0",
+		"@types/microtime": "2.1.2",
 		"@types/mocha": "^8.0.4",
 		"@types/moo": "0.5.3",
 		"@types/nearley": "2.11.1",
